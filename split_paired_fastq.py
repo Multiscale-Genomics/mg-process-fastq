@@ -78,10 +78,10 @@ class fastqreader:
         
         if read_id == '':
             if side == 1:
-                self.eof_1 = True
+                self.f1_eof = True
                 return False
             if side == 2:
-                self.eof_1 = True
+                self.f2_eof = True
                 return False
         return {'id': read_id.rstrip(), 'seq': read_seq.rstrip(), 'add': read_addition.rstrip(), 'score': read_score.rstrip()}
     

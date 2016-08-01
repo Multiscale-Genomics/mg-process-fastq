@@ -16,7 +16,7 @@ Scripts required for the processing of FASTQ files (eg generating adjacency list
 - mcl
 
 
-# Whole Genome Bisulfite Analysis
+# Whole Genome Bisulfite Sequencing (WGBS)
 ## Code Example
 ### Filter the FastQ files
 

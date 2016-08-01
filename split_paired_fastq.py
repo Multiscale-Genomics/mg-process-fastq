@@ -86,19 +86,22 @@ class fastqreader:
         return {'id': read_id.rstrip(), 'seq': read_seq.rstrip(), 'add': read_addition.rstrip(), 'score': read_score.rstrip()}
     
     def createOutputFiles(self, tag = ''):
+        if tag != '' and self.output_tag != tag:
+            self.output_tag = tag
+        
         """
         Create and open the file handles for the output files
         """
         f1 = self.fastq1.split("/")
-        f1[-1] = f1[-1].replace(".fastq", "." + str(tag) + "_" + str(self.output_file_count) + ".fastq")
+        f1[-1] = f1[-1].replace(".fastq", "." + str(self.output_tag) + "_" + str(self.output_file_count) + ".fastq")
         f1.insert(-1, "tmp")
         
         f2 = self.fastq2.split("/")
-        f2[-1] = f2[-1].replace(".fastq", "." + str(tag) + "_" + str(self.output_file_count) + ".fastq")
+        f2[-1] = f2[-1].replace(".fastq", "." + str(self.output_tag) + "_" + str(self.output_file_count) + ".fastq")
         f2.insert(-1, "tmp")
         
-        self.f1_output_file = open(f1.join("/"), "w")
-        self.f2_output_file = open(f2.join("/"), "w")
+        self.f1_output_file = open("/".join(f1), "w")
+        self.f2_output_file = open("/".join(f2), "w")
     
     def writeOutput(self, read, side = 1):
         """
@@ -125,11 +128,11 @@ class fastqreader:
         Increment the counter and create new files for splitting the original
         FastQ paired end files.
         """
-        closeOutputFiles()
+        self.closeOutputFiles()
         
         self.output_file_count+=1
         
-        createOutputFiles(self.output_tag)
+        self.createOutputFiles(self.output_tag)
     
         
 # Set up the command line parameters

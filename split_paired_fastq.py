@@ -24,6 +24,9 @@ class fastqreader:
         self.output_file_count = 0
     
     def openPairedFastQ(self, file1, file2):
+        """
+        Create file handles for reading the FastQ files
+        """
         self.fastq1 = file1
         self.fastq2 = file2
         
@@ -34,10 +37,16 @@ class fastqreader:
         self.f2_eof = False
     
     def closePairedFastQ(self):
+        """
+        Close file handles for the FastQ files.
+        """
         self.f1_file.close()
         self.f2_file.close()
     
     def eof(self, side = 1):
+        """
+        Indicate if the end of the file has been reached
+        """
         if side == 1:
             return self.f1_eof
         elif side == 2:
@@ -46,6 +55,9 @@ class fastqreader:
             return "ERROR"
     
     def next(self, side = 1):
+        """
+        Get the next read element for the specific FastQ file pair
+        """
         read_id = ''
         read_seq = ''
         read_addition = ''
@@ -74,16 +86,24 @@ class fastqreader:
         return {'id': read_id.rstrip(), 'seq': read_seq.rstrip(), 'add': read_addition.rstrip(), 'score': read_score.rstrip()}
     
     def createOutputFiles(self, tag = ''):
+        """
+        Create and open the file handles for the output files
+        """
         f1 = self.fastq1.split("/")
         f1[-1] = f1[-1].replace(".fastq", "." + str(tag) + "_" + str(self.output_file_count) + ".fastq")
+        f1.insert(-1, "tmp")
         
         f2 = self.fastq2.split("/")
         f2[-1] = f2[-1].replace(".fastq", "." + str(tag) + "_" + str(self.output_file_count) + ".fastq")
+        f2.insert(-1, "tmp")
         
         self.f1_output_file = open(f1.join("/"), "w")
         self.f2_output_file = open(f2.join("/"), "w")
     
     def writeOutput(self, read, side = 1):
+        """
+        Writer to print the extracted lines
+        """
         line = read["id"] + "\n" + read["seq"] + "\n" + read["add"] + "\n" + read["score"] + "\n"
         if side == 1:
             self.f1_output_file.write(line)
@@ -94,10 +114,17 @@ class fastqreader:
         return True
     
     def closeOutputFiles(self):
+        """
+        Close the output file handles
+        """
         self.f1_output_file.close()
         self.f2_output_file.close()
     
     def incrementOutputFiles(self):
+        """
+        Increment the counter and create new files for splitting the original
+        FastQ paired end files.
+        """
         closeOutputFiles()
         
         self.output_file_count+=1

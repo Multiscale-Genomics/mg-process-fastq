@@ -27,12 +27,12 @@ class fastq2adjacency:
         """
         Initialise the module and 
         """
-        self.genome_accession = 'GCA_000001405.22' # GRChg38, current
-        self.dataset     = 'GSE63525'
+        self.genome_accession = '' # GCA_000001405.22 - GRChg38, current
+        self.dataset     = '' # 'GSE63525'
         self.sra_id      = '' # 'SRR1658632'
         self.library     = '' # 'HiC036'
         self.enzyme_name = '' # 'NcoI'
-        self.resolution  = 100000
+        self.resolution  = 1000000
 
         self.temp_root = '/' # '/<tmp_area>/'
         self.data_root = '/' # '/<data_dir>/'
@@ -88,7 +88,7 @@ class fastq2adjacency:
         if windows2 != None:
             self.windows2 = windows2
     
-    def mapWindows(self, side=1, same_file=True):
+    def mapWindows(self, side=1):
         """
         Map the reads to the genome
         """

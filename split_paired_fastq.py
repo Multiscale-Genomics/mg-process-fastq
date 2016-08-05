@@ -23,8 +23,8 @@ fqr.createOutputFiles(tag)
 r1 = fqr.next(1)
 r2 = fqr.next(2)
 
-count_r1 = 1
-count_r2 = 2
+count_r1 = 0
+count_r2 = 0
 count_r3 = 0
 
 while fqr.eof(1) == False and fqr.eof(2) == False:

@@ -66,20 +66,20 @@ class fastq2adjacency:
         self.data_root = data_dir
     
         self.gem_file    = self.data_root + self.genome_accession + '/' + self.genome_accession + '.gem'
-        self.genome_file = self.data_root + self.genome_accession + '/chromos/' + self.genome_accession + '.fa'
+        self.genome_file = self.data_root + self.genome_accession + '/chroms/' + self.genome_accession + '.fa'
         
         self.fastq_file_1  = self.data_root + self.dataset + '/' + self.library + '/'
         self.fastq_file_2  = self.data_root + self.dataset + '/' + self.library + '/'
         if same_fastq == True:
             self.fastq_file_1  = self.fastq_file_1 + self.sra_id + '.fastq'
-            self.fastq_file_2  = self.fastq_file_1 + self.sra_id + '.fastq'
+            self.fastq_file_2  = self.fastq_file_2 + self.sra_id + '.fastq'
         else:
             self.fastq_file_1  = self.fastq_file_1 + self.sra_id + '_1.fastq'
-            self.fastq_file_2  = self.fastq_file_1 + self.sra_id + '_2.fastq'
+            self.fastq_file_2  = self.fastq_file_2 + self.sra_id + '_2.fastq'
             
         self.map_dir     = self.data_root + self.dataset + '/' + self.library + '/01_it-mapped_read'
         self.tmp_dir     = self.temp_root + self.dataset + '/' + self.library
-        self.parsed_reads_dir = tmp_dir + '/parsed_reads'
+        self.parsed_reads_dir = self.tmp_dir + '/parsed_reads'
         
         mkdir(self.parsed_reads_dir)
         
@@ -126,15 +126,18 @@ class fastq2adjacency:
     def parseMaps(self):
         """
         Merge the 2 read maps together 
+        Requires 8 CPU
         """
         # new file with info of each "read1" and its placement with respect to RE sites
         reads1 = self.parsed_reads_dir + '/read1.tsv'
         # new file with info of each "read2" and its placement with respect to RE sites
         reads2 = self.parsed_reads_dir + '/read2.tsv'
         
-        mapped_rN = getMappedWindows()
+        mapped_rN = self.getMappedWindows()
 
         print 'Parse MAP files...'
+        print reads1
+        print reads2
         parse_map(mapped_rN["mapped_r1"], mapped_rN["mapped_r2"], out_file1=reads1, out_file2=reads2, genome_seq=self.genome_seq, re_name=self.enzyme_name, verbose=True, ncpus=8)
     
     def mergeMaps(self):
@@ -171,8 +174,8 @@ class fastq2adjacency:
         """
         Load the interactions into the HiC-Data data type
         """
-        filt_reads = self.parsed_reads_dir + '/filtered_map.tsv'
-        self.hic_data = load_hic_data_from_reads(filt_reads, resolution=resolution)
+        filter_reads = self.parsed_reads_dir + '/filtered_map.tsv'
+        self.hic_data = load_hic_data_from_reads(filter_reads, resolution=self.resolution)
     
     def normalise_hic_data(self, iterations=0):
         """

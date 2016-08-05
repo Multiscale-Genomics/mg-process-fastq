@@ -145,9 +145,9 @@ class fastq2adjacency:
         Merging mapped "read1" and "read2"
         """
         # Output file
-        reads  = parsed_reads_dir + '/both_map.tsv'
+        reads  = self.parsed_reads_dir + '/both_map.tsv'
         # new file with info of each "read1" and its placement with respect to RE sites
-        reads1 = parsed_reads_dir + '/read1.tsv'
+        reads1 = self.parsed_reads_dir + '/read1.tsv'
         # new file with info of each "read2" and its placement with respect to RE sites
         reads2 = self.parsed_reads_dir + '/read2.tsv'
         get_intersection(reads1, reads2, reads, verbose=True)

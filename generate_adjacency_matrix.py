@@ -39,8 +39,9 @@ windows2 = ((1,25), (1,50), (1,75),(1,100))
 #windows2 = ((101,125), (101,150), (101,175),(101,200))
 f2a.set_params(genome, dataset, sra_id, library, enzyme_name, resolution, tmp_dir, data_dir, False, windows1, windows1)
 
-f2a.mapWindows(1)
-f2a.mapWindows(2)
+map(f2a.mapWindows, [1, 2])
+#f2a.mapWindows(1)
+#f2a.mapWindows(2)
 
 f2a.parseGenomeSeq()
 

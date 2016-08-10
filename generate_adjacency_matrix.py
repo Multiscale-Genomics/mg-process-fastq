@@ -13,7 +13,7 @@ parser.add_argument("--library", help="Library") #                default="HIC00
 parser.add_argument("--enzyme_name", help="Enzyme name (HboI)") # default="HboI")
 parser.add_argument("--resolution", help="Resolution") #          default=1000000)
 parser.add_argument("--tmp_dir", help="Temporary data dir")
-parser.add_argument("--data_dir", help="Data directory; location of SRA FASTQ files")
+parser.add_argument("--data_dir", help="Data directory; location to download SRA FASTQ files and save results")
 
 # Get the matching parameters from the command line
 args = parser.parse_args()
@@ -37,11 +37,11 @@ f2a = fastq2adjacency()
 windows1 = ((1,25), (1,50), (1,75),(1,100))
 windows2 = ((1,25), (1,50), (1,75),(1,100))
 #windows2 = ((101,125), (101,150), (101,175),(101,200))
-f2a.set_params(genome, dataset, sra_id, library, enzyme_name, resolution, tmp_dir, data_dir, False, windows1, windows1)
+f2a.set_params(genome, dataset, sra_id, library, enzyme_name, resolution, tmp_dir, data_dir, same_fastq=False, windows1=windows1, windows2=windows2)
+
+f2a.getFastqData()
 
 map(f2a.mapWindows, [1, 2])
-#f2a.mapWindows(1)
-#f2a.mapWindows(2)
 
 f2a.parseGenomeSeq()
 
@@ -51,8 +51,10 @@ f2a.mergeMaps()
 
 f2a.filterReads(conservative=True)
 
-f2a.load_hic_data()
+# It is at this point that the resolution is used.
+f2a.load_hic_read_data()
 
 f2a.normalise_hic_data()
 
 f2a.save_hic_data()
+

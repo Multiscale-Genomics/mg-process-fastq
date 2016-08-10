@@ -139,7 +139,12 @@ if __name__ == "__main__":
     import sys
     import os
     from pycompss.api.api import compss_wait_on
-    #from 
+    
+    in_file1  = sys.argv[1]
+    in_file2  = sys.argv[2]
+    out_file1 = in_file1.replace(".fastq", "_filtered.fastq")
+    out_file2 = in_file2.replace(".fastq", "_filtered.fastq")
+    genome    = sys.argv[3]
     
     start = time.time()
     

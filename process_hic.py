@@ -5,35 +5,55 @@ import argparse, time
 from pycompss.api.task import task
 from pycompss.api.parameter import *
 
-from fastq2adjacency import fastq2adjacency
+class process_hic:
+    @task(params = IN)
+    def main(self, params):
+        from fastq2adjacency import fastq2adjacency
+        
+        genome      = params[0]
+        dataset     = params[1]
+        sra_id      = params[2]
+        library     = params[3]
+        enzyme_name = params[4]
+        resolution  = params[5]
+        tmp_dir     = params[6]
+        data_dir    = params[7]
+        expt        = params[8]
+        same_fastq  = params[9]
+        windows1    = params[10]
+        windows2    = params[11]
+        
+        print "Got Params"
+        
+        print sra_id, library, resolution, time.time()
+        
+        f2a = fastq2adjacency()
+        f2a.set_params(genome, dataset, sra_id, library, enzyme_name, resolution, tmp_dir, data_dir, expt, same_fastq, windows1, windows2)
+        
+        print "Set Params"
+        
+        #f2a.getFastqData()
+        
+        #map(f2a.mapWindows, [1, 2])
 
-@task()
-def main(genome, dataset, sra_id, library, enzyme_name, resolution, tmp_dir, data_dir, expt):
-    f2a = fastq2adjacency()
-    f2a.set_params(genome, dataset, sra_id, library, enzyme_name, resolution, tmp_dir, data_dir, expt, same_fastq=False, windows1=windows1, windows2=windows2)
-    
-    f2a.getFastqData()
-    
-    map(MapReads2Genome, [1, 2])
+        #f2a.parseGenomeSeq()
 
-    f2a.parseGenomeSeq()
+        #f2a.parseMaps()
 
-    f2a.parseMaps()
+        #f2a.mergeMaps()
 
-    f2a.mergeMaps()
+        #f2a.filterReads(conservative=True)
 
-    f2a.filterReads(conservative=True)
+        # It is at this point that the resolution is used.
+        #f2a.load_hic_read_data()
 
-    # It is at this point that the resolution is used.
-    f2a.load_hic_read_data()
+        #f2a.normalise_hic_data()
 
-    f2a.normalise_hic_data()
+        #f2a.save_hic_data()
 
-    f2a.save_hic_data()
-
-@task()
-def MapReads2Genome(f2a, window):
-    f2a.mapWindows(window)
+    #@task()
+    #def MapReads2Genome(f2a, window):
+    #    f2a.mapWindows(window)
 
 
 if __name__ == "__main__":
@@ -55,9 +75,9 @@ if __name__ == "__main__":
     # Get the matching parameters from the command line
     args = parser.parse_args()
 
-    if len(sys.argv) < 9:
-        parser.print_help()
-        sys.exit(2)
+    #if len(sys.argv) < 9:
+    #    parser.print_help()
+    #    sys.exit(2)
 
     genome      = args.genome
     dataset     = args.dataset
@@ -84,8 +104,12 @@ if __name__ == "__main__":
         line = line.split("\t")
         
         #                                sra_id,  library, enzyme_name
-        more_params = [[genome, dataset, line[0], line[1], line[2], resolution, tmp_dir, data_dir, expt, False, windows1, windows2] for expt in resolutions]
+        more_params = [[genome, dataset, line[0], line[1], line[2], resolution, tmp_dir, data_dir, expt_name, False, windows1, windows2] for resolution in resolutions]
         loading_list += more_params
 
-
-    map(main, loading_list)
+    print loading_list
+    
+    hic = process_hic()
+    map(hic.main, loading_list)
+    
+    

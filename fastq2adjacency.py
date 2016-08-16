@@ -67,7 +67,7 @@ class fastq2adjacency:
         self.data_root = data_dir
         
         self.gem_file = self.data_root + self.genome_accession + "/" + self.genome_accession + ".gem"
-        self.genome_accession = self.data_root + self.genome_accession + "/chroms/" + self.genome_accession + ".gem"
+        self.genome_file = self.data_root + self.genome_accession + "/chroms/" + self.genome_accession + ".fa"
         
         if expt_name != None:
             self.expt_name = expt_name + '/'
@@ -243,7 +243,7 @@ class fastq2adjacency:
         
         # Run core TADbit function to find TADs on each expt.
         # For the current dataset required 61GB of RAM
-        my_chrom.find_tad(self.expt_name, n_cpus=8)
+        my_chrom.find_tad(self.expt_name, n_cpus=15)
         
         exp = my_chrom.experiments[self.expt_name]
         tad_file = self.library_dir + expt_name + '_tads_' + str(resolution) + '.tsv'
@@ -260,6 +260,8 @@ class fastq2adjacency:
     
     def load_hic_matrix_data(self, norm=True):
         """
+        Load the interactions from Hi-C adjacency matrix into the HiC-Data data
+        type
         """
         if norm == True:
             # Dump the data pre-normalized

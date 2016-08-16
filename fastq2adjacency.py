@@ -285,12 +285,15 @@ class fastq2adjacency:
         """
         self.hic_data.normalize_hic(iterations=iterations, max_dev=0.1)
     
+    def get_chromosomes(self):
+        return self.hic_data.chromosomes.keys()
+    
     def save_hic_split_data(self, normalised=False):
         """
         Saves the data from the filtering step split by "chrA x chrB" to allow
         for easy loading and TAD calling.
         """
-        chroms = self.hic_data.chromosomes.keys()
+        chroms = self.get_chromosomes()
         for chrA in range(len(chroms)):
             for chrB in range(chrA+1):
                 adj_list = self.parsed_reads_dir + '/adjlist_map_' + chroms[chrA] + '-' + chroms[chrB] + '_' + self.resolution + '.tsv'

@@ -32,20 +32,24 @@ class process_hic:
         
         print "Set Params"
         
-        #f2a.getFastqData()
+        f2a.getFastqData()
         
-        #map(f2a.mapWindows, [1, 2])
+        map(f2a.mapWindows, [1, 2])
 
-        #f2a.parseGenomeSeq()
+        f2a.parseGenomeSeq()
 
-        #f2a.parseMaps()
+        f2a.parseMaps()
 
-        #f2a.mergeMaps()
+        f2a.mergeMaps()
 
-        #f2a.filterReads(conservative=True)
+        f2a.filterReads(conservative=True)
 
         # It is at this point that the resolution is used.
         #f2a.load_hic_read_data()
+        
+        f2a.save_hic_split_data()
+        
+        #chrom = f2a.get_chromosomes()
 
         #f2a.normalise_hic_data()
 
@@ -111,5 +115,6 @@ if __name__ == "__main__":
     
     hic = process_hic()
     map(hic.main, loading_list)
+    
     
     

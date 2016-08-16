@@ -82,12 +82,6 @@ class fastq2adjacency:
             self.fastq_file_1  = self.library_dir + self.sra_id + '_1.fastq'
             self.fastq_file_2  = self.library_dir + self.sra_id + '_2.fastq'
         
-        if expt_name != None:
-            self.expt_name = expt_name + '/'
-        else:
-            self.expt_name = ''
-        
-        
         self.map_dir     = self.library_dir + '01_it-mapped_read'
         self.tmp_dir     = self.temp_root + self.expt_name + self.dataset + '/' + self.library
         self.parsed_reads_dir = self.tmp_dir + '/parsed_reads'
@@ -129,9 +123,9 @@ class fastq2adjacency:
             for fastq_file in fastq_files:
                 file_name = fastq_file.split("/")
                 print fastq_file
-                print self.data_root + self.expt_name + self.dataset + '/' + self.library + '/' + file_name[-1]
+                print self.library_dir + file_name[-1]
                 print file_name[-1]
-                dl_file = open(self.data_root + self.expt_name + self.dataset + '/' + self.library + '/' + file_name[-1], "w")
+                dl_file = open(self.library_dir + file_name[-1], "w")
                 dl = urllib2.urlopen("ftp://" + fastq_file)
                 dl_file.write(dl.read())
                 dl_file.close()
@@ -219,41 +213,53 @@ class fastq2adjacency:
     
     def merge_adjacency_data(self, adjacency_matrixes):
         """
+        TODO: Work on the merging and finalise the procedure.
+        
         The recommended route is to merge the normalised data is to sum the
         normalised values from previous steps. This should be the final step of
         the initial phase for main function should have finished by normalising
         each of the individual adjacency files.
         """
-        merged_matrix = Chromosome(name=self.expt_name, centromere_search=True)
-        merged_matrix.add_experiment(self.expt_name, resolution=self.resolution)
-        merged_exp = merged_matrix.experiment[self.expt_name]
+        exptName = self.library + "_" + str(self.resolution)
+        
+        merged_matrix = Chromosome(name=exptName, centromere_search=True)
+        merged_matrix.add_experiment(exptName, resolution=self.resolution)
+        merged_exp = merged_matrix.experiment[exptName]
         print adjacency_data
         
         for m in adjacency_matrixes:
-            new_chrom = Chromosome(name=self.expt_name, centromere_search=True)
-            new_chrom.add_experiment(self.expt_name, hic_data=m, resolution=self.resolution)
-            merged_exp = merged_exp + new_chrom.experiment[self.expt_name]
+            new_chrom = Chromosome(name=exptName, centromere_search=True)
+            new_chrom.add_experiment(exptName, hic_data=m, resolution=self.resolution)
+            merged_exp = merged_exp + new_chrom.experiments[exptName]
     
-    def generate_tads(self):
+    def generate_tads(self, chrom):
         """
         Uses TADbit to generate the TAD borders based on the computed hic_data
         """
-        my_chrom = Chromosome(name=self.expt_name, centromere_search=True)
-        my_chrom.add_experiment(self.expt_name, hic_data=self.hic_data, resolution=self.resolution)
+        from pytadbit import Chromosome
+        
+        exptName = self.library + "_" + str(self.resolution) + "_" + chrom + "-" + chrom
+        fname = self.parsed_reads_dir + '/adjlist_map_' + chrom + '-' + chrom + '_' + self.resolution + '.tsv'
+        chr_hic_data = load_hic_data_from_reads(fname, resolution=self.resolution)
+        
+        my_chrom = Chromosome(name=exptName, centromere_search=True)
+        my_chrom.add_experiment(exptName, hic_data=chr_hic_data, resolution=self.resolution)
         
         # Run core TADbit function to find TADs on each expt.
         # For the current dataset required 61GB of RAM
-        my_chrom.find_tad(self.expt_name, n_cpus=15)
+        my_chrom.find_tad(exptName, n_cpus=15)
         
-        exp = my_chrom.experiments[self.expt_name]
-        tad_file = self.library_dir + expt_name + '_tads_' + str(resolution) + '.tsv'
-        tad_out = open(tad_file)
-        tad_out.write(exp.write_tad_borders())
-        tad_out.close()
+        exp = my_chrom.experiments[exptName]
+        tad_file = self.library_dir + exptName + '_tads.tsv'
+        exp.write_tad_borders(savedata=tad_file)
     
     def load_hic_read_data(self):
         """
         Load the interactions into the HiC-Data data type
+        
+        This should be used as the primary way of loading the HiC-data as the 
+        data is loaded in the right form for later functions. Options like the
+        TAD calling also require non-normalised data.
         """
         filter_reads = self.parsed_reads_dir + '/filtered_map.tsv'
         self.hic_data = load_hic_data_from_reads(filter_reads, resolution=self.resolution)
@@ -278,6 +284,21 @@ class fastq2adjacency:
         done by Rao et al 2014
         """
         self.hic_data.normalize_hic(iterations=iterations, max_dev=0.1)
+    
+    def save_hic_split_data(self, normalised=False):
+        """
+        Saves the data from the filtering step split by "chrA x chrB" to allow
+        for easy loading and TAD calling.
+        """
+        chroms = self.hic_data.chromosomes.keys()
+        for chrA in range(len(chroms)):
+            for chrB in range(chrA+1):
+                adj_list = self.parsed_reads_dir + '/adjlist_map_' + chroms[chrA] + '-' + chroms[chrB] + '_' + self.resolution + '.tsv'
+                if normalized == True:
+                    adj_list = self.parsed_reads_dir + '/adjlist_map_' + chroms[chrA] + '-' + chroms[chrB] + '_' + self.resolution + '.norm.tsv'
+                
+                self.hic_data.write_matrix(adj_list, (chroms[chrA], chroms[chrB]), normalized=normalised)
+        
     
     def save_hic_data(self, normalized=False):
         """

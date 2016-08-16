@@ -172,7 +172,7 @@ class fastq2adjacency:
         """
         self.genome_seq = parse_fasta(self.genome_file)
     
-    def parseMaps(self):
+    def parseMaps(self, num_cpus=8):
         """
         Merge the 2 read maps together 
         Requires 8 CPU
@@ -185,7 +185,7 @@ class fastq2adjacency:
         mapped_rN = self.getMappedWindows()
 
         print 'Parse MAP files...'
-        parse_map(mapped_rN["mapped_r1"], mapped_rN["mapped_r2"], out_file1=reads1, out_file2=reads2, genome_seq=self.genome_seq, re_name=self.enzyme_name, verbose=True, ncpus=8)
+        parse_map(mapped_rN["mapped_r1"], mapped_rN["mapped_r2"], out_file1=reads1, out_file2=reads2, genome_seq=self.genome_seq, re_name=self.enzyme_name, verbose=True, ncpus=num_cpus)
     
     def mergeMaps(self):
         """

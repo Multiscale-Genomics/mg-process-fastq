@@ -6,7 +6,7 @@ from pycompss.api.task import task
 from pycompss.api.parameter import *
 
 class process_hic:
-    @task(params = IN)
+    #@task(params = IN)
     def main(self, params):
         from fastq2adjacency import fastq2adjacency
         
@@ -47,7 +47,7 @@ class process_hic:
         # It is at this point that the resolution is used.
         #f2a.load_hic_read_data()
         
-        f2a.save_hic_split_data()
+        #f2a.save_hic_split_data()
         
         #chrom = f2a.get_chromosomes()
 
@@ -58,6 +58,69 @@ class process_hic:
     #@task()
     #def MapReads2Genome(f2a, window):
     #    f2a.mapWindows(window)
+    
+    def merge_adjacency_data(self, adj_list):
+        from fastq2adjacency import fastq2adjacency
+        
+        f2a = fastq2adjacency()
+        genome      = params[0][0]
+        dataset     = params[0][1]
+        sra_id      = params[0][2]
+        library     = params[0][3]
+        enzyme_name = params[0][4]
+        resolution  = params[0][5]
+        tmp_dir     = params[0][6]
+        data_dir    = params[0][7]
+        expt        = params[0][8]
+        same_fastq  = params[0][9]
+        windows1    = params[0][10]
+        windows2    = params[0][11]
+        f2a.set_params(genome, dataset, sra_id, library, enzyme_name, resolution, tmp_dir, data_dir, expt, same_fastq, windows1, windows2)
+        
+        f2a.load_hic_read_data()
+        
+        new_hic_data = f2a.hic_data
+        
+        for i in range(1,len(adj_list)):
+            f2a = fastq2adjacency()
+            genome      = params[i][0]
+            dataset     = params[i][1]
+            sra_id      = params[i][2]
+            library     = params[i][3]
+            enzyme_name = params[i][4]
+            resolution  = params[i][5]
+            tmp_dir     = params[i][6]
+            data_dir    = params[i][7]
+            expt        = params[i][8]
+            same_fastq  = params[i][9]
+            windows1    = params[i][10]
+            windows2    = params[i][11]
+            f2a.set_params(genome, dataset, sra_id, library, enzyme_name, resolution, tmp_dir, data_dir, expt, same_fastq, windows1, windows2)
+            
+            f2a.load_hic_read_data()
+        
+            new_hic_data += f2a.hic_data
+        
+        f2a = fastq2adjacency()
+        genome      = params[0][0]
+        dataset     = params[0][1]
+        sra_id      = params[0][2] + "_all"
+        library     = "MERGED"
+        enzyme_name = "RANGE"
+        resolution  = params[0][5]
+        tmp_dir     = params[0][6]
+        data_dir    = params[0][7]
+        expt        = params[0][8]
+        same_fastq  = params[0][9]
+        windows1    = params[0][10]
+        windows2    = params[0][11]
+        f2a.set_params(genome, dataset, sra_id, library, enzyme_name, resolution, tmp_dir, data_dir, expt, same_fastq, windows1, windows2)
+        
+        f2a.hic_data = new_hic_data
+        
+        f2a.save_hic_split_data()
+        
+        map(f2a.generate_tads, f2a.get_chromosomes())
 
 
 if __name__ == "__main__":

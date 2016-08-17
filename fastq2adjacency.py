@@ -88,7 +88,15 @@ class fastq2adjacency:
         
         try:
             os.makedirs(self.map_dir)
+        except:
+            pass
+        
+        try:
             os.makedirs(self.tmp_dir)
+        except:
+            pass
+        
+        try:
             os.makedirs(self.parsed_reads_dir)
         except:
             pass
@@ -211,26 +219,26 @@ class fastq2adjacency:
             # Less conservative option
             apply_filter(reads, filt_reads, masked, filters=[1,2,3,9,10])
     
-    def merge_adjacency_data(self, adjacency_matrixes):
-        """
-        TODO: Work on the merging and finalise the procedure.
-        
-        The recommended route is to merge the normalised data is to sum the
-        normalised values from previous steps. This should be the final step of
-        the initial phase for main function should have finished by normalising
-        each of the individual adjacency files.
-        """
-        exptName = self.library + "_" + str(self.resolution)
-        
-        merged_matrix = Chromosome(name=exptName, centromere_search=True)
-        merged_matrix.add_experiment(exptName, resolution=self.resolution)
-        merged_exp = merged_matrix.experiment[exptName]
-        print adjacency_data
-        
-        for m in adjacency_matrixes:
-            new_chrom = Chromosome(name=exptName, centromere_search=True)
-            new_chrom.add_experiment(exptName, hic_data=m, resolution=self.resolution)
-            merged_exp = merged_exp + new_chrom.experiments[exptName]
+    #def merge_adjacency_data(self, adjacency_matrixes):
+    #    """
+    #    TODO: Work on the merging and finalise the procedure.
+    #    
+    #    The recommended route is to merge the normalised data is to sum the
+    #    normalised values from previous steps. This should be the final step of
+    #    the initial phase for main function should have finished by normalising
+    #    each of the individual adjacency files.
+    #    """
+    #    exptName = self.library + "_" + str(self.resolution)
+    #    
+    #    merged_matrix = Chromosome(name=exptName, centromere_search=True)
+    #    merged_matrix.add_experiment(exptName, resolution=self.resolution)
+    #    merged_exp = merged_matrix.experiment[exptName]
+    #    print adjacency_data
+    #    
+    #    for m in adjacency_matrixes:
+    #        new_chrom = Chromosome(name=exptName, centromere_search=True)
+    #        new_chrom.add_experiment(exptName, hic_data=m, resolution=self.resolution)
+    #        merged_exp = merged_exp + new_chrom.experiments[exptName]
     
     def generate_tads(self, chrom):
         """

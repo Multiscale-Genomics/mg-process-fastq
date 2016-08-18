@@ -11,6 +11,7 @@ from pytadbit.parsers.hic_parser    import read_matrix
 from pytadbit.parsers.genome_parser import parse_fasta
 from pytadbit.utils.file_handling   import mkdir
 import numpy as np
+import hdf5
 
 
 class fastq2adjacency:
@@ -323,4 +324,20 @@ class fastq2adjacency:
         else:
             adj_list = self.parsed_reads_dir + '/adjlist_map_norm.tsv'
             self.hic_data.write_matrix(adj_list, normalized=True)
+    
+    def save_hic_hdf5(self, normalized=False):
+        """
+        Save the hic_data object to HDF5 file. This is saved as an NxN array
+        with the values for all positions being set.
+        """
+        dSize = len(self.hic_data)
+        d = np.zeros([dSize, dSize], dtype='int32')
+        d += f2a.hic_data.get_matrix()
+        
+        filename = self.data_root + self.genome_accession + "_" + self.dataset + ".hdf5"
+        f = h5py.File(filename, "a")
+        dset = f.create_dataset(str(self.resolution), (dSize, dSize), dtype='int32', chunks=True, compression="gzip")
+        dset[0:dSize,0:dSize] += d
+        f.close()
+        
 

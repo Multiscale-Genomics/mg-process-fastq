@@ -11,7 +11,7 @@ from pytadbit.parsers.hic_parser    import read_matrix
 from pytadbit.parsers.genome_parser import parse_fasta
 from pytadbit.utils.file_handling   import mkdir
 import numpy as np
-import hdf5
+import h5py
 
 
 class fastq2adjacency:
@@ -247,9 +247,9 @@ class fastq2adjacency:
         """
         from pytadbit import Chromosome
         
-        exptName = self.library + "_" + str(self.resolution) + "_" + chrom + "-" + chrom
-        fname = self.parsed_reads_dir + '/adjlist_map_' + chrom + '-' + chrom + '_' + self.resolution + '.tsv'
-        chr_hic_data = load_hic_data_from_reads(fname, resolution=self.resolution)
+        exptName = self.library + "_" + str(self.resolution) + "_" + str(chrom) + "-" + str(chrom)
+        fname = self.parsed_reads_dir + '/adjlist_map_' + str(chrom) + '-' + str(chrom) + '_' + str(self.resolution) + '.tsv'
+        chr_hic_data = read_matrix(fname, resolution=self.resolution)
         
         my_chrom = Chromosome(name=exptName, centromere_search=True)
         my_chrom.add_experiment(exptName, hic_data=chr_hic_data, resolution=self.resolution)

@@ -8,6 +8,15 @@ from pycompss.api.parameter import *
 class process_hic:
     #@task(params = IN)
     def main(self, params):
+        """
+        Initial grouping to download, parse and filter the individual
+        experiments.
+        
+        Returns: None
+        
+        Output: Raw counts for the experiment in a HiC adjacency matrix saved to
+                the tmp_dir
+        """
         from fastq2adjacency import fastq2adjacency
         
         genome      = params[0]
@@ -46,20 +55,23 @@ class process_hic:
 
         # It is at this point that the resolution is used.
         #f2a.load_hic_read_data()
-        
         #f2a.save_hic_split_data()
-        
         #chrom = f2a.get_chromosomes()
-
         #f2a.normalise_hic_data()
-
         #f2a.save_hic_data()
 
-    #@task()
-    #def MapReads2Genome(f2a, window):
-    #    f2a.mapWindows(window)
-    
     def merge_adjacency_data(self, adj_list):
+        """
+        Merged the HiC filtered data into a single dataset.
+        
+        Input:   list of all the params in a list of lists.
+        
+        Returns: None
+        
+        Output:  The merged adjacency file, split files for each chrA vs chrB 
+                 combination and a file for each chromosome with the positions
+                 of the predicted TADs
+        """
         from fastq2adjacency import fastq2adjacency
         
         f2a = fastq2adjacency()
@@ -117,10 +129,31 @@ class process_hic:
         f2a.set_params(genome, dataset, sra_id, library, enzyme_name, resolution, tmp_dir, data_dir, expt, same_fastq, windows1, windows2)
         
         f2a.hic_data = new_hic_data
-        
+        f2a.save_hic_data()
+        f2a.save_hic_hdf5()
         f2a.save_hic_split_data()
         
-        map(f2a.generate_tads, f2a.get_chromosomes())
+        tad_param = [[genome, dataset, sra_id, library, enzyme_name, resolution, tmp_dir, data_dir, expt, same_fastq, windows1, windows2, chrom] from chrom in f2a.get_chromosomes()]
+        map(self.call_tads, tad_param)
+    
+    #@task()
+    def call_tads(self, genome, dataset, sra_id, library, enzyme_name, resolution, tmp_dir, data_dir, expt, same_fastq, windows1, windows2, chrom):
+        """
+        TAD calling for a given dataset and chromosome. This should be run from
+        the merge step, but can be run individually. Relies on the split
+        adjacency files having already been created.
+        
+        Input:   params for the f2a set up and the chromosome for analysis
+        
+        Returns: None
+        
+        Output:  File containing the predicted TADs.
+        """
+        from fastq2adjacency import fastq2adjacency
+        
+        f2a = fastq2adjacency()
+        f2a.set_params(genome, dataset, sra_id, library, enzyme_name, resolution, tmp_dir, data_dir, expt, same_fastq, windows1, windows2)
+        f2a.generate_tads(chrom)
 
 
 if __name__ == "__main__":
@@ -153,7 +186,7 @@ if __name__ == "__main__":
     tmp_dir     = args.tmp_dir
     data_dir    = args.data_dir
     
-    # A defauilt value is only required for the first few steps to generate the
+    # A default value is only required for the first few steps to generate the
     # intial alignments and prepare the HiC data for loading. The resolutions
     # get passed later on when the pipeline splits and handles each on
     # individually via the process_block_size() function.
@@ -179,5 +212,5 @@ if __name__ == "__main__":
     hic = process_hic()
     map(hic.main, loading_list)
     
-    
+    hic.merge_adjacency_data(loading_list)
     

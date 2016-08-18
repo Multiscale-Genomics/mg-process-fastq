@@ -59,3 +59,8 @@ python generate_adjacency_matrix.py --genome=<genome_accession> --dataset=<datas
 ....This will be the location for the intermediary files. This gets shared between process, but they should not collide.
 * --data_dir \<data_dir\>/
 ....This is where the initial FastQ files will be downloaded to and the output files will get saved.
+
+### Example
+```
+runcompss --lang=python /home/compss/mg-process-fastq/process_hic.py --genome GCA_000001405.22 --dataset GSE63525 --expt_name rao2014 --expt_list /home/compss/mg-process-fastq/exptList.tsv --tmp_dir /home/compss/tmp/ --data_dir /home/compss/data/
+```

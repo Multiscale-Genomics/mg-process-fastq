@@ -1,4 +1,4 @@
-import os, os.path, urllib2
+import os, os.path, shutil, urllib2
 
 import pytadbit
 from pytadbit.mapping               import get_intersection
@@ -334,10 +334,27 @@ class fastq2adjacency:
         d = np.zeros([dSize, dSize], dtype='int32')
         d += f2a.hic_data.get_matrix()
         
-        filename = self.data_root + self.genome_accession + "_" + self.dataset + "_" + str(self.resolutoin) + ".hdf5"
+        filename = self.data_root + self.genome_accession + "_" + self.dataset + "_" + str(self.resolution) + ".hdf5"
         f = h5py.File(filename, "a")
         dset = f.create_dataset(str(self.resolution), (dSize, dSize), dtype='int32', chunks=True, compression="gzip")
         dset[0:dSize,0:dSize] += d
         f.close()
+    
+    def clean_up(self):
+        """
+        Clears up the tmp folders
+        """
+        os.chdir(self.temp_root)
+        
+        try:
+            shutil.rmtree(self.expt_name)
+        except:
+            pass
+        
+        try:
+            shutil.rmtree(self.dataset)
+        except:
+            pass
+        
         
 

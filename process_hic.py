@@ -155,6 +155,25 @@ class process_hic:
         f2a.set_params(genome, dataset, sra_id, library, enzyme_name, resolution, tmp_dir, data_dir, expt, same_fastq, windows1, windows2)
         f2a.generate_tads(chrom)
 
+    def merge_hdf5_files(self, genome, dataset, resolutions, data_dir):
+        """
+        Merges the separate HDF5 files with each of the separate resolutions
+        into a single 
+        """
+        
+        #f = h5py.File(filename, "a")
+        #dset = f.create_dataset(str(self.resolution), (dSize, dSize), dtype='int32', chunks=True, compression="gzip")
+        #dset[0:dSize,0:dSize] += d
+        #f.close()
+        
+        f_out = data_dir + genome + "_" + dataset + ".hdf5"
+        final_h5 = h5py.File(f_out, "a")
+        for resolution in resolutions:
+            f = data_dir + genome + "_" + dataset + "_" + str(resolution) + ".hdf5"
+            fin = h5py.File(f, "r")
+            hdf5.h5o.copy(fin, str(resolution), final_h5, str(resolution))
+            fin.close()
+        final_h5.close()
 
 if __name__ == "__main__":
     import sys
@@ -205,12 +224,21 @@ if __name__ == "__main__":
         
         #                                sra_id,  library, enzyme_name
         more_params = [[genome, dataset, line[0], line[1], line[2], resolution, tmp_dir, data_dir, expt_name, False, windows1, windows2] for resolution in resolutions]
-        loading_list += more_params
+        less_params = [genome, dataset, line[0], line[1], line[2], 1000, tmp_dir, data_dir, expt_name, False, windows1, windows2]
+        more_loading_list += more_params
+        less_loading_list += less_params
 
-    print loading_list
+    print more_loading_list
     
     hic = process_hic()
-    map(hic.main, loading_list)
     
-    hic.merge_adjacency_data(loading_list)
+    # Downloads the FastQ files and then maps then to the genome.
+    map(hic.main, less_loading_list)
+    
+    # Generates the final adjacency matrix for a given resolutions
+    hic.merge_adjacency_data(more_loading_list)
+    
+    # This merges the final set of HDF5 files into a single file ready for the
+    # REST API
+    hic.merge_hdf5_files(genome, dataset, resolutions, data_dir)
     

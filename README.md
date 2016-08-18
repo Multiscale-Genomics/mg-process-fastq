@@ -45,20 +45,27 @@ python generate_adjacency_matrix.py --genome=<genome_accession> --dataset=<datas
 
 ### Parameters:
 * --genome
-...Genome accession (e.g. GCA_000001405.22)
+
+   Genome accession (e.g. GCA_000001405.22)
 * --dataset
-...Dataset ID from the reference paper (e.g. GSE63525)
+
+   Dataset ID from the reference paper (e.g. GSE63525)
 * --expt_name
-...A manual name to provide extra separation if there are multiple Hi-C sets within the same dataset
+
+   A manual name to provide extra separation if there are multiple Hi-C sets within the same dataset
 * --expt_list /home/compss/MuG_pipelines/mg-process-fastq/exptList.tsv
-...A list of the experiments in a tab separated format including the following columns
-...1. SRR ID
-...2. Library name
-...3. Retrictions enzyme (eg MboI)
+
+   A list of the experiments in a tab separated format including the following columns
+
+   1. SRR ID
+   2. Library name
+   3. Retrictions enzyme (eg MboI)
 * --tmp_dir \<temp_dir\>/
-...This will be the location for the intermediary files. This gets shared between process, but they should not collide.
+
+   This will be the location for the intermediary files. This gets shared between process, but they should not collide.
 * --data_dir \<data_dir\>/
-...This is where the initial FastQ files will be downloaded to and the output files will get saved.
+
+   This is where the initial FastQ files will be downloaded to and the output files will get saved.
 
 ### Example
 ```

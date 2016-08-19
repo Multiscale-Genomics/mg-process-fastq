@@ -17,6 +17,10 @@ class process_wgbs:
         self.ready=None
 
     def getFastqFiles(self, sra_id, data_dir):
+        """
+        Function for downloading and extracting the FastQ files from the ENA
+        """
+        
         f_index = urllib2.urlopen(
         'http://www.ebi.ac.uk/ena/data/warehouse/filereport?accession=' + str(sra_id) + '&result=read_run&fields=study_accession,run_accession,tax_id,scientific_name,instrument_model,library_layout,fastq_ftp&download=txt')
         data = f_index.read()

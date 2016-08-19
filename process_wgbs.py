@@ -1,9 +1,46 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 '''process whole genome bisulfate sequencing FastQ files'''
-import time
+import argparse, time
 from pycompss.api.task import task
 from pycompss.api.parameter import *
+
+
+def getFastqFiles(self, sra_id, data_dir):
+    f_index = urllib2.urlopen(
+    'http://www.ebi.ac.uk/ena/data/warehouse/filereport?accession=' + str(self.sra_id) + '&result=read_run&fields=study_accession,run_accession,tax_id,scientific_name,instrument_model,library_layout,fastq_ftp&download=txt')
+    data = f_index.read()
+    rows = data.split("\n")
+    row_count = 0
+    files = []
+    for row in rows:
+        if row_count == 0:
+            row_count += 1
+            continue
+        
+        row = row.rstrip()
+        row = row.split("\t")
+        
+        if len(row) == 0:
+            continue
+        
+        project = row[0]
+        srr_ir = row[1]
+        fastq_files = row[6].split(';')
+        row_count += 1
+        
+        for fastq_file in fastq_files:
+            file_name = fastq_file.split("/")
+            print fastq_file
+            print data_dir + file_name[-1]
+            print file_name[-1]
+            files.append(data_dir + file_name[-1])
+            dl_file = open(data_dir + file_name[-1], "w")
+            dl = urllib2.urlopen("ftp://" + fastq_file)
+            dl_file.write(dl.read())
+            dl_file.close()
+    
+    return files
 
 
 @task(infile = FILE_IN, outfile = FILE_OUT)
@@ -140,15 +177,31 @@ if __name__ == "__main__":
     import os
     from pycompss.api.api import compss_wait_on
     
-    in_file1  = sys.argv[1]
-    in_file2  = sys.argv[2]
-    out_file1 = in_file1.replace(".fastq", "_filtered.fastq")
-    out_file2 = in_file2.replace(".fastq", "_filtered.fastq")
-    genome    = sys.argv[3]
+    # Set up the command line parameters
+    parser = argparse.ArgumentParser(description="Load adjacency list into HDF5 file")
+    parser.add_argument("--genome", help="Genome name") #             default="GCA_000001405.22")
+    parser.add_argument("--dataset", help="Name of the dataset") #    default="SRR1536575")
+    parser.add_argument("--tmp_dir", help="Temporary data dir")
+    parser.add_argument("--data_dir", help="Data directory; location to download SRA FASTQ files and save results")
+
+    # Get the matching parameters from the command line
+    args = parser.parse_args()
+    
+    sra_id   = args.dataset
+    genome   = args.genome
+    data_dir = args.data_dir
+    tmp_dir  = args.tmp_dir
     
     start = time.time()
     
     db_dir = ""
+    
+    # Optain the paired FastQ files
+    in_files = getFastqFiles(sra_id, data_dir)
+    in_file1 = in_files[0]
+    in_file2 = in_files[1]
+    out_file1 = in_file1.replace(".fastq", "_filtered.fastq")
+    out_file2 = in_file2.replace(".fastq", "_filtered.fastq")
     
     # Run the FilterReads.py steps for the individual FastQ files
     x = map(FilterFastQReads, [[in_file1, out_file1], [in_file2, out_file2]])
@@ -194,3 +247,6 @@ if __name__ == "__main__":
     # Run the bs_seeker2-call_methylation.py steps
     x = MethylationCaller(out_bam_file, tag, db_dir)
     x = compss_wait_on(x)
+    
+    # Tidy up
+    

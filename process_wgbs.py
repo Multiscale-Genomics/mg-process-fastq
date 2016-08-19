@@ -196,6 +196,17 @@ class process_wgbs:
         p = subprocess.Popen(args)
         p.wait()
 
+    def clean_up(self, data_dir):
+        """
+        Clears up the tmp folders
+        """
+        os.chdir(self.data_dir)
+        
+        try:
+            shutil.rmtree("tmp")
+        except:
+            pass
+        
 
 if __name__ == "__main__":
     import sys
@@ -291,4 +302,4 @@ if __name__ == "__main__":
     x = compss_wait_on(x)
     
     # Tidy up
-    
+    pwgbs.clean_up(data_dir)

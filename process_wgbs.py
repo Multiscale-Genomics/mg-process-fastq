@@ -214,7 +214,7 @@ if __name__ == "__main__":
     
     srr_id   = args.srr
     genome   = args.genome
-    data_dir = args.data_dir
+    data_dir = args.data_dir + srr_id
     tmp_dir  = args.tmp_dir
     
     start = time.time()
@@ -222,6 +222,13 @@ if __name__ == "__main__":
     db_dir = ""
     
     pwgbs = process_wgbs()
+    
+    try:
+        os.makedirs(data_dir)
+        
+        data_dir += "/"
+    except:
+        pass
     
     # Optain the paired FastQ files
     in_files = pwgbs.getFastqFiles(srr_id, data_dir)

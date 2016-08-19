@@ -88,12 +88,12 @@ class process_wgbs:
         Function to submit the FASTA file for the reference sequence and build the
         required index file used by the aligner.
         """
-        builder_exec = os.path.join(aligner_path or aligner_path[aligner],
+        builder_exec = os.path.join(aligner_path,
                                     {BOWTIE   : 'bowtie-build',
                                      BOWTIE2  : 'bowtie2-build',
                                      SOAP     : '2bwt-builder',
                                      RMAP     : '' # do nothing
-                                    }[options.aligner])
+                                    }[aligner])
 
         build_command = builder_exec + { BOWTIE   : ' -f %(fname)s.fa %(fname)s',
                                          BOWTIE2  : ' -f %(fname)s.fa %(fname)s',
@@ -206,16 +206,22 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Load adjacency list into HDF5 file")
     parser.add_argument("--genome", help="Genome name") #             default="GCA_000001405.22")
     parser.add_argument("--srr_id", help="SRR ID of the dataset") #   default="SRR1536575")
+    parser.add_argument("--aligner", help="Aligner to use (eg bowtie2)") #   default="bowtie2")
     parser.add_argument("--tmp_dir", help="Temporary data dir")
     parser.add_argument("--data_dir", help="Data directory; location to download SRA FASTQ files and save results")
+    parser.add_argument("--aligner_dir", help="Directory for the aligner program")
 
     # Get the matching parameters from the command line
     args = parser.parse_args()
     
     srr_id   = args.srr
     genome   = args.genome
+    aligner  = args.aligner
+    aligner_dir = args.aligner_dir
     data_dir = args.data_dir + srr_id
     tmp_dir  = args.tmp_dir
+    
+    genome_dir = args.data_dir + genome + "/chroms/"
     
     start = time.time()
     
@@ -244,7 +250,7 @@ if __name__ == "__main__":
     x = compss_wait_on(x)
     
     # Run the bs_seeker2-builder.py steps
-    x = pwgbs.Builder(fasta_file, aligner, aligner_path, ref_path)
+    x = pwgbs.Builder(genome_dir + genome + ".fa", "bowtie2", aligner_dir, genome_dir)
     x = compss_wait_on(x)
     
     # Split the paired fastq files

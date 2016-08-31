@@ -40,28 +40,14 @@ f2a = fastq2adjacency()
 f2a.set_params(genome, dataset, sra_id, library, enzyme_name, resolution, tmp_dir, data_dir)
 f2a.load_hic_read_data()
 
-# initiate a chromosome object that will store all Hi-C data and analysis
-my_chrom = Chromosome(name=expt_name, centromere_search=True)
+print "Creating intermediate save files ..."
+f2a.save_hic_split_data()
 
-# load Hi-C data
-my_chrom.add_experiment(expt_name, hic_data=f2a.hic_data, resolution=resolution)
+print "Generating TADS:"
+chroms = f2a.get_chromosomes()
+for chrom in range(len(chroms)):
+    print chroms[chrom]
+    f2a.generate_tads(chroms[chrom])
 
-# Filter and normalise the matrix
-# This should have already been done as part of the generate_adjacency_matrix.py
-# script
-#
-# my_chrom.experiments['First Hi-C experiment'].filter_columns()
-# my_chrom.experiments['First Hi-C experiment'].normalize_hic(iterations=0, max_dev=0.1)
-
-# Run core TADbit function to find TADs on each expt.
-# For the current dataset required 61GB of RAM
-my_chrom.find_tad(expt_name, n_cpus=8)
-
-
-exp = my_chrom.experiments[expt_name]
-tad_file = data_root + '/' + dataset + '/' + library + '/' + expt_name + '_tads_' + str(resolution) + '.tsv'
-tad_out = open(tad_file)
-tad_out.write(exp.write_tad_borders())
-tad_out.close()
 
 

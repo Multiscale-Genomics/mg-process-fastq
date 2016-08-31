@@ -271,7 +271,9 @@ class fastq2adjacency:
         TAD calling also require non-normalised data.
         """
         filter_reads = self.parsed_reads_dir + '/filtered_map.tsv'
-        self.hic_data = load_hic_data_from_reads(filter_reads, resolution=self.resolution)
+        
+        print "\nfilter_reads: " + filter_reads
+        self.hic_data = load_hic_data_from_reads(filter_reads, resolution=int(self.resolution))
     
     def load_hic_matrix_data(self, norm=True):
         """
@@ -297,19 +299,18 @@ class fastq2adjacency:
     def get_chromosomes(self):
         return self.hic_data.chromosomes.keys()
     
-    def save_hic_split_data(self, normalised=False):
+    def save_hic_split_data(self, normalized=False):
         """
         Saves the data from the filtering step split by "chrA x chrB" to allow
         for easy loading and TAD calling.
         """
         chroms = self.get_chromosomes()
         for chrA in range(len(chroms)):
-            for chrB in range(chrA+1):
-                adj_list = self.parsed_reads_dir + '/adjlist_map_' + chroms[chrA] + '-' + chroms[chrB] + '_' + self.resolution + '.tsv'
-                if normalized == True:
-                    adj_list = self.parsed_reads_dir + '/adjlist_map_' + chroms[chrA] + '-' + chroms[chrB] + '_' + self.resolution + '.norm.tsv'
-                
-                self.hic_data.write_matrix(adj_list, (chroms[chrA], chroms[chrB]), normalized=normalised)
+            adj_list = self.parsed_reads_dir + '/adjlist_map_' + chroms[chrA] + '-' + chroms[chrA] + '_' + self.resolution + '.tsv'
+            if normalized == True:
+                adj_list = self.parsed_reads_dir + '/adjlist_map_' + chroms[chrA] + '-' + chroms[chrA] + '_' + self.resolution + '.norm.tsv'
+            
+            self.hic_data.write_matrix(adj_list, (chroms[chrA], chroms[chrA]), normalized=normalized)
         
     
     def save_hic_data(self, normalized=False):

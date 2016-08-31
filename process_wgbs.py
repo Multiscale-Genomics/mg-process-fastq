@@ -10,11 +10,18 @@ from FilterReads import *
 from bs_index.wg_build import *
 
 class process_wgbs:
+    """
+    Functions for downloading and processing whole genome bisulfate sequencings
+    (WGBS) files. Files are downloaded from the European Nucleotide Archive
+    (ENA), then filtered, aligned and analysed for points of methylation
+    """
+
     def __init__ (self):
         """
         Initialise the module
         """
         self.ready=None
+
 
     def getFastqFiles(self, sra_id, data_dir):
         """
@@ -85,8 +92,12 @@ class process_wgbs:
     #@task()
     def Builder(self, fasta_file, aligner, aligner_path, ref_path):
         """
-        Function to submit the FASTA file for the reference sequence and build the
-        required index file used by the aligner.
+        Function to submit the FASTA file for the reference sequence and build
+        the required index file used by the aligner.
+        
+        This only needs to be done once, so there needs to be a check to ensure
+        that if the index file have already been generated then they do no need
+        to be analysed again
         """
         builder_exec = os.path.join(aligner_path,
                                     {BOWTIE   : 'bowtie-build',
@@ -196,6 +207,7 @@ class process_wgbs:
         p = subprocess.Popen(args)
         p.wait()
 
+    
     def clean_up(self, data_dir):
         """
         Clears up the tmp folders
@@ -303,3 +315,6 @@ if __name__ == "__main__":
     
     # Tidy up
     pwgbs.clean_up(data_dir)
+    
+    # Load the REST staging area once everything is complete
+

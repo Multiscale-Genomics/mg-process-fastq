@@ -249,10 +249,10 @@ class fastq2adjacency:
         
         exptName = self.library + "_" + str(self.resolution) + "_" + str(chrom) + "-" + str(chrom)
         fname = self.parsed_reads_dir + '/adjlist_map_' + str(chrom) + '-' + str(chrom) + '_' + str(self.resolution) + '.tsv'
-        chr_hic_data = read_matrix(fname, resolution=self.resolution)
+        chr_hic_data = read_matrix(fname, resolution=int(self.resolution))
         
         my_chrom = Chromosome(name=exptName, centromere_search=True)
-        my_chrom.add_experiment(exptName, hic_data=chr_hic_data, resolution=self.resolution)
+        my_chrom.add_experiment(exptName, hic_data=chr_hic_data, resolution=int(self.resolution))
         
         # Run core TADbit function to find TADs on each expt.
         # For the current dataset required 61GB of RAM

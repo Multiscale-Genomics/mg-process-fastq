@@ -199,7 +199,7 @@ class process_wgbs:
         Alignment of the paired ends to the reference genome
         Generates bam files for the alignments
         This is performed by running the external program rather than reimplementing
-        the code from teh main function to make it easier when it comes to updating
+        the code from the main function to make it easier when it comes to updating
         the changes in BS-Seeker2
         """
         import subprocess
@@ -215,7 +215,7 @@ class process_wgbs:
         Takes the merged and sorted bam file and calls the methylation sites.
         Generates a wig file of the potential sites.
         This is performed by running the external program rather than reimplementing
-        the code from teh main function to make it easier when it comes to updating
+        the code from the main function to make it easier when it comes to updating
         the changes in BS-Seeker2
         """
         import subprocess
@@ -243,7 +243,7 @@ if __name__ == "__main__":
     #from pycompss.api.api import compss_wait_on
     
     # Set up the command line parameters
-    parser = argparse.ArgumentParser(description="Load adjacency list into HDF5 file")
+    parser = argparse.ArgumentParser(description="Parse WGBS data")
     parser.add_argument("--genome", help="Genome name") #             default="GCA_000001405.22")
     parser.add_argument("--srr_id", help="SRR ID of the dataset") #   default="SRR1536575")
     parser.add_argument("--aligner", help="Aligner to use (eg bowtie2)") #   default="bowtie2")

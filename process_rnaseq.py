@@ -18,14 +18,14 @@ limitations under the License.
 
 import shlex, subprocess, os.path
 
-#from pycompss.api.task import task
-#from pycompss.api.parameter import *
+from pycompss.api.task import task
+from pycompss.api.parameter import *
 
 class process_rnaseq:
     """
-    Functions for downloading and processing whole genome bisulfate sequencings
-    (WGBS) files. Files are downloaded from the European Nucleotide Archive
-    (ENA), then filtered, aligned and analysed for points of methylation
+    Functions for downloading and processing RNA-seq FastQ files. Files are
+    downloaded from the European Nucleotide Archive (ENA), then they are mapped
+    to quantify the amount of cDNA
     """
     
     def __init__ (self):
@@ -145,7 +145,7 @@ if __name__ == "__main__":
     import os
     
     # Set up the command line parameters
-    parser = argparse.ArgumentParser(description="Load adjacency list into HDF5 file")
+    parser = argparse.ArgumentParser(description="Parse RNA-seq for expression analysis")
     parser.add_argument("--species", help="Species (Homo_sapiens)")
     parser.add_argument("--assembly", help="Assembly (GRCh38)")
     parser.add_argument("--project_id", help="Project ID of the dataset (PRJEB2445)")

@@ -16,7 +16,7 @@ class process_rnaseq:
     
     def getcDNAFiles(self, data_dir, species, assembly):
         """
-        Function for downloading and extracting the CNA files from the ensembl FTP
+        Function for downloading and extracting the CDNA files from the ensembl FTP
         """
         
         cdna_file = urllib2.urlopen(
@@ -89,7 +89,7 @@ class process_rnaseq:
     
     def run_kallisto_indexing(self, data_dir, species, assembly):
         """
-        
+        Runs the Kallisto index program to generate a list of the indexes for each of the cDNAs
         """
         
         cdna_file = data_dir + species + '_' + assembly + '/' + species + '.' + assembly + '.cdna.all.fa.gz'
@@ -105,7 +105,7 @@ class process_rnaseq:
     
     def run_kallisto_quant(self, data_dir, species, assembly, project, fastq = []):
         """
-        
+        Kallisto function to map the paired end FastQ files to the cDNAs and generate the matching quatification files.
         """
         
         cdna_file = data_dir + species + '_' + assembly + '/' + species + '.' + assembly + '.cdna.all.fa.gz'

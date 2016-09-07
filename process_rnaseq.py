@@ -5,7 +5,7 @@ class process_rnaseq:
     (ENA), then filtered, aligned and analysed for points of methylation
     """
     
-    import shlex, subprocess
+    import shlex, subprocess, os.path
 
     def __init__ (self):
         """
@@ -19,18 +19,19 @@ class process_rnaseq:
         Function for downloading and extracting the CDNA files from the ensembl FTP
         """
         
-        cdna_file = urllib2.urlopen(
-        'ftp://ftp.ensembl.org/pub/current_fasta/' + species + '/cdna/' + species + '.' + assembly + '.cdna.all.fa.gz')
+        file_name = data_dir + '/' + species + '_' + assembly + '/' + species + '.' + assembly + '.cdna.all.fa.gz'
         
-        CHUNK = 16 * 1024
-                
-        file_name = species + '.' + assembly + '.cdna.all.fa.gz'
-        
-        with open(data_dir + '/' + species + '_' + assembly + '/' + file_name, 'wb') as fp:
-            while True:
-                chunk = cdna_file.read(CHUNK)
-                if not chunk: break
-                fp.write(chunk)
+        if os.path.isfile(file_name) == False:
+            cdna_file = urllib2.urlopen(
+            'ftp://ftp.ensembl.org/pub/current_fasta/' + species + '/cdna/' + species + '.' + assembly + '.cdna.all.fa.gz')
+            
+            CHUNK = 16 * 1024
+                    
+            with open(file_name, 'wb') as fp:
+                while True:
+                    chunk = cdna_file.read(CHUNK)
+                    if not chunk: break
+                    fp.write(chunk)
     
     
     def getFastqFiles(self, ena_err_id, data_dir):

@@ -93,3 +93,37 @@ When using a local verion of the [COMPS virtual machine](http://www.bsc.es/compu
 ```
 runcompss --lang=python /home/compss/mg-process-fastq/process_hic.py --genome GCA_000001405.22 --dataset GSE63525 --expt_name rao2014 --expt_list /home/compss/mg-process-fastq/exptList.tsv --tmp_dir /home/compss/tmp/ --data_dir /home/compss/data/
 ```
+
+
+# RNA-seq Differential Expression Data Processing
+A set of scripts that can get run on the COMPS infrastructure to process the paired FastQ data for RNA-seq differenctial expression data.
+
+## Code
+## COMPS Code
+`process_rnaseq.py`
+
+### Parameters:
+* --species
+
+   Species (e.g. homo_sapiens)
+* --assembly
+
+   Assembly accession (e.g. GRCh38)
+* --project_id
+
+   Project ID from the ENA website (e.g. PRJEB2445)
+* --run_id
+
+   Experiment Run Accession ID from the ENA website (e.g. ERR030872)
+* --data_dir \<data_dir\>/
+
+   This is where the initial FastQ files will be downloaded to and the output files will get saved.
+* --tmp_dir \<temp_dir\>/
+
+   This will be the location for the intermediary files. This gets shared between process, but they should not collide.
+
+### Example
+When using a local verion of the [COMPS virtual machine](http://www.bsc.es/computer-sciences/grid-computing/comp-superscalar/downloads-and-documentation):
+```
+runcompss --lang=python /home/compss/mg-process-fastq/process_rnaseq.py --species homo_sapiens --assembly GRCh38 --project_id PRJEB2445 --run_id ERR030872 --data_dir /home/compss/data/
+```

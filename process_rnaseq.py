@@ -24,12 +24,11 @@ class process_rnaseq:
         
         CHUNK = 16 * 1024
                 
-        files.append(data_dir + file_name[-1].replace('.fastq.gz', '.fastq'))
-        gzfiles.append(data_dir + file_name[-1])
+        file_name = species + '.' + assembly + '.cdna.all.fa.gz'
         
-        with open(data_dir + file_name[-1], 'wb') as fp:
+        with open(data_dir + '/' + species + '_' + assembly + '/' + file_name, 'wb') as fp:
             while True:
-                chunk = req.read(CHUNK)
+                chunk = cdna_file.read(CHUNK)
                 if not chunk: break
                 fp.write(chunk)
     
@@ -88,12 +87,15 @@ class process_rnaseq:
         return files
     
     
-    def run_kallisto_indexing(self, data_dir, genome):
+    def run_kallisto_indexing(self, data_dir, species, assembly):
         """
         
         """
         
-        command_line = 'kallisto index -i ' + data_dir + '/genome/' + genome + '.idx ' + data_dir + '/genome/' + genome
+        cdna_file = data_dir + species + '_' + assembly + '/' + species + '.' + assembly + '.cdna.all.fa.gz'
+        cdna_idx_file = cdna_file + 'idx'
+        
+        command_line = 'kallisto index -i ' + cdna_idx_file + ' ' + cdna_file
         
         args = shlex.split(command_line)
         p = subprocess.Popen(args)
@@ -101,12 +103,15 @@ class process_rnaseq:
         
     
     
-    def run_kallisto_quant(self, data_dir, genome, dataset, fastq = []):
+    def run_kallisto_quant(self, data_dir, species, assembly, project, fastq = []):
         """
         
         """
         
-        command_line = 'kallisto quant -i ' + data_dir + '/genome/' + genome + '.idx -o ' + data_dir + '/' + dataset + '/' + fastq[0] + ' ' + data_dir + '/' + dataset + '/' + fastq[1]
+        cdna_file = data_dir + species + '_' + assembly + '/' + species + '.' + assembly + '.cdna.all.fa.gz'
+        cdna_idx_file = cdna_file + 'idx'
+        
+        command_line = 'kallisto quant -i ' + cdna_idx_file + ' -o ' + data_dir + project + '/' + fastq[0] + ' ' + data_dir + project + '/' + fastq[1]
         
         args = shlex.split(command_line)
         p = subprocess.Popen(args)
@@ -154,9 +159,9 @@ if __name__ == "__main__":
     prs.getcDNAFiles(data_dir, species, assembly)
     
     # Index the cDNA
-    prs.run_kallisto_indexing(data_dir, genome)
+    prs.run_kallisto_indexing(data_dir, species, assembly)
     
     # Quantify RNA-seq
-    prs.run_kallisto_quant(data_dir, genome, )
+    prs.run_kallisto_quant(data_dir, species, assembly, project, [in_file1, in_file2])
     
     

@@ -12,6 +12,9 @@ Scripts required for the processing of FASTQ files (eg generating adjacency list
   - pysam
 - BS-Seeker2
   - Bowtie2
+- BWA
+- BioBamBam2
+- MACS
 - imp (for 3D modelling with TADbit)
 - mcl
 
@@ -98,7 +101,6 @@ runcompss --lang=python /home/compss/mg-process-fastq/process_hic.py --genome GC
 # RNA-seq Differential Expression Data Processing
 A set of scripts that can get run on the COMPS infrastructure to process the paired FastQ data for RNA-seq differenctial expression data.
 
-## Code
 ## COMPS Code
 `process_rnaseq.py`
 
@@ -118,12 +120,30 @@ A set of scripts that can get run on the COMPS infrastructure to process the pai
 * --data_dir \<data_dir\>/
 
    This is where the initial FastQ files will be downloaded to and the output files will get saved.
-* --tmp_dir \<temp_dir\>/
-
-   This will be the location for the intermediary files. This gets shared between process, but they should not collide.
 
 ### Example
 When using a local verion of the [COMPS virtual machine](http://www.bsc.es/computer-sciences/grid-computing/comp-superscalar/downloads-and-documentation):
 ```
 runcompss --lang=python /home/compss/mg-process-fastq/process_rnaseq.py --species homo_sapiens --assembly GRCh38 --project_id PRJEB2445 --run_id ERR030872 --data_dir /home/compss/data/
 ```
+
+
+# Chip-seq Analysis
+A set of scripts that can get run on the COMPS infrastructure to process the Chip-seq data and produce peak calls.
+
+## COMPS Code
+`process_chipseq.py`
+
+### Parameters
+* --data_dir \<data_dir\>/
+
+   This is where the initial FastQ files will be downloaded to and the output files will get saved.
+
+## Example
+When using a local verion of the [COMPS virtual machine](http://www.bsc.es/computer-sciences/grid-computing/comp-superscalar/downloads-and-documentation):
+```
+runcompss --lang=python /home/compss/mg-process-fastq/process_chipseq.py --species homo_sapiens --assembly GRCh38 --project_id PRJEB2445 --run_id ERR030872 --data_dir /home/compss/data/
+```
+
+
+

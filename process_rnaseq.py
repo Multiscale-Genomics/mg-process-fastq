@@ -1,3 +1,26 @@
+#!/usr/bin/python
+
+"""
+Copyright 2016 EMBL-European Bioinformatics Institute
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+"""
+
+import shlex, subprocess, os.path
+
+#from pycompss.api.task import task
+#from pycompss.api.parameter import *
+
 class process_rnaseq:
     """
     Functions for downloading and processing whole genome bisulfate sequencings
@@ -5,8 +28,6 @@ class process_rnaseq:
     (ENA), then filtered, aligned and analysed for points of methylation
     """
     
-    import shlex, subprocess, os.path
-
     def __init__ (self):
         """
         Initialise the module
@@ -128,7 +149,7 @@ if __name__ == "__main__":
     parser.add_argument("--species", help="Species (Homo_sapiens)")
     parser.add_argument("--assembly", help="Assembly (GRCh38)")
     parser.add_argument("--project_id", help="Project ID of the dataset (PRJEB2445)")
-    parser.add_argument("--run_id", help="SRR ID of the dataset (ERR030872)")
+    parser.add_argument("--run_id", help="Experiment run ID of the dataset (ERR030872)")
     parser.add_argument("--data_dir", help="Data directory; location to download ERR FASTQ files and save results")
 
     # Get the matching parameters from the command line

@@ -100,8 +100,8 @@ runcompss --lang=python /home/compss/mg-process-fastq/process_hic.py --genome GC
 ```
 
 
-# RNA-seq Differential Expression Data Processing
-A set of scripts that can get run on the COMPS infrastructure to process the paired FastQ data for RNA-seq differenctial expression data.
+# RNA-Seq Differential Expression Data Processing
+A set of scripts that can get run on the COMPS infrastructure to process the paired FastQ data for RNA-Seq differenctial expression data.
 
 ## COMPS Code
 `process_rnaseq.py`
@@ -130,13 +130,25 @@ runcompss --lang=python /home/compss/mg-process-fastq/process_rnaseq.py --specie
 ```
 
 
-# Chip-seq Analysis
-A set of scripts that can get run on the COMPS infrastructure to process the Chip-seq data and produce peak calls.
+# CHiP-Seq Analysis
+A set of scripts that can get run on the COMPS infrastructure to process the CHiP-Seq data and produce peak calls.
 
 ## COMPS Code
 `process_chipseq.py`
 
 ### Parameters
+* --species
+
+   Species (e.g. homo_sapiens)
+* --assembly
+
+   Assembly accession (e.g. GRCh38)
+* --project_id
+
+   Project ID from the ENA website (e.g. PRJDA34559)
+* --run_id
+
+   Experiment Run Accession ID from the ENA website (e.g. DRR000150)
 * --data_dir \<data_dir\>/
 
    This is where the initial FastQ files will be downloaded to and the output files will get saved.
@@ -147,5 +159,34 @@ When using a local verion of the [COMPS virtual machine](http://www.bsc.es/compu
 runcompss --lang=python /home/compss/mg-process-fastq/process_chipseq.py --species homo_sapiens --assembly GRCh38 --project_id PRJEB2445 --run_id ERR030872 --data_dir /home/compss/data/
 ```
 
+
+# MNase-Seq Analysis
+A set of scripts that can get run on the COMPS infrastructure to process the MNase-Seq data and produce peak calls.
+
+## COMPS Code
+`process_mnaseseq.py`
+
+### Parameters
+* --species
+
+   Species (e.g. homo_sapiens)
+* --assembly
+
+   Assembly accession (e.g. GRCh38)
+* --project_id
+
+   Project ID from the ENA website (e.g. PRJDA34559)
+* --run_id
+
+   Experiment Run Accession ID from the ENA website (e.g. DRR000150)
+* --data_dir \<data_dir\>/
+
+   This is where the initial FastQ files will be downloaded to and the output files will get saved.
+
+## Example
+When using a local verion of the [COMPS virtual machine](http://www.bsc.es/computer-sciences/grid-computing/comp-superscalar/downloads-and-documentation):
+```
+runcompss --lang=python /home/compss/mg-process-fastq/process_mnaseseq.py --species homo_sapiens --assembly GRCh38 --project_id PRJEB2445 --run_id ERR030872 --data_dir /home/compss/data/
+```
 
 

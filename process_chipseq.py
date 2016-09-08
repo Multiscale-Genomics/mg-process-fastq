@@ -45,14 +45,14 @@ class process_chipseq:
     
     def getGenomeFile(self, data_dir, species, assembly):
         """
-        Function for downloading and extracting the CDNA files from the ensembl FTP
+        Function for downloading and extracting the DNA files from the ensembl FTP
         """
         
-        file_name = data_dir + '/' + species + '_' + assembly + '/' + species + '.' + assembly + '.cdna.all.fa.gz'
+        file_name = data_dir + '/' + species + '_' + assembly + '/' + species + '.' + assembly + '.dna.toplevel.fa.gz'
         
         if os.path.isfile(file_name) == False:
             cdna_file = urllib2.urlopen(
-            'ftp://ftp.ensembl.org/pub/current_fasta/' + species + '/cdna/' + species + '.' + assembly + '.cdna.all.fa.gz')
+            'ftp://ftp.ensembl.org/pub/current_fasta/' + species.lower() + '/dna/' + species[0].upper + species[1:] + '.' + assembly + '.dna.toplevel.fa.gz')
             
             CHUNK = 16 * 1024
                     
@@ -63,6 +63,62 @@ class process_chipseq:
                     fp.write(chunk)
             
             self.bwa_index_genome(file_name)
+        
+        return file_name
+    
+    
+    def getFastqFiles(self, run_id, data_dir):
+        """
+        Function for downloading and extracting the FastQ files from the ENA
+        """
+        
+        f_index = urllib2.urlopen(
+        'http://www.ebi.ac.uk/ena/data/warehouse/filereport?accession=' + str(run_id) + '&result=read_run&fields=study_accession,run_accession,tax_id,scientific_name,instrument_model,library_layout,fastq_ftp&download=txt')
+        data = f_index.read()
+        rows = data.split("\n")
+        row_count = 0
+        files = []
+        gzfiles  = []
+        for row in rows:
+            if row_count == 0:
+                row_count += 1
+                continue
+            
+            row = row.rstrip()
+            row = row.split("\t")
+            
+            if len(row) < 6:
+                continue
+            
+            project = row[0]
+            srr_id = row[1]
+            fastq_files = row[6].split(';')
+            row_count += 1
+            
+            for fastq_file in fastq_files:
+                file_name = fastq_file.split("/")
+                print fastq_file
+                print data_dir + file_name[-1]
+                print file_name[-1]
+                
+                req = urllib2.urlopen("ftp://" + fastq_file)
+                CHUNK = 16 * 1024
+                
+                files.append(data_dir + file_name[-1].replace('.fastq.gz', '.fastq'))
+                gzfiles.append(data_dir + file_name[-1])
+                
+                with open(data_dir + file_name[-1], 'wb') as fp:
+                    while True:
+                        chunk = req.read(CHUNK)
+                        if not chunk: break
+                        fp.write(chunk)
+        
+        for gzf in gzfiles:
+            with gzip.open(gzf, 'rb') as f_in, open(gzf.replace('.fastq.gz', '.fastq'), 'wb') as f_out:
+                shutil.copyfileobj(f_in, f_out)
+            os.remove(gzf)
+        
+        return files
     
     
     def bwa_index_genome(self, genome_file):
@@ -133,14 +189,18 @@ class process_chipseq:
         It is important that all duplicate alignments have been removed. This
         can be run as an intermediate step, but should always be run as the 
         """
-        command_line = 'bamsormadup ' + data_dir + '/' + run_id + '.bam'
+        command_line = 'bamsormadup < ' + data_dir + '/' + run_id + '.bam > '+ data_dir + '/' + run_id + '.filtered.bam' 
         
         args = shlex.split(command_line)
         p = subprocess.Popen(args)
         p.wait()
     
     
-    def macs2_peak_calling(self, data_dir, bam_file)
+    def macs2_peak_calling(self, data_dir, run_id):
+        """
+        Function to run MACS2 for peak calling
+        """
+        bam_file = data_dir + '/' + run_id + '.filtered.bam'
         
     
 if __name__ == "__main__":
@@ -149,20 +209,20 @@ if __name__ == "__main__":
     
     # Set up the command line parameters
     parser = argparse.ArgumentParser(description="RNA-seq peak calling")
-    parser.add_argument("--species", help="Species (Homo_sapiens)")
+    parser.add_argument("--species", help="Species (homo_sapiens)")
     parser.add_argument("--assembly", help="Assembly (GRCh38)")
     parser.add_argument("--project_id", help="Project ID of the dataset ()")
-    parser.add_argument("--run_id", help="Experiment run ID of the dataset ()")
+    parser.add_argument("--run_ids", help="File with list of the experiment run IDs of the dataset")
     parser.add_argument("--data_dir", help="Data directory; location to download ERR FASTQ files and save results")
 
     # Get the matching parameters from the command line
     args = parser.parse_args()
     
-    project    = args.project_id
-    ena_err_id = args.run_id
-    species    = args.species
-    assembly   = args.assembly
-    data_dir   = args.data_dir
+    project     = args.project_id
+    run_id_file = args.run_ids
+    species     = args.species
+    assembly    = args.assembly
+    data_dir    = args.data_dir
     
     prs = process_rnaseq()
     
@@ -176,18 +236,30 @@ if __name__ == "__main__":
         pass
     
     # Optain the FastQ files
-    in_files = pcs.getFastqFiles(ena_err_id, data_dir)
-    in_file1 = in_files[0]
-    in_file2 = in_files[1]
+    run_ids = []
+    run_fastq_files = []
+    run_id_fi = open(run_id_file, "r")
+    for run_id in run_id_fi:
+        run_ids.append(run_id)
+        in_files = pcs.getFastqFiles(run_id, data_dir)
+        run_fastq_files.append(in_files)
+    
     
     # Get the assembly
-    
+    genome_fa = pcs.getGenomeFile(data_dir, species, assembly)
     
     # Run BWA
+    bam_files = []
+    for run_id in run_ids:
+        pcs.bwa_align_reads(genome_fa, data_dir, run_id)
     
+    pcs.merge_bam(data_dir, project_id, run_ids)
     
     # Run BioBamBam to sort and highlight duplicates
-    
+    pcs.biobambam_filter_alignments(data_dir, project_id)
     
     # Peak Calling with MACs
+    pcs.macs2_peak_calling(data_dir, project_id)
+    
+    
     

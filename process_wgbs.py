@@ -305,7 +305,7 @@ if __name__ == "__main__":
         fastq_for_alignment.append(tmp)
         bam_root = bams[0] + "_bspe.bam"
         bam_sort_files.append(bams[0] + "_bspe.bam")
-        bam_sort_files.append(["-o", bam_root + ".sorted.bam", "-T", bam_root + ".bam_sort", bam_root])
+        bam_merge_files.append(["-o", bam_root + ".sorted.bam", "-T", bam_root + ".bam_sort", bam_root])
     
     # Run the bs_seeker2-align.py steps on the split up fastq files
     x = map(pwgbs.Aligner, fastq_for_alignment)

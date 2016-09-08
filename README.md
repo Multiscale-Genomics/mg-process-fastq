@@ -10,11 +10,13 @@ Scripts required for the processing of FASTQ files (eg generating adjacency list
   - matplotlib
   - TADbit
   - pysam
+  - MACS2 - can be installed with pip, but runs on command line
 - BS-Seeker2
   - Bowtie2
 - BWA
+- SamTools
 - BioBamBam2
-- MACS
+  - libmaus2
 - imp (for 3D modelling with TADbit)
 - mcl
 

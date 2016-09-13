@@ -115,7 +115,7 @@ class process_rnaseq:
         """
         
         cdna_file = data_dir + species + '_' + assembly + '/' + species + '.' + assembly + '.cdna.all.fa.gz'
-        cdna_idx_file = cdna_file + 'idx'
+        cdna_idx_file = cdna_file + '.idx'
         
         command_line = 'kallisto index -i ' + cdna_idx_file + ' ' + cdna_file
         
@@ -131,7 +131,7 @@ class process_rnaseq:
         """
         
         cdna_file = data_dir + species + '_' + assembly + '/' + species + '.' + assembly + '.cdna.all.fa.gz'
-        cdna_idx_file = cdna_file + 'idx'
+        cdna_idx_file = cdna_file + '.idx'
         
         command_line = 'kallisto quant -i ' + cdna_idx_file + ' -o ' + data_dir + project + '/' + fastq[0] + ' ' + data_dir + project + '/' + fastq[1]
         

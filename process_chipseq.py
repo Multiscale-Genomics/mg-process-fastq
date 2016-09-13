@@ -43,6 +43,7 @@ class process_chipseq:
         self.ready = ""
     
     
+    #@task()
     def getGenomeFile(self, data_dir, species, assembly):
         """
         Function for downloading and extracting the DNA files from the ensembl FTP
@@ -67,6 +68,7 @@ class process_chipseq:
         return file_name
     
     
+    #@task()
     def getFastqFiles(self, run_id, data_dir):
         """
         Function for downloading and extracting the FastQ files from the ENA
@@ -121,6 +123,7 @@ class process_chipseq:
         return files
     
     
+    #@task()
     def bwa_index_genome(self, genome_file):
         """
         Create an index of the 
@@ -131,7 +134,8 @@ class process_chipseq:
         p = subprocess.Popen(args)
         p.wait()
         
-        
+    
+    #@task()    
     def bwa_align_reads(self, genome_file, data_dir, run_id):
         """
         Map the reads to the genome
@@ -144,7 +148,7 @@ class process_chipseq:
         
         command_lines = [
             'bwa aln -q 5 -f ' + intermediate_file + ' ' + genome_file + ' ' + reads_file,
-            'bwa samse -r "read group information" -f ' + intermediate_sam_file  + ' ' + genome_file + ' ' + intermediate_file + ' ' + reads_file,
+            'bwa samse -f ' + intermediate_sam_file  + ' ' + genome_file + ' ' + intermediate_file + ' ' + reads_file,
             'samtools view -b -o ' + output_bam_file + ' ' + intermediate_sam_file
         ]
         
@@ -152,8 +156,9 @@ class process_chipseq:
             args = shlex.split(command_line)
             p = subprocess.Popen(args)
             p.wait()
-     
     
+     
+    #@task()
     def merge_bam(self, data_dir, final_id, run_ids=[]):
         """
         Merge together all the bams in a directory and sort to create the final
@@ -182,6 +187,7 @@ class process_chipseq:
         pysam.index(out_bam_file)
     
     
+    #@task()
     def biobambam_filter_alignments(self, data_dir, run_id):
         """
         Sorts and filters the bam file.
@@ -196,11 +202,59 @@ class process_chipseq:
         p.wait()
     
     
-    def macs2_peak_calling(self, data_dir, run_id):
+    #@task()
+    def macs2_peak_calling(self, data_dir, run_id, background_id):
         """
         Function to run MACS2 for peak calling
+        
+        background might need to be optional.
         """
         bam_file = data_dir + '/' + run_id + '.filtered.bam'
+        bam_background_file = data_dir + '/' + background_id + '.filtered.bam'
+        command_line = 'macs2 callpeak -t ' + bam_file + ' -n ' + run_id + '-c ' + bam_background_file
+    
+    
+    #@task()
+    def main(self, data_dir, expt, genome_fa):
+        """
+        Main loop
+        """
+        # Optain the FastQ files
+        run_ids = []
+        run_fastq_files = []
+        
+        run_ids = []
+        run_fastq_files = []
+        for run_id in expt["run_ids"]:
+            run_ids.append(run_id)
+            in_files = self.getFastqFiles(run_id, data_dir)
+            run_fastq_files.append(in_files)
+        
+        # Obtain background FastQ files
+        bgd_ids = []
+        bgd_fastq_files = []
+        for bgd_id in expt["run_ids"]:
+            bgd_ids.append(run_id)
+            in_files = self.getFastqFiles(bgd_id, data_dir)
+            bgd_fastq_files.append(in_files)
+        
+        # Run BWA
+        for run_id in run_ids:
+            self.bwa_align_reads(genome_fa, data_dir, run_id)
+        
+        final_run_id = expt["project_id"] + "_" + expt["group_name"] + "_run"
+        final_bgd_id = expt["project_id"] + "_" + expt["group_name"] + "_bgd"
+        
+        # Merge Bam files
+        self.merge_bam(data_dir, final_run_id, expt["run_ids"])
+        self.merge_bam(data_dir, final_bgd_id, expt["bgd_ids"])
+        
+        # Filter the bams
+        self.biobambam_filter_alignments(data_dir, final_run_id)
+        self.biobambam_filter_alignments(data_dir, final_bgd_id)
+        
+        # MACS2 to call peaks
+        self.macs2_peak_calling(data_dir, final_run_id, final_bgd_id)
         
     
 if __name__ == "__main__":
@@ -208,11 +262,11 @@ if __name__ == "__main__":
     import os
     
     # Set up the command line parameters
-    parser = argparse.ArgumentParser(description="RNA-seq peak calling")
+    parser = argparse.ArgumentParser(description="CHiP-seq peak calling")
     parser.add_argument("--species", help="Species (homo_sapiens)")
     parser.add_argument("--assembly", help="Assembly (GRCh38)")
     parser.add_argument("--project_id", help="Project ID of the dataset ()")
-    parser.add_argument("--run_ids", help="File with list of the experiment run IDs of the dataset")
+    parser.add_argument("--run_ids", help="JSON file with list of the experiment run IDs and background data (if available) of the dataset")
     parser.add_argument("--data_dir", help="Data directory; location to download ERR FASTQ files and save results")
 
     # Get the matching parameters from the command line
@@ -224,7 +278,7 @@ if __name__ == "__main__":
     assembly    = args.assembly
     data_dir    = args.data_dir
     
-    prs = process_rnaseq()
+    pcs = process_chipseq()
     
     try:
         os.makedirs(data_dir)
@@ -235,31 +289,34 @@ if __name__ == "__main__":
     except:
         pass
     
-    # Optain the FastQ files
-    run_ids = []
-    run_fastq_files = []
-    run_id_fi = open(run_id_file, "r")
-    for run_id in run_id_fi:
-        run_ids.append(run_id)
-        in_files = pcs.getFastqFiles(run_id, data_dir)
-        run_fastq_files.append(in_files)
-    
-    
     # Get the assembly
     genome_fa = pcs.getGenomeFile(data_dir, species, assembly)
     
-    # Run BWA
-    bam_files = []
-    for run_id in run_ids:
-        pcs.bwa_align_reads(genome_fa, data_dir, run_id)
+    # Example JSON file:
+    """
+    {
+      "user" : "user_name",
+      "submission_name" : "test_01",
+      "expts" : [
+        {
+          "project_id": "ena_project_id",
+          "group_name": "user_defined_name_1",
+          "run_ids" : ["ena_run_accn_1", "ena_run_accn_2", ...]
+          "bgd_ids" : ["ena_run_accn_3", "ena_run_accn_4", ...]
+        },
+        {
+          "project_id": "ena_project_id",
+          "group_name": "user_defined_name_2",
+          "run_ids" : ["ena_run_accn_5", "ena_run_accn_6", ...]
+          "bgd_ids" : ["ena_run_accn_3", "ena_run_accn_4", ...]
+        }
+      ]
+    }
+    """
+    job_id_sets = json.loads(dataset_file)
+    for expt in job_id_sets["expts"]:
+        pcs.main(data_dir, expt, genome_fa)
     
-    pcs.merge_bam(data_dir, project_id, run_ids)
-    
-    # Run BioBamBam to sort and highlight duplicates
-    pcs.biobambam_filter_alignments(data_dir, project_id)
-    
-    # Peak Calling with MACs
-    pcs.macs2_peak_calling(data_dir, project_id)
     
     
     

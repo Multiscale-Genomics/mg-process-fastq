@@ -2,7 +2,7 @@
 Scripts required for the processing of FASTQ files (eg generating adjacency lists for Hi-C data)
 
 # Requirements
-- Python 2.7+
+- Python 2.7.10+
 - Python Modules:
   - numpy
   - h5py

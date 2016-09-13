@@ -71,11 +71,15 @@ class process_hic:
         f2a.filterReads(conservative=True)
 
         # It is at this point that the resolution is used.
-        #f2a.load_hic_read_data()
-        #f2a.save_hic_split_data()
-        #chrom = f2a.get_chromosomes()
-        #f2a.normalise_hic_data()
-        #f2a.save_hic_data()
+        f2a.load_hic_read_data()
+        f2a.save_hic_split_data()
+        chroms = f2a.get_chromosomes()
+        
+        for chrom in chroms:
+            f2a.generate_tads(chrom)
+        
+        f2a.normalise_hic_data()
+        f2a.save_hic_data()
 
     def merge_adjacency_data(self, adj_list):
         """

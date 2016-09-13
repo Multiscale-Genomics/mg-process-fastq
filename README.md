@@ -11,6 +11,7 @@ Scripts required for the processing of FASTQ files (eg generating adjacency list
   - TADbit
   - pysam
   - MACS2 - can be installed with pip, but runs on command line
+  - rpy2
 - BS-Seeker2
   - Bowtie2
 - BWA
@@ -19,6 +20,7 @@ Scripts required for the processing of FASTQ files (eg generating adjacency list
   - libmaus2
 - imp (for 3D modelling with TADbit)
 - mcl
+- DANPOS2
 
 
 # Whole Genome Bisulfite Sequencing (WGBS) Data Processing

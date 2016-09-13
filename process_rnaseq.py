@@ -40,7 +40,7 @@ class process_rnaseq:
         Function for downloading and extracting the CDNA files from the ensembl FTP
         """
         
-        file_name = data_dir + '/' + species + '_' + assembly + '/' + species + '.' + assembly + '.cdna.all.fa.gz'
+        file_name = data_dir + species + '_' + assembly + '/' + species + '.' + assembly + '.cdna.all.fa.gz'
         
         if os.path.isfile(file_name) == False:
             cdna_file = urllib2.urlopen(
@@ -86,14 +86,14 @@ class process_rnaseq:
             for fastq_file in fastq_files:
                 file_name = fastq_file.split("/")
                 print fastq_file
-                print data_dir + file_name[-1]
+                print data_dir + project + "/" + file_name[-1]
                 print file_name[-1]
                 
                 req = urllib2.urlopen("ftp://" + fastq_file)
                 CHUNK = 16 * 1024
                 
-                files.append(data_dir + file_name[-1].replace('.fastq.gz', '.fastq'))
-                gzfiles.append(data_dir + file_name[-1])
+                files.append(data_dir + project + "/" + file_name[-1].replace('.fastq.gz', '.fastq'))
+                gzfiles.append(data_dir + project + "/" + file_name[-1])
                 
                 with open(data_dir + file_name[-1], 'wb') as fp:
                     while True:

@@ -40,13 +40,13 @@ class process_wgbs:
         self.ready=None
 
 
-    def getFastqFiles(self, sra_id, data_dir):
+    def getFastqFiles(self, ena_err_id, data_dir):
         """
         Function for downloading and extracting the FastQ files from the ENA
         """
         
         f_index = urllib2.urlopen(
-        'http://www.ebi.ac.uk/ena/data/warehouse/filereport?accession=' + str(sra_id) + '&result=read_run&fields=study_accession,run_accession,tax_id,scientific_name,instrument_model,library_layout,fastq_ftp&download=txt')
+        'http://www.ebi.ac.uk/ena/data/warehouse/filereport?accession=' + str(ena_err_id) + '&result=read_run&fields=study_accession,run_accession,tax_id,scientific_name,instrument_model,library_layout,fastq_ftp&download=txt')
         data = f_index.read()
         rows = data.split("\n")
         row_count = 0
@@ -63,6 +63,7 @@ class process_wgbs:
             if len(row) < 6:
                 continue
             
+            print row
             project = row[0]
             srr_id = row[1]
             fastq_files = row[6].split(';')
@@ -71,16 +72,16 @@ class process_wgbs:
             for fastq_file in fastq_files:
                 file_name = fastq_file.split("/")
                 print fastq_file
-                print data_dir + file_name[-1]
+                print data_dir + project + "/" + file_name[-1]
                 print file_name[-1]
                 
                 req = urllib2.urlopen("ftp://" + fastq_file)
                 CHUNK = 16 * 1024
                 
-                files.append(data_dir + file_name[-1].replace('.fastq.gz', '.fastq'))
-                gzfiles.append(data_dir + file_name[-1])
+                files.append(data_dir + project + "/" + file_name[-1].replace('.fastq.gz', '.fastq'))
+                gzfiles.append(data_dir + project + "/" + file_name[-1])
                 
-                with open(data_dir + file_name[-1], 'wb') as fp:
+                with open(data_dir + project + "/" + file_name[-1], 'wb') as fp:
                     while True:
                         chunk = req.read(CHUNK)
                         if not chunk: break

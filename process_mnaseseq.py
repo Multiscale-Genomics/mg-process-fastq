@@ -16,7 +16,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-import shlex, subprocess, os.path
+import argparse, shlex, subprocess, os.path
 
 from pycompss.api.task import task
 from pycompss.api.parameter import *
@@ -144,7 +144,7 @@ class process_chipseq:
         
         command_lines = [
             'bwa aln -q 5 -f ' + intermediate_file + ' ' + genome_file + ' ' + reads_file,
-            'bwa samse -r "read group information" -f ' + intermediate_sam_file  + ' ' + genome_file + ' ' + intermediate_file + ' ' + reads_file,
+            'bwa samse -f ' + intermediate_sam_file  + ' ' + genome_file + ' ' + intermediate_file + ' ' + reads_file,
             'samtools view -b -o ' + output_bam_file + ' ' + intermediate_sam_file
         ]
         
@@ -182,21 +182,22 @@ class process_chipseq:
         pysam.index(out_bam_file)
     
     
-    #def biobambam_filter_alignments(self, data_dir, run_id):
-    #    """
-    #    Sorts and filters the bam file.
-    #    
-    #    It is important that all duplicate alignments have been removed. This
-    #    can be run as an intermediate step, but should always be run as the 
-    #    """
-    #    command_line = 'bamsormadup ' + data_dir + '/' + run_id + '.bam'
-    #    
-    #    args = shlex.split(command_line)
-    #    p = subprocess.Popen(args)
-    #    p.wait()
+    def biobambam_filter_alignments(self, data_dir, run_id):
+        """
+        Sorts and filters the bam file.
+        
+        It is important that all duplicate alignments have been removed. This
+        can be run as an intermediate step, but should always be run as the 
+        """
+        command_line = 'bamsormadup < ' + data_dir + '/' + run_id + '.bam > '+ data_dir + '/' + run_id + '.filtered.bam' 
+        
+        args = shlex.split(command_line)
+        p = subprocess.Popen(args)
+        p.wait()
     
     
-    def danpos2_peak_calling(self, data_dir, bam_file)
+    def danpos2_peak_calling(self, data_dir, bam_file):
+        
         
     
 if __name__ == "__main__":
@@ -240,5 +241,5 @@ if __name__ == "__main__":
     # Run BWA
     
     
-    s# Peak Calling with DANPOS2
+    # Peak Calling with DANPOS2
     

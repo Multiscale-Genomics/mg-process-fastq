@@ -165,9 +165,17 @@ if __name__ == "__main__":
     
     try:
         os.makedirs(data_dir)
-        
-        data_dir += "/"
+    except:
+        pass
+    
+    data_dir += "/"
+    
+    try:
         os.makedirs(data_dir + project)
+    except:
+        pass
+    
+    try:
         os.makedirs(data_dir + species + "_" + assembly)
     except:
         pass

@@ -262,10 +262,10 @@ if __name__ == "__main__":
     import os
     
     # Set up the command line parameters
-    parser = argparse.ArgumentParser(description="CHiP-seq peak calling")
+    parser = argparse.ArgumentParser(description="ChIP-seq peak calling")
     parser.add_argument("--species", help="Species (homo_sapiens)")
     parser.add_argument("--assembly", help="Assembly (GRCh38)")
-    parser.add_argument("--project_id", help="Project ID of the dataset ()")
+    parser.add_argument("--project_id", help="Project ID of the dataset")
     parser.add_argument("--run_ids", help="JSON file with list of the experiment run IDs and background data (if available) of the dataset")
     parser.add_argument("--data_dir", help="Data directory; location to download ERR FASTQ files and save results")
 
@@ -313,7 +313,7 @@ if __name__ == "__main__":
       ]
     }
     """
-    job_id_sets = json.loads(dataset_file)
+    job_id_sets = json.loads(run_id_file)
     for expt in job_id_sets["expts"]:
         pcs.main(data_dir, expt, genome_fa)
     

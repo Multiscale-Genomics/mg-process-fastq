@@ -2,7 +2,7 @@
 Scripts required for the processing of FASTQ files (eg generating adjacency lists for Hi-C data)
 
 # Requirements
-- Python 2.7.10+
+- Python 2.7.12+
 - Python Modules:
   - numpy
   - h5py
@@ -12,14 +12,17 @@ Scripts required for the processing of FASTQ files (eg generating adjacency list
   - pysam
   - MACS2 - can be installed with pip, but runs on command line
   - rpy2
-- BS-Seeker2
-  - Bowtie2
+- GEMtools
+- HDF5
+- Bowtie2
 - BWA
-- SamTools
+- SAMtools
+- BS-Seeker2
+- libmaus2
 - BioBamBam2
-  - libmaus2
 - imp (for 3D modelling with TADbit)
 - mcl
+- R (2.9.1)
 - DANPOS2
 
 

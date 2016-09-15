@@ -16,7 +16,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-import argparse, urllib2, gzip, shlex, subprocess, os.path
+import argparse, urllib2, gzip, shutil, shlex, subprocess, os.path
 
 from pycompss.api.task import task
 from pycompss.api.parameter import *

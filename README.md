@@ -29,6 +29,14 @@ Scripts required for the processing of FASTQ files (eg generating adjacency list
 # Whole Genome Bisulfite Sequencing (WGBS) Data Processing
 A set of scripts that can get run on the COMPS infrastructure to convert the paired FastQ data for WGBS into the matching wig, ATCGmap and CGmap files.
 
+## Process
+* FASTQ and assemblies are downloaded
+* BSseeker2 filters the reads to remove low quality reads
+* FASTQ files are split
+* BSseeker2 uses BOWTIE2 to align the reads to the genomes
+* Bam files are sorted and merged.
+* BSseeker2 then calls the methylation regions
+
 ## Code
 ### Filter the FastQ files
 
@@ -65,6 +73,13 @@ runcompss --lang=python /home/compss/mg-process-fastq/process_wgbs.py --genome G
 # Hi-C Data Processing
 Processing of paired end FastQ files from Hi-C experiments. Generates adjacency matrixes, computes TADs and generates the matching HDF5 files for using the REST API (mg-rest-hdf5). The mojority of the code has been wrapped up in the COMPS script, but this can be extracted and run locally. For the moment you need to comment out the `@task(...)` and `@constraint(...)` flags.
 
+## Process
+* FastQ and assembly is downloaded
+* TADbit is used to parse the genome and FASTQ files
+* TADbit generates the adjacency matrices
+* TAD calls are made
+* HDF5 files are generated
+
 ## Code - Generate Hi-C Adjacency Matrix
 Takes an SRA file as the input and generates an adjacency matrix for the interacting sections of the genome.
 ```
@@ -98,6 +113,10 @@ python generate_adjacency_matrix.py --genome=<genome_accession> --dataset=<datas
 
    This is where the initial FastQ files will be downloaded to and the output files will get saved.
 
+### Output Files
+* Adjacency list saved to an HDF5 file
+* TSV file of the TAD regions
+
 ### Example
 When using a local verion of the [COMPS virtual machine](http://www.bsc.es/computer-sciences/grid-computing/comp-superscalar/downloads-and-documentation):
 ```
@@ -107,6 +126,11 @@ runcompss --lang=python /home/compss/mg-process-fastq/process_hic.py --genome GC
 
 # RNA-Seq Differential Expression Data Processing
 A set of scripts that can get run on the COMPS infrastructure to process the paired FastQ data for RNA-Seq differenctial expression data.
+
+## Process
+* cDNAs and FastQ are downloaded
+* Kallisto is used to map the reads to the cDNAs
+* Kallisto then generates the quantification files
 
 ## COMPS Code
 `process_rnaseq.py`
@@ -128,6 +152,10 @@ A set of scripts that can get run on the COMPS infrastructure to process the pai
 
    This is where the initial FastQ files will be downloaded to and the output files will get saved.
 
+### Output Files
+* bed
+* wig
+
 ### Example
 When using a local verion of the [COMPS virtual machine](http://www.bsc.es/computer-sciences/grid-computing/comp-superscalar/downloads-and-documentation):
 ```
@@ -137,6 +165,11 @@ runcompss --lang=python /home/compss/mg-process-fastq/process_rnaseq.py --specie
 
 # CHiP-Seq Analysis
 A set of scripts that can get run on the COMPS infrastructure to process the CHiP-Seq data and produce peak calls.
+
+## Process
+* BWA for the alignment
+* BioBamBam2 for the filtering
+* MACS2 for the peak calling
 
 ## COMPS Code
 `process_chipseq.py`
@@ -157,6 +190,10 @@ A set of scripts that can get run on the COMPS infrastructure to process the CHi
 * --data_dir \<data_dir\>/
 
    This is where the initial FastQ files will be downloaded to and the output files will get saved.
+
+### Output Files
+* bed
+* wig
 
 ## Example
 When using a local verion of the [COMPS virtual machine](http://www.bsc.es/computer-sciences/grid-computing/comp-superscalar/downloads-and-documentation):

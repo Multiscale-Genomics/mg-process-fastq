@@ -44,7 +44,7 @@ class process_rnaseq:
         
         if os.path.isfile(file_name) == False:
             cdna_file = urllib2.urlopen(
-            'ftp://ftp.ensembl.org/pub/current_fasta/' + species + '/cdna/' + species + '.' + assembly + '.cdna.all.fa.gz')
+            'ftp://ftp.ensembl.org/pub/current_fasta/' + species.lower() + '/cdna/' + species + '.' + assembly + '.cdna.all.fa.gz')
             
             CHUNK = 16 * 1024
                     

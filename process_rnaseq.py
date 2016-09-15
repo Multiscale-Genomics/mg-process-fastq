@@ -134,7 +134,7 @@ class process_rnaseq:
         cdna_file = data_dir + species + '_' + assembly + '/' + species + '.' + assembly + '.cdna.all.fa.gz'
         cdna_idx_file = cdna_file + '.idx'
         
-        command_line = 'kallisto quant -i ' + cdna_idx_file + ' -o ' + fastq[0] + ' ' + fastq[1]
+        command_line = 'kallisto quant -i ' + cdna_idx_file + ' -o ' + data_dir + project + ' ' + fastq[0] + ' ' + fastq[1]
         
         args = shlex.split(command_line)
         p = subprocess.Popen(args)
@@ -183,8 +183,6 @@ if __name__ == "__main__":
     
     # Optain the paired FastQ files
     in_files = prs.getFastqFiles(ena_err_id, data_dir)
-    in_file1 = in_files[0]
-    in_file2 = in_files[1]
     
     # Get the cDNA
     prs.getcDNAFiles(data_dir, species, assembly)
@@ -193,6 +191,6 @@ if __name__ == "__main__":
     prs.run_kallisto_indexing(data_dir, species, assembly)
     
     # Quantify RNA-seq
-    prs.run_kallisto_quant(data_dir, species, assembly, project, [in_file1, in_file2])
+    prs.run_kallisto_quant(data_dir, species, assembly, project, in_files)
     
     

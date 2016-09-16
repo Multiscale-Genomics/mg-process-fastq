@@ -191,6 +191,29 @@ A set of scripts that can get run on the COMPS infrastructure to process the CHi
 
    This is where the initial FastQ files will be downloaded to and the output files will get saved.
 
+### Example JSON file:
+```
+{
+  "user" : "user_name",
+  "submission_name" : "test_01",
+  "expts" : [
+    {
+      "project_id": "ena_project_id",
+      "group_name": "user_defined_name_1",
+      "run_ids" : ["ena_run_accn_1", "ena_run_accn_2", ...]
+      "bgd_ids" : ["ena_run_accn_3", "ena_run_accn_4", ...]
+    },
+    {
+      "project_id": "ena_project_id",
+      "group_name": "user_defined_name_2",
+      "run_ids" : ["ena_run_accn_5", "ena_run_accn_6", ...]
+      "bgd_ids" : ["ena_run_accn_3", "ena_run_accn_4", ...]
+    },
+    { ... }
+  ]
+}
+```
+
 ### Output Files
 * bed
 * wig
@@ -198,7 +221,7 @@ A set of scripts that can get run on the COMPS infrastructure to process the CHi
 ## Example
 When using a local verion of the [COMPS virtual machine](http://www.bsc.es/computer-sciences/grid-computing/comp-superscalar/downloads-and-documentation):
 ```
-runcompss --lang=python /home/compss/mg-process-fastq/process_chipseq.py --species homo_sapiens --assembly GRCh38 --project_id PRJEB2445 --run_id ERR030872 --data_dir /home/compss/data/
+runcompss --comm=integratedtoolkit.gat.master.GATAdaptor --log_level=debug --lang=python /home/compss/mg-process-fastq/process_chipseq.py --species homo_sapiens --assembly GRCh38 --project_id PRJDA34559 --run_ids PRJEB2445.json --data_dir /home/compss/VMShare
 ```
 
 

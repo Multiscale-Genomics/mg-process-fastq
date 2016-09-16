@@ -110,7 +110,7 @@ class process_chipseq:
                 files.append(data_dir + '/' + project + "/" + file_name[-1].replace('.fastq.gz', '.fastq'))
                 gzfiles.append(data_dir + '/' + project + "/" + file_name[-1])
                 
-                with open(data_dir + project + "/" + file_name[-1], 'wb') as fp:
+                with open(data_dir + '/' + project + "/" + file_name[-1], 'wb') as fp:
                     while True:
                         chunk = req.read(CHUNK)
                         if not chunk: break

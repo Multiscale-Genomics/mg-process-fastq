@@ -16,7 +16,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-import argparse, urllib2, gzip, shutil, shlex, subprocess, os.path
+import argparse, urllib2, gzip, shutil, shlex, subprocess, os.path, json
 
 from pycompss.api.task import task
 from pycompss.api.parameter import *
@@ -53,7 +53,7 @@ class process_chipseq:
         
         if os.path.isfile(file_name) == False:
             cdna_file = urllib2.urlopen(
-            'ftp://ftp.ensembl.org/pub/current_fasta/' + species.lower() + '/dna/' + species[0].upper + species[1:] + '.' + assembly + '.dna.toplevel.fa.gz')
+            'ftp://ftp.ensembl.org/pub/current_fasta/' + species.lower() + '/dna/' + species[0].upper() + species[1:] + '.' + assembly + '.dna.toplevel.fa.gz')
             
             CHUNK = 16 * 1024
                     
@@ -293,27 +293,6 @@ if __name__ == "__main__":
     # Get the assembly
     genome_fa = pcs.getGenomeFile(data_dir, species, assembly)
     
-    # Example JSON file:
-    """
-    {
-      "user" : "user_name",
-      "submission_name" : "test_01",
-      "expts" : [
-        {
-          "project_id": "ena_project_id",
-          "group_name": "user_defined_name_1",
-          "run_ids" : ["ena_run_accn_1", "ena_run_accn_2", ...]
-          "bgd_ids" : ["ena_run_accn_3", "ena_run_accn_4", ...]
-        },
-        {
-          "project_id": "ena_project_id",
-          "group_name": "user_defined_name_2",
-          "run_ids" : ["ena_run_accn_5", "ena_run_accn_6", ...]
-          "bgd_ids" : ["ena_run_accn_3", "ena_run_accn_4", ...]
-        }
-      ]
-    }
-    """
     job_id_sets = json.loads(run_id_file)
     for expt in job_id_sets["expts"]:
         pcs.main(data_dir, expt, genome_fa)

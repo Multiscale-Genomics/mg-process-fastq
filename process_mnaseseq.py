@@ -52,7 +52,7 @@ class process_chipseq:
         
         if os.path.isfile(file_name) == False:
             cdna_file = urllib2.urlopen(
-            'ftp://ftp.ensembl.org/pub/current_fasta/' + species.lower() + '/dna/' + species[0].upper + species[1:] + '.' + assembly + '.dna.toplevel.fa.gz')
+            'ftp://ftp.ensembl.org/pub/current_fasta/' + species.lower() + '/dna/' + species[0].upper() + species[1:] + '.' + assembly + '.dna.toplevel.fa.gz')
             
             CHUNK = 16 * 1024
                     

@@ -137,15 +137,15 @@ class process_chipseq:
         
     
     #@task()    
-    def bwa_align_reads(self, genome_file, data_dir, run_id):
+    def bwa_align_reads(self, genome_file, data_dir, project_id, run_id):
         """
         Map the reads to the genome
         """
         
-        reads_file = data_dir + '/' + run_id + '.fq'
-        intermediate_file = data_dir + '/' + run_id + '.sai'
-        intermediate_sam_file = data_dir + '/' + run_id + '.sam'
-        output_bam_file = data_dir + '/' + run_id + '.bam'
+        reads_file = data_dir + '/' + project_id + '/' + run_id + '.fq'
+        intermediate_file = data_dir + '/' + project_id + '/' + run_id + '.sai'
+        intermediate_sam_file = data_dir + '/' + project_id + '/' + run_id + '.sam'
+        output_bam_file = data_dir + '/' + project_id + '/' + run_id + '.bam'
         
         command_lines = [
             'bwa aln -q 5 -f ' + intermediate_file + ' ' + genome_file + ' ' + reads_file,
@@ -160,7 +160,7 @@ class process_chipseq:
     
      
     #@task()
-    def merge_bam(self, data_dir, final_id, run_ids=[]):
+    def merge_bam(self, data_dir, project_id, final_id, run_ids=[]):
         """
         Merge together all the bams in a directory and sort to create the final
         bam ready to be filtered
@@ -168,10 +168,10 @@ class process_chipseq:
         If run_ids is blank then the function looks for all bam files in the
         data_dir
         """
-        out_bam_file = data_dir + '/' + final_id + '.bam'
+        out_bam_file = data_dir + '/' + project_id + '/' + final_id + '.bam'
         
         if len(run_ids) == 0:
-            bam_files = [f for f in listdir(data_dir) if f.endswith(("sai"))]
+            bam_files = [f for f in listdir(data_dir + '/' + project_id) if f.endswith(("sai"))]
         else:
             bam_files = [f + ".bam" for f in run_ids]
         
@@ -190,14 +190,14 @@ class process_chipseq:
     
     
     #@task()
-    def biobambam_filter_alignments(self, data_dir, run_id):
+    def biobambam_filter_alignments(self, data_dir, project_id, run_id):
         """
         Sorts and filters the bam file.
         
         It is important that all duplicate alignments have been removed. This
         can be run as an intermediate step, but should always be run as the 
         """
-        command_line = 'bamsormadup < ' + data_dir + '/' + run_id + '.bam > '+ data_dir + '/' + run_id + '.filtered.bam' 
+        command_line = 'bamsormadup < ' + data_dir + '/' + project_id + '/' + run_id + '.bam > '+ data_dir + '/' + project_id + '/' + run_id + '.filtered.bam' 
         
         args = shlex.split(command_line)
         p = subprocess.Popen(args)
@@ -205,14 +205,14 @@ class process_chipseq:
     
     
     #@task()
-    def macs2_peak_calling(self, data_dir, run_id, background_id):
+    def macs2_peak_calling(self, data_dir, project_id, run_id, background_id):
         """
         Function to run MACS2 for peak calling
         
         background might need to be optional.
         """
-        bam_file = data_dir + '/' + run_id + '.filtered.bam'
-        bam_background_file = data_dir + '/' + background_id + '.filtered.bam'
+        bam_file = data_dir + '/' + project_id + '/' + run_id + '.filtered.bam'
+        bam_background_file = data_dir + '/' + project_id + '/' + background_id + '.filtered.bam'
         command_line = 'macs2 callpeak -t ' + bam_file + ' -n ' + run_id + '-c ' + bam_background_file
     
     
@@ -248,15 +248,15 @@ class process_chipseq:
         final_bgd_id = expt["project_id"] + "_" + expt["group_name"] + "_bgd"
         
         # Merge Bam files
-        self.merge_bam(data_dir, final_run_id, expt["run_ids"])
-        self.merge_bam(data_dir, final_bgd_id, expt["bgd_ids"])
+        self.merge_bam(data_dir, expt["project_id"], final_run_id, expt["run_ids"])
+        self.merge_bam(data_dir, expt["project_id"], final_bgd_id, expt["bgd_ids"])
         
         # Filter the bams
-        self.biobambam_filter_alignments(data_dir, final_run_id)
-        self.biobambam_filter_alignments(data_dir, final_bgd_id)
+        self.biobambam_filter_alignments(data_dir, expt["project_id"], final_run_id)
+        self.biobambam_filter_alignments(data_dir, expt["project_id"], final_bgd_id)
         
         # MACS2 to call peaks
-        self.macs2_peak_calling(data_dir, final_run_id, final_bgd_id)
+        self.macs2_peak_calling(data_dir, expt["project_id"], final_run_id, final_bgd_id)
         
     
 if __name__ == "__main__":
@@ -288,14 +288,12 @@ if __name__ == "__main__":
         pass
 
     try:
-        data_dir += "/"
-        os.makedirs(data_dir + project)
+        os.makedirs(data_dir + '/' + project)
     except:
         pass
     
     try:
-        data_dir += "/"
-        os.makedirs(data_dir + species + "_" + assembly)
+        os.makedirs(data_dir + '/' + species + "_" + assembly)
     except:
         pass
     

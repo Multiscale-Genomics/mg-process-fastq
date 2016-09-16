@@ -1,3 +1,4 @@
+*.json
 bs_*
 .python-version
 *.pyc

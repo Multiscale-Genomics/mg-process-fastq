@@ -175,6 +175,7 @@ class process_chipseq:
         else:
             bam_files = [f + ".bam" for f in run_ids]
         
+        bam_sort_files = []
         for bam in bam_files:
             bam_sort_files.append(bam)
             bam_merge_files.append(["-o", bam + ".sorted.bam", "-T", bam + ".bam_sort", bam])

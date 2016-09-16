@@ -283,9 +283,17 @@ if __name__ == "__main__":
     
     try:
         os.makedirs(data_dir)
-        
+    except:
+        pass
+
+    try:
         data_dir += "/"
         os.makedirs(data_dir + project)
+    except:
+        pass
+    
+    try:
+        data_dir += "/"
         os.makedirs(data_dir + species + "_" + assembly)
     except:
         pass
@@ -293,7 +301,9 @@ if __name__ == "__main__":
     # Get the assembly
     genome_fa = pcs.getGenomeFile(data_dir, species, assembly)
     
-    job_id_sets = json.loads(run_id_file)
+    with open(run_id_file) as data_file:    
+        job_id_sets = json.load(data_file)
+    
     for expt in job_id_sets["expts"]:
         pcs.main(data_dir, expt, genome_fa)
     

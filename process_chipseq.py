@@ -107,8 +107,8 @@ class process_chipseq:
                 req = urllib2.urlopen("ftp://" + fastq_file)
                 CHUNK = 16 * 1024
                 
-                files.append(data_dir + project + "/" + file_name[-1].replace('.fastq.gz', '.fastq'))
-                gzfiles.append(data_dir + project + "/" + file_name[-1])
+                files.append(data_dir + '/' + project + "/" + file_name[-1].replace('.fastq.gz', '.fastq'))
+                gzfiles.append(data_dir + '/' + project + "/" + file_name[-1])
                 
                 with open(data_dir + project + "/" + file_name[-1], 'wb') as fp:
                     while True:
@@ -235,14 +235,17 @@ class process_chipseq:
         # Obtain background FastQ files
         bgd_ids = []
         bgd_fastq_files = []
-        for bgd_id in expt["run_ids"]:
+        for bgd_id in expt["bgd_ids"]:
             bgd_ids.append(run_id)
             in_files = self.getFastqFiles(bgd_id, data_dir)
             bgd_fastq_files.append(in_files)
         
         # Run BWA
-        for run_id in run_ids:
-            self.bwa_align_reads(genome_fa, data_dir, run_id)
+        for run_id in expt["run_ids"]:
+            self.bwa_align_reads(genome_fa, data_dir, expt["project_id"], run_id)
+        
+        for bgd_id in expt["bgd_ids"]:
+            self.bwa_align_reads(genome_fa, data_dir, expt["project_id"], bgd_id)
         
         final_run_id = expt["project_id"] + "_" + expt["group_name"] + "_run"
         final_bgd_id = expt["project_id"] + "_" + expt["group_name"] + "_bgd"

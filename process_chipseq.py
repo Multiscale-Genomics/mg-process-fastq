@@ -92,7 +92,6 @@ class process_chipseq:
             if len(row) < 6:
                 continue
             
-            print row
             project = row[0]
             srr_id = row[1]
             fastq_files = row[6].split(';')
@@ -100,9 +99,7 @@ class process_chipseq:
             
             for fastq_file in fastq_files:
                 file_name = fastq_file.split("/")
-                print fastq_file
-                print data_dir + project + "/" + file_name[-1]
-                print file_name[-1]
+                print data_dir + '/' + project + "/" + file_name[-1]
                 
                 req = urllib2.urlopen("ftp://" + fastq_file)
                 CHUNK = 16 * 1024
@@ -176,6 +173,7 @@ class process_chipseq:
             bam_files = [f + ".bam" for f in run_ids]
         
         bam_sort_files = []
+        bam_merge_files = []
         for bam in bam_files:
             bam_sort_files.append(bam)
             bam_merge_files.append(["-o", bam + ".sorted.bam", "-T", bam + ".bam_sort", bam])

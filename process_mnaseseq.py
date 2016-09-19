@@ -29,7 +29,7 @@ except ImportError :
     exit(-1)
 
 
-class process_chipseq:
+class process_rnaseq:
     """
     Functions for downloading and processing Mnase-seq FastQ files. Files are
     downloaded from the European Nucleotide Archive (ENA), then aligned,
@@ -198,8 +198,80 @@ class process_chipseq:
     
     
     def danpos2_peak_calling(self, data_dir, bam_file):
+        """
+        python /nfs/panda/ensembl/mug/lib/danpos-2.2.2/danpos.py dpos /nfs/panda/ensembl/mug/datasets/mnase-seq/PRJNA108097/SRR000713.sorted.bam
+        """
+        # This is the command from the danpos.py script. Check the hand written notes for what the default parameters are outside of the ones that need to get passed. Need to import the danpos.py script and then call the functions myself. This library also needs adding to the $PYTHONPATH
+        danpos(\
+               #input output args
+               tpath=bam_file,paired=0,opath='result',save=0,tbg=None,fdr=1,\
+               #region calling
+               call_region=0,\
+               #peak calling
+               call_peak=0,\
+               #position calling args
+               call_position=1,width=40,distance=100,edge=0,fill_gap=0,ratio=0.9,\
+               ref_position=None,\
+               height=5,pheight=0,logp=0,\
+               #occupancy processing args
+               nor='F',nonzero=0,amount=None,step=10,smooth_width=20,lmd=300,\
+               #reads processing
+               cut=0,fs=None,mifrsz=50,mafrsz=300,extend=80,\
+               # whether to bo position calling for both gain and loss of occupancy
+               #exclude_low_percent=args.exclude_low_percent,exclude_high_percent=args.exclude_high_percent,\
+               exclude_low_percent=0,exclude_high_percent=0,region_file=None,\
+               both=True,\
+               # P value cutoff for calling occupancy positions, set to 1 will disable this parameter
+               #pheight=1,\
+               #the output format of wiggle format file
+               wgfmt='fixed',\
+               #the default value for gap filling in position calling
+               fill_value=1,\
+               #the differential test method,'P':Poisson, 'C':Chi-Square
+               test='P',\
+               #whether or not to do position calling for each replicate, set to 1 if need to do, else set to 0.
+               pcfer=0)#args.pcfer)#0)
+    
+    #@task()
+    def main(self, data_dir, expt, genome_fa):
+        """
+        Main loop
+        """
+        # Optain the FastQ files
+        run_ids = []
+        run_fastq_files = []
         
+        run_ids = []
+        run_fastq_files = []
+        for run_id in expt["run_ids"]:
+            run_ids.append(run_id)
+            in_files = self.getFastqFiles(run_id, data_dir)
+            run_fastq_files.append(in_files)
         
+        # Obtain background FastQ files
+        bgd_ids = []
+        bgd_fastq_files = []
+        for bgd_id in expt["bgd_ids"]:
+            bgd_ids.append(run_id)
+            in_files = self.getFastqFiles(bgd_id, data_dir)
+            bgd_fastq_files.append(in_files)
+        
+        # Run BWA
+        for run_id in expt["run_ids"]:
+            self.bwa_align_reads(genome_fa, data_dir, expt["project_id"], run_id)
+        
+        for bgd_id in expt["bgd_ids"]:
+            self.bwa_align_reads(genome_fa, data_dir, expt["project_id"], bgd_id)
+        
+        final_run_id = expt["project_id"] + "_" + expt["group_name"] + "_run"
+        final_bgd_id = expt["project_id"] + "_" + expt["group_name"] + "_bgd"
+        
+        # Merge Bam files
+        self.merge_bam(data_dir, expt["project_id"], final_run_id, expt["run_ids"])
+        self.merge_bam(data_dir, expt["project_id"], final_bgd_id, expt["bgd_ids"])
+        
+        # DANPOS to call peaks
+        self.danpos2_peak_calling(data_dir, expt["project_id"], final_run_id, final_bgd_id)
     
 if __name__ == "__main__":
     import sys
@@ -234,13 +306,16 @@ if __name__ == "__main__":
         pass
     
     # Optain the FastQ files
-    in_files = pcs.getFastqFiles(ena_err_id, data_dir)
+    in_files = prs.getFastqFiles(ena_err_id, data_dir)
     
     # Get the assembly
+    genome_fa = prs.getGenomeFile(data_dir, species, assembly)
     
+    # Run main loop
+    with open(run_id_file) as data_file:    
+        job_id_sets = json.load(data_file)
     
-    # Run BWA
+    for expt in job_id_sets["expts"]:
+        prs.main(data_dir, expt, genome_fa)
     
-    
-    # Peak Calling with DANPOS2
     

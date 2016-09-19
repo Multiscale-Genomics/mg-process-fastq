@@ -18,6 +18,8 @@ limitations under the License.
 
 import argparse, urllib2, gzip, shutil, shlex, subprocess, os.path
 
+from functions import danpos
+
 from pycompss.api.task import task
 from pycompss.api.parameter import *
 
@@ -183,54 +185,31 @@ class process_rnaseq:
         pysam.index(out_bam_file)
     
     
-    def biobambam_filter_alignments(self, data_dir, run_id):
+    def danpos2_peak_calling(self, data_dir, run_ids = [], paired = 0, wild_type_id = None):
         """
-        Sorts and filters the bam file.
+        Runs dpos script in DANPOS2. The call has been extracted from the
+        danpos.py script so that it can get run as part of the pipeline
         
-        It is important that all duplicate alignments have been removed. This
-        can be run as an intermediate step, but should always be run as the 
+        Need to handle
         """
-        command_line = 'bamsormadup < ' + data_dir + '/' + run_id + '.bam > '+ data_dir + '/' + run_id + '.filtered.bam' 
+        bam_file = data_dir + run_id + '.bam'
+        bam_file = ','.join([data_dir + run_id for run_id in run_ids])
+        #bam_bgd_file = data_dir + bgd_id + '.bam'
         
-        args = shlex.split(command_line)
-        p = subprocess.Popen(args)
-        p.wait()
-    
-    
-    def danpos2_peak_calling(self, data_dir, bam_file):
-        """
-        python /nfs/panda/ensembl/mug/lib/danpos-2.2.2/danpos.py dpos /nfs/panda/ensembl/mug/datasets/mnase-seq/PRJNA108097/SRR000713.sorted.bam
-        """
-        # This is the command from the danpos.py script. Check the hand written notes for what the default parameters are outside of the ones that need to get passed. Need to import the danpos.py script and then call the functions myself. This library also needs adding to the $PYTHONPATH
-        danpos(\
-               #input output args
-               tpath=bam_file,paired=0,opath='result',save=0,tbg=None,fdr=1,\
-               #region calling
-               call_region=0,\
-               #peak calling
-               call_peak=0,\
-               #position calling args
-               call_position=1,width=40,distance=100,edge=0,fill_gap=0,ratio=0.9,\
-               ref_position=None,\
-               height=5,pheight=0,logp=0,\
-               #occupancy processing args
-               nor='F',nonzero=0,amount=None,step=10,smooth_width=20,lmd=300,\
-               #reads processing
-               cut=0,fs=None,mifrsz=50,mafrsz=300,extend=80,\
-               # whether to bo position calling for both gain and loss of occupancy
-               #exclude_low_percent=args.exclude_low_percent,exclude_high_percent=args.exclude_high_percent,\
-               exclude_low_percent=0,exclude_high_percent=0,region_file=None,\
-               both=True,\
-               # P value cutoff for calling occupancy positions, set to 1 will disable this parameter
-               #pheight=1,\
-               #the output format of wiggle format file
-               wgfmt='fixed',\
-               #the default value for gap filling in position calling
-               fill_value=1,\
-               #the differential test method,'P':Poisson, 'C':Chi-Square
-               test='P',\
-               #whether or not to do position calling for each replicate, set to 1 if need to do, else set to 0.
-               pcfer=0)#args.pcfer)#0)
+        danpos(tpath=bam_file,paired=paired,opath='result',save=0,tbg=None,fdr=1,\
+            call_region=0,\
+            call_peak=0,\
+            call_position=1,width=40,distance=100,edge=0,fill_gap=0,ratio=0.9,\
+            ref_position=None,\
+            height=5,pheight=0,logp=0,\
+            nor='F',nonzero=0,amount=None,step=10,smooth_width=20,lmd=300,\
+            cut=0,fs=None,mifrsz=50,mafrsz=300,extend=80,\
+            exclude_low_percent=0,exclude_high_percent=0,region_file=None,\
+            both=True,\
+            wgfmt='fixed',\
+            fill_value=1,\
+            test='P',\
+            pcfer=0)
     
     #@task()
     def main(self, data_dir, expt, genome_fa):
@@ -242,11 +221,11 @@ class process_rnaseq:
         run_fastq_files = []
         
         run_ids = []
-        run_fastq_files = []
+        run_fastq_files = {}
         for run_id in expt["run_ids"]:
             run_ids.append(run_id)
             in_files = self.getFastqFiles(run_id, data_dir)
-            run_fastq_files.append(in_files)
+            run_fastq_files[run_id] = in_files
         
         # Obtain background FastQ files
         bgd_ids = []
@@ -254,24 +233,38 @@ class process_rnaseq:
         for bgd_id in expt["bgd_ids"]:
             bgd_ids.append(run_id)
             in_files = self.getFastqFiles(bgd_id, data_dir)
-            bgd_fastq_files.append(in_files)
+            bgd_fastq_files[run_id] = in_files
         
         # Run BWA
+        paired = 0
         for run_id in expt["run_ids"]:
-            self.bwa_align_reads(genome_fa, data_dir, expt["project_id"], run_id)
+            if len(run_fastq_files[run_id]) > 1:
+                paired = 1
+                for i in range(1,len(run_fastq_files[run_id])+1):
+                    self.bwa_align_reads(genome_fa, data_dir, expt["project_id"], run_id + "_" + str(i))
+            else:
+                self.bwa_align_reads(genome_fa, data_dir, expt["project_id"], run_id)
         
         for bgd_id in expt["bgd_ids"]:
-            self.bwa_align_reads(genome_fa, data_dir, expt["project_id"], bgd_id)
+            if len(run_fastq_files[run_id]) > 1:
+                paired = 1
+                for i in range(1,len(run_fastq_files[run_id])+1):
+                    self.bwa_align_reads(genome_fa, data_dir, expt["project_id"], bgd_id + "_" + str(i))
+            else:
+                self.bwa_align_reads(genome_fa, data_dir, expt["project_id"], bgd_id)
         
-        final_run_id = expt["project_id"] + "_" + expt["group_name"] + "_run"
-        final_bgd_id = expt["project_id"] + "_" + expt["group_name"] + "_bgd"
+        #final_run_id = expt["project_id"] + "_" + expt["group_name"] + "_run"
+        #final_bgd_id = expt["project_id"] + "_" + expt["group_name"] + "_bgd"
         
         # Merge Bam files
-        self.merge_bam(data_dir, expt["project_id"], final_run_id, expt["run_ids"])
-        self.merge_bam(data_dir, expt["project_id"], final_bgd_id, expt["bgd_ids"])
+        #self.merge_bam(data_dir, expt["project_id"], final_run_id, expt["run_ids"])
+        #self.merge_bam(data_dir, expt["project_id"], final_bgd_id, expt["bgd_ids"])
         
         # DANPOS to call peaks
-        self.danpos2_peak_calling(data_dir, expt["project_id"], final_run_id, final_bgd_id)
+        if len(expt["bgd_ids"]) == 1:
+            self.danpos2_peak_calling(data_dir, expt["project_id"], expt["run_ids"], paired, expt["bgd_ids"][0])
+        else:        
+            self.danpos2_peak_calling(data_dir, expt["project_id"], expt["run_ids"], paired, None)
     
 if __name__ == "__main__":
     import sys
@@ -280,9 +273,9 @@ if __name__ == "__main__":
     # Set up the command line parameters
     parser = argparse.ArgumentParser(description="Mnase-seq peak calling")
     parser.add_argument("--species", help="Species (Homo_sapiens)")
-    parser.add_argument("--assembly", help="Assembly (GRCh38)")
-    parser.add_argument("--project_id", help="Project ID of the dataset ()")
-    parser.add_argument("--run_ids", help="File with list of the experiment run IDs of the dataset ()")
+    parser.add_argument("--assembly", help="Assembly (GRCm38)")
+    parser.add_argument("--project_id", help="Project ID of the dataset (PRJDA47577)")
+    parser.add_argument("--run_ids", help="File with list of the experiment run IDs of the dataset")
     parser.add_argument("--data_dir", help="Data directory; location to download ERR FASTQ files and save results")
 
     # Get the matching parameters from the command line

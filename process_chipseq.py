@@ -241,6 +241,7 @@ class process_chipseq:
         # Run BWA
         for run_id in expt["run_ids"]:
             self.bwa_align_reads(genome_fa, data_dir, expt["project_id"], run_id)
+            out_bam = data_dir + '/' + project_id + '/' + run_id + '.bam'
         
         for bgd_id in expt["bgd_ids"]:
             self.bwa_align_reads(genome_fa, data_dir, expt["project_id"], bgd_id)
@@ -255,6 +256,9 @@ class process_chipseq:
         # Filter the bams
         self.biobambam_filter_alignments(data_dir, expt["project_id"], final_run_id)
         self.biobambam_filter_alignments(data_dir, expt["project_id"], final_bgd_id)
+        
+        final_run_id = expt["project_id"] + "_" + expt["group_name"] + "_run"
+        final_bgd_id = expt["project_id"] + "_" + expt["group_name"] + "_bgd"
         
         # MACS2 to call peaks
         self.macs2_peak_calling(data_dir, expt["project_id"], final_run_id, final_bgd_id)

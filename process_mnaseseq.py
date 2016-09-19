@@ -20,8 +20,8 @@ import argparse, urllib2, gzip, shutil, shlex, subprocess, os.path
 
 from functions import danpos
 
-from pycompss.api.task import task
-from pycompss.api.parameter import *
+#from pycompss.api.task import task
+#from pycompss.api.parameter import *
 
 
 try :
@@ -92,7 +92,6 @@ class process_rnaseq:
             if len(row) < 6:
                 continue
             
-            print row
             project = row[0]
             srr_id = row[1]
             fastq_files = row[6].split(';')
@@ -100,17 +99,15 @@ class process_rnaseq:
             
             for fastq_file in fastq_files:
                 file_name = fastq_file.split("/")
-                print fastq_file
-                print data_dir + project + "/" + file_name[-1]
-                print file_name[-1]
+                print data_dir + '/' + project + "/" + file_name[-1]
                 
                 req = urllib2.urlopen("ftp://" + fastq_file)
                 CHUNK = 16 * 1024
                 
-                files.append(data_dir + project + "/" + file_name[-1].replace('.fastq.gz', '.fastq'))
-                gzfiles.append(data_dir + project + "/" + file_name[-1])
+                files.append(data_dir + '/' + project + "/" + file_name[-1].replace('.fastq.gz', '.fastq'))
+                gzfiles.append(data_dir + '/' + project + "/" + file_name[-1])
                 
-                with open(data_dir + project + "/" + file_name[-1], 'wb') as fp:
+                with open(data_dir + '/' + project + "/" + file_name[-1], 'wb') as fp:
                     while True:
                         chunk = req.read(CHUNK)
                         if not chunk: break
@@ -165,13 +162,15 @@ class process_rnaseq:
         If run_ids is blank then the function looks for all bam files in the
         data_dir
         """
-        out_bam_file = data_dir + '/' + final_id + '.bam'
+        out_bam_file = data_dir + '/' + project_id + '/' + final_id + '.bam'
         
         if len(run_ids) == 0:
-            bam_files = [f for f in listdir(data_dir) if f.endswith(("sai"))]
+            bam_files = [f for f in listdir(data_dir + '/' + project_id) if f.endswith(("sai"))]
         else:
             bam_files = [f + ".bam" for f in run_ids]
         
+        bam_sort_files = []
+        bam_merge_files = []
         for bam in bam_files:
             bam_sort_files.append(bam)
             bam_merge_files.append(["-o", bam + ".sorted.bam", "-T", bam + ".bam_sort", bam])
@@ -281,25 +280,28 @@ if __name__ == "__main__":
     # Get the matching parameters from the command line
     args = parser.parse_args()
     
-    project    = args.project_id
-    ena_err_id = args.run_id
-    species    = args.species
-    assembly   = args.assembly
-    data_dir   = args.data_dir
+    project     = args.project_id
+    run_id_file = args.run_ids
+    species     = args.species
+    assembly    = args.assembly
+    data_dir    = args.data_dir
     
     prs = process_rnaseq()
     
     try:
         os.makedirs(data_dir)
-        
-        data_dir += "/"
-        os.makedirs(data_dir + project)
-        os.makedirs(data_dir + species + "_" + assembly)
+    except:
+        pass
+
+    try:
+        os.makedirs(data_dir + '/' + project)
     except:
         pass
     
-    # Optain the FastQ files
-    in_files = prs.getFastqFiles(ena_err_id, data_dir)
+    try:
+        os.makedirs(data_dir + '/' + species + "_" + assembly)
+    except:
+        pass
     
     # Get the assembly
     genome_fa = prs.getGenomeFile(data_dir, species, assembly)

@@ -248,6 +248,31 @@ A set of scripts that can get run on the COMPS infrastructure to process the MNa
 
    This is where the initial FastQ files will be downloaded to and the output files will get saved.
 
+### Example JSON file:
+```
+{
+  "user" : "user_name",
+  "submission_name" : "test_01",
+  "expts" : [
+    {
+      # Paired-end dataset
+      "project_id": "ena_project_id",
+      "group_name": "user_defined_name_1",
+      "run_ids" : ["ena_run_accn_1", "ena_run_accn_2"]
+      "bgd_ids" : ["ena_run_accn_3"]
+    },
+    {
+      # Single ended dataset
+      "project_id": "ena_project_id",
+      "group_name": "user_defined_name_2",
+      "run_ids" : ["ena_run_accn_5"]
+      "bgd_ids" : ["ena_run_accn_3"]
+    },
+    { ... }
+  ]
+}
+```
+
 ## Example
 When using a local verion of the [COMPS virtual machine](http://www.bsc.es/computer-sciences/grid-computing/comp-superscalar/downloads-and-documentation):
 ```

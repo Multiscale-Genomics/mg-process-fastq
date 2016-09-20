@@ -16,7 +16,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-import argparse, urllib2, gzip, shutil, shlex, subprocess, os.path
+import argparse, urllib2, gzip, shutil, shlex, subprocess, os.path, json
 
 from functions import danpos
 
@@ -91,14 +91,6 @@ class process_rnaseq:
             in_files = cf.getFastqFiles(run_id, data_dir)
             run_fastq_files[run_id] = in_files
         
-        # Obtain background FastQ files
-        bgd_ids = []
-        bgd_fastq_files = []
-        for bgd_id in expt["bgd_ids"]:
-            bgd_ids.append(run_id)
-            in_files = cf.getFastqFiles(bgd_id, data_dir)
-            bgd_fastq_files[run_id] = in_files
-        
         # Run BWA
         paired = 0
         for run_id in expt["run_ids"]:
@@ -109,18 +101,28 @@ class process_rnaseq:
             else:
                 cf.bwa_align_reads(genome_fa, data_dir, expt["project_id"], run_id)
         
-        for bgd_id in expt["bgd_ids"]:
-            if len(run_fastq_files[run_id]) > 1:
-                paired = 1
-                for i in range(1,len(run_fastq_files[run_id])+1):
-                    cf.bwa_align_reads(genome_fa, data_dir, expt["project_id"], bgd_id + "_" + str(i))
-            else:
-                cf.bwa_align_reads(genome_fa, data_dir, expt["project_id"], bgd_id)
         
-        # DANPOS to call peaks
-        if len(expt["bgd_ids"]) == 1:
+        if expt.has_key("bgd_ids"):
+            # Obtain background FastQ files
+            bgd_ids = []
+            bgd_fastq_files = []
+            for bgd_id in expt["bgd_ids"]:
+                bgd_ids.append(run_id)
+                in_files = cf.getFastqFiles(bgd_id, data_dir)
+                bgd_fastq_files[run_id] = in_files
+            
+            for bgd_id in expt["bgd_ids"]:
+                if len(run_fastq_files[run_id]) > 1:
+                    paired = 1
+                    for i in range(1,len(run_fastq_files[run_id])+1):
+                        cf.bwa_align_reads(genome_fa, data_dir, expt["project_id"], bgd_id + "_" + str(i))
+                else:
+                    cf.bwa_align_reads(genome_fa, data_dir, expt["project_id"], bgd_id)
+            
+            # DANPOS to call peaks
             self.danpos2_peak_calling(data_dir, expt["project_id"], expt["run_ids"], paired, expt["bgd_ids"][0])
-        else:        
+        else:
+            # DANPOS to call peaks
             self.danpos2_peak_calling(data_dir, expt["project_id"], expt["run_ids"], paired, None)
     
 if __name__ == "__main__":
@@ -144,6 +146,7 @@ if __name__ == "__main__":
     assembly    = args.assembly
     data_dir    = args.data_dir
     
+    cf = common()
     prs = process_rnaseq()
     
     try:
@@ -162,7 +165,7 @@ if __name__ == "__main__":
         pass
     
     # Get the assembly
-    genome_fa = prs.getGenomeFile(data_dir, species, assembly)
+    genome_fa = cf.getGenomeFile(data_dir, species, assembly)
     
     # Run main loop
     with open(run_id_file) as data_file:    

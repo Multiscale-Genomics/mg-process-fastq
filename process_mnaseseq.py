@@ -85,7 +85,7 @@ class process_rnaseq:
             pcfer=0)
     
     #@task()
-    def inps_peak_calling(self data_dir, project_id, run_ids):
+    def inps_peak_calling(self, data_dir, project_id, run_ids):
         """
         Convert Bam to Bed then make Nucleosome peak calls. These are saved as
         bed files That can then get displayed on genome browsers.
@@ -97,15 +97,17 @@ class process_rnaseq:
                 bed_file = data_dir + '/' + project_id + '/' + run_id + '.bed'
                 bed_out_folder = data_dir + '/' + project_id + '/' + run_id + '.inp'
                 
-                command_lines = [
-                    'bedtools bamtobed -i ' + bam_file + ' > ' + bed_file
-                    'python iNPS_V1.2.2.py -i ' + bed_file + ' -o ' + bed_out_folder
-                ]
+                command_line_1 = 'bedtools bamtobed -i ' + bam_file
+                command_line_2 = 'python iNPS_V1.2.2.py -i ' + bed_file + ' -o ' + bed_out_folder
                 
-                for command_line in command_lines:
-                    args = shlex.split(command_line)
-                    p = subprocess.Popen(args)
-                    p.wait()
+                
+                args = shlex.split(command_line_1)
+                p = subprocess.Popen(args, stdout=bed_file)
+                p.wait()
+                
+                args = shlex.split(command_line_2)
+                p = subprocess.Popen(args)
+                p.wait()
     
     #@task()
     def main(self, data_dir, expt, genome_fa):

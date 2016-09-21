@@ -3,6 +3,7 @@ Scripts required for the processing of FASTQ files (eg generating adjacency list
 
 # Requirements
 - Python 2.7.12+
+- Python 3
 - Python Modules:
   - numpy
   - h5py
@@ -23,7 +24,7 @@ Scripts required for the processing of FASTQ files (eg generating adjacency list
 - imp (for 3D modelling with TADbit)
 - mcl
 - R (2.9.1)
-- DANPOS2
+- iNPS
 
 
 # Whole Genome Bisulfite Sequencing (WGBS) Data Processing
@@ -226,7 +227,7 @@ runcompss --comm=integratedtoolkit.gat.master.GATAdaptor --log_level=debug --lan
 
 
 # MNase-Seq Analysis
-A set of scripts that can get run on the COMPS infrastructure to process the MNase-Seq data and produce peak calls.
+A set of scripts that can get run on the COMPS infrastructure to process the MNase-Seq data and produce peak calls. This uses the iNPS package for teh peak calling.
 
 ## COMPS Code
 `process_mnaseseq.py`
@@ -259,14 +260,12 @@ A set of scripts that can get run on the COMPS infrastructure to process the MNa
       "project_id": "ena_project_id",
       "group_name": "user_defined_name_1",
       "run_ids" : ["ena_run_accn_1", "ena_run_accn_2"]
-      "bgd_ids" : ["ena_run_accn_3"]
     },
     {
       # Single ended dataset
       "project_id": "ena_project_id",
       "group_name": "user_defined_name_2",
       "run_ids" : ["ena_run_accn_5"]
-      "bgd_ids" : ["ena_run_accn_3"]
     },
     { ... }
   ]

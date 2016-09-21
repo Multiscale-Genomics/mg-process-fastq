@@ -47,15 +47,14 @@ class process_rnaseq:
         self.ready = ""
     
     
-    def danpos2_peak_calling(self, data_dir, run_ids = [], paired = 0, wild_type_id = None):
+    def danpos2_peak_calling(self, data_dir, project_id, run_ids = [], paired = 0, wild_type_id = None):
         """
         Runs dpos script in DANPOS2. The call has been extracted from the
         danpos.py script so that it can get run as part of the pipeline
         
         Need to handle
         """
-        bam_file = data_dir + run_id + '.bam'
-        bam_file = ','.join([data_dir + run_id for run_id in run_ids])
+        bam_file = ','.join([data_dir + '/' + project_id + '/' + run_id + '.bam' for run_id in run_ids])
         #bam_bgd_file = data_dir + bgd_id + '.bam'
         
         danpos(tpath=bam_file,paired=paired,opath='result',save=0,tbg=None,fdr=1,\
@@ -72,6 +71,28 @@ class process_rnaseq:
             fill_value=1,\
             test='P',\
             pcfer=0)
+    
+    #@task()
+    def inps_peak_calling(self data_dir, project_id, run_ids):
+        """
+        Convert Bam to Bed then make Nucleosome peak calls. These are saved as
+        bed files That can then get displayed on genome browsers.
+        """
+        
+        for run_id in run_ids:
+            bam_file = data_dir + '/' + project_id + '/' + run_id + '.bam'
+            bed_file = data_dir + '/' + project_id + '/' + run_id + '.bed'
+            bed_out_folder = data_dir + '/' + project_id + '/' + run_id + '.inp'
+            
+            command_lines = [
+                'bedtools bamtobed -i ' + bam_file + ' > ' + bed_file
+                'python3 ~/lib/iNPS/iNPS_V1.2.2.py -i ' + bed_file + ' -o ' + bed_out_folder
+            ]
+            
+            for command_line in command_lines:
+                args = shlex.split(command_line)
+                p = subprocess.Popen(args)
+                p.wait()
     
     #@task()
     def main(self, data_dir, expt, genome_fa):
@@ -101,7 +122,9 @@ class process_rnaseq:
             else:
                 cf.bwa_align_reads(genome_fa, data_dir, expt["project_id"], run_id)
         
+        self.inps_peak_calling(data_dir, expt["project_id"], expt["run_ids"])
         
+        """
         if expt.has_key("bgd_ids"):
             # Obtain background FastQ files
             bgd_ids = []
@@ -124,6 +147,7 @@ class process_rnaseq:
         else:
             # DANPOS to call peaks
             self.danpos2_peak_calling(data_dir, expt["project_id"], expt["run_ids"], paired, None)
+        """
     
 if __name__ == "__main__":
     import sys

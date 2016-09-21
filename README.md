@@ -3,7 +3,7 @@ Scripts required for the processing of FASTQ files (eg generating adjacency list
 
 # Requirements
 - Python 2.7.12+
-- Python 3
+- Python 3.5.2 (required for iNPS in MNase-Seq pipeline)
 - Python Modules:
   - numpy
   - h5py

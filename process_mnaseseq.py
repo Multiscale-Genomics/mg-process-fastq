@@ -16,7 +16,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-import argparse, urllib2, gzip, shutil, shlex, subprocess, os.path, json
+import argparse, urllib2, gzip, shutil, shlex, subprocess, os, json
 
 from functions import danpos
 
@@ -31,6 +31,18 @@ try :
 except ImportError :
     print "[Error] Cannot import \"pysam\" package. Have you installed it?"
     exit(-1)
+
+class cd:
+    """Context manager for changing the current working directory"""
+    def __init__(self, newPath):
+        self.newPath = os.path.expanduser(newPath)
+
+    def __enter__(self):
+        self.savedPath = os.getcwd()
+        os.chdir(self.newPath)
+
+    def __exit__(self, etype, value, traceback):
+        os.chdir(self.savedPath)
 
 
 class process_rnaseq:
@@ -79,20 +91,21 @@ class process_rnaseq:
         bed files That can then get displayed on genome browsers.
         """
         
-        for run_id in run_ids:
-            bam_file = data_dir + '/' + project_id + '/' + run_id + '.bam'
-            bed_file = data_dir + '/' + project_id + '/' + run_id + '.bed'
-            bed_out_folder = data_dir + '/' + project_id + '/' + run_id + '.inp'
-            
-            command_lines = [
-                'bedtools bamtobed -i ' + bam_file + ' > ' + bed_file
-                'python3 ~/lib/iNPS/iNPS_V1.2.2.py -i ' + bed_file + ' -o ' + bed_out_folder
-            ]
-            
-            for command_line in command_lines:
-                args = shlex.split(command_line)
-                p = subprocess.Popen(args)
-                p.wait()
+        with cd('../../lib/iNPS'):
+            for run_id in run_ids:
+                bam_file = data_dir + '/' + project_id + '/' + run_id + '.bam'
+                bed_file = data_dir + '/' + project_id + '/' + run_id + '.bed'
+                bed_out_folder = data_dir + '/' + project_id + '/' + run_id + '.inp'
+                
+                command_lines = [
+                    'bedtools bamtobed -i ' + bam_file + ' > ' + bed_file
+                    'python iNPS_V1.2.2.py -i ' + bed_file + ' -o ' + bed_out_folder
+                ]
+                
+                for command_line in command_lines:
+                    args = shlex.split(command_line)
+                    p = subprocess.Popen(args)
+                    p.wait()
     
     #@task()
     def main(self, data_dir, expt, genome_fa):

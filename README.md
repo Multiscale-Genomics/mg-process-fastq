@@ -27,50 +27,6 @@ Scripts required for the processing of FASTQ files (eg generating adjacency list
 - iNPS
 
 
-# Whole Genome Bisulfite Sequencing (WGBS) Data Processing
-A set of scripts that can get run on the COMPS infrastructure to convert the paired FastQ data for WGBS into the matching wig, ATCGmap and CGmap files.
-
-## Process
-* FASTQ and assemblies are downloaded
-* BSseeker2 filters the reads to remove low quality reads
-* FASTQ files are split
-* BSseeker2 uses BOWTIE2 to align the reads to the genomes
-* Bam files are sorted and merged.
-* BSseeker2 then calls the methylation regions
-
-## Code
-### Filter the FastQ files
-
-### Split the list
-Reads through the paired input FastQ files, removed pairs that are only in one side then splits the original 2 FastQ files into pairs of 1000000 ready for alignment.
-
-```
-python split_paired_fastq.py --input_1=<file_1_paired.fastq> --input_2=<file_2_paired.fastq> --output_tag=<e.g. matching>
-```
-
-## COMPS Code
-`process_wgbs.py`
-
-### Parameters:
-* --genome
-
-   Genome accession (e.g. GCA_000001405.22)
-* --dataset
-
-   Dataset ID from the reference paper (e.g. SRR1536575)
-* --data_dir \<data_dir\>/
-
-   This is where the initial FastQ files will be downloaded to and the output files will get saved.
-* --tmp_dir \<temp_dir\>/
-
-   This will be the location for the intermediary files. This gets shared between process, but they should not collide.
-
-### Example
-When using a local verion of the [COMPS virtual machine](http://www.bsc.es/computer-sciences/grid-computing/comp-superscalar/downloads-and-documentation):
-```
-runcompss --lang=python /home/compss/mg-process-fastq/process_wgbs.py --genome GCA_000001405.22 --dataset SRR1536575 --tmp_dir /home/compss/tmp/ --data_dir /home/compss/data/
-```
-
 # Hi-C Data Processing
 Processing of paired end FastQ files from Hi-C experiments. Generates adjacency matrixes, computes TADs and generates the matching HDF5 files for using the REST API (mg-rest-hdf5). The mojority of the code has been wrapped up in the COMPS script, but this can be extracted and run locally. For the moment you need to comment out the `@task(...)` and `@constraint(...)` flags.
 
@@ -122,6 +78,51 @@ python generate_adjacency_matrix.py --genome=<genome_accession> --dataset=<datas
 When using a local verion of the [COMPS virtual machine](http://www.bsc.es/computer-sciences/grid-computing/comp-superscalar/downloads-and-documentation):
 ```
 runcompss --lang=python /home/compss/mg-process-fastq/process_hic.py --genome GCA_000001405.22 --dataset GSE63525 --expt_name rao2014 --expt_list /home/compss/mg-process-fastq/exptList.tsv --tmp_dir /home/compss/tmp/ --data_dir /home/compss/data/
+```
+
+
+# Whole Genome Bisulfite Sequencing (WGBS) Data Processing
+A set of scripts that can get run on the COMPS infrastructure to convert the paired FastQ data for WGBS into the matching wig, ATCGmap and CGmap files.
+
+## Process
+* FASTQ and assemblies are downloaded
+* BSseeker2 filters the reads to remove low quality reads
+* FASTQ files are split
+* BSseeker2 uses BOWTIE2 to align the reads to the genomes
+* Bam files are sorted and merged.
+* BSseeker2 then calls the methylation regions
+
+## Code
+### Filter the FastQ files
+
+### Split the list
+Reads through the paired input FastQ files, removed pairs that are only in one side then splits the original 2 FastQ files into pairs of 1000000 ready for alignment.
+
+```
+python split_paired_fastq.py --input_1=<file_1_paired.fastq> --input_2=<file_2_paired.fastq> --output_tag=<e.g. matching>
+```
+
+## COMPS Code
+`process_wgbs.py`
+
+### Parameters:
+* --genome
+
+   Genome accession (e.g. GCA_000001405.22)
+* --dataset
+
+   Dataset ID from the reference paper (e.g. SRR1536575)
+* --data_dir \<data_dir\>/
+
+   This is where the initial FastQ files will be downloaded to and the output files will get saved.
+* --tmp_dir \<temp_dir\>/
+
+   This will be the location for the intermediary files. This gets shared between process, but they should not collide.
+
+### Example
+When using a local verion of the [COMPS virtual machine](http://www.bsc.es/computer-sciences/grid-computing/comp-superscalar/downloads-and-documentation):
+```
+runcompss --lang=python /home/compss/mg-process-fastq/process_wgbs.py --genome GCA_000001405.22 --dataset SRR1536575 --tmp_dir /home/compss/tmp/ --data_dir /home/compss/data/
 ```
 
 

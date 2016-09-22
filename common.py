@@ -62,6 +62,26 @@ class common:
         return file_name
     
     
+    def getcDNAFiles(self, data_dir, species, assembly):
+        """
+        Function for downloading and extracting the CDNA files from the ensembl FTP
+        """
+        
+        file_name = data_dir + species + '_' + assembly + '/' + species + '.' + assembly + '.cdna.all.fa.gz'
+        
+        if os.path.isfile(file_name) == False:
+            cdna_file = urllib2.urlopen(
+            'ftp://ftp.ensembl.org/pub/current_fasta/' + species.lower() + '/cdna/' + species[0].upper() + species[1:] + '.' + assembly + '.cdna.all.fa.gz')
+            
+            CHUNK = 16 * 1024
+                    
+            with open(file_name, 'wb') as fp:
+                while True:
+                    chunk = cdna_file.read(CHUNK)
+                    if not chunk: break
+                    fp.write(chunk)
+    
+    
     def getFastqFiles(self, ena_err_id, data_dir):
         """
         Function for downloading and extracting the FastQ files from the ENA

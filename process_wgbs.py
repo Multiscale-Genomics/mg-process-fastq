@@ -40,61 +40,6 @@ class process_wgbs:
         self.ready=None
 
 
-    def getFastqFiles(self, ena_err_id, data_dir):
-        """
-        Function for downloading and extracting the FastQ files from the ENA
-        """
-        
-        f_index = urllib2.urlopen(
-        'http://www.ebi.ac.uk/ena/data/warehouse/filereport?accession=' + str(ena_err_id) + '&result=read_run&fields=study_accession,run_accession,tax_id,scientific_name,instrument_model,library_layout,fastq_ftp&download=txt')
-        data = f_index.read()
-        rows = data.split("\n")
-        row_count = 0
-        files = []
-        gzfiles  = []
-        for row in rows:
-            if row_count == 0:
-                row_count += 1
-                continue
-            
-            row = row.rstrip()
-            row = row.split("\t")
-            
-            if len(row) < 6:
-                continue
-            
-            print row
-            project = row[0]
-            srr_id = row[1]
-            fastq_files = row[6].split(';')
-            row_count += 1
-            
-            for fastq_file in fastq_files:
-                file_name = fastq_file.split("/")
-                print fastq_file
-                print data_dir + project + "/" + file_name[-1]
-                print file_name[-1]
-                
-                req = urllib2.urlopen("ftp://" + fastq_file)
-                CHUNK = 16 * 1024
-                
-                files.append(data_dir + project + "/" + file_name[-1].replace('.fastq.gz', '.fastq'))
-                gzfiles.append(data_dir + project + "/" + file_name[-1])
-                
-                with open(data_dir + project + "/" + file_name[-1], 'wb') as fp:
-                    while True:
-                        chunk = req.read(CHUNK)
-                        if not chunk: break
-                        fp.write(chunk)
-        
-        for gzf in gzfiles:
-            with gzip.open(gzf, 'rb') as f_in, open(gzf.replace('.fastq.gz', '.fastq'), 'wb') as f_out:
-                shutil.copyfileobj(f_in, f_out)
-            os.remove(gzf)
-        
-        return files
-
-
     #@task(infile = FILE_IN, outfile = FILE_OUT)
     def FilterFastQReads(self, infile, outfile):
         """
@@ -277,8 +222,11 @@ if __name__ == "__main__":
     except:
         pass
     
+    
+    cf = common()
+    
     # Optain the paired FastQ files
-    in_files = pwgbs.getFastqFiles(srr_id, data_dir)
+    in_files = cf.getFastqFiles(srr_id, data_dir)
     in_file1 = in_files[0]
     in_file2 = in_files[1]
     out_file1 = in_file1.replace(".fastq", "_filtered.fastq")

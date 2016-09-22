@@ -102,8 +102,9 @@ class process_rnaseq:
                 
                 
                 args = shlex.split(command_line_1)
-                p = subprocess.Popen(args, stdout=bed_file)
-                p.wait()
+                with open(bed_file, "w") as f_out:
+                    p = subprocess.Popen(args, stdout=f_out)
+                    p.wait()
                 
                 args = shlex.split(command_line_2)
                 p = subprocess.Popen(args)

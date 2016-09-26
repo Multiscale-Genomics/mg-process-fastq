@@ -21,6 +21,8 @@ import argparse, urllib2, gzip, shutil, shlex, subprocess, os.path, json
 from pycompss.api.task import task
 from pycompss.api.parameter import *
 
+from common import common
+
 
 try :
     import pysam

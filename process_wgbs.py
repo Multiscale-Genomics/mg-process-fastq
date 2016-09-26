@@ -22,6 +22,8 @@ import argparse, time, urllib2, gzip, shutil
 from pycompss.api.task import task
 from pycompss.api.parameter import *
 
+from common import common
+
 from fastqreader import *
 from FilterReads import *
 from bs_index.wg_build import *

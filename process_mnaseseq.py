@@ -22,8 +22,8 @@ from functions import danpos
 
 from common import common
 
-#from pycompss.api.task import task
-#from pycompss.api.parameter import *
+from pycompss.api.task import task
+from pycompss.api.parameter import *
 
 
 try :
@@ -84,7 +84,7 @@ class process_rnaseq:
             test='P',\
             pcfer=0)
     
-    #@task()
+    @task(data_dir = IN, project_id = IN, run_ids = IN)
     def inps_peak_calling(self, data_dir, project_id, run_ids):
         """
         Convert Bam to Bed then make Nucleosome peak calls. These are saved as
@@ -110,7 +110,7 @@ class process_rnaseq:
                 p = subprocess.Popen(args)
                 p.wait()
     
-    #@task()
+    @task(data_dir = IN, expt = IN, genome_fa = IN)
     def main(self, data_dir, expt, genome_fa):
         """
         Main loop

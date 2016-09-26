@@ -19,8 +19,8 @@ limitations under the License.
 # -*- coding: utf-8 -*-
 '''process whole genome bisulfate sequencing FastQ files'''
 import argparse, time, urllib2, gzip, shutil
-#from pycompss.api.task import task
-#from pycompss.api.parameter import *
+from pycompss.api.task import task
+from pycompss.api.parameter import *
 
 from fastqreader import *
 from FilterReads import *
@@ -40,7 +40,7 @@ class process_wgbs:
         self.ready=None
 
 
-    #@task(infile = FILE_IN, outfile = FILE_OUT)
+    @task(infile = FILE_IN, outfile = FILE_OUT)
     def FilterFastQReads(self, infile, outfile):
         """
         This is optional, but removes reads that can be problematic for the
@@ -51,8 +51,8 @@ class process_wgbs:
         FilterReads(infile, outfile, True)
 
 
-    #@constraint(ProcessorCoreCount=8)
-    #@task()
+    @constraint(ProcessorCoreCount=8)
+    @task(fasta_file = IN, alighner = IN, aligner_path = IN ref_path = IN)
     def Builder(self, fasta_file, aligner, aligner_path, ref_path):
         """
         Function to submit the FASTA file for the reference sequence and build
@@ -138,8 +138,8 @@ class process_wgbs:
         return files_out
 
 
-    #@constraint(ProcessorCoreCount=8)
-    #@task() # No. of CPU, RAM required
+    @constraint(ProcessorCoreCount=8)
+    @task(input_fastq1 = IN, input_fastq2 = IN, aligner = IN, aligner_path = IN, genome_fasta = IN)
     def Aligner(self, input_fastq1, input_fastq2, aligner, aligner_path, genome_fasta):
         """
         Alignment of the paired ends to the reference genome
@@ -155,7 +155,8 @@ class process_wgbs:
         p.wait()
 
 
-    #@task() # No. of CPUs, RAM required
+    @constraint(ProcessorCoreCount=8)
+    @task(bam_file = IN, output_prefix = IN, db_dir = IN)
     def MethylationCaller(self, bam_file, output_prefix, db_dir):
         """
         Takes the merged and sorted bam file and calls the methylation sites.
@@ -186,7 +187,7 @@ class process_wgbs:
 if __name__ == "__main__":
     import sys
     import os
-    #from pycompss.api.api import compss_wait_on
+    from pycompss.api.api import compss_wait_on
     
     # Set up the command line parameters
     parser = argparse.ArgumentParser(description="Parse WGBS data")
@@ -281,6 +282,4 @@ if __name__ == "__main__":
     
     # Tidy up
     pwgbs.clean_up(data_dir)
-    
-    # Load the REST staging area once everything is complete
 

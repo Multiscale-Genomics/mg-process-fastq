@@ -16,6 +16,9 @@ limitations under the License.
 
 import os, os.path, shutil, urllib2
 
+from pycompss.api.task import task
+from pycompss.api.constraint import constraint
+
 import pytadbit
 from pytadbit.mapping               import get_intersection
 from pytadbit.mapping.filter        import apply_filter
@@ -191,6 +194,8 @@ class fastq2adjacency:
         """
         self.genome_seq = parse_fasta(self.genome_file)
     
+    @constraint(ProcessorCoreCount=8)
+    @task(num_cpus = IN)
     def parseMaps(self, num_cpus=8):
         """
         Merge the 2 read maps together 
@@ -218,6 +223,8 @@ class fastq2adjacency:
         reads2 = self.parsed_reads_dir + '/read2.tsv'
         get_intersection(reads1, reads2, reads, verbose=True)
     
+    @constraint(ProcessorCoreCount=4)
+    @task(conservative = IN)
     def filterReads(self, conservative = True):
         """
         Filter the reads to remove duplicates and experimental abnormalities
@@ -257,6 +264,9 @@ class fastq2adjacency:
     #        new_chrom.add_experiment(exptName, hic_data=m, resolution=self.resolution)
     #        merged_exp = merged_exp + new_chrom.experiments[exptName]
     
+    @constraint(ProcessorCoreCount=8)
+    @constraint(MemoryPhysicalSize=80)
+    @task(chrom = IN)
     def generate_tads(self, chrom):
         """
         Uses TADbit to generate the TAD borders based on the computed hic_data

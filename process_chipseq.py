@@ -43,7 +43,7 @@ class process_chipseq:
         self.ready = ""
     
     
-    #@task()
+    @task(data_dir = IN, project_id = IN, run_id = IN)
     def biobambam_filter_alignments(self, data_dir, project_id, run_id):
         """
         Sorts and filters the bam file.
@@ -58,7 +58,7 @@ class process_chipseq:
         p.wait()
     
     
-    #@task()
+    @task(data_dir = IN, project_id = IN, run_id = IN, background_id = IN)
     def macs2_peak_calling(self, data_dir, project_id, run_id, background_id):
         """
         Function to run MACS2 for peak calling
@@ -70,7 +70,7 @@ class process_chipseq:
         command_line = 'macs2 callpeak -t ' + bam_file + ' -n ' + run_id + '-c ' + bam_background_file
     
     
-    #@task()
+    @task(data_dir = IN, expt = IN, genome_fa = IN)
     def main(self, data_dir, expt, genome_fa):
         """
         Main loop

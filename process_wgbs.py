@@ -52,7 +52,7 @@ class process_wgbs:
 
 
     @constraint(ProcessorCoreCount=8)
-    @task(fasta_file = IN, alighner = IN, aligner_path = IN ref_path = IN)
+    @task(fasta_file = FILE_IN, aligner = IN, aligner_path = IN ref_path = IN)
     def Builder(self, fasta_file, aligner, aligner_path, ref_path):
         """
         Function to submit the FASTA file for the reference sequence and build
@@ -139,7 +139,7 @@ class process_wgbs:
 
 
     @constraint(ProcessorCoreCount=8)
-    @task(input_fastq1 = IN, input_fastq2 = IN, aligner = IN, aligner_path = IN, genome_fasta = IN)
+    @task(input_fastq1 = FILE_IN, input_fastq2 = FILE_IN, aligner = IN, aligner_path = IN, genome_fasta = FILE_IN)
     def Aligner(self, input_fastq1, input_fastq2, aligner, aligner_path, genome_fasta):
         """
         Alignment of the paired ends to the reference genome
@@ -156,7 +156,7 @@ class process_wgbs:
 
 
     @constraint(ProcessorCoreCount=8)
-    @task(bam_file = IN, output_prefix = IN, db_dir = IN)
+    @task(bam_file = FILE_IN, output_prefix = IN, db_dir = IN)
     def MethylationCaller(self, bam_file, output_prefix, db_dir):
         """
         Takes the merged and sorted bam file and calls the methylation sites.

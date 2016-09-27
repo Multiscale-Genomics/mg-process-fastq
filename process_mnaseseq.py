@@ -145,7 +145,7 @@ class process_rnaseq:
         
         self.inps_peak_calling(data_dir, expt["project_id"], expt["run_ids"])
         
-        returns 1
+        return 1
         
         """
         if expt.has_key("bgd_ids"):

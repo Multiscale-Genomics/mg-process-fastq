@@ -71,7 +71,7 @@ class process_chipseq:
         command_line = 'macs2 callpeak -t ' + bam_file + ' -n ' + run_id + '-c ' + bam_background_file
     
     
-    @task(data_dir = IN, expt = IN, genome_fa = IN, returns int)
+    @task(data_dir = IN, expt = IN, genome_fa = IN, returns = int)
     def main(self, data_dir, expt, genome_fa):
         """
         Main loop

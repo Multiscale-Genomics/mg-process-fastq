@@ -60,7 +60,6 @@ class process_chipseq:
         p.wait()
     
     
-    @task(data_dir = IN, project_id = IN, run_id = IN, background_id = IN)
     def macs2_peak_calling(self, data_dir, project_id, run_id, background_id):
         """
         Function to run MACS2 for peak calling
@@ -72,11 +71,12 @@ class process_chipseq:
         command_line = 'macs2 callpeak -t ' + bam_file + ' -n ' + run_id + '-c ' + bam_background_file
     
     
-    @task(data_dir = IN, expt = IN, genome_fa = IN)
+    @task(data_dir = IN, expt = IN, genome_fa = IN, returns int)
     def main(self, data_dir, expt, genome_fa):
         """
         Main loop
         """
+        
         cf = common()
         
         # Optain the FastQ files
@@ -118,10 +118,14 @@ class process_chipseq:
         # MACS2 to call peaks
         self.macs2_peak_calling(data_dir, expt["project_id"], final_run_id, final_bgd_id)
         
+        return 1
+        
     
 if __name__ == "__main__":
     import sys
     import os
+    
+    from pycompss.api.api import compss_wait_on
     
     # Set up the command line parameters
     parser = argparse.ArgumentParser(description="ChIP-seq peak calling")
@@ -164,8 +168,10 @@ if __name__ == "__main__":
     with open(run_id_file) as data_file:    
         job_id_sets = json.load(data_file)
     
+    x = []
     for expt in job_id_sets["expts"]:
-        pcs.main(data_dir, expt, genome_fa)
+        x.append(pcs.main(data_dir, expt, genome_fa))
+    x = compss_wait_on(x)
     
     
     

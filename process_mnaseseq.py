@@ -84,7 +84,7 @@ class process_rnaseq:
             test='P',\
             pcfer=0)
     
-    @task(data_dir = IN, project_id = IN, run_ids = IN)
+    #@task(data_dir = IN, project_id = IN, run_ids = IN, returns int)
     def inps_peak_calling(self, data_dir, project_id, run_ids):
         """
         Convert Bam to Bed then make Nucleosome peak calls. These are saved as
@@ -110,7 +110,7 @@ class process_rnaseq:
                 p = subprocess.Popen(args)
                 p.wait()
     
-    @task(data_dir = IN, expt = IN, genome_fa = IN)
+    @task(data_dir = IN, expt = IN, genome_fa = IN, returns int)
     def main(self, data_dir, expt, genome_fa):
         """
         Main loop
@@ -145,6 +145,8 @@ class process_rnaseq:
         
         self.inps_peak_calling(data_dir, expt["project_id"], expt["run_ids"])
         
+        returns 1
+        
         """
         if expt.has_key("bgd_ids"):
             # Obtain background FastQ files
@@ -173,6 +175,8 @@ class process_rnaseq:
 if __name__ == "__main__":
     import sys
     import os
+    
+    from pycompss.api.api import compss_wait_on
     
     # Set up the command line parameters
     parser = argparse.ArgumentParser(description="Mnase-seq peak calling")
@@ -216,7 +220,8 @@ if __name__ == "__main__":
     with open(run_id_file) as data_file:    
         job_id_sets = json.load(data_file)
     
+    x = []
     for expt in job_id_sets["expts"]:
-        prs.main(data_dir, expt, genome_fa)
-    
+        x.append(prs.main(data_dir, expt, genome_fa))
+    x = compss_wait_on(x)
     

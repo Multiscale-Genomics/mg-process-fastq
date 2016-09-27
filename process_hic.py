@@ -93,6 +93,7 @@ class process_hic:
                  combination and a file for each chromosome with the positions
                  of the predicted TADs
         """
+        from pycompss.api.api import compss_wait_on
         from fastq2adjacency import fastq2adjacency
         
         f2a = fastq2adjacency()
@@ -154,10 +155,12 @@ class process_hic:
         f2a.save_hic_hdf5()
         f2a.save_hic_split_data()
         
-        tad_param = [[genome, dataset, sra_id, library, enzyme_name, resolution, tmp_dir, data_dir, expt, same_fastq, windows1, windows2, chrom] from chrom in f2a.get_chromosomes()]
-        map(self.call_tads, tad_param)
+        tad_done = []
+        for chrom in f2a.get_chromosomes():
+            tad_done.append(call_tads(genome, dataset, sra_id, library, enzyme_name, resolution, tmp_dir, data_dir, expt, same_fastq, windows1, windows2, chrom))
+        tad_done.compss_wait_on(tad_done)
     
-    @task(genome = IN, dataset = IN, sra_id = IN, library = IN, enzyme_name = IN, resolution = IN, tmp_dir = IN, data_dir = IN, expt = IN, same_fastq = IN, windows1 = IN, windows2 = IN, chrom = IN)
+    @task(genome = IN, dataset = IN, sra_id = IN, library = IN, enzyme_name = IN, resolution = IN, tmp_dir = IN, data_dir = IN, expt = IN, same_fastq = IN, windows1 = IN, windows2 = IN, chrom = IN, returns int)
     def call_tads(self, genome, dataset, sra_id, library, enzyme_name, resolution, tmp_dir, data_dir, expt, same_fastq, windows1, windows2, chrom):
         """
         TAD calling for a given dataset and chromosome. This should be run from

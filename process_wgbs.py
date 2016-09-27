@@ -42,7 +42,7 @@ class process_wgbs:
         self.ready=None
 
 
-    @task(infile = FILE_IN, outfile = FILE_OUT)
+    @task(infile = FILE_IN, outfile = FILE_OUT, returns = int)
     def FilterFastQReads(self, infile, outfile):
         """
         This is optional, but removes reads that can be problematic for the
@@ -51,6 +51,7 @@ class process_wgbs:
         If performing RRBS then this step can be skipped
         """
         FilterReads(infile, outfile, True)
+        return 1
 
 
     @constraint(ProcessorCoreCount=8)
@@ -141,7 +142,7 @@ class process_wgbs:
 
 
     @constraint(ProcessorCoreCount=8)
-    @task(input_fastq1 = FILE_IN, input_fastq2 = FILE_IN, aligner = IN, aligner_path = IN, genome_fasta = FILE_IN)
+    @task(input_fastq1 = FILE_IN, input_fastq2 = FILE_IN, aligner = IN, aligner_path = IN, genome_fasta = FILE_IN, returns = int)
     def Aligner(self, input_fastq1, input_fastq2, aligner, aligner_path, genome_fasta):
         """
         Alignment of the paired ends to the reference genome
@@ -155,10 +156,12 @@ class process_wgbs:
         args = ["python", "bs_seeker2-align.py", "--input_1", input_fastq1, "--input_2", input_fastq2, "--aligner", aligner, "--path", aligner_path_path, "--genome", genome_fasta, "--bt2-p", "4"]
         p = subprocess.Popen(args)
         p.wait()
+        
+        return 1
 
 
     @constraint(ProcessorCoreCount=8)
-    @task(bam_file = FILE_IN, output_prefix = IN, db_dir = IN)
+    @task(bam_file = FILE_IN, output_prefix = IN, db_dir = IN, returns = int)
     def MethylationCaller(self, bam_file, output_prefix, db_dir):
         """
         Takes the merged and sorted bam file and calls the methylation sites.
@@ -172,6 +175,8 @@ class process_wgbs:
         args = ["python", "bs_seeker2-call_methylation.py", "--input", str(bam_file), "--output-prefix", str(output_prefix), "--db", db_dir]
         p = subprocess.Popen(args)
         p.wait()
+        
+        return 1
 
     
     def clean_up(self, data_dir):
@@ -244,13 +249,14 @@ if __name__ == "__main__":
     
     
     # Run the FilterReads.py steps for the individual FastQ files
-    x = map(pwgbs.FilterFastQReads, [[in_file1, out_file1], [in_file2, out_file2]])
+    x = []
+    for l in [[in_file1, out_file1], [in_file2, out_file2]]:
+        x.append(pwgbs.FilterFastQReads(l))
     x = compss_wait_on(x)
     
     # Run the bs_seeker2-builder.py steps
-    x = pwgbs.Builder(genome_dir + genome + ".fa", "bowtie2", aligner_dir, genome_dir)
-    x = compss_wait_on(x)
-    
+    pwgbs.Builder(genome_dir + genome + ".fa", "bowtie2", aligner_dir, genome_dir)
+        
     # Split the paired fastq files
     tmp_fastq = pwgbs.Splitter(in_file1, in_file2, tag)
     
@@ -266,13 +272,14 @@ if __name__ == "__main__":
         bam_merge_files.append(["-o", bam_root + ".sorted.bam", "-T", bam_root + ".bam_sort", bam_root])
     
     # Run the bs_seeker2-align.py steps on the split up fastq files
-    x = map(pwgbs.Aligner, fastq_for_alignment)
+    x = []
+    for ffa in fastq_for_alignment:
+        x.append(pwgbs.Aligner(ffa))
     x = compss_wait_on(x)
     
     # Sort and merge the aligned bam files
     # Pre-sort the original input bam files
     x = map(pysam.sort, bam_sort_files)
-    x = compss_wait_on(x)
     
     f_bam = in_file1.split("/")
     f_bam[-1] = f_bam[-1].replace(".fastq", ".sorted.bam")

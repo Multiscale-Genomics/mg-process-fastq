@@ -14,20 +14,24 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-import argparse, time
-from pycompss.api.task import task
 from pycompss.api.parameter import *
+from pycompss.api.task import task
 
-#class process_test:
-#    
-#    def __init__(self):
-#        self.ready = True
-    
-@task(x = IN)
 def main(x):
-    print time.time(), x
+    from pycompss.api.api import compss_wait_on
+    print "Main process:"
+    results = []
+    for i in x:
+        results.append(print_time(i))
+    results = compss_wait_on(results)
+    print results
 
-y = range(1)
+@task(x = IN, returns = int)
+def print_time(x):
+    import time
+    x = time.time()
+    return x
 
-#pt = process_test()
-map(main, y)
+if __name__ == "__main__":
+    y = range(10)
+    main(y)

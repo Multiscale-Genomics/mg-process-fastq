@@ -18,8 +18,6 @@ limitations under the License.
 
 import argparse, urllib2, gzip, shutil, shlex, subprocess, os, json
 
-from functions import danpos
-
 from common import common
 
 from pycompss.api.task import task
@@ -66,6 +64,8 @@ class process_rnaseq:
         
         Need to handle
         """
+        from functions import danpos
+        
         bam_file = ','.join([data_dir + '/' + project_id + '/' + run_id + '.bam' for run_id in run_ids])
         #bam_bgd_file = data_dir + bgd_id + '.bam'
         

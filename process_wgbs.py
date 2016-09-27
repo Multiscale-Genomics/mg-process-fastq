@@ -55,7 +55,7 @@ class process_wgbs:
 
 
     @constraint(ProcessorCoreCount=8)
-    @task(fasta_file = FILE_IN, aligner = IN, aligner_path = IN ref_path = IN)
+    @task(fasta_file = FILE_IN, aligner = IN, aligner_path = IN, ref_path = IN)
     def Builder(self, fasta_file, aligner, aligner_path, ref_path):
         """
         Function to submit the FASTA file for the reference sequence and build

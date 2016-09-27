@@ -57,33 +57,6 @@ class process_rnaseq:
         self.ready = ""
     
     
-    def danpos2_peak_calling(self, data_dir, project_id, run_ids = [], paired = 0, wild_type_id = None):
-        """
-        Runs dpos script in DANPOS2. The call has been extracted from the
-        danpos.py script so that it can get run as part of the pipeline
-        
-        Need to handle
-        """
-        from functions import danpos
-        
-        bam_file = ','.join([data_dir + '/' + project_id + '/' + run_id + '.bam' for run_id in run_ids])
-        #bam_bgd_file = data_dir + bgd_id + '.bam'
-        
-        danpos(tpath=bam_file,paired=paired,opath='result',save=0,tbg=None,fdr=1,\
-            call_region=0,\
-            call_peak=0,\
-            call_position=1,width=40,distance=100,edge=0,fill_gap=0,ratio=0.9,\
-            ref_position=None,\
-            height=5,pheight=0,logp=0,\
-            nor='F',nonzero=0,amount=None,step=10,smooth_width=20,lmd=300,\
-            cut=0,fs=None,mifrsz=50,mafrsz=300,extend=80,\
-            exclude_low_percent=0,exclude_high_percent=0,region_file=None,\
-            both=True,\
-            wgfmt='fixed',\
-            fill_value=1,\
-            test='P',\
-            pcfer=0)
-    
     #@task(data_dir = IN, project_id = IN, run_ids = IN, returns int)
     def inps_peak_calling(self, data_dir, project_id, run_ids):
         """

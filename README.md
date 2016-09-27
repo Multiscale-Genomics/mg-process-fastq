@@ -109,9 +109,15 @@ python split_paired_fastq.py --input_1=<file_1_paired.fastq> --input_2=<file_2_p
 * --genome
 
    Genome accession (e.g. GCA_000001405.22)
-* --dataset
+* --srr_id
 
    Dataset ID from the reference paper (e.g. SRR1536575)
+* --aligner
+
+   Aligner to use in BSseeker2 (default is bowtie2)
+* --aligner_dir
+   
+   Directory for the alignment program
 * --data_dir \<data_dir\>/
 
    This is where the initial FastQ files will be downloaded to and the output files will get saved.
@@ -125,7 +131,7 @@ python split_paired_fastq.py --input_1=<file_1_paired.fastq> --input_2=<file_2_p
 ### Example
 When using a local verion of the [COMPS virtual machine](http://www.bsc.es/computer-sciences/grid-computing/comp-superscalar/downloads-and-documentation):
 ```
-runcompss --lang=python /home/compss/mg-process-fastq/process_wgbs.py --genome GCA_000001405.22 --dataset SRR1536575 --tmp_dir /home/compss/tmp/ --data_dir /home/compss/data/ --local 0
+runcompss --lang=python /home/compss/mg-process-fastq/process_wgbs.py --genome GCA_000001405.22 --srr_id SRR1536575 --aligner bowtie2 --aligner_dir /home/compss/lib --tmp_dir /home/compss/tmp/ --data_dir /home/compss/data/ --local 0
 ```
 
 

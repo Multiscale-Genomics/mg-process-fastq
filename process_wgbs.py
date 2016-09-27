@@ -21,6 +21,7 @@ limitations under the License.
 import argparse, time, urllib2, gzip, shutil
 from pycompss.api.task import task
 from pycompss.api.parameter import *
+from pycompss.api.constraint import *
 
 from common import common
 

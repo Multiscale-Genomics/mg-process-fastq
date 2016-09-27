@@ -199,6 +199,7 @@ if __name__ == "__main__":
     parser.add_argument("--tmp_dir", help="Temporary data dir")
     parser.add_argument("--data_dir", help="Data directory; location to download SRA FASTQ files and save results")
     parser.add_argument("--aligner_dir", help="Directory for the aligner program")
+    parser.add_argument("--local", help="Directory and data files already available", default=0)
 
     # Get the matching parameters from the command line
     args = parser.parse_args()
@@ -209,6 +210,7 @@ if __name__ == "__main__":
     aligner_dir = args.aligner_dir
     data_dir = args.data_dir + srr_id
     tmp_dir  = args.tmp_dir
+    local = args.local
     
     genome_dir = args.data_dir + genome + "/chroms/"
     
@@ -229,7 +231,7 @@ if __name__ == "__main__":
     cf = common()
     
     # Optain the paired FastQ files
-    if (expt.has_key("local") == False):
+    if (local == 1):
         in_files = cf.getFastqFiles(srr_id, data_dir)
     else:
         in_files = [f for f in os.listdir(data_dir + '/' + project) if re.match(run_id, f)]

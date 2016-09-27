@@ -79,6 +79,7 @@ if __name__ == "__main__":
     parser.add_argument("--project_id", help="Project ID of the dataset (PRJEB2445)")
     parser.add_argument("--run_id", help="Experiment run ID of the dataset (ERR030872)")
     parser.add_argument("--data_dir", help="Data directory; location to download ERR FASTQ files and save results")
+    parser.add_argument("--local", help="Directory and data files already available", default=0)
 
     # Get the matching parameters from the command line
     args = parser.parse_args()
@@ -112,7 +113,7 @@ if __name__ == "__main__":
     
     
     # Optain the paired FastQ files
-    if (expt.has_key("local") == False):
+    if (local == 0):
         in_files = cf.getFastqFiles(ena_err_id, data_dir)
     else:
         in_files = [f for f in os.listdir(data_dir + '/' + project) if re.match(run_id, f)]

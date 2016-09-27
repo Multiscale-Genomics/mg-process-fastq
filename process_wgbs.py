@@ -229,7 +229,11 @@ if __name__ == "__main__":
     cf = common()
     
     # Optain the paired FastQ files
-    in_files = cf.getFastqFiles(srr_id, data_dir)
+    if (expt.has_key("local") == False):
+        in_files = cf.getFastqFiles(srr_id, data_dir)
+    else:
+        in_files = [f for f in os.listdir(data_dir + '/' + project) if re.match(run_id, f)]
+    
     in_file1 = in_files[0]
     in_file2 = in_files[1]
     out_file1 = in_file1.replace(".fastq", "_filtered.fastq")

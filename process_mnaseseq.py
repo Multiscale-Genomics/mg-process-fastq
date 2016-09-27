@@ -117,6 +117,8 @@ class process_rnaseq:
         """
         cf = common()
         
+        local_files = data_dir + '/' + expt["project_id"]
+        
         # Optain the FastQ files
         run_ids = []
         run_fastq_files = []
@@ -125,7 +127,10 @@ class process_rnaseq:
         run_fastq_files = {}
         for run_id in expt["run_ids"]:
             run_ids.append(run_id)
-            in_files = cf.getFastqFiles(run_id, data_dir)
+            if (expt.has_key("local") == False):
+                in_files = cf.getFastqFiles(run_id, data_dir)
+            else:
+                in_files = [f for f in os.listdir(local_files) if re.match(run_id, f)]
             run_fastq_files[run_id] = in_files
         
         # Run BWA

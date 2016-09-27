@@ -210,11 +210,11 @@ if __name__ == "__main__":
     # Get the matching parameters from the command line
     args = parser.parse_args()
     
-    srr_id   = args.srr
+    srr_id   = args.srr_id
     genome   = args.genome
     aligner  = args.aligner
     aligner_dir = args.aligner_dir
-    data_dir = args.data_dir + srr_id
+    data_dir = args.data_dir + '/' + srr_id
     tmp_dir  = args.tmp_dir
     local = args.local
     

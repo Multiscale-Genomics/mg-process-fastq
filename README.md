@@ -118,11 +118,14 @@ python split_paired_fastq.py --input_1=<file_1_paired.fastq> --input_2=<file_2_p
 * --tmp_dir \<temp_dir\>/
 
    This will be the location for the intermediary files. This gets shared between process, but they should not collide.
+* --local [OPTIONAL]
+
+   This identifies that the required FastQ files are already available in the data_dir. Default is 0, use 1 to signify that the files are already present
 
 ### Example
 When using a local verion of the [COMPS virtual machine](http://www.bsc.es/computer-sciences/grid-computing/comp-superscalar/downloads-and-documentation):
 ```
-runcompss --lang=python /home/compss/mg-process-fastq/process_wgbs.py --genome GCA_000001405.22 --dataset SRR1536575 --tmp_dir /home/compss/tmp/ --data_dir /home/compss/data/
+runcompss --lang=python /home/compss/mg-process-fastq/process_wgbs.py --genome GCA_000001405.22 --dataset SRR1536575 --tmp_dir /home/compss/tmp/ --data_dir /home/compss/data/ --local 0
 ```
 
 
@@ -153,6 +156,9 @@ A set of scripts that can get run on the COMPS infrastructure to process the pai
 * --data_dir \<data_dir\>/
 
    This is where the initial FastQ files will be downloaded to and the output files will get saved.
+* --local [OPTIONAL]
+
+   This identifies that the required FastQ files are already available in the data_dir. Default is 0, use 1 to signify that the files are already present
 
 ### Output Files
 * bed
@@ -202,6 +208,7 @@ A set of scripts that can get run on the COMPS infrastructure to process the CHi
     {
       "project_id": "ena_project_id",
       "group_name": "user_defined_name_1",
+      "local": '',
       "run_ids" : ["ena_run_accn_1", "ena_run_accn_2", ...]
       "bgd_ids" : ["ena_run_accn_3", "ena_run_accn_4", ...]
     },
@@ -215,6 +222,8 @@ A set of scripts that can get run on the COMPS infrastructure to process the CHi
   ]
 }
 ```
+
+The `local` tag can be used to highlight if the FastQ files for that project have already been downloaded and are already available.
 
 ### Output Files
 * bed
@@ -259,6 +268,7 @@ A set of scripts that can get run on the COMPS infrastructure to process the MNa
     {
       # Paired-end dataset
       "project_id": "ena_project_id",
+      "local": '',
       "group_name": "user_defined_name_1",
       "run_ids" : ["ena_run_accn_1", "ena_run_accn_2"]
     },
@@ -272,6 +282,8 @@ A set of scripts that can get run on the COMPS infrastructure to process the MNa
   ]
 }
 ```
+
+The `local` tag can be used to highlight if the FastQ files for that project have already been downloaded and are already available.
 
 ## Example
 When using a local verion of the [COMPS virtual machine](http://www.bsc.es/computer-sciences/grid-computing/comp-superscalar/downloads-and-documentation):

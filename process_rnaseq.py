@@ -89,6 +89,7 @@ if __name__ == "__main__":
     species    = args.species
     assembly   = args.assembly
     data_dir   = args.data_dir
+    local      = args.local
     
     prs = process_rnaseq()
     cf = common()

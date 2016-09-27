@@ -110,7 +110,7 @@ class process_rnaseq:
                 p = subprocess.Popen(args)
                 p.wait()
     
-    @task(data_dir = IN, expt = IN, genome_fa = IN, returns int)
+    @task(data_dir = IN, expt = IN, genome_fa = IN, returns = int)
     def main(self, data_dir, expt, genome_fa):
         """
         Main loop

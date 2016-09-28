@@ -75,6 +75,7 @@ class fastq2adjacency:
         
         self.hic_data = None
 
+    
     def set_params(self, genome_accession, dataset, sra_id, library, enzyme_name, resolution, tmp_dir, data_dir, expt_name = None, same_fastq=True, windows1=None, windows2=None):
         self.genome_accession = genome_accession
         self.dataset     = dataset
@@ -126,38 +127,6 @@ class fastq2adjacency:
         if windows2 != None:
             self.windows2 = windows2
     
-    def getFastqData(self):
-        f_index = urllib2.urlopen(
-        'http://www.ebi.ac.uk/ena/data/warehouse/filereport?accession=' + str(self.sra_id) + '&result=read_run&fields=study_accession,run_accession,tax_id,scientific_name,instrument_model,library_layout,fastq_ftp&download=txt')
-        data = f_index.read()
-        rows = data.split("\n")
-        row_count = 0
-        for row in rows:
-            if row_count == 0:
-                row_count += 1
-                continue
-            
-            row = row.rstrip()
-            row = row.split("\t")
-            
-            if len(row) == 0:
-                continue
-            
-            project = row[0]
-            srr_ir = row[1]
-            fastq_files = row[6].split(';')
-            row_count += 1
-            
-            for fastq_file in fastq_files:
-                file_name = fastq_file.split("/")
-                print fastq_file
-                print self.library_dir + file_name[-1]
-                print file_name[-1]
-                dl_file = open(self.library_dir + file_name[-1], "w")
-                dl = urllib2.urlopen("ftp://" + fastq_file)
-                dl_file.write(dl.read())
-                dl_file.close()
-        
     
     def mapWindows(self, side=1):
         """
@@ -168,6 +137,7 @@ class fastq2adjacency:
             mapped_r1 = full_mapping(self.gem_file, self.fastq_file_1, self.map_dir + str(1), windows=self.windows1, frag_map=False, nthreads=8, clean=True, temp_dir=self.tmp_dir)
         elif side == 2:
             mapped_r2 = full_mapping(self.gem_file, self.fastq_file_2, self.map_dir + str(2), windows=self.windows2, frag_map=False, nthreads=8, clean=True, temp_dir=self.tmp_dir)
+    
     
     def getMappedWindows(self):
         """
@@ -188,11 +158,13 @@ class fastq2adjacency:
         
         return {'mapped_r1': mapped_r1, 'mapped_r2': mapped_r2}
     
+    
     def parseGenomeSeq(self):
         """
         Loads the genome
         """
         self.genome_seq = parse_fasta(self.genome_file)
+    
     
     @constraint(ProcessorCoreCount=8)
     @task(num_cpus = IN)
@@ -222,6 +194,7 @@ class fastq2adjacency:
         # new file with info of each "read2" and its placement with respect to RE sites
         reads2 = self.parsed_reads_dir + '/read2.tsv'
         get_intersection(reads1, reads2, reads, verbose=True)
+    
     
     @constraint(ProcessorCoreCount=4)
     @task(conservative = IN)
@@ -264,8 +237,8 @@ class fastq2adjacency:
     #        new_chrom.add_experiment(exptName, hic_data=m, resolution=self.resolution)
     #        merged_exp = merged_exp + new_chrom.experiments[exptName]
     
-    @constraint(ProcessorCoreCount=8)
-    @constraint(MemoryPhysicalSize=80)
+    
+    @constraint(ProcessorCoreCount=8, MemoryPhysicalSize=80)
     @task(chrom = IN)
     def generate_tads(self, chrom):
         """
@@ -288,6 +261,7 @@ class fastq2adjacency:
         tad_file = self.library_dir + exptName + '_tads.tsv'
         exp.write_tad_borders(savedata=tad_file)
     
+    
     def load_hic_read_data(self):
         """
         Load the interactions into the HiC-Data data type
@@ -300,6 +274,7 @@ class fastq2adjacency:
         
         print "\nfilter_reads: " + filter_reads
         self.hic_data = load_hic_data_from_reads(filter_reads, resolution=int(self.resolution))
+    
     
     def load_hic_matrix_data(self, norm=True):
         """
@@ -314,6 +289,7 @@ class fastq2adjacency:
         
         self.hic_data = read_matrix(adj_list, resolution=self.resolution)
     
+    
     def normalise_hic_data(self, iterations=0):
         """
         Normalise the Hi-C data
@@ -322,8 +298,10 @@ class fastq2adjacency:
         """
         self.hic_data.normalize_hic(iterations=iterations, max_dev=0.1)
     
+    
     def get_chromosomes(self):
         return self.hic_data.chromosomes.keys()
+    
     
     def save_hic_split_data(self, normalized=False):
         """
@@ -352,6 +330,7 @@ class fastq2adjacency:
             adj_list = self.parsed_reads_dir + '/adjlist_map_norm.tsv'
             self.hic_data.write_matrix(adj_list, normalized=True)
     
+    
     def save_hic_hdf5(self, normalized=False):
         """
         Save the hic_data object to HDF5 file. This is saved as an NxN array
@@ -366,6 +345,7 @@ class fastq2adjacency:
         dset = f.create_dataset(str(self.resolution), (dSize, dSize), dtype='int32', chunks=True, compression="gzip")
         dset[0:dSize,0:dSize] += d
         f.close()
+    
     
     def clean_up(self):
         """

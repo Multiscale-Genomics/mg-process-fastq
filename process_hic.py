@@ -34,6 +34,7 @@ class process_hic:
         Output: Raw counts for the experiment in a HiC adjacency matrix saved to
                 the tmp_dir
         """
+        from common import common
         from fastq2adjacency import fastq2adjacency
         
         genome      = params[0]
@@ -57,8 +58,8 @@ class process_hic:
         f2a.set_params(genome, dataset, sra_id, library, enzyme_name, resolution, tmp_dir, data_dir, expt, same_fastq, windows1, windows2)
         
         print "Set Params"
-        
-        f2a.getFastqData()
+        cf = common()
+        in_files = cf.getFastqFiles(sra_id, data_dir)
         
         map(f2a.mapWindows, [1, 2])
 

@@ -53,11 +53,15 @@ class process_chipseq:
         It is important that all duplicate alignments have been removed. This
         can be run as an intermediate step, but should always be run as the 
         """
-        command_line = 'bamsormadup < ' + data_dir + '/' + project_id + '/' + run_id + '.bam > '+ data_dir + '/' + project_id + '/' + run_id + '.filtered.bam' 
+        command_line = 'bamsormadup'
+        bam_file_in  = data_dir + '/' + project_id + '/' + run_id + '.bam
+        bam_file_out = data_dir + '/' + project_id + '/' + run_id + '.filtered.bam
         
         args = shlex.split(command_line)
-        p = subprocess.Popen(args)
-        p.wait()
+        with open(bam_file_in, "r") as f_in:
+            with open(bam_file_out, "w") as f_out:
+                p = subprocess.Popen(args, stdin=f_in, stdout=f_out)
+                p.wait()
     
     
     def macs2_peak_calling(self, data_dir, project_id, run_id, background_id):

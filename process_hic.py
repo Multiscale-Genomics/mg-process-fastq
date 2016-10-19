@@ -161,7 +161,7 @@ class process_hic:
             tad_done.append(call_tads(genome, dataset, sra_id, library, enzyme_name, resolution, tmp_dir, data_dir, expt, same_fastq, windows1, windows2, chrom))
         tad_done.compss_wait_on(tad_done)
     
-    @task(genome = IN, dataset = IN, sra_id = IN, library = IN, enzyme_name = IN, resolution = IN, tmp_dir = IN, data_dir = IN, expt = IN, same_fastq = IN, windows1 = IN, windows2 = IN, chrom = IN, returns int)
+    @task(genome = IN, dataset = IN, sra_id = IN, library = IN, enzyme_name = IN, resolution = IN, tmp_dir = IN, data_dir = IN, expt = IN, same_fastq = IN, windows1 = IN, windows2 = IN, chrom = IN, returns = int)
     def call_tads(self, genome, dataset, sra_id, library, enzyme_name, resolution, tmp_dir, data_dir, expt, same_fastq, windows1, windows2, chrom):
         """
         TAD calling for a given dataset and chromosome. This should be run from
@@ -179,6 +179,8 @@ class process_hic:
         f2a = fastq2adjacency()
         f2a.set_params(genome, dataset, sra_id, library, enzyme_name, resolution, tmp_dir, data_dir, expt, same_fastq, windows1, windows2)
         f2a.generate_tads(chrom)
+        
+        return 1
 
     def merge_hdf5_files(self, genome, dataset, resolutions, data_dir):
         """
@@ -219,14 +221,10 @@ if __name__ == "__main__":
     # Get the matching parameters from the command line
     args = parser.parse_args()
 
-    #if len(sys.argv) < 9:
-    #    parser.print_help()
-    #    sys.exit(2)
-
     genome      = args.genome
     dataset     = args.dataset
-    expt_name = args.expt_name
-    expt_list = args.expt_list
+    expt_name   = args.expt_name
+    expt_list   = args.expt_list
     tmp_dir     = args.tmp_dir
     data_dir    = args.data_dir
     

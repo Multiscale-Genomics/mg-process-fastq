@@ -53,7 +53,7 @@ class process_rnaseq:
         
     
     
-    def run_kallisto_quant(self, data_dir, species, assembly, project, fastq = []):
+    def run_kallisto_quant(self, data_dir, species, assembly, project, fastq = [], single = False):
         """
         Kallisto function to map the paired end FastQ files to the cDNAs and generate the matching quatification files.
         """
@@ -61,11 +61,37 @@ class process_rnaseq:
         cdna_file = data_dir + species + '_' + assembly + '/' + species + '.' + assembly + '.cdna.all.fa.gz'
         cdna_idx_file = cdna_file + '.idx'
         
-        command_line = 'kallisto quant -i ' + cdna_idx_file + ' -o ' + data_dir + project + ' ' + fastq[0] + ' ' + fastq[1]
+        command_line = 'kallisto quant -i ' + cdna_idx_file + ' -o ' + data_dir + project
+        if single == True:
+            fq_stats = self.seq_read_stats(fastq[0])
+            command_line += ' --single -l ' + str(fq_stats['mean']) + ' -s ' + str(fq_stats['std']) + ' ' + fastq[0]
+        else:
+            command_line += ' ' + fastq[0] + ' ' + fastq[1]
         
         args = shlex.split(command_line)
         p = subprocess.Popen(args)
         p.wait()
+    
+    
+    def seq_read_stats(self, file_in):
+        """
+        Calculate the mean and standard deviation of the reads in a fastq file
+        """
+        
+        from numpy import std
+        from numpy import mean
+
+        total_len = []
+        with open(file_in, 'r') as f:
+            forthlines = itertools.islice(f, 1, None, 4)
+            for line in forthlines:
+                line = line.rstrip()
+                total_len.append(len(line))
+
+        s = std(total_len)
+        m = mean(total_len)
+
+        return {'mean' : m, 'std' : s}
         
 
 if __name__ == "__main__":
@@ -126,6 +152,9 @@ if __name__ == "__main__":
     prs.run_kallisto_indexing(data_dir, species, assembly)
     
     # Quantify RNA-seq
-    prs.run_kallisto_quant(data_dir, species, assembly, project, in_files)
+    if len(in_files == 1):
+        prs.run_kallisto_quant(data_dir, species, assembly, project, in_files, True)
+    else:
+        prs.run_kallisto_quant(data_dir, species, assembly, project, in_files)
     
     

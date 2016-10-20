@@ -66,9 +66,9 @@ class process_rnaseq:
         
         with cd('../../lib/iNPS'):
             for run_id in run_ids:
-                bam_file = data_dir + '/' + project_id + '/' + run_id + '.bam'
-                bed_file = data_dir + '/' + project_id + '/' + run_id + '.bed'
-                bed_out_folder = data_dir + '/' + project_id + '/' + run_id + '.inp'
+                bam_file = data_dir + project_id + '/' + run_id + '.bam'
+                bed_file = data_dir + project_id + '/' + run_id + '.bed'
+                bed_out_folder = data_dir + project_id + '/' + run_id + '.inp'
                 
                 command_line_1 = 'bedtools bamtobed -i ' + bam_file
                 command_line_2 = 'python iNPS_V1.2.2.py -i ' + bed_file + ' -o ' + bed_out_folder
@@ -90,7 +90,7 @@ class process_rnaseq:
         """
         cf = common()
         
-        local_files = data_dir + '/' + expt["project_id"]
+        local_files = data_dir + expt["project_id"]
         
         # Optain the FastQ files
         run_ids = []
@@ -175,14 +175,17 @@ if __name__ == "__main__":
         os.makedirs(data_dir)
     except:
         pass
+    
+    if data_dir[-1] == "/":
+        data_dir += "/"
 
     try:
-        os.makedirs(data_dir + '/' + project)
+        os.makedirs(data_dir + project)
     except:
         pass
     
     try:
-        os.makedirs(data_dir + '/' + species + "_" + assembly)
+        os.makedirs(data_dir + species + "_" + assembly)
     except:
         pass
     

@@ -54,8 +54,8 @@ class process_chipseq:
         can be run as an intermediate step, but should always be run as the 
         """
         command_line = 'bamsormadup'
-        bam_file_in  = data_dir + '/' + project_id + '/' + run_id + '.bam
-        bam_file_out = data_dir + '/' + project_id + '/' + run_id + '.filtered.bam
+        bam_file_in  = data_dir + project_id + '/' + run_id + '.bam
+        bam_file_out = data_dir + project_id + '/' + run_id + '.filtered.bam
         
         args = shlex.split(command_line)
         with open(bam_file_in, "r") as f_in:
@@ -70,8 +70,8 @@ class process_chipseq:
         
         background might need to be optional.
         """
-        bam_file = data_dir + '/' + project_id + '/' + run_id + '.filtered.bam'
-        bam_background_file = data_dir + '/' + project_id + '/' + background_id + '.filtered.bam'
+        bam_file = data_dir + project_id + '/' + run_id + '.filtered.bam'
+        bam_background_file = data_dir + project_id + '/' + background_id + '.filtered.bam'
         command_line = 'macs2 callpeak -t ' + bam_file + ' -n ' + run_id + '-c ' + bam_background_file
     
     
@@ -100,7 +100,7 @@ class process_chipseq:
         # Run BWA
         for run_id in expt["run_ids"]:
             cf.bwa_align_reads(genome_fa, data_dir, expt["project_id"], run_id)
-            out_bam = data_dir + '/' + project_id + '/' + run_id + '.bam'
+            out_bam = data_dir + project_id + '/' + run_id + '.bam'
         
         for bgd_id in expt["bgd_ids"]:
             cf.bwa_align_reads(genome_fa, data_dir, expt["project_id"], bgd_id)
@@ -151,18 +151,21 @@ if __name__ == "__main__":
     pcs = process_chipseq()
     cf = common()
     
+    if data_dir[-1] != "/":
+        data_dir += "/"
+    
     try:
         os.makedirs(data_dir)
     except:
         pass
 
     try:
-        os.makedirs(data_dir + '/' + project)
+        os.makedirs(data_dir + project)
     except:
         pass
     
     try:
-        os.makedirs(data_dir + '/' + species + "_" + assembly)
+        os.makedirs(data_dir + species + "_" + assembly)
     except:
         pass
     

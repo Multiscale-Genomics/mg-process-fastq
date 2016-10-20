@@ -127,6 +127,7 @@ if __name__ == "__main__":
     
     if data_dir[-1] != "/":
         data_dir += "/"
+        #data_dir gzf.replace('.fastq.gz', '.fastq')
     
     try:
         os.makedirs(data_dir + project)

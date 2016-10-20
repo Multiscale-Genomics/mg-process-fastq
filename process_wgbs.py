@@ -226,13 +226,16 @@ if __name__ == "__main__":
     
     pwgbs = process_wgbs()
     
+    if data_dir[-1] != "/":
+        data_dir += "/"
+    
     try:
         os.makedirs(data_dir)
     except:
         pass
     
     try:
-        os.makedirs(data_dir + '/' + srr_id)
+        os.makedirs(data_dir + srr_id)
     except:
         pass
     
@@ -242,7 +245,7 @@ if __name__ == "__main__":
     if (local == 1):
         in_files = cf.getFastqFiles(srr_id, data_dir)
     else:
-        in_files = [f for f in os.listdir(data_dir + '/' + srr_id) if re.match(run_id, f)]
+        in_files = [f for f in os.listdir(data_dir + srr_id) if re.match(run_id, f)]
     
     in_file1 = in_files[0]
     in_file2 = in_files[1]
@@ -299,5 +302,5 @@ if __name__ == "__main__":
     x = compss_wait_on(x)
     
     # Tidy up
-    pwgbs.clean_up(data_dir + '/' + srr_id)
+    pwgbs.clean_up(data_dir + srr_id)
 

@@ -60,6 +60,8 @@ class common:
                     if not chunk: break
                     fp.write(chunk)
             
+            cdna_file.close()
+            
             self.bwa_index_genome(file_name)
         
         return file_name
@@ -83,6 +85,10 @@ class common:
                     chunk = cdna_file.read(CHUNK)
                     if not chunk: break
                     fp.write(chunk)
+            
+            cdna_file.close()
+        
+        return file_name
     
     
     def getFastqFiles(self, ena_err_id, data_dir):

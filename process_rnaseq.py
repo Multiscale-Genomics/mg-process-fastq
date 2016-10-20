@@ -125,7 +125,7 @@ if __name__ == "__main__":
     except:
         pass
     
-    if data_dir[-1] != "/"
+    if data_dir[-1] != "/":
         data_dir += "/"
     
     try:

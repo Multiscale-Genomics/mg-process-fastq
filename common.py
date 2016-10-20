@@ -123,26 +123,27 @@ class common:
                 file_name = fastq_file.split("/")
                 print data_dir + '/' + project + "/" + file_name[-1]
                 
-                req = urllib2.urlopen("ftp://" + fastq_file)
-                CHUNK = 16 * 1024
+                if os.path.isfile(data_dir + '/' + project + "/" + file_name[-1]) == False and os.path.isfile(data_dir + '/' + project + "/" + file_name[-1].replace('.fastq.gz', '.fastq')) == False:
+                    req = urllib2.urlopen("ftp://" + fastq_file)
+                    CHUNK = 16 * 1024
+                    
+                    #files.append(data_dir + '/' + project + "/" + file_name[-1].replace('.fastq.gz', '.fastq'))
+                    gzfiles.append(data_dir + '/' + project + "/" + file_name[-1])
+                    try:
+                        with open(data_dir + '/' + project + "/" + file_name[-1], 'wb') as fp:
+                            while True:
+                                chunk = req.read(CHUNK)
+                                if not chunk: break
+                                fp.write(chunk)
+                        
+                        req.close()
+                    except SocketError as e:
+                        if e.errno != errno.ECONNRESET:
+                            raise
+                        print e
+                        pass # Handle error here
                 
                 files.append(data_dir + '/' + project + "/" + file_name[-1].replace('.fastq.gz', '.fastq'))
-                gzfiles.append(data_dir + '/' + project + "/" + file_name[-1])
-                try:
-                    with open(data_dir + '/' + project + "/" + file_name[-1], 'wb') as fp:
-                        while True:
-                            chunk = req.read(CHUNK)
-                            if not chunk: break
-                            fp.write(chunk)
-                    
-                    req.close()
-                except SocketError as e:
-                    if e.errno != errno.ECONNRESET:
-                        raise
-                    print e
-                    pass # Handle error here
-                
-                
         
         for gzf in gzfiles:
             with gzip.open(gzf, 'rb') as f_in, open(gzf.replace('.fastq.gz', '.fastq'), 'wb') as f_out:

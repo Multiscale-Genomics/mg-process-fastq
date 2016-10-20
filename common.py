@@ -128,11 +128,15 @@ class common:
                             chunk = req.read(CHUNK)
                             if not chunk: break
                             fp.write(chunk)
+                    
+                    req.close()
                 except SocketError as e:
                     if e.errno != errno.ECONNRESET:
                         raise
                     print e
                     pass # Handle error here
+                
+                
         
         for gzf in gzfiles:
             with gzip.open(gzf, 'rb') as f_in, open(gzf.replace('.fastq.gz', '.fastq'), 'wb') as f_out:

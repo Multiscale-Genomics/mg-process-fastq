@@ -154,7 +154,7 @@ if __name__ == "__main__":
     prs.run_kallisto_indexing(data_dir, species, assembly)
     
     # Quantify RNA-seq
-    if len(in_files == 1):
+    if len(in_files) == 1:
         prs.run_kallisto_quant(data_dir, species, assembly, project, in_files, True)
     else:
         prs.run_kallisto_quant(data_dir, species, assembly, project, in_files)

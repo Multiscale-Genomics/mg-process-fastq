@@ -125,7 +125,8 @@ if __name__ == "__main__":
     except:
         pass
     
-    data_dir += "/"
+    if data_dir[-1] != "/"
+        data_dir += "/"
     
     try:
         os.makedirs(data_dir + project)
@@ -143,7 +144,7 @@ if __name__ == "__main__":
     if (local == 0):
         in_files = cf.getFastqFiles(ena_err_id, data_dir)
     else:
-        in_files = [f for f in os.listdir(data_dir + '/' + project) if re.match(run_id, f)]
+        in_files = [f for f in os.listdir(data_dir + project) if re.match(run_id, f)]
     
     # Get the cDNA
     cf.getcDNAFiles(data_dir, species, assembly)

@@ -18,6 +18,9 @@ limitations under the License.
 
 import argparse, urllib2, gzip, shutil, shlex, subprocess, os.path
 
+from socket import error as SocketError
+import errno
+
 try :
     import pysam
 except ImportError :
@@ -119,12 +122,17 @@ class common:
                 
                 files.append(data_dir + '/' + project + "/" + file_name[-1].replace('.fastq.gz', '.fastq'))
                 gzfiles.append(data_dir + '/' + project + "/" + file_name[-1])
-                
-                with open(data_dir + '/' + project + "/" + file_name[-1], 'wb') as fp:
-                    while True:
-                        chunk = req.read(CHUNK)
-                        if not chunk: break
-                        fp.write(chunk)
+                try:
+                    with open(data_dir + '/' + project + "/" + file_name[-1], 'wb') as fp:
+                        while True:
+                            chunk = req.read(CHUNK)
+                            if not chunk: break
+                            fp.write(chunk)
+                except SocketError as e:
+                    if e.errno != errno.ECONNRESET:
+                        raise
+                    print e
+                    pass # Handle error here
         
         for gzf in gzfiles:
             with gzip.open(gzf, 'rb') as f_in, open(gzf.replace('.fastq.gz', '.fastq'), 'wb') as f_out:

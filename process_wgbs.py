@@ -247,7 +247,7 @@ if __name__ == "__main__":
     if (local == 0):
         in_files = cf.getFastqFiles(project_id, data_dir, srr_id)
     else:
-        in_files = [f for f in os.listdir(data_dir + project_id + '/' + srr_id) if re.match(run_id, f)]
+        in_files = [f for f in os.listdir(data_dir + project_id + '/' + srr_id) if re.match(srr_id, f)]
     
     in_file1 = in_files[0]
     in_file2 = in_files[1]

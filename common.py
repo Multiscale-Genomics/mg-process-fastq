@@ -49,18 +49,9 @@ class common:
         file_name = data_dir + '/' + species + '_' + assembly + '/' + species + '.' + assembly + '.dna.toplevel.fa.gz'
         
         if os.path.isfile(file_name) == False:
-            cdna_file = urllib2.urlopen(
-            'ftp://ftp.ensembl.org/pub/current_fasta/' + species.lower() + '/dna/' + species[0].upper() + species[1:] + '.' + assembly + '.dna.toplevel.fa.gz')
+            ftp_url = 'ftp://ftp.ensembl.org/pub/current_fasta/' + species.lower() + '/dna/' + species[0].upper() + species[1:] + '.' + assembly + '.dna.toplevel.fa.gz'
             
-            CHUNK = 16 * 1024
-                    
-            with open(file_name, 'wb') as fp:
-                while True:
-                    chunk = cdna_file.read(CHUNK)
-                    if not chunk: break
-                    fp.write(chunk)
-            
-            cdna_file.close()
+            self.download_file(file_name, ftp_url)
             
             self.bwa_index_genome(file_name)
         
@@ -75,18 +66,9 @@ class common:
         file_name = data_dir + species + '_' + assembly + '/' + species + '.' + assembly + '.cdna.all.fa.gz'
         
         if os.path.isfile(file_name) == False:
-            cdna_file = urllib2.urlopen(
-            'ftp://ftp.ensembl.org/pub/current_fasta/' + species.lower() + '/cdna/' + species[0].upper() + species[1:] + '.' + assembly + '.cdna.all.fa.gz')
+            ftp_url = 'ftp://ftp.ensembl.org/pub/current_fasta/' + species.lower() + '/cdna/' + species[0].upper() + species[1:] + '.' + assembly + '.cdna.all.fa.gz'
             
-            CHUNK = 16 * 1024
-                    
-            with open(file_name, 'wb') as fp:
-                while True:
-                    chunk = cdna_file.read(CHUNK)
-                    if not chunk: break
-                    fp.write(chunk)
-            
-            cdna_file.close()
+            self.download_file(file_name, ftp_url)
         
         return file_name
     

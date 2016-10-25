@@ -88,14 +88,14 @@ class process_chipseq:
         for run_id in expt["run_ids"]:
             run_ids.append(run_id)
             if (expt.has_key("local") == False):
-                in_files = cf.getFastqFiles(run_id, data_dir)
+                in_files = cf.getFastqFiles(expt["project_id"], data_dir, run_id)
         
         # Obtain background FastQ files
         bgd_ids = []
         for bgd_id in expt["bgd_ids"]:
             bgd_ids.append(run_id)
             if (expt.has_key("local") == False):
-                in_files = cf.getFastqFiles(bgd_id, data_dir)
+                in_files = cf.getFastqFiles(expt["project_id"], data_dir, bgd_id)
         
         # Run BWA
         for run_id in expt["run_ids"]:

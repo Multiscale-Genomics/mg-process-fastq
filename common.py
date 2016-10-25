@@ -162,7 +162,7 @@ class common:
     def download_file(self, file_location, url):
         restart_counter = 0
         
-        while True
+        while True:
             meta = urllib2.urlopen(url)
             info = meta.info()
             if restart_counter > 0:

@@ -166,7 +166,7 @@ class common:
             meta = urllib2.urlopen(url)
             info = meta.info()
             if restart_counter > 0:
-                byte_start = os.stat(file_location).st_size + 1
+                byte_start = int(os.stat(file_location).st_size) + 1
                 req = urllib2.request(url, headers={"Range" : "bytes=" + str(byte_start) + "-" + str(info["content-length"])})
             else:
                 req = urllib2.request(url)

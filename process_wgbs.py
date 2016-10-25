@@ -242,7 +242,7 @@ if __name__ == "__main__":
     cf = common()
     
     # Optain the paired FastQ files
-    if (local == 1):
+    if (local == 0):
         in_files = cf.getFastqFiles(srr_id, data_dir)
     else:
         in_files = [f for f in os.listdir(data_dir + srr_id) if re.match(run_id, f)]

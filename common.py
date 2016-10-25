@@ -167,11 +167,10 @@ class common:
             info = meta.info()
             if restart_counter > 0:
                 byte_start = int(os.stat(file_location).st_size) + 1
-                req = urllib2.request(url, headers={"Range" : "bytes=" + str(byte_start) + "-" + str(info["content-length"])})
+                req = urllib2.Request(url, headers={"Range" : "bytes=" + str(byte_start) + "-" + str(info["content-length"])})
             else:
-                req = urllib2.request(url)
+                req = urllib2.Request(url)
             
-            req = urllib2.urlopen(url)
             CHUNK = 16 * 1024
             
             try:

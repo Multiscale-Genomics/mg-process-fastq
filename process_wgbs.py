@@ -200,6 +200,7 @@ if __name__ == "__main__":
     # Set up the command line parameters
     parser = argparse.ArgumentParser(description="Parse WGBS data")
     parser.add_argument("--genome", help="Genome name") #             default="GCA_000001405.22")
+    parser.add_argument("--project_id", help="Project ID of the dataset") #   default="SRR1536575")
     parser.add_argument("--srr_id", help="SRR ID of the dataset") #   default="SRR1536575")
     parser.add_argument("--aligner", help="Aligner to use (eg bowtie2)") #   default="bowtie2")
     parser.add_argument("--tmp_dir", help="Temporary data dir")
@@ -210,6 +211,7 @@ if __name__ == "__main__":
     # Get the matching parameters from the command line
     args = parser.parse_args()
     
+    project_id = args.project_id
     srr_id   = args.srr_id
     genome   = args.genome
     aligner  = args.aligner
@@ -235,7 +237,7 @@ if __name__ == "__main__":
         pass
     
     try:
-        os.makedirs(data_dir + srr_id)
+        os.makedirs(data_dir + project_dir + '/' + srr_id)
     except:
         pass
     
@@ -243,9 +245,9 @@ if __name__ == "__main__":
     
     # Optain the paired FastQ files
     if (local == 0):
-        in_files = cf.getFastqFiles(srr_id, data_dir)
+        in_files = cf.getFastqFiles(project_id, data_dir, srr_id)
     else:
-        in_files = [f for f in os.listdir(data_dir + srr_id) if re.match(run_id, f)]
+        in_files = [f for f in os.listdir(data_dir + project_dir + '/' + srr_id) if re.match(run_id, f)]
     
     in_file1 = in_files[0]
     in_file2 = in_files[1]

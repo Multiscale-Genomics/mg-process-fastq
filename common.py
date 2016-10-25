@@ -91,7 +91,7 @@ class common:
         return file_name
     
     
-    def getFastqFiles(self, ena_err_id, data_dir):
+    def getFastqFiles(self, ena_err_id, data_dir, ena_srr_id = None):
         """
         Function for downloading and extracting the FastQ files from the ENA
         """
@@ -116,6 +116,8 @@ class common:
             
             project = row[0]
             srr_id = row[1]
+            if (ena_srr_id != None and srr_id != ena_srr_id):
+                continue
             fastq_files = row[6].split(';')
             row_count += 1
             

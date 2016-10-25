@@ -54,8 +54,8 @@ class process_chipseq:
         can be run as an intermediate step, but should always be run as the 
         """
         command_line = 'bamsormadup'
-        bam_file_in  = data_dir + project_id + '/' + run_id + '.bam
-        bam_file_out = data_dir + project_id + '/' + run_id + '.filtered.bam
+        bam_file_in  = data_dir + project_id + '/' + run_id + '.bam'
+        bam_file_out = data_dir + project_id + '/' + run_id + '.filtered.bam'
         
         args = shlex.split(command_line)
         with open(bam_file_in, "r") as f_in:

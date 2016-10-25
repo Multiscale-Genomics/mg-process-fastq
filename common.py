@@ -126,24 +126,28 @@ class common:
                 print data_dir + '/' + project + "/" + file_name[-1]
                 
                 if os.path.isfile(data_dir + '/' + project + "/" + file_name[-1]) == False and os.path.isfile(data_dir + '/' + project + "/" + file_name[-1].replace('.fastq.gz', '.fastq')) == False:
-                    req = urllib2.urlopen("ftp://" + fastq_file)
-                    CHUNK = 16 * 1024
+                    file_location = data_dir + '/' + project + "/" + file_name[-1]
+                    ftp_url = "ftp://" + fastq_file
+                    self.download_file(file_location, ftp_url)
                     
-                    #files.append(data_dir + '/' + project + "/" + file_name[-1].replace('.fastq.gz', '.fastq'))
-                    gzfiles.append(data_dir + '/' + project + "/" + file_name[-1])
-                    try:
-                        with open(data_dir + '/' + project + "/" + file_name[-1], 'wb') as fp:
-                            while True:
-                                chunk = req.read(CHUNK)
-                                if not chunk: break
-                                fp.write(chunk)
-                        
-                        req.close()
-                    except SocketError as e:
-                        if e.errno != errno.ECONNRESET:
-                            raise
-                        print e
-                        pass # Handle error here
+                    #req = urllib2.urlopen("ftp://" + fastq_file)
+                    #CHUNK = 16 * 1024
+                    #
+                    ##files.append(data_dir + '/' + project + "/" + file_name[-1].replace('.fastq.gz', '.fastq'))
+                    #gzfiles.append(data_dir + '/' + project + "/" + file_name[-1])
+                    #try:
+                    #    with open(data_dir + '/' + project + "/" + file_name[-1], 'wb') as fp:
+                    #        while True:
+                    #            chunk = req.read(CHUNK)
+                    #            if not chunk: break
+                    #            fp.write(chunk)
+                    #    
+                    #    req.close()
+                    #except SocketError as e:
+                    #    if e.errno != errno.ECONNRESET:
+                    #        raise
+                    #    print e
+                    #    pass # Handle error here
                 
                 files.append(data_dir + '/' + project + "/" + file_name[-1].replace('.fastq.gz', '.fastq'))
         
@@ -153,6 +157,50 @@ class common:
             os.remove(gzf)
         
         return files
+    
+    
+    def download_file(self, file_location, url):
+        restart_counter = 0
+        
+        while True
+            meta = urllib2.urlopen(url)
+            info = meta.info()
+            if restart_counter > 0:
+                byte_start = os.stat(file_location).st_size + 1
+                req = urllib2.request(url, headers={"Range" : "bytes=" + str(byte_start) + "-" + str(info["content-length"])})
+            else:
+                req = urllib2.request(url)
+            
+            req = urllib2.urlopen(url)
+            CHUNK = 16 * 1024
+            
+            try:
+                if restart_counter == 0 :
+                    with open(file_location, 'wb') as fp:
+                        while True:
+                            chunk = req.read(CHUNK)
+                            if not chunk: break
+                            fp.write(chunk)
+                else:
+                    with open(file_location, 'ab') as fp:
+                        while True:
+                            chunk = req.read(CHUNK)
+                            if not chunk: break
+                            fp.write(chunk)
+                
+                req.close()
+            except SocketError as e:
+                if e.errno != errno.ECONNRESET:
+                    raise
+                print e
+                print "Attempting to restart download ..."
+                restart_counter += 1
+            
+            if restart_count >= 5 :
+                return False
+            break
+        
+        return True
     
     
     def bwa_index_genome(self, genome_file):

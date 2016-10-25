@@ -123,6 +123,12 @@ class common:
     
     
     def download_file(self, file_location, url):
+        """
+        Function to download a file to a given location and file name. Will
+        attempt to restart the download up to 5 times if the connection is
+        closed by the remote server.
+        """
+        
         restart_counter = 0
         
         while True:

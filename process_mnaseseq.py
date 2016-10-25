@@ -57,7 +57,7 @@ class process_rnaseq:
         self.ready = ""
     
     
-    #@task(data_dir = IN, project_id = IN, run_ids = IN, returns int)
+    @task(data_dir = IN, project_id = IN, run_ids = IN, returns int)
     def inps_peak_calling(self, data_dir, project_id, run_ids):
         """
         Convert Bam to Bed then make Nucleosome peak calls. These are saved as
@@ -101,7 +101,7 @@ class process_rnaseq:
         for run_id in expt["run_ids"]:
             run_ids.append(run_id)
             if (expt.has_key("local") == False):
-                in_files = cf.getFastqFiles(run_id, data_dir)
+                in_files = cf.getFastqFiles(expt["project_id"], data_dir, run_id)
             else:
                 in_files = [f for f in os.listdir(local_files) if re.match(run_id, f)]
             run_fastq_files[run_id] = in_files

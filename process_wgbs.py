@@ -216,7 +216,7 @@ if __name__ == "__main__":
     genome   = args.genome
     aligner  = args.aligner
     aligner_dir = args.aligner_dir
-    data_dir = args.data_dir + '/' + srr_id
+    data_dir = args.data_dir
     tmp_dir  = args.tmp_dir
     local = args.local
     

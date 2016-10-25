@@ -129,25 +129,6 @@ class common:
                     file_location = data_dir + '/' + project + "/" + file_name[-1]
                     ftp_url = "ftp://" + fastq_file
                     self.download_file(file_location, ftp_url)
-                    
-                    #req = urllib2.urlopen("ftp://" + fastq_file)
-                    #CHUNK = 16 * 1024
-                    #
-                    ##files.append(data_dir + '/' + project + "/" + file_name[-1].replace('.fastq.gz', '.fastq'))
-                    #gzfiles.append(data_dir + '/' + project + "/" + file_name[-1])
-                    #try:
-                    #    with open(data_dir + '/' + project + "/" + file_name[-1], 'wb') as fp:
-                    #        while True:
-                    #            chunk = req.read(CHUNK)
-                    #            if not chunk: break
-                    #            fp.write(chunk)
-                    #    
-                    #    req.close()
-                    #except SocketError as e:
-                    #    if e.errno != errno.ECONNRESET:
-                    #        raise
-                    #    print e
-                    #    pass # Handle error here
                 
                 files.append(data_dir + '/' + project + "/" + file_name[-1].replace('.fastq.gz', '.fastq'))
         
@@ -196,7 +177,7 @@ class common:
                 print "Attempting to restart download ..."
                 restart_counter += 1
             
-            if restart_count >= 5 :
+            if restart_counter >= 5 :
                 return False
             break
         

@@ -177,8 +177,7 @@ if __name__ == "__main__":
     
     x = []
     for expt in job_id_sets["expts"]:
-        x.append(pcs.main(data_dir, expt, genome_fa))
-    x = compss_wait_on(x)
+        pcs.main(data_dir, expt, genome_fa)
     
     
     

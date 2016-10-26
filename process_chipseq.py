@@ -75,7 +75,7 @@ class process_chipseq:
         command_line = 'macs2 callpeak -t ' + bam_file + ' -n ' + run_id + '-c ' + bam_background_file
     
     
-    @task(data_dir = IN, expt = IN, genome_fa = IN, returns = int)
+    #@task(data_dir = IN, expt = IN, genome_fa = IN, returns = int)
     def main(self, data_dir, expt, genome_fa):
         """
         Main loop
@@ -100,7 +100,7 @@ class process_chipseq:
         # Run BWA
         for run_id in expt["run_ids"]:
             cf.bwa_align_reads(genome_fa, data_dir, expt["project_id"], run_id)
-            out_bam = data_dir + project_id + '/' + run_id + '.bam'
+            out_bam = data_dir + expt["project_id"] + '/' + run_id + '.bam'
         
         for bgd_id in expt["bgd_ids"]:
             cf.bwa_align_reads(genome_fa, data_dir, expt["project_id"], bgd_id)

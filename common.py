@@ -105,6 +105,7 @@ class common:
             
             for fastq_file in fastq_files:
                 file_name = fastq_file.split("/")
+                gzfiles.append(data_dir + '/' + project + "/" + file_name[-1])
                 print data_dir + '/' + project + "/" + file_name[-1]
                 
                 if os.path.isfile(data_dir + '/' + project + "/" + file_name[-1]) == False and os.path.isfile(data_dir + '/' + project + "/" + file_name[-1].replace('.fastq.gz', '.fastq')) == False:

@@ -191,10 +191,10 @@ class common:
         Map the reads to the genome
         """
         
-        reads_file = data_dir + '/' + project_id + '/' + run_id + '.fastq'
-        intermediate_file = data_dir + '/' + project_id + '/' + run_id + '.sai'
-        intermediate_sam_file = data_dir + '/' + project_id + '/' + run_id + '.sam'
-        output_bam_file = data_dir + '/' + project_id + '/' + run_id + '.bam'
+        reads_file = data_dir + project_id + '/' + run_id + '.fastq'
+        intermediate_file = data_dir + project_id + '/' + run_id + '.sai'
+        intermediate_sam_file = data_dir + project_id + '/' + run_id + '.sam'
+        output_bam_file = data_dir + project_id + '/' + run_id + '.bam'
         
         command_lines = [
             'bwa aln -q 5 -f ' + intermediate_file + ' ' + genome_file + ' ' + reads_file,
@@ -216,10 +216,10 @@ class common:
         If run_ids is blank then the function looks for all bam files in the
         data_dir
         """
-        out_bam_file = data_dir + '/' + project_id + '/' + final_id + '.bam'
+        out_bam_file = data_dir + project_id + '/' + final_id + '.bam'
         
         if len(run_ids) == 0:
-            bam_files = [f for f in listdir(data_dir + '/' + project_id) if f.endswith(("sai"))]
+            bam_files = [f for f in listdir(data_dir + project_id) if f.endswith(("sai"))]
         else:
             bam_files = [f + ".bam" for f in run_ids]
         

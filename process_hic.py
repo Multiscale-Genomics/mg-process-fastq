@@ -23,7 +23,7 @@ from pycompss.api.task import task
 from pycompss.api.parameter import *
 
 class process_hic:
-    @task(params = IN)
+    #@task(params = IN)
     def main(self, params):
         """
         Initial grouping to download, parse and filter the individual
@@ -161,7 +161,7 @@ class process_hic:
             tad_done.append(call_tads(genome, dataset, sra_id, library, enzyme_name, resolution, tmp_dir, data_dir, expt, same_fastq, windows1, windows2, chrom))
         tad_done.compss_wait_on(tad_done)
     
-    @task(genome = IN, dataset = IN, sra_id = IN, library = IN, enzyme_name = IN, resolution = IN, tmp_dir = IN, data_dir = IN, expt = IN, same_fastq = IN, windows1 = IN, windows2 = IN, chrom = IN, returns = int)
+    #@task(genome = IN, dataset = IN, sra_id = IN, library = IN, enzyme_name = IN, resolution = IN, tmp_dir = IN, data_dir = IN, expt = IN, same_fastq = IN, windows1 = IN, windows2 = IN, chrom = IN, returns = int)
     def call_tads(self, genome, dataset, sra_id, library, enzyme_name, resolution, tmp_dir, data_dir, expt, same_fastq, windows1, windows2, chrom):
         """
         TAD calling for a given dataset and chromosome. This should be run from

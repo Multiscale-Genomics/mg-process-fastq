@@ -83,7 +83,7 @@ class process_rnaseq:
                 p = subprocess.Popen(args)
                 p.wait()
     
-    @task(data_dir = IN, expt = IN, genome_fa = IN, returns = int)
+    #@task(data_dir = IN, expt = IN, genome_fa = IN, returns = int)
     def main(self, data_dir, expt, genome_fa):
         """
         Main loop
@@ -198,6 +198,5 @@ if __name__ == "__main__":
     
     x = []
     for expt in job_id_sets["expts"]:
-        x.append(prs.main(data_dir, expt, genome_fa))
-    x = compss_wait_on(x)
+        prs.main(data_dir, expt, genome_fa)
     

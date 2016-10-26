@@ -205,7 +205,7 @@ class common:
             p.wait()
     
     
-    def merge_bam(self, data_dir, final_id, run_ids=[]):
+    def merge_bam(self, data_dir, project_id, final_id, run_ids=[]):
         """
         Merge together all the bams in a directory and sort to create the final
         bam ready to be filtered

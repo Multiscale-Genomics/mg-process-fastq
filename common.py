@@ -47,7 +47,7 @@ class common:
         """
         
         file_name = data_dir + species + '_' + assembly + '/' + species + '.' + assembly + '.dna.toplevel.fa.gz'
-        print filename
+        print file_name
         
         if os.path.isfile(file_name) == False:
             ftp_url = 'ftp://ftp.ensembl.org/pub/current_fasta/' + species.lower() + '/dna/' + species[0].upper() + species[1:] + '.' + assembly + '.dna.toplevel.fa.gz'

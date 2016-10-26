@@ -46,7 +46,7 @@ class common:
         Function for downloading and extracting the DNA files from the ensembl FTP
         """
         
-        file_name = data_dir + '/' + species + '_' + assembly + '/' + species + '.' + assembly + '.dna.toplevel.fa.gz'
+        file_name = data_dir + species + '_' + assembly + '/' + species + '.' + assembly + '.dna.toplevel.fa.gz'
         
         if os.path.isfile(file_name) == False:
             ftp_url = 'ftp://ftp.ensembl.org/pub/current_fasta/' + species.lower() + '/dna/' + species[0].upper() + species[1:] + '.' + assembly + '.dna.toplevel.fa.gz'
@@ -201,7 +201,9 @@ class common:
             'bwa samse -f ' + intermediate_sam_file  + ' ' + genome_file + ' ' + intermediate_file + ' ' + reads_file,
             'samtools view -b -o ' + output_bam_file + ' ' + intermediate_sam_file
         ]
+        
         print command_lines
+        
         for command_line in command_lines:
             args = shlex.split(command_line)
             p = subprocess.Popen(args)

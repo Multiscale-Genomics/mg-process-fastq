@@ -259,7 +259,7 @@ if __name__ == "__main__":
     # Run the FilterReads.py steps for the individual FastQ files
     x = []
     for l in [[in_file1, out_file1], [in_file2, out_file2]]:
-        pwgbs.FilterFastQReads(l)
+        pwgbs.FilterFastQReads(l[0], l[1])
     #x = compss_wait_on(x)
     
     # Run the bs_seeker2-builder.py steps

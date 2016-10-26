@@ -54,7 +54,10 @@ class common:
             
             self.download_file(file_name, ftp_url)
             
+        if os.path.isfile(file_name + '.idx') == False:
             self.bwa_index_genome(file_name)
+        
+        self.bowtie_index_genome(file_name)
         
         return file_name
     
@@ -176,9 +179,23 @@ class common:
         return True
     
     
+    def bowtie_index_genome(self, genome_file):
+        """
+        Create an index of the genome FASTA file with Bowtie2
+        """
+        file_name = genome_file.split("/")
+        file_name[-1].replace('.fa', '')
+        
+        command_line = 'bowtie2-build ' + genome_file + ' ' + file_name[-1].replace('.fa', '')
+        
+        args = shlex.split(command_line)
+        p = subprocess.Popen(args)
+        p.wait()
+    
+    
     def bwa_index_genome(self, genome_file):
         """
-        Create an index of the 
+        Create an index of the genome FASTA file with BWA
         """
         command_line = 'bwa index ' + genome_file
         

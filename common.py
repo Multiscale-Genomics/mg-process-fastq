@@ -201,7 +201,7 @@ class common:
             'bwa samse -f ' + intermediate_sam_file  + ' ' + genome_file + ' ' + intermediate_file + ' ' + reads_file,
             'samtools view -b -o ' + output_bam_file + ' ' + intermediate_sam_file
         ]
-        
+        print command_lines
         for command_line in command_lines:
             args = shlex.split(command_line)
             p = subprocess.Popen(args)

@@ -43,7 +43,7 @@ class process_wgbs:
         self.ready=None
 
 
-    @task(infile = FILE_IN, outfile = FILE_OUT, returns = int)
+    #@task(infile = FILE_IN, outfile = FILE_OUT, returns = int)
     def FilterFastQReads(self, infile, outfile):
         """
         This is optional, but removes reads that can be problematic for the
@@ -55,8 +55,8 @@ class process_wgbs:
         return 1
 
 
-    @constraint(ProcessorCoreCount=8)
-    @task(fasta_file = FILE_IN, aligner = IN, aligner_path = IN, ref_path = IN)
+    #@constraint(ProcessorCoreCount=8)
+    #@task(fasta_file = FILE_IN, aligner = IN, aligner_path = IN, ref_path = IN)
     def Builder(self, fasta_file, aligner, aligner_path, ref_path):
         """
         Function to submit the FASTA file for the reference sequence and build
@@ -142,8 +142,8 @@ class process_wgbs:
         return files_out
 
 
-    @constraint(ProcessorCoreCount=8)
-    @task(input_fastq1 = FILE_IN, input_fastq2 = FILE_IN, aligner = IN, aligner_path = IN, genome_fasta = FILE_IN, returns = int)
+    #@constraint(ProcessorCoreCount=8)
+    #@task(input_fastq1 = FILE_IN, input_fastq2 = FILE_IN, aligner = IN, aligner_path = IN, genome_fasta = FILE_IN, returns = int)
     def Aligner(self, input_fastq1, input_fastq2, aligner, aligner_path, genome_fasta):
         """
         Alignment of the paired ends to the reference genome
@@ -161,8 +161,8 @@ class process_wgbs:
         return 1
 
 
-    @constraint(ProcessorCoreCount=8)
-    @task(bam_file = FILE_IN, output_prefix = IN, db_dir = IN, returns = int)
+    #@constraint(ProcessorCoreCount=8)
+    #@task(bam_file = FILE_IN, output_prefix = IN, db_dir = IN, returns = int)
     def MethylationCaller(self, bam_file, output_prefix, db_dir):
         """
         Takes the merged and sorted bam file and calls the methylation sites.

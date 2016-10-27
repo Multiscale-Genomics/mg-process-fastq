@@ -216,6 +216,8 @@ if __name__ == "__main__":
     project_id = args.project_id
     srr_id   = args.srr_id
     #genome   = args.genome
+    species     = args.species
+    assembly    = args.assembly
     aligner  = args.aligner
     aligner_dir = args.aligner_dir
     data_dir = args.data_dir
@@ -241,7 +243,7 @@ if __name__ == "__main__":
     except:
         pass
     
-    genome_dir = args.data_dir + genome
+    genome_dir = args.data_dir + species + "_" + assembly
     
     try:
         os.makedirs(genome_dir)

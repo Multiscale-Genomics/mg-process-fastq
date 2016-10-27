@@ -54,10 +54,11 @@ class common:
             
             self.download_file(file_name, ftp_url)
             
-        if os.path.isfile(file_name + '.idx') == False:
+        if os.path.isfile(file_name + '.ann') == False:
             self.bwa_index_genome(file_name)
         
-        self.bowtie_index_genome(file_name)
+        if os.path.isfile(file_name + '.1.bt2') == False:
+            self.bowtie_index_genome(file_name)
         
         return file_name
     

@@ -58,9 +58,10 @@ class common:
             self.bwa_index_genome(file_name)
         
         if os.path.isfile(file_name + '.1.bt2') == False:
+            file_name_unzipped = file_name.replace('.fa.gz', '.fa')
             with gzip.open(file_name, 'rb') as f_in, open(file_name.replace('.fa.gz', '.fa'), 'wb') as f_out:
                 shutil.copyfileobj(f_in, f_out)
-            self.bowtie_index_genome(f_out)
+            self.bowtie_index_genome(file_name_unzipped)
         
         return file_name
     

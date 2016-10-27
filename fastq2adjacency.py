@@ -48,7 +48,9 @@ class fastq2adjacency:
         """
         Initialise the module and 
         """
-        self.genome_accession = '' # GCA_000001405.22 - GRChg38, current
+        #self.genome_accession = '' # GCA_000001405.22 - GRChg38, current
+        self.species     = '' # 'homo_sapiens'
+        self.assembly    = '' # 'GRCh38'
         self.dataset     = '' # 'GSE63525'
         self.sra_id      = '' # 'SRR1658632'
         self.library     = '' # 'HiC036'
@@ -76,8 +78,10 @@ class fastq2adjacency:
         self.hic_data = None
 
     
-    def set_params(self, genome_accession, dataset, sra_id, library, enzyme_name, resolution, tmp_dir, data_dir, expt_name = None, same_fastq=True, windows1=None, windows2=None):
-        self.genome_accession = genome_accession
+    def set_params(self, species, assembly, dataset, sra_id, library, enzyme_name, resolution, tmp_dir, data_dir, expt_name = None, same_fastq=True, windows1=None, windows2=None):
+        #self.genome_accession = genome_accession
+        self.species     = species
+        self.assembly    = assembly
         self.dataset     = dataset
         self.sra_id      = sra_id
         self.library     = library
@@ -87,8 +91,10 @@ class fastq2adjacency:
         self.temp_root = tmp_dir
         self.data_root = data_dir
         
-        self.gem_file = self.data_root + self.genome_accession + "/" + self.genome_accession + ".gem"
-        self.genome_file = self.data_root + self.genome_accession + "/chroms/" + self.genome_accession + ".fa"
+        #self.gem_file = self.data_root + self.genome_accession + "/" + self.genome_accession + ".gem"
+        #self.genome_file = self.data_root + self.genome_accession + "/chroms/" + self.genome_accession + ".fa"
+        self.gem_file = self.data_root + self.species + '_' + self.assembly + '/' + self.species + '.' + self.assembly + ".gem"
+        self.genome_file = self.data_root + self.species + '_' + self.assembly + '/' + self.species + '.' + self.assembly + ".fa"
         
         if expt_name != None:
             self.expt_name = expt_name + '/'
@@ -340,7 +346,7 @@ class fastq2adjacency:
         d = np.zeros([dSize, dSize], dtype='int32')
         d += f2a.hic_data.get_matrix()
         
-        filename = self.data_root + self.genome_accession + "_" + self.dataset + "_" + str(self.resolution) + ".hdf5"
+        filename = self.data_root + self.species + '_' + self.assembly + "_" + self.dataset + "_" + str(self.resolution) + ".hdf5"
         f = h5py.File(filename, "a")
         dset = f.create_dataset(str(self.resolution), (dSize, dSize), dtype='int32', chunks=True, compression="gzip")
         dset[0:dSize,0:dSize] += d

@@ -22,6 +22,8 @@ import argparse, time
 from pycompss.api.task import task
 from pycompss.api.parameter import *
 
+from common import common
+
 class process_hic:
     #@task(params = IN)
     def main(self, params):
@@ -205,13 +207,14 @@ class process_hic:
 if __name__ == "__main__":
     import sys
     import os
-    from pycompss.api.api import compss_wait_on
     
     start = time.time()
     
     # Set up the command line parameters
     parser = argparse.ArgumentParser(description="Load adjacency list into HDF5 file")
-    parser.add_argument("--genome", help="Genome name") #             default="GCA_000001405.22")
+    #parser.add_argument("--genome", help="Genome name") #             default="GCA_000001405.22")
+    parser.add_argument("--species", help="Species (homo_sapiens)")
+    parser.add_argument("--assembly", help="Assembly (GRCh38)")
     parser.add_argument("--dataset", help="Name of the dataset") #    default="GSE63525")
     parser.add_argument("--expt_name")
     parser.add_argument("--expt_list", help="TSV detailing the SRA ID, library and restriction enzymeused that are to be treated as a single set")
@@ -252,6 +255,11 @@ if __name__ == "__main__":
         less_loading_list += less_params
 
     print more_loading_list
+    
+    cf = common()
+    
+    # Get the assembly
+    genome_fa = cf.getGenomeFile(data_dir, species, assembly)
     
     hic = process_hic()
     

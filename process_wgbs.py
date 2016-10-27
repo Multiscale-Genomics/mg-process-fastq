@@ -195,7 +195,6 @@ class process_wgbs:
 if __name__ == "__main__":
     import sys
     import os
-    from pycompss.api.api import compss_wait_on
     
     # Set up the command line parameters
     parser = argparse.ArgumentParser(description="Parse WGBS data")

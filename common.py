@@ -47,6 +47,7 @@ class common:
         """
         
         file_name = data_dir + species + '_' + assembly + '/' + species + '.' + assembly + '.dna.toplevel.fa.gz'
+        file_name_unzipped = file_name.replace('.fa.gz', '.fa')
         print file_name
         
         if os.path.isfile(file_name) == False:
@@ -54,13 +55,17 @@ class common:
             
             self.download_file(file_name, ftp_url)
             
+        if os.path.isfile(file_name + '.fa') == False:
+            with gzip.open(file_name, 'rb') as f_in, open(file_name_unzipped, 'wb') as f_out:
+                shutil.copyfileobj(f_in, f_out)
+        
         if os.path.isfile(file_name + '.ann') == False:
             self.bwa_index_genome(file_name)
         
-        if os.path.isfile(file_name + '.1.bt2') == False:
-            file_name_unzipped = file_name.replace('.fa.gz', '.fa')
-            with gzip.open(file_name, 'rb') as f_in, open(file_name.replace('.fa.gz', '.fa'), 'wb') as f_out:
-                shutil.copyfileobj(f_in, f_out)
+        if os.path.isfile(file_name_unzipped + '.1.bt2') == False:
+            self.bowtie_index_genome(file_name_unzipped)
+        
+        if os.path.isfile(file_name_unzipped + '.gem') == False:
             self.bowtie_index_genome(file_name_unzipped)
         
         return file_name
@@ -181,6 +186,20 @@ class common:
             break
         
         return True
+    
+    
+    def gem_index_genome(self, genome_file):
+        """
+        Create an index of the genome FASTA file with GEM
+        """
+        file_name = genome_file.split("/")
+        file_name[-1].replace('.fa', '')
+        
+        command_line = 'gem-indexer -i ' + genome_file + ' -o ' + file_name[-1].replace('.fa', '')
+        
+        args = shlex.split(command_line)
+        p = subprocess.Popen(args)
+        p.wait()
     
     
     def bowtie_index_genome(self, genome_file):

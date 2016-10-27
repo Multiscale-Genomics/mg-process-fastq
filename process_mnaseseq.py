@@ -57,7 +57,7 @@ class process_rnaseq:
         self.ready = ""
     
     
-    @task(data_dir = IN, project_id = IN, run_ids = IN, returns = int)
+    #@task(data_dir = IN, project_id = IN, run_ids = IN, returns = int)
     def inps_peak_calling(self, data_dir, project_id, run_ids):
         """
         Convert Bam to Bed then make Nucleosome peak calls. These are saved as

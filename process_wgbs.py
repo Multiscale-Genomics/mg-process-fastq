@@ -215,14 +215,12 @@ if __name__ == "__main__":
     
     project_id = args.project_id
     srr_id   = args.srr_id
-    genome   = args.genome
+    #genome   = args.genome
     aligner  = args.aligner
     aligner_dir = args.aligner_dir
     data_dir = args.data_dir
     tmp_dir  = args.tmp_dir
     local = args.local
-    
-    genome_dir = args.data_dir + genome + "/chroms/"
     
     start = time.time()
     
@@ -243,6 +241,13 @@ if __name__ == "__main__":
     except:
         pass
     
+    genome_dir = args.data_dir + genome
+    
+    try:
+        os.makedirs(genome_dir)
+    except:
+        pass
+    
     cf = common()
     
     # Optain the paired FastQ files
@@ -256,7 +261,8 @@ if __name__ == "__main__":
     out_file1 = in_file1.replace(".fastq", "_filtered.fastq")
     out_file2 = in_file2.replace(".fastq", "_filtered.fastq")
     
-    
+    # Get the assembly
+    genome_fa = cf.getGenomeFile(data_dir, species, assembly)
     
     # Run the FilterReads.py steps for the individual FastQ files
     x = []
@@ -265,7 +271,7 @@ if __name__ == "__main__":
     #x = compss_wait_on(x)
     
     # Run the bs_seeker2-builder.py steps
-    pwgbs.Builder(genome_dir + genome + ".fa", "bowtie2", aligner_dir, genome_dir)
+    pwgbs.Builder(genome_fa, "bowtie2", aligner_dir, genome_dir)
         
     # Split the paired fastq files
     tmp_fastq = pwgbs.Splitter(in_file1, in_file2, tag)
@@ -275,7 +281,7 @@ if __name__ == "__main__":
     fastq_for_alignment = []
     for bams in tmp_fastq:
         tmp = bams
-        tmp.append(aligner, aligner_path, genome_fasta_files)
+        tmp.append(aligner, aligner_path, genome_fa)
         fastq_for_alignment.append(tmp)
         bam_root = bams[0] + "_bspe.bam"
         bam_sort_files.append(bams[0] + "_bspe.bam")
@@ -284,8 +290,8 @@ if __name__ == "__main__":
     # Run the bs_seeker2-align.py steps on the split up fastq files
     x = []
     for ffa in fastq_for_alignment:
-        x.append(pwgbs.Aligner(ffa))
-    x = compss_wait_on(x)
+        pwgbs.Aligner(ffa)
+    #x = compss_wait_on(x)
     
     # Sort and merge the aligned bam files
     # Pre-sort the original input bam files

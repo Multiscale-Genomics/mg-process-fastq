@@ -60,7 +60,7 @@ class common:
             with gzip.open(file_name, 'rb') as f_in, open(file_name_unzipped, 'wb') as f_out:
                 shutil.copyfileobj(f_in, f_out)
         
-        if os.path.isfile(file_name + '.ann') == False:
+        if os.path.isfile(file_name_unzipped + '.idx') == False:
             print "Indexing - BWA"
             self.bwa_index_genome(file_name)
         
@@ -73,7 +73,7 @@ class common:
             print "Indexing - GEM"
             self.bowtie_index_genome(file_name_unzipped)
         
-        return file_name
+        return {'zipped': file_name, 'unzipped': file_name_unzipped, 'index' : {'bowtie' : file_name_unzipped + '_bowtie2', 'bwa' : file_name_unzipped + '.idx', 'gem' : file_name_unzipped + '.gem'}}
     
     
     def getcDNAFiles(self, data_dir, species, assembly):

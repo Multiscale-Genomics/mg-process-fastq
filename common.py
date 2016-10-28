@@ -62,7 +62,7 @@ class common:
         if os.path.isfile(file_name + '.ann') == False:
             self.bwa_index_genome(file_name)
         
-        if os.path.isfile(file_name_unzipped + '.1.bt2') == False:
+        if os.path.isdir(file_name_unzipped + '_bowtie2') == False:
             self.bowtie_index_genome(file_name_unzipped)
         
         if os.path.isfile(file_name_unzipped + '.gem') == False:

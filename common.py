@@ -41,7 +41,7 @@ class common:
         self.ready = ""
     
     
-    def getGenomeFile(self, data_dir, species, assembly):
+    def getGenomeFile(self, data_dir, species, assembly, index = True):
         """
         Function for downloading and extracting the DNA files from the ensembl FTP
         """
@@ -60,12 +60,13 @@ class common:
             with gzip.open(file_name, 'rb') as f_in, open(file_name_unzipped, 'wb') as f_out:
                 shutil.copyfileobj(f_in, f_out)
         
-        indexes = self.run_indexers(file_name_unzipped)
+        if index == True:
+            indexes = self.run_indexers(file_name_unzipped)
         
         return {'zipped': file_name, 'unzipped': file_name_unzipped, 'index' : indexers}
     
     
-    def getGenomeFromENA(self, data_dir, species, assembly):
+    def getGenomeFromENA(self, data_dir, species, assembly, index = True):
         """
         Obtain the Assembly from the ENA. This means that it is possible to get
         the exact assembly matching that defined by the user.
@@ -87,7 +88,8 @@ class common:
         ftp_url = 'http://www.ebi.ac.uk/ena/data/view/' + ','.join(chr_list) + '&display=fasta'
         self.download_file(file_name, ftp_url)
         
-        indexes = self.run_indexers(file_name_unzipped)
+        if index == True:
+            indexes = self.run_indexers(file_name_unzipped)
         
         return {'unzipped': file_name_unzipped, 'index' : indexers}
     

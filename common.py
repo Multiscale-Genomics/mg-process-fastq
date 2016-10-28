@@ -91,7 +91,7 @@ class common:
         if index == True:
             indexes = self.run_indexers(file_name_unzipped)
         
-        return {'unzipped': file_name_unzipped, 'index' : indexers}
+        return {'unzipped': file_name, 'index' : indexers}
     
     
     def getcDNAFiles(self, data_dir, species, assembly, e_release):

@@ -60,23 +60,39 @@ class common:
             with gzip.open(file_name, 'rb') as f_in, open(file_name_unzipped, 'wb') as f_out:
                 shutil.copyfileobj(f_in, f_out)
         
-        if os.path.isfile(file_name_unzipped + '.idx') == False:
-            print "Indexing - BWA"
-            self.bwa_index_genome(file_name)
+        indexes = self.run_indexers(file_name_unzipped)
         
-        print file_name_unzipped + '_bowtie2'
-        if os.path.isdir(file_name_unzipped + '_bowtie2') == False:
-            print "Indexing - Bowtie"
-            self.bowtie_index_genome(file_name_unzipped)
-        
-        if os.path.isfile(file_name_unzipped + '.gem') == False:
-            print "Indexing - GEM"
-            self.bowtie_index_genome(file_name_unzipped)
-        
-        return {'zipped': file_name, 'unzipped': file_name_unzipped, 'index' : {'bowtie' : file_name_unzipped + '_bowtie2', 'bwa' : file_name_unzipped + '.idx', 'gem' : file_name_unzipped + '.gem'}}
+        return {'zipped': file_name, 'unzipped': file_name_unzipped, 'index' : indexers}
     
     
-    def getcDNAFiles(self, data_dir, species, assembly):
+    def getGenomeFromENA(self, data_dir, species, assembly):
+        """
+        Obtain the Assembly from the ENA. This means that it is possible to get
+        the exact assembly matching that defined by the user.
+        """
+        
+        file_name = data_dir + species + '_' + assembly + '/' + species + '.' + assembly + '.fa'
+        
+        ftp_list_url = 'ftp://ftp.ebi.ac.uk/pub/databases/ena/assembly/' + assembly[0:7] + '/' + assembly[0:10] + '/' + assembly + '_sequence_report.txt'
+        res_list = urllib2.urlopen(ftp_list_url)
+        table = res_list.read()
+        table = table.split("\n")
+        
+        chr_list = []
+        for row in table:
+            col = row.split("\t")
+            if len(col) > 5 and col[3] == 'assembled-molecule':
+                chr_list.append(col[0])
+        
+        ftp_url = 'http://www.ebi.ac.uk/ena/data/view/' + ','.join(chr_list) + '&display=fasta'
+        self.download_file(file_name, ftp_url)
+        
+        indexes = self.run_indexers(file_name_unzipped)
+        
+        return {'unzipped': file_name_unzipped, 'index' : indexers}
+    
+    
+    def getcDNAFiles(self, data_dir, species, assembly, e_release):
         """
         Function for downloading and extracting the CDNA files from the ensembl FTP
         """
@@ -84,7 +100,7 @@ class common:
         file_name = data_dir + species + '_' + assembly + '/' + species + '.' + assembly + '.cdna.all.fa.gz'
         
         if os.path.isfile(file_name) == False:
-            ftp_url = 'ftp://ftp.ensembl.org/pub/current_fasta/' + species.lower() + '/cdna/' + species[0].upper() + species[1:] + '.' + assembly + '.cdna.all.fa.gz'
+            ftp_url = 'ftp://ftp.ensembl.org/pub/release-' + e-release + '/' + species.lower() + '/cdna/' + species[0].upper() + species[1:] + '.' + assembly + '.cdna.all.fa.gz'
             
             self.download_file(file_name, ftp_url)
         
@@ -191,6 +207,34 @@ class common:
             break
         
         return True
+    
+    
+    def run_indexers(self, file_name):
+        """
+        
+        """
+        
+        file_name_unzipped = file_name.replace('.fa.gz', '.fa')
+        
+        if os.path.isfile(file_name_unzipped) == False:
+            print "Unzipping"
+            with gzip.open(file_name, 'rb') as f_in, open(file_name_unzipped, 'wb') as f_out:
+                shutil.copyfileobj(f_in, f_out)
+        
+        if os.path.isfile(file_name_unzipped + '.idx') == False:
+            print "Indexing - BWA"
+            self.bwa_index_genome(file_name)
+        
+        print file_name_unzipped + '_bowtie2'
+        if os.path.isdir(file_name_unzipped + '_bowtie2') == False:
+            print "Indexing - Bowtie"
+            self.bowtie_index_genome(file_name_unzipped)
+        
+        if os.path.isfile(file_name_unzipped + '.gem') == False:
+            print "Indexing - GEM"
+            self.bowtie_index_genome(file_name_unzipped)
+        
+        return {'bowtie' : file_name_unzipped + '_bowtie2', 'bwa' : file_name_unzipped + '.idx', 'gem' : file_name_unzipped + '.gem'}
     
     
     def gem_index_genome(self, genome_file):

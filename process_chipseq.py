@@ -99,11 +99,11 @@ class process_chipseq:
         
         # Run BWA
         for run_id in expt["run_ids"]:
-            cf.bwa_align_reads(genome_fa, data_dir, expt["project_id"], run_id)
+            cf.bwa_align_reads(genome_fa["index"]["bwa"], data_dir, expt["project_id"], run_id)
             out_bam = data_dir + expt["project_id"] + '/' + run_id + '.bam'
         
         for bgd_id in expt["bgd_ids"]:
-            cf.bwa_align_reads(genome_fa, data_dir, expt["project_id"], bgd_id)
+            cf.bwa_align_reads(genome_fa["index"]["bwa"], data_dir, expt["project_id"], bgd_id)
         
         final_run_id = expt["project_id"] + "_" + expt["group_name"] + "_run"
         final_bgd_id = expt["project_id"] + "_" + expt["group_name"] + "_bgd"
@@ -170,7 +170,7 @@ if __name__ == "__main__":
         pass
     
     # Get the assembly
-    genome_fa = cf.getGenomeFile(data_dir, species, assembly)
+    genome_fa = cf.getGenomeFromENA(data_dir, species, assembly)
     
     with open(run_id_file) as data_file:    
         job_id_sets = json.load(data_file)

@@ -263,7 +263,7 @@ if __name__ == "__main__":
     out_file2 = in_file2.replace(".fastq", "_filtered.fastq")
     
     # Get the assembly
-    genome_fa = cf.getGenomeFile(data_dir, species, assembly)
+    genome_fa = cf.getGenomeFromENA(data_dir, species, assembly)
     
     # Run the FilterReads.py steps for the individual FastQ files
     x = []
@@ -272,7 +272,7 @@ if __name__ == "__main__":
     #x = compss_wait_on(x)
     
     # Run the bs_seeker2-builder.py steps
-    pwgbs.Builder(genome_fa, "bowtie2", aligner_dir, genome_dir)
+    pwgbs.Builder(genome_fa["index"]["bowtie"], "bowtie2", aligner_dir, genome_dir)
         
     # Split the paired fastq files
     tmp_fastq = pwgbs.Splitter(in_file1, in_file2, tag)
@@ -282,7 +282,7 @@ if __name__ == "__main__":
     fastq_for_alignment = []
     for bams in tmp_fastq:
         tmp = bams
-        tmp.append(aligner, aligner_path, genome_fa)
+        tmp.append(aligner, aligner_path, genome_fa["index"]["bowtie"])
         fastq_for_alignment.append(tmp)
         bam_root = bams[0] + "_bspe.bam"
         bam_sort_files.append(bams[0] + "_bspe.bam")

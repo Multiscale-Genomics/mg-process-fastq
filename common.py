@@ -55,17 +55,22 @@ class common:
             
             self.download_file(file_name, ftp_url)
             
-        if os.path.isfile(file_name + '.fa') == False:
+        if os.path.isfile(file_name_unzipped) == False:
+            print "Unzipping"
             with gzip.open(file_name, 'rb') as f_in, open(file_name_unzipped, 'wb') as f_out:
                 shutil.copyfileobj(f_in, f_out)
         
         if os.path.isfile(file_name + '.ann') == False:
+            print "Indexing - BWA"
             self.bwa_index_genome(file_name)
         
+        print file_name_unzipped + '_bowtie2'
         if os.path.isdir(file_name_unzipped + '_bowtie2') == False:
+            print "Indexing - Bowtie"
             self.bowtie_index_genome(file_name_unzipped)
         
         if os.path.isfile(file_name_unzipped + '.gem') == False:
+            print "Indexing - GEM"
             self.bowtie_index_genome(file_name_unzipped)
         
         return file_name

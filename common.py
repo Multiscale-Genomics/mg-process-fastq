@@ -60,10 +60,11 @@ class common:
             with gzip.open(file_name, 'rb') as f_in, open(file_name_unzipped, 'wb') as f_out:
                 shutil.copyfileobj(f_in, f_out)
         
+        indexes = {}
         if index == True:
             indexes = self.run_indexers(file_name_unzipped)
         
-        return {'zipped': file_name, 'unzipped': file_name_unzipped, 'index' : indexers}
+        return {'zipped': file_name, 'unzipped': file_name_unzipped, 'index' : indexes}
     
     
     def getGenomeFromENA(self, data_dir, species, assembly, index = True):

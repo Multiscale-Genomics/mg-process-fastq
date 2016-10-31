@@ -74,19 +74,20 @@ class common:
         
         file_name = data_dir + species + '_' + assembly + '/' + species + '.' + assembly + '.fa'
         
-        ftp_list_url = 'ftp://ftp.ebi.ac.uk/pub/databases/ena/assembly/' + assembly[0:7] + '/' + assembly[0:10] + '/' + assembly + '_sequence_report.txt'
-        res_list = urllib2.urlopen(ftp_list_url)
-        table = res_list.read()
-        table = table.split("\n")
-        
-        chr_list = []
-        for row in table:
-            col = row.split("\t")
-            if len(col) > 5 and col[3] == 'assembled-molecule':
-                chr_list.append(col[0])
-        
-        ftp_url = 'http://www.ebi.ac.uk/ena/data/view/' + ','.join(chr_list) + '&display=fasta'
-        self.download_file(file_name, ftp_url)
+        if os.path.isfile(file_name) == False:
+          ftp_list_url = 'ftp://ftp.ebi.ac.uk/pub/databases/ena/assembly/' + assembly[0:7] + '/' + assembly[0:10] + '/' + assembly + '_sequence_report.txt'
+          res_list = urllib2.urlopen(ftp_list_url)
+          table = res_list.read()
+          table = table.split("\n")
+          
+          chr_list = []
+          for row in table:
+              col = row.split("\t")
+              if len(col) > 5 and col[3] == 'assembled-molecule':
+                  chr_list.append(col[0])
+          
+          ftp_url = 'http://www.ebi.ac.uk/ena/data/view/' + ','.join(chr_list) + '&display=fasta'
+          self.download_file(file_name, ftp_url)
         
         if index == True:
             indexes = self.run_indexers(file_name_unzipped)

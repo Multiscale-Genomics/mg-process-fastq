@@ -90,7 +90,7 @@ class common:
           self.download_file(file_name, ftp_url)
         
         if index == True:
-            indexes = self.run_indexers(file_name_unzipped)
+            indexes = self.run_indexers(file_name)
         
         return {'unzipped': file_name, 'index' : indexers}
     

@@ -90,10 +90,11 @@ class common:
           ftp_url = 'http://www.ebi.ac.uk/ena/data/view/' + ','.join(chr_list) + '&display=fasta'
           self.download_file(file_name, ftp_url)
         
+        indexes = {}
         if index == True:
             indexes = self.run_indexers(file_name)
         
-        return {'unzipped': file_name, 'index' : indexers}
+        return {'unzipped': file_name, 'index' : indexes}
     
     
     def getcDNAFiles(self, data_dir, species, assembly, e_release):

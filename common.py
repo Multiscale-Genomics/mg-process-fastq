@@ -217,26 +217,26 @@ class common:
         """
         
         file_name_unzipped = file_name.replace('.fa.gz', '.fa')
+        file_name_nofa = file_name_unzipped.replace('.fa', '')
         
         if os.path.isfile(file_name_unzipped) == False:
             print "Unzipping"
             with gzip.open(file_name, 'rb') as f_in, open(file_name_unzipped, 'wb') as f_out:
                 shutil.copyfileobj(f_in, f_out)
         
-        if os.path.isfile(file_name_unzipped + '.idx') == False:
+        if os.path.isfile(file_name_unzipped + '.bwt') == False:
             print "Indexing - BWA"
             self.bwa_index_genome(file_name)
         
-        print file_name_unzipped + '_bowtie2'
-        if os.path.isdir(file_name_unzipped + '_bowtie2') == False:
+        if os.path.isdir(file_name_nofa + '.1.bt2') == False:
             print "Indexing - Bowtie"
             self.bowtie_index_genome(file_name_unzipped)
         
-        if os.path.isfile(file_name_unzipped + '.gem') == False:
+        if os.path.isfile(file_name_nofa + '.gem') == False:
             print "Indexing - GEM"
             self.bowtie_index_genome(file_name_unzipped)
         
-        return {'bowtie' : file_name_unzipped + '_bowtie2', 'bwa' : file_name_unzipped + '.idx', 'gem' : file_name_unzipped + '.gem'}
+        return {'bowtie' : file_name_unzipped + '.1.bt2', 'bwa' : file_name_unzipped + '.bwt', 'gem' : file_name_unzipped + '.gem'}
     
     
     def gem_index_genome(self, genome_file):

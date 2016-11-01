@@ -99,11 +99,11 @@ class process_chipseq:
         
         # Run BWA
         for run_id in expt["run_ids"]:
-            cf.bwa_align_reads(genome_fa["index"]["bwa"], data_dir, expt["project_id"], run_id)
+            cf.bwa_align_reads(genome_fa["unzipped"], data_dir, expt["project_id"], run_id)
             out_bam = data_dir + expt["project_id"] + '/' + run_id + '.bam'
         
         for bgd_id in expt["bgd_ids"]:
-            cf.bwa_align_reads(genome_fa["index"]["bwa"], data_dir, expt["project_id"], bgd_id)
+            cf.bwa_align_reads(genome_fa["unzipped"], data_dir, expt["project_id"], bgd_id)
         
         final_run_id = expt["project_id"] + "_" + expt["group_name"] + "_run"
         final_bgd_id = expt["project_id"] + "_" + expt["group_name"] + "_bgd"

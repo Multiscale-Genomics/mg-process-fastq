@@ -112,9 +112,9 @@ class process_rnaseq:
             if len(run_fastq_files[run_id]) > 1:
                 paired = 1
                 for i in range(1,len(run_fastq_files[run_id])+1):
-                    cf.bwa_align_reads(genome_fa["index"]["bwa"], data_dir, expt["project_id"], run_id + "_" + str(i))
+                    cf.bwa_align_reads(genome_fa["unzipped"], data_dir, expt["project_id"], run_id + "_" + str(i))
             else:
-                cf.bwa_align_reads(genome_fa["index"]["bwa"], data_dir, expt["project_id"], run_id)
+                cf.bwa_align_reads(genome_fa["unzipped"], data_dir, expt["project_id"], run_id)
         
         self.inps_peak_calling(data_dir, expt["project_id"], expt["run_ids"])
         

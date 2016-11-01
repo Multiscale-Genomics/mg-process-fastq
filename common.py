@@ -100,7 +100,7 @@ class common:
         return {'unzipped': file_name, 'index' : indexes}
     
     
-    def replaceENAHeader(file_path):
+    def replaceENAHeader(self, file_path):
         """
         The ENA header has pipes in the header as part of teh stable_id. This
         function removes the ENA stable_id and replaces it with the final

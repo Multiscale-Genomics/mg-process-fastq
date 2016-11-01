@@ -122,8 +122,6 @@ class process_chipseq:
         # MACS2 to call peaks
         self.macs2_peak_calling(data_dir, expt["project_id"], final_run_id, final_bgd_id)
         
-        return 1
-        
     
 if __name__ == "__main__":
     import sys

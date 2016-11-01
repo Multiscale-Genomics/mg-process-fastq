@@ -337,4 +337,4 @@ class common:
             pysam.merge(out_bam_file, *bam_merge_files)
             pysam.sort("-o", str(out_bam_file), "-T", str(out_bam_file) + ".bam_sort", str(out_bam_file))
 
-        pysam.index(out_bam_file)
+        pysam.index(str(out_bam_file))

@@ -106,6 +106,9 @@ class common:
         function removes the ENA stable_id and replaces it with the final
         section after splitting the stable ID on the pipe.
         """
+        from tempfile import mkstemp
+        from shutil import move
+        from os import remove, close
         
         #Create temp file
         fh, abs_path = mkstemp()

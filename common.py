@@ -323,13 +323,18 @@ class common:
         bam_sort_files = []
         bam_merge_files = []
         for bam in bam_files:
-            bam_sort_files.append(bam)
-            bam_merge_files.append(["-o", bam + ".sorted.bam", "-T", bam + ".bam_sort", bam])
-        
-        map(pysam.sort, bam_sort_files)
-        
-        pysam.merge(out_bam_file, bam_merge_files)
-    
-        pysam.sort("-o", out_bam_file + '.sorted.bam', "-T", out_bam_file + ".bam_sort", out_bam_file)
-    
+            bam_loc = data_dir + project_id + '/' + bam
+            bam_sort_files.append(bam_loc)
+            bam_merge_files.append(bam_loc)
+
+        for bam_sort_file in bam_sort_files:
+            print bam_sort_file
+            pysam.sort("-o", str(bam_sort_file), str(bam_sort_file))
+
+        if len(bam_sort_files) == 1:
+            pysam.sort("-o", str(out_bam_file), str(bam_sort_files[0]))
+        else:
+            pysam.merge(out_bam_file, *bam_merge_files)
+            pysam.sort("-o", str(out_bam_file), "-T", str(out_bam_file) + ".bam_sort", str(out_bam_file))
+
         pysam.index(out_bam_file)

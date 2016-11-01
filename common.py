@@ -73,7 +73,7 @@ class common:
         the exact assembly matching that defined by the user.
         """
         
-        file_name = data_dir + species + '_' + assembly + '/' + species + '_' + assembly + '.fa'
+        file_name = data_dir + species + '_' + assembly + '/' + species + '.' + assembly + '.fa'
         
         if os.path.isfile(file_name) == False:
           ftp_list_url = 'ftp://ftp.ebi.ac.uk/pub/databases/ena/assembly/' + assembly[0:7] + '/' + assembly[0:10] + '/' + assembly + '_sequence_report.txt'

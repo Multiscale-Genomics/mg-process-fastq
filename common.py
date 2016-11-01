@@ -89,12 +89,37 @@ class common:
           
           ftp_url = 'http://www.ebi.ac.uk/ena/data/view/' + ','.join(chr_list) + '&display=fasta'
           self.download_file(file_name, ftp_url)
+          self.replaceENAHeader(file_name)
         
         indexes = {}
         if index == True:
             indexes = self.run_indexers(file_name)
         
         return {'unzipped': file_name, 'index' : indexes}
+    
+    
+    def replaceENAHeader(file_path):
+        """
+        The ENA header has pipes in the header as part of teh stable_id. This
+        function removes the ENA stable_id and replaces it with the final
+        section after splitting the stable ID on the pipe.
+        """
+        
+        #Create temp file
+        fh, abs_path = mkstemp()
+        with open(abs_path,'w') as new_file:
+            with open(file_path) as old_file:
+                for line in old_file:
+                    if line[0] == '>':
+                        space_line = line.split(" ")
+                        new_file.write(">" + space_line[0].split("|")[-1].replace(">", "") + " " + " ".join(space_line[1:]))
+                    else:
+                        new_file.write(line)
+        close(fh)
+        #Remove original file
+        remove(file_path)
+        #Move new file
+        move(abs_path, file_path)
     
     
     def getcDNAFiles(self, data_dir, species, assembly, e_release):

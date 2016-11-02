@@ -201,7 +201,7 @@ if __name__ == "__main__":
     parser.add_argument("--species", help="Species (Homo_sapiens)")
     parser.add_argument("--assembly", help="Assembly (GRCm38)")
     #parser.add_argument("--genome", help="Genome name") #             default="GCA_000001405.22")
-    parser.add_argument("--project_id", help="Project ID of the dataset") #   default="SRR1536575")
+    parser.add_argument("--project_id", help="Project ID of the dataset") #   default="PRJNA257496")
     parser.add_argument("--srr_id", help="SRR ID of the dataset") #   default="SRR1536575")
     parser.add_argument("--aligner", help="Aligner to use (eg bowtie2)") #   default="bowtie2")
     parser.add_argument("--tmp_dir", help="Temporary data dir")

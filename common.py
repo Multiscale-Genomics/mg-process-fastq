@@ -90,8 +90,6 @@ class common:
           ftp_url = 'http://www.ebi.ac.uk/ena/data/view/' + ','.join(chr_list) + '&display=fasta'
           self.download_file(file_name, ftp_url)
         
-        self.replaceENAHeader(file_name)
-        
         indexes = {}
         if index == True:
             self.replaceENAHeader(file_name)

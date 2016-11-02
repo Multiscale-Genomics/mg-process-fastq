@@ -118,31 +118,6 @@ class process_rnaseq:
         
         self.inps_peak_calling(data_dir, expt["project_id"], expt["run_ids"])
         
-        
-        """
-        if expt.has_key("bgd_ids"):
-            # Obtain background FastQ files
-            bgd_ids = []
-            bgd_fastq_files = []
-            for bgd_id in expt["bgd_ids"]:
-                bgd_ids.append(run_id)
-                in_files = cf.getFastqFiles(bgd_id, data_dir)
-                bgd_fastq_files[run_id] = in_files
-            
-            for bgd_id in expt["bgd_ids"]:
-                if len(run_fastq_files[run_id]) > 1:
-                    paired = 1
-                    for i in range(1,len(run_fastq_files[run_id])+1):
-                        cf.bwa_align_reads(genome_fa, data_dir, expt["project_id"], bgd_id + "_" + str(i))
-                else:
-                    cf.bwa_align_reads(genome_fa, data_dir, expt["project_id"], bgd_id)
-            
-            # DANPOS to call peaks
-            self.danpos2_peak_calling(data_dir, expt["project_id"], expt["run_ids"], paired, expt["bgd_ids"][0])
-        else:
-            # DANPOS to call peaks
-            self.danpos2_peak_calling(data_dir, expt["project_id"], expt["run_ids"], paired, None)
-        """
     
 if __name__ == "__main__":
     import sys

@@ -263,7 +263,7 @@ if __name__ == "__main__":
     out_file2 = in_file2.replace(".fastq", "_filtered.fastq")
     
     # Get the assembly
-    genome_fa = cf.getGenomeFromENA(data_dir, species, assembly)
+    genome_fa = cf.getGenomeFromENA(data_dir, species, assembly, False)
     
     # Run the FilterReads.py steps for the individual FastQ files
     x = []

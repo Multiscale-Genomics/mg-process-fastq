@@ -164,7 +164,7 @@ if __name__ == "__main__":
         pass
     
     # Get the assembly
-    genome_fa = cf.getGenomeFromENA(data_dir, species, assembly)
+    genome_fa = cf.getGenomeFromENA(data_dir, species, assembly, False)
     
     # Run main loop
     with open(run_id_file) as data_file:    

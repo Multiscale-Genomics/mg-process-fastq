@@ -66,4 +66,4 @@ if __name__ == "__main__":
     
     # Get the assembly
     #genome_fa = cf.getGenomeFile(data_dir, species, assembly, False)
-    genome_fa = cf.getGenomeFromENA(data_dir, species, assembly)
+    genome_fa = cf.getGenomeFromENA(data_dir, species, assembly, True)

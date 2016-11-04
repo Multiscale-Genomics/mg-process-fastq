@@ -64,6 +64,7 @@ class process_chipseq:
                 p.wait()
     
     
+    @task(data_dir = IN, project_id = IN, run_id = IN, background_id = IN)
     def macs2_peak_calling(self, data_dir, project_id, run_id, background_id):
         """
         Function to run MACS2 for peak calling

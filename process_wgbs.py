@@ -272,7 +272,7 @@ if __name__ == "__main__":
     #x = compss_wait_on(x)
     
     # Run the bs_seeker2-builder.py steps
-    pwgbs.Builder(genome_fa["index"]["bowtie"], "bowtie2", aligner_dir, genome_dir)
+    pwgbs.Builder(genome_fa["unzipped"], "bowtie2", aligner_dir, genome_dir)
         
     # Split the paired fastq files
     tmp_fastq = pwgbs.Splitter(in_file1, in_file2, tag)

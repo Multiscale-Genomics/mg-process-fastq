@@ -271,10 +271,8 @@ if __name__ == "__main__":
     genome_fa = cf.getGenomeFromENA(data_dir, species, assembly, False)
     
     # Run the FilterReads.py steps for the individual FastQ files
-    x = []
     for l in [[in_file1, out_file1], [in_file2, out_file2]]:
         pwgbs.FilterFastQReads(l[0], l[1])
-    #x = compss_wait_on(x)
     
     # Run the bs_seeker2-builder.py steps
     pwgbs.Builder(genome_fa["unzipped"], "bowtie2", aligner_dir, genome_dir)
@@ -305,14 +303,14 @@ if __name__ == "__main__":
     f_bam[-1] = f_bam[-1].replace(".fastq", ".sorted.bam")
     out_bam_file = "/".join(f_bam)
     
-    pysam.merge(out_bam_file, bam_merge_files)
+    pysam.merge(out_bam_file, *bam_merge_files)
     
     pysam.sort("-o", out_bam_file + '.sorted.bam', "-T", out_bam_file + ".bam_sort", out_bam_file)
     
     pysam.index(out_bam_file)
     
     # Run the bs_seeker2-call_methylation.py steps
-    x = pwgbs.MethylationCaller(out_bam_file, tag, db_dir)
+    x = pwgbs.MethylationCaller(out_bam_file, 'tmp', db_dir)
     x = compss_wait_on(x)
     
     # Tidy up

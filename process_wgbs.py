@@ -92,7 +92,7 @@ class process_wgbs:
         """
         
         fqr = fastqreader()
-        fqr.openPairedFastQ(file1, file2)
+        fqr.openPairedFastQ(in_file1, in_file2)
         fqr.createOutputFiles(tag)
 
         r1 = fqr.next(1)
@@ -127,11 +127,11 @@ class process_wgbs:
             if count_r3 % 1000000 == 0:
                 fqr.incrementOutputFiles()
                 f1 = self.fastq1.split("/")
-                f1[-1] = f1[-1].replace(".fastq", "." + str(self.output_tag) + "_" + str(self.output_file_count) + ".fastq")
+                f1[-1] = f1[-1].replace(".fastq", "." + str(fqr.output_tag) + "_" + str(fqr.output_file_count) + ".fastq")
                 f1.insert(-1, "tmp")
                 
                 f2 = self.fastq2.split("/")
-                f2[-1] = f2[-1].replace(".fastq", "." + str(self.output_tag) + "_" + str(self.output_file_count) + ".fastq")
+                f2[-1] = f2[-1].replace(".fastq", "." + str(fqr.output_tag) + "_" + str(fqr.output_file_count) + ".fastq")
                 f2.insert(-1, "tmp")
                 
                 files_out.append(["/".join(f1), "/".join(f2)])
@@ -275,7 +275,7 @@ if __name__ == "__main__":
     pwgbs.Builder(genome_fa["unzipped"], "bowtie2", aligner_dir, genome_dir)
         
     # Split the paired fastq files
-    tmp_fastq = pwgbs.Splitter(in_file1, in_file2, tag)
+    tmp_fastq = pwgbs.Splitter(in_file1, in_file2, 'tmp')
     
     bam_sort_files = []
     bam_merge_files = []

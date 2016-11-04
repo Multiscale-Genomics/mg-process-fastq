@@ -120,9 +120,6 @@ class process_chipseq:
         self.biobambam_filter_alignments(data_dir, expt["project_id"], final_run_id)
         self.biobambam_filter_alignments(data_dir, expt["project_id"], final_bgd_id)
         
-        final_run_id = expt["project_id"] + "_" + expt["group_name"] + "_run"
-        final_bgd_id = expt["project_id"] + "_" + expt["group_name"] + "_bgd"
-        
         # MACS2 to call peaks
         self.macs2_peak_calling(data_dir, expt["project_id"], final_run_id, final_bgd_id)
         

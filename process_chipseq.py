@@ -72,7 +72,7 @@ class process_chipseq:
         """
         bam_file = data_dir + project_id + '/' + run_id + '.filtered.bam'
         bam_background_file = data_dir + project_id + '/' + background_id + '.filtered.bam'
-        command_line = 'macs2 callpeak -t ' + bam_file + ' -n ' + run_id + ' -c ' + bam_background_file + " --outdir " + data_dir + project_id
+        command_line = 'macs2 callpeak -t ' + bam_file + ' -n ' + run_id + ' -c ' + bam_background_file + ' --outdir ' + data_dir + project_id
         args = shlex.split(command_line)
         p = subprocess.Popen(args)
         p.wait()

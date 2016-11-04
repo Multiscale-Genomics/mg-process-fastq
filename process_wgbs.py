@@ -294,10 +294,8 @@ if __name__ == "__main__":
         bam_merge_files.append(["-o", bam_root + ".sorted.bam", "-T", bam_root + ".bam_sort", bam_root])
     
     # Run the bs_seeker2-align.py steps on the split up fastq files
-    x = []
     for ffa in fastq_for_alignment:
         pwgbs.Aligner(ffa)
-    #x = compss_wait_on(x)
     
     # Sort and merge the aligned bam files
     # Pre-sort the original input bam files

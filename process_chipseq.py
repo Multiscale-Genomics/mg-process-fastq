@@ -79,7 +79,6 @@ class process_chipseq:
         p.wait()
         
     
-    #@task(data_dir = IN, expt = IN, genome_fa = IN, returns = int)
     def main(self, data_dir, expt, genome_fa):
         """
         Main loop

@@ -242,6 +242,11 @@ if __name__ == "__main__":
     except:
         pass
     
+    try:
+        os.makedirs(data_dir + project_id + '/tmp')
+    except:
+        pass
+    
     genome_dir = args.data_dir + species + "_" + assembly
     
     try:

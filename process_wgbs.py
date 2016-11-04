@@ -126,11 +126,11 @@ class process_wgbs:
             
             if count_r3 % 1000000 == 0:
                 fqr.incrementOutputFiles()
-                f1 = self.fastq1.split("/")
+                f1 = fqr.fastq1.split("/")
                 f1[-1] = f1[-1].replace(".fastq", "." + str(fqr.output_tag) + "_" + str(fqr.output_file_count) + ".fastq")
                 f1.insert(-1, "tmp")
                 
-                f2 = self.fastq2.split("/")
+                f2 = fqr.fastq2.split("/")
                 f2[-1] = f2[-1].replace(".fastq", "." + str(fqr.output_tag) + "_" + str(fqr.output_file_count) + ".fastq")
                 f2.insert(-1, "tmp")
                 

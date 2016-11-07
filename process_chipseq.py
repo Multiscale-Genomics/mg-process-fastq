@@ -45,8 +45,8 @@ class process_chipseq:
         self.ready = ""
     
     
-    @task(data_dir = IN, project_id = IN, run_id = IN)
-    def biobambam_filter_alignments(self, data_dir, project_id, run_id):
+    @task(bam_file_in = FILE_IN, bam_file_out = FILE_OUT)
+    def biobambam_filter_alignments(self, bam_file_in, bam_file_out):
         """
         Sorts and filters the bam file.
         
@@ -54,9 +54,6 @@ class process_chipseq:
         can be run as an intermediate step, but should always be run as the 
         """
         command_line = 'bamsormadup'
-        bam_file_in  = data_dir + project_id + '/' + run_id + '.bam'
-        bam_file_out = data_dir + project_id + '/' + run_id + '.filtered.bam'
-        
         args = shlex.split(command_line)
         with open(bam_file_in, "r") as f_in:
             with open(bam_file_out, "w") as f_out:

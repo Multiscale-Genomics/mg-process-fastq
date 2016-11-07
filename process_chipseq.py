@@ -45,15 +45,15 @@ class process_chipseq:
         self.ready = ""
     
     
-    @task(bam_file_in = FILE_IN, bam_file_out = FILE_OUT)
-    def biobambam_filter_alignments(self, bam_file_in, bam_file_out):
+    @task(bam_file_in = FILE_IN, bam_file_out = FILE_OUT, tmp_dir = IN)
+    def biobambam_filter_alignments(self, bam_file_in, bam_file_out, tmp_dir):
         """
         Sorts and filters the bam file.
         
         It is important that all duplicate alignments have been removed. This
         can be run as an intermediate step, but should always be run as the 
         """
-        command_line = 'bamsormadup'
+        command_line = 'bamsormadup --tmpfile=' +  + '.tmp'
         args = shlex.split(command_line)
         with open(bam_file_in, "r") as f_in:
             with open(bam_file_out, "w") as f_out:
@@ -76,7 +76,7 @@ class process_chipseq:
         p.wait()
         
     
-    def main(self, data_dir, expt, genome_fa):
+    def main(self, data_dir, tmp_dir, expt, genome_fa):
         """
         Main loop
         """
@@ -113,8 +113,12 @@ class process_chipseq:
         cf.merge_bam(data_dir, expt["project_id"], final_bgd_id, expt["bgd_ids"])
         
         # Filter the bams
-        self.biobambam_filter_alignments(data_dir, expt["project_id"], final_run_id)
-        self.biobambam_filter_alignments(data_dir, expt["project_id"], final_bgd_id)
+        bam_file_in  = data_dir + project_id + '/' + final_run_id + '.bam'
+        bam_file_out = data_dir + project_id + '/' + final_run_id + '.filtered.bam'
+        self.biobambam_filter_alignments(bam_file_in, bam_file_out, tmp_dir + expt["project_id"] + '.run.tmp')
+        bam_bgd_file_in  = data_dir + project_id + '/' + final_bgd_id + '.bam'
+        bam_bgd_file_out = data_dir + project_id + '/' + final_bgd_id + '.filtered.bam'
+        self.biobambam_filter_alignments(bam_bgd_file_in, bam_bgd_file_out, tmp_dir + expt["project_id"] + '.bgd.tmp')
         
         # MACS2 to call peaks
         self.macs2_peak_calling(data_dir, expt["project_id"], final_run_id, final_bgd_id)
@@ -133,6 +137,7 @@ if __name__ == "__main__":
     parser.add_argument("--project_id", help="Project ID of the dataset")
     parser.add_argument("--run_ids", help="JSON file with list of the experiment run IDs and background data (if available) of the dataset")
     parser.add_argument("--data_dir", help="Data directory; location to download ERR FASTQ files and save results")
+    parser.add_argument("--tmp_dir", help="Temporary Data directory")
 
     # Get the matching parameters from the command line
     args = parser.parse_args()
@@ -142,6 +147,7 @@ if __name__ == "__main__":
     species     = args.species
     assembly    = args.assembly
     data_dir    = args.data_dir
+    tmp_dir    = args.tmp_dir
     
     pcs = process_chipseq()
     cf = common()
@@ -160,6 +166,11 @@ if __name__ == "__main__":
         pass
     
     try:
+        os.makedirs(tmp_dir + project)
+    except:
+        pass
+    
+    try:
         os.makedirs(data_dir + species + "_" + assembly)
     except:
         pass
@@ -172,7 +183,7 @@ if __name__ == "__main__":
     
     x = []
     for expt in job_id_sets["expts"]:
-        pcs.main(data_dir, expt, genome_fa)
+        pcs.main(data_dir, tmp_dir, expt, genome_fa)
     
     
     

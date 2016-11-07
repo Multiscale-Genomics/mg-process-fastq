@@ -113,11 +113,11 @@ class process_chipseq:
         cf.merge_bam(data_dir, expt["project_id"], final_bgd_id, expt["bgd_ids"])
         
         # Filter the bams
-        bam_file_in  = data_dir + project_id + '/' + final_run_id + '.bam'
-        bam_file_out = data_dir + project_id + '/' + final_run_id + '.filtered.bam'
+        bam_file_in  = data_dir + expt["project_id"] + '/' + final_run_id + '.bam'
+        bam_file_out = data_dir + expt["project_id"] + '/' + final_run_id + '.filtered.bam'
         self.biobambam_filter_alignments(bam_file_in, bam_file_out, tmp_dir + expt["project_id"] + '.run.tmp')
-        bam_bgd_file_in  = data_dir + project_id + '/' + final_bgd_id + '.bam'
-        bam_bgd_file_out = data_dir + project_id + '/' + final_bgd_id + '.filtered.bam'
+        bam_bgd_file_in  = data_dir + expt["project_id"] + '/' + final_bgd_id + '.bam'
+        bam_bgd_file_out = data_dir + expt["project_id"] + '/' + final_bgd_id + '.filtered.bam'
         self.biobambam_filter_alignments(bam_bgd_file_in, bam_bgd_file_out, tmp_dir + expt["project_id"] + '.bgd.tmp')
         
         # MACS2 to call peaks
@@ -176,7 +176,7 @@ if __name__ == "__main__":
         pass
     
     # Get the assembly
-    genome_fa = cf.getGenomeFromENA(data_dir, species, assembly)
+    genome_fa = cf.getGenomeFromENA(data_dir, species, assembly, False)
     
     with open(run_id_file) as data_file:    
         job_id_sets = json.load(data_file)

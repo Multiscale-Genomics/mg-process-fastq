@@ -285,7 +285,7 @@ if __name__ == "__main__":
     fastq_for_alignment = []
     for bams in tmp_fastq:
         tmp = bams
-        tmp.append(aligner, aligner_path, genome_fa["index"]["bowtie"])
+        tmp.append(aligner, aligner_path, genome_fa["unzipped"])
         fastq_for_alignment.append(tmp)
         bam_root = bams[0] + "_bspe.bam"
         bam_sort_files.append(bams[0] + "_bspe.bam")

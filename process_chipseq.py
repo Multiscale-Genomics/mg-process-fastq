@@ -115,10 +115,10 @@ class process_chipseq:
         # Filter the bams
         bam_file_in  = data_dir + expt["project_id"] + '/' + final_run_id + '.bam'
         bam_file_out = data_dir + expt["project_id"] + '/' + final_run_id + '.filtered.bam'
-        self.biobambam_filter_alignments(bam_file_in, bam_file_out, tmp_dir + expt["project_id"] + '.run.tmp')
+        self.biobambam_filter_alignments(bam_file_in, bam_file_out, tmp_dir + '/' + expt["project_id"] + '.run.tmp')
         bam_bgd_file_in  = data_dir + expt["project_id"] + '/' + final_bgd_id + '.bam'
         bam_bgd_file_out = data_dir + expt["project_id"] + '/' + final_bgd_id + '.filtered.bam'
-        self.biobambam_filter_alignments(bam_bgd_file_in, bam_bgd_file_out, tmp_dir + expt["project_id"] + '.bgd.tmp')
+        self.biobambam_filter_alignments(bam_bgd_file_in, bam_bgd_file_out, tmp_dir + '/' + expt["project_id"] + '.bgd.tmp')
         
         # MACS2 to call peaks
         self.macs2_peak_calling(data_dir, expt["project_id"], final_run_id, final_bgd_id)

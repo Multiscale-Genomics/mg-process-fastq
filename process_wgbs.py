@@ -171,8 +171,6 @@ class process_wgbs:
         args = shlex.split(command_line)
         p = subprocess.Popen(args)
         p.wait()
-        
-        return 1
 
 
     #@constraint(ProcessorCoreCount=8)
@@ -191,8 +189,6 @@ class process_wgbs:
         args = shlex.split(command_line)
         p = subprocess.Popen(args)
         p.wait()
-        
-        return 1
 
     
     def clean_up(self, data_dir):
@@ -331,5 +327,5 @@ if __name__ == "__main__":
     pwgbs.MethylationCaller(aligner_dir, out_bam_file, data_dir + project_id + '/' + srr_id + '/' + srr_id, genome_fa["unzipped"] + "_bowtie2")
     
     # Tidy up
-    pwgbs.clean_up(data_dir + srr_id)
+    pwgbs.clean_up(ata_dir + project_id)
 

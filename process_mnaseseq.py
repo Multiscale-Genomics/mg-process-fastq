@@ -43,7 +43,7 @@ class cd:
         os.chdir(self.savedPath)
 
 
-class process_rnaseq:
+class process_mnaseseq:
     """
     Functions for downloading and processing Mnase-seq FastQ files. Files are
     downloaded from the European Nucleotide Archive (ENA), then aligned,
@@ -143,7 +143,7 @@ if __name__ == "__main__":
     data_dir    = args.data_dir
     
     cf = common()
-    prs = process_rnaseq()
+    ps = process_mnaseseq()
     
     try:
         os.makedirs(data_dir)
@@ -170,7 +170,6 @@ if __name__ == "__main__":
     with open(run_id_file) as data_file:    
         job_id_sets = json.load(data_file)
     
-    x = []
     for expt in job_id_sets["expts"]:
-        prs.main(data_dir, expt, genome_fa)
+        ps.main(data_dir, expt, genome_fa)
     

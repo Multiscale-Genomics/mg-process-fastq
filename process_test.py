@@ -14,16 +14,22 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-from pycompss.api.parameter import *
-from pycompss.api.task import task
+try :
+    from pycompss.api.parameter import *
+    from pycompss.api.task import task
+except ImportError :
+    print "[Warning] Cannot import \"pycompss\" API packages."
+    print "          Using mock decorators."
+    
+    from pycompss_dummy import *
+
+        
 
 def main(x):
-    from pycompss.api.api import compss_wait_on
     print "Main process:"
     results = []
     for i in x:
         results.append(print_time(i))
-    results = compss_wait_on(results)
     print results
 
 @task(x = IN, returns = int)

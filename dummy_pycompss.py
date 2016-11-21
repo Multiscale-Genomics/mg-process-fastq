@@ -16,7 +16,7 @@
 
 #
 # This code is based on the dummy functions from the pyCOMPSS module so that the
-# functions can be run outside of the COMPS environment
+# functions can be run outside of the COMPS environment for testing purposes.
 #
 
 def compss_wait_on(a):

@@ -21,7 +21,7 @@ except ImportError :
     print "[Warning] Cannot import \"pycompss\" API packages."
     print "          Using mock decorators."
     
-    from pycompss_dummy import *
+    from dummy_pycompss import *
 
         
 

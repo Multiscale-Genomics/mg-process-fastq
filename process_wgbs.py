@@ -23,6 +23,16 @@ from pycompss.api.task import task
 from pycompss.api.parameter import *
 from pycompss.api.constraint import *
 
+try :
+    from pycompss.api.parameter import *
+    from pycompss.api.task import task
+    from pycompss.api.constraint import *
+except ImportError :
+    print "[Warning] Cannot import \"pycompss\" API packages."
+    print "          Using mock decorators."
+    
+    from dummy_pycompss import *
+
 from common import common
 import pysam
 

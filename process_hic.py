@@ -19,8 +19,15 @@ limitations under the License.
 # -*- coding: utf-8 -*-
 '''process Hi-C paired end FastQ files'''
 import argparse, time
-from pycompss.api.task import task
-from pycompss.api.parameter import *
+
+try :
+    from pycompss.api.parameter import *
+    from pycompss.api.task import task
+except ImportError :
+    print "[Warning] Cannot import \"pycompss\" API packages."
+    print "          Using mock decorators."
+    
+    from dummy_pycompss import *
 
 from common import common
 

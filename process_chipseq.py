@@ -18,8 +18,14 @@ limitations under the License.
 
 import argparse, urllib2, gzip, shutil, shlex, subprocess, os.path, json
 
-from pycompss.api.task import task
-from pycompss.api.parameter import *
+try :
+    from pycompss.api.parameter import *
+    from pycompss.api.task import task
+except ImportError :
+    print "[Warning] Cannot import \"pycompss\" API packages."
+    print "          Using mock decorators."
+    
+    from dummy_pycompss import *
 
 from common import common
 

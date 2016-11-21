@@ -20,8 +20,14 @@ import argparse, urllib2, gzip, shutil, shlex, subprocess, os.path
 
 from common import common
 
-from pycompss.api.task import task
-from pycompss.api.parameter import *
+try :
+    from pycompss.api.parameter import *
+    from pycompss.api.task import task
+except ImportError :
+    print "[Warning] Cannot import \"pycompss\" API packages."
+    print "          Using mock decorators."
+    
+    from dummy_pycompss import *
 
 class process_rnaseq:
     """

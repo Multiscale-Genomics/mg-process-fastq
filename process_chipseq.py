@@ -18,17 +18,20 @@
 
 import argparse, urllib2, gzip, shutil, shlex, subprocess, os.path, json
 
-try :
-    from pycompss.api.parameter import *
+from .. import Tool, Workflow, Metadata
+from common import common
+from dmp import dmp
+import os
+
+try
+    from pycompss.api.parameter import FILE_IN, FILE_OUT
     from pycompss.api.task import task
+    from pycompss.api.constraint import constraint
 except ImportError :
     print "[Warning] Cannot import \"pycompss\" API packages."
     print "          Using mock decorators."
     
     from dummy_pycompss import *
-
-from common import common
-
 
 try :
     import pysam
@@ -37,19 +40,10 @@ except ImportError :
     exit(-1)
 
 
-class process_chipseq:
-    """
-    Functions for downloading and processing Chip-seq FastQ files. Files are
-    downloaded from the European Nucleotide Archive (ENA), then aligned,
-    filtered and analysed for peak calling
+class biobambamTool(Tool):
     """
     
-    def __init__ (self):
-        """
-        Initialise the module
-        """
-        self.ready = ""
-    
+    """
     
     @task(bam_file_in = FILE_IN, bam_file_out = FILE_OUT, tmp_dir = IN)
     def biobambam_filter_alignments(self, bam_file_in, bam_file_out, tmp_dir):
@@ -65,69 +59,102 @@ class process_chipseq:
             with open(bam_file_out, "w") as f_out:
                 p = subprocess.Popen(args, stdin=f_in, stdout=f_out)
                 p.wait()
+        
+        return True
     
     
-    @task(data_dir = IN, project_id = IN, run_id = IN, background_id = IN)
-    def macs2_peak_calling(self, data_dir, project_id, run_id, background_id):
+    def run(self, input_files, metadata):
+        """
+        Standard function to call a task
+        """
+        output_file = input_files[0].replace('.bam', '.filtered.bam')
+        
+        # handle error
+        if not self.biobambam_filter_alignments(input_files[0], output_file):
+            output_metadata.set_exception(
+                Exception(
+                    "biobambamTool: Could not process files {}, {}.".format(*input_files)))
+output_file = None
+        return ([output_file], [output_metadata])
+    
+
+class macs2Tool(Tool):
+    """
+    
+    """
+    
+    @task(name = IN, bam_file = FILE_IN, bam_file_bg = FILE_IN, peak_bed = FILE_OUT, summit_bed = FILE_OUT, narrowPeak = FILE_OUT, broadPeak = FILE_OUT, gappedPeak = FILE_OUT)
+    def macs2_peak_calling(self, name, bam_file, bam_file_bg):
         """
         Function to run MACS2 for peak calling
         
         background might need to be optional.
         """
-        bam_file = data_dir + project_id + '/' + run_id + '.filtered.bam'
-        bam_background_file = data_dir + project_id + '/' + background_id + '.filtered.bam'
-        command_line = 'macs2 callpeak -t ' + bam_file + ' -n ' + run_id + ' -c ' + bam_background_file + ' --outdir ' + data_dir + project_id
+        command_line = 'macs2 callpeak -t ' + bam_file + ' -n ' + name + ' -c ' + bam_file_bg + ' --outdir ' + data_dir + project_id
         args = shlex.split(command_line)
         p = subprocess.Popen(args)
         p.wait()
         
+        peak_bed    = name + "_peaks.bed"
+        summits_bed = name + "_summits.bed"
+        narrowPeak  = name + "_narrowPeak"
+        broadPeak   = name + "_broadPeak"
+        gappedPeak  = name + "_gappedPeak"
+        
+        return True
     
-    def main(self, data_dir, tmp_dir, expt, genome_fa):
+    
+    def run(self, input_files, metadata):
         """
-        Main loop
+        Standard function to call a task
         """
+        
+        # handle error
+        if not self.macs2_peak_calling("TODO_Name", input_files[0], input_files[1]):
+            output_metadata.set_exception(
+                Exception(
+                    "macs2_peak_calling: Could not process files {}, {}.".format(*input_files)))
+output_file = None
+        return ([output_file], [output_metadata])
+
+
+class process_chipseq(Workflow):
+    """
+    Functions for downloading and processing Chip-seq FastQ files. Files are
+    downloaded from the European Nucleotide Archive (ENA), then aligned,
+    filtered and analysed for peak calling
+    """
+    
+    def run(self, file_ids, metadata):
+        """
+        Main run function
+        """
+        
+        # TODO - Handle multiple file and background files
+        genome_fa = file_ids[0]
+        file_loc = file_ids[1]
+        file_bgd_loc = file_ids[2]
         
         cf = common()
         
-        # Optain the FastQ files
-        run_ids = []
-        for run_id in expt["run_ids"]:
-            run_ids.append(run_id)
-            if (expt.has_key("local") == False):
-                in_files = cf.getFastqFiles(expt["project_id"], data_dir, run_id)
+        cf.bwa_align_reads(genome_fa["unzipped"], file_loc)
+        out_bam = file_loc.replace('.fastq', '.bam')
         
-        # Obtain background FastQ files
-        bgd_ids = []
-        for bgd_id in expt["bgd_ids"]:
-            bgd_ids.append(run_id)
-            if (expt.has_key("local") == False):
-                in_files = cf.getFastqFiles(expt["project_id"], data_dir, bgd_id)
+        cf.bwa_align_reads(genome_fa["unzipped"], file_bgd_loc)
+        out_bgd_bam = file_bgd_loc.replace('.fastq', '.bam')
         
-        # Run BWA
-        for run_id in expt["run_ids"]:
-            cf.bwa_align_reads(genome_fa["unzipped"], data_dir, expt["project_id"], run_id)
-            out_bam = data_dir + expt["project_id"] + '/' + run_id + '.bam'
-        
-        for bgd_id in expt["bgd_ids"]:
-            cf.bwa_align_reads(genome_fa["unzipped"], data_dir, expt["project_id"], bgd_id)
-        
-        final_run_id = expt["project_id"] + "_" + expt["group_name"] + "_run"
-        final_bgd_id = expt["project_id"] + "_" + expt["group_name"] + "_bgd"
-        
-        # Merge Bam files
-        cf.merge_bam(data_dir, expt["project_id"], final_run_id, expt["run_ids"])
-        cf.merge_bam(data_dir, expt["project_id"], final_bgd_id, expt["bgd_ids"])
+        # TODO - Multiple files need merging into a single bam file
         
         # Filter the bams
-        bam_file_in  = data_dir + expt["project_id"] + '/' + final_run_id + '.bam'
-        bam_file_out = data_dir + expt["project_id"] + '/' + final_run_id + '.filtered.bam'
-        self.biobambam_filter_alignments(bam_file_in, bam_file_out, tmp_dir + '/' + expt["project_id"] + '.run.tmp')
-        bam_bgd_file_in  = data_dir + expt["project_id"] + '/' + final_bgd_id + '.bam'
-        bam_bgd_file_out = data_dir + expt["project_id"] + '/' + final_bgd_id + '.filtered.bam'
-        self.biobambam_filter_alignments(bam_bgd_file_in, bam_bgd_file_out, tmp_dir + '/' + expt["project_id"] + '.bgd.tmp')
+        b3f = biobambamTool(self.configuration)
+        b3f_file_out = b3f.run((out_bam), ())
+        b3f_file_bgd_out = b3f.run((out_bgd_bam), ())
         
         # MACS2 to call peaks
-        self.macs2_peak_calling(data_dir, expt["project_id"], final_run_id, final_bgd_id)
+        macs2 = macs2Tool(self.configuration)
+        peak_bed, summits_bed, narrowPeak, broadPeak, gappedPeak = macs2.run((b3f_file_out,  b3f_file_bgd_out), ())
+        
+        return (b3f_file_out, b3f_file_bgd_out, peak_bed, summits_bed, narrowPeak, broadPeak, gappedPeak)
         
     
 if __name__ == "__main__":
@@ -139,58 +166,47 @@ if __name__ == "__main__":
     # Set up the command line parameters
     parser = argparse.ArgumentParser(description="ChIP-seq peak calling")
     parser.add_argument("--species", help="Species (homo_sapiens)")
-    parser.add_argument("--assembly", help="Assembly (GRCh38)")
-    parser.add_argument("--project_id", help="Project ID of the dataset")
-    parser.add_argument("--run_ids", help="JSON file with list of the experiment run IDs and background data (if available) of the dataset")
-    parser.add_argument("--data_dir", help="Data directory; location to download ERR FASTQ files and save results")
-    parser.add_argument("--tmp_dir", help="Temporary Data directory")
-
+    parser.add_argument("--genome", help="Genome FASTA file")
+    parser.add_argument("--file", help="Project ID of the dataset")
+    parser.add_argument("--bgd_file", help="Project ID of the dataset")
+    
     # Get the matching parameters from the command line
     args = parser.parse_args()
     
-    project     = args.project_id
-    run_id_file = args.run_ids
     species     = args.species
-    assembly    = args.assembly
-    data_dir    = args.data_dir
-    tmp_dir    = args.tmp_dir
+    genome_fa   = args.genome
+    file_loc    = args.data_dir
+    file_bg_loc = args.tmp_dir
     
     pcs = process_chipseq()
     cf = common()
     
-    if data_dir[-1] != "/":
-        data_dir += "/"
-    
-    try:
-        os.makedirs(data_dir)
-    except:
-        pass
-
-    try:
-        os.makedirs(data_dir + project)
-    except:
-        pass
-    
-    try:
-        os.makedirs(tmp_dir + project)
-    except:
-        pass
-    
-    try:
-        os.makedirs(data_dir + species + "_" + assembly)
-    except:
-        pass
+    #
+    # MuG Tool Steps
+    # --------------
+    # 
+    # 1. Create data files
     
     # Get the assembly
     genome_fa = cf.getGenomeFromENA(data_dir, species, assembly, False)
     
-    with open(run_id_file) as data_file:    
-        job_id_sets = json.load(data_file)
+    #2. Register the data with the DMP
+    from dmp import dmp
     
-    x = []
-    for expt in job_id_sets["expts"]:
-        pcs.main(data_dir, tmp_dir, expt, genome_fa)
+    da = dmp()
     
+    print da.get_files_by_user("test")
     
+    genome_file = da.set_file("test", genome_fa, "fasta", "Assembly", 9606, None)
+    file_in = da.set_file("test", file_loc, "fasta", "ChIP-seq", 9606, None)
+    file_bg_in = da.set_file("test", file_bg_loc, "fasta", "ChIP-seq", 9606, None)
     
+    print da.get_files_by_user("test")
+    
+    # 3. Instantiate and launch the App
+    from nnn import WorkflowApp
+    app = WoekflowApp()
+    results = app.launch(process_chipseq, [genome_file, file_in, file_bg_in], {})
+    
+    print da.get_files_by_user("test")
     

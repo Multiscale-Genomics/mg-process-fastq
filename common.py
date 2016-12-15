@@ -1,19 +1,19 @@
 #!/usr/bin/python
 
 """
-Copyright 2016 EMBL-European Bioinformatics Institute
+.. Copyright 2016 EMBL-European Bioinformatics Institute
+ 
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at 
 
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
+       http://www.apache.org/licenses/LICENSE-2.0
 
-    http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
 """
 
 import argparse, urllib2, gzip, shutil, shlex, subprocess, os.path
@@ -309,15 +309,15 @@ class common:
         p.wait()
         
         
-    def bwa_align_reads(self, genome_file, data_dir, project_id, run_id):
+    def bwa_align_reads(self, genome_file, reads_file):
         """
         Map the reads to the genome
         """
         
         reads_file = data_dir + project_id + '/' + run_id + '.fastq'
-        intermediate_file = data_dir + project_id + '/' + run_id + '.sai'
-        intermediate_sam_file = data_dir + project_id + '/' + run_id + '.sam'
-        output_bam_file = data_dir + project_id + '/' + run_id + '.bam'
+        intermediate_file = reads_file.replace('.fastq', '.sai')
+        intermediate_sam_file = reads_file.replace('.fastq', '.sam')
+        output_bam_file = reads_file.replace('.fastq', '.bam')
         
         command_lines = [
             'bwa aln -q 5 -f ' + intermediate_file + ' ' + genome_file + ' ' + reads_file,
@@ -333,6 +333,7 @@ class common:
             p.wait()
     
     
+    #def merge_bam(self, data_dir, project_id, final_id, run_ids=[]):
     def merge_bam(self, data_dir, project_id, final_id, run_ids=[]):
         """
         Merge together all the bams in a directory and sort to create the final

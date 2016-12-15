@@ -62,7 +62,7 @@ class bowtieIndexerTool(Tool):
         if not self.bowtie_indexer(input_files[0]):
             output_metadata.set_exception(
                 Exception(
-                    "macs2_peak_calling: Could not process files {}, {}.".format(*input_files)))
+                    "bowtie2_indexer: Could not process files {}, {}.".format(*input_files)))
 output_file = None
         return ([output_file], [output_metadata])
     
@@ -90,12 +90,12 @@ class bwaIndexerTool(Tool):
         if not self.bwa_indexer(input_files[0]):
             output_metadata.set_exception(
                 Exception(
-                    "macs2_peak_calling: Could not process files {}, {}.".format(*input_files)))
+                    "bwa_indexer: Could not process files {}, {}.".format(*input_files)))
 output_file = None
         return ([output_file], [output_metadata])
     
     
-class bowtieIndexerTool(Tool):
+class gemIndexerTool(Tool):
     """
     Tool for running indexers over a genome FASTA file
     """
@@ -119,7 +119,7 @@ class bowtieIndexerTool(Tool):
         if not self.gem_indexer(input_files[0]):
             output_metadata.set_exception(
                 Exception(
-                    "macs2_peak_calling: Could not process files {}, {}.".format(*input_files)))
+                    "gem_indexer: Could not process files {}, {}.".format(*input_files)))
 output_file = None
         return ([output_file], [output_metadata])
 

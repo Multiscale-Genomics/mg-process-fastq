@@ -137,6 +137,20 @@ class processs_genome(Workflow):
         """
         Main run function
         """
+        
+        genome_fa = file_ids[0]
+        
+        # Bowtie2 Indexer
+        bt = bowtieIndexerTool(self.configuration)
+        bti = bt.run((genome_fa), ())
+        
+        # BWA Indexer
+        bwa = bwaIndexerTool(self.configuration)
+        bwai = bwa.run((genome_fa), ())
+        
+        # GEM Indexer
+        gem = gemIndexerTool(self.configuration)
+        gemi = gem.run((genome_fa), ())
 
 
 if __name__ == "__main__":
@@ -146,22 +160,18 @@ if __name__ == "__main__":
     from pycompss.api.api import compss_wait_on
     
     # Set up the command line parameters
-    parser = argparse.ArgumentParser(description="ChIP-seq peak calling")
-    parser.add_argument("--species", help="Species (homo_sapiens)")
+    parser = argparse.ArgumentParser(description="Index the genome file")
+    parser.add_argument("--species", help="Species (9606)")
     parser.add_argument("--genome", help="Genome FASTA file")
-    parser.add_argument("--file", help="Project ID of the dataset")
-    parser.add_argument("--bgd_file", help="Project ID of the dataset")
     
     # Get the matching parameters from the command line
     args = parser.parse_args()
     
     species     = args.species
-    genome_fa   = args.genome
     file_loc    = args.data_dir
     file_bg_loc = args.tmp_dir
     
-    pcs = process_chipseq()
-    cf = common()
+    pcs = process_genome()
     
     #
     # MuG Tool Steps
@@ -170,7 +180,8 @@ if __name__ == "__main__":
     # 1. Create data files
     
     # Get the assembly
-    genome_fa = cf.getGenomeFromENA(data_dir, species, assembly, False)
+    genome_fa   = args.genome
+    #genome_fa = cf.getGenomeFromENA(data_dir, species, assembly, False)
     
     #2. Register the data with the DMP
     from dmp import dmp
@@ -179,16 +190,14 @@ if __name__ == "__main__":
     
     print da.get_files_by_user("test")
     
-    genome_file = da.set_file("test", genome_fa, "fasta", "Assembly", 9606, None)
-    file_in = da.set_file("test", file_loc, "fasta", "ChIP-seq", 9606, None)
-    file_bg_in = da.set_file("test", file_bg_loc, "fasta", "ChIP-seq", 9606, None)
+    genome_file = da.set_file("test", genome_fa, "fasta", "Assembly", species, None)
     
     print da.get_files_by_user("test")
     
     # 3. Instantiate and launch the App
     from nnn import WorkflowApp
-    app = WoekflowApp()
-    results = app.launch(process_chipseq, [genome_file, file_in, file_bg_in], {})
+    app = WorkflowApp()
+    results = app.launch(process_genome, [genome_file], {})
     
     print da.get_files_by_user("test")
     

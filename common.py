@@ -265,7 +265,7 @@ class common:
         
         if os.path.isfile(file_name_nofa + '.gem') == False:
             print "Indexing - GEM"
-            self.bowtie_index_genome(file_name_unzipped)
+            self.gem_index_genome(file_name_unzipped)
         
         return {'bowtie' : file_name_unzipped + '.1.bt2', 'bwa' : file_name_unzipped + '.bwt', 'gem' : file_name_unzipped + '.gem'}
     
@@ -275,7 +275,6 @@ class common:
         Create an index of the genome FASTA file with GEM
         """
         file_name = genome_file.split("/")
-        file_name[-1].replace('.fa', '')
         
         command_line = 'gem-indexer -i ' + genome_file + ' -o ' + file_name[-1].replace('.fa', '')
         

@@ -42,7 +42,7 @@ except ImportError :
 
 class biobambamTool(Tool):
     """
-    
+    Tool to sort and filter bam files
     """
     
     @task(bam_file_in = FILE_IN, bam_file_out = FILE_OUT, tmp_dir = IN)
@@ -80,7 +80,7 @@ output_file = None
 
 class macs2Tool(Tool):
     """
-    
+    Tool for peak calling for ChIP-seq data
     """
     
     @task(name = IN, bam_file = FILE_IN, bam_file_bg = FILE_IN, peak_bed = FILE_OUT, summit_bed = FILE_OUT, narrowPeak = FILE_OUT, broadPeak = FILE_OUT, gappedPeak = FILE_OUT)

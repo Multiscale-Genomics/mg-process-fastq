@@ -46,12 +46,25 @@ class biobambamTool(Tool):
     """
     
     @task(bam_file_in = FILE_IN, bam_file_out = FILE_OUT, tmp_dir = IN)
-    def biobambam_filter_alignments(self, bam_file_in, bam_file_out, tmp_dir):
+    def biobambam_filter_alignments(self, bam_file_in, tmp_dir):
         """
         Sorts and filters the bam file.
         
         It is important that all duplicate alignments have been removed. This
-        can be run as an intermediate step, but should always be run as the 
+        can be run as an intermediate step, but should always be run as a check
+        to ensure that the files are sorted and duplicates have been removed.
+        
+        Parameters
+        ----------
+        bam_file_in : str
+            Location of the input bam file
+        tmp_dir : str
+            Tmp location for intermediate files during the sorting
+        
+        Returns
+        -------
+        bam_file_out : str
+            Location of the output bam file
         """
         command_line = 'bamsormadup --tmpfile=' + tmp_dir
         args = shlex.split(command_line)
@@ -89,6 +102,22 @@ class macs2Tool(Tool):
         Function to run MACS2 for peak calling
         
         background might need to be optional.
+        
+        Parameters
+        ----------
+        name : str
+        bam_file : str
+        bam_file_bgd : str
+        
+        Returns
+        -------
+        peak_bed : file
+        summit_bed : file
+        narrowPeak : file
+        broardPeak : file
+        gappedPeak : file
+        
+        All these files are described in the docs at https://github.com/taoliu/MACS
         """
         command_line = 'macs2 callpeak -t ' + bam_file + ' -n ' + name + ' -c ' + bam_file_bg + ' --outdir ' + data_dir + project_id
         args = shlex.split(command_line)

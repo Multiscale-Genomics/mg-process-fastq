@@ -29,9 +29,8 @@ except ImportError :
 
 class common:
     """
-    Functions for downloading and processing Mnase-seq FastQ files. Files are
-    downloaded from the European Nucleotide Archive (ENA), then aligned,
-    filtered and analysed for peak calling
+    Functions for downloading and processing *-seq FastQ files. Functions
+    provided allow for the downloading andindexing of the genome assemblies.
     """
     
     def __init__ (self):
@@ -43,7 +42,16 @@ class common:
     
     def getGenomeFile(self, data_dir, species, assembly, index = True):
         """
-        Function for downloading and extracting the DNA files from the ensembl FTP
+        Function for downloading and extracting the DNA files from the ensembl
+        FTP
+        
+        Parameters
+        ----------
+        
+        
+        
+        Returns
+        -------
         """
         
         file_name = data_dir + species + '_' + assembly + '/' + species + '.' + assembly + '.dna.toplevel.fa.gz'
@@ -272,7 +280,13 @@ class common:
     
     def gem_index_genome(self, genome_file):
         """
-        Create an index of the genome FASTA file with GEM
+        Create an index of the genome FASTA file with GEM. These are saved
+        alongside the assembly file.
+        
+        Parameters
+        ----------
+        genome_file : str
+            Location of the assembly file in the file system
         """
         file_name = genome_file.split("/")
         
@@ -285,7 +299,13 @@ class common:
     
     def bowtie_index_genome(self, genome_file):
         """
-        Create an index of the genome FASTA file with Bowtie2
+        Create an index of the genome FASTA file with Bowtie2. These are saved
+        alongside the assembly file.
+        
+        Parameters
+        ----------
+        genome_file : str
+            Location of the assembly file in the file system
         """
         file_name = genome_file.split("/")
         file_name[-1].replace('.fa', '')
@@ -299,7 +319,13 @@ class common:
     
     def bwa_index_genome(self, genome_file):
         """
-        Create an index of the genome FASTA file with BWA
+        Create an index of the genome FASTA file with BWA. These are saved
+        alongside the assembly file.
+        
+        Parameters
+        ----------
+        genome_file : str
+            Location of the assembly file in the file system
         """
         command_line = 'bwa index ' + genome_file
         
@@ -310,7 +336,14 @@ class common:
         
     def bwa_align_reads(self, genome_file, reads_file):
         """
-        Map the reads to the genome
+        Map the reads to the genome using BWA
+        
+        Parameters
+        ----------
+        genome_file : str
+            Location of the assembly file in the file system
+        reads_file : str
+            Location of the reads file in the file system
         """
         
         reads_file = data_dir + project_id + '/' + run_id + '.fastq'

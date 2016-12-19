@@ -24,6 +24,8 @@ from basic_modules.tool import Tool
 
 from .. import common
 
+# ------------------------------------------------------------------------------
+
 class gemIndexerTool(Tool):
     """
     Tool for running indexers over a genome FASTA file
@@ -51,3 +53,5 @@ class gemIndexerTool(Tool):
                     "gem_indexer: Could not process files {}, {}.".format(*input_files)))
         output_file = None
         return ([output_file], [output_metadata])
+
+# ------------------------------------------------------------------------------

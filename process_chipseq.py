@@ -19,8 +19,10 @@
 import argparse, urllib2, gzip, shutil, shlex, subprocess, os.path, json
 
 from .. import Tool, Workflow, Metadata
+
 from common import common
 from dmp import dmp
+
 import os
 
 try
@@ -38,113 +40,6 @@ try :
 except ImportError :
     print "[Error] Cannot import \"pysam\" package. Have you installed it?"
     exit(-1)
-
-
-class biobambamTool(Tool):
-    """
-    Tool to sort and filter bam files
-    """
-    
-    @task(bam_file_in = FILE_IN, bam_file_out = FILE_OUT, tmp_dir = IN)
-    def biobambam_filter_alignments(self, bam_file_in, tmp_dir):
-        """
-        Sorts and filters the bam file.
-        
-        It is important that all duplicate alignments have been removed. This
-        can be run as an intermediate step, but should always be run as a check
-        to ensure that the files are sorted and duplicates have been removed.
-        
-        Parameters
-        ----------
-        bam_file_in : str
-            Location of the input bam file
-        tmp_dir : str
-            Tmp location for intermediate files during the sorting
-        
-        Returns
-        -------
-        bam_file_out : str
-            Location of the output bam file
-        """
-        command_line = 'bamsormadup --tmpfile=' + tmp_dir
-        args = shlex.split(command_line)
-        with open(bam_file_in, "r") as f_in:
-            with open(bam_file_out, "w") as f_out:
-                p = subprocess.Popen(args, stdin=f_in, stdout=f_out)
-                p.wait()
-        
-        return True
-    
-    
-    def run(self, input_files, metadata):
-        """
-        Standard function to call a task
-        """
-        output_file = input_files[0].replace('.bam', '.filtered.bam')
-        
-        # handle error
-        if not self.biobambam_filter_alignments(input_files[0], output_file):
-            output_metadata.set_exception(
-                Exception(
-                    "biobambamTool: Could not process files {}, {}.".format(*input_files)))
-output_file = None
-        return ([output_file], [output_metadata])
-    
-
-class macs2Tool(Tool):
-    """
-    Tool for peak calling for ChIP-seq data
-    """
-    
-    @task(name = IN, bam_file = FILE_IN, bam_file_bg = FILE_IN, peak_bed = FILE_OUT, summit_bed = FILE_OUT, narrowPeak = FILE_OUT, broadPeak = FILE_OUT, gappedPeak = FILE_OUT)
-    def macs2_peak_calling(self, name, bam_file, bam_file_bg):
-        """
-        Function to run MACS2 for peak calling
-        
-        background might need to be optional.
-        
-        Parameters
-        ----------
-        name : str
-        bam_file : str
-        bam_file_bgd : str
-        
-        Returns
-        -------
-        peak_bed : file
-        summit_bed : file
-        narrowPeak : file
-        broardPeak : file
-        gappedPeak : file
-        
-        All these files are described in the docs at https://github.com/taoliu/MACS
-        """
-        command_line = 'macs2 callpeak -t ' + bam_file + ' -n ' + name + ' -c ' + bam_file_bg + ' --outdir ' + data_dir + project_id
-        args = shlex.split(command_line)
-        p = subprocess.Popen(args)
-        p.wait()
-        
-        peak_bed    = name + "_peaks.bed"
-        summits_bed = name + "_summits.bed"
-        narrowPeak  = name + "_narrowPeak"
-        broadPeak   = name + "_broadPeak"
-        gappedPeak  = name + "_gappedPeak"
-        
-        return True
-    
-    
-    def run(self, input_files, metadata):
-        """
-        Standard function to call a task
-        """
-        
-        # handle error
-        if not self.macs2_peak_calling("TODO_Name", input_files[0], input_files[1]):
-            output_metadata.set_exception(
-                Exception(
-                    "macs2_peak_calling: Could not process files {}, {}.".format(*input_files)))
-output_file = None
-        return ([output_file], [output_metadata])
 
 
 class process_chipseq(Workflow):
@@ -175,12 +70,12 @@ class process_chipseq(Workflow):
         # TODO - Multiple files need merging into a single bam file
         
         # Filter the bams
-        b3f = biobambamTool(self.configuration)
+        b3f = biobambam(self.configuration)
         b3f_file_out = b3f.run((out_bam), ())
         b3f_file_bgd_out = b3f.run((out_bgd_bam), ())
         
         # MACS2 to call peaks
-        macs2 = macs2Tool(self.configuration)
+        macs2 = macs2(self.configuration)
         peak_bed, summits_bed, narrowPeak, broadPeak, gappedPeak = macs2.run((b3f_file_out,  b3f_file_bgd_out), ())
         
         return (b3f_file_out, b3f_file_bgd_out, peak_bed, summits_bed, narrowPeak, broadPeak, gappedPeak)

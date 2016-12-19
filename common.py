@@ -345,10 +345,13 @@ class common:
         ann_name = genome_file.split("/")
         ann_name[-1].replace('.fa', '.ann')
         
+        bwt_name = genome_file.split("/")
+        bwt_name[-1].replace('.fa', '.bwt')
+        
         pac_name = genome_file.split("/")
         pac_name[-1].replace('.fa', '.pac')
         
-        return ('/'.join(amb_name), '/'.join(ann_name), '/'.join(pac_name))
+        return ('/'.join(amb_name), '/'.join(ann_name), '/'.join(bwt_name), '/'.join(pac_name))
         
         
     def bwa_align_reads(self, genome_file, reads_file):

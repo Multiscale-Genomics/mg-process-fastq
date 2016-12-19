@@ -19,8 +19,10 @@
 import argparse, urllib2, gzip, shutil, shlex, subprocess, os.path, json
 
 from .. import Tool, Workflow, Metadata
+
 from common import common
 from dmp import dmp
+
 import os
 
 try

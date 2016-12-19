@@ -31,13 +31,13 @@ class bwaIndexerTool(Tool):
     Tool for running indexers over a genome FASTA file
     """
     
-    @task(file_loc=FILE_IN, amb_loc=FILE_OUT, ann_loc=FILE_OUT, bwt_loc=FILE_OUT, pac_loc=FILE_OUT)
+    @task(file_loc=FILE_IN, amb_loc=FILE_OUT, ann_loc=FILE_OUT, bwt_loc=FILE_OUT, pac_loc=FILE_OUT, sa_loc=FILE_OUT)
     def bwa_indexer(self, file_loc):
         """
         BWA Indexer
         """
         cf = common()
-        amb_loc, ann_loc, bwt_loc, pac_loc = cf.bwa_index_genome(file_loc)
+        amb_loc, ann_loc, bwt_loc, pac_loc, sa_loc = cf.bwa_index_genome(file_loc)
         return True
     
     def run(self, input_files, metadata):

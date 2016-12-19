@@ -295,6 +295,10 @@ class common:
         args = shlex.split(command_line)
         p = subprocess.Popen(args)
         p.wait()
+        
+        file_name = genome_file.split("/")
+        file_name[-1].replace('.fa', '.gem')
+        return '/'.join(file_name)
     
     
     def bowtie_index_genome(self, genome_file):
@@ -315,6 +319,8 @@ class common:
         args = shlex.split(command_line)
         p = subprocess.Popen(args)
         p.wait()
+        
+        return True
     
     
     def bwa_index_genome(self, genome_file):
@@ -332,6 +338,17 @@ class common:
         args = shlex.split(command_line)
         p = subprocess.Popen(args)
         p.wait()
+        
+        amb_name = genome_file.split("/")
+        amb_name[-1].replace('.fa', '.amb')
+        
+        ann_name = genome_file.split("/")
+        ann_name[-1].replace('.fa', '.ann')
+        
+        pac_name = genome_file.split("/")
+        pac_name[-1].replace('.fa', '.pac')
+        
+        return ('/'.join(amb_name), '/'.join(ann_name), '/'.join(pac_name))
         
         
     def bwa_align_reads(self, genome_file, reads_file):

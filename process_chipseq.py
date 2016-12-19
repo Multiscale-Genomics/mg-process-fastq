@@ -41,6 +41,7 @@ except ImportError :
     print "[Error] Cannot import \"pysam\" package. Have you installed it?"
     exit(-1)
 
+# ------------------------------------------------------------------------------
 
 class process_chipseq(Workflow):
     """
@@ -79,7 +80,8 @@ class process_chipseq(Workflow):
         peak_bed, summits_bed, narrowPeak, broadPeak, gappedPeak = macs2.run((b3f_file_out,  b3f_file_bgd_out), ())
         
         return (b3f_file_out, b3f_file_bgd_out, peak_bed, summits_bed, narrowPeak, broadPeak, gappedPeak)
-        
+
+# ------------------------------------------------------------------------------
     
 if __name__ == "__main__":
     import sys
@@ -112,7 +114,7 @@ if __name__ == "__main__":
     # 1. Create data files
     
     # Get the assembly
-    genome_fa = cf.getGenomeFromENA(data_dir, species, assembly, False)
+    #genome_fa = cf.getGenomeFromENA(data_dir, species, assembly, False)
     
     #2. Register the data with the DMP
     from dmp import dmp

@@ -41,6 +41,7 @@ except ImportError :
     print "[Error] Cannot import \"pysam\" package. Have you installed it?"
     exit(-1)
 
+# ------------------------------------------------------------------------------
 
 class processs_genome(Workflow):
     """
@@ -70,6 +71,7 @@ class processs_genome(Workflow):
         gem = gemIndexerTool(self.configuration)
         gemi = gem.run((genome_fa), ())
 
+# ------------------------------------------------------------------------------
 
 if __name__ == "__main__":
     import sys

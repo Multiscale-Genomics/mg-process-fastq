@@ -60,7 +60,7 @@ class processs_genome(Workflow):
         genome_fa = file_ids[0]
         
         # Bowtie2 Indexer
-        bt = bowtieIndexerTool(self.configuration)
+        bt = tool.bowtieIndexerTool(self.configuration)
         bti = bt.run((genome_fa), ())
         
         # BWA Indexer
@@ -115,7 +115,7 @@ if __name__ == "__main__":
     print da.get_files_by_user("test")
     
     # 3. Instantiate and launch the App
-    from nnn import WorkflowApp
+    from basic_modules import WorkflowApp
     app = WorkflowApp()
     results = app.launch(process_genome, [genome_file], {})
     

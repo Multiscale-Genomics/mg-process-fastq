@@ -130,7 +130,7 @@ if __name__ == "__main__":
     print da.get_files_by_user("test")
     
     # 3. Instantiate and launch the App
-    from nnn import WorkflowApp
+    from basic_modules import WorkflowApp
     app = WorkflowApp()
     results = app.launch(process_chipseq, [genome_file, file_in, file_bg_in], {})
     

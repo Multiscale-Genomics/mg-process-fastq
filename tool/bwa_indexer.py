@@ -56,6 +56,7 @@ class bwaIndexer(Tool):
         """
         Standard function to call a task
         """
+        genome_file = input_files[0]
         
         amb_name = genome_file.split("/")
         amb_name[-1].replace('.fa', '.amb')
@@ -78,7 +79,7 @@ class bwaIndexer(Tool):
         sa_loc = '/'.join(sa_name)
         
         # handle error
-        if not self.bwa_indexer(input_files[0], amb_loc, ann_loc, bwt_loc, pac_loc, sa_loc):
+        if not self.bwa_indexer(genome_file, amb_loc, ann_loc, bwt_loc, pac_loc, sa_loc):
             output_metadata.set_exception(
                 Exception(
                     "bwa_indexer: Could not process files {}, {}.".format(*input_files)))

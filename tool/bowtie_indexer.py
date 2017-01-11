@@ -45,7 +45,8 @@ class bowtieIndexerTool(Tool):
         Standard function to call a task
         """
         
-        output_file = file_name[-1].replace('.fa', '')
+        file_name = input_files[0].split('/')
+        output_file = '/'.join(file_name[-1].replace('.fa', ''))
         
         # input and output share most metadata
         output_metadata = dict(

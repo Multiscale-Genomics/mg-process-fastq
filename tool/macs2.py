@@ -32,7 +32,7 @@ class macs2(Tool):
     """
     
     @task(name = IN, bam_file = FILE_IN, bam_file_bg = FILE_IN, peak_bed = FILE_OUT, summit_bed = FILE_OUT, narrowPeak = FILE_OUT, broadPeak = FILE_OUT, gappedPeak = FILE_OUT)
-    def macs2_peak_calling(self, name, bam_file, bam_file_bg):
+    def macs2_peak_calling(self, name, bam_file, bam_file_bg, peak_bed, summits_bed, narrowPeak, broadPeak, gappedPeak):
         """
         Function to run MACS2 for peak calling
         
@@ -73,12 +73,31 @@ class macs2(Tool):
         Standard function to call a task
         """
         
+        bam_file = input_files[0]
+        
+        root_name = bam_file.split("/")
+        root_name[-1].replace('.fa', '')
+        
+        name = root_name[-1]
+        
+        peak_bed    = '/'.join(root_name) + "_peaks.bed"
+        summits_bed = '/'.join(root_name) + "_summits.bed"
+        narrowPeak  = '/'.join(root_name) + "_narrowPeak"
+        broadPeak   = '/'.join(root_name) + "_broadPeak"
+        gappedPeak  = '/'.join(root_name) + "_gappedPeak"
+        
+        # input and output share most metadata
+        output_metadata = dict(
+            data_type=metadata[0]["data_type"],
+            file_type=metadata[0]["file_type"],
+            meta_data=metadata[0]["meta_data"])
+        
         # handle error
-        if not self.macs2_peak_calling("TODO_Name", input_files[0], input_files[1]):
+        if not self.macs2_peak_calling(name, input_files[0], input_files[1], peak_bed, summits_bed, narrowPeak, broadPeak, gappedPeak):
             output_metadata.set_exception(
                 Exception(
                     "macs2_peak_calling: Could not process files {}, {}.".format(*input_files)))
 output_file = None
-        return ([output_file], [output_metadata])
+        return ([peak_bed, summits_bed, narrowPeak, broadPeak, gappedPeak], [output_metadata])
 
 # ------------------------------------------------------------------------------

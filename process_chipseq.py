@@ -87,8 +87,6 @@ if __name__ == "__main__":
     import sys
     import os
     
-    from pycompss.api.api import compss_wait_on
-    
     # Set up the command line parameters
     parser = argparse.ArgumentParser(description="ChIP-seq peak calling")
     parser.add_argument("--species", help="Species (homo_sapiens)")

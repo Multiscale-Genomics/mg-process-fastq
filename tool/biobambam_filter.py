@@ -73,6 +73,7 @@ class biobambam(Tool):
             output_metadata.set_exception(
                 Exception(
                     "biobambamTool: Could not process files {}, {}.".format(*input_files)))
+            output_file = None
 output_file = None
         return ([output_file], [output_metadata])
 

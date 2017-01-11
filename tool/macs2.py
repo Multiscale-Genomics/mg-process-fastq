@@ -97,7 +97,7 @@ class macs2(Tool):
             output_metadata.set_exception(
                 Exception(
                     "macs2_peak_calling: Could not process files {}, {}.".format(*input_files)))
-output_file = None
+            output_file = None
         return ([peak_bed, summits_bed, narrowPeak, broadPeak, gappedPeak], [output_metadata])
 
 # ------------------------------------------------------------------------------

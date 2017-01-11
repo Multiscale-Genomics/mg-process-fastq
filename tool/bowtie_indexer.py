@@ -32,12 +32,12 @@ class bowtieIndexerTool(Tool):
     """
     
     @task(file_loc=FILE_IN, idx_loc=FILE_OUT)
-    def bowtie2_indexer(self, file_loc):
+    def bowtie2_indexer(self, file_loc, idx_loc):
         """
         Bowtie2 Indexer
         """
         cf = common()
-        idx_loc = cf.bowtie_index_genome(file_loc)
+        output_file = cf.bowtie_index_genome(file_loc)
         return True
     
     def run(self, input_files, metadata):
@@ -45,8 +45,16 @@ class bowtieIndexerTool(Tool):
         Standard function to call a task
         """
         
+        output_file = file_name[-1].replace('.fa', '')
+        
+        # input and output share most metadata
+        output_metadata = dict(
+            data_type=metadata[0]["data_type"],
+            file_type=metadata[0]["file_type"],
+            meta_data=metadata[0]["meta_data"])
+        
         # handle error
-        if not self.bowtie_indexer(input_files[0]):
+        if not self.bowtie_indexer(input_files[0], output_file):
             output_metadata.set_exception(
                 Exception(
                     "bowtie2_indexer: Could not process files {}, {}.".format(*input_files)))

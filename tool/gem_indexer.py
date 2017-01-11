@@ -32,7 +32,7 @@ class gemIndexerTool(Tool):
     """
     
     @task(file_loc=FILE_IN, idx_loc=FILE_OUT)
-    def gem_indexer(self, file_loc):
+    def gem_indexer(self, file_loc, idx_loc):
         """
         GEM Indexer
         """
@@ -46,8 +46,16 @@ class gemIndexerTool(Tool):
         Standard function to call a task
         """
         
+        output_file = file_name[-1].replace('.fa', '')
+        
+        # input and output share most metadata
+        output_metadata = dict(
+            data_type=metadata[0]["data_type"],
+            file_type=metadata[0]["file_type"],
+            meta_data=metadata[0]["meta_data"])
+        
         # handle error
-        if not self.gem_indexer(input_files[0]):
+        if not self.gem_indexer(input_files[0], output_file):
             output_metadata.set_exception(
                 Exception(
                     "gem_indexer: Could not process files {}, {}.".format(*input_files)))

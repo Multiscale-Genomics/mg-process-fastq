@@ -18,10 +18,12 @@
 
 import argparse, urllib2, gzip, shutil, shlex, subprocess, os.path, json
 
-from .. import Tool, Workflow, Metadata
+from basic_modules import Tool, Workflow, Metadata
 
 from common import common
 from dmp import dmp
+
+import tool
 
 import os
 
@@ -61,23 +63,21 @@ class processs_genome(Workflow):
         
         # Bowtie2 Indexer
         bt = tool.bowtieIndexerTool(self.configuration)
-        bti = bt.run((genome_fa), ())
+        bti, btm = bt.run((genome_fa), ())
         
         # BWA Indexer
-        bwa = bwaIndexerTool(self.configuration)
-        bwai = bwa.run((genome_fa), ())
+        bwa = tool.bwaIndexerTool(self.configuration)
+        bwai, bwam = bwa.run((genome_fa), ())
         
         # GEM Indexer
-        gem = gemIndexerTool(self.configuration)
-        gemi = gem.run((genome_fa), ())
+        gem = tool.gemIndexerTool(self.configuration)
+        gemi, gemm = gem.run((genome_fa), ())
 
 # ------------------------------------------------------------------------------
 
 if __name__ == "__main__":
     import sys
     import os
-    
-    from pycompss.api.api import compss_wait_on
     
     # Set up the command line parameters
     parser = argparse.ArgumentParser(description="Index the genome file")
@@ -98,14 +98,14 @@ if __name__ == "__main__":
     # --------------
     # 
     # 1. Create data files
+    #    This should have already been done by the VRE - Potentially. If these
+    #    Are ones that are present in the ENA then I would need to download them
     
     # Get the assembly
     genome_fa   = args.genome
     #genome_fa = cf.getGenomeFromENA(data_dir, species, assembly, False)
     
     #2. Register the data with the DMP
-    from dmp import dmp
-    
     da = dmp()
     
     print da.get_files_by_user("test")

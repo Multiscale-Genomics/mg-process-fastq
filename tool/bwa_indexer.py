@@ -44,7 +44,7 @@ class bwaIndexer(Tool):
         print "BWA Indexer"
     
     @task(file_loc=FILE_IN, amb_loc=FILE_OUT, ann_loc=FILE_OUT, bwt_loc=FILE_OUT, pac_loc=FILE_OUT, sa_loc=FILE_OUT)
-    def bwa_indexer(self, file_loc):
+    def bwa_indexer(self, file_loc, amb_loc, ann_loc, bwt_loc, pac_loc, sa_loc):
         """
         BWA Indexer
         """
@@ -57,12 +57,32 @@ class bwaIndexer(Tool):
         Standard function to call a task
         """
         
+        amb_name = genome_file.split("/")
+        amb_name[-1].replace('.fa', '.amb')
+        amb_loc = '/'.join(amb_name)
+        
+        ann_name = genome_file.split("/")
+        ann_name[-1].replace('.fa', '.ann')
+        ann_loc = '/'.join(ann_name)
+        
+        bwt_name = genome_file.split("/")
+        bwt_name[-1].replace('.fa', '.bwt')
+        bwt_loc = '/'.join(bwt_name)
+        
+        pac_name = genome_file.split("/")
+        pac_name[-1].replace('.fa', '.pac')
+        pac_loc = '/'.join(pac_name)
+        
+        sa_name = genome_file.split("/")
+        sa_name[-1].replace('.fa', '.pac')
+        sa_loc = '/'.join(sa_name)
+        
         # handle error
-        if not self.bwa_indexer(input_files[0]):
+        if not self.bwa_indexer(input_files[0], amb_loc, ann_loc, bwt_loc, pac_loc, sa_loc):
             output_metadata.set_exception(
                 Exception(
                     "bwa_indexer: Could not process files {}, {}.".format(*input_files)))
         output_file = None
-        return ([output_file], [output_metadata])
+        return ([output_file, amb_loc, ann_loc, bwt_loc, pac_loc, sa_loc], [output_metadata])
 
 # ------------------------------------------------------------------------------

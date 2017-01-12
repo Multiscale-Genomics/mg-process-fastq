@@ -47,6 +47,21 @@ class bwaIndexer(Tool):
     def bwa_indexer(self, file_loc, amb_loc, ann_loc, bwt_loc, pac_loc, sa_loc):
         """
         BWA Indexer
+        
+        Parameters
+        ----------
+        file_loc : str
+            Location of the genome assebly FASTA file
+        amb_loc : str
+            Location of the output file
+        ann_loc : str
+            Location of the output file
+        bwt_loc : str
+            Location of the output file
+        pac_loc : str
+            Location of the output file
+        sa_loc : str
+            Location of the output file
         """
         cf = common()
         amb_loc, ann_loc, bwt_loc, pac_loc, sa_loc = cf.bwa_index_genome(file_loc)
@@ -54,7 +69,28 @@ class bwaIndexer(Tool):
     
     def run(self, input_files, metadata):
         """
-        Standard function to call a task
+        Function to run the BWA over a genome assembly FASTA file to generate
+        the matching index for use with the aligner
+        
+        Parameters
+        ----------
+        input_files : list
+            List containing the location of the genome assembly FASTA file
+        meta_data : list
+        
+        Returns
+        -------
+        list
+            amb_loc : str
+                Location of the output file
+            ann_loc : str
+                Location of the output file
+            bwt_loc : str
+                Location of the output file
+            pac_loc : str
+                Location of the output file
+            sa_loc : str
+                Location of the output file
         """
         genome_file = input_files[0]
         
@@ -84,6 +120,6 @@ class bwaIndexer(Tool):
                 Exception(
                     "bwa_indexer: Could not process files {}, {}.".format(*input_files)))
         output_file = None
-        return ([output_file, amb_loc, ann_loc, bwt_loc, pac_loc, sa_loc], [output_metadata])
+        return ([amb_loc, ann_loc, bwt_loc, pac_loc, sa_loc], [output_metadata])
 
 # ------------------------------------------------------------------------------

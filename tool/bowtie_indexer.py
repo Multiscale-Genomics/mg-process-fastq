@@ -31,10 +31,23 @@ class bowtieIndexerTool(Tool):
     Tool for running indexers over a genome FASTA file
     """
     
+    def __init__(self):
+        """
+        Init function
+        """
+        print "Bowtie2 Indexer"
+    
     @task(file_loc=FILE_IN, idx_loc=FILE_OUT)
     def bowtie2_indexer(self, file_loc, idx_loc):
         """
         Bowtie2 Indexer
+        
+        Parameters
+        ----------
+        file_loc : str
+            Location of the genome assembly FASTA file
+        idx_loc : str
+            Location of the output index file
         """
         cf = common()
         output_file = cf.bowtie_index_genome(file_loc)
@@ -42,7 +55,21 @@ class bowtieIndexerTool(Tool):
     
     def run(self, input_files, metadata):
          """
-        Standard function to call a task
+        Tool for generating assembly aligner index files for use with the
+        Bowtie 2 aligner
+        
+        Parameters
+        ----------
+        input_files : list
+            List with a single str element with the location of the genome
+            assembly FASTA file
+        metadata : list
+        
+        Returns
+        -------
+        array : list
+            First element is a list of the index files. Second element is a
+            list of the matching metadata
         """
         
         file_name = input_files[0].split('/')

@@ -31,6 +31,12 @@ class macs2(Tool):
     Tool for peak calling for ChIP-seq data
     """
     
+    def __init__(self):
+        """
+        Init function
+        """
+        print "MACS2 Peak Caller"
+    
     @task(name = IN, bam_file = FILE_IN, bam_file_bg = FILE_IN, peak_bed = FILE_OUT, summit_bed = FILE_OUT, narrowPeak = FILE_OUT, broadPeak = FILE_OUT, gappedPeak = FILE_OUT)
     def macs2_peak_calling(self, name, bam_file, bam_file_bg, peak_bed, summits_bed, narrowPeak, broadPeak, gappedPeak):
         """

@@ -23,6 +23,8 @@ from .. import Tool, Workflow, Metadata
 from common import common
 from dmp import dmp
 
+import tool
+
 import os
 
 try
@@ -45,14 +47,26 @@ except ImportError :
 
 class process_chipseq(Workflow):
     """
-    Functions for downloading and processing Chip-seq FastQ files. Files are
-    downloaded from the European Nucleotide Archive (ENA), then aligned,
+    Functions for processing Chip-seq FastQ files. Files are the aligned,
     filtered and analysed for peak calling
     """
     
     def run(self, file_ids, metadata):
         """
-        Main run function
+        Main run function for processing ChIP-seq FastQ data. Pipeline aligns
+        the FASTQ files to the genome using BWA. MACS 2 is then used for peak
+        calling.
+        
+        Parameters
+        ----------
+        files_ids : list
+            List of file locations
+        metadata : dict
+        
+        Returns
+        -------
+        outputfiles : list
+            List of locations for the output bam, bed and tsv files
         """
         
         # TODO - Handle multiple file and background files
@@ -62,21 +76,26 @@ class process_chipseq(Workflow):
         
         cf = common()
         
-        cf.bwa_align_reads(genome_fa["unzipped"], file_loc)
         out_bam = file_loc.replace('.fastq', '.bam')
         
-        cf.bwa_align_reads(genome_fa["unzipped"], file_bgd_loc)
+        bwa = tool.bwaAlignerTool(self.configuration)
+        out_bam = bwa.run((genome_fa, file_loc), ())
+        #cf.bwa_align_reads(genome_fa, file_loc)
+        out_bam, out_bam_meta = file_loc.replace('.fastq', '.bam')
+        
+        #cf.bwa_align_reads(genome_fa, file_bgd_loc)
         out_bgd_bam = file_bgd_loc.replace('.fastq', '.bam')
+        out_bgd_bam, out_bgd_bam_meta = bwa.run((genome_fa, file_bgd_loc), ())
         
         # TODO - Multiple files need merging into a single bam file
         
         # Filter the bams
-        b3f = biobambam(self.configuration)
-        b3f_file_out = b3f.run((out_bam), ())
-        b3f_file_bgd_out = b3f.run((out_bgd_bam), ())
+        b3f = tool.biobambam(self.configuration)
+        b3f_file_out = b3f.run((out_bam[0]), ())
+        b3f_file_bgd_out = b3f.run((out_bgd_bam[0]), ())
         
         # MACS2 to call peaks
-        macs2 = macs2(self.configuration)
+        macs2 = tool.macs2(self.configuration)
         peak_bed, summits_bed, narrowPeak, broadPeak, gappedPeak = macs2.run((b3f_file_out,  b3f_file_bgd_out), ())
         
         return (b3f_file_out, b3f_file_bgd_out, peak_bed, summits_bed, narrowPeak, broadPeak, gappedPeak)

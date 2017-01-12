@@ -70,7 +70,22 @@ class macs2(Tool):
     
     def run(self, input_files, metadata):
         """
-        Standard function to call a task
+        The main function to run MACS 2 for peak calling over a given BAM file
+        and matching background BAM file.
+        
+        Parameters
+        ----------
+        input_files : list
+            List of input bam file locations where 0 is the bam data file and 1
+            is the matching background bam file
+        metadata : dict
+        
+        Returns
+        -------
+        output_files : list
+            List of locations for the output files.
+        output_metadata : list
+            List of matching metadata dict objects
         """
         
         bam_file = input_files[0]
@@ -97,7 +112,11 @@ class macs2(Tool):
             output_metadata.set_exception(
                 Exception(
                     "macs2_peak_calling: Could not process files {}, {}.".format(*input_files)))
-            output_file = None
+            peak_bed    = None
+            summits_bed = None
+            narrowPeak  = None
+            broadPeak   = None
+            gappedPeak  = None
         return ([peak_bed, summits_bed, narrowPeak, broadPeak, gappedPeak], [output_metadata])
 
 # ------------------------------------------------------------------------------

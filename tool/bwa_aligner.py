@@ -32,25 +32,47 @@ class bwaAlignerTool(Tool):
     """
     
     @task(genome_file_loc=FILE_IN, reads_file_loc=FILE_IN, bam_loc=FILE_OUT)
-    def bwa_aligner(self, genome_file_loc, read_file_loc):
+    def bwa_aligner(self, genome_file_loc, read_file_loc, bam_loc):
         """
         BWA Aligner
+        
+        Parameters
+        ----------
+        genome_file_loc : str
+            Location of the genomic fasta
+        read_file_loc : str
+            Location of the FASTQ file
+        bam_loc : str
+            Location of the output file
         """
         cf = common()
         bam_loc = cf.bwa_align_reads(genome_file_loc, reads_file_loc)
         return True
     
     def run(self, input_files, metadata):
-         """
-        Standard function to call a task
+        """
+        The main function to align bam files to a genome using BWA
+        
+        Parameters
+        ----------
+        input_files : list
+            File 0 is the genome file location, file 1 is the FASTQ file
+        
+        Returns
+        -------
+        output : list
+            First element is a list of output_bam_files, second element is the
+            matching meta data
         """
         
+        output_bam_file = input_files[1].replace('.fastq', '.bam')
+        
         # handle error
-        if not self.bwa_indexer(input_files[0]):
+        if not self.bwa_aligner(input_files[0], input_files[1], output_bam_file):
             output_metadata.set_exception(
                 Exception(
                     "bwa_indexer: Could not process files {}, {}.".format(*input_files)))
-output_file = None
-        return ([output_file], [output_metadata])
+            output_bam_file = None
+        return ([output_bam_file], [output_metadata])
 
 # ------------------------------------------------------------------------------

@@ -1,5 +1,5 @@
 """
-Copyright 2016 EMBL-European Bioinformatics Institute
+Copyright 2017 EMBL-European Bioinformatics Institute
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -341,6 +341,11 @@ class fastq2adjacency:
         """
         Save the hic_data object to HDF5 file. This is saved as an NxN array
         with the values for all positions being set.
+        
+        This needs to include attributes for the chromosomes for each resolution
+         - See the mg-rest-adjacency hdf5_reader for further details about the
+           requirement. This prevents the need for secondary storage details
+           outside of the HDF5 file.
         """
         dSize = len(self.hic_data)
         d = np.zeros([dSize, dSize], dtype='int32')

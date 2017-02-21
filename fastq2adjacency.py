@@ -349,7 +349,7 @@ class fastq2adjacency:
         """
         dSize = len(self.hic_data)
         d = np.zeros([dSize, dSize], dtype='int32')
-        d += f2a.hic_data.get_matrix()
+        d += self.hic_data.get_matrix()
         
         filename = self.data_root + self.species + '_' + self.assembly + "_" + self.dataset + "_" + str(self.resolution) + ".hdf5"
         f = h5py.File(filename, "a")

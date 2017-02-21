@@ -2,7 +2,7 @@
 Scripts required for the processing of FASTQ files (eg generating adjacency lists for Hi-C data)
 
 # Requirements
-- Python 2.7.12+
+- Python 2.7.12 (required for MACS2 in ChIP-Seq pipeline)
 - Python 3.5.2 (required for iNPS in MNase-Seq pipeline)
 - Python Modules:
   - numpy

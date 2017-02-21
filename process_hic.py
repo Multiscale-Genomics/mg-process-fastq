@@ -90,6 +90,7 @@ class process_hic:
         
         f2a.normalise_hic_data()
         f2a.save_hic_data()
+        f2a.save_hic_hdf5()
 
     def merge_adjacency_data(self, adj_list):
         """
@@ -219,7 +220,7 @@ if __name__ == "__main__":
     
     # Set up the command line parameters
     parser = argparse.ArgumentParser(description="Load adjacency list into HDF5 file")
-    #parser.add_argument("--genome", help="Genome name") #             default="GCA_000001405.22")
+    parser.add_argument("--genome", help="Genome name") #             default="GCA_000001405.22")
     parser.add_argument("--species", help="Species (homo_sapiens)")
     parser.add_argument("--assembly", help="Assembly (GRCh38)")
     parser.add_argument("--dataset", help="Name of the dataset") #    default="GSE63525")
@@ -231,12 +232,14 @@ if __name__ == "__main__":
     # Get the matching parameters from the command line
     args = parser.parse_args()
 
-    genome      = args.genome
-    dataset     = args.dataset
-    expt_name   = args.expt_name
-    expt_list   = args.expt_list
-    tmp_dir     = args.tmp_dir
-    data_dir    = args.data_dir
+    genome    = args.genome
+    species   = args.species
+    assembly  = args.assembly
+    dataset   = args.dataset
+    expt_name = args.expt_name
+    expt_list = args.expt_list
+    tmp_dir   = args.tmp_dir
+    data_dir  = args.data_dir
     
     # A default value is only required for the first few steps to generate the
     # intial alignments and prepare the HiC data for loading. The resolutions
@@ -250,7 +253,8 @@ if __name__ == "__main__":
     
     f = open(expt_list, "r")
 
-    loading_list = []
+    more_loading_list = []
+    less_loading_list = []
     for line in f:
         line = line.rstrip()
         line = line.split("\t")

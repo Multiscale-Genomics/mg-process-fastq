@@ -29,8 +29,6 @@ except ImportError :
     
     from dummy_pycompss import *
 
-from common import common
-
 class process_hic:
     #@task(params = IN)
     def main(self, params):

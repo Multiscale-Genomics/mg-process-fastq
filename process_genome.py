@@ -20,7 +20,6 @@ import argparse, urllib2, gzip, shutil, shlex, subprocess, os.path, json
 
 from basic_modules import Tool, Workflow, Metadata
 
-from common import common
 from dmp import dmp
 
 import tool
@@ -103,7 +102,6 @@ if __name__ == "__main__":
     
     # Get the assembly
     genome_fa   = args.genome
-    #genome_fa = cf.getGenomeFromENA(data_dir, species, assembly, False)
     
     #2. Register the data with the DMP
     da = dmp()

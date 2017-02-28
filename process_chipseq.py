@@ -22,7 +22,6 @@ from .. import Tool, Workflow, Metadata
 
 from functools import wraps
 
-from common import common
 from dmp import dmp
 
 import tool
@@ -77,16 +76,12 @@ class process_chipseq(Workflow):
         file_loc = file_ids[1]
         file_bgd_loc = file_ids[2]
         
-        cf = common()
-        
         out_bam = file_loc.replace('.fastq', '.bam')
         
         bwa = tool.bwaAlignerTool(self.configuration)
         out_bam = bwa.run((genome_fa, file_loc), ())
-        #cf.bwa_align_reads(genome_fa, file_loc)
         out_bam, out_bam_meta = file_loc.replace('.fastq', '.bam')
         
-        #cf.bwa_align_reads(genome_fa, file_bgd_loc)
         out_bgd_bam = file_bgd_loc.replace('.fastq', '.bam')
         out_bgd_bam, out_bgd_bam_meta = bwa.run((genome_fa, file_bgd_loc), ())
         
@@ -125,7 +120,6 @@ if __name__ == "__main__":
     file_bg_loc = args.tmp_dir
     
     pcs = process_chipseq()
-    cf = common()
     
     #
     # MuG Tool Steps
@@ -134,11 +128,8 @@ if __name__ == "__main__":
     # 1. Create data files
     
     # Get the assembly
-    #genome_fa = cf.getGenomeFromENA(data_dir, species, assembly, False)
     
     #2. Register the data with the DMP
-    from dmp import dmp
-    
     da = dmp()
     
     print da.get_files_by_user("test")

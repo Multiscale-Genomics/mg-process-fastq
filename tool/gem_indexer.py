@@ -22,7 +22,7 @@ from pycompss.api.task import task
 from basic_modules.metadata import Metadata
 from basic_modules.tool import Tool
 
-from .. import common
+from common import common
 
 # ------------------------------------------------------------------------------
 

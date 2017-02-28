@@ -14,7 +14,10 @@
    limitations under the License.
 """
 
+import bowtie_indexer
 import bwa_indexer
+import gem_indexer
+import biobambam_filter
 import macs2
 
 __author__  = 'Mark McDowall'

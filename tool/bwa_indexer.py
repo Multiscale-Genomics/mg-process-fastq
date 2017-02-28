@@ -32,7 +32,7 @@ from .. import common
 
 # ------------------------------------------------------------------------------
 
-class bwaIndexer(Tool):
+class bwaIndexerTool(Tool):
     """
     Tool for running indexers over a genome FASTA file
     """

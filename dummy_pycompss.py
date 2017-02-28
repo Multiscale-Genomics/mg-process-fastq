@@ -19,27 +19,31 @@
 # functions can be run outside of the COMPS environment for testing purposes.
 #
 
+from functools import wraps
+
 def compss_wait_on(a):
     return a
 
 class constraint(object):
-    
+    @wraps(object)
     def __init__(self, *args, **kwargs):
         self.args = args
         self.kwargs = kwargs
 
     def __call__(self, f):
+        @wraps(f)
         def wrapped_f(*args, **kwargs):
             return f(*args, **kwargs)
         return wrapped_f
 
 class task(object):
-    
+    @wraps(object)
     def __init__(self, *args, **kwargs):
         self.args = args
         self.kwargs = kwargs
 
     def __call__(self, f):
+        @wraps(f)
         def wrapped_f(*args, **kwargs):
             return f(*args, **kwargs)
         return wrapped_f
@@ -64,6 +68,7 @@ class Type:
 
 
 class Parameter:
+    @wraps(object)
     def __init__(self, p_type=None, p_direction=Direction.IN):
         self.type = p_type
         self.direction = p_direction

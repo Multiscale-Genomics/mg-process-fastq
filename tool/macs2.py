@@ -40,23 +40,38 @@ class macs2(Tool):
     @task(name = IN, bam_file = FILE_IN, bam_file_bg = FILE_IN, peak_bed = FILE_OUT, summit_bed = FILE_OUT, narrowPeak = FILE_OUT, broadPeak = FILE_OUT, gappedPeak = FILE_OUT)
     def macs2_peak_calling(self, name, bam_file, bam_file_bg, peak_bed, summits_bed, narrowPeak, broadPeak, gappedPeak):
         """
-        Function to run MACS2 for peak calling
+        Function to run MACS2 for peak calling on aligned sequence files and
+        normalised against a provided background set of alignments.
         
         background might need to be optional.
         
         Parameters
         ----------
         name : str
+            Name to be used to identify the files
         bam_file : str
+            Location of the aligned FASTQ files as a bam file
         bam_file_bgd : str
+            Location of the aligned FASTQ files as a bam file representing
+            background values for the cell
         
         Returns
         -------
+        Definitions defined for each of these files have come from the MACS2
+        documentation
+        
         peak_bed : file
+            
         summit_bed : file
+            
         narrowPeak : file
+            BED6+4 file - ideal for transcription factor binding site
+            identification
         broardPeak : file
+            BED6+3 file - ideal for histone binding site identification
         gappedPeak : file
+            BED12+3 file - Contains a merged set of the broad and narrow peak
+            files
         
         All these files are described in the docs at https://github.com/taoliu/MACS
         """

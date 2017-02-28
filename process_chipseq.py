@@ -20,6 +20,8 @@ import argparse, urllib2, gzip, shutil, shlex, subprocess, os.path, json
 
 from .. import Tool, Workflow, Metadata
 
+from functools import wraps
+
 from common import common
 from dmp import dmp
 
@@ -47,7 +49,7 @@ except ImportError :
 
 class process_chipseq(Workflow):
     """
-    Functions for processing Chip-seq FastQ files. Files are the aligned,
+    Functions for processing Chip-Seq FastQ files. Files are the aligned,
     filtered and analysed for peak calling
     """
     
@@ -55,8 +57,9 @@ class process_chipseq(Workflow):
         """
         Main run function for processing ChIP-seq FastQ data. Pipeline aligns
         the FASTQ files to the genome using BWA. MACS 2 is then used for peak
-        calling.
-        
+        calling to identify transcription factor binding sites within the
+        genome.
+                
         Parameters
         ----------
         files_ids : list

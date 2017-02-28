@@ -104,7 +104,7 @@ class process_hic:
                  combination and a file for each chromosome with the positions
                  of the predicted TADs
         """
-        from pycompss.api.api import compss_wait_on
+        #from pycompss.api.api import compss_wait_on
         from fastq2adjacency import fastq2adjacency
         
         f2a = fastq2adjacency()

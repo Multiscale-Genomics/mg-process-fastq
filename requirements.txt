@@ -2,7 +2,7 @@ numpy
 h5py
 scipy
 matplotlib
-TADbit
+git+https://github.com/3DGenomes/TADbit.git
 pysam
 MACS2
 rpy2

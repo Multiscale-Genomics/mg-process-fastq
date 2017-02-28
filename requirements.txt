@@ -6,6 +6,5 @@ pysam
 MACS2
 rpy2
 git+https://github.com/Multiscale-Genomics/mg-dm-api.git
-git+https://github.com/3DGenomes/TADbit.git
 ConfigParser
 

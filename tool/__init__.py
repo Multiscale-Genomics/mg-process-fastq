@@ -15,6 +15,7 @@
 """
 
 import bwa_indexer
+import macs2
 
 __author__  = 'Mark McDowall'
 __version__ = '0.0'

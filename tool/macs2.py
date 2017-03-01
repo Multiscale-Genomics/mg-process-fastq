@@ -20,8 +20,8 @@ try :
     from pycompss.api.parameter import *
     from pycompss.api.task import task
 except ImportError :
-    print "[Warning] Cannot import \"pycompss\" API packages."
-    print "          Using mock decorators."
+    print("[Warning] Cannot import \"pycompss\" API packages.")
+    print("          Using mock decorators.")
     
     from dummy_pycompss import *
 
@@ -49,7 +49,7 @@ class macs2(Tool):
         Function to run MACS2 for peak calling on aligned sequence files and
         normalised against a provided background set of alignments.
         
-        background might need to be optional.
+        (Background might need to be optional)
         
         Parameters
         ----------
@@ -67,9 +67,7 @@ class macs2(Tool):
         documentation
         
         peak_bed : file
-            
         summit_bed : file
-            
         narrowPeak : file
             BED6+4 file - ideal for transcription factor binding site
             identification
@@ -107,12 +105,14 @@ class macs2(Tool):
             is the matching background bam file
         metadata : dict
         
+        
         Returns
         -------
         output_files : list
             List of locations for the output files.
         output_metadata : list
             List of matching metadata dict objects
+        
         """
         
         bam_file = input_files[0]

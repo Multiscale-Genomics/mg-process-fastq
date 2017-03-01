@@ -3,7 +3,7 @@ Tools for processing FastQ files
 
 .. automodule:: tool
    
-   BED Indexer
+   MACS2
    ----------------
    .. autoclass:: tool.macs2.macs2
       :members:

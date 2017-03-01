@@ -22,6 +22,8 @@ try:
 except ImportError :
     print "[Warning] Cannot import \"pycompss\" API packages."
     print "          Using mock decorators."
+    
+    from dummy_pycompss import *
 
 from basic_modules.metadata import Metadata
 from basic_modules.tool import Tool
@@ -78,7 +80,6 @@ class biobambam(Tool):
                 Exception(
                     "biobambamTool: Could not process files {}, {}.".format(*input_files)))
             output_file = None
-output_file = None
         return ([output_file], [output_metadata])
 
 # ------------------------------------------------------------------------------

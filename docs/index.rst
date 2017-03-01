@@ -20,6 +20,14 @@ Installation
 ------------
 Directly from GitHub:
 
+:: console
+   git clone https://github.com/Multiscale-Genomics/mg-process-fastq.git
+
+Using pip:
+
+:: console
+   pip install git+https://github.com/Multiscale-Genomics/mg-process-fastq.git
+
 
 .. toctree::
    :maxdepth: 2

@@ -70,7 +70,22 @@ class biobambam(Tool):
     
     def run(self, input_files, metadata):
         """
-        Standard function to call a task
+        The main function to run BioBAMBAMfilter to remove duplicates and
+        spurious reads from the FASTQ files before analysis.
+        
+        Parameters
+        ----------
+        input_files : list
+            List of input bam file locations where 0 is the bam data file
+        metadata : dict
+        
+        
+        Returns
+        -------
+        output_files : list
+            Filtered bam fie.
+        output_metadata : list
+            List of matching metadata dict objects
         """
         output_file = input_files[0].replace('.bam', '.filtered.bam')
         

@@ -5,7 +5,7 @@ Tools for processing FastQ files
    
    BioBamBam Filter
    ----------------
-   .. autoclass:: tool.biobambam_filter.biobambam_filter
+   .. autoclass:: tool.biobambam_filter.biobambam
       :members:
    
    MACS2

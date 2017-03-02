@@ -21,6 +21,15 @@ import argparse, urllib2, gzip, shutil, shlex, subprocess, os.path
 from socket import error as SocketError
 import errno
 
+try:
+    from pycompss.api.parameter import FILE_IN, FILE_OUT
+    from pycompss.api.task import task
+except ImportError :
+    print "[Warning] Cannot import \"pycompss\" API packages."
+    print "          Using mock decorators."
+    
+    from dummy_pycompss import *
+
 try :
     import pysam
 except ImportError :
@@ -40,39 +49,53 @@ class common:
         self.ready = ""
     
     
-    def getGenomeFile(self, data_dir, species, assembly, index = True):
+    @task(file_loc = FILE_INOUT, species = IN, species = IN, assembly = IN, index = IN, unzipped = FILE_OUT, bowtie_index = FILE_OUT, bwa_index = FILE_OUT, gem_index = FILE_OUT)
+    def getGenomeFile(self, file_loc, species, assembly, index = True):
         """
         Function for downloading and extracting the DNA files from the ensembl
         FTP
         
         Parameters
         ----------
-        
-        
+        file_loc : str
+            Location of the zipped genome file
+        species : str
+            Species name
+        assembly : str
+            Genome assembly for the given species
+        index : bool
+            Flag to indicate if the indexes are to be built for the downloaded
+            assembly (default : True)
         
         Returns
         -------
+        dict
+            zipped : str
+                This is the location of the 
         """
         
-        file_name = data_dir + species + '_' + assembly + '/' + species + '.' + assembly + '.dna.toplevel.fa.gz'
-        file_name_unzipped = file_name.replace('.fa.gz', '.fa')
-        print file_name
+        file_loc_unzipped = file_loc.replace('.fa.gz', '.fa')
+        print file_loc_unzipped
         
         if os.path.isfile(file_name) == False:
             ftp_url = 'ftp://ftp.ensembl.org/pub/current_fasta/' + species.lower() + '/dna/' + species[0].upper() + species[1:] + '.' + assembly + '.dna.toplevel.fa.gz'
             
-            self.download_file(file_name, ftp_url)
+            self.download_file(file_loc, ftp_url)
             
-        if os.path.isfile(file_name_unzipped) == False:
+        if os.path.isfile(file_loc_unzipped) == False:
             print "Unzipping"
-            with gzip.open(file_name, 'rb') as f_in, open(file_name_unzipped, 'wb') as f_out:
+            with gzip.open(file_loc, 'rb') as f_in, open(file_loc_unzipped, 'wb') as f_out:
                 shutil.copyfileobj(f_in, f_out)
         
         indexes = {}
         if index == True:
-            indexes = self.run_indexers(file_name_unzipped)
+            indexes = self.run_indexers(file_loc_unzipped)
+            bowtie_index = indexes['bowtie']
+            bwa_index    = indexes['bwa']
+            gem_index    = indexes['gem']
         
-        return {'zipped': file_name, 'unzipped': file_name_unzipped, 'index' : indexes}
+        #return {'zipped': file_loc, 'unzipped': file_loc_unzipped, 'index' : indexes}
+        return True
     
     
     def getGenomeFromENA(self, data_dir, species, assembly, index = True):

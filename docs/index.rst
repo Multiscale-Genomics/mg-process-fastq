@@ -5,7 +5,7 @@
 
 MuG - FastQ Pipelines's documentation!
 ======================================
-**Quick Links**: `Source (github) <https://github.com/Multiscale-Genomics/mg-process-files>`_ - `Documentation (rtd) <https://mg-process-files.readthedocs.io/>`_
+**Quick Links**: `Source (github) <https://github.com/Multiscale-Genomics/mg-process-fastq>`_ - `Documentation (rtd) <https://mg-process-fastq.readthedocs.io/>`_
 
 Requirements
 ------------
@@ -33,7 +33,10 @@ Using pip:
    :maxdepth: 2
    :caption: Contents:
    
+   pipelines
    tools
+   common
+   license
 
 
 

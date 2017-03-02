@@ -75,9 +75,10 @@ class common:
         """
         
         file_loc_unzipped = file_loc.replace('.fa.gz', '.fa')
+        print file_loc
         print file_loc_unzipped
         
-        if os.path.isfile(file_name) == False:
+        if os.path.isfile(file_loc) == False and os.path.isfile(file_loc_unzipped) == False:
             ftp_url = 'ftp://ftp.ensembl.org/pub/current_fasta/' + species.lower() + '/dna/' + species[0].upper() + species[1:] + '.' + assembly + '.dna.toplevel.fa.gz'
             
             self.download_file(file_loc, ftp_url)
@@ -275,7 +276,38 @@ class common:
     
     def run_indexers(self, file_name):
         """
+        Assembly Index Manager
         
+        Manges the creation of indexes for a given genome assembly file. If the
+        downloaded file has not been unzipped then it will get unzipped here.
+        There are then 3 indexers that are available including BWA, Bowtie2 and
+        GEM. If the indexes already exist for the given file then the indexing
+        is not rerun.
+        
+        Parameters
+        ----------
+        file_name : str
+            Location of the assembly FASTA file
+        
+        Returns
+        -------
+        dict
+            bowtie : str
+                Location of the Bowtie index file
+            bwa : str
+                Location of the BWA index file
+            gem : str
+                Location of the gem index file
+        
+        Example
+        -------
+        .. code-block:: python
+           :linenos:
+           from tool.common import common
+           cf = common()
+           
+           indexes = cf.run_indexers('/<data_dir>/human_GRCh38.fa.gz')
+           print(indexes)
         """
         
         file_name_unzipped = file_name.replace('.fa.gz', '.fa')
@@ -286,9 +318,15 @@ class common:
             with gzip.open(file_name, 'rb') as f_in, open(file_name_unzipped, 'wb') as f_out:
                 shutil.copyfileobj(f_in, f_out)
         
-        if os.path.isfile(file_name_unzipped + '.bwt') == False:
-            print "Indexing - BWA"
-            self.bwa_index_genome(file_name)
+        print "Indexing - BWA"
+        amn, ann, bwt, pac, sa = self.bwa_index_genome(file_name)
+        bwa_indexes = {
+            'amn' : amn,
+            'ann' : ann,
+            'bwt' : bwt,
+            'pac' : pac,
+            'sa'  : sa
+        }
         
         if os.path.isfile(file_name_nofa + '.1.bt2') == False:
             print "Indexing - Bowtie"
@@ -298,7 +336,7 @@ class common:
             print "Indexing - GEM"
             self.gem_index_genome(file_name_unzipped)
         
-        return {'bowtie' : file_name_unzipped + '.1.bt2', 'bwa' : file_name_unzipped + '.bwt', 'gem' : file_name_unzipped + '.gem'}
+        return {'bowtie' : file_name_unzipped + '.1.bt2', 'bwa' : bwa_indexes + '.bwt', 'gem' : file_name_unzipped + '.gem'}
     
     
     def gem_index_genome(self, genome_file):
@@ -310,6 +348,7 @@ class common:
         ----------
         genome_file : str
             Location of the assembly file in the file system
+        
         """
         file_name = genome_file.split("/")
         
@@ -319,9 +358,7 @@ class common:
         p = subprocess.Popen(args)
         p.wait()
         
-        file_name = genome_file.split("/")
-        file_name[-1].replace('.fa', '.gem')
-        return '/'.join(file_name)
+        return True
     
     
     def bowtie_index_genome(self, genome_file):
@@ -349,40 +386,56 @@ class common:
     def bwa_index_genome(self, genome_file):
         """
         Create an index of the genome FASTA file with BWA. These are saved
-        alongside the assembly file.
+        alongside the assembly file. If the index has already been generated
+        then the locations of the files are returned
         
         Parameters
         ----------
         genome_file : str
             Location of the assembly file in the file system
+        
+        Returns
+        -------
+        amb_file : str
+            Location of the amb file
+        ann_file : str
+            Location of the ann file
+        bwt_file : str
+            Location of the bwt file
+        pac_file : str
+            Location of the pac file
+        sa_file : str
+            Location of the sa file
+        
+        Example
+        -------
+        .. code-block:: python
+           :linenos:
+           from tool.common import common
+           cf = common()
+           
+           indexes = cf.bwa_index_genome('/<data_dir>/human_GRCh38.fa.gz')
+           print(indexes)
         """
         command_line = 'bwa index ' + genome_file
         
-        args = shlex.split(command_line)
-        p = subprocess.Popen(args)
-        p.wait()
+        amb_name = genome_file + '.amb'
+        ann_name = genome_file + '.ann'
+        bwt_name = genome_file + '.bwt'
+        pac_name = genome_file + '.pac'
+        sa_name = genome_file + '.sa'
         
-        amb_name = genome_file.split("/")
-        amb_name[-1].replace('.fa', '.amb')
+        if os.path.isfile(bwt_file) == False:
+            args = shlex.split(command_line)
+            p = subprocess.Popen(args)
+            p.wait()
         
-        ann_name = genome_file.split("/")
-        ann_name[-1].replace('.fa', '.ann')
-        
-        bwt_name = genome_file.split("/")
-        bwt_name[-1].replace('.fa', '.bwt')
-        
-        pac_name = genome_file.split("/")
-        pac_name[-1].replace('.fa', '.pac')
-        
-        sa_name = genome_file.split("/")
-        sa_name[-1].replace('.fa', '.pac')
-        
-        return ('/'.join(amb_name), '/'.join(ann_name), '/'.join(bwt_name), '/'.join(pac_name), '/'.join(sa_name))
+        return (amb_name, ann_name, bwt_name, pac_name, sa_name)
         
         
     def bwa_align_reads(self, genome_file, reads_file):
         """
-        Map the reads to the genome using BWA
+        Map the reads to the genome using BWA.
         
         Parameters
         ----------
@@ -403,7 +456,7 @@ class common:
             'samtools view -b -o ' + output_bam_file + ' ' + intermediate_sam_file
         ]
         
-        print command_lines
+        #print command_lines
         
         for command_line in command_lines:
             args = shlex.split(command_line)

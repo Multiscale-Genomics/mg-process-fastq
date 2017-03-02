@@ -3,10 +3,48 @@ Tools for processing FastQ files
 
 .. automodule:: tool
    
+   Indexers
+   ========
+   
+   Bowtie 2
+   --------
+   .. autoclass:: tool.bowtie_indexer.bowtieIndexerTool
+      :members:
+   
+   BWA
+   ---
+   .. autoclass:: tool.bowtie_indexer.bowtieIndexerTool
+      :members:
+   
+   GEM
+   ---
+   .. autoclass:: tool.bowtie_indexer.bowtieIndexerTool
+      :members:
+   
+   
+   Aligners
+   ========
+   
+   BWA
+   ---
+   BWA
+   ---
+   .. autoclass:: tool.bowtie_aligner.bwaAlignerTool
+      :members:
+   
+   
+   
+   Filters
+   =======
+   
    BioBamBam Filter
    ----------------
    .. autoclass:: tool.biobambam_filter.biobambam
       :members:
+   
+   
+   Peak Calling
+   ============
    
    MACS2
    ----------------

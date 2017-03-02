@@ -269,7 +269,8 @@ if __name__ == "__main__":
     cf = common()
     
     # Get the assembly
-    genome_fa = cf.getGenomeFile(data_dir, species, assembly)
+    spp_dir = data_dir + species + '_' + assembly + '/' + species + '.' + assembly + '.dna.toplevel.fa.gz'
+    genome_fa = cf.getGenomeFile(spp_dir, species, assembly)
     
     hic = process_hic()
     

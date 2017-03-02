@@ -49,7 +49,7 @@ class common:
         self.ready = ""
     
     
-    @task(file_loc = FILE_INOUT, species = IN, species = IN, assembly = IN, index = IN, unzipped = FILE_OUT, bowtie_index = FILE_OUT, bwa_index = FILE_OUT, gem_index = FILE_OUT)
+    @task(file_loc = FILE_INOUT, species = IN, assembly = IN, index = IN, unzipped = FILE_OUT, bowtie_index = FILE_OUT, bwa_index = FILE_OUT, gem_index = FILE_OUT)
     def getGenomeFile(self, file_loc, species, assembly, index = True):
         """
         Function for downloading and extracting the DNA files from the ensembl

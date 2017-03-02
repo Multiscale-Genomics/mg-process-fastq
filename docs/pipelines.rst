@@ -33,7 +33,7 @@ ChIP-Seq Analysis
 
 Mnase-Seq Analysis
 ------------------
-.. automodule:: process_mnase-seq
+.. automodule:: process_mnaseseq
    
    Process Methods
    ---------------

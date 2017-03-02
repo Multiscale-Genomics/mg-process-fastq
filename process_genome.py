@@ -47,27 +47,31 @@ except ImportError :
 class process_genome(Workflow):
     """
     Workflow to download and pre-index a given genome
-    
-    The downloading can be done using the current common.py functions. These
-    should be prevented from running the indexing step as this will be done as
-    part of this workflow.
-    
-    Parameters
-    ----------
-    files_ids : list
-        List of file locations
-    metadata : list
-        
-    Returns
-    -------
-    outputfiles : list
-        List of locations for the output bam, bed and tsv files
-        
     """
+    
+    def __init__(self):
+        """
+        Initialise the class
+        """
     
     def run(self, file_ids, metadata):
         """
-        Main run function
+        The downloading can be done using the current common.py functions. These
+        should be prevented from running the indexing step as this will be done
+        as part of this workflow.
+        
+        
+        Parameters
+        ----------
+        file_ids : list
+            List of file locations
+        metadata : list
+            Required meta data
+        
+        Returns
+        -------
+        outputfiles : list
+            List of locations for the output bam, bed and tsv files
         """
         
         genome_fa = file_ids[0]

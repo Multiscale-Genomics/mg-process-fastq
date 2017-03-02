@@ -16,8 +16,15 @@ limitations under the License.
 
 import os, os.path, shutil, urllib2
 
-from pycompss.api.task import task
-from pycompss.api.constraint import constraint
+try:
+    from pycompss.api.parameter import FILE_IN, FILE_OUT
+    from pycompss.api.task import task
+    from pycompss.api.constraint import constraint
+except ImportError :
+    print "[Warning] Cannot import \"pycompss\" API packages."
+    print "          Using mock decorators."
+    
+    from dummy_pycompss import *
 
 import pytadbit
 from pytadbit.mapping               import get_intersection

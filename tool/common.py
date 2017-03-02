@@ -36,6 +36,18 @@ except ImportError :
     print "[Error] Cannot import \"pysam\" package. Have you installed it?"
     exit(-1)
 
+class cd:
+    """Context manager for changing the current working directory"""
+    def __init__(self, newPath):
+        self.newPath = os.path.expanduser(newPath)
+
+    def __enter__(self):
+        self.savedPath = os.getcwd()
+        os.chdir(self.newPath)
+
+    def __exit__(self, etype, value, traceback):
+        os.chdir(self.savedPath)
+
 class common:
     """
     Functions for downloading and processing *-seq FastQ files. Functions
@@ -328,7 +340,7 @@ class common:
             'sa'  : sa
         }
         
-        if os.path.isfile(file_name_nofa + '.1.bt2') == False:
+        if os.path.isfile(file_name_nofa + '.1.bt2l') == False:
             print "Indexing - Bowtie"
             self.bowtie_index_genome(file_name_unzipped)
         
@@ -374,11 +386,12 @@ class common:
         file_name = genome_file.split("/")
         file_name[-1].replace('.fa', '')
         
-        command_line = 'bowtie2-build ' + genome_file + ' ' + file_name[-1].replace('.fa', '')
-        
-        args = shlex.split(command_line)
-        p = subprocess.Popen(args)
-        p.wait()
+        with cd("/".join(file_name[0:-1])):
+            command_line = 'bowtie2-build ' + genome_file + ' ' + file_name[-1].replace('.fa', '')
+            
+            args = shlex.split(command_line)
+            p = subprocess.Popen(args)
+            p.wait()
         
         return True
     
@@ -425,7 +438,7 @@ class common:
         pac_name = genome_file + '.pac'
         sa_name = genome_file + '.sa'
         
-        if os.path.isfile(bwt_file) == False:
+        if os.path.isfile(bwt_name) == False:
             args = shlex.split(command_line)
             p = subprocess.Popen(args)
             p.wait()

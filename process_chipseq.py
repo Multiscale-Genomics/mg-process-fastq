@@ -64,6 +64,7 @@ class process_chipseq(Workflow):
         files_ids : list
             List of file locations
         metadata : list
+            Required meta data
         
         Returns
         -------

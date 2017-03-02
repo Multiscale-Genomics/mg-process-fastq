@@ -42,8 +42,6 @@ class process_hic:
         -------
         None
         
-        Output
-        ------
         Raw counts for the experiment in a HiC adjacency matrix saved to
         the tmp_dir
         """

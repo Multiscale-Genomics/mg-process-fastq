@@ -27,8 +27,6 @@ Tools for processing FastQ files
    
    BWA
    ---
-   BWA
-   ---
    .. autoclass:: tool.bowtie_aligner.bwaAlignerTool
       :members:
    

@@ -38,10 +38,14 @@ class process_hic:
         Initial grouping to download, parse and filter the individual
         experiments.
         
-        Returns: None
+        Returns
+        -------
+        None
         
-        Output: Raw counts for the experiment in a HiC adjacency matrix saved to
-                the tmp_dir
+        Output
+        ------
+        Raw counts for the experiment in a HiC adjacency matrix saved to
+        the tmp_dir
         """
         from fastq2adjacency import fastq2adjacency
         

@@ -29,6 +29,8 @@ except ImportError :
     
     from dummy_pycompss import *
 
+from tool.common import common
+
 class process_hic:
     #@task(params = IN)
     def main(self, params):
@@ -41,7 +43,6 @@ class process_hic:
         Output: Raw counts for the experiment in a HiC adjacency matrix saved to
                 the tmp_dir
         """
-        from common import common
         from fastq2adjacency import fastq2adjacency
         
         genome      = params[0]

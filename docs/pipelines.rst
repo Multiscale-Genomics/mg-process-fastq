@@ -7,7 +7,7 @@ Download and index genome files
    
    Process Methods
    ---------------
-   .. autoclass:: process_genome.process_genomes
+   .. autoclass:: process_genome.process_genome
       :members:
 
 

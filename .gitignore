@@ -1,4 +1,5 @@
 *.json
+*.tsv
 bs_*
 .python-version
 *.pyc

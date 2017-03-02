@@ -53,10 +53,10 @@ RNA-Seq Analysis
 
 Whole Genome BiSulphate Sequencing Analysis
 -------------------------------------------
-.. automodule:: process_wgbs
-   
-   Process Methods
-   ---------------
-   .. autoclass:: process_wgbs.process_wgbs
-      :members:
+#.. automodule:: process_wgbs
+#   
+#   Process Methods
+#   ---------------
+#   .. autoclass:: process_wgbs.process_wgbs
+#      :members:
 

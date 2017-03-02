@@ -18,7 +18,7 @@ limitations under the License.
 
 import argparse, urllib2, gzip, shutil, shlex, subprocess, os.path
 
-from common import common
+from tool.common import common
 
 try :
     from pycompss.api.parameter import *

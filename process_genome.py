@@ -26,7 +26,7 @@ import tool
 
 import os
 
-try
+try:
     from pycompss.api.parameter import FILE_IN, FILE_OUT
     from pycompss.api.task import task
     from pycompss.api.constraint import constraint
@@ -44,7 +44,7 @@ except ImportError :
 
 # ------------------------------------------------------------------------------
 
-class processs_genome(Workflow):
+class process_genome(Workflow):
     """
     Workflow to download and pre-index a given genome
     
@@ -57,11 +57,12 @@ class processs_genome(Workflow):
     files_ids : list
         List of file locations
     metadata : list
-    
+        
     Returns
     -------
     outputfiles : list
         List of locations for the output bam, bed and tsv files
+        
     """
     
     def run(self, file_ids, metadata):

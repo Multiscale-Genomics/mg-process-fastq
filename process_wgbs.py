@@ -17,11 +17,8 @@ limitations under the License.
 """
 
 # -*- coding: utf-8 -*-
-'''process whole genome bisulfate sequencing FastQ files'''
+"""process whole genome bisulfate sequencing FastQ files"""
 import argparse, time, urllib2, gzip, shutil
-from pycompss.api.task import task
-from pycompss.api.parameter import *
-from pycompss.api.constraint import *
 
 try :
     from pycompss.api.parameter import *
@@ -33,7 +30,7 @@ except ImportError :
     
     from dummy_pycompss import *
 
-from common import common
+from tool.common import common
 import pysam
 
 from fastqreader import *

@@ -13,12 +13,12 @@ Tools for processing FastQ files
    
    BWA
    ---
-   .. autoclass:: tool.bowtie_indexer.bwaIndexerTool
+   .. autoclass:: tool.bwa_indexer.bwaIndexerTool
       :members:
    
    GEM
    ---
-   .. autoclass:: tool.bowtie_indexer.gemIndexerTool
+   .. autoclass:: tool.gem_indexer.gemIndexerTool
       :members:
    
    

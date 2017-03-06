@@ -29,19 +29,34 @@ except ImportError :
     
     from dummy_pycompss import *
 
-class process_rnaseq:
+# ------------------------------------------------------------------------------
+
+class process_rnaseq(Workflow):
     """
     Functions for downloading and processing RNA-seq FastQ files. Files are
     downloaded from the European Nucleotide Archive (ENA), then they are mapped
     to quantify the amount of cDNA
     """
     
-    def __init__ (self):
+    def run(self, file_ids, metadata):
         """
-        Initialise the module
+        Main run function for processing RNA-Seq FastQ data. Pipeline aligns
+        the FASTQ files to the genome using Kallisto. Kallisto is then also
+        used for peak calling to identify levels of expression.
+                
+        Parameters
+        ----------
+        files_ids : list
+            List of file locations
+        metadata : list
+            Required meta data
+        
+        Returns
+        -------
+        outputfiles : list
+            List of locations for the output bam, bed and tsv files
         """
-        self.ready = ""
-    
+        
     
     def run_kallisto_indexing(self, data_dir, species, assembly, e_release):
         """
@@ -98,7 +113,8 @@ class process_rnaseq:
         m = mean(total_len)
 
         return {'mean' : m, 'std' : s}
-        
+
+# ------------------------------------------------------------------------------
 
 if __name__ == "__main__":
     import sys

@@ -52,13 +52,6 @@ class process_mnaseseq(Workflow):
     filtered and analysed for peak calling
     """
     
-    def __init__ (self):
-        """
-        Initialise the module
-        """
-        self.ready = ""
-    
-    
     def run(self, file_ids, metadata):
         """
         Main run function for processing MNase-Seq FastQ data. Pipeline aligns

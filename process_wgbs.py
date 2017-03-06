@@ -44,13 +44,6 @@ class process_wgbs:
     (ENA), then filtered, aligned and analysed for points of methylation
     """
 
-    def __init__ (self):
-        """
-        Initialise the module
-        """
-        self.ready=None
-
-
     #@task(infile = FILE_IN, outfile = FILE_OUT, returns = int)
     def FilterFastQReads(self, infile, outfile):
         """

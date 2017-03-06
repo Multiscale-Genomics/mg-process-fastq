@@ -18,7 +18,14 @@ limitations under the License.
 
 import argparse, urllib2, gzip, shutil, shlex, subprocess, os, json
 
+from basic_modules import Tool, Workflow, Metadata
+
+from functools import wraps
+
 from tool.common import common
+from tool.common import cd
+
+import tool
 
 try :
     from pycompss.api.parameter import *
@@ -36,20 +43,9 @@ except ImportError :
     print "[Error] Cannot import \"pysam\" package. Have you installed it?"
     exit(-1)
 
-class cd:
-    """Context manager for changing the current working directory"""
-    def __init__(self, newPath):
-        self.newPath = os.path.expanduser(newPath)
+# ------------------------------------------------------------------------------
 
-    def __enter__(self):
-        self.savedPath = os.getcwd()
-        os.chdir(self.newPath)
-
-    def __exit__(self, etype, value, traceback):
-        os.chdir(self.savedPath)
-
-
-class process_mnaseseq:
+class process_mnaseseq(Workflow):
     """
     Functions for downloading and processing Mnase-seq FastQ files. Files are
     downloaded from the European Nucleotide Archive (ENA), then aligned,
@@ -63,73 +59,39 @@ class process_mnaseseq:
         self.ready = ""
     
     
-    #@task(data_dir = IN, project_id = IN, run_ids = IN, returns = int)
-    def inps_peak_calling(self, data_dir, project_id, run_ids):
+    def run(self, file_ids, metadata):
         """
-        Convert Bam to Bed then make Nucleosome peak calls. These are saved as
-        bed files That can then get displayed on genome browsers.
+        Main run function for processing MNase-Seq FastQ data. Pipeline aligns
+        the FASTQ files to the genome using BWA. iNPS is then used for peak
+        calling to identify nucleosome position sites within the genome.
+                
+        Parameters
+        ----------
+        files_ids : list
+            List of file locations
+        metadata : list
+            Required meta data
+        
+        Returns
+        -------
+        outputfiles : list
+            List of locations for the output bam, bed and tsv files
         """
         
-        with cd('../../lib/iNPS'):
-            for run_id in run_ids:
-                bam_file = data_dir + project_id + '/' + run_id + '.bam'
-                bed_file = data_dir + project_id + '/' + run_id + '.bed'
-                bed_out_folder = data_dir + project_id + '/' + run_id + '.inp'
-                
-                command_line_1 = 'bedtools bamtobed -i ' + bam_file
-                command_line_2 = 'python iNPS_V1.2.2.py -i ' + bed_file + ' -o ' + bed_out_folder
-                
-                
-                args = shlex.split(command_line_1)
-                with open(bed_file, "w") as f_out:
-                    p = subprocess.Popen(args, stdout=f_out)
-                    p.wait()
-                
-                args = shlex.split(command_line_2)
-                p = subprocess.Popen(args)
-                p.wait()
-    
-    #@task(data_dir = IN, expt = IN, genome_fa = IN, returns = int)
-    def main(self, data_dir, expt, genome_fa):
-        """
-        Main loop
-        """
-        cf = common()
+        cwa_align = tool.bwaAlignerTool(self.configuration)
+        out_bam, out_meta = cwa_align.run((files_ids[0], files_ids[1]), ())
         
-        local_files = data_dir + expt["project_id"]
+        # Needs moving to its own tool
+        inps = tool.inps(self.configuration)
+        out_peak_bed, out_meta = inps.inps_peak_calling(out_bam, ())
         
-        # Optain the FastQ files
-        run_ids = []
-        run_fastq_files = []
-        
-        run_ids = []
-        run_fastq_files = {}
-        for run_id in expt["run_ids"]:
-            run_ids.append(run_id)
-            if (expt.has_key("local") == False):
-                in_files = cf.getFastqFiles(expt["project_id"], data_dir, run_id)
-            else:
-                in_files = [f for f in os.listdir(local_files) if re.match(run_id, f)]
-            run_fastq_files[run_id] = in_files
-        
-        # Run BWA
-        paired = 0
-        for run_id in expt["run_ids"]:
-            if len(run_fastq_files[run_id]) > 1:
-                paired = 1
-                for i in range(1,len(run_fastq_files[run_id])+1):
-                    cf.bwa_align_reads(genome_fa["unzipped"], data_dir, expt["project_id"], run_id + "_" + str(i))
-            else:
-                cf.bwa_align_reads(genome_fa["unzipped"], data_dir, expt["project_id"], run_id)
-        
-        self.inps_peak_calling(data_dir, expt["project_id"], expt["run_ids"])
-        
-    
+        return (out_peak_bed[0])
+
+# ------------------------------------------------------------------------------
+
 if __name__ == "__main__":
     import sys
     import os
-    
-    from pycompss.api.api import compss_wait_on
     
     # Set up the command line parameters
     parser = argparse.ArgumentParser(description="Mnase-seq peak calling")
@@ -177,5 +139,26 @@ if __name__ == "__main__":
         job_id_sets = json.load(data_file)
     
     for expt in job_id_sets["expts"]:
-        ps.main(data_dir, expt, genome_fa)
+        local_files = data_dir + expt["project_id"]
+        
+        # Optain the FastQ files
+        run_ids = []
+        run_fastq_files = []
+        
+        run_ids = []
+        run_fastq_files = {}
+        for run_id in expt["run_ids"]:
+            run_ids.append(run_id)
+            if (expt.has_key("local") == False):
+                in_files = cf.getFastqFiles(expt["project_id"], data_dir, run_id)
+            else:
+                in_files = [f for f in os.listdir(local_files) if re.match(run_id, f)]
+            run_fastq_files[run_id] = in_files
+        
+        peak_files = []
+        for run_id in run_fastq_files:
+            peak_file = ps.run((genome_fa["unzipped"], run_fastq_files[run_id][0]), ())
+            peak_files.append(peak_file)
     
+    print peak_files
+

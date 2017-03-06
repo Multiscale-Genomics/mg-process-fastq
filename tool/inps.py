@@ -103,8 +103,6 @@ class inps(Tool):
         """
         
         bam_file = input_files[0]
-        bed_file = input_files[1]
-        peak_bed = bed_file + "_Gathering.like_bed"
         
         # input and output share most metadata
         output_metadata = dict(
@@ -113,10 +111,10 @@ class inps(Tool):
             meta_data=metadata[0]["meta_data"])
         
         # handle error
-        if not self.inps_peak_calling(name, input_files[0], input_files[1], peak_bed, summits_bed, narrowPeak, broadPeak, gappedPeak):
+        if not self.inps_peak_calling(input_files[0]):
             output_metadata.set_exception(
                 Exception(
-                    "macs2_peak_calling: Could not process files {}, {}.".format(*input_files)))
+                    "inps_peak_calling: Could not process files {}, {}.".format(*input_files)))
             peak_bed = None
         return ([peak_bed], [output_metadata])
 

@@ -21,6 +21,11 @@ Tools for processing FastQ files
    .. autoclass:: tool.gem_indexer.gemIndexerTool
       :members:
    
+   Kallisto
+   --------
+   .. autoclass:: tool.kallisto_indexer.kallistoIndexerTool
+      :members:
+   
    
    Aligners
    ========

@@ -61,23 +61,20 @@ class macs2(Tool):
             Location of the aligned FASTQ files as a bam file representing
             background values for the cell
         
+        
         Returns
         -------
-        Definitions defined for each of these files have come from the MACS2
-        documentation
-        
-        peak_bed : file
-        summit_bed : file
         narrowPeak : file
             BED6+4 file - ideal for transcription factor binding site
             identification
-        broardPeak : file
+        broadPeak : file
             BED6+3 file - ideal for histone binding site identification
         gappedPeak : file
             BED12+3 file - Contains a merged set of the broad and narrow peak
             files
         
-        All these files are described in the docs at https://github.com/taoliu/MACS
+        Definitions defined for each of these files have come from the MACS2
+        documentation described in the docs at https://github.com/taoliu/MACS
         """
         command_line = 'macs2 callpeak -t ' + bam_file + ' -n ' + name + ' -c ' + bam_file_bg + ' --outdir ' + data_dir + project_id
         args = shlex.split(command_line)

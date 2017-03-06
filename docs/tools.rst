@@ -13,12 +13,12 @@ Tools for processing FastQ files
    
    BWA
    ---
-   .. autoclass:: tool.bowtie_indexer.bowtieIndexerTool
+   .. autoclass:: tool.bowtie_indexer.bwaIndexerTool
       :members:
    
    GEM
    ---
-   .. autoclass:: tool.bowtie_indexer.bowtieIndexerTool
+   .. autoclass:: tool.bowtie_indexer.gemIndexerTool
       :members:
    
    
@@ -44,8 +44,13 @@ Tools for processing FastQ files
    Peak Calling
    ============
    
+   iNPS
+   ----
+   .. autoclass:: tool.inps.inps
+      :members:
+   
    MACS2
-   ----------------
+   -----
    .. autoclass:: tool.macs2.macs2
       :members:
 

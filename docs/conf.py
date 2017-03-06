@@ -42,7 +42,8 @@ sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
 # ones.
 extensions = [
     'sphinx.ext.autodoc',
-    'sphinx.ext.ifconfig',
+    'sphinx.ext.napoleon',
+    #'sphinx.ext.ifconfig',
     'sphinx.ext.viewcode'
 ]
 

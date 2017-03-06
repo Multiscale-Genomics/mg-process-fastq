@@ -21,6 +21,8 @@ import argparse, urllib2, gzip, shutil, shlex, subprocess, os.path
 from socket import error as SocketError
 import errno
 
+from functools import wraps
+
 try:
     from pycompss.api.parameter import FILE_IN, FILE_OUT
     from pycompss.api.task import task
@@ -37,7 +39,10 @@ except ImportError :
     exit(-1)
 
 class cd:
-    """Context manager for changing the current working directory"""
+    """
+    Context manager for changing the current working directory
+    """
+    
     def __init__(self, newPath):
         self.newPath = os.path.expanduser(newPath)
 
@@ -58,10 +63,9 @@ class common:
         """
         Initialise the module
         """
-        self.ready = ""
+        print "Common functions"
     
     
-    @task(file_loc = FILE_INOUT, species = IN, assembly = IN, index = IN, unzipped = FILE_OUT, bowtie_index = FILE_OUT, bwa_index = FILE_OUT, gem_index = FILE_OUT)
     def getGenomeFile(self, file_loc, species, assembly, index = True):
         """
         Function for downloading and extracting the DNA files from the ensembl
@@ -326,11 +330,14 @@ class common:
         -------
         .. code-block:: python
            :linenos:
+           
            from tool.common import common
            cf = common()
            
            indexes = cf.run_indexers('/<data_dir>/human_GRCh38.fa.gz')
            print(indexes)
+           
+        
         """
         
         file_name_unzipped = file_name.replace('.fa.gz', '.fa')
@@ -435,11 +442,14 @@ class common:
         -------
         .. code-block:: python
            :linenos:
+           
            from tool.common import common
            cf = common()
            
            indexes = cf.bwa_index_genome('/<data_dir>/human_GRCh38.fa.gz')
            print(indexes)
+           
+        
         """
         command_line = 'bwa index ' + genome_file
         

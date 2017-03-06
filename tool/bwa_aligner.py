@@ -48,11 +48,15 @@ class bwaAlignerTool(Tool):
             Location of the genomic fasta
         read_file_loc : str
             Location of the FASTQ file
+        
+        Returns
+        -------
         bam_loc : str
             Location of the output file
         """
         cf = common()
         bam_loc = cf.bwa_align_reads(genome_file_loc, reads_file_loc)
+        
         return True
     
     def run(self, input_files, metadata):

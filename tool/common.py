@@ -187,6 +187,17 @@ class common:
     def getFastqFiles(self, ena_err_id, data_dir, ena_srr_id = None):
         """
         Function for downloading and extracting the FastQ files from the ENA
+        
+        Parameters
+        ----------
+        ena_err_id : str
+        data_dir : str
+        ena_srr_id : str
+        
+        Returns
+        -------
+        files_list : list
+            Locations of the downloaded FASTQ files
         """
         
         f_index = urllib2.urlopen(

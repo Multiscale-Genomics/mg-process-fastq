@@ -43,7 +43,7 @@ class kallistoIndexerTool(Tool):
         """
         print "Kallisto Indexer"
     
-    @task(file_loc=FILE_IN, cdna_idx_file=FILE_INOUT)
+    @task(cdna_file_loc=FILE_IN, cdna_idx_file=FILE_INOUT)
     def kallisto_indexer(self, cdna_file_loc, cdna_idx_file):
         """
         Kallisto Indexer

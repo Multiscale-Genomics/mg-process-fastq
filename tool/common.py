@@ -458,7 +458,6 @@ class common:
             Location of the reads file in the file system
         """
         
-        reads_file = data_dir + project_id + '/' + run_id + '.fastq'
         intermediate_file = reads_file.replace('.fastq', '.sai')
         intermediate_sam_file = reads_file.replace('.fastq', '.sam')
         output_bam_file = reads_file.replace('.fastq', '.bam')

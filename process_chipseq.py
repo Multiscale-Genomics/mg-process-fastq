@@ -80,8 +80,8 @@ class process_chipseq(Workflow):
         out_bam = file_loc.replace('.fastq', '.bam')
         
         bwa = tool.bwaAlignerTool(self.configuration)
-        out_bam = bwa.run((genome_fa, file_loc), ())
-        out_bam, out_bam_meta = file_loc.replace('.fastq', '.bam')
+        file_loc = file_loc.replace('.fastq', '.bam')
+        out_bam, out_bam_meta = bwa.run((genome_fa, file_loc), ())
         
         out_bgd_bam = file_bgd_loc.replace('.fastq', '.bam')
         out_bgd_bam, out_bgd_bam_meta = bwa.run((genome_fa, file_bgd_loc), ())

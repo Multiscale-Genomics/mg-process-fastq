@@ -54,6 +54,11 @@ Tools for processing FastQ files
    .. autoclass:: tool.inps.inps
       :members:
    
+   Kallisto Quantification
+   -----------------------
+   .. autoclass:: tool.kallisto_quant.kallistoQuantificationTool
+      :members:
+   
    MACS2
    -----
    .. autoclass:: tool.macs2.macs2

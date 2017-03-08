@@ -18,6 +18,11 @@
 
 import argparse, urllib2, gzip, shutil, shlex, subprocess, os.path
 
+
+from basic_modules import Tool, Workflow, Metadata
+
+from functools import wraps
+
 from tool.common import common
 
 try :

@@ -44,6 +44,13 @@ ChIP-Seq Analysis
        Bed files with the locations of transcription factor binding sites
        within the genome
    
+   Example
+   -------
+   When using a local verion of the [COMPS virtual machine](http://www.bsc.es/computer-sciences/grid-computing/comp-superscalar/downloads-and-documentation):
+   
+   :: console
+      runcompss --lang=python /home/compss/mg-process-fastq/process_hic.py --genome GCA_000001405.22 --dataset GSE63525 --expt_name rao2014 --expt_list /home/compss/mg-process-fastq/exptList.tsv --tmp_dir /home/compss/tmp/ --data_dir /home/compss/data/
+   
    Process Methods
    ---------------
    .. autoclass:: process_chipseq.process_chipseq

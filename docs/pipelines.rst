@@ -25,6 +25,25 @@ ChIP-Seq Analysis
 -----------------
 .. automodule:: process_chipseq
    
+   Running the pipeline from the command line:
+   
+   Parameters
+   ----------
+   genome : str
+       Genome accession (e.g. GCA_000001405.22)
+   species : str
+       Species (e.g. homo_sapiens)
+   file : str
+       Location of FASTQ input file
+   bgd_file : str
+       Location of FASTQ background file
+   
+   Returns
+   -------
+   bed : file
+       Bed files with the locations of transcription factor binding sites
+       within the genome
+   
    Process Methods
    ---------------
    .. autoclass:: process_chipseq.process_chipseq

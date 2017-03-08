@@ -100,7 +100,7 @@ class process_chipseq(Workflow):
         return (b3f_file_out, b3f_file_bgd_out, peak_bed, summits_bed, narrowPeak, broadPeak, gappedPeak)
 
 # ------------------------------------------------------------------------------
-    
+
 if __name__ == "__main__":
     import sys
     import os
@@ -109,8 +109,8 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="ChIP-seq peak calling")
     parser.add_argument("--species", help="Species (homo_sapiens)")
     parser.add_argument("--genome", help="Genome FASTA file")
-    parser.add_argument("--file", help="Project ID of the dataset")
-    parser.add_argument("--bgd_file", help="Project ID of the dataset")
+    parser.add_argument("--file", help="Location of FASTQ input file")
+    parser.add_argument("--bgd_file", help="Location of FASTQ background file")
     
     # Get the matching parameters from the command line
     args = parser.parse_args()

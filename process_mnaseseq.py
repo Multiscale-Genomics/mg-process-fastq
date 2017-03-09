@@ -22,9 +22,6 @@ from basic_modules import Tool, Workflow, Metadata
 
 from functools import wraps
 
-from tool.common import common
-from tool.common import cd
-
 import tool
 
 try :

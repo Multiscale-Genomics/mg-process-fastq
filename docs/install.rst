@@ -2,10 +2,11 @@ Requirements and Installation
 =============================
 
 Requirements
-============
+------------
 
 Software
---------
+^^^^^^^^
+
 - bedtools
 - bedToBigBed - http://hgdownload.cse.ucsc.edu/admin/exe/linux.x86_64/
 - wigToBigWig - http://hgdownload.cse.ucsc.edu/admin/exe/linux.x86_64/
@@ -20,14 +21,14 @@ Software
 - pyenv
 
 Pytho Modules
--------------
+^^^^^^^^^^^^^
 
 - numpy
 - h5py
 - pysam
 
 Installation
-============
+------------
 
 Directly from GitHub:
 
@@ -41,6 +42,8 @@ Directly from GitHub:
 Create the Python environment
 
 .. code-block:: none
+   :linenos:
+   
    pyenv-virtualenv 2.7.10 mg-process-fastq
    pip install --editable .
    

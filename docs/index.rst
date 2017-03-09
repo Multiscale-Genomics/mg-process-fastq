@@ -7,6 +7,15 @@ MuG - FastQ Pipelines's documentation!
 ======================================
 **Quick Links**: `Source (github) <https://github.com/Multiscale-Genomics/mg-process-fastq>`_ - `Documentation (rtd) <https://mg-process-fastq.readthedocs.io/>`_
 
+.. toctree::
+   :maxdepth: 2
+   :caption: Contents:
+   
+   pipelines
+   tools
+   common
+   license
+
 Requirements
 ------------
 
@@ -35,36 +44,21 @@ Using pip:
 
 Pipelines
 ---------
-.. toctree::
-   :maxdepth: 2
-   :caption: Contents:
-   
-   pipelines
+pipelines
+
 
 Tools
 -----
-.. toctree::
-   :maxdepth: 2
-   :caption: Contents:
-   
-   tools
+tools
+
 
 Common Functions
 ----------------
-.. toctree::
-   :maxdepth: 2
-   :caption: Contents:
-   
-   common
+common
 
 License
 -------
-.. toctree::
-   :maxdepth: 2
-   :caption: Contents:
-   
-   license
-
+License
 
 
 Indices and tables

@@ -108,7 +108,9 @@ if __name__ == "__main__":
     # Set up the command line parameters
     parser = argparse.ArgumentParser(description="ChIP-seq peak calling")
     parser.add_argument("--species", help="Species (homo_sapiens)")
+    parser.add_argument("--taxon_id", help="Taxon_ID (9606)")
     parser.add_argument("--genome", help="Genome FASTA file")
+    parser.add_argument("--assembly", help="Genome assembly ID (GCA_000001405.25)")
     parser.add_argument("--file", help="Location of FASTQ input file")
     parser.add_argument("--bgd_file", help="Location of FASTQ background file")
     
@@ -116,9 +118,11 @@ if __name__ == "__main__":
     args = parser.parse_args()
     
     species     = args.species
+    taxon_id    = args.taxon_id
     genome_fa   = args.genome
-    file_loc    = args.data_dir
-    file_bg_loc = args.tmp_dir
+    assembly    = args.assembly
+    file_loc    = args.file
+    file_bg_loc = args.bgd_file
     
     pcs = process_chipseq()
     
@@ -135,9 +139,9 @@ if __name__ == "__main__":
     
     print da.get_files_by_user("test")
     
-    genome_file = da.set_file("test", genome_fa, "fasta", "Assembly", 9606, None)
-    file_in = da.set_file("test", file_loc, "fasta", "ChIP-seq", 9606, None)
-    file_bg_in = da.set_file("test", file_bg_loc, "fasta", "ChIP-seq", 9606, None)
+    genome_file = da.set_file("test", genome_fa, "fasta", "Assembly", taxon_id, {'assembly' : assembly})
+    file_in = da.set_file("test", file_loc, "fasta", "ChIP-seq", taxon_id, {'assembly' : assembly})
+    file_bg_in = da.set_file("test", file_bg_loc, "fasta", "ChIP-seq", taxon_id, {'assembly' : assembly})
     
     print da.get_files_by_user("test")
     

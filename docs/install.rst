@@ -22,8 +22,8 @@ Software
 - Python 2.7.10+
 - pyenv
 
-Pytho Modules
-^^^^^^^^^^^^^
+Python Modules
+^^^^^^^^^^^^^^
 
 - numpy
 - h5py

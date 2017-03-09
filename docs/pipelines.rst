@@ -46,10 +46,35 @@ ChIP-Seq Analysis
    
    Example
    -------
+    .. code-block:: none
+       :linenos:
+       
+       {
+         "user" : "user_name",
+         "submission_name" : "test_01",
+         "expts" : [
+           {
+             "project_id": "ena_project_id",
+             "group_name": "user_defined_name_1",
+             "local": '',
+             "run_ids" : ["ena_run_accn_1", "ena_run_accn_2", ...]
+             "bgd_ids" : ["ena_run_accn_3", "ena_run_accn_4", ...]
+           },
+           {
+             "project_id": "ena_project_id",
+             "group_name": "user_defined_name_2",
+             "run_ids" : ["ena_run_accn_5", "ena_run_accn_6", ...]
+             "bgd_ids" : ["ena_run_accn_3", "ena_run_accn_4", ...]
+           }
+         ]
+       }
+      
    When using a local verion of the [COMPS virtual machine](http://www.bsc.es/computer-sciences/grid-computing/comp-superscalar/downloads-and-documentation):
    
-   :: console
-      runcompss --lang=python /home/compss/mg-process-fastq/process_hic.py --genome GCA_000001405.22 --dataset GSE63525 --expt_name rao2014 --expt_list /home/compss/mg-process-fastq/exptList.tsv --tmp_dir /home/compss/tmp/ --data_dir /home/compss/data/
+   .. code-block:: none
+      :linenos:
+      
+      runcompss --comm=integratedtoolkit.gat.master.GATAdaptor --log_level=debug --lang=python /home/compss/mg-process-fastq/process_chipseq.py --species homo_sapiens --assembly GRCh38 --project_id PRJDA34559 --run_ids PRJEB2445.json --data_dir /home/compss/VMShare
    
    Process Methods
    ---------------

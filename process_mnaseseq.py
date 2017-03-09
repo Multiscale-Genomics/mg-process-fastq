@@ -99,6 +99,7 @@ if __name__ == "__main__":
     
     species    = args.species
     genome     = args.genome
+    taxon_id   = args.taxon_id
     assembly   = argsd.assembly
     fastq_file = args.file
     
@@ -108,8 +109,8 @@ if __name__ == "__main__":
     
     print da.get_files_by_user("test")
     
-    genome_file = da.set_file("test", genome_fa, "fasta", "Assembly", 9606, {'assembly' : assembly})
-    file_in = da.set_file("test", file_loc, "fastq", "ChIP-seq", 9606, {'assembly' : assembly})
+    genome_file = da.set_file("test", genome_fa, "fasta", "Assembly", taxon_id, {'assembly' : assembly})
+    file_in = da.set_file("test", file_loc, "fastq", "ChIP-seq", taxon_id, {'assembly' : assembly})
     
     print da.get_files_by_user("test")
     

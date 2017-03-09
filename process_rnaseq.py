@@ -77,7 +77,7 @@ class process_rnaseq(Workflow):
         if len(file_ids) == 2:
             results = kq.run((file_ids[0], file_ids[0]), ())
         elif len(file_ids) == 3:
-            results = kq.run((file_ids[0], file_ids[1], , file_ids[2]), ())
+            results = kq.run((file_ids[0], file_ids[1], file_ids[2]), ())
         
         return results[0]
 

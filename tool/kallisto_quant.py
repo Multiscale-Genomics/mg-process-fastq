@@ -45,16 +45,16 @@ class kallistoQuantificationTool(Tool):
         print "Kallisto Quantification"
     
     @task(fastq_file_loc=FILE_IN, cdna_idx_file=FILE_IN, wig_file = FILE_OUT)
-    def kallisto_quant_single(self, fastq_file_loc, cdna_idx_file):
+    def kallisto_quant_single(self, cdna_idx_file, fastq_file_loc):
         """
         Kallisto quantifier for single end RNA-seq data
         
         Parameters
         ----------
-        fastq_file_loc : str
-            Location of the FASTQ sequence file
         idx_loc : str
             Location of the output index file
+        fastq_file_loc : str
+            Location of the FASTQ sequence file
         
         Returns
         -------
@@ -74,18 +74,18 @@ class kallistoQuantificationTool(Tool):
     
     
     @task(fastq_file_loc_01=FILE_IN, fastq_file_loc_02=FILE_IN, cdna_idx_file=FILE_IN, wig_file = FILE_OUT)
-    def kallisto_quant_paired(self, fastq_file_loc_01, fastq_file_loc_02, cdna_idx_file):
+    def kallisto_quant_paired(self, cdna_idx_file, fastq_file_loc_01, fastq_file_loc_02):
         """
         Kallisto quantifier for paired end RNA-seq data
         
         Parameters
         ----------
+        idx_loc : str
+            Location of the output index file
         fastq_file_loc_01 : str
             Location of the FASTQ sequence file
         fastq_file_loc_02 : str
             Location of the paired FASTQ sequence file
-        idx_loc : str
-            Location of the output index file
         
         Returns
         -------
@@ -143,7 +143,8 @@ class kallistoQuantificationTool(Tool):
         Parameters
         ----------
         input_files : list
-            FASTA file location will all the cDNA sequences for a given genome
+            Kallisto index file for the 
+            FASTQ file for the experiemtnal alignments
         metadata : list
         
         Returns
@@ -153,21 +154,34 @@ class kallistoQuantificationTool(Tool):
             list of the matching metadata
         """
         
-        file_name = input_files[0]
-        output_file = file_name + '.idx'
-        
         # input and output share most metadata
         output_metadata = dict(
             data_type=metadata[0]["data_type"],
             file_type=metadata[0]["file_type"],
             meta_data=metadata[0]["meta_data"])
         
-        # handle error
-        if not self.kallisto_indexer(input_files[0], output_file):
+        results_wig_file = input_files[0].replace('.fastq', '.wig')
+        
+        if len(input_files) == 2:
+            # handle error
+            if not self.kallisto_quant_single(input_files[0], input_files[1], results_wig_file):
+                output_metadata.set_exception(
+                    Exception(
+                        "kallisto_quant_single: Could not process files {}, {}.".format(*input_files)))
+            results_wig_file = None
+        elif len(input_files) == 3:
+            # handle error
+            if not self.kallisto_quant_paired(input_files[0], input_files[1], input_files[2], results_wig_file):
+                output_metadata.set_exception(
+                    Exception(
+                        "kallisto_quant_single: Could not process files {}, {}.".format(*input_files)))
+            results_wig_file = None
+        else:
             output_metadata.set_exception(
                 Exception(
-                    "kallisto_quant: Could not process files {}, {}.".format(*input_files)))
-        output_file = None
-        return ([output_file], [output_metadata])
+                    "Error: Incorrect number of parameters {}, {}.".format(*input_files)))
+            results_wig_file = None
+        
+        return ([results_wig_file], [output_metadata])
 
 # ------------------------------------------------------------------------------

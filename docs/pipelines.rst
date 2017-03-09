@@ -5,8 +5,8 @@ Download and index genome files
 -------------------------------
 .. automodule:: process_genome
    
-   Process Methods
-   ---------------
+   Methods
+   =======
    .. autoclass:: process_genome.process_genome
       :members:
 
@@ -15,8 +15,8 @@ Hi-C Anslysis
 -------------
 .. automodule:: process_hic
    
-   Process Methods
-   ---------------
+   Methods
+   =======
    .. autoclass:: process_hic.process_hic
       :members:
 
@@ -79,8 +79,8 @@ ChIP-Seq Analysis
       
       runcompss --comm=integratedtoolkit.gat.master.GATAdaptor --log_level=debug --lang=python /home/compss/mg-process-fastq/process_chipseq.py --species homo_sapiens --assembly GRCh38 --project_id PRJDA34559 --run_ids PRJEB2445.json --data_dir /home/compss/VMShare
    
-   Process Methods
-   ---------------
+   Methods
+   =======
    .. autoclass:: process_chipseq.process_chipseq
       :members:
 
@@ -119,10 +119,10 @@ Mnase-Seq Analysis
    .. code-block:: none
       :linenos:
       
-      runcompss --lang=python /home/compss/mg-process-fastq/process_mnaseseq.py --species mus_musculus --assembly GCA_000001405.22 --taxon_id 10090 --genome <data_dir>/GCA_000001635.2.fa --file 
+      runcompss --lang=python /home/compss/mg-process-fastq/process_mnaseseq.py --species mus_musculus --assembly GCA_000001635.2 --taxon_id 10090 --genome <data_dir>/GCA_000001635.2.fa --file 
    
-   Process Methods
-   ---------------
+   Methods
+   =======
    .. autoclass:: process_mnaseseq.process_mnaseseq
       :members:
 
@@ -131,8 +131,40 @@ RNA-Seq Analysis
 ----------------
 .. automodule:: process_rnaseq
    
-   Process Methods
-   ---------------
+   This pipeline can process FASTQ to quantify the level of expression of cDNAs.
+   
+   Running from the command line
+   =============================
+   
+   Parameters
+   ----------
+   assembly : str
+       Genome assembly ID (e.g. GCA_000001405.22)
+   taxon_id : int
+       Taxon ID (e.g. 9606)
+   genome : str
+       Location of genome assembly FASTA file
+   species : str
+       Species (e.g. homo_sapien)
+   file : str
+       Location of FASTQ input file
+   
+   Returns
+   -------
+   bed : file
+       WIG file with the levels of expression for genes
+   
+   Example
+   -------
+   When using a local verion of the [COMPS virtual machine](http://www.bsc.es/computer-sciences/grid-computing/comp-superscalar/downloads-and-documentation):
+   
+   .. code-block:: none
+      :linenos:
+      
+      runcompss --lang=python /home/compss/mg-process-fastq/process_rnaseq.py --species homo_sapien --assembly GCA_000001405.22 --taxon_id 9606 --genome <data_dir>/GCA_000001405.22.fa --file <data_dir>/expt1.fastq
+   
+   Methods
+   =======
    .. autoclass:: process_rnaseq.process_rnaseq
       :members:
 
@@ -141,8 +173,8 @@ Whole Genome BiSulphate Sequencing Analysis
 -------------------------------------------
 #.. automodule:: process_wgbs
 #   
-#   Process Methods
-#   ---------------
+#   Methods
+#   =======
 #   .. autoclass:: process_wgbs.process_wgbs
 #      :members:
 

@@ -138,48 +138,5 @@ runcompss --lang=python /home/compss/mg-process-fastq/process_wgbs.py --genome G
 ```
 
 
-# RNA-Seq Differential Expression Data Processing
-A set of scripts that can get run on the COMPS infrastructure to process the paired FastQ data for RNA-Seq differenctial expression data.
-
-## Process
-* cDNAs and FastQ are downloaded
-* Kallisto is used to map the reads to the cDNAs
-* Kallisto then generates the quantification files
-
-## COMPS Code
-`process_rnaseq.py`
-
-### Parameters:
-* --species
-
-   Species (e.g. homo_sapiens)
-* --assembly
-
-   Assembly accession (e.g. GRCh38)
-* --project_id
-
-   Project ID from the ENA website (e.g. PRJEB2445)
-* --run_id
-
-   Experiment Run Accession ID from the ENA website (e.g. ERR030872)
-* --data_dir \<data_dir\>/
-
-   This is where the initial FastQ files will be downloaded to and the output files will get saved.
-* --local [OPTIONAL]
-
-   This identifies that the required FastQ files are already available in the data_dir. Default is 0, use 1 to signify that the files are already present
-
-### Output Files
-* bed
-* wig
-
-### Example
-When using a local verion of the [COMPS virtual machine](http://www.bsc.es/computer-sciences/grid-computing/comp-superscalar/downloads-and-documentation):
-```
-runcompss --lang=python /home/compss/mg-process-fastq/process_rnaseq.py --species homo_sapiens --assembly GRCh38 --project_id PRJEB2445 --run_id ERR030872 --data_dir /home/compss/data/
-```
-
-
-
 
 

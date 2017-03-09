@@ -108,6 +108,15 @@ Mnase-Seq Analysis
    bed : file
        Bed files with the locations of nucleosome binding sites within the genome
    
+   Example
+   -------
+   When using a local verion of the [COMPS virtual machine](http://www.bsc.es/computer-sciences/grid-computing/comp-superscalar/downloads-and-documentation):
+   
+   .. code-block:: none
+      :linenos:
+      
+      runcompss --lang=python /home/compss/mg-process-fastq/process_mnaseseq.py --species homo_sapiens --assembly GRCh38 --project_id PRJEB2445 --run_id ERR030872 --data_dir /home/compss/data/
+   
    Process Methods
    ---------------
    .. autoclass:: process_mnaseseq.process_mnaseseq

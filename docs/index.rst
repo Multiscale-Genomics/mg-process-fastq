@@ -5,7 +5,6 @@
 
 MuG - FastQ Pipelines's documentation!
 ======================================
-**Quick Links**: `Source (github) <https://github.com/Multiscale-Genomics/mg-process-fastq>`_ - `Documentation (rtd) <https://mg-process-fastq.readthedocs.io/>`_
 
 .. toctree::
    :maxdepth: 2

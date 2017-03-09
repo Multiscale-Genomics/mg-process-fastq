@@ -40,8 +40,29 @@ Pipelines
    :caption: Contents:
    
    pipelines
+
+Tools
+-----
+.. toctree::
+   :maxdepth: 2
+   :caption: Contents:
+   
    tools
+
+Common Functions
+----------------
+.. toctree::
+   :maxdepth: 2
+   :caption: Contents:
+   
    common
+
+License
+-------
+.. toctree::
+   :maxdepth: 2
+   :caption: Contents:
+   
    license
 
 

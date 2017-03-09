@@ -15,20 +15,26 @@ Requirements
 - Python 2.7.10+
 - numpy
 - h5py
+- pysam
 
 Installation
 ------------
 Directly from GitHub:
 
-:: console
+.. code-block:: none
+   :linenos:
+   
    git clone https://github.com/Multiscale-Genomics/mg-process-fastq.git
 
 Using pip:
 
-:: console
+.. code-block:: none
+   :linenos:
+
    pip install git+https://github.com/Multiscale-Genomics/mg-process-fastq.git
 
-
+Pipelines
+---------
 .. toctree::
    :maxdepth: 2
    :caption: Contents:

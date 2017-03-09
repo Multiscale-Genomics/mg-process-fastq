@@ -88,70 +88,71 @@ if __name__ == "__main__":
     
     # Set up the command line parameters
     parser = argparse.ArgumentParser(description="Mnase-seq peak calling")
-    parser.add_argument("--species", help="Species (Homo_sapiens)")
-    parser.add_argument("--assembly", help="Assembly (GRCm38)")
-    parser.add_argument("--project_id", help="Project ID of the dataset (PRJDA47577)")
-    parser.add_argument("--run_ids", help="File with list of the experiment run IDs of the dataset")
-    parser.add_argument("--data_dir", help="Data directory; location to download ERR FASTQ files and save results")
+    parser.add_argument("--species", help="Species (Mus_musculus)")
+    parser.add_argument("--genome", help="Genome assembly FASTA file")
+    parser.add_argument("--file", help="Location of FASTQ file")
+    #parser.add_argument("--project_id", help="Project ID of the dataset (PRJDA47577)")
+    #parser.add_argument("--run_ids", help="File with list of the experiment run IDs of the dataset")
+    #parser.add_argument("--data_dir", help="Data directory; location to download ERR FASTQ files and save results")
 
     # Get the matching parameters from the command line
     args = parser.parse_args()
     
-    project     = args.project_id
-    run_id_file = args.run_ids
-    species     = args.species
-    assembly    = args.assembly
-    data_dir    = args.data_dir
+    species    = args.species
+    genome     = args.genome
+    fastq_file = args.file
     
-    cf = common()
+    #cf = common()
     ps = process_mnaseseq()
     
-    try:
-        os.makedirs(data_dir)
-    except:
-        pass
-    
-    if data_dir[-1] != "/":
-        data_dir += "/"
-
-    try:
-        os.makedirs(data_dir + project)
-    except:
-        pass
-    
-    try:
-        os.makedirs(data_dir + species + "_" + assembly)
-    except:
-        pass
+    #try:
+    #    os.makedirs(data_dir)
+    #except:
+    #    pass
+    #
+    #if data_dir[-1] != "/":
+    #    data_dir += "/"
+    #
+    #try:
+    #    os.makedirs(data_dir + project)
+    #except:
+    #    pass
+    #
+    #try:
+    #    os.makedirs(data_dir + species + "_" + genome)
+    #except:
+    #    pass
     
     # Get the assembly
-    genome_fa = cf.getGenomeFromENA(data_dir, species, assembly, False)
+    #genome_fa = cf.getGenomeFromENA(data_dir, species, genome, False)
     
     # Run main loop
-    with open(run_id_file) as data_file:    
-        job_id_sets = json.load(data_file)
+    #with open(run_id_file) as data_file:    
+    #    job_id_sets = json.load(data_file)
+    #
+    #for expt in job_id_sets["expts"]:
+    #    local_files = data_dir + expt["project_id"]
+    #    
+    #    # Optain the FastQ files
+    #    run_ids = []
+    #    run_fastq_files = []
+    #    
+    #    run_ids = []
+    #    run_fastq_files = {}
+    #    for run_id in expt["run_ids"]:
+    #        run_ids.append(run_id)
+    #        if (expt.has_key("local") == False):
+    #            in_files = cf.getFastqFiles(expt["project_id"], data_dir, run_id)
+    #        else:
+    #            in_files = [f for f in os.listdir(local_files) if re.match(run_id, f)]
+    #        run_fastq_files[run_id] = in_files
+    #    
+    #    peak_files = []
+    #    for run_id in run_fastq_files:
+    #        peak_file = ps.run((genome_fa["unzipped"], run_fastq_files[run_id][0]), ())
+    #        peak_files.append(peak_file)
     
-    for expt in job_id_sets["expts"]:
-        local_files = data_dir + expt["project_id"]
-        
-        # Optain the FastQ files
-        run_ids = []
-        run_fastq_files = []
-        
-        run_ids = []
-        run_fastq_files = {}
-        for run_id in expt["run_ids"]:
-            run_ids.append(run_id)
-            if (expt.has_key("local") == False):
-                in_files = cf.getFastqFiles(expt["project_id"], data_dir, run_id)
-            else:
-                in_files = [f for f in os.listdir(local_files) if re.match(run_id, f)]
-            run_fastq_files[run_id] = in_files
-        
-        peak_files = []
-        for run_id in run_fastq_files:
-            peak_file = ps.run((genome_fa["unzipped"], run_fastq_files[run_id][0]), ())
-            peak_files.append(peak_file)
+    peak_file = ps.run((genome_fa, fastq_file), ())
     
     print peak_files
 

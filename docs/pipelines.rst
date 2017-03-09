@@ -25,7 +25,10 @@ ChIP-Seq Analysis
 -----------------
 .. automodule:: process_chipseq
    
-   Running the pipeline from the command line:
+   This pipeline can process FASTQ to identify protein-DNA binding sites.
+   
+   Running from the command line
+   =============================
    
    Parameters
    ----------
@@ -85,6 +88,25 @@ ChIP-Seq Analysis
 Mnase-Seq Analysis
 ------------------
 .. automodule:: process_mnaseseq
+   
+   This pipeline can process FASTQ to identify nucleosome binding sites.
+   
+   Running from the command line
+   =============================
+   
+   Parameters
+   ----------
+   genome : str
+       Genome accession (e.g. GCA_000001405.22)
+   species : str
+       Species (e.g. homo_sapiens)
+   file : str
+       Location of FASTQ input file
+   
+   Returns
+   -------
+   bed : file
+       Bed files with the locations of nucleosome binding sites within the genome
    
    Process Methods
    ---------------

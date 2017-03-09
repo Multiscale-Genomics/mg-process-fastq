@@ -12,15 +12,19 @@ Software
 - bedtools
 - bedToBigBed - http://hgdownload.cse.ucsc.edu/admin/exe/linux.x86_64/
 - wigToBigWig - http://hgdownload.cse.ucsc.edu/admin/exe/linux.x86_64/
-- biobambam2
+- BioBamBam2
 - Bowtie2
 - BWA
-- GEM
+- GEMtools
 - HDF5
 - iNPS
 - Kallisto
+- libmaus2
 - Python 2.7.10+
 - pyenv
+- R 2.9.1+
+- SAMtools
+- MCL
 
 Python Modules
 ^^^^^^^^^^^^^^
@@ -28,6 +32,11 @@ Python Modules
 - numpy
 - h5py
 - pysam
+- scipy
+- matplotlib
+- rpy2
+- BS-Seeker2
+- TADbit
 
 Installation
 ------------

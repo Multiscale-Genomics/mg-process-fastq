@@ -13,11 +13,20 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 """
-
+# Indexers
 import bowtie_indexer
 import bwa_indexer
 import gem_indexer
+import kallisto_indexer
+
+# Aligners
+
+# Filters
 import biobambam_filter
+
+# Analysis
+import inps
+import kallisto_quant
 import macs2
 
 __author__  = 'Mark McDowall'

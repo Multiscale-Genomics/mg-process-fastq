@@ -96,10 +96,14 @@ Mnase-Seq Analysis
    
    Parameters
    ----------
+   assembly : str
+       Genome assembly ID (e.g. GCA_000001635.2)
+   taxon_id : int
+       Taxon ID (e.g. 10090)
    genome : str
-       Genome accession (e.g. GCA_000001405.22)
+       Location of genome assembly FASTA file
    species : str
-       Species (e.g. homo_sapiens)
+       Species (e.g. mus_musculus)
    file : str
        Location of FASTQ input file
    
@@ -115,7 +119,7 @@ Mnase-Seq Analysis
    .. code-block:: none
       :linenos:
       
-      runcompss --lang=python /home/compss/mg-process-fastq/process_mnaseseq.py --species homo_sapiens --assembly GRCh38 --project_id PRJEB2445 --run_id ERR030872 --data_dir /home/compss/data/
+      runcompss --lang=python /home/compss/mg-process-fastq/process_mnaseseq.py --species mus_musculus --assembly GCA_000001405.22 --taxon_id 10090 --genome <data_dir>/GCA_000001635.2.fa --file 
    
    Process Methods
    ---------------

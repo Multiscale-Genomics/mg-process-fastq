@@ -53,8 +53,8 @@ class bssMethylationCallerTool(Tool):
         reimplementing the code from the main function to make it easier when
         it comes to updating the changes in BS-Seeker2
 
-        Parameers
-        ---------
+        Parameters
+        ----------
         script_path : str
             Location of the Methylation caller script
         bam_file : str

@@ -34,7 +34,7 @@ from bs_index.wg_build import *
 
 # ------------------------------------------------------------------------------
 
-class bssIndexerTool(Tool):
+class bssAlignerTool(Tool):
     """
     Script from BS-Seeker2 for building the index for alignment. In this case
     it uses Bowtie2.

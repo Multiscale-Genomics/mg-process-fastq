@@ -111,7 +111,7 @@ class bssIndexerTool(Tool):
             output_metadata.set_exception(
                 Exception(
                     "bs_seeker_filter: Could not process files {}, {}.".format(*input_files)))
-        output_file = None
+            output_file = None
         return ([output_file], [output_metadata])
 
 # ------------------------------------------------------------------------------

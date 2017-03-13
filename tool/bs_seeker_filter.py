@@ -46,7 +46,7 @@ class filterReadsTool(Tool):
         print "BS-Seeker FilterReads wrapper"
 
     @task(infile = FILE_IN, outfile = FILE_OUT)
-    def bs_seeker_filter(self, infile, outfile):
+    def bss_seeker_filter(self, infile, outfile):
         """
         This is optional, but removes reads that can be problematic for the
         alignment of whole genome datasets.
@@ -93,11 +93,11 @@ class filterReadsTool(Tool):
             meta_data=metadata[0]["meta_data"])
         
         # handle error
-        if not self.bs_seeker_filter(input_files[0], output_file):
+        if not self.bss_seeker_filter(input_files[0], output_file):
             output_metadata.set_exception(
                 Exception(
                     "bs_seeker_filter: Could not process files {}, {}.".format(*input_files)))
-        output_file = None
+            output_file = None
         return ([output_file], [output_metadata])
 
 # ------------------------------------------------------------------------------

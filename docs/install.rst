@@ -62,7 +62,7 @@ Create the Python environment
 
 Check out the following software for use by the process_wgbs.py pipeline:
 
-.. cod-bloack:: none
+.. code-block:: none
 	:linenos:
 
 	cd $code_root
@@ -72,3 +72,5 @@ Check out the following software for use by the process_wgbs.py pipeline:
 	ln -s $code_root/bs_align bs_align
 	ln -s $code_root/bs_index bs_index
 	ln -s $code_root/bs_utils bs_utils
+   
+

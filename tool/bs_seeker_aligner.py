@@ -51,9 +51,9 @@ class bssAlignerTool(Tool):
         """
         Alignment of the paired ends to the reference genome
         Generates bam files for the alignments
-        This is performed by running the external program rather than reimplementing
-        the code from the main function to make it easier when it comes to updating
-        the changes in BS-Seeker2
+        This is performed by running the external program rather than
+        reimplementing the code from the main function to make it easier when
+        it comes to updating the changes in BS-Seeker2
 
         Parameters
         ----------
@@ -69,6 +69,11 @@ class bssAlignerTool(Tool):
             Location of the genome FASTA file
         bam_out : str
             Location of the aligned bam file
+
+        Returns
+        -------
+        bam_out : file
+            Location of the BAM file generated during the alignment.
         """
         import subprocess
         

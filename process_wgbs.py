@@ -38,18 +38,36 @@ import pysam
 class process_wgbs:
     """
     Functions for downloading and processing whole genome bisulfate sequencings
-    (WGBS) files. Files are downloaded from the European Nucleotide Archive
-    (ENA), then filtered, aligned and analysed for points of methylation
+    (WGBS) files. Files are filtered, aligned and analysed for points of
+    methylation
     """
 
-    def Splitter(self, in_file1, in_file2, tag):
+    def Splitter(self, in_file1, in_file2, tag = 'tmp'):
         """
         Function to divide the FastQ files into separte sub files of 1000000
-        sequences so that the aligner can get run in parallel.
+        sequences so that the aligner can run in parallel.
         
+        Parameters
+        ----------
+        in_file1 : str
+            Location of first paired end FASTQ file
+        in_file2 : str
+            Location of second paired end FASTQ file
+        tag : str
+            DEFAULT = tmp
+            Tag used to identify the files. Useful if this is getting run
+            manually on a single machine multiple times to prevent collisions of
+            file names
+
+        
+        Returns
+        -------
         Returns: Returns a list of lists of the files that have been generated.
                  Each sub list containing the two paired end files for that
                  subset.
+        paired_files : list
+            List of lists of pair end files. Each sub list containing the two
+            paired end files for that subset.
         """
         
         fqr = fastqreader()
@@ -65,11 +83,11 @@ class process_wgbs:
         
         f1 = fqr.fastq1.split("/")
         f1[-1] = f1[-1].replace(".fastq", "." + str(fqr.output_tag) + "_" + str(fqr.output_file_count) + ".fastq")
-        f1.insert(-1, "tmp")
+        f1.insert(-1, tag)
         
         f2 = fqr.fastq2.split("/")
         f2[-1] = f2[-1].replace(".fastq", "." + str(fqr.output_tag) + "_" + str(fqr.output_file_count) + ".fastq")
-        f2.insert(-1, "tmp")
+        f2.insert(-1, tag)
         files_out = [["/".join(f1), "/".join(f2)]]
 
         while fqr.eof(1) == False and fqr.eof(2) == False:

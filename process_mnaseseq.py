@@ -33,13 +33,6 @@ except ImportError :
     
     from dummy_pycompss import *
 
-
-try :
-    import pysam
-except ImportError :
-    print "[Error] Cannot import \"pysam\" package. Have you installed it?"
-    exit(-1)
-
 # ------------------------------------------------------------------------------
 
 class process_mnaseseq(Workflow):
@@ -95,12 +88,10 @@ if __name__ == "__main__":
     args = parser.parse_args()
     
     species    = args.species
-    genome     = args.genome
+    genome_fa  = args.genome
     taxon_id   = args.taxon_id
-    assembly   = argsd.assembly
+    assembly   = args.assembly
     fastq_file = args.file
-    
-    ps = process_mnaseseq()
     
     da = dmp()
     

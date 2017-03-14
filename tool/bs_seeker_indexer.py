@@ -58,10 +58,6 @@ class bssIndexerTool(Tool):
         Function to submit the FASTA file for the reference sequence and build
         the required index file used by the aligner.
         
-        This only needs to be done once, so there needs to be a check to ensure
-        that if the index file have already been generated then they do no need
-        to be analysed again
-
         Parameters
         ----------
         fasta_file : str

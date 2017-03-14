@@ -55,7 +55,7 @@ class bwaAlignerTool(Tool):
             Location of the output file
         """
         cf = common()
-        bam_loc = cf.bwa_align_reads(genome_file_loc, reads_file_loc)
+        bam_loc = cf.bwa_align_reads(genome_file_loc, reads_file_loc, bam_loc)
         
         return True
     

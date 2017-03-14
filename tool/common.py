@@ -55,7 +55,7 @@ class cd:
 
 class common:
     """
-    Functions for downloading and processing *-seq FastQ files. Functions
+    Functions for downloading and processing \*-seq FastQ files. Functions
     provided allow for the downloading andindexing of the genome assemblies.
     """
     

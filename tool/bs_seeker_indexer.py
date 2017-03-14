@@ -52,8 +52,8 @@ class bssIndexerTool(Tool):
         """
         print "BS-Seeker FilterReads wrapper"
 
-    @task(fasta_file = FILE_IN, aligner = IN, aligner_path = IN, ref_path = IN, bam_out = FILE_OUT)
-    def bss_build_index(self, fasta_file, aligner, aligner_path, ref_path):
+    @task(fasta_file = FILE_IN, aligner = IN, aligner_path = IN, ref_path = IN, bam_out = FILE_INOUT)
+    def bss_build_index(self, fasta_file, aligner, aligner_path, ref_path, bam_out):
         """
         Function to submit the FASTA file for the reference sequence and build
         the required index file used by the aligner.
@@ -61,6 +61,25 @@ class bssIndexerTool(Tool):
         This only needs to be done once, so there needs to be a check to ensure
         that if the index file have already been generated then they do no need
         to be analysed again
+
+        Parameters
+        ----------
+        fasta_file : str
+            Location of the genome FASTA file
+        aligner : str
+            Aligner to use by BS-Seeker2. Currently only bowtie2 is available in
+            this build
+        aligner_path : str
+            Location of the aligners binary file
+        ref_path : str
+            Location of the indexes for the FASTA file
+        bam_out : str
+            Location of the output bam alignment file
+
+        Returns
+        -------
+        bam_out : str
+            Location of the output bam alignment file
         """
         builder_exec = os.path.join(aligner_path,
                                     {BOWTIE   : 'bowtie-build',

@@ -20,14 +20,14 @@ import os, sys
 sys.path.insert(0, os.path.abspath('..'))
 import tool
 
-from mock import MagicMock
+from mock import Mock as MagicMock
 
 class Mock(MagicMock):
     @classmethod
     def __getattr__(cls, name):
             return MagicMock()
 
-MOCK_MODULES = ['pytadbit', 'rpy2', 'bs_index.wg_build', 'FilterReads', '', '']
+MOCK_MODULES = ['pytadbit', 'rpy2', 'bs_index', 'bs_index.wg_build', 'FilterReads']
 sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
 
 
@@ -46,6 +46,8 @@ extensions = [
     #'sphinx.ext.ifconfig',
     'sphinx.ext.viewcode'
 ]
+
+autodoc_mock_imports = ['bs_index', 'bs_index.wg_build', 'FilterReads']
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']

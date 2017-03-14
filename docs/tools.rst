@@ -12,7 +12,7 @@ Tools for processing FastQ files
       :members:
    
    BS-Seeker2 Indexer
-   -----------------------------
+   ------------------
    .. autoclass:: tool.bs_seeker_indexer.bssIndexerTool
       :members:
 
@@ -40,9 +40,9 @@ Tools for processing FastQ files
    .. autoclass:: tool.bwa_aligner.bwaAlignerTool
       :members:
    
-   
-   BS-Seeker Aligner
-   -----------------
+
+   BS-Seeker2 Aligner
+   ------------------
    .. autoclass:: tool.bs_seeker_aligner.bssAlignerTool
       :members:
    
@@ -55,8 +55,8 @@ Tools for processing FastQ files
    .. autoclass:: tool.biobambam_filter.biobambam
       :members:
 
-   BS-Seeker Filter
-   ----------------
+   BS-Seeker2 Filter
+   -----------------
    .. autoclass:: tool.bs_seeker_filter.filterReadsTool
       :members:
    

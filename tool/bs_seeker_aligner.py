@@ -30,7 +30,13 @@ from basic_modules.tool import Tool
 
 from common import common
 
-from bs_index.wg_build import *
+pwd = os.environ.get('PWD')
+pwd_split = pwd.split('/')
+
+if pwd_split[-1] != 'docs':
+    on_rtd = os.environ.get('READTHEDOCS') == 'True'
+    if on_rtd == False:
+        from bs_index.wg_build import *
 
 # ------------------------------------------------------------------------------
 
@@ -50,7 +56,9 @@ class bssAlignerTool(Tool):
     def bs_seeker_aligner(self, input_fastq1, input_fastq2, aligner, aligner_path, genome_fasta, bam_out):
         """
         Alignment of the paired ends to the reference genome
+        
         Generates bam files for the alignments
+        
         This is performed by running the external program rather than
         reimplementing the code from the main function to make it easier when
         it comes to updating the changes in BS-Seeker2

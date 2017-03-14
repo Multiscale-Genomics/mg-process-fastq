@@ -30,7 +30,13 @@ from basic_modules.tool import Tool
 
 from common import common
 
-from bs_index.wg_build import *
+pwd = os.environ.get('PWD')
+pwd_split = pwd.split('/')
+
+if pwd_split[-1] != 'docs':
+    on_rtd = os.environ.get('READTHEDOCS') == 'True'
+    if on_rtd == False:
+        from bs_index.wg_build import *
 
 # ------------------------------------------------------------------------------
 

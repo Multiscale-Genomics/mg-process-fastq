@@ -467,7 +467,7 @@ class common:
         return (amb_name, ann_name, bwt_name, pac_name, sa_name)
         
         
-    def bwa_align_reads(self, genome_file, reads_file):
+    def bwa_align_reads(self, genome_file, reads_file, bam_loc):
         """
         Map the reads to the genome using BWA.
         
@@ -477,11 +477,13 @@ class common:
             Location of the assembly file in the file system
         reads_file : str
             Location of the reads file in the file system
+        bam_loc : str
+            Location of the output file
         """
         
         intermediate_file = reads_file.replace('.fastq', '.sai')
         intermediate_sam_file = reads_file.replace('.fastq', '.sam')
-        output_bam_file = reads_file.replace('.fastq', '.bam')
+        output_bam_file = bam_loc
         
         command_lines = [
             'bwa aln -q 5 -f ' + intermediate_file + ' ' + genome_file + ' ' + reads_file,

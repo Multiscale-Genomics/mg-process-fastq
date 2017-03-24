@@ -134,7 +134,6 @@ if __name__ == "__main__":
     windows2 = ((1,25), (1,50), (1,75),(1,100))
     #windows2 = ((101,125), (101,150), (101,175),(101,200))
     
-    species       = args.species
     genome_fa     = args.genome
     taxon_id      = args.taxon_id
     assembly      = args.assembly

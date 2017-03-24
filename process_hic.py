@@ -18,7 +18,13 @@
 
 # -*- coding: utf-8 -*-
 """process Hi-C paired end FastQ files"""
-import argparse, time
+import argparse, urllib2, gzip, shutil, shlex, subprocess, os, json, time
+
+from basic_modules import Tool, Workflow, Metadata
+
+from functools import wraps
+
+import tool
 
 try :
     from pycompss.api.parameter import *
@@ -31,187 +37,73 @@ except ImportError :
 
 from tool.common import common
 
-class process_hic:
-    #@task(params = IN)
-    def main(self, params):
+# ------------------------------------------------------------------------------
+class process_hic(Workflow):
+    """
+    Functions for downloading and processing Mnase-seq FastQ files. Files are
+    downloaded from the European Nucleotide Archive (ENA), then aligned,
+    filtered and analysed for peak calling
+    """
+    
+    def run(self, file_ids, metadata):
         """
-        Initial grouping to download, parse and filter the individual
-        experiments.
+        Main run function for processing MNase-Seq FastQ data. Pipeline aligns
+        the FASTQ files to the genome using BWA. iNPS is then used for peak
+        calling to identify nucleosome position sites within the genome.
+                
+        Parameters
+        ----------
+        files_ids : list
+            List of file locations
+        metadata : list
+            Required meta data
         
         Returns
         -------
-        None
-        
-        Raw counts for the experiment in a HiC adjacency matrix saved to
-        the tmp_dir
+        outputfiles : list
+            List of locations for the output bam, bed and tsv files
         """
+        
         from fastq2adjacency import fastq2adjacency
-        
-        genome      = params[0]
-        dataset     = params[1]
-        sra_id      = params[2]
-        library     = params[3]
-        enzyme_name = params[4]
-        resolution  = params[5]
-        tmp_dir     = params[6]
-        data_dir    = params[7]
-        expt        = params[8]
-        same_fastq  = params[9]
-        windows1    = params[10]
-        windows2    = params[11]
-        
-        print "Got Params"
-        
-        print sra_id, library, resolution, time.time()
-        
-        f2a = fastq2adjacency()
-        f2a.set_params(genome, dataset, sra_id, library, enzyme_name, resolution, tmp_dir, data_dir, expt, same_fastq, windows1, windows2)
-        
-        print "Set Params"
-        cf = common()
-        in_files = cf.getFastqFiles(sra_id, data_dir)
-        
-        map(f2a.mapWindows, [1, 2])
+
+        genome_gem   = files_ids[0]
+        fastq_file_1 = files_ids[1]
+        fastq_file_2 = files_ids[2]
+        enzyme_name = metadata['enzyme_name']
+        resolutions = metadata['resolutions']
+        windows1    = metadata['windows1']
+        windows2    = metadata['windows2']
+
+        tmp_name = fastq_file_1.split('/')
+        tmp_dir = '/'.join(tmp_name[0:-1])
+        try:
+            os.makedirs(tmp_dir)
+        except:
+            pass
+
+        f2a = fastq2adjacency_02()
+        f2a.set_params(genome_gem, fastq_file_1, fastq_file_2, enzyme_name,
+            resolutions, tmp_dir, windows1, windows2)
+
+        mapped_r1 = f2a.mapWindows(1)
+        mapped_r2 = f2a.mapWindows(2)
 
         f2a.parseGenomeSeq()
 
-        f2a.parseMaps()
+        f2a.parseMaps(mapped_r1, mapped_r2)
 
         f2a.mergeMaps()
 
-        f2a.filterReads(conservative=True)
+        adjlist_filtered_loc = f2a.filterReads(conservative=True)
 
-        # It is at this point that the resolution is used.
-        f2a.load_hic_read_data()
-        f2a.save_hic_split_data()
-        chroms = f2a.get_chromosomes()
-        
-        for chrom in chroms:
-            f2a.generate_tads(chrom)
-        
-        f2a.normalise_hic_data()
-        f2a.save_hic_data()
-        f2a.save_hic_hdf5()
+        adjlist_loc = f2a.save_hic_data()
 
-    def merge_adjacency_data(self, adj_list):
-        """
-        Merged the HiC filtered data into a single dataset.
-        
-        Input:   list of all the params in a list of lists.
-        
-        Returns: None
-        
-        Output:  The merged adjacency file, split files for each chrA vs chrB 
-                 combination and a file for each chromosome with the positions
-                 of the predicted TADs
-        """
-        #from pycompss.api.api import compss_wait_on
-        from fastq2adjacency import fastq2adjacency
-        
-        f2a = fastq2adjacency()
-        genome      = params[0][0]
-        dataset     = params[0][1]
-        sra_id      = params[0][2]
-        library     = params[0][3]
-        enzyme_name = params[0][4]
-        resolution  = params[0][5]
-        tmp_dir     = params[0][6]
-        data_dir    = params[0][7]
-        expt        = params[0][8]
-        same_fastq  = params[0][9]
-        windows1    = params[0][10]
-        windows2    = params[0][11]
-        f2a.set_params(genome, dataset, sra_id, library, enzyme_name, resolution, tmp_dir, data_dir, expt, same_fastq, windows1, windows2)
-        
-        f2a.load_hic_read_data()
-        
-        new_hic_data = f2a.hic_data
-        
-        for i in range(1,len(adj_list)):
-            f2a = fastq2adjacency()
-            genome      = params[i][0]
-            dataset     = params[i][1]
-            sra_id      = params[i][2]
-            library     = params[i][3]
-            enzyme_name = params[i][4]
-            resolution  = params[i][5]
-            tmp_dir     = params[i][6]
-            data_dir    = params[i][7]
-            expt        = params[i][8]
-            same_fastq  = params[i][9]
-            windows1    = params[i][10]
-            windows2    = params[i][11]
-            f2a.set_params(genome, dataset, sra_id, library, enzyme_name, resolution, tmp_dir, data_dir, expt, same_fastq, windows1, windows2)
-            
-            f2a.load_hic_read_data()
-        
-            new_hic_data += f2a.hic_data
-        
-        f2a = fastq2adjacency()
-        genome      = params[0][0]
-        dataset     = params[0][1]
-        sra_id      = params[0][2] + "_all"
-        library     = "MERGED"
-        enzyme_name = "RANGE"
-        resolution  = params[0][5]
-        tmp_dir     = params[0][6]
-        data_dir    = params[0][7]
-        expt        = params[0][8]
-        same_fastq  = params[0][9]
-        windows1    = params[0][10]
-        windows2    = params[0][11]
-        f2a.set_params(genome, dataset, sra_id, library, enzyme_name, resolution, tmp_dir, data_dir, expt, same_fastq, windows1, windows2)
-        
-        f2a.hic_data = new_hic_data
-        f2a.save_hic_data()
-        f2a.save_hic_hdf5()
-        f2a.save_hic_split_data()
-        
-        tad_done = []
-        for chrom in f2a.get_chromosomes():
-            tad_done.append(call_tads(genome, dataset, sra_id, library, enzyme_name, resolution, tmp_dir, data_dir, expt, same_fastq, windows1, windows2, chrom))
-        tad_done.compss_wait_on(tad_done)
-    
-    #@task(genome = IN, dataset = IN, sra_id = IN, library = IN, enzyme_name = IN, resolution = IN, tmp_dir = IN, data_dir = IN, expt = IN, same_fastq = IN, windows1 = IN, windows2 = IN, chrom = IN, returns = int)
-    def call_tads(self, genome, dataset, sra_id, library, enzyme_name, resolution, tmp_dir, data_dir, expt, same_fastq, windows1, windows2, chrom):
-        """
-        TAD calling for a given dataset and chromosome. This should be run from
-        the merge step, but can be run individually. Relies on the split
-        adjacency files having already been created.
-        
-        Input:   params for the f2a set up and the chromosome for analysis
-        
-        Returns: None
-        
-        Output:  File containing the predicted TADs.
-        """
-        from fastq2adjacency import fastq2adjacency
-        
-        f2a = fastq2adjacency()
-        f2a.set_params(genome, dataset, sra_id, library, enzyme_name, resolution, tmp_dir, data_dir, expt, same_fastq, windows1, windows2)
-        f2a.generate_tads(chrom)
-        
-        return 1
+        # List of files to get saved
+        return (adjlist_filtered_loc, adjlist_loc)
 
-    def merge_hdf5_files(self, genome, dataset, resolutions, data_dir):
-        """
-        Merges the separate HDF5 files with each of the separate resolutions
-        into a single 
-        """
-        
-        #f = h5py.File(filename, "a")
-        #dset = f.create_dataset(str(self.resolution), (dSize, dSize), dtype='int32', chunks=True, compression="gzip")
-        #dset[0:dSize,0:dSize] += d
-        #f.close()
-        
-        f_out = data_dir + genome + "_" + dataset + ".hdf5"
-        final_h5 = h5py.File(f_out, "a")
-        for resolution in resolutions:
-            f = data_dir + genome + "_" + dataset + "_" + str(resolution) + ".hdf5"
-            fin = h5py.File(f, "r")
-            hdf5.h5o.copy(fin, str(resolution), final_h5, str(resolution))
-            fin.close()
-        final_h5.close()
+
+# ------------------------------------------------------------------------------
+
 
 if __name__ == "__main__":
     import sys
@@ -220,69 +112,79 @@ if __name__ == "__main__":
     start = time.time()
     
     # Set up the command line parameters
-    parser = argparse.ArgumentParser(description="Load adjacency list into HDF5 file")
-    parser.add_argument("--genome", help="Genome name") #             default="GCA_000001405.22")
+    parser = argparse.ArgumentParser(description="Generate adjacency files")
+    parser.add_argument("--genome", help="Genome assembly FASTA file") #             default="GCA_000001405.22")
     parser.add_argument("--species", help="Species (homo_sapiens)")
     parser.add_argument("--assembly", help="Assembly (GRCh38)")
-    parser.add_argument("--dataset", help="Name of the dataset") #    default="GSE63525")
-    parser.add_argument("--expt_name")
-    parser.add_argument("--expt_list", help="TSV detailing the SRA ID, library and restriction enzymeused that are to be treated as a single set")
+    parser.add_argument("--file1", help="Location of FASTQ file 1")
+    parser.add_argument("--file2", help="Location of FASTQ file 2")
+    parser.add_argument("--resolutions")
+    parser.add_argument("--enzyme_name")
+    parser.add_argument("--windows1")
+    parser.add_argument("--windows2")
+    parser.add_argument("--file_out")
     parser.add_argument("--tmp_dir", help="Temporary data dir")
-    parser.add_argument("--data_dir", help="Data directory; location to download SRA FASTQ files and save results")
-
+    
     # Get the matching parameters from the command line
     args = parser.parse_args()
 
-    genome    = args.genome
-    species   = args.species
-    assembly  = args.assembly
-    dataset   = args.dataset
-    expt_name = args.expt_name
-    expt_list = args.expt_list
-    tmp_dir   = args.tmp_dir
-    data_dir  = args.data_dir
-    
-    # A default value is only required for the first few steps to generate the
-    # intial alignments and prepare the HiC data for loading. The resolutions
-    # get passed later on when the pipeline splits and handles each on
-    # individually via the process_block_size() function.
-    #resolutions = [1000, 2500, 5000, 10000, 25000, 50000, 100000, 250000, 500000, 1000000, 10000000]
-    resolutions = [1000000, 10000000]
-    
+    # Assumes that there are 2 fastq files for the paired ends
     windows1 = ((1,25), (1,50), (1,75),(1,100))
     windows2 = ((1,25), (1,50), (1,75),(1,100))
+    #windows2 = ((101,125), (101,150), (101,175),(101,200))
     
-    f = open(expt_list, "r")
+    species       = args.species
+    genome_fa     = args.genome
+    taxon_id      = args.taxon_id
+    assembly      = args.assembly
+    fastq_01_file = args.file
+    fastq_02_file = args.file
+    tmp_dir       = args.tmp_dir
+    enzyme_name   = args.enzyme_name
+    resolutions   = args.resolutions
+    windows1arg   = args.windows1
+    windows2arg   = args.windows1
 
-    more_loading_list = []
-    less_loading_list = []
-    for line in f:
-        line = line.rstrip()
-        line = line.split("\t")
-        
-        #                                sra_id,  library, enzyme_name
-        more_params = [[genome, dataset, line[0], line[1], line[2], resolution, tmp_dir, data_dir, expt_name, False, windows1, windows2] for resolution in resolutions]
-        less_params = [genome, dataset, line[0], line[1], line[2], 1000, tmp_dir, data_dir, expt_name, False, windows1, windows2]
-        more_loading_list += more_params
-        less_loading_list += less_params
+    if windows1arg is not None:
+        windows1 = windows1arg
+    if windows2arg is not None:
+        windows2 = windows2arg
 
-    print more_loading_list
+    if resolutions is None:
+         #resolutions = [1000, 2500, 5000, 10000, 25000, 50000, 100000, 250000, 500000, 1000000, 10000000]
+        resolutions = [1000000, 10000000]
+    else:
+        resolutions = resolutions.split(',')
+
+    da = dmp()
     
-    cf = common()
+    print da.get_files_by_user("test")
     
-    # Get the assembly
-    spp_dir = data_dir + species + '_' + assembly + '/' + species + '.' + assembly + '.dna.toplevel.fa.gz'
-    genome_fa = cf.getGenomeFile(spp_dir, species, assembly)
+    genome_file = da.set_file("test", genome_fa, "fasta", "Assembly", taxon_id, {'assembly' : assembly})
     
-    hic = process_hic()
+    metadata = {
+        'assembly'    : assembly,
+        'resolutions' : resolutions,
+        'enzyme_name' : enzyme_name,
+        'windows1'    : windows1,
+        'windows2'    : windows2,
+    }
+
+    fastq_01_file_in = da.set_file("test", fastq_01_file, "fastq", "Hi-C", taxon_id, metadata)
+    fastq_02_file_in = da.set_file("test", fastq_02_file, "fastq", "Hi-C", taxon_id, metadata)
     
-    # Downloads the FastQ files and then maps then to the genome.
-    map(hic.main, less_loading_list)
+    print da.get_files_by_user("test")
     
-    # Generates the final adjacency matrix for a given resolutions
-    hic.merge_adjacency_data(more_loading_list)
+    # 3. Instantiate and launch the App
+    from basic_modules import WorkflowApp
+    app = WorkflowApp()
     
-    # This merges the final set of HDF5 files into a single file ready for the
-    # REST API
-    hic.merge_hdf5_files(genome, dataset, resolutions, data_dir)
+    files = [
+        genome_fa,
+        fastq_01_file_in,
+        fastq_02_file_in
+    ]
+
+    results = app.launch(process_hic, files, metadata)
     
+    print results

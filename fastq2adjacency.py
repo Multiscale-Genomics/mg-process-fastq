@@ -84,40 +84,23 @@ class fastq2adjacency:
         
         self.hic_data = None
 
-    
-    def set_params(self, species, assembly, dataset, sra_id, library, enzyme_name, resolution, tmp_dir, data_dir, expt_name = None, same_fastq=True, windows1=None, windows2=None):
-        #self.genome_accession = genome_accession
-        self.species     = species
-        self.assembly    = assembly
-        self.dataset     = dataset
-        self.sra_id      = sra_id
-        self.library     = library
+    def set_params(self, genome_file, gem_file, fastq_file_1, fastq_file_2, enzyme_name, resolutions, tmp_dir windows1=None, windows2=None):
+        self.genome_file = genome_file
+        self.gem_file    = 
+        self.fastq_file_1  = fastq_file_1
+        
+        if fastq_file_2 == None
+            self.fastq_file_2  = fastq_file_1
+        else:
+            self.fastq_file_2  = fastq_file_2
+        
         self.enzyme_name = enzyme_name
-        self.resolution  = resolution
+        self.resolutions = resolutions
 
         self.temp_root = tmp_dir
-        self.data_root = data_dir
         
-        #self.gem_file = self.data_root + self.genome_accession + "/" + self.genome_accession + ".gem"
-        #self.genome_file = self.data_root + self.genome_accession + "/chroms/" + self.genome_accession + ".fa"
-        self.gem_file = self.data_root + self.species + '_' + self.assembly + '/' + self.species + '.' + self.assembly + ".gem"
-        self.genome_file = self.data_root + self.species + '_' + self.assembly + '/' + self.species + '.' + self.assembly + ".fa"
-        
-        if expt_name != None:
-            self.expt_name = expt_name + '/'
-        else:
-            self.expt_name = ''
-        
-        self.library_dir = self.data_root + self.expt_name + self.dataset + '/' + self.library + '/'
-        if same_fastq == True:
-            self.fastq_file_1  = self.library_dir + self.sra_id + '.fastq'
-            self.fastq_file_2  = self.library_dir + self.sra_id + '.fastq'
-        else:
-            self.fastq_file_1  = self.library_dir + self.sra_id + '_1.fastq'
-            self.fastq_file_2  = self.library_dir + self.sra_id + '_2.fastq'
-        
-        self.map_dir     = self.library_dir + '01_it-mapped_read'
-        self.tmp_dir     = self.temp_root + self.expt_name + self.dataset + '/' + self.library
+        self.map_dir     = self.temp_root + '01_it-mapped_read'
+        self.tmp_dir     = self.temp_root + 'tmp'
         self.parsed_reads_dir = self.tmp_dir + '/parsed_reads'
         
         try:
@@ -147,9 +130,11 @@ class fastq2adjacency:
         """
         
         if side == 1:
-            mapped_r1 = full_mapping(self.gem_file, self.fastq_file_1, self.map_dir + str(1), windows=self.windows1, frag_map=False, nthreads=8, clean=True, temp_dir=self.tmp_dir)
+            return full_mapping(self.gem_file, self.fastq_file_1, self.map_dir + str(1), windows=self.windows1, frag_map=False, nthreads=8, clean=True, temp_dir=self.tmp_dir)
         elif side == 2:
-            mapped_r2 = full_mapping(self.gem_file, self.fastq_file_2, self.map_dir + str(2), windows=self.windows2, frag_map=False, nthreads=8, clean=True, temp_dir=self.tmp_dir)
+            return full_mapping(self.gem_file, self.fastq_file_2, self.map_dir + str(2), windows=self.windows2, frag_map=False, nthreads=8, clean=True, temp_dir=self.tmp_dir)
+
+        return False
     
     
     def getMappedWindows(self):
@@ -179,9 +164,9 @@ class fastq2adjacency:
         self.genome_seq = parse_fasta(self.genome_file)
     
     
-    @constraint(ProcessorCoreCount=8)
-    @task(num_cpus = IN)
-    def parseMaps(self, num_cpus=8):
+    #@constraint(ProcessorCoreCount=8)
+    #@task(num_cpus = IN)
+    def parseMaps(self, mapped_r1, mapped_r2, num_cpus=8):
         """
         Merge the 2 read maps together 
         Requires 8 CPU
@@ -191,10 +176,18 @@ class fastq2adjacency:
         # new file with info of each "read2" and its placement with respect to RE sites
         reads2 = self.parsed_reads_dir + '/read2.tsv'
         
-        mapped_rN = self.getMappedWindows()
+        #mapped_rN = self.getMappedWindows()
 
         print 'Parse MAP files...'
-        parse_map(mapped_rN["mapped_r1"], mapped_rN["mapped_r2"], out_file1=reads1, out_file2=reads2, genome_seq=self.genome_seq, re_name=self.enzyme_name, verbose=True, ncpus=num_cpus)
+        parse_map(
+            mapped_r1,
+            mapped_r1,
+            out_file1=reads1,
+            out_file2=reads2,
+            genome_seq=self.genome_seq,
+            re_name=self.enzyme_name,
+            verbose=True,
+            ncpus=num_cpus)
     
     def mergeMaps(self):
         """
@@ -207,10 +200,12 @@ class fastq2adjacency:
         # new file with info of each "read2" and its placement with respect to RE sites
         reads2 = self.parsed_reads_dir + '/read2.tsv'
         get_intersection(reads1, reads2, reads, verbose=True)
+
+        return reads
     
     
-    @constraint(ProcessorCoreCount=4)
-    @task(conservative = IN)
+    #@constraint(ProcessorCoreCount=4)
+    #@task(conservative = IN)
     def filterReads(self, conservative = True):
         """
         Filter the reads to remove duplicates and experimental abnormalities
@@ -220,7 +215,14 @@ class fastq2adjacency:
         reads      = self.parsed_reads_dir + '/both_map.tsv'
         filt_reads = self.parsed_reads_dir + '/filtered_map.tsv'
         
-        masked = filter_reads(reads, max_molecule_length=610, min_dist_to_re=915, over_represented=0.005, max_frag_size=100000, min_frag_size=100, re_proximity=4)
+        masked = filter_reads(
+            reads,
+            max_molecule_length=610,
+            min_dist_to_re=915,
+            over_represented=0.005,
+            max_frag_size=100000,
+            min_frag_size=100,
+            re_proximity=4)
 
         if conservative == True:
             # Ignore filter 5 (based on docs) as not very helpful
@@ -228,27 +230,6 @@ class fastq2adjacency:
         else:
             # Less conservative option
             apply_filter(reads, filt_reads, masked, filters=[1,2,3,9,10])
-    
-    #def merge_adjacency_data(self, adjacency_matrixes):
-    #    """
-    #    TODO: Work on the merging and finalise the procedure.
-    #    
-    #    The recommended route is to merge the normalised data is to sum the
-    #    normalised values from previous steps. This should be the final step of
-    #    the initial phase for main function should have finished by normalising
-    #    each of the individual adjacency files.
-    #    """
-    #    exptName = self.library + "_" + str(self.resolution)
-    #    
-    #    merged_matrix = Chromosome(name=exptName, centromere_search=True)
-    #    merged_matrix.add_experiment(exptName, resolution=self.resolution)
-    #    merged_exp = merged_matrix.experiment[exptName]
-    #    print adjacency_data
-    #    
-    #    for m in adjacency_matrixes:
-    #        new_chrom = Chromosome(name=exptName, centromere_search=True)
-    #        new_chrom.add_experiment(exptName, hic_data=m, resolution=self.resolution)
-    #        merged_exp = merged_exp + new_chrom.experiments[exptName]
     
     
     @constraint(ProcessorCoreCount=8, MemoryPhysicalSize=80)
@@ -259,6 +240,7 @@ class fastq2adjacency:
         """
         from pytadbit import Chromosome
         
+        # Need to remove the library parameter
         exptName = self.library + "_" + str(self.resolution) + "_" + str(chrom) + "-" + str(chrom)
         fname = self.parsed_reads_dir + '/adjlist_map_' + str(chrom) + '-' + str(chrom) + '_' + str(self.resolution) + '.tsv'
         chr_hic_data = read_matrix(fname, resolution=int(self.resolution))
@@ -275,7 +257,7 @@ class fastq2adjacency:
         exp.write_tad_borders(savedata=tad_file)
     
     
-    def load_hic_read_data(self):
+    def load_hic_read_data(self, filter_reads_file = None, resolution = None):
         """
         Load the interactions into the HiC-Data data type
         
@@ -283,18 +265,24 @@ class fastq2adjacency:
         data is loaded in the right form for later functions. Options like the
         TAD calling also require non-normalised data.
         """
-        filter_reads = self.parsed_reads_dir + '/filtered_map.tsv'
-        
+        if filter_reads_file == None:
+            filter_reads = self.parsed_reads_dir + '/filtered_map.tsv'
+        else:
+            filder_reads = filter_reads_file
+
+        if resolution == None:
+            resolution = self.resolution
+
         print "\nfilter_reads: " + filter_reads
-        self.hic_data = load_hic_data_from_reads(filter_reads, resolution=int(self.resolution))
+        self.hic_data = load_hic_data_from_reads(filter_reads, resolution=int(resolution))
     
     
-    def load_hic_matrix_data(self, norm=True):
+    def load_hic_matrix_data(self, norm=False):
         """
         Load the interactions from Hi-C adjacency matrix into the HiC-Data data
         type
         """
-        if norm == True:
+        if norm == False:
             # Dump the data pre-normalized
             adj_list = self.parsed_reads_dir + '/adjlist_map.tsv'
         else:
@@ -342,27 +330,29 @@ class fastq2adjacency:
         else:
             adj_list = self.parsed_reads_dir + '/adjlist_map_norm.tsv'
             self.hic_data.write_matrix(adj_list, normalized=True)
+
+        return adj_list
     
     
-    def save_hic_hdf5(self, normalized=False):
-        """
-        Save the hic_data object to HDF5 file. This is saved as an NxN array
-        with the values for all positions being set.
-        
-        This needs to include attributes for the chromosomes for each resolution
-         - See the mg-rest-adjacency hdf5_reader for further details about the
-           requirement. This prevents the need for secondary storage details
-           outside of the HDF5 file.
-        """
-        dSize = len(self.hic_data)
-        d = np.zeros([dSize, dSize], dtype='int32')
-        d += self.hic_data.get_matrix()
-        
-        filename = self.data_root + self.species + '_' + self.assembly + "_" + self.dataset + "_" + str(self.resolution) + ".hdf5"
-        f = h5py.File(filename, "a")
-        dset = f.create_dataset(str(self.resolution), (dSize, dSize), dtype='int32', chunks=True, compression="gzip")
-        dset[0:dSize,0:dSize] += d
-        f.close()
+    #def save_hic_hdf5(self, normalized=False):
+    #    """
+    #    Save the hic_data object to HDF5 file. This is saved as an NxN array
+    #    with the values for all positions being set.
+    #    
+    #    This needs to include attributes for the chromosomes for each resolution
+    #     - See the mg-rest-adjacency hdf5_reader for further details about the
+    #       requirement. This prevents the need for secondary storage details
+    #       outside of the HDF5 file.
+    #    """
+    #    dSize = len(self.hic_data)
+    #    d = np.zeros([dSize, dSize], dtype='int32')
+    #    d += self.hic_data.get_matrix()
+    #    
+    #    filename = self.data_root + self.species + '_' + self.assembly + "_" + self.dataset + "_" + str(self.resolution) + ".hdf5"
+    #    f = h5py.File(filename, "a")
+    #    dset = f.create_dataset(str(self.resolution), (dSize, dSize), dtype='int32', chunks=True, compression="gzip")
+    #    dset[0:dSize,0:dSize] += d
+    #    f.close()
     
     
     def clean_up(self):
@@ -371,15 +361,15 @@ class fastq2adjacency:
         """
         os.chdir(self.temp_root)
         
-        try:
-            shutil.rmtree(self.expt_name)
-        except:
-            pass
+        #try:
+        #    shutil.rmtree(self.expt_name)
+        #except:
+        #    pass
         
-        try:
-            shutil.rmtree(self.dataset)
-        except:
-            pass
+        #try:
+        #    shutil.rmtree(self.dataset)
+        #except:
+        #    pass
         
         
 

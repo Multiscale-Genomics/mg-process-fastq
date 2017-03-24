@@ -114,6 +114,7 @@ if __name__ == "__main__":
     # Set up the command line parameters
     parser = argparse.ArgumentParser(description="Generate adjacency files")
     parser.add_argument("--genome", help="Genome assembly FASTA file") #             default="GCA_000001405.22")
+    parser.add_argument("--genome_gem", help="Genome assembly GEM file")
     parser.add_argument("--species", help="Species (homo_sapiens)")
     parser.add_argument("--assembly", help="Assembly (GRCh38)")
     parser.add_argument("--file1", help="Location of FASTQ file 1")
@@ -122,7 +123,7 @@ if __name__ == "__main__":
     parser.add_argument("--enzyme_name")
     parser.add_argument("--windows1")
     parser.add_argument("--windows2")
-    parser.add_argument("--file_out")
+    #parser.add_argument("--file_out")
     parser.add_argument("--tmp_dir", help="Temporary data dir")
     
     # Get the matching parameters from the command line

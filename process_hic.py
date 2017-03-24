@@ -137,8 +137,8 @@ if __name__ == "__main__":
     genome_fa     = args.genome
     taxon_id      = args.taxon_id
     assembly      = args.assembly
-    fastq_01_file = args.file
-    fastq_02_file = args.file
+    fastq_01_file = args.file1
+    fastq_02_file = args.file2
     tmp_dir       = args.tmp_dir
     enzyme_name   = args.enzyme_name
     resolutions   = args.resolutions
@@ -168,8 +168,6 @@ if __name__ == "__main__":
         'assembly'    : assembly,
         'resolutions' : resolutions,
         'enzyme_name' : enzyme_name,
-        'windows1'    : windows1,
-        'windows2'    : windows2,
     }
 
     fastq_01_file_in = da.set_file("test", fastq_01_file, "fastq", "Hi-C", taxon_id, metadata)
@@ -186,6 +184,14 @@ if __name__ == "__main__":
         fastq_01_file_in,
         fastq_02_file_in
     ]
+
+    metadata = {
+        'assembly'    : assembly,
+        'resolutions' : resolutions,
+        'enzyme_name' : enzyme_name,
+        'windows1'    : windows1,
+        'windows2'    : windows2,
+    }
 
     results = app.launch(process_hic, files, metadata)
     

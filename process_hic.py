@@ -21,6 +21,7 @@
 import argparse, urllib2, gzip, shutil, shlex, subprocess, os, json, time
 
 from basic_modules import Tool, Workflow, Metadata
+from dmp import dmp
 
 from functools import wraps
 
@@ -158,7 +159,7 @@ if __name__ == "__main__":
     else:
         resolutions = resolutions.split(',')
 
-    da = dmp()
+    da = dmp(test=True)
     
     print da.get_files_by_user("test")
     

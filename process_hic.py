@@ -115,7 +115,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Generate adjacency files")
     parser.add_argument("--genome", help="Genome assembly FASTA file") #             default="GCA_000001405.22")
     parser.add_argument("--genome_gem", help="Genome assembly GEM file")
-    parser.add_argument("--species", help="Species (homo_sapiens)")
+    parser.add_argument("--taxon_id", help="Species (9606)")
     parser.add_argument("--assembly", help="Assembly (GRCh38)")
     parser.add_argument("--file1", help="Location of FASTQ file 1")
     parser.add_argument("--file2", help="Location of FASTQ file 2")

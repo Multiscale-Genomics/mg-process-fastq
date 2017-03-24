@@ -146,9 +146,11 @@ if __name__ == "__main__":
     windows2arg   = args.windows1
 
     if windows1arg is not None:
-        windows1 = windows1arg
+        w1 = [int(i) for i in windows1arg.split(",")]
+        windows1 = ((w1[0], j) for j in w1[1:])
     if windows2arg is not None:
-        windows2 = windows2arg
+        w2 = [int(i) for i in windows2arg.split(",")]
+        windows2 = ((w1[0], j) for j in w2[1:])
 
     if resolutions is None:
          #resolutions = [1000, 2500, 5000, 10000, 25000, 50000, 100000, 250000, 500000, 1000000, 10000000]

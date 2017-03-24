@@ -124,8 +124,6 @@ if __name__ == "__main__":
     file_loc    = args.file
     file_bg_loc = args.bgd_file
     
-    pcs = process_chipseq()
-    
     #
     # MuG Tool Steps
     # --------------

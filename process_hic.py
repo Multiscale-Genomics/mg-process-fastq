@@ -21,6 +21,7 @@
 import argparse, urllib2, gzip, shutil, shlex, subprocess, os, json, time
 
 from basic_modules import Tool, Workflow, Metadata
+from 
 from dmp import dmp
 
 from functools import wraps
@@ -177,8 +178,8 @@ if __name__ == "__main__":
     print da.get_files_by_user("test")
     
     # 3. Instantiate and launch the App
-    from basic_modules import WorkflowApp
-    app = WorkflowApp()
+    #from basic_modules import WorkflowApp
+    #app = WorkflowApp()
     
     files = [
         genome_fa,
@@ -194,6 +195,9 @@ if __name__ == "__main__":
         'windows2'    : windows2,
     }
 
-    results = app.launch(process_hic, files, metadata)
+    #results = app.launch(process_hic, files, metadata)
+
+    ph = process_hic()
+    results = ph.run(files, metadata)
     
     print results

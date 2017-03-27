@@ -15,21 +15,21 @@
 """
 # Indexers
 import bowtie_indexer
-import bs_seeker_indexer
+#import bs_seeker_indexer
 import bwa_indexer
 import gem_indexer
 import kallisto_indexer
 
 # Aligners
-import bs_seeker_aligner
+#import bs_seeker_aligner
 import bwa_aligner
 
 # Filters
 import biobambam_filter
-import bs_seeker_filter
+#import bs_seeker_filter
 
 # Analysis
-import bs_seeker_methylation_caller
+#import bs_seeker_methylation_caller
 import inps
 import kallisto_quant
 import macs2

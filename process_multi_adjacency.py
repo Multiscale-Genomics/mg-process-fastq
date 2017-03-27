@@ -38,7 +38,7 @@ except ImportError :
 from tool.common import common
 
 # ------------------------------------------------------------------------------
-class process_hic(Workflow):
+class process_multi_adjacency(Workflow):
     """
     Functions for downloading and processing Mnase-seq FastQ files. Files are
     downloaded from the European Nucleotide Archive (ENA), then aligned,
@@ -64,42 +64,14 @@ class process_hic(Workflow):
             List of locations for the output bam, bed and tsv files
         """
         
-        from fastq2adjacency import fastq2adjacency
-
-        genome_gem   = files_ids[0]
-        fastq_file_1 = files_ids[1]
-        fastq_file_2 = files_ids[2]
-        enzyme_name = metadata['enzyme_name']
-        resolutions = metadata['resolutions']
-        windows1    = metadata['windows1']
-        windows2    = metadata['windows2']
-
-        tmp_name = fastq_file_1.split('/')
-        tmp_dir = '/'.join(tmp_name[0:-1])
-        try:
-            os.makedirs(tmp_dir)
-        except:
-            pass
-
-        f2a = fastq2adjacency_02()
-        f2a.set_params(genome_gem, fastq_file_1, fastq_file_2, enzyme_name,
-            resolutions, tmp_dir, windows1, windows2)
-
-        mapped_r1 = f2a.mapWindows(1)
-        mapped_r2 = f2a.mapWindows(2)
-
-        f2a.parseGenomeSeq()
-
-        f2a.parseMaps(mapped_r1, mapped_r2)
-
-        f2a.mergeMaps()
-
-        f2a.filterReads(conservative=True)
-
-        adjlist_loc = f2a.save_hic_data()
-
-        # List of files to get saved
-        return (adjlist_loc)
+        cwa_align = tool.bwaAlignerTool(self.configuration)
+        out_bam, out_meta = cwa_align.run((files_ids[0], files_ids[1]), ())
+        
+        # Needs moving to its own tool
+        inps = tool.inps(self.configuration)
+        out_peak_bed, out_meta = inps.inps_peak_calling(out_bam, ())
+        
+        return (out_peak_bed[0])
 
 
 # ------------------------------------------------------------------------------

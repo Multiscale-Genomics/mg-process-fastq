@@ -24,7 +24,9 @@ from functools import wraps
 
 from dmp import dmp
 
-import tool
+from tool import bwa_aligner
+from tool import biobambam_filter
+from tool import macs2
 
 import os
 
@@ -79,7 +81,7 @@ class process_chipseq(Workflow):
         
         out_bam = file_loc.replace('.fastq', '.bam')
         
-        bwa = tool.bwaAlignerTool(self.configuration)
+        bwa = bwa_aligner.bwaAlignerTool(self.configuration)
         file_loc = file_loc.replace('.fastq', '.bam')
         out_bam, out_bam_meta = bwa.run((genome_fa, file_loc), ())
         
@@ -89,12 +91,12 @@ class process_chipseq(Workflow):
         # TODO - Multiple files need merging into a single bam file
         
         # Filter the bams
-        b3f = tool.biobambam(self.configuration)
+        b3f = biobambam_filter.biobambam(self.configuration)
         b3f_file_out = b3f.run((out_bam[0]), ())
         b3f_file_bgd_out = b3f.run((out_bgd_bam[0]), ())
         
         # MACS2 to call peaks
-        macs2 = tool.macs2(self.configuration)
+        macs2 = macs.macs2(self.configuration)
         peak_bed, summits_bed, narrowPeak, broadPeak, gappedPeak = macs2.run((b3f_file_out,  b3f_file_bgd_out), ())
         
         return (b3f_file_out, b3f_file_bgd_out, peak_bed, summits_bed, narrowPeak, broadPeak, gappedPeak)
@@ -107,7 +109,6 @@ if __name__ == "__main__":
     
     # Set up the command line parameters
     parser = argparse.ArgumentParser(description="ChIP-seq peak calling")
-    parser.add_argument("--species", help="Species (homo_sapiens)")
     parser.add_argument("--taxon_id", help="Taxon_ID (9606)")
     parser.add_argument("--genome", help="Genome FASTA file")
     parser.add_argument("--assembly", help="Genome assembly ID (GCA_000001405.25)")
@@ -117,7 +118,6 @@ if __name__ == "__main__":
     # Get the matching parameters from the command line
     args = parser.parse_args()
     
-    species     = args.species
     taxon_id    = args.taxon_id
     genome_fa   = args.genome
     assembly    = args.assembly

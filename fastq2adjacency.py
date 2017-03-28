@@ -84,12 +84,12 @@ class fastq2adjacency:
         
         self.hic_data = None
 
-    def set_params(self, genome_file, gem_file, fastq_file_1, fastq_file_2, enzyme_name, resolutions, tmp_dir windows1=None, windows2=None):
+    def set_params(self, genome_file, gem_file, fastq_file_1, fastq_file_2, enzyme_name, resolutions, tmp_dir, windows1=None, windows2=None):
         self.genome_file = genome_file
-        self.gem_file    = 
+        self.gem_file    = gem_file
         self.fastq_file_1  = fastq_file_1
         
-        if fastq_file_2 == None
+        if fastq_file_2 == None:
             self.fastq_file_2  = fastq_file_1
         else:
             self.fastq_file_2  = fastq_file_2

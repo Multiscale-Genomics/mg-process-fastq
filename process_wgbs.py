@@ -275,9 +275,11 @@ if __name__ == "__main__":
     print da.get_files_by_user("test")
     
     # 3. Instantiate and launch the App
-    from basic_modules import WorkflowApp
-    app = WorkflowApp()
-    results = app.launch(process_wgbs, [genome_fa, fastq_file_1, fastq_file_2], metadata)
-    #peak_file = ps.run((genome_fa, fastq_file), ())
+    #from basic_modules import WorkflowApp
+    #app = WorkflowApp()
+    #results = app.launch(process_wgbs, [genome_fa, fastq_file_1, fastq_file_2], metadata)
+    
+    pw = process_wgbs()
+    peak_file = pw.run([genome_fa, fastq_file_1, fastq_file_2], metadata)
     
     print peak_files

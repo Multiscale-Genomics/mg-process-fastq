@@ -116,9 +116,12 @@ if __name__ == "__main__":
     print da.get_files_by_user("test")
     
     # 3. Instantiate and launch the App
-    from basic_modules import WorkflowApp
-    app = WorkflowApp()
-    results = app.launch(process_rnaseq, [genome_file, file_in], {})
+    #from basic_modules import WorkflowApp
+    #app = WorkflowApp()
+    #results = app.launch(process_rnaseq, [genome_file, file_in], {})
+
+    pr = process_rnaseq()
+    resutls = pr.run([genome_file, file_in], {})
     
     print da.get_files_by_user("test")
     

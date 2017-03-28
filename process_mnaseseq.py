@@ -106,7 +106,9 @@ if __name__ == "__main__":
     from basic_modules import WorkflowApp
     app = WorkflowApp()
     results = app.launch(process_mnaseseq, [genome_fa, fastq_file], {})
-    #peak_file = ps.run((genome_fa, fastq_file), ())
+    
+    pm = process_mnaseseq()
+    peak_file = pm.run([genome_fa, fastq_file], {})
     
     print peak_files
 

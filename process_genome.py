@@ -106,8 +106,6 @@ if __name__ == "__main__":
     file_loc    = args.data_dir
     file_bg_loc = args.tmp_dir
     
-    pcs = process_genome()
-    
     #
     # MuG Tool Steps
     # --------------
@@ -129,9 +127,13 @@ if __name__ == "__main__":
     print da.get_files_by_user("test")
     
     # 3. Instantiate and launch the App
-    from basic_modules import WorkflowApp
-    app = WorkflowApp()
-    results = app.launch(process_genome, [genome_file], {})
+    #from basic_modules import WorkflowApp
+    #app = WorkflowApp()
+    #results = app.launch(process_genome, [genome_file], {})
+
+    pg = process_genome()
+    results = pg.run([genome_file], {})
+
     
     print da.get_files_by_user("test")
     

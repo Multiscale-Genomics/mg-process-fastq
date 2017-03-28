@@ -144,9 +144,12 @@ if __name__ == "__main__":
     print da.get_files_by_user("test")
     
     # 3. Instantiate and launch the App
-    from basic_modules import WorkflowApp
-    app = WorkflowApp()
-    results = app.launch(process_chipseq, [genome_file, file_in, file_bg_in], {})
+    #from basic_modules import WorkflowApp
+    #app = WorkflowApp()
+    #results = app.launch(process_chipseq, [genome_file, file_in, file_bg_in], {})
+
+    pc = process_chipseq()
+    results = pc.run([genome_file, file_in, file_bg_in], {})
     
     print da.get_files_by_user("test")
     

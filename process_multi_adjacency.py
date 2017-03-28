@@ -147,16 +147,18 @@ if __name__ == "__main__":
     
     print da.get_files_by_user("test")
     
-    # 3. Instantiate and launch the App
-    from basic_modules import WorkflowApp
-    app = WorkflowApp()
-    
     files = [
         genome_fa,
         fastq_01_file_in,
         fastq_02_file_in
     ]
 
-    results = app.launch(process_multi_adjacency, files, metadata)
+    # 3. Instantiate and launch the App
+    #from basic_modules import WorkflowApp
+    #app = WorkflowApp()
+    #results = app.launch(process_multi_adjacency, files, metadata)
+
+    pma = process_multi_adjacency()
+    results = pma.run(files, metadata)
     
     print results[0]

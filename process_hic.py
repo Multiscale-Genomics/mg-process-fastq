@@ -21,7 +21,6 @@
 import argparse, urllib2, gzip, shutil, shlex, subprocess, os, json, time
 
 from basic_modules import Tool, Workflow, Metadata
-from 
 from dmp import dmp
 
 from functools import wraps

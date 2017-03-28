@@ -34,8 +34,8 @@ ChIP-Seq Analysis
    ----------
    genome : str
       Genome accession (e.g. GCA_000001405.22)
-   species : str
-      Species (e.g. homo_sapiens)
+   taxon_id : int
+      Species (e.g. 9606)
    file : str
       Location of FASTQ input file
    bgd_file : str
@@ -49,35 +49,32 @@ ChIP-Seq Analysis
    
    Example
    -------
-    .. code-block:: none
-       :linenos:
-       
-       {
-         "user" : "user_name",
-         "submission_name" : "test_01",
-         "expts" : [
-           {
-             "project_id": "ena_project_id",
-             "group_name": "user_defined_name_1",
-             "local": '',
-             "run_ids" : ["ena_run_accn_1", "ena_run_accn_2", ...]
-             "bgd_ids" : ["ena_run_accn_3", "ena_run_accn_4", ...]
-           },
-           {
-             "project_id": "ena_project_id",
-             "group_name": "user_defined_name_2",
-             "run_ids" : ["ena_run_accn_5", "ena_run_accn_6", ...]
-             "bgd_ids" : ["ena_run_accn_3", "ena_run_accn_4", ...]
-           }
-         ]
-       }
-      
+   When running the pipeline on a local machine:
+
+   .. code-block:: none
+      :linenos:
+
+      python process_chipseq.py                                      \\
+         --genome /<dataset_dir>/Homo_sapiens.GRCh38.fasta           \\
+         --assembly GCA_000001405.25                                 \\
+         --taxon_id 9606                                             \\
+         --file /<dataset_dir>/<file_name>.fastq                     \\
+         --bgd_file /<dataset_dir>/<bgd_file_name>.fastq             \\
+
    When using a local verion of the [COMPS virtual machine](http://www.bsc.es/computer-sciences/grid-computing/comp-superscalar/downloads-and-documentation):
    
    .. code-block:: none
       :linenos:
       
-      runcompss --comm=integratedtoolkit.gat.master.GATAdaptor --log_level=debug --lang=python /home/compss/mg-process-fastq/process_chipseq.py --species homo_sapiens --assembly GRCh38 --project_id PRJDA34559 --run_ids PRJEB2445.json --data_dir /home/compss/VMShare
+      runcompss
+         --comm=integratedtoolkit.gat.master.GATAdaptor                   \\
+         --log_level=debug                                                \\
+         --lang=python /home/compss/mg-process-fastq/process_chipseq.py   \\
+            --taxon_id 9606                                               \\
+            --assembly GCA_000001405.25                                   \\
+            --file /<dataset_dir>/<file_name>.fastq                       \\
+            --bgd_file /<dataset_dir>/<bgd_file_name>.fastq
+            
    
    Methods
    =======
@@ -165,7 +162,7 @@ RNA-Seq Analysis
          --genome /<dataset_dir>/Homo_sapiens.GRCh38.cdna.all.fasta  \\
          --assembly GCA_000001405.25                                 \\
          --taxon_id 9606                                             \\
-         --file /<dataset_dir>/ERR030856.fastq                       \\
+         --file /<dataset_dir>/expt1.fastq                           \\
 
 
    When using a local verion of the [COMPS virtual machine](http://www.bsc.es/computer-sciences/grid-computing/comp-superscalar/downloads-and-documentation):
@@ -173,7 +170,14 @@ RNA-Seq Analysis
    .. code-block:: none
       :linenos:
       
-      runcompss --lang=python /home/compss/mg-process-fastq/process_rnaseq.py --species homo_sapien --assembly GCA_000001405.22 --taxon_id 9606 --genome <data_dir>/GCA_000001405.22.fa --file <data_dir>/expt1.fastq
+      runcompss
+         --comm=integratedtoolkit.gat.master.GATAdaptor                   \\
+         --log_level=debug                                                \\
+         --lang=python /home/compss/mg-process-fastq/process_rnaseq.py    \\
+            --assembly GCA_000001405.22                                   \\
+            --taxon_id 9606                                               \\
+            --genome <data_dir>/GCA_000001405.25.fa                       \\
+            --file <data_dir>/expt1.fastq                                 \\
    
    Methods
    =======

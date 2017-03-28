@@ -163,7 +163,7 @@ if __name__ == "__main__":
     
     print da.get_files_by_user("test")
     
-    genome_file = da.set_file("test", genome_fa, "fasta", "Assembly", taxon_id, {'assembly' : assembly})
+    genome_file = da.set_file("test", genome_fa, "fasta", "Assembly", taxon_id, meta_data={'assembly' : assembly})
     
     metadata = {
         'user_id'     : 'test'
@@ -172,8 +172,8 @@ if __name__ == "__main__":
         'enzyme_name' : enzyme_name,
     }
 
-    fastq_01_file_in = da.set_file("test", fastq_01_file, "fastq", "Hi-C", taxon_id, metadata)
-    fastq_02_file_in = da.set_file("test", fastq_02_file, "fastq", "Hi-C", taxon_id, metadata)
+    fastq_01_file_in = da.set_file("test", fastq_01_file, "fastq", "Hi-C", taxon_id, meta_data=metadata)
+    fastq_02_file_in = da.set_file("test", fastq_02_file, "fastq", "Hi-C", taxon_id, meta_data=metadata)
     
     print da.get_files_by_user("test")
     

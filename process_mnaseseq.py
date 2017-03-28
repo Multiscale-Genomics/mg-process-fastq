@@ -97,8 +97,8 @@ if __name__ == "__main__":
     
     print da.get_files_by_user("test")
     
-    genome_file = da.set_file("test", genome_fa, "fasta", "Assembly", taxon_id, {'assembly' : assembly})
-    file_in = da.set_file("test", file_loc, "fastq", "Mnase-seq", taxon_id, {'assembly' : assembly})
+    genome_file = da.set_file("test", genome_fa, "fasta", "Assembly", taxon_id, meta_data={'assembly' : assembly})
+    file_in = da.set_file("test", file_loc, "fastq", "Mnase-seq", taxon_id, meta_data={'assembly' : assembly})
     
     print da.get_files_by_user("test")
 

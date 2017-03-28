@@ -269,9 +269,9 @@ if __name__ == "__main__":
     
     print da.get_files_by_user("test")
     
-    genome_file = da.set_file("test", genome_fa, "fasta", "Assembly", taxon_id, {'assembly' : assembly})
-    fastq_file_1 = da.set_file("test", fastq1, "fastq", "wgbs", taxon_id, {'assembly' : assembly})
-    fastq_file_2 = da.set_file("test", fastq2, "fastq", "wgbs", taxon_id, {'assembly' : assembly})
+    genome_file = da.set_file("test", genome_fa, "fasta", "Assembly", taxon_id, meta_data={'assembly' : assembly})
+    fastq_file_1 = da.set_file("test", fastq1, "fastq", "wgbs", taxon_id, meta_data={'assembly' : assembly})
+    fastq_file_2 = da.set_file("test", fastq2, "fastq", "wgbs", taxon_id, meta_data={'assembly' : assembly})
     
     print da.get_files_by_user("test")
 

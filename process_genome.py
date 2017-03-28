@@ -98,13 +98,13 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Index the genome file")
     parser.add_argument("--species", help="Species (9606)")
     parser.add_argument("--genome", help="Genome FASTA file")
+    parser.add_argument("--assembly", help="Assembly ID")
+
     
     # Get the matching parameters from the command line
     args = parser.parse_args()
     
     species     = args.species
-    file_loc    = args.data_dir
-    file_bg_loc = args.tmp_dir
     
     #
     # MuG Tool Steps
@@ -116,13 +116,14 @@ if __name__ == "__main__":
     
     # Get the assembly
     genome_fa   = args.genome
+    assembly    = args.assembly
     
     #2. Register the data with the DMP
     da = dmp(test=True)
     
     print da.get_files_by_user("test")
     
-    genome_file = da.set_file("test", genome_fa, "fasta", "Assembly", species, None)
+    genome_file = da.set_file("test", genome_fa, "fasta", "Assembly", species, meta_data={'assembly' : assembly})
     
     print da.get_files_by_user("test")
     

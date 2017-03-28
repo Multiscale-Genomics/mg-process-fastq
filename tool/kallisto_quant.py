@@ -175,7 +175,7 @@ class kallistoQuantificationTool(Tool):
             run_info_file = None
         elif len(input_files) == 3:
             # handle error
-            if not self.kallisto_quant_paired(input_files[0], input_files[1], input_files[2], , abundance_h5_file, abundance_tsv_file, run_info_file):
+            if not self.kallisto_quant_paired(input_files[0], input_files[1], input_files[2], abundance_h5_file, abundance_tsv_file, run_info_file):
                 output_metadata.set_exception(
                     Exception(
                         "kallisto_quant_single: Could not process files {}, {}.".format(*input_files)))

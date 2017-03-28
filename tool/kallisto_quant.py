@@ -45,7 +45,7 @@ class kallistoQuantificationTool(Tool):
         print "Kallisto Quantification"
     
     @task(fastq_file_loc=FILE_IN, cdna_idx_file=FILE_IN, wig_file = FILE_OUT)
-    def kallisto_quant_single(self, cdna_idx_file, fastq_file_loc):
+    def kallisto_quant_single(self, cdna_idx_file, fastq_file_loc, wig_file):
         """
         Kallisto quantifier for single end RNA-seq data
         
@@ -63,7 +63,7 @@ class kallistoQuantificationTool(Tool):
         """
         
         command_line = 'kallisto quant -i ' + cdna_idx_file + ' -o .'
-        fq_stats = self.seq_read_stats(fastq[0])
+        fq_stats = self.seq_read_stats(fastq_file_loc)
         command_line += ' --single -l ' + str(fq_stats['mean']) + ' -s ' + str(fq_stats['std']) + ' ' + fastq_file_loc
         
         args = shlex.split(command_line)
@@ -74,7 +74,7 @@ class kallistoQuantificationTool(Tool):
     
     
     @task(fastq_file_loc_01=FILE_IN, fastq_file_loc_02=FILE_IN, cdna_idx_file=FILE_IN, wig_file = FILE_OUT)
-    def kallisto_quant_paired(self, cdna_idx_file, fastq_file_loc_01, fastq_file_loc_02):
+    def kallisto_quant_paired(self, cdna_idx_file, fastq_file_loc_01, fastq_file_loc_02, , wig_file):
         """
         Kallisto quantifier for paired end RNA-seq data
         

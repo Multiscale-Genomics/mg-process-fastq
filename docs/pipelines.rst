@@ -144,10 +144,10 @@ RNA-Seq Analysis
       Taxon ID (e.g. 9606)
    genome : str
       Location of genome assembly FASTA file
-   species : str
-      Species (e.g. homo_sapien)
    file : str
       Location of FASTQ input file
+   file2 : str
+      [OPTIONAL] Location if FASTQ file if the data is paired end
    
    Returns
    -------
@@ -156,6 +156,18 @@ RNA-Seq Analysis
    
    Example
    -------
+   When running the pipeline on a local machine:
+
+   .. code-block:: none
+      :linenos:
+
+      python process_rnaseq.py                                       \\
+         --genome /<dataset_dir>/Homo_sapiens.GRCh38.cdna.all.fasta  \\
+         --assembly GCA_000001405.25                                 \\
+         --taxon_id 9606                                             \\
+         --file /<dataset_dir>/ERR030856.fastq                       \\
+
+
    When using a local verion of the [COMPS virtual machine](http://www.bsc.es/computer-sciences/grid-computing/comp-superscalar/downloads-and-documentation):
    
    .. code-block:: none

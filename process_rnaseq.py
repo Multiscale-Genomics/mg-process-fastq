@@ -79,7 +79,7 @@ class process_rnaseq(Workflow):
         kq = kallisto_quant.kallistoQuantificationTool()
         
         if len(file_ids) == 2:
-            results = kq.run([genome_idx_loc, file_ids[0]], metadata)
+            results = kq.run([genome_idx_loc, file_ids[1]], metadata)
         elif len(file_ids) == 3:
             results = kq.run([genome_idx_loc, file_ids[1], file_ids[2]], metadata)
         

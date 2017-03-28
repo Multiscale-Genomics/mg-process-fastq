@@ -155,10 +155,7 @@ class kallistoQuantificationTool(Tool):
         """
         
         # input and output share most metadata
-        output_metadata = dict(
-            data_type=metadata[0]["data_type"],
-            file_type=metadata[0]["file_type"],
-            meta_data=metadata[0]["meta_data"])
+        output_metadata = {}
         
         results_wig_file = input_files[0].replace('.fastq', '.wig')
         

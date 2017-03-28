@@ -14,10 +14,10 @@
    limitations under the License.
 """
 
-import os
+import os, shutil, shlex, subprocess
 
 try:
-    from pycompss.api.parameter import FILE_IN, FILE_OUT
+    from pycompss.api.parameter import FILE_IN, FILE_OUT, FILE_INOUT
     from pycompss.api.task import task
 except ImportError :
     print "[Warning] Cannot import \"pycompss\" API packages."
@@ -56,7 +56,7 @@ class kallistoIndexerTool(Tool):
             Location of the output index file
         """
         
-        command_line = 'kallisto index -i ' + cdna_idx_file + ' ' + cdna_file
+        command_line = 'kallisto index -i ' + cdna_idx_file + ' ' + cdna_file_loc
         
         args = shlex.split(command_line)
         p = subprocess.Popen(args)
@@ -83,13 +83,10 @@ class kallistoIndexerTool(Tool):
         """
         
         file_name = input_files[0]
-        output_file = file_name + '.idx'
+        output_file = input_files[1]
         
         # input and output share most metadata
-        output_metadata = dict(
-            data_type=metadata[0]["data_type"],
-            file_type=metadata[0]["file_type"],
-            meta_data=metadata[0]["meta_data"])
+        output_metadata = {}
         
         # handle error
         if not self.kallisto_indexer(input_files[0], output_file):

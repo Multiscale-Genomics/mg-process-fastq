@@ -20,10 +20,13 @@ import argparse, urllib2, gzip, shutil, shlex, subprocess, os.path
 
 
 from basic_modules import Tool, Workflow, Metadata
+from dmp import dmp
 
 from functools import wraps
 
 import tool
+from tool import kallisto_indexer
+from tool import kallisto_quant
 
 try :
     from pycompss.api.parameter import *
@@ -67,17 +70,17 @@ class process_rnaseq(Workflow):
         
         # Index the cDNA
         # This could get moved to the general tools section
-        ki = tool.kallistoIndexerTool(self.configuration)
-        genome_idx_loc = file_loc.replace('.fa', '.idx')
-        gi_out = ki.run((genome_fa, genome_id_loc), ())
+        ki = kallisto_indexer.kallistoIndexerTool()
+        genome_idx_loc = file_loc.replace('.fasta', '.idx')
+        gi_out = ki.run([genome_fa, genome_idx_loc], metadata)
         
         # Quantification
-        kq = tool.kallistoQuantificationTool(self.configuration)
+        kq = kallisto_quant.kallistoQuantificationTool()
         
         if len(file_ids) == 2:
-            results = kq.run((file_ids[0], file_ids[0]), ())
+            results = kq.run([file_ids[0], file_ids[0]], metadata)
         elif len(file_ids) == 3:
-            results = kq.run((file_ids[0], file_ids[1], file_ids[2]), ())
+            results = kq.run([file_ids[0], file_ids[1], file_ids[2]], metadata)
         
         return results[0]
 
@@ -110,8 +113,8 @@ if __name__ == "__main__":
     
     print da.get_files_by_user("test")
     
-    genome_file = da.set_file("test", genome_fa, "fasta", "cDNA", taxon_id, {'assembly' : assembly})
-    file_in = da.set_file("test", file_loc, "fasta", "RNA-seq", taxon_id, {'assembly' : assembly})
+    genome_file = da.set_file("test", genome_fa, "fasta", "cDNA", taxon_id, meta_data={'assembly' : assembly})
+    file_in = da.set_file("test", file_loc, "fasta", "RNA-seq", taxon_id, meta_data={'assembly' : assembly})
     
     print da.get_files_by_user("test")
     
@@ -130,7 +133,7 @@ if __name__ == "__main__":
         resutls = pr.run(files, {'user_id' : 'test'})
     else:
         files.append(paired_file)
-        file2_in = da.set_file("test", paired_file, "fasta", "RNA-seq", taxon_id, {'assembly' : assembly})
+        file2_in = da.set_file("test", paired_file, "fasta", "RNA-seq", taxon_id, meta_data={'assembly' : assembly})
         resutls = pr.run(files, {'user_id' : 'test'})
     
     print da.get_files_by_user("test")

@@ -91,22 +91,22 @@ if __name__ == "__main__":
     
     # Set up the command line parameters
     parser = argparse.ArgumentParser(description="Parse RNA-seq for expression analysis")
-    parser.add_argument("--species", help="Species (Homo_sapiens)")
     parser.add_argument("--assembly", help="Genome assembly ID (GCA_000001405.25)")
     parser.add_argument("--taxon_id", help="Taxon_ID (9606)")
     parser.add_argument("--genome", help="Location of the genome cDNA FASTA file")
     parser.add_argument("--file", help="Location of the FASTQ file")
+    parser.add_argument("--file2", help="[OPTIONAL] Location of the paired end FASTQ file", default=None)
 
     # Get the matching parameters from the command line
     args = parser.parse_args()
     
-    species    = args.species
     assembly   = args.assembly
     taxon_id    = args.taxon_id
     genome_fa   = args.genome
     file_loc    = args.file
+    paired_file = args.file2
     
-    da = dmp()
+    da = dmp(test=True)
     
     print da.get_files_by_user("test")
     
@@ -120,8 +120,18 @@ if __name__ == "__main__":
     #app = WorkflowApp()
     #results = app.launch(process_rnaseq, [genome_file, file_in], {})
 
+    files = [
+        genome_fa,
+        file_loc
+    ]
+
     pr = process_rnaseq()
-    resutls = pr.run([genome_file, file_in], {})
+    if paired_file == None:
+        resutls = pr.run(files, {'user_id' : 'test'})
+    else:
+        files.append(paired_file)
+        file2_in = da.set_file("test", paired_file, "fasta", "RNA-seq", taxon_id, {'assembly' : assembly})
+        resutls = pr.run(files, {'user_id' : 'test'})
     
     print da.get_files_by_user("test")
     

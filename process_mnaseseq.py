@@ -93,7 +93,7 @@ if __name__ == "__main__":
     assembly   = args.assembly
     fastq_file = args.file
     
-    da = dmp()
+    da = dmp(test=True)
     
     print da.get_files_by_user("test")
     
@@ -101,14 +101,19 @@ if __name__ == "__main__":
     file_in = da.set_file("test", file_loc, "fastq", "Mnase-seq", taxon_id, {'assembly' : assembly})
     
     print da.get_files_by_user("test")
+
+    files = [
+        genome_fa,
+        file_loc
+    ]
     
     # 3. Instantiate and launch the App
-    from basic_modules import WorkflowApp
-    app = WorkflowApp()
-    results = app.launch(process_mnaseseq, [genome_fa, fastq_file], {})
+    #from basic_modules import WorkflowApp
+    #app = WorkflowApp()
+    #results = app.launch(process_mnaseseq, [genome_fa, fastq_file], 'user_id' : 'test'})
     
     pm = process_mnaseseq()
-    peak_file = pm.run([genome_fa, fastq_file], {})
+    peak_file = pm.run(files, {'user_id' : 'test'})
     
     print peak_files
 

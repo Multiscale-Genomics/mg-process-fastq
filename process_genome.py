@@ -118,7 +118,7 @@ if __name__ == "__main__":
     genome_fa   = args.genome
     
     #2. Register the data with the DMP
-    da = dmp()
+    da = dmp(test=True)
     
     print da.get_files_by_user("test")
     
@@ -132,7 +132,7 @@ if __name__ == "__main__":
     #results = app.launch(process_genome, [genome_file], {})
 
     pg = process_genome()
-    results = pg.run([genome_file], {})
+    results = pg.run([genome_fa], {'user_id' : 'test'})
 
     
     print da.get_files_by_user("test")

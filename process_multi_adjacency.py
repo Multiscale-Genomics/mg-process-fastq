@@ -135,6 +135,7 @@ if __name__ == "__main__":
     genome_file = da.set_file("test", genome_fa, "fasta", "Assembly", taxon_id, {'assembly' : assembly})
     
     metadata = {
+        'user_id'     : 'test'
         'assembly'    : assembly,
         'resolutions' : resolutions,
         'enzyme_name' : enzyme_name,
@@ -149,8 +150,8 @@ if __name__ == "__main__":
     
     files = [
         genome_fa,
-        fastq_01_file_in,
-        fastq_02_file_in
+        fastq_01_file,
+        fastq_02_file
     ]
 
     # 3. Instantiate and launch the App

@@ -133,7 +133,7 @@ if __name__ == "__main__":
     # Get the assembly
     
     #2. Register the data with the DMP
-    da = dmp()
+    da = dmp(test=True)
     
     print da.get_files_by_user("test")
     
@@ -142,14 +142,20 @@ if __name__ == "__main__":
     file_bg_in = da.set_file("test", file_bg_loc, "fasta", "ChIP-seq", taxon_id, {'assembly' : assembly})
     
     print da.get_files_by_user("test")
+
+    files = [
+        genome_fa,
+        file_loc,
+        file_bg_loc
+    ]
     
     # 3. Instantiate and launch the App
     #from basic_modules import WorkflowApp
     #app = WorkflowApp()
-    #results = app.launch(process_chipseq, [genome_file, file_in, file_bg_in], {})
+    #results = app.launch(process_chipseq, [genome_file, file_in, file_bg_in], {'user_id' : 'test'})
 
     pc = process_chipseq()
-    results = pc.run([genome_file, file_in, file_bg_in], {})
+    results = pc.run(files, {'user_id' : 'test'})
     
     print da.get_files_by_user("test")
     

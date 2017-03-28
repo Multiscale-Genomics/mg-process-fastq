@@ -259,12 +259,13 @@ if __name__ == "__main__":
     aligner_path = args.aligner_path
     
     metadata = {
+        'user_id' : 'test',
         'aligner' : aligner,
         'aligner_path' : aligner_path
     }
 
 
-    da = dmp()
+    da = dmp(test=True)
     
     print da.get_files_by_user("test")
     
@@ -273,6 +274,12 @@ if __name__ == "__main__":
     fastq_file_2 = da.set_file("test", fastq2, "fastq", "wgbs", taxon_id, {'assembly' : assembly})
     
     print da.get_files_by_user("test")
+
+    files = [
+        genome_fa,
+        fastq1,
+        fastq2
+    ]
     
     # 3. Instantiate and launch the App
     #from basic_modules import WorkflowApp
@@ -280,6 +287,6 @@ if __name__ == "__main__":
     #results = app.launch(process_wgbs, [genome_fa, fastq_file_1, fastq_file_2], metadata)
     
     pw = process_wgbs()
-    peak_file = pw.run([genome_fa, fastq_file_1, fastq_file_2], metadata)
+    peak_file = pw.run(files, metadata)
     
     print peak_files

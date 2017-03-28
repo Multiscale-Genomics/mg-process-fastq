@@ -131,11 +131,11 @@ if __name__ == "__main__":
 
     pr = process_rnaseq()
     if paired_file == None:
-        resutls = pr.run(files, {'user_id' : 'test'})
+        results = pr.run(files, {'user_id' : 'test'})
     else:
         files.append(paired_file)
         file2_in = da.set_file("test", paired_file, "fasta", "RNA-seq", taxon_id, meta_data={'assembly' : assembly})
-        resutls = pr.run(files, {'user_id' : 'test'})
+        results = pr.run(files, {'user_id' : 'test'})
     
     print(results)
 

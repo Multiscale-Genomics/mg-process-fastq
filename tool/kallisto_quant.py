@@ -14,7 +14,8 @@
    limitations under the License.
 """
 
-import os
+import os, shutil, shlex, subprocess
+import itertools
 
 try:
     from pycompss.api.parameter import FILE_IN, FILE_OUT
@@ -44,8 +45,8 @@ class kallistoQuantificationTool(Tool):
         """
         print "Kallisto Quantification"
     
-    @task(fastq_file_loc=FILE_IN, cdna_idx_file=FILE_IN, wig_file = FILE_OUT)
-    def kallisto_quant_single(self, cdna_idx_file, fastq_file_loc, wig_file):
+    @task(fastq_file_loc=FILE_IN, cdna_idx_file=FILE_IN, abundance_h5_file=FILE_OUT, abundance_tsv_file=FILE_OUT, run_info_file=FILE_OUT)
+    def kallisto_quant_single(self, cdna_idx_file, fastq_file_loc, abundance_h5_file, abundance_tsv_file, run_info_file):
         """
         Kallisto quantifier for single end RNA-seq data
         
@@ -62,7 +63,8 @@ class kallistoQuantificationTool(Tool):
             Location of the wig file containing the levels of expression
         """
         
-        command_line = 'kallisto quant -i ' + cdna_idx_file + ' -o .'
+        out_dir = abundance_h5_file.split("/")
+        command_line = 'kallisto quant -i ' + cdna_idx_file + ' -o ' + "/".join(out_dir[0:-1]) + "/"
         fq_stats = self.seq_read_stats(fastq_file_loc)
         command_line += ' --single -l ' + str(fq_stats['mean']) + ' -s ' + str(fq_stats['std']) + ' ' + fastq_file_loc
         
@@ -73,8 +75,8 @@ class kallistoQuantificationTool(Tool):
         return True
     
     
-    @task(fastq_file_loc_01=FILE_IN, fastq_file_loc_02=FILE_IN, cdna_idx_file=FILE_IN, wig_file = FILE_OUT)
-    def kallisto_quant_paired(self, cdna_idx_file, fastq_file_loc_01, fastq_file_loc_02, , wig_file):
+    @task(fastq_file_loc_01=FILE_IN, fastq_file_loc_02=FILE_IN, cdna_idx_file=FILE_IN, abundance_h5_file=FILE_OUT, abundance_tsv_file=FILE_OUT, run_info_file=FILE_OUT)
+    def kallisto_quant_paired(self, cdna_idx_file, fastq_file_loc_01, fastq_file_loc_02, abundance_h5_file, abundance_tsv_file, run_info_file):
         """
         Kallisto quantifier for paired end RNA-seq data
         
@@ -157,28 +159,37 @@ class kallistoQuantificationTool(Tool):
         # input and output share most metadata
         output_metadata = {}
         
-        results_wig_file = input_files[0].replace('.fastq', '.wig')
+        file_loc = input_files[1].split("/")
+        abundance_h5_file = "/".join(file_loc[0:-1]) + "/abundance.h5"
+        abundance_tsv_file = "/".join(file_loc[0:-1]) + "/abundance.tsv"
+        run_info_file = "/".join(file_loc[0:-1]) + "/run_info.json"
         
         if len(input_files) == 2:
             # handle error
-            if not self.kallisto_quant_single(input_files[0], input_files[1], results_wig_file):
+            if not self.kallisto_quant_single(input_files[0], input_files[1], abundance_h5_file, abundance_tsv_file, run_info_file):
                 output_metadata.set_exception(
                     Exception(
                         "kallisto_quant_single: Could not process files {}, {}.".format(*input_files)))
-            results_wig_file = None
+            abundance_h5_file = None
+            abundance_tsv_file = None
+            run_info_file = None
         elif len(input_files) == 3:
             # handle error
-            if not self.kallisto_quant_paired(input_files[0], input_files[1], input_files[2], results_wig_file):
+            if not self.kallisto_quant_paired(input_files[0], input_files[1], input_files[2], , abundance_h5_file, abundance_tsv_file, run_info_file):
                 output_metadata.set_exception(
                     Exception(
                         "kallisto_quant_single: Could not process files {}, {}.".format(*input_files)))
-            results_wig_file = None
+            abundance_h5_file = None
+            abundance_tsv_file = None
+            run_info_file = None
         else:
             output_metadata.set_exception(
                 Exception(
                     "Error: Incorrect number of parameters {}, {}.".format(*input_files)))
-            results_wig_file = None
+            abundance_h5_file = None
+            abundance_tsv_file = None
+            run_info_file = None
         
-        return ([results_wig_file], [output_metadata])
+        return ([abundance_h5_file, abundance_tsv_file, run_info_file], [output_metadata])
 
 # ------------------------------------------------------------------------------

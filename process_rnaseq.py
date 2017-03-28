@@ -71,16 +71,17 @@ class process_rnaseq(Workflow):
         # Index the cDNA
         # This could get moved to the general tools section
         ki = kallisto_indexer.kallistoIndexerTool()
-        genome_idx_loc = file_loc.replace('.fasta', '.idx')
+        genome_idx_loc = genome_fa.replace('.fasta', '.idx')
+        genome_idx_loc = genome_idx_loc.replace('.fa', '.idx')
         gi_out = ki.run([genome_fa, genome_idx_loc], metadata)
         
         # Quantification
         kq = kallisto_quant.kallistoQuantificationTool()
         
         if len(file_ids) == 2:
-            results = kq.run([file_ids[0], file_ids[0]], metadata)
+            results = kq.run([genome_idx_loc, file_ids[0]], metadata)
         elif len(file_ids) == 3:
-            results = kq.run([file_ids[0], file_ids[1], file_ids[2]], metadata)
+            results = kq.run([genome_idx_loc, file_ids[1], file_ids[2]], metadata)
         
         return results[0]
 
@@ -111,12 +112,12 @@ if __name__ == "__main__":
     
     da = dmp(test=True)
     
-    print da.get_files_by_user("test")
+    print(da.get_files_by_user("test"))
     
     genome_file = da.set_file("test", genome_fa, "fasta", "cDNA", taxon_id, meta_data={'assembly' : assembly})
     file_in = da.set_file("test", file_loc, "fasta", "RNA-seq", taxon_id, meta_data={'assembly' : assembly})
     
-    print da.get_files_by_user("test")
+    print(da.get_files_by_user("test"))
     
     # 3. Instantiate and launch the App
     #from basic_modules import WorkflowApp
@@ -136,6 +137,8 @@ if __name__ == "__main__":
         file2_in = da.set_file("test", paired_file, "fasta", "RNA-seq", taxon_id, meta_data={'assembly' : assembly})
         resutls = pr.run(files, {'user_id' : 'test'})
     
-    print da.get_files_by_user("test")
+    print(results)
+
+    print(da.get_files_by_user("test"))
     
     

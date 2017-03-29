@@ -37,8 +37,8 @@ class bwaAlignerTool(Tool):
     Tool for aligning sequence reads to a genome using BWA
     """
     
-    @task(genome_file_loc=FILE_IN, reads_file_loc=FILE_IN, bam_loc=FILE_OUT)
-    def bwa_aligner(self, genome_file_loc, read_file_loc, bam_loc):
+    @task(genome_file_loc=FILE_IN, reads_file_loc=FILE_IN, bam_loc=FILE_OUT, amb_loc=FILE_IN, ann_loc=FILE_IN, bwt_loc=FILE_IN, pac_loc=FILE_IN, sa_loc=FILE_IN)
+    def bwa_aligner(self, genome_file_loc, read_file_loc, bam_loc, amb_loc, ann_loc, bwt_loc, pac_loc, sa_loc):
         """
         BWA Aligner
         
@@ -78,7 +78,7 @@ class bwaAlignerTool(Tool):
         output_bam_file = input_files[1].replace('.fastq', '.bam')
         
         # handle error
-        if not self.bwa_aligner(input_files[0], input_files[1], output_bam_file):
+        if not self.bwa_aligner(input_files[0], input_files[1], output_bam_file, input_files[2], input_files[3], input_files[4], input_files[5], input_files[6], input_files[7]):
             output_metadata.set_exception(
                 Exception(
                     "bwa_indexer: Could not process files {}, {}.".format(*input_files)))

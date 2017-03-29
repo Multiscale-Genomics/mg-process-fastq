@@ -76,27 +76,34 @@ class process_chipseq(Workflow):
         
         # TODO - Handle multiple file and background files
         genome_fa = file_ids[0]
-        file_loc = file_ids[1]
-        file_bgd_loc = file_ids[2]
+        bwa_amb = files_ids[1]
+        bwa_ann = files_ids[2]
+        bwa_bwt = files_ids[3]
+        bwa_pac = files_ids[4]
+        bwa_sa  = files_ids[5]
+        file_loc = file_ids[6]
+        file_bgd_loc = file_ids[7]
+        
+
         
         out_bam = file_loc.replace('.fastq', '.bam')
         
-        bwa = bwa_aligner.bwaAlignerTool(self.configuration)
-        file_loc = file_loc.replace('.fastq', '.bam')
-        out_bam, out_bam_meta = bwa.run((genome_fa, file_loc), ())
+        bwa = bwa_aligner.bwaAlignerTool()
+        out_bam = file_loc.replace('.fastq', '.bam')
+        out_bam, out_bam_meta = bwa.run((genome_fa, file_loc, out_bam, bwa_amb, bwa_ann, bwa_bwt, bwa_pac, bwa_sa), ())
         
         out_bgd_bam = file_bgd_loc.replace('.fastq', '.bam')
-        out_bgd_bam, out_bgd_bam_meta = bwa.run((genome_fa, file_bgd_loc), ())
+        out_bgd_bam, out_bgd_bam_meta = bwa.run((genome_fa, file_bgd_loc, out_bgd_bam, bwa_amb, bwa_ann, bwa_bwt, bwa_pac, bwa_sa), ())
         
         # TODO - Multiple files need merging into a single bam file
         
         # Filter the bams
-        b3f = biobambam_filter.biobambam(self.configuration)
+        b3f = biobambam_filter.biobambam()
         b3f_file_out = b3f.run((out_bam[0]), ())
         b3f_file_bgd_out = b3f.run((out_bgd_bam[0]), ())
         
         # MACS2 to call peaks
-        macs2 = macs.macs2(self.configuration)
+        macs2 = macs.macs2()
         peak_bed, summits_bed, narrowPeak, broadPeak, gappedPeak = macs2.run((b3f_file_out,  b3f_file_bgd_out), ())
         
         return (b3f_file_out, b3f_file_bgd_out, peak_bed, summits_bed, narrowPeak, broadPeak, gappedPeak)
@@ -138,6 +145,11 @@ if __name__ == "__main__":
     print da.get_files_by_user("test")
     
     genome_file = da.set_file("test", genome_fa, "fasta", "Assembly", taxon_id, meta_data={'assembly' : assembly})
+    genome_file_idx1 = da.set_file("test", genome_fa + ".amb", "fasta", "Assembly", taxon_id, meta_data={'assembly' : assembly})
+    genome_file_idx2 = da.set_file("test", genome_fa + ".ann", "fasta", "Assembly", taxon_id, meta_data={'assembly' : assembly})
+    genome_file_idx3 = da.set_file("test", genome_fa + ".bwt", "fasta", "Assembly", taxon_id, meta_data={'assembly' : assembly})
+    genome_file_idx4 = da.set_file("test", genome_fa + ".pac", "fasta", "Assembly", taxon_id, meta_data={'assembly' : assembly})
+    genome_file_idx5 = da.set_file("test", genome_fa + ".sa", "fasta", "Assembly", taxon_id, meta_data={'assembly' : assembly})
     file_in = da.set_file("test", file_loc, "fasta", "ChIP-seq", taxon_id, meta_data={'assembly' : assembly})
     file_bg_in = da.set_file("test", file_bg_loc, "fasta", "ChIP-seq", taxon_id, meta_data={'assembly' : assembly})
     
@@ -145,6 +157,11 @@ if __name__ == "__main__":
 
     files = [
         genome_fa,
+        genome_fa + ".amb",
+        genome_fa + ".ann",
+        genome_fa + ".bwt",
+        genome_fa + ".pac",
+        genome_fa + ".sa",
         file_loc,
         file_bg_loc
     ]

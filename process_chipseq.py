@@ -99,12 +99,14 @@ class process_chipseq(Workflow):
         
         # Filter the bams
         b3f = biobambam_filter.biobambam()
-        b3f_file_out = b3f.run((out_bam[0]), ())
-        b3f_file_bgd_out = b3f.run((out_bgd_bam[0]), ())
+        b3f_file_out = file_loc.replace('.fastq', '.filtered.bam')
+        b3f_out = b3f.run([b3f_file_out], {}})
+        b3f_bgd_file_out = file_bgd_loc.replace('.fastq', '.filtered.bam')
+        b3f_out_bgd = b3f.run([b3f_bgd_file_out], {})
         
         # MACS2 to call peaks
         macs2 = macs.macs2()
-        peak_bed, summits_bed, narrowPeak, broadPeak, gappedPeak = macs2.run((b3f_file_out,  b3f_file_bgd_out), ())
+        peak_bed, summits_bed, narrowPeak, broadPeak, gappedPeak = macs2.run([b3f_file_out[0],  b3f_file_bgd_out[0]], {}
         
         return (b3f_file_out, b3f_file_bgd_out, peak_bed, summits_bed, narrowPeak, broadPeak, gappedPeak)
 

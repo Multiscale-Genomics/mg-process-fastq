@@ -38,7 +38,7 @@ class biobambam(Tool):
     """
     
     @task(bam_file_in = FILE_IN, bam_file_out = FILE_OUT, tmp_dir = IN)
-    def biobambam_filter_alignments(self, bam_file_in, tmp_dir):
+    def biobambam_filter_alignments(self, bam_file_in, bam_file_out, tmp_dir):
         """
         Sorts and filters the bam file.
         

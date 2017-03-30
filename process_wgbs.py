@@ -31,6 +31,11 @@ except ImportError :
     from dummy_pycompss import *
 
 from tool.common import common
+from tool import bs_seeker_aligner
+from tool import bs_seeker_filter
+from tool import bs_seeker_indexer
+from tool import bs_seeker_methylation_caller
+
 import pysam
 
 # ------------------------------------------------------------------------------
@@ -162,16 +167,16 @@ class process_wgbs:
         output_metadata = {}
 
         # Filter the FASTQ reads to remove duplicates
-        frt = tool.filterReadsTool(self.configuration)
-        fastq1f, filter1_meta = frt.run(fastq1)
-        fastq2f, filter2_meta = frt.run(fastq2)
+        frt = bs_seeker_filter.filterReadsTool()
+        fastq1f, filter1_meta = frt.run([fastq1], {})
+        fastq2f, filter2_meta = frt.run([fastq2], {})
 
         output_metadata['fastq1'] = filter1_meta
         output_metadata['fastq2'] = filter2_meta
 
         # Build the matching WGBS genome index
-        builder = tool.bssIndexerTool(self.configuration)
-        genome_idx, gidx_meta = builder.run((genome_fa), metadata)
+        builder = tool.bssIndexerTool()
+        genome_idx, gidx_meta = builder.run([genome_fa], metadata)
         output_metadata['genome_idx'] = gidx_meta
 
         # Split the FASTQ files into smaller, easier to align packets
@@ -220,7 +225,10 @@ class process_wgbs:
         cgmap_file   = out_bam_file.replace('.bam', '.cgmap')
         atcgmap_file = out_bam_file.replace('.bam', '.atcgmap')
         mc = tool.bss_methylation_caller(self.configuration)
-        peak_calls, peak_meta = mc.run((metadata['aligner_path'], out_bam_file, wig_file, cgmap_file, atcgmap_file, genome_idx), ())
+        peak_calls, peak_meta = mc.run(
+            [metadata['aligner_path'], out_bam_file, wig_file, cgmap_file, atcgmap_file, genome_idx],
+            {}
+        )
         output_metadata['peak_calling'] = peak_meta
 
 

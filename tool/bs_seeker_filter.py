@@ -59,6 +59,9 @@ class filterReadsTool(Tool):
         
         If performing RRBS then this step can be skipped
 
+        This is a function that is installed as part of the BS-Seeker
+        installation process.
+
         Parameters
         ----------
         infile : str
@@ -92,14 +95,8 @@ class filterReadsTool(Tool):
         file_name = input_files[0]
         output_file = file_name + '.filtered.fastq'
         
-        # input and output share most metadata
-        output_metadata = dict(
-            data_type=metadata[0]["data_type"],
-            file_type=metadata[0]["file_type"],
-            meta_data=metadata[0]["meta_data"])
-        
         # handle error
-        if not self.bss_seeker_filter(input_files[0], output_file):
+        if not self.bss_seeker_filter(file_name, output_file):
             output_metadata.set_exception(
                 Exception(
                     "bs_seeker_filter: Could not process files {}, {}.".format(*input_files)))

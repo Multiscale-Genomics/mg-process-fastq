@@ -27,7 +27,7 @@ class Mock(MagicMock):
     def __getattr__(cls, name):
             return MagicMock()
 
-MOCK_MODULES = ['pytadbit', 'rpy2', 'bs_index', 'bs_index.wg_build', 'FilterReads']
+MOCK_MODULES = ['pytadbit', 'rpy2', 'pyBigWig', 'bs_index', 'bs_index.wg_build', 'FilterReads']
 sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
 
 

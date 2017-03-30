@@ -90,11 +90,17 @@ class process_chipseq(Workflow):
         
         bwa = bwa_aligner.bwaAlignerTool()
         out_bam = file_loc.replace('.fastq', '.bam')
-        out_bam, out_bam_meta = bwa.run([genome_fa, file_loc, out_bam, bwa_amb, bwa_ann, bwa_bwt, bwa_pac, bwa_sa], {}})
+        out_bam, out_bam_meta = bwa.run(
+            [genome_fa, file_loc, out_bam, bwa_amb, bwa_ann, bwa_bwt, bwa_pac, bwa_sa],
+            {}}
+        )
         
         if file_bgd_loc != None:
             out_bgd_bam = file_bgd_loc.replace('.fastq', '.bam')
-            out_bgd_bam, out_bgd_bam_meta = bwa.run([genome_fa, file_bgd_loc, out_bgd_bam, bwa_amb, bwa_ann, bwa_bwt, bwa_pac, bwa_sa], {})
+            out_bgd_bam, out_bgd_bam_meta = bwa.run(
+                [genome_fa, file_bgd_loc, out_bgd_bam, bwa_amb, bwa_ann, bwa_bwt, bwa_pac, bwa_sa],
+                {}
+            )
         
         # TODO - Multiple files need merging into a single bam file
         

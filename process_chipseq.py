@@ -76,11 +76,11 @@ class process_chipseq(Workflow):
         
         # TODO - Handle multiple file and background files
         genome_fa = file_ids[0]
-        bwa_amb = files_ids[1]
-        bwa_ann = files_ids[2]
-        bwa_bwt = files_ids[3]
-        bwa_pac = files_ids[4]
-        bwa_sa  = files_ids[5]
+        bwa_amb = file_ids[1]
+        bwa_ann = file_ids[2]
+        bwa_bwt = file_ids[3]
+        bwa_pac = file_ids[4]
+        bwa_sa  = file_ids[5]
         file_loc = file_ids[6]
         file_bgd_loc = file_ids[7]
         
@@ -90,18 +90,18 @@ class process_chipseq(Workflow):
         
         bwa = bwa_aligner.bwaAlignerTool()
         out_bam = file_loc.replace('.fastq', '.bam')
-        out_bam, out_bam_meta = bwa.run((genome_fa, file_loc, out_bam, bwa_amb, bwa_ann, bwa_bwt, bwa_pac, bwa_sa), ())
+        out_bam, out_bam_meta = bwa.run([genome_fa, file_loc, out_bam, bwa_amb, bwa_ann, bwa_bwt, bwa_pac, bwa_sa], {}})
         
         if file_bgd_loc != None:
             out_bgd_bam = file_bgd_loc.replace('.fastq', '.bam')
-            out_bgd_bam, out_bgd_bam_meta = bwa.run((genome_fa, file_bgd_loc, out_bgd_bam, bwa_amb, bwa_ann, bwa_bwt, bwa_pac, bwa_sa), ())
+            out_bgd_bam, out_bgd_bam_meta = bwa.run([genome_fa, file_bgd_loc, out_bgd_bam, bwa_amb, bwa_ann, bwa_bwt, bwa_pac, bwa_sa], {})
         
         # TODO - Multiple files need merging into a single bam file
         
         # Filter the bams
         b3f = biobambam_filter.biobambam()
         b3f_file_out = file_loc.replace('.fastq', '.filtered.bam')
-        b3f_out = b3f.run([b3f_file_out], {}})
+        b3f_out = b3f.run([b3f_file_out], {})
         
         if file_bgd_loc != None:
             b3f_bgd_file_out = file_bgd_loc.replace('.fastq', '.filtered.bam')
@@ -111,7 +111,7 @@ class process_chipseq(Workflow):
         
         # MACS2 to call peaks
         macs2 = macs.macs2()
-        peak_bed, summits_bed, narrowPeak, broadPeak, gappedPeak = macs2.run([b3f_file_out[0],  b3f_file_bgd_out[0]], {}
+        peak_bed, summits_bed, narrowPeak, broadPeak, gappedPeak = macs2.run([b3f_file_out[0],  b3f_file_bgd_out[0]], {})
         
         return (b3f_file_out, b3f_file_bgd_out, peak_bed, summits_bed, narrowPeak, broadPeak, gappedPeak)
 

@@ -55,7 +55,7 @@ class bwaAlignerTool(Tool):
             Location of the output file
         """
         cf = common()
-        bam_loc = cf.bwa_align_reads(genome_file_loc, reads_file_loc, bam_loc)
+        bam_loc = cf.bwa_align_reads(genome_file_loc, read_file_loc, bam_loc)
         
         return True
     
@@ -78,7 +78,7 @@ class bwaAlignerTool(Tool):
         output_bam_file = input_files[1].replace('.fastq', '.bam')
         
         # handle error
-        if not self.bwa_aligner(input_files[0], input_files[1], output_bam_file, input_files[2], input_files[3], input_files[4], input_files[5], input_files[6], input_files[7]):
+        if not self.bwa_aligner(input_files[0], input_files[1], output_bam_file, input_files[2], input_files[3], input_files[4], input_files[5], input_files[6]):
             output_metadata.set_exception(
                 Exception(
                     "bwa_indexer: Could not process files {}, {}.".format(*input_files)))

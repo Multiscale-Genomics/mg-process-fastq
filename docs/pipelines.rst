@@ -111,6 +111,17 @@ Mnase-Seq Analysis
    
    Example
    -------
+   When running the pipeline on a local machine:
+
+   .. code-block:: none
+      :linenos:
+
+      python process_mnaseseq.py                                      \\
+         --genome /<dataset_dir>/Homo_sapiens.GRCh38.fasta           \\
+         --assembly GCA_000001405.25                                 \\
+         --taxon_id 9606                                             \\
+         --file /<dataset_dir>/<file_name>.fastq                     \\
+
    When using a local verion of the [COMPS virtual machine](http://www.bsc.es/computer-sciences/grid-computing/comp-superscalar/downloads-and-documentation):
    
    .. code-block:: none

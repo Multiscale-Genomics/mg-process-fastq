@@ -122,7 +122,7 @@ if __name__ == "__main__":
     parser.add_argument("--genome", help="Genome FASTA file")
     parser.add_argument("--assembly", help="Genome assembly ID (GCA_000001405.25)")
     parser.add_argument("--file", help="Location of FASTQ input file")
-    parser.add_argument("--bgd_file", help="Location of FASTQ background file")
+    parser.add_argument("--bgd_file", help="Location of FASTQ background file", default=None)
     
     # Get the matching parameters from the command line
     args = parser.parse_args()

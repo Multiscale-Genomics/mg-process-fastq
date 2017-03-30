@@ -43,13 +43,11 @@ class macs2(Tool):
         """
         print "MACS2 Peak Caller"
     
-    @task(name = IN, bam_file = FILE_IN, bam_file_bg = FILE_IN, peak_bed = FILE_OUT, summit_bed = FILE_OUT, narrowPeak = FILE_OUT, broadPeak = FILE_OUT, gappedPeak = FILE_OUT)
-    def macs2_peak_calling(self, name, bam_file, bam_file_bg, peak_bed, summits_bed, narrowPeak, broadPeak, gappedPeak):
+    @task(name = IN, bam_file = FILE_IN, bam_file_bgd = FILE_IN, peak_bed = FILE_OUT, summit_bed = FILE_OUT, narrowPeak = FILE_OUT, broadPeak = FILE_OUT, gappedPeak = FILE_OUT)
+    def macs2_peak_calling_bgd(self, name, bam_file, bam_file_bgd = None, peak_bed, summits_bed, narrowPeak, broadPeak, gappedPeak):
         """
         Function to run MACS2 for peak calling on aligned sequence files and
         normalised against a provided background set of alignments.
-        
-        (Background might need to be optional)
         
         Parameters
         ----------
@@ -76,7 +74,11 @@ class macs2(Tool):
         Definitions defined for each of these files have come from the MACS2
         documentation described in the docs at https://github.com/taoliu/MACS
         """
-        command_line = 'macs2 callpeak -t ' + bam_file + ' -n ' + name + ' -c ' + bam_file_bg + ' --outdir ' + data_dir + project_id
+        
+        bgd_command = ''
+        if bam_file_bgd != None:
+            bgd_command = ' -c ' + bam_file_bgd
+        command_line = 'macs2 callpeak -t ' + bam_file + ' -n ' + name + bgd_command + ' --outdir ' + data_dir + project_id
         args = shlex.split(command_line)
         p = subprocess.Popen(args)
         p.wait()

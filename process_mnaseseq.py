@@ -22,7 +22,8 @@ from basic_modules import Tool, Workflow, Metadata
 
 from functools import wraps
 
-import tool
+from tool import bwa_aligner
+from tool import inps
 
 try :
     from pycompss.api.parameter import *
@@ -70,14 +71,14 @@ class process_mnaseseq(Workflow):
         file_loc = file_ids[6]
         file_bgd_loc = file_ids[7]
         
-        cwa_align = tool.bwaAlignerTool(self.configuration)
+        cwa_align = bwa_aligner.bwaAlignerTool()
         out_bam, out_meta = cwa_align.run(
             [genome_fa, file_bgd_loc, out_bgd_bam, bwa_amb, bwa_ann, bwa_bwt, bwa_pac, bwa_sa],
             {}
         )
         
         # Needs moving to its own tool
-        inps = tool.inps(self.configuration)
+        inps = inps.inps()
         out_peak_bed, out_meta = inps.inps_peak_calling(out_bam, {})
         
         return (out_peak_bed[0])

@@ -92,8 +92,9 @@ class process_chipseq(Workflow):
         out_bam = file_loc.replace('.fastq', '.bam')
         out_bam, out_bam_meta = bwa.run((genome_fa, file_loc, out_bam, bwa_amb, bwa_ann, bwa_bwt, bwa_pac, bwa_sa), ())
         
-        out_bgd_bam = file_bgd_loc.replace('.fastq', '.bam')
-        out_bgd_bam, out_bgd_bam_meta = bwa.run((genome_fa, file_bgd_loc, out_bgd_bam, bwa_amb, bwa_ann, bwa_bwt, bwa_pac, bwa_sa), ())
+        if file_bgd_loc != None:
+            out_bgd_bam = file_bgd_loc.replace('.fastq', '.bam')
+            out_bgd_bam, out_bgd_bam_meta = bwa.run((genome_fa, file_bgd_loc, out_bgd_bam, bwa_amb, bwa_ann, bwa_bwt, bwa_pac, bwa_sa), ())
         
         # TODO - Multiple files need merging into a single bam file
         
@@ -101,8 +102,12 @@ class process_chipseq(Workflow):
         b3f = biobambam_filter.biobambam()
         b3f_file_out = file_loc.replace('.fastq', '.filtered.bam')
         b3f_out = b3f.run([b3f_file_out], {}})
-        b3f_bgd_file_out = file_bgd_loc.replace('.fastq', '.filtered.bam')
-        b3f_out_bgd = b3f.run([b3f_bgd_file_out], {})
+        
+        if file_bgd_loc != None:
+            b3f_bgd_file_out = file_bgd_loc.replace('.fastq', '.filtered.bam')
+            b3f_out_bgd = b3f.run([b3f_bgd_file_out], {})
+        else:
+            b3f_bgd_file_out = [None]
         
         # MACS2 to call peaks
         macs2 = macs.macs2()

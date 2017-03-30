@@ -92,7 +92,7 @@ class process_chipseq(Workflow):
         out_bam = file_loc.replace('.fastq', '.bam')
         out_bam, out_bam_meta = bwa.run(
             [genome_fa, file_loc, out_bam, bwa_amb, bwa_ann, bwa_bwt, bwa_pac, bwa_sa],
-            {}}
+            {}
         )
         
         if file_bgd_loc != None:

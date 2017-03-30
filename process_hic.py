@@ -166,7 +166,7 @@ if __name__ == "__main__":
     genome_file = da.set_file("test", genome_fa, "fasta", "Assembly", taxon_id, meta_data={'assembly' : assembly})
     
     metadata = {
-        'user_id'     : 'test'
+        'user_id'     : 'test',
         'assembly'    : assembly,
         'resolutions' : resolutions,
         'enzyme_name' : enzyme_name,

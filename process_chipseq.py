@@ -116,11 +116,11 @@ class process_chipseq(Workflow):
             b3f_bgd_file_out = [None]
         
         # MACS2 to call peaks
-        macs2 = macs2.macs2()
+        m = macs2.macs2()
         if file_bgd_loc != None:
-            peak_bed, summits_bed, narrowPeak, broadPeak, gappedPeak = macs2.run([b3f_file_out[0],  b3f_bgd_file_out[0]], {})
+            peak_bed, summits_bed, narrowPeak, broadPeak, gappedPeak = m.run([b3f_file_out[0],  b3f_bgd_file_out[0]], {})
         else:
-            peak_bed, summits_bed, narrowPeak, broadPeak, gappedPeak = macs2.run([b3f_file_out[0]], {})
+            peak_bed, summits_bed, narrowPeak, broadPeak, gappedPeak = m.run([b3f_file_out[0]], {})
         
         return (b3f_file_out, b3f_file_bgd_out, peak_bed, summits_bed, narrowPeak, broadPeak, gappedPeak)
 

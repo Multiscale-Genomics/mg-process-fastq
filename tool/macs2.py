@@ -44,7 +44,7 @@ class macs2(Tool):
         print "MACS2 Peak Caller"
     
     @task(name = IN, bam_file = FILE_IN, bam_file_bgd = FILE_IN, peak_bed = FILE_OUT, summit_bed = FILE_OUT, narrowPeak = FILE_OUT, broadPeak = FILE_OUT, gappedPeak = FILE_OUT)
-    def macs2_peak_calling_bgd(self, name, bam_file, bam_file_bgd = None, peak_bed = None, summits_bed = None, narrowPeak = None, broadPeak = None, gappedPeak = None):
+    def macs2_peak_calling(self, name, bam_file, bam_file_bgd = None, peak_bed = None, summits_bed = None, narrowPeak = None, broadPeak = None, gappedPeak = None):
         """
         Function to run MACS2 for peak calling on aligned sequence files and
         normalised against a provided background set of alignments.
@@ -115,6 +115,9 @@ class macs2(Tool):
         """
         
         bam_file = input_files[0]
+        bam_file_bgd = None
+        if len(input_files) == 2:
+            bam_file_bgd = input_files[1]
         
         root_name = bam_file.split("/")
         root_name[-1].replace('.fa', '')
@@ -131,7 +134,7 @@ class macs2(Tool):
         output_metadata = {}
         
         # handle error
-        if not self.macs2_peak_calling(name, input_files[0], input_files[1], peak_bed, summits_bed, narrowPeak, broadPeak, gappedPeak):
+        if not self.macs2_peak_calling(name, bam_file, bam_file_bgd, peak_bed, summits_bed, narrowPeak, broadPeak, gappedPeak):
             output_metadata.set_exception(
                 Exception(
                     "macs2_peak_calling: Could not process files {}, {}.".format(*input_files)))

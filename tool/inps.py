@@ -14,7 +14,7 @@
    limitations under the License.
 """
 
-import os
+import os, shutil, shlex, subprocess
 
 try :
     from pycompss.api.parameter import *
@@ -29,6 +29,7 @@ from basic_modules.metadata import Metadata
 from basic_modules.tool import Tool
 
 from common import common
+from common import cd
 
 # ------------------------------------------------------------------------------
 
@@ -53,13 +54,15 @@ class inps(Tool):
         ----------
         bam_file : str
             Location of the aligned sequences in bam format
+        peak_bed : str
+            Location of the collated bed file of nucleosome peak calls
         
         Returns
         -------
         peak_bed : str
             Location of the collated bed file of nucleosome peak calls
         """
-        
+        bed_file = bam_file + ".bed"
         with cd('../../lib/iNPS'):
             command_line_1 = 'bedtools bamtobed -i ' + bam_file
             command_line_2 = 'python iNPS_V1.2.2.py -i ' + bed_file + ' -o ' + peak_bed

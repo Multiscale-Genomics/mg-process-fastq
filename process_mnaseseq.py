@@ -81,8 +81,8 @@ class process_mnaseseq(Workflow):
         )
         
         # Needs moving to its own tool
-        inps = inps.inps()
-        out_peak_bed, out_meta = inps.inps_peak_calling(out_bam, {})
+        inps_tool = inps.inps()
+        out_peak_bed, out_meta = inps_tool.run([out_bam], {})
         
         return (out_peak_bed[0])
 

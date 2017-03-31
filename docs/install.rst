@@ -8,7 +8,7 @@ Requirements
 
 Software
 ^^^^^^^^
-
+- Python 2.7.10+
 - bedtools (specifically bamtobed)
 - bedToBigBed - http://hgdownload.cse.ucsc.edu/admin/exe/linux.x86_64/
 - wigToBigWig - http://hgdownload.cse.ucsc.edu/admin/exe/linux.x86_64/
@@ -20,7 +20,6 @@ Software
 - iNPS
 - Kallisto
 - libmaus2
-- Python 2.7.10+
 - pyenv
 - R 2.9.1+
 - SAMtools

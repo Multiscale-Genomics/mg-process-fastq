@@ -17,7 +17,7 @@
 import os
 
 try :
-    from pycompss.api.parameter import *
+    from pycompss.api.parameter import FILE_IN, FILE_OUT, FILE_INOUT
     from pycompss.api.task import task
 except ImportError :
     print("[Warning] Cannot import \"pycompss\" API packages.")
@@ -43,7 +43,7 @@ class macs2(Tool):
         """
         print "MACS2 Peak Caller"
     
-    @task(name = IN, bam_file = FILE_IN, bam_file_bgd = FILE_IN, peak_bed = FILE_OUT, summit_bed = FILE_OUT, narrowPeak = FILE_OUT, broadPeak = FILE_OUT, gappedPeak = FILE_OUT)
+    @task(name = IN, bam_file = FILE_IN, bam_file_bgd = FILE_IN, peak_bed = FILE_INOUT, summit_bed = FILE_INOUT, narrowPeak = FILE_INOUT, broadPeak = FILE_INOUT, gappedPeak = FILE_INOUT)
     def macs2_peak_calling(self, name, bam_file, bam_file_bgd = None, peak_bed = None, summits_bed = None, narrowPeak = None, broadPeak = None, gappedPeak = None):
         """
         Function to run MACS2 for peak calling on aligned sequence files and
@@ -74,20 +74,16 @@ class macs2(Tool):
         Definitions defined for each of these files have come from the MACS2
         documentation described in the docs at https://github.com/taoliu/MACS
         """
-        
+        od = bam_file.split("/")
+        output_dir = "/".join(od[0:-1])
+
         bgd_command = ''
         if bam_file_bgd != None:
             bgd_command = ' -c ' + bam_file_bgd
-        command_line = 'macs2 callpeak -t ' + bam_file + ' -n ' + name + bgd_command + ' --outdir ' + data_dir + project_id
+        command_line = 'macs2 callpeak -t ' + bam_file + ' -n ' + name + bgd_command + ' --outdir ' + output_dir
         args = shlex.split(command_line)
         p = subprocess.Popen(args)
         p.wait()
-        
-        peak_bed    = name + "_peaks.bed"
-        summits_bed = name + "_summits.bed"
-        narrowPeak  = name + "_narrowPeak"
-        broadPeak   = name + "_broadPeak"
-        gappedPeak  = name + "_gappedPeak"
         
         return True
     

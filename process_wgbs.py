@@ -256,7 +256,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Parse WGBS data")
     parser.add_argument("--fastq1", help="Location of first paired end FASTQ")
     parser.add_argument("--fastq2", help="Location of second paired end FASTQ")
-    parser.add_argument("--taxon_id", help="Taxon_ID (9606)")
+    parser.add_argument("--taxon_id", help="Taxon_ID (10090)")
     parser.add_argument("--assembly", help="Assembly (GRCm38)")
     parser.add_argument("--genome", help="Genome assembly FASTA file")
     parser.add_argument("--aligner", help="Aligner to use (eg bowtie2)")

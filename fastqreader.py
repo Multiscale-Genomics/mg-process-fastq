@@ -22,6 +22,8 @@ class fastqreader:
         """
         Initialise the module and 
         """
+        self.paired = False
+
         self.fastq1 = ''
         self.fastq2 = ''
         
@@ -37,25 +39,28 @@ class fastqreader:
         self.output_tag = ''
         self.output_file_count = 0
     
-    def openPairedFastQ(self, file1, file2):
+    def openFastQ(self, file1, file2 = None):
         """
         Create file handles for reading the FastQ files
         """
         self.fastq1 = file1
-        self.fastq2 = file2
-        
         self.f1_file = open(self.fastq1, "r")
-        self.f2_file = open(self.fastq2, "r")
-        
         self.f1_eof = False
-        self.f2_eof = False
+        
+        if file2 is not None:
+            self.fastq2 = file2
+            self.f2_file = open(self.fastq2, "r")
+            self.f2_eof = False
+            self.paired = True
     
-    def closePairedFastQ(self):
+    def closeFastQ(self):
         """
         Close file handles for the FastQ files.
         """
         self.f1_file.close()
-        self.f2_file.close()
+
+        if self.paired == True:
+            self.f2_file.close()
     
     def eof(self, side = 1):
         """
@@ -109,13 +114,13 @@ class fastqreader:
         f1 = self.fastq1.split("/")
         f1[-1] = f1[-1].replace(".fastq", "." + str(self.output_tag) + "_" + str(self.output_file_count) + ".fastq")
         f1.insert(-1, "tmp")
-        
-        f2 = self.fastq2.split("/")
-        f2[-1] = f2[-1].replace(".fastq", "." + str(self.output_tag) + "_" + str(self.output_file_count) + ".fastq")
-        f2.insert(-1, "tmp")
-        
         self.f1_output_file = open("/".join(f1), "w")
-        self.f2_output_file = open("/".join(f2), "w")
+        
+        if self.paired == True:
+            f2 = self.fastq2.split("/")
+            f2[-1] = f2[-1].replace(".fastq", "." + str(self.output_tag) + "_" + str(self.output_file_count) + ".fastq")
+            f2.insert(-1, "tmp")
+            self.f2_output_file = open("/".join(f2), "w")
     
     def writeOutput(self, read, side = 1):
         """
@@ -135,7 +140,9 @@ class fastqreader:
         Close the output file handles
         """
         self.f1_output_file.close()
-        self.f2_output_file.close()
+
+        if self.paired == True:
+            self.f2_output_file.close()
     
     def incrementOutputFiles(self):
         """

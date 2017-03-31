@@ -76,6 +76,8 @@ class bwaAlignerTool(Tool):
         """
         
         output_bam_file = input_files[1].replace('.fastq', '.bam')
+
+        output_metadata = {}
         
         # handle error
         if not self.bwa_aligner(input_files[0], input_files[1], output_bam_file, input_files[2], input_files[3], input_files[4], input_files[5], input_files[6]):

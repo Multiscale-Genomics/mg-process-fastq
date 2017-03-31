@@ -14,7 +14,7 @@
    limitations under the License.
 """
 
-import os
+import os, shutil, shlex, subprocess
 
 try:
     from pycompss.api.parameter import FILE_IN, FILE_OUT
@@ -87,10 +87,13 @@ class biobambam(Tool):
         output_metadata : list
             List of matching metadata dict objects
         """
-        output_file = input_files[0].replace('.bam', '.filtered.bam')
+        input_file = input_files[0]
+        output_file = input_files[1]
+        td = input_file.split("/")
+        tmp_dir = "/".join(td[0:-1])
         
         # handle error
-        if not self.biobambam_filter_alignments(input_files[0], output_file):
+        if not self.biobambam_filter_alignments(input_file, output_file, tmp_dir):
             output_metadata.set_exception(
                 Exception(
                     "biobambamTool: Could not process files {}, {}.".format(*input_files)))

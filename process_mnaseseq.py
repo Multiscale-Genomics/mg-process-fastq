@@ -19,6 +19,7 @@
 import argparse, urllib2, gzip, shutil, shlex, subprocess, os, json
 
 from basic_modules import Tool, Workflow, Metadata
+from dmp import dmp
 
 from functools import wraps
 
@@ -116,7 +117,7 @@ if __name__ == "__main__":
     genome_file_idx3 = da.set_file("test", genome_fa + ".bwt", "fasta", "Assembly", taxon_id, meta_data={'assembly' : assembly})
     genome_file_idx4 = da.set_file("test", genome_fa + ".pac", "fasta", "Assembly", taxon_id, meta_data={'assembly' : assembly})
     genome_file_idx5 = da.set_file("test", genome_fa + ".sa", "fasta", "Assembly", taxon_id, meta_data={'assembly' : assembly})
-    file_in = da.set_file("test", file_loc, "fastq", "Mnase-seq", taxon_id, meta_data={'assembly' : assembly})
+    file_in = da.set_file("test", fastq_file, "fastq", "Mnase-seq", taxon_id, meta_data={'assembly' : assembly})
     
     print da.get_files_by_user("test")
 
@@ -127,7 +128,7 @@ if __name__ == "__main__":
         genome_fa + ".bwt",
         genome_fa + ".pac",
         genome_fa + ".sa",
-        file_loc
+        fastq_file
     ]
     
     # 3. Instantiate and launch the App

@@ -128,10 +128,7 @@ class macs2(Tool):
         gappedPeak  = '/'.join(root_name) + "_gappedPeak"
         
         # input and output share most metadata
-        output_metadata = dict(
-            data_type=metadata[0]["data_type"],
-            file_type=metadata[0]["file_type"],
-            meta_data=metadata[0]["meta_data"])
+        output_metadata = {}
         
         # handle error
         if not self.macs2_peak_calling(name, input_files[0], input_files[1], peak_bed, summits_bed, narrowPeak, broadPeak, gappedPeak):
@@ -143,6 +140,6 @@ class macs2(Tool):
             narrowPeak  = None
             broadPeak   = None
             gappedPeak  = None
-        return ([peak_bed, summits_bed, narrowPeak, broadPeak, gappedPeak], [output_metadata])
+        return ([peak_bed, summits_bed, narrowPeak, broadPeak, gappedPeak], output_metadata)
 
 # ------------------------------------------------------------------------------

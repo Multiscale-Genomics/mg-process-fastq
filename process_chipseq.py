@@ -90,14 +90,14 @@ class process_chipseq(Workflow):
         
         bwa = bwa_aligner.bwaAlignerTool()
         out_bam = file_loc.replace('.fastq', '.bam')
-        out_bam, out_bam_meta = bwa.run(
+        out_file_bam, out_bam_meta = bwa.run(
             [genome_fa, file_loc, out_bam, bwa_amb, bwa_ann, bwa_bwt, bwa_pac, bwa_sa],
             {}
         )
         
         if file_bgd_loc != None:
             out_bgd_bam = file_bgd_loc.replace('.fastq', '.bam')
-            out_bgd_bam, out_bgd_bam_meta = bwa.run(
+            out_bgd_bam_res, out_bgd_bam_meta = bwa.run(
                 [genome_fa, file_bgd_loc, out_bgd_bam, bwa_amb, bwa_ann, bwa_bwt, bwa_pac, bwa_sa],
                 {}
             )
@@ -107,17 +107,20 @@ class process_chipseq(Workflow):
         # Filter the bams
         b3f = biobambam_filter.biobambam()
         b3f_file_out = file_loc.replace('.fastq', '.filtered.bam')
-        b3f_out = b3f.run([b3f_file_out], {})
+        b3f_out = b3f.run([out_bam, b3f_file_out], {})
         
         if file_bgd_loc != None:
             b3f_bgd_file_out = file_bgd_loc.replace('.fastq', '.filtered.bam')
-            b3f_out_bgd = b3f.run([b3f_bgd_file_out], {})
+            b3f_bgd_file_out = b3f.run([out_bgd_bam, b3f_bgd_file_out], {})
         else:
             b3f_bgd_file_out = [None]
         
         # MACS2 to call peaks
-        macs2 = macs.macs2()
-        peak_bed, summits_bed, narrowPeak, broadPeak, gappedPeak = macs2.run([b3f_file_out[0],  b3f_file_bgd_out[0]], {})
+        macs2 = macs2.macs2()
+        if file_bgd_loc != None:
+            peak_bed, summits_bed, narrowPeak, broadPeak, gappedPeak = macs2.run([b3f_file_out[0],  b3f_bgd_file_out[0]], {})
+        else:
+            peak_bed, summits_bed, narrowPeak, broadPeak, gappedPeak = macs2.run([b3f_file_out[0]], {})
         
         return (b3f_file_out, b3f_file_bgd_out, peak_bed, summits_bed, narrowPeak, broadPeak, gappedPeak)
 

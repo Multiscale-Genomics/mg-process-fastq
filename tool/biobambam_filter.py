@@ -50,6 +50,8 @@ class biobambam(Tool):
         ----------
         bam_file_in : str
             Location of the input bam file
+        bam_file_out : str
+            Location of the output bam file
         tmp_dir : str
             Tmp location for intermediate files during the sorting
         
@@ -92,12 +94,14 @@ class biobambam(Tool):
         td = input_file.split("/")
         tmp_dir = "/".join(td[0:-1])
         
+        output_metadata = {}
+
         # handle error
         if not self.biobambam_filter_alignments(input_file, output_file, tmp_dir):
             output_metadata.set_exception(
                 Exception(
                     "biobambamTool: Could not process files {}, {}.".format(*input_files)))
             output_file = None
-        return ([output_file], [output_metadata])
+        return ([output_file], output_metadata)
 
 # ------------------------------------------------------------------------------

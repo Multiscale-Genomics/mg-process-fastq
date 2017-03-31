@@ -44,7 +44,7 @@ class inps(Tool):
         print "iNPS Peak Caller"
     
     @task(bam_file = FILE_IN, peak_bed = FILE_OUT)
-    def inps_peak_calling(self, bam_file):
+    def inps_peak_calling(self, bam_file, peak_bed):
         """
         Convert Bam to Bed then make Nucleosome peak calls. These are saved as
         bed files That can then get displayed on genome browsers.
@@ -61,9 +61,6 @@ class inps(Tool):
         """
         
         with cd('../../lib/iNPS'):
-            bed_file = bam_file.replace('.bam', '.bed')
-            peak_bed = bam_file.replace('.bam', '.bed')
-            
             command_line_1 = 'bedtools bamtobed -i ' + bam_file
             command_line_2 = 'python iNPS_V1.2.2.py -i ' + bed_file + ' -o ' + peak_bed
             
@@ -77,7 +74,7 @@ class inps(Tool):
             p = subprocess.Popen(args)
             p.wait()
         
-        return True
+        return peak_bed
     
     
     def run(self, input_files, metadata):
@@ -103,19 +100,17 @@ class inps(Tool):
         """
         
         bam_file = input_files[0]
+        peak_bed = bam_file.replace('.bam', '.bed')
         
         # input and output share most metadata
-        output_metadata = dict(
-            data_type=metadata[0]["data_type"],
-            file_type=metadata[0]["file_type"],
-            meta_data=metadata[0]["meta_data"])
+        output_metadata = {}
         
         # handle error
-        if not self.inps_peak_calling(input_files[0]):
+        if not self.inps_peak_calling(bam_file, peak_bed):
             output_metadata.set_exception(
                 Exception(
                     "inps_peak_calling: Could not process files {}, {}.".format(*input_files)))
             peak_bed = None
-        return ([peak_bed], [output_metadata])
+        return ([peak_bed], output_metadata)
 
 # ------------------------------------------------------------------------------

@@ -69,11 +69,13 @@ class process_mnaseseq(Workflow):
         bwa_pac = file_ids[4]
         bwa_sa  = file_ids[5]
         file_loc = file_ids[6]
-        file_bgd_loc = file_ids[7]
         
-        cwa_align = bwa_aligner.bwaAlignerTool()
-        out_bam, out_meta = cwa_align.run(
-            [genome_fa, file_bgd_loc, out_bgd_bam, bwa_amb, bwa_ann, bwa_bwt, bwa_pac, bwa_sa],
+        out_bam = file_loc.replace('.fastq', '.bam')
+        
+        bwa = bwa_aligner.bwaAlignerTool()
+        out_bam = file_loc.replace('.fastq', '.bam')
+        out_file_bam, out_bam_meta = bwa.run(
+            [genome_fa, file_loc, out_bam, bwa_amb, bwa_ann, bwa_bwt, bwa_pac, bwa_sa],
             {}
         )
         

@@ -9,7 +9,7 @@ Requirements
 Software
 ^^^^^^^^
 
-- bedtools
+- bedtools (specifically bamtobed)
 - bedToBigBed - http://hgdownload.cse.ucsc.edu/admin/exe/linux.x86_64/
 - wigToBigWig - http://hgdownload.cse.ucsc.edu/admin/exe/linux.x86_64/
 - BioBamBam2

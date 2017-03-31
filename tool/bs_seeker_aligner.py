@@ -115,8 +115,8 @@ class bssAlignerTool(Tool):
         """
         
         genome_fasta = input_files[0]
-        fasta_file_1 = input_files[1]
-        fasta_file_2 = input_files[2]
+        fastq_file_1 = input_files[1]
+        fastq_file_2 = input_files[2]
 
         gd = file_name.split("/")
         genome_dir = '/' + '/'.join(gd[:-1])
@@ -128,17 +128,14 @@ class bssAlignerTool(Tool):
         output_file = file_name + '.filtered.bam'
         
         # input and output share most metadata
-        output_metadata = dict(
-            data_type=metadata[0]["data_type"],
-            file_type=metadata[0]["file_type"],
-            meta_data=metadata[0]["meta_data"])
+        output_metadata = {}
         
-        # handle error
-        if not self.bss_build_index(file_name, aligner, aligner_path, genome_dir, output_file):
+        # handle error                input_fastq1, input_fastq2, aligner, aligner_path, genome_fasta, bam_out
+        if not self.bs_seeker_aligner(fastq_file_1, fastq_file_2, aligner, aligner_path, genome_fasta, output_file):
             output_metadata.set_exception(
                 Exception(
                     "bs_seeker_filter: Could not process files {}, {}.".format(*input_files)))
             output_file = None
-        return ([output_file], [output_metadata])
+        return ([output_file], output_metadata)
 
 # ------------------------------------------------------------------------------

@@ -101,6 +101,6 @@ class filterReadsTool(Tool):
                 Exception(
                     "bs_seeker_filter: Could not process files {}, {}.".format(*input_files)))
             output_file = None
-        return ([output_file], [output_metadata])
+        return ([output_file], output_metadata)
 
 # ------------------------------------------------------------------------------

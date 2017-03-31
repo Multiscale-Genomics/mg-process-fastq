@@ -175,12 +175,15 @@ class process_wgbs:
         output_metadata['fastq2'] = filter2_meta
 
         # Build the matching WGBS genome index
-        builder = tool.bssIndexerTool()
-        genome_idx, gidx_meta = builder.run([genome_fa], metadata)
+        builder = bs_seeker_indexer.bssIndexerTool()
+        genome_idx, gidx_meta = builder.run(
+            [genome_fa],
+            metadata
+        )
         output_metadata['genome_idx'] = gidx_meta
 
         # Split the FASTQ files into smaller, easier to align packets
-        tmp_fastq = self.Splitter(fastq1f, fastq2f, 'tmp')
+        tmp_fastq = self.Splitter(fastq1f[0], fastq2f[0], 'tmp')
         bam_sort_files = []
         bam_merge_files = []
         fastq_for_alignment = []
@@ -198,8 +201,11 @@ class process_wgbs:
         
         # Run the bs_seeker2-align.py steps on the split up fastq files
         for ffa in fastq_for_alignment:
-            bss_aligner = tool.bs_seeker_aligner(self.configuration)
-            bam, bam_meta = bss_aligner(ffa[0], ffa[1], ffa[2], ffa[3][ffa[2]], ffa[4], ffa[5])
+            bss_aligner = bs_seeker_aligner.bssAlignerTool()
+            bam, bam_meta = bss_aligner.run(
+                [ffa[0], ffa[1], ffa[2], ffa[3][ffa[2]], ffa[4], ffa[5]],
+                {}
+            )
             if 'alignment' in output_metadata:
                 output_metadata['alignment'] = bam_meta
             else:
@@ -216,7 +222,7 @@ class process_wgbs:
 
         pysam.merge(out_bam_file, *bam_merge_files)
         
-        pysam.sort("-o", out_bam_file + '.sorted.bam', "-T", out_bam_file + ".bam_sort", out_bam_file)
+        pysam.sort("-o", out_bam_file, "-T", out_bam_file + "_sort", out_bam_file)
         
         pysam.index(out_bam_file)
 
@@ -224,9 +230,12 @@ class process_wgbs:
         wig_file     = out_bam_file.replace('.bam', '.wig')
         cgmap_file   = out_bam_file.replace('.bam', '.cgmap')
         atcgmap_file = out_bam_file.replace('.bam', '.atcgmap')
-        mc = tool.bss_methylation_caller(self.configuration)
+        mc = bs_seeker_methylation_caller.bssMethylationCallerTool()
         peak_calls, peak_meta = mc.run(
-            [metadata['aligner_path'], out_bam_file, wig_file, cgmap_file, atcgmap_file, genome_idx],
+            [
+                metadata['aligner_path'], out_bam_file, wig_file,
+                cgmap_file, atcgmap_file, genome_idx
+            ],
             {}
         )
         output_metadata['peak_calling'] = peak_meta
@@ -247,7 +256,6 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Parse WGBS data")
     parser.add_argument("--fastq1", help="Location of first paired end FASTQ")
     parser.add_argument("--fastq2", help="Location of second paired end FASTQ")
-    parser.add_argument("--species", help="Species (Homo_sapiens)")
     parser.add_argument("--taxon_id", help="Taxon_ID (9606)")
     parser.add_argument("--assembly", help="Assembly (GRCm38)")
     parser.add_argument("--genome", help="Genome assembly FASTA file")
@@ -260,7 +268,6 @@ if __name__ == "__main__":
     fastq1 = args.fastq1
     fastq2 = args.fastq2
     genome   = args.genome
-    species     = args.species
     taxon_id   = args.taxon_id
     assembly    = args.assembly
     aligner  = args.aligner

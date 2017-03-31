@@ -36,6 +36,8 @@ from tool import bs_seeker_filter
 from tool import bs_seeker_indexer
 from tool import bs_seeker_methylation_caller
 
+import fastqreader
+
 import pysam
 
 # ------------------------------------------------------------------------------
@@ -47,7 +49,65 @@ class process_wgbs:
     methylation
     """
 
-    def Splitter(self, in_file1, in_file2, tag = 'tmp'):
+    def single_splitter(self, in_file1, tag = 'tmp'):
+        """
+        Function to divide the FastQ files into separte sub files of 1000000
+        sequences so that the aligner can run in parallel.
+        
+        Parameters
+        ----------
+        in_file1 : str
+            Location of first FASTQ file
+        tag : str
+            DEFAULT = tmp
+            Tag used to identify the files. Useful if this is getting run
+            manually on a single machine multiple times to prevent collisions of
+            file names
+
+        
+        Returns
+        -------
+        Returns: Returns a list of the files that have been generated.
+                 Each sub list containing the two paired end files for that
+                 subset.
+        paired_files : list
+            List of lists of pair end files. Each sub list containing the two
+            paired end files for that subset.
+        """
+        
+        fqr = fastqreader()
+        fqr.openFastQ(in_file1)
+        fqr.createOutputFiles(tag)
+
+        r1 = fqr.next(1)
+        
+        count_r3 = 0
+        
+        f1 = fqr.fastq1.split("/")
+        f1[-1] = f1[-1].replace(".fastq", "." + str(fqr.output_tag) + "_" + str(fqr.output_file_count) + ".fastq")
+        f1.insert(-1, tag)
+        
+        files_out = [["/".join(f1)]]
+
+        while fqr.eof(1) == False:
+            fqr.writeOutput(r1, 1)
+            r1 = fqr.next(1)
+            count_r3 += 1
+            
+            if count_r3 % 1000000 == 0:
+                fqr.incrementOutputFiles()
+                f1 = fqr.fastq1.split("/")
+                f1[-1] = f1[-1].replace(".fastq", "." + str(fqr.output_tag) + "_" + str(fqr.output_file_count) + ".fastq")
+                f1.insert(-1, "tmp")
+                
+                files_out.append(["/".join(f1)])
+
+        fqr.closeFastQ()
+        fqr.closeOutputFiles()
+        
+        return files_out
+
+    def paired_splitter(self, in_file1, in_file2, tag = 'tmp'):
         """
         Function to divide the FastQ files into separte sub files of 1000000
         sequences so that the aligner can run in parallel.
@@ -76,7 +136,7 @@ class process_wgbs:
         """
         
         fqr = fastqreader()
-        fqr.openPairedFastQ(in_file1, in_file2)
+        fqr.openFastQ(in_file1, in_file2)
         fqr.createOutputFiles(tag)
 
         r1 = fqr.next(1)
@@ -128,7 +188,7 @@ class process_wgbs:
                 
                 files_out.append(["/".join(f1), "/".join(f2)])
 
-        fqr.closePairedFastQ()
+        fqr.closeFastQ()
         fqr.closeOutputFiles()
         
         return files_out
@@ -163,6 +223,12 @@ class process_wgbs:
         genome_fa = file_ids[0]
         fastq1 = file_ids[1]
         fastq2 = file_ids[2]
+        bt2_1 = file_ids[3]
+        bt2_2 = file_ids[4]
+        bt2_3 = file_ids[5]
+        bt2_4 = file_ids[6]
+        bt2_rev_1 = file_ids[7]
+        bt2_rev_2 = file_ids[8]
 
         output_metadata = {}
 
@@ -183,29 +249,38 @@ class process_wgbs:
         output_metadata['genome_idx'] = gidx_meta
 
         # Split the FASTQ files into smaller, easier to align packets
-        tmp_fastq = self.Splitter(fastq1f[0], fastq2f[0], 'tmp')
+        if fastq2 is not None:
+            tmp_fastq = self.paired_splitter(fastq1f[0], fastq2f[0], 'tmp')
+        else:
+            tmp_fastq = self.single_splitter(fastq1f[0], 'tmp')
+        
         bam_sort_files = []
         bam_merge_files = []
         fastq_for_alignment = []
         for bams in tmp_fastq:
             bam_root = bams[0] + "_bspe.bam"
             tmp = bams
-            tmp.append(aligner)
-            tmp.append(aligner_path)
-            tmp.append(genome_fa)
             tmp.append(bam_root)
 
             fastq_for_alignment.append(tmp)
             bam_sort_files.append([bam_root, bam_root + ".sorted.bam"])
             bam_merge_files.append(bam_root + ".sorted.bam")
         
+        metadata = {
+            'aligner' : aligner,
+            'aligner_path' : aligner_path
+        }
+
         # Run the bs_seeker2-align.py steps on the split up fastq files
         for ffa in fastq_for_alignment:
             bss_aligner = bs_seeker_aligner.bssAlignerTool()
-            bam, bam_meta = bss_aligner.run(
-                [ffa[0], ffa[1], ffa[2], ffa[3][ffa[2]], ffa[4], ffa[5]],
-                {}
-            )
+            if fastq2 is not None:
+                files = [genome_fa, ffa[0], ffa[1], ffa[2], bt2_1, bt2_2, bt2_3, bt2_4, bt2_rev_1, bt2_rev_2]
+            else:
+                files = [genome_fa, ffa[0], None, ffa[1], bt2_1, bt2_2, bt2_3, bt2_4, bt2_rev_1, bt2_rev_2]
+            
+            bam, bam_meta = bss_aligner.run(files, metadata)
+            
             if 'alignment' in output_metadata:
                 output_metadata['alignment'] = bam_meta
             else:
@@ -255,7 +330,7 @@ if __name__ == "__main__":
     # Set up the command line parameters
     parser = argparse.ArgumentParser(description="Parse WGBS data")
     parser.add_argument("--fastq1", help="Location of first paired end FASTQ")
-    parser.add_argument("--fastq2", help="Location of second paired end FASTQ")
+    parser.add_argument("--fastq2", help="Location of second paired end FASTQ", default = None)
     parser.add_argument("--taxon_id", help="Taxon_ID (10090)")
     parser.add_argument("--assembly", help="Assembly (GRCm38)")
     parser.add_argument("--genome", help="Genome assembly FASTA file")
@@ -293,7 +368,13 @@ if __name__ == "__main__":
     files = [
         genome_fa,
         fastq1,
-        fastq2
+        fastq2,
+        genome_fa + ".1.bt2",
+        genome_fa + ".2.bt2",
+        genome_fa + ".3.bt2",
+        genome_fa + ".4.bt2",
+        genome_fa + ".rev.1.bt2",
+        genome_fa + ".rev.2.bt2",
     ]
     
     # 3. Instantiate and launch the App

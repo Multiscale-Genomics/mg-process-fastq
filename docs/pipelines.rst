@@ -220,8 +220,6 @@ Whole Genome BiSulphate Sequencing Analysis
       Taxon ID (e.g. 9606)
    genome : str
       Location of genome assembly FASTA file
-   species : str
-      Species (e.g. homo_sapien)
    fastq1 : str
       Location of FASTQ input file
    fastq2 : str
@@ -245,6 +243,20 @@ Whole Genome BiSulphate Sequencing Analysis
 
    Example
    -------
+   When running the pipeline on a local machine:
+
+   .. code-block:: none
+      :linenos:
+
+      python process_rnaseq.py                                    \\
+         --assembly GCA_000001405.22                              \\
+         --taxon_id 9606                                          \\
+         --genome <data_dir>/GCA_000001405.22.fa                  \\
+         --fastq1 <data_dir>/expt1_a.fastq                        \\
+         --fastq2 <data_dir>/expt1_b.fastq                        \\
+         --aligner bowtie2                                        \\
+         --aligner_path /home/compss/lib
+
    When using a local verion of the [COMPS virtual machine](http://www.bsc.es/computer-sciences/grid-computing/comp-superscalar/downloads-and-documentation):
    
    .. code-block:: none

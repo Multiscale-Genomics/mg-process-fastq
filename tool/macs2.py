@@ -14,7 +14,7 @@
    limitations under the License.
 """
 
-import os
+import os, shutil, shlex, subprocess
 
 try :
     from pycompss.api.parameter import FILE_IN, FILE_OUT, FILE_INOUT

@@ -14,8 +14,7 @@
    limitations under the License.
 """
 
-import os
-import subprocess
+import os, shutil, shlex, subprocess
 
 try:
     from pycompss.api.parameter import FILE_IN, FILE_OUT
@@ -109,10 +108,7 @@ class bssMethylationCallerTool(Tool):
         atcgmap_file = input_files[1].replace('.bam', '.atcgmap.tsv')
         
         # input and output share most metadata
-        output_metadata = dict(
-            data_type=metadata[0]["data_type"],
-            file_type=metadata[0]["file_type"],
-            meta_data=metadata[0]["meta_data"])
+        output_metadata = {}
         
         # handle error
         if not self.bss_methylation_caller(script_path, file_name, genome_dir, wig_file, cgmap_file, atcgmap_file):

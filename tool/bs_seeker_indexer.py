@@ -122,10 +122,7 @@ class bssIndexerTool(Tool):
         output_file = file_name + '.filtered.bam'
         
         # input and output share most metadata
-        output_metadata = dict(
-            data_type=metadata[0]["data_type"],
-            file_type=metadata[0]["file_type"],
-            meta_data=metadata[0]["meta_data"])
+        output_metadata = {}
         
         # handle error
         if not self.bss_build_index(file_name, aligner, aligner_path, genome_dir, output_file):

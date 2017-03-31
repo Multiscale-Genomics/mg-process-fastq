@@ -94,6 +94,8 @@ class filterReadsTool(Tool):
         
         file_name = input_files[0]
         output_file = file_name + '.filtered.fastq'
+
+        output_metadata = {}
         
         # handle error
         if not self.bss_seeker_filter(file_name, output_file):

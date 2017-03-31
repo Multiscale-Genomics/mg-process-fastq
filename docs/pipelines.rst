@@ -59,7 +59,7 @@ ChIP-Seq Analysis
          --assembly GCA_000001405.25                                 \\
          --taxon_id 9606                                             \\
          --file /<dataset_dir>/<file_name>.fastq                     \\
-         --bgd_file /<dataset_dir>/<bgd_file_name>.fastq             \\
+         --bgd_file /<dataset_dir>/<bgd_file_name>.fastq
 
    When using a local verion of the [COMPS virtual machine](http://www.bsc.es/computer-sciences/grid-computing/comp-superscalar/downloads-and-documentation):
    
@@ -116,18 +116,25 @@ Mnase-Seq Analysis
    .. code-block:: none
       :linenos:
 
-      python process_mnaseseq.py                                      \\
+      python process_mnaseseq.py                                     \\
          --genome /<dataset_dir>/Homo_sapiens.GRCh38.fasta           \\
          --assembly GCA_000001405.25                                 \\
          --taxon_id 9606                                             \\
-         --file /<dataset_dir>/<file_name>.fastq                     \\
+         --file /<dataset_dir>/<file_name>.fastq
 
    When using a local verion of the [COMPS virtual machine](http://www.bsc.es/computer-sciences/grid-computing/comp-superscalar/downloads-and-documentation):
    
    .. code-block:: none
       :linenos:
       
-      runcompss --lang=python /home/compss/mg-process-fastq/process_mnaseseq.py --species mus_musculus --assembly GCA_000001635.2 --taxon_id 10090 --genome <data_dir>/GCA_000001635.2.fa --file 
+      runcompss
+         --comm=integratedtoolkit.gat.master.GATAdaptor                  \\
+         --log_level=debug                                               \\
+         --lang=python /home/compss/mg-process-fastq/process_mnaseseq.py \\
+            --assembly GCA_000001635.2                                   \\
+            --taxon_id 10090                                             \\
+            --genome <data_dir>/GCA_000001635.2.fa                       \\
+            --file /<dataset_dir>/<file_name>.fastq
    
    Methods
    =======
@@ -173,7 +180,7 @@ RNA-Seq Analysis
          --genome /<dataset_dir>/Homo_sapiens.GRCh38.cdna.all.fasta  \\
          --assembly GCA_000001405.25                                 \\
          --taxon_id 9606                                             \\
-         --file /<dataset_dir>/expt1.fastq                           \\
+         --file /<dataset_dir>/expt1.fastq
 
 
    When using a local verion of the [COMPS virtual machine](http://www.bsc.es/computer-sciences/grid-computing/comp-superscalar/downloads-and-documentation):
@@ -188,7 +195,7 @@ RNA-Seq Analysis
             --assembly GCA_000001405.22                                   \\
             --taxon_id 9606                                               \\
             --genome <data_dir>/GCA_000001405.25.fa                       \\
-            --file <data_dir>/expt1.fastq                                 \\
+            --file <data_dir>/expt1.fastq
    
    Methods
    =======
@@ -243,7 +250,17 @@ Whole Genome BiSulphate Sequencing Analysis
    .. code-block:: none
       :linenos:
       
-      runcompss --lang=python /home/compss/mg-process-fastq/process_wgbs.py --species homo_sapien --assembly GCA_000001405.22 --taxon_id 9606 --genome <data_dir>/GCA_000001405.22.fa --fastq1 <data_dir>/expt1_a.fastq --fastq2 <data_dir>/expt1_b.fastq --aligner bowtie2 --aligner_path /home/compss/lib
+      runcompss
+         --comm=integratedtoolkit.gat.master.GATAdaptor              \\
+         --log_level=debug                                           \\
+         --lang=python /home/compss/mg-process-fastq/process_wgbs.py \\
+            --assembly GCA_000001405.22                              \\
+            --taxon_id 9606                                          \\
+            --genome <data_dir>/GCA_000001405.22.fa                  \\
+            --fastq1 <data_dir>/expt1_a.fastq                        \\
+            --fastq2 <data_dir>/expt1_b.fastq                        \\
+            --aligner bowtie2                                        \\
+            --aligner_path /home/compss/lib
 
 
    Methods

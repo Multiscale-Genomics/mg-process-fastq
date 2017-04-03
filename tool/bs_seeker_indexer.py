@@ -52,8 +52,8 @@ class bssIndexerTool(Tool):
         """
         print "BS-Seeker FilterReads wrapper"
 
-    @task(fasta_file = FILE_IN, aligner = IN, aligner_path = IN, ref_path = IN, bam_out = FILE_INOUT)
-    def bss_build_index(self, fasta_file, aligner, aligner_path, ref_path, bam_out):
+    @task(fasta_file = FILE_IN, aligner = IN, aligner_path = IN, bss_path = IN, ref_path = IN, bam_out = FILE_INOUT)
+    def bss_build_index(self, fasta_file, aligner, aligner_path, bss_path, ref_path, bam_out):
         """
         Function to submit the FASTA file for the reference sequence and build
         the required index file used by the aligner.
@@ -77,7 +77,7 @@ class bssIndexerTool(Tool):
         bam_out : str
             Location of the output bam alignment file
         """
-        command_line = ("python " + aligner_path + "/bs_seeker2-build.py"
+        command_line = ("python " + bss_path + "/bs_seeker2-build.py"
             " -f " + fasta_file
             " --aligner " + aligner + " --path " + aligner_path).format(x=x)
         
@@ -114,6 +114,7 @@ class bssIndexerTool(Tool):
         
         aligner      = metadata['aligner']
         aligner_path = metadata['aligner_path']
+        bss_path     = metadata['bss_path']
 
 
         output_file = file_name + '.filtered.bam'
@@ -122,7 +123,7 @@ class bssIndexerTool(Tool):
         output_metadata = {}
         
         # handle error
-        if not self.bss_build_index(file_name, aligner, aligner_path, genome_dir, output_file):
+        if not self.bss_build_index(file_name, aligner, aligner_path, bss_path, genome_dir, output_file):
             output_metadata.set_exception(
                 Exception(
                     "bs_seeker_filter: Could not process files {}, {}.".format(*input_files)))

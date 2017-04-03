@@ -51,8 +51,8 @@ class filterReadsTool(Tool):
         """
         print "BS-Seeker FilterReads wrapper"
 
-    @task(infile = FILE_IN, outfile = FILE_OUT)
-    def bss_seeker_filter(self, infile, outfile):
+    @task(infile = FILE_IN, outfile = FILE_OUT, bss_path = IN)
+    def bss_seeker_filter(self, infile, outfile, bss_path):
         """
         This is optional, but removes reads that can be problematic for the
         alignment of whole genome datasets.
@@ -72,7 +72,7 @@ class filterReadsTool(Tool):
         outfile : str
             Location of the filtered FASTQ file
         """
-        command_line = ("python " + aligner_path + "/FilterReads.py"
+        command_line = ("python " + bss_path + "/FilterReads.py"
             " --i " + infile
             " --o " + outfile
             ).format(x=x)
@@ -106,7 +106,7 @@ class filterReadsTool(Tool):
         output_metadata = {}
         
         # handle error
-        if not self.bss_seeker_filter(file_name, output_file):
+        if not self.bss_seeker_filter(file_name, output_file, metadata["bss_path"]):
             output_metadata.set_exception(
                 Exception(
                     "bs_seeker_filter: Could not process files {}, {}.".format(*input_files)))

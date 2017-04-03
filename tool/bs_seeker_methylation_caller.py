@@ -43,8 +43,8 @@ class bssMethylationCallerTool(Tool):
         """
         print "BS-Seeker Methylation Caller"
 
-    @task(script_path = IN, bam_file = FILE_IN, db_dir = IN, wig_file = FILE_INOUT, cgmap_file = FILE_INOUT, atcgmap_file = FILE_INOUT)
-    def bss_methylation_caller(self, script_path, bam_file, db_dir, wig_file, cgmap_file, atcgmap_file):
+    @task(bss_path = IN, bam_file = FILE_IN, db_dir = IN, wig_file = FILE_INOUT, cgmap_file = FILE_INOUT, atcgmap_file = FILE_INOUT)
+    def bss_methylation_caller(self, bss_path, bam_file, db_dir, wig_file, cgmap_file, atcgmap_file):
         """
         Takes the merged and sorted bam file and calls the methylation sites.
         Generates a wig file of the potential sites.
@@ -54,7 +54,7 @@ class bssMethylationCallerTool(Tool):
 
         Parameters
         ----------
-        script_path : str
+        bss_path : str
             Location of the Methylation caller script
         bam_file : str
             Location of the bam alignment file
@@ -105,7 +105,7 @@ class bssMethylationCallerTool(Tool):
         gd = file_name.split("/")
         genome_dir = input_files[0]
 
-        script_path = metadata['aligner_path']
+        script_path = metadata['bss_path']
         wig_file = input_files[1].replace('.bam', '.wig')
         cgmap_file = input_files[1].replace('.bam', '.cgmap.tsv')
         atcgmap_file = input_files[1].replace('.bam', '.atcgmap.tsv')
@@ -114,7 +114,7 @@ class bssMethylationCallerTool(Tool):
         output_metadata = {}
         
         # handle error
-        if not self.bss_methylation_caller(script_path, file_name, genome_dir, wig_file, cgmap_file, atcgmap_file):
+        if not self.bss_methylation_caller(bss_path, file_name, genome_dir, wig_file, cgmap_file, atcgmap_file):
             output_metadata.set_exception(
                 Exception(
                     "bss_methylation_caller: Could not process files {}, {}.".format(*input_files)))

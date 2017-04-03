@@ -234,8 +234,8 @@ class process_wgbs:
 
         # Filter the FASTQ reads to remove duplicates
         frt = bs_seeker_filter.filterReadsTool()
-        fastq1f, filter1_meta = frt.run([fastq1], {})
-        fastq2f, filter2_meta = frt.run([fastq2], {})
+        fastq1f, filter1_meta = frt.run([fastq1], metadata)
+        fastq2f, filter2_meta = frt.run([fastq2], metadata)
 
         output_metadata['fastq1'] = filter1_meta
         output_metadata['fastq2'] = filter2_meta
@@ -266,11 +266,6 @@ class process_wgbs:
             bam_sort_files.append([bam_root, bam_root + ".sorted.bam"])
             bam_merge_files.append(bam_root + ".sorted.bam")
         
-        metadata = {
-            'aligner' : aligner,
-            'aligner_path' : aligner_path
-        }
-
         # Run the bs_seeker2-align.py steps on the split up fastq files
         for ffa in fastq_for_alignment:
             bss_aligner = bs_seeker_aligner.bssAlignerTool()
@@ -311,7 +306,7 @@ class process_wgbs:
                 metadata['aligner_path'], out_bam_file, wig_file,
                 cgmap_file, atcgmap_file, genome_idx
             ],
-            {}
+            metadata
         )
         output_metadata['peak_calling'] = peak_meta
 
@@ -336,6 +331,7 @@ if __name__ == "__main__":
     parser.add_argument("--genome", help="Genome assembly FASTA file")
     parser.add_argument("--aligner", help="Aligner to use (eg bowtie2)")
     parser.add_argument("--aligner_path", help="Directory for the aligner program")
+    parser.add_argument("--bss_path", help="Directory for the aligner program")
 
     # Get the matching parameters from the command line
     args = parser.parse_args()
@@ -347,11 +343,13 @@ if __name__ == "__main__":
     assembly    = args.assembly
     aligner  = args.aligner
     aligner_path = args.aligner_path
+    bss_path     = args.bss_path
     
     metadata = {
         'user_id' : 'test',
         'aligner' : aligner,
-        'aligner_path' : aligner_path
+        'aligner_path' : aligner_path,
+        'bss_path' : bss_path
     }
 
 

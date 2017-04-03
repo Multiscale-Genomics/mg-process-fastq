@@ -53,9 +53,10 @@ class bssAlignerTool(Tool):
         print "BS-Seeker Aligner"
 
     @task(input_fastq1 = FILE_IN, input_fastq2 = FILE_IN, aligner = IN, aligner_path = IN,
+        bss_path = IN,
         genome_fasta = FILE_IN, bam_out = FILE_INOUT, bt2_1 = FILE_IN, bt2_2 = FILE_IN,
         bt2_3 = FILE_IN, bt2_4 = FILE_IN, bt2_rev_1 = FILE_IN, bt2_rev_2 = FILE_IN)
-    def bs_seeker_aligner(self, input_fastq1, input_fastq2, aligner, aligner_path,
+    def bs_seeker_aligner(self, input_fastq1, input_fastq2, aligner, aligner_path, bss_path,
         genome_fasta, bam_out, bt2_1, bt2_2, bt2_3, bt2_4, bt2_rev_1, bt2_rev_2):
         """
         Alignment of the paired ends to the reference genome
@@ -89,7 +90,7 @@ class bssAlignerTool(Tool):
         g_dir = genome_fasta.split("/")
         g_dir = "/".join(g_dir[0:-1])
 
-        command_line = ("python " + aligner_path + "/bs_seeker2-align.py"
+        command_line = ("python " + bss_path + "/bs_seeker2-align.py"
             " --input_1 " + input_fastq1 + " --input_2 " + input_fastq2
             " --aligner " + aligner + " --path " + aligner_path
             " --genome " + genome_fasta + " -d " + g_dir
@@ -132,6 +133,7 @@ class bssAlignerTool(Tool):
 
         aligner      = metadata['aligner']
         aligner_path = metadata['aligner_path']
+        bss_path     = metadata['bss_path']
 
         # input and output share most metadata
         output_metadata = {}

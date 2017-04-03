@@ -91,9 +91,9 @@ class bssAlignerTool(Tool):
         g_dir = "/".join(g_dir[0:-1])
 
         command_line = ("python " + bss_path + "/bs_seeker2-align.py"
-            " --input_1 " + input_fastq1 + " --input_2 " + input_fastq2
-            " --aligner " + aligner + " --path " + aligner_path
-            " --genome " + genome_fasta + " -d " + g_dir
+            " --input_1 " + input_fastq1 + " --input_2 " + input_fastq2 + ""
+            " --aligner " + aligner + " --path " + aligner_path + ""
+            " --genome " + genome_fasta + " -d " + g_dir + ""
             " --bt2-p 4 -o " + bam_out).format()
         
         args = shlex.split(command_line)

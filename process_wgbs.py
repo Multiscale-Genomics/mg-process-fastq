@@ -30,6 +30,8 @@ except ImportError :
     
     from dummy_pycompss import *
 
+from dmp import dmp
+
 from tool.common import common
 from tool import bs_seeker_aligner
 from tool import bs_seeker_filter

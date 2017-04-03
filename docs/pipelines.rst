@@ -255,7 +255,8 @@ Whole Genome BiSulphate Sequencing Analysis
          --fastq1 <data_dir>/expt1_a.fastq                        \\
          --fastq2 <data_dir>/expt1_b.fastq                        \\
          --aligner bowtie2                                        \\
-         --aligner_path /home/compss/lib
+         --aligner_path /home/compss/lib                          \\
+         --bss_path <script_dir>/BS-Seeker2
 
    When using a local verion of the [COMPS virtual machine](http://www.bsc.es/computer-sciences/grid-computing/comp-superscalar/downloads-and-documentation):
    
@@ -272,7 +273,8 @@ Whole Genome BiSulphate Sequencing Analysis
             --fastq1 <data_dir>/expt1_a.fastq                        \\
             --fastq2 <data_dir>/expt1_b.fastq                        \\
             --aligner bowtie2                                        \\
-            --aligner_path /home/compss/lib
+            --aligner_path /home/compss/lib                          \\
+            --bss_path <script_dir>/BS-Seeker2
 
 
    Methods

@@ -73,9 +73,9 @@ class filterReadsTool(Tool):
             Location of the filtered FASTQ file
         """
         command_line = ("python " + bss_path + "/FilterReads.py"
-            " --i " + infile
-            " --o " + outfile
-            ).format(x=x)
+            " -i " + infile + ""
+            " -o " + outfile + ""
+        ).format()
         
         args = shlex.split(command_line)
         p = subprocess.Popen(args)

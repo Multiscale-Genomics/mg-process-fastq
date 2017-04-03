@@ -78,8 +78,8 @@ class bssIndexerTool(Tool):
             Location of the output bam alignment file
         """
         command_line = ("python " + bss_path + "/bs_seeker2-build.py"
-            " -f " + fasta_file
-            " --aligner " + aligner + " --path " + aligner_path).format(x=x)
+            " -f " + fasta_file + ""
+            " --aligner " + aligner + " --path " + aligner_path).format()
         
         args = shlex.split(command_line)
         p = subprocess.Popen(args)

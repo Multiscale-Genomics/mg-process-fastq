@@ -340,7 +340,7 @@ if __name__ == "__main__":
     
     fastq1 = args.fastq1
     fastq2 = args.fastq2
-    genome   = args.genome
+    genome_fa   = args.genome
     taxon_id   = args.taxon_id
     assembly    = args.assembly
     aligner  = args.aligner

@@ -333,7 +333,7 @@ if __name__ == "__main__":
     parser.add_argument("--genome", help="Genome assembly FASTA file")
     parser.add_argument("--aligner", help="Aligner to use (eg bowtie2)")
     parser.add_argument("--aligner_path", help="Directory for the aligner program")
-    parser.add_argument("--bss_path", help="Directory for the aligner program")
+    parser.add_argument("--bss_path", help="Directory for the BS-Seeker2 program")
 
     # Get the matching parameters from the command line
     args = parser.parse_args()
@@ -349,6 +349,7 @@ if __name__ == "__main__":
     
     metadata = {
         'user_id' : 'test',
+        'assembly' : assembly,
         'aligner' : aligner,
         'aligner_path' : aligner_path,
         'bss_path' : bss_path
@@ -359,9 +360,9 @@ if __name__ == "__main__":
     
     print da.get_files_by_user("test")
     
-    genome_file = da.set_file("test", genome_fa, "fasta", "Assembly", taxon_id, meta_data={'assembly' : assembly})
-    fastq_file_1 = da.set_file("test", fastq1, "fastq", "wgbs", taxon_id, meta_data={'assembly' : assembly})
-    fastq_file_2 = da.set_file("test", fastq2, "fastq", "wgbs", taxon_id, meta_data={'assembly' : assembly})
+    genome_file = da.set_file("test", genome_fa, "fasta", "Assembly", taxon_id, meta_data=metadata)
+    fastq_file_1 = da.set_file("test", fastq1, "fastq", "wgbs", taxon_id, meta_data=metadata)
+    fastq_file_2 = da.set_file("test", fastq2, "fastq", "wgbs", taxon_id, meta_data=metadata)
     
     print da.get_files_by_user("test")
 

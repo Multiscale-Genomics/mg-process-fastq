@@ -228,6 +228,8 @@ Whole Genome BiSulphate Sequencing Analysis
       The aligner for BS-Seeker to use (bowtie2)
    aligner_path
       Location of the bowtie2 executable
+   bss_path : str
+      Location of the BS-Seeker2 scripts
 
    Returns
    -------

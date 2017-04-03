@@ -14,7 +14,7 @@
    limitations under the License.
 """
 
-import os
+import os, shutil, shlex, subprocess
 
 try:
     from pycompss.api.parameter import FILE_IN, FILE_OUT
@@ -33,10 +33,10 @@ from common import common
 pwd = os.environ.get('PWD')
 pwd_split = pwd.split('/')
 
-if pwd_split[-1] != 'docs':
-    on_rtd = os.environ.get('READTHEDOCS') == 'True'
-    if on_rtd == False:
-        from FilterReads import *
+#if pwd_split[-1] != 'docs':
+#    on_rtd = os.environ.get('READTHEDOCS') == 'True'
+#    if on_rtd == False:
+#        from FilterReads import *
 
 # ------------------------------------------------------------------------------
 
@@ -72,7 +72,15 @@ class filterReadsTool(Tool):
         outfile : str
             Location of the filtered FASTQ file
         """
-        FilterReads(infile, outfile, True)
+        command_line = ("python " + aligner_path + "/FilterReads.py"
+            " --i " + infile
+            " --o " + outfile
+            ).format(x=x)
+        
+        args = shlex.split(command_line)
+        p = subprocess.Popen(args)
+        p.wait()
+
         return True
 
 

@@ -14,7 +14,7 @@
    limitations under the License.
 """
 
-import os
+import os, shutil, shlex, subprocess
 
 try:
     from pycompss.api.parameter import FILE_IN, FILE_OUT
@@ -33,10 +33,10 @@ from common import common
 pwd = os.environ.get('PWD')
 pwd_split = pwd.split('/')
 
-if pwd_split[-1] != 'docs':
-    on_rtd = os.environ.get('READTHEDOCS') == 'True'
-    if on_rtd == False:
-        from bs_index.wg_build import *
+#if pwd_split[-1] != 'docs':
+#    on_rtd = os.environ.get('READTHEDOCS') == 'True'
+#    if on_rtd == False:
+#        from bs_index.wg_build import *
 
 # ------------------------------------------------------------------------------
 
@@ -77,19 +77,16 @@ class bssIndexerTool(Tool):
         bam_out : str
             Location of the output bam alignment file
         """
-        builder_exec = os.path.join(aligner_path,
-                                    {BOWTIE   : 'bowtie-build',
-                                     BOWTIE2  : 'bowtie2-build',
-                                     SOAP     : '2bwt-builder',
-                                     RMAP     : '' # do nothing
-                                    }[aligner])
-
-        build_command = builder_exec + { BOWTIE   : ' -f %(fname)s.fa %(fname)s',
-                                         BOWTIE2  : ' -f %(fname)s.fa %(fname)s',
-                                         SOAP     : ' %(fname)s.fa'
-                                       }[aligner]
+        command_line = ("python " + aligner_path + "/bs_seeker2-build.py"
+            " -f " + fasta_file
+            " --aligner " + aligner + " --path " + aligner_path).format(x=x)
         
-        wg_build(fasta_file, build_command, ref_path, aligner)
+        args = shlex.split(command_line)
+        p = subprocess.Popen(args)
+        p.wait()
+
+        return True
+
         return True
 
 

@@ -14,7 +14,7 @@
    limitations under the License.
 """
 
-import os
+import os, shutil, shlex, subprocess
 
 try:
     from pycompss.api.parameter import FILE_IN, FILE_OUT
@@ -33,10 +33,10 @@ from common import common
 pwd = os.environ.get('PWD')
 pwd_split = pwd.split('/')
 
-if pwd_split[-1] != 'docs':
-    on_rtd = os.environ.get('READTHEDOCS') == 'True'
-    if on_rtd == False:
-        from bs_index.wg_build import *
+#if pwd_split[-1] != 'docs':
+#    on_rtd = os.environ.get('READTHEDOCS') == 'True'
+#    if on_rtd == False:
+#        from bs_index.wg_build import *
 
 # ------------------------------------------------------------------------------
 
@@ -86,8 +86,6 @@ class bssAlignerTool(Tool):
         bam_out : file
             Location of the BAM file generated during the alignment.
         """
-        import subprocess
-        
         g_dir = genome_fasta.split("/")
         g_dir = "/".join(g_dir[0:-1])
 

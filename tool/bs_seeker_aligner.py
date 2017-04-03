@@ -52,8 +52,11 @@ class bssAlignerTool(Tool):
         """
         print "BS-Seeker Aligner"
 
-    @task(input_fastq1 = FILE_IN, input_fastq2 = FILE_IN, aligner = IN, aligner_path = IN, genome_fasta = FILE_IN, bam_out = FILE_INOUT)
-    def bs_seeker_aligner(self, input_fastq1, input_fastq2, aligner, aligner_path, genome_fasta, bam_out):
+    @task(input_fastq1 = FILE_IN, input_fastq2 = FILE_IN, aligner = IN, aligner_path = IN,
+        genome_fasta = FILE_IN, bam_out = FILE_INOUT, bt2_1 = FILE_IN, bt2_2 = FILE_IN,
+        bt2_3 = FILE_IN, bt2_4 = FILE_IN, bt2_rev_1 = FILE_IN, bt2_rev_2 = FILE_IN)
+    def bs_seeker_aligner(self, input_fastq1, input_fastq2, aligner, aligner_path,
+        genome_fasta, bam_out, bt2_1, bt2_2, bt2_3, bt2_4, bt2_rev_1, bt2_rev_2):
         """
         Alignment of the paired ends to the reference genome
         
@@ -88,7 +91,11 @@ class bssAlignerTool(Tool):
         g_dir = genome_fasta.split("/")
         g_dir = "/".join(g_dir[0:-1])
 
-        command_line = "python " + aligner_path + "/bs_seeker2-align.py --input_1 " + input_fastq1 + " --input_2 " + input_fastq2 + " --aligner " + aligner + " --path " + aligner_path + " --genome " + genome_fasta + " -d " + g_dir + " --bt2-p 4 -o " + bam_out
+        command_line = ("python " + aligner_path + "/bs_seeker2-align.py"
+            " --input_1 " + input_fastq1 + " --input_2 " + input_fastq2
+            " --aligner " + aligner + " --path " + aligner_path
+            " --genome " + genome_fasta + " -d " + g_dir
+            " --bt2-p 4 -o " + bam_out).format(x=x)
         
         args = shlex.split(command_line)
         p = subprocess.Popen(args)
@@ -117,21 +124,22 @@ class bssAlignerTool(Tool):
         genome_fasta = input_files[0]
         fastq_file_1 = input_files[1]
         fastq_file_2 = input_files[2]
+        output_file  = input_files[3]
+        bt2_1        = input_files[4]
+        bt2_2        = input_files[5]
+        bt2_3        = input_files[6]
+        bt2_4        = input_files[7]
+        bt2_rev_1    = input_files[8]
+        bt2_rev_2    = input_files[9]
 
-        gd = file_name.split("/")
-        genome_dir = '/' + '/'.join(gd[:-1])
-        
         aligner      = metadata['aligner']
         aligner_path = metadata['aligner_path']
 
-
-        output_file = file_name + '.filtered.bam'
-        
         # input and output share most metadata
         output_metadata = {}
         
         # handle error                input_fastq1, input_fastq2, aligner, aligner_path, genome_fasta, bam_out
-        if not self.bs_seeker_aligner(fastq_file_1, fastq_file_2, aligner, aligner_path, genome_fasta, output_file):
+        if not self.bs_seeker_aligner(fastq_file_1, fastq_file_2, aligner, aligner_path, genome_fasta, output_file, bt2_1, bt2_2, bt2_3, bt2_4, bt2_rev_1, bt2_rev_2):
             output_metadata.set_exception(
                 Exception(
                     "bs_seeker_aligner: Could not process files {}, {}.".format(*input_files)))

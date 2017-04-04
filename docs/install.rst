@@ -31,6 +31,7 @@ Python Modules
 - numpy
 - h5py
 - pysam
+- pyBigWig
 - scipy
 - matplotlib
 - rpy2

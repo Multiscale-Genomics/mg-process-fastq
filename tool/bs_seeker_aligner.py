@@ -139,7 +139,7 @@ class bssAlignerTool(Tool):
         output_metadata = {}
         
         # handle error                input_fastq1, input_fastq2, aligner, aligner_path, genome_fasta, bam_out
-        if not self.bs_seeker_aligner(fastq_file_1, fastq_file_2, aligner, aligner_path, genome_fasta, output_file, bt2_1, bt2_2, bt2_3, bt2_4, bt2_rev_1, bt2_rev_2):
+        if not self.bs_seeker_aligner(fastq_file_1, fastq_file_2, aligner, aligner_path, bss_path, genome_fasta, output_file, bt2_1, bt2_2, bt2_3, bt2_4, bt2_rev_1, bt2_rev_2):
             output_metadata.set_exception(
                 Exception(
                     "bs_seeker_aligner: Could not process files {}, {}.".format(*input_files)))

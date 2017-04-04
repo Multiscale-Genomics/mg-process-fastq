@@ -232,8 +232,8 @@ class fastq2adjacency:
             apply_filter(reads, filt_reads, masked, filters=[1,2,3,9,10])
     
     
-    @constraint(ProcessorCoreCount=8, MemoryPhysicalSize=80)
-    @task(chrom = IN)
+    #@constraint(ProcessorCoreCount=8, MemoryPhysicalSize=80)
+    #@task(chrom = IN)
     def generate_tads(self, chrom):
         """
         Uses TADbit to generate the TAD borders based on the computed hic_data

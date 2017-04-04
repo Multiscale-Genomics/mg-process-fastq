@@ -14,6 +14,7 @@ MuG - FastQ Pipelines's documentation!
    pipelines
    tools
    common
+   fastqreader
    license
 
 

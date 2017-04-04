@@ -16,11 +16,16 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
+import os
+
 class fastqreader:
+    """
+    Module for reading single end and paired end FASTQ files
+    """
     
     def __init__(self):
         """
-        Initialise the module and 
+        Initialise the module
         """
         self.paired = False
 
@@ -42,6 +47,13 @@ class fastqreader:
     def openFastQ(self, file1, file2 = None):
         """
         Create file handles for reading the FastQ files
+
+        Parameters
+        ----------
+        file1 : str
+            Location of the first FASTQ file
+        file2 : str
+            Location of a paired end FASTQ file.
         """
         self.fastq1 = file1
         self.f1_file = open(self.fastq1, "r")
@@ -65,6 +77,11 @@ class fastqreader:
     def eof(self, side = 1):
         """
         Indicate if the end of the file has been reached
+
+        Parameters
+        ----------
+        side : int
+            1 or 2
         """
         if side == 1:
             return self.f1_eof
@@ -76,6 +93,23 @@ class fastqreader:
     def next(self, side = 1):
         """
         Get the next read element for the specific FastQ file pair
+
+        Parameters
+        ----------
+        side : int
+            1 or 2 to get the element from the relevant end (DEFAULT: 1)
+
+        Returns
+        -------
+        dict
+            id : str
+                Sequence ID
+            seq : str
+                Called sequence
+            add : str
+                Plus sign
+            score : str
+                Base call score
         """
         read_id = ''
         read_seq = ''
@@ -105,12 +139,17 @@ class fastqreader:
         return {'id': read_id.rstrip(), 'seq': read_seq.rstrip(), 'add': read_addition.rstrip(), 'score': read_score.rstrip()}
     
     def createOutputFiles(self, tag = ''):
-        if tag != '' and self.output_tag != tag:
-            self.output_tag = tag
-        
         """
         Create and open the file handles for the output files
+
+        Parameters
+        ----------
+        tag : str
+            Tag to identify the output files (DEFAULT: '')
         """
+        if tag != '' and self.output_tag != tag:
+            self.output_tag = tag
+
         f1 = self.fastq1.split("/")
         f1[-1] = f1[-1].replace(".fastq", "." + str(self.output_tag) + "_" + str(self.output_file_count) + ".fastq")
         f1.insert(-1, "tmp")
@@ -129,6 +168,18 @@ class fastqreader:
     def writeOutput(self, read, side = 1):
         """
         Writer to print the extracted lines
+
+        Parameters
+        ----------
+        read : dict
+            Read is the dictionary object returned from self.next()
+        side : int
+            The side that the read has coe from (DEFAULT: 1)
+        
+        Returns
+        -------
+        bool
+            False if a value other than 1 or 2 is entered for the side.
         """
         line = read["id"] + "\n" + read["seq"] + "\n" + read["add"] + "\n" + read["score"] + "\n"
         if side == 1:

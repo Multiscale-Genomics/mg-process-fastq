@@ -114,6 +114,10 @@ class fastqreader:
         f1 = self.fastq1.split("/")
         f1[-1] = f1[-1].replace(".fastq", "." + str(self.output_tag) + "_" + str(self.output_file_count) + ".fastq")
         f1.insert(-1, "tmp")
+        
+        if os.path.isdir("/".join(f1[0:-1])) == False:
+            os.mkdir("/".join(f1[0:-1]))
+
         self.f1_output_file = open("/".join(f1), "w")
         
         if self.paired == True:

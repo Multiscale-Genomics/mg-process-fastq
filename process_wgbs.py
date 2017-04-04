@@ -38,7 +38,7 @@ from tool import bs_seeker_filter
 from tool import bs_seeker_indexer
 from tool import bs_seeker_methylation_caller
 
-import fastqreader
+from fastqreader import fastqreader
 
 import pysam
 

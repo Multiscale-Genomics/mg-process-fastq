@@ -18,7 +18,7 @@
 
 # -*- coding: utf-8 -*-
 """process Hi-C paired end FastQ files"""
-import argparse, urllib2, gzip, shutil, shlex, subprocess, os, json, time
+import argparse, urllib2, gzip, shutil, shlex, subprocess, os, sys, json, time
 
 from basic_modules import Tool, Workflow, Metadata
 from dmp import dmp
@@ -107,9 +107,6 @@ class process_hic(Workflow):
 
 
 if __name__ == "__main__":
-    import sys
-    import os
-    
     start = time.time()
     
     # Set up the command line parameters
@@ -120,10 +117,10 @@ if __name__ == "__main__":
     parser.add_argument("--assembly", help="Assembly (GRCh38)")
     parser.add_argument("--file1", help="Location of FASTQ file 1")
     parser.add_argument("--file2", help="Location of FASTQ file 2")
-    parser.add_argument("--resolutions")
-    parser.add_argument("--enzyme_name")
-    parser.add_argument("--windows1")
-    parser.add_argument("--windows2")
+    parser.add_argument("--resolutions", help="CSV string of the resolutions to be computed for the models")
+    parser.add_argument("--enzyme_name", help="Enzyme used to digest the DNA")
+    parser.add_argument("--windows1", help="FASTQ windowing - start locations", default="1,25,50,75,100")
+    parser.add_argument("--windows2", help="FASTQ windowing - paired end locations", default="1,25,50,75,100")
     #parser.add_argument("--file_out")
     parser.add_argument("--tmp_dir", help="Temporary data dir")
     
@@ -131,8 +128,8 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     # Assumes that there are 2 fastq files for the paired ends
-    windows1 = ((1,25), (1,50), (1,75),(1,100))
-    windows2 = ((1,25), (1,50), (1,75),(1,100))
+    #windows1 = ((1,25), (1,50), (1,75),(1,100))
+    #windows2 = ((1,25), (1,50), (1,75),(1,100))
     #windows2 = ((101,125), (101,150), (101,175),(101,200))
     
     genome_fa     = args.genome
@@ -170,6 +167,8 @@ if __name__ == "__main__":
         'assembly'    : assembly,
         'resolutions' : resolutions,
         'enzyme_name' : enzyme_name,
+        'windows1'    : windows1,
+        'windows2'    : windows2,
     }
 
     fastq_01_file_in = da.set_file("test", fastq_01_file, "fastq", "Hi-C", taxon_id, meta_data=metadata)
@@ -186,14 +185,6 @@ if __name__ == "__main__":
         fastq_01_file_in,
         fastq_02_file_in
     ]
-
-    metadata = {
-        'assembly'    : assembly,
-        'resolutions' : resolutions,
-        'enzyme_name' : enzyme_name,
-        'windows1'    : windows1,
-        'windows2'    : windows2,
-    }
 
     #results = app.launch(process_hic, files, metadata)
 

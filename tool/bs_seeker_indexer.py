@@ -79,13 +79,12 @@ class bssIndexerTool(Tool):
         """
         command_line = ("python " + bss_path + "/bs_seeker2-build.py"
             " -f " + fasta_file + ""
-            " --aligner " + aligner + " --path " + aligner_path).format()
+            " --aligner " + aligner + " --path " + aligner_path + ""
+            " --db " + ref_path).format()
         
         args = shlex.split(command_line)
         p = subprocess.Popen(args)
         p.wait()
-
-        return True
 
         return True
 

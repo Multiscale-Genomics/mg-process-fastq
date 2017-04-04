@@ -35,6 +35,11 @@ Python Modules
 - scipy
 - matplotlib
 - rpy2
+
+Instructions for the follownig modules are listed in the installation section.
+All other python modules should be installed with pip prior to the following
+libraries.
+
 - BS-Seeker2
 - TADbit
 
@@ -59,6 +64,19 @@ Create the Python environment
    
    pyenv-virtualenv 2.7.10 mg-process-fastq
    pip install --editable .
+
+Install the pyTADbit modules
+
+.. code-block:: none
+    :linenos:
+
+    cd <lib_dir>
+    wget https://github.com/3DGenomes/tadbit/archive/master.zip -O tadbit.zip
+    unzip tadbit.zip
+    cd tadbit-master
+
+    pyenv activate mg-process-fastq
+    pip install .
 
 Check out the following software for use by the process_wgbs.py pipeline:
 

@@ -82,7 +82,7 @@ class process_hic(Workflow):
         except:
             pass
 
-        f2a = fastq2adjacency_02()
+        f2a = fastq2adjacency()
         f2a.set_params(genome_gem, fastq_file_1, fastq_file_2, enzyme_name,
             resolutions, tmp_dir, windows1, windows2)
 

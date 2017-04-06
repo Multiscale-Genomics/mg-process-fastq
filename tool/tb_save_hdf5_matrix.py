@@ -38,7 +38,7 @@ from common import common
 
 # ------------------------------------------------------------------------------
 
-class tbFilterTool(Tool):
+class tbSaveAdjacencyHDF5Tool(Tool):
     """
     Tool for filtering out experimetnal artifacts from the aligned data
     """
@@ -47,63 +47,62 @@ class tbFilterTool(Tool):
         """
         Init function
         """
-        print "TADbit filter aligned reads"
+        print "TADbit save adjacency matrix"
     
-    @task(reads = FILE_IN, filter_reads = FILE_INOUT, conservative = IN)
-    def tb_filter(self, reads, filter_reads, conservative):
+    @task(adj_list = FILE_IN, adj_matrix = FILE_INOUT, resolution = IN, assembly = IN)
+    def tb_matrix_hdf5(self, adj_list, adj_hdf5, resolution, assembly):
         """
-        Function to filter out expoerimental artifacts
+        Function to the Hi-C matrix into an HDF5 file
         
         Parameters
         ----------
-        reads : str
-            Location of the reads thats that has a matching location at both
-            ends of the paired reads
-        filtered_reads : str
-            Location of the filtered reads
-        conservative : bool
-            Level of filtering [DEFAULT : True]
-        
+        adj_list : str
+                Location of the adjacency list
+        hdf5_file : str
+            Location of the HDF5 output matrix file
+        resolution : int
+            Resolution to read teh Hi-C adjacency list at
+        assembly : str
+            Assembly used to align the experimental data to
         
         Returns
         -------
-        filtered_reads : str
-            Location of the filtered reads
+        hdf5_file : str
+            Location of the HDF5 output matrix file
         
         """
+        hic_data = load_hic_data_from_reads(adj_list, resolution=resolution)
 
-        masked = filter_reads(
-            reads,
-            max_molecule_length=610,
-            min_dist_to_re=915,
-            over_represented=0.005,
-            max_frag_size=100000,
-            min_frag_size=100,
-            re_proximity=4)
-
-        if conservative == True:
-            # Ignore filter 5 (based on docs) as not very helpful
-            apply_filter(reads, filter_reads, masked, filters=[1,2,3,4,6,7,8,9,10])
-        else:
-            # Less conservative option
-            apply_filter(reads, filter_reads, masked, filters=[1,2,3,9,10])
+        dSize = len(hic_data)
+        d = np.zeros([dSize, dSize], dtype='int32')
+        d += hic_data.get_matrix()
+        
+        f = h5py.File(adj_hdf5, "a")
+        dset = f.create_dataset(str(resolution), (dSize, dSize), dtype='int32', chunks=True, compression="gzip")
+        dset[0:dSize,0:dSize] += d
+        f.close()
         
         return True
     
     
     def run(self, input_files, metadata):
         """
-        The main function to filter the reads to remove experimental artifacts
+        The main function save the adjacency list from Hi-C into an HDF5 index
+        file at the defined resolutions.
         
         Parameters
         ----------
         input_files : list
-            reads : str
-                Location of the reads thats that has a matching location at both
-                ends of the paired reads
+            adj_list : str
+                Location of the adjacency list
+            hdf5_file : str
+                Location of the HDF5 output matrix file
         metadata : dict
-            conservative : bool
-                Level of filtering to apply [DEFAULT : True]
+            resolutions : list
+                Levels of resolution for the adjacency list to be daved at
+            assembly : str
+                Assembly of the aligned sequences
+
         
         
         Returns
@@ -115,23 +114,22 @@ class tbFilterTool(Tool):
         
         """
         
-        reads = input_files[0]
-        conservative = True
-        if 'conservative_filtering' in metadata:
-            conservative = metadata['conservative_filtering']
+        adj_list = input_files[0]
+        hdf5_file = input_files[1]
+        resolutions = [1000000]
+        if 'resolutions' in metadata:
+            resolutions = metadata['resolutions']
 
-        root_name = fastq_file.split("/")
-        filtered_reads  = "/".join(root_name[0:-1]) + '/filtered_map.tsv'
-        
         # input and output share most metadata
         output_metadata = {}
         
-        # handle error
-        if not self.tb_filter(reads, filter_reads, conservative):
-            output_metadata.set_exception(
-                Exception(
-                    "tb_filter: Could not process files {}, {}.".format(*input_files)))
-            filtered_reads = None
-        return ([filtered_reads], output_metadata)
+        for resolution in resolutions:
+            # handle error
+            if not self.tb_matrix_hdf5(adj_list, hdf5_file, resolution):
+                output_metadata.set_exception(
+                    Exception(
+                        "tb_matrix_hdf5: Could not process files {}, {}.".format(*input_files)))
+            
+        return ([hdf5_file], output_metadata)
 
 # ------------------------------------------------------------------------------

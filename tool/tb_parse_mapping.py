@@ -61,7 +61,6 @@ class tbParseMappingTool(Tool):
         window1_1, window1_2, window1_3, window1_4,
         window2_1, window2_2, window2_3, window2_4,
         reads1, reads2, reads):
-        
         """
         Function to map the aligned reads and return the matching pairs
         

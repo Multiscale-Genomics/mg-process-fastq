@@ -99,10 +99,9 @@ class tbFilterTool(Tool):
         Parameters
         ----------
         input_files : list
-            gem_file : str
-                Location of the genome GEM index file
-            fastq_file_bgd : str
-                Location of the FASTQ file
+            reads : str
+                Location of the reads thats that has a matching location at both
+                ends of the paired reads
         metadata : dict
             conservative : bool
                 Level of filtering to apply [DEFAULT : True]

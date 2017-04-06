@@ -36,7 +36,9 @@ except ImportError :
     
     from dummy_pycompss import *
 
-from tool.common import common
+from tool import tb_full_mapping
+from tool import tb_parse_mapping
+from tool import tb_filter
 
 # ------------------------------------------------------------------------------
 class process_hic(Workflow):
@@ -67,9 +69,10 @@ class process_hic(Workflow):
         
         from fastq2adjacency import fastq2adjacency
 
-        genome_gem   = files_ids[0]
-        fastq_file_1 = files_ids[1]
-        fastq_file_2 = files_ids[2]
+        genome_file  = files_ids[0]
+        genome_gem   = files_ids[1]
+        fastq_file_1 = files_ids[2]
+        fastq_file_2 = files_ids[3]
         enzyme_name = metadata['enzyme_name']
         resolutions = metadata['resolutions']
         windows1    = metadata['windows1']
@@ -82,20 +85,19 @@ class process_hic(Workflow):
         except:
             pass
 
-        f2a = fastq2adjacency()
-        f2a.set_params(genome_gem, fastq_file_1, fastq_file_2, enzyme_name,
-            resolutions, tmp_dir, windows1, windows2)
+        tfm1 = tb_full_mapping.tbFullMappingTool()
+        tfm1_files, tfm1_meta = tfm1.run([genome_gem, fastq_file_1], {'windows' : windows1})
 
-        mapped_r1 = f2a.mapWindows(1)
-        mapped_r2 = f2a.mapWindows(2)
+        tfm2 = tb_full_mapping.tbFullMappingTool()
+        tfm2_files, tfm2_meta = tfm2.run([genome_gem, fastq_file_2], {'windows' : windows2})
 
-        f2a.parseGenomeSeq()
+        tpm = tb_parse_mapping.tb_parse_mapping()
+        files = [genome_file] + tfm1_files + tfm2_files
+        metadata = {'enzyme_name' : enzyme_name}
+        tpm_files, tpm_meta = tpm.run(files, metadata)
 
-        f2a.parseMaps(mapped_r1, mapped_r2)
-
-        f2a.mergeMaps()
-
-        adjlist_filtered_loc = f2a.filterReads(conservative=True)
+        tf = tb_filter.tbFilterTool()
+        tf_files, tf_meta = tf.run(tpm_files, {'conservative' : True})
 
         adjlist_loc = f2a.save_hic_data()
 
@@ -133,6 +135,7 @@ if __name__ == "__main__":
     #windows2 = ((101,125), (101,150), (101,175),(101,200))
     
     genome_fa     = args.genome
+    genome_gem    = args.genome_gem
     taxon_id      = args.taxon_id
     assembly      = args.assembly
     fastq_01_file = args.file1
@@ -182,6 +185,7 @@ if __name__ == "__main__":
     
     files = [
         genome_fa,
+        genome_gem,
         fastq_01_file_in,
         fastq_02_file_in
     ]

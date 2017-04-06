@@ -27,7 +27,10 @@ class Mock(MagicMock):
     def __getattr__(cls, name):
             return MagicMock()
 
-MOCK_MODULES = ['pytadbit', 'rpy2', 'pyBigWig', 'bs_index', 'bs_index.wg_build', 'FilterReads']
+MOCK_MODULES = [
+    'rpy2', 'pyBigWig',
+    'bs_index', 'bs_index.wg_build', 'FilterReads'
+]
 sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
 
 
@@ -47,7 +50,14 @@ extensions = [
     'sphinx.ext.viewcode'
 ]
 
-autodoc_mock_imports = ['bs_index', 'bs_index.wg_build', 'FilterReads']
+autodoc_mock_imports = [
+    'bs_index', 'bs_index.wg_build', 'FilterReads',
+    'pytadbit',
+    'pytadbit.mapping.mapper', 'pytadbit.mapping.mapper.full_mapping', 'full_mapping',
+    'pytadbit.parsers.genome_parser', 'pytadbit.parsers.genome_parser.parse_fasta', 'parse_fasta',
+    'pytadbit.parsers.map_parser', 'pytadbit.parsers.map_parser.parse_map', 'parse_map',
+    'pytadbit.mapping.filter', 'pytadbit.mapping.filter.apply_filter', 'apply_filter'
+]
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']

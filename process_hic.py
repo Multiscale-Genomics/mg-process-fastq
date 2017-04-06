@@ -99,7 +99,7 @@ class process_hic(Workflow):
         tf = tb_filter.tbFilterTool()
         tf_files, tf_meta = tf.run(tpm_files, {'conservative' : True})
 
-        adjlist_loc = f2a.save_hic_data()
+        #adjlist_loc = f2a.save_hic_data()
 
         # List of files to get saved
         return (adjlist_filtered_loc, adjlist_loc)
@@ -124,7 +124,7 @@ if __name__ == "__main__":
     parser.add_argument("--windows1", help="FASTQ windowing - start locations", default="1,25,50,75,100")
     parser.add_argument("--windows2", help="FASTQ windowing - paired end locations", default="1,25,50,75,100")
     #parser.add_argument("--file_out")
-    parser.add_argument("--tmp_dir", help="Temporary data dir")
+    #parser.add_argument("--tmp_dir", help="Temporary data dir")
     
     # Get the matching parameters from the command line
     args = parser.parse_args()

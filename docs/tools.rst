@@ -84,3 +84,24 @@ Tools for processing FastQ files
    .. autoclass:: tool.macs2.macs2
       :members:
 
+
+   Hi-C Parsing
+   ============
+
+   The following tools are a split out of the Hi-C pipelines generated to use
+   the TADbit library.
+
+   FASTQ mapping
+   -------------
+   .. autoclass:: tool.tb_full_mapping.tbFullMappingTool
+      :members:
+
+   Map Parsing
+   -----------
+   .. autoclass:: tool.tb_parse_mapping.tbParseMappingTool
+      :members:
+
+   Filter Aligned Reads
+   --------------------
+   .. autoclass:: tool.tb_filter.tbFilterTool
+      :members:

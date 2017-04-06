@@ -14,7 +14,86 @@ Download and index genome files
 Hi-C Anslysis
 -------------
 .. automodule:: process_hic
+
+   This piplien can process paired end FASTQ files to identify structural
+   interactions that occur so that the genome can fold into the confines of the
+   nucleus
+
+   Running from the command line
+   =============================
    
+   Parameters
+   ----------
+   genome : str
+      Location of the genomes FASTA file
+   genome_gem : str
+      Location of the genome GEM index file
+   taxon_id : int
+      Species taxonomic ID
+   assembly : str
+      Genomic assembly ID
+   file1 : str
+      Location of FASTQ file 1
+   file2 : str
+      Location of FASTQ file 2
+   resolutions : str
+      Comma separated list of resolutions to calcualte the matrix for.
+      [DEFAULT : 1000000,10000000]
+   enzyme_name : str
+      Name of the enzyme used to digest the genome (example 'MboI')
+   windows1 : str
+      FASTQ sampling window sizes to use for the first paired end FASTQ file,
+      the default is to use `[[1,25], [1,50], [1,75], [1,100]]`. This would be
+      represented as `1,25,50,75,100` as input for this variable
+   windows2 : str
+      FASTQ sampling window sizes to use for the second paired end FASTQ file,
+      the default is to use `[[1,25], [1,50], [1,75], [1,100]]`. This would be
+      represented as `1,25,50,75,100` as input for this variable
+
+   Returns
+   -------
+   Adjacency List : file
+   HDF5 Adjacency Array : file
+
+   Example
+   -------
+   When running the pipeline on a local machine:
+
+   .. code-block:: none
+      :linenos:
+
+      python process_hic.py                                   \\
+         --genome /<dataset_dir>/Homo_sapiens.GRCh38.fasta    \\
+         --genome /<dataset_dir>/Homo_sapiens.GRCh38.gem      \\
+         --assembly GCA_000001405.25                          \\
+         --taxon_id 9606                                      \\
+         --file1 /<dataset_dir>/<file_name>_1.fastq           \\
+         --file2 /<dataset_dir>/<file_name>_2.fastq           \\
+         --resolution 1000000,10000000                        \\
+         --enzyme_name MboI                                   \\
+         --windows1 1,25,50,75,100                            \\
+         --windows2 1,25,50,75,100
+
+   When using a local verion of the [COMPS virtual machine](http://www.bsc.es/computer-sciences/grid-computing/comp-superscalar/downloads-and-documentation):
+   
+   .. code-block:: none
+      :linenos:
+      
+      runcompss
+         --comm=integratedtoolkit.gat.master.GATAdaptor               \\
+         --log_level=debug                                            \\
+         --lang=python /home/compss/mg-process-fastq/process_hic.py   \\
+            --genome /<dataset_dir>/Homo_sapiens.GRCh38.fasta         \\
+            --genome /<dataset_dir>/Homo_sapiens.GRCh38.gem           \\
+            --assembly GCA_000001405.25                               \\
+            --taxon_id 9606                                           \\
+            --file1 /<dataset_dir>/<file_name>_1.fastq                \\
+            --file2 /<dataset_dir>/<file_name>_2.fastq                \\
+            --resolution 1000000,10000000                             \\
+            --enzyme_name MboI                                        \\
+            --windows1 1,25,50,75,100                                 \\
+            --windows2 1,25,50,75,100
+
    Methods
    =======
    .. autoclass:: process_hic.process_hic

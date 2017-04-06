@@ -105,3 +105,8 @@ Tools for processing FastQ files
    --------------------
    .. autoclass:: tool.tb_filter.tbFilterTool
       :members:
+
+   Save Matrix to HDF5 File
+   ------------------------
+   .. autoclass:: tool.tb_save_hdf5_matrix.tbSaveAdjacencyHDF5Tool
+      :members:

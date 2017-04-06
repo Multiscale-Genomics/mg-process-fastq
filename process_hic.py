@@ -164,6 +164,7 @@ if __name__ == "__main__":
     print da.get_files_by_user("test")
     
     genome_file = da.set_file("test", genome_fa, "fasta", "Assembly", taxon_id, meta_data={'assembly' : assembly})
+    genome_idx  = da.set_file("test", genome_gem, "gem", "Assembly Index", taxon_id, meta_data={'assembly' : assembly})
     
     metadata = {
         'user_id'     : 'test',

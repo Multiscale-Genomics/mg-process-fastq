@@ -181,7 +181,7 @@ class fastq2adjacency:
         print 'Parse MAP files...'
         parse_map(
             mapped_r1,
-            mapped_r1,
+            mapped_r2,
             out_file1=reads1,
             out_file2=reads2,
             genome_seq=self.genome_seq,
@@ -334,7 +334,7 @@ class fastq2adjacency:
         return adj_list
     
     
-    #def save_hic_hdf5(self, normalized=False):
+    def save_hic_hdf5(self, normalized=False):
     #    """
     #    Save the hic_data object to HDF5 file. This is saved as an NxN array
     #    with the values for all positions being set.
@@ -344,15 +344,15 @@ class fastq2adjacency:
     #       requirement. This prevents the need for secondary storage details
     #       outside of the HDF5 file.
     #    """
-    #    dSize = len(self.hic_data)
-    #    d = np.zeros([dSize, dSize], dtype='int32')
-    #    d += self.hic_data.get_matrix()
-    #    
-    #    filename = self.data_root + self.species + '_' + self.assembly + "_" + self.dataset + "_" + str(self.resolution) + ".hdf5"
-    #    f = h5py.File(filename, "a")
-    #    dset = f.create_dataset(str(self.resolution), (dSize, dSize), dtype='int32', chunks=True, compression="gzip")
-    #    dset[0:dSize,0:dSize] += d
-    #    f.close()
+        dSize = len(self.hic_data)
+        d = np.zeros([dSize, dSize], dtype='int32')
+        d += self.hic_data.get_matrix()
+        
+        filename = self.data_root + self.species + '_' + self.assembly + "_" + self.dataset + "_" + str(self.resolution) + ".hdf5"
+        f = h5py.File(filename, "a")
+        dset = f.create_dataset(str(self.resolution), (dSize, dSize), dtype='int32', chunks=True, compression="gzip")
+        dset[0:dSize,0:dSize] += d
+        f.close()
     
     
     def clean_up(self):

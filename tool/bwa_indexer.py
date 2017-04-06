@@ -111,7 +111,7 @@ class bwaIndexerTool(Tool):
         pac_loc = '/'.join(pac_name)
         
         sa_name = genome_file.split("/")
-        sa_name[-1].replace('.fa', '.pac')
+        sa_name[-1].replace('.fa', '.sa')
         sa_loc = '/'.join(sa_name)
         
         # handle error

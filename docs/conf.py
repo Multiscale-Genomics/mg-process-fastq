@@ -72,7 +72,7 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'MuG - FastQ Pipelines'
+project = u'MuG - FASTQ Pipelines'
 copyright = u'2017, Mark McDowall'
 author = u'Mark McDowall'
 
@@ -127,7 +127,7 @@ html_static_path = ['_static']
 # -- Options for HTMLHelp output ------------------------------------------
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'MuG-FastQPipelinesdoc'
+htmlhelp_basename = 'MuG-FASTQPipelinesdoc'
 
 
 # -- Options for LaTeX output ---------------------------------------------
@@ -154,7 +154,7 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    (master_doc, 'MuG-FastQPipelines.tex', u'MuG - FastQ Pipelines Documentation',
+    (master_doc, 'MuG-FASTQPipelines.tex', u'MuG - FASTQ Pipelines Documentation',
      u'Mark McDowall', 'manual'),
 ]
 
@@ -164,7 +164,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    (master_doc, 'mug-fastqpipelines', u'MuG - FastQ Pipelines Documentation',
+    (master_doc, 'mug-fastqpipelines', u'MuG - FASTQ Pipelines Documentation',
      [author], 1)
 ]
 
@@ -175,8 +175,8 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-    (master_doc, 'MuG-FastQPipelines', u'MuG - FastQ Pipelines Documentation',
-     author, 'MuG-FastQPipelines', 'One line description of project.',
+    (master_doc, 'MuG-FASTQPipelines', u'MuG - FASTQ Pipelines Documentation',
+     author, 'MuG-FASTQPipelines', 'One line description of project.',
      'Miscellaneous'),
 ]
 

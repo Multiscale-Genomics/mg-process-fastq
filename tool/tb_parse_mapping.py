@@ -240,21 +240,15 @@ class tbParseMappingTool(Tool):
             root_name_2 = "/tmp/data/expt_source_2".split
             windows = [[1,25], [1,50], [1,75], [1,100]]
 
-            window1_1 = '/'.join(root_name_1) + "_full_" + windows[0][0] + "-" + windows[0][1] + ".map"
-            window1_2 = '/'.join(root_name_1) + "_full_" + windows[1][0] + "-" + windows[1][1] + ".map"
-            window1_3 = '/'.join(root_name_1) + "_full_" + windows[2][0] + "-" + windows[2][1] + ".map"
-            window1_4 = '/'.join(root_name_1) + "_full_" + windows[3][0] + "-" + windows[3][1] + ".map"
+            windows1 = []
+            windows2 = []
 
-            window2_1 = '/'.join(root_name_2) + "_full_" + windows[0][0] + "-" + windows[0][1] + ".map"
-            window2_2 = '/'.join(root_name_2) + "_full_" + windows[1][0] + "-" + windows[1][1] + ".map"
-            window2_3 = '/'.join(root_name_2) + "_full_" + windows[2][0] + "-" + windows[2][1] + ".map"
-            window2_4 = '/'.join(root_name_2) + "_full_" + windows[3][0] + "-" + windows[3][1] + ".map"
+            for w in windows:
+                tail = "_full_" + w[0] + "-" + w[1] + ".map"
+                windows1.append('/'.join(root_name_1) + tail)
+                windows2.append('/'.join(root_name_2) + tail)
             
-            files = [
-                genome_file,
-                window1_1, window1_2, window1_3, window1_4,
-                window2_1, window2_2, window2_3, window2_4,
-            ]
+            files = [genome_file] + windows1 + windows2
 
             tpm = tb_parse_mapping.tb_parse_mapping()
             metadata = {'enzyme_name' : 'MboI', 'mapping' : ['iter', 'iter']}
@@ -273,11 +267,14 @@ class tbParseMappingTool(Tool):
             root_name_2 = "/tmp/data/expt_source_2".split
             windows = [[1,100]]
 
-            window1_1 = '/'.join(root_name_1) + "_full_" + windows[0][0] + "-" + windows[0][1] + ".map"
-            window1_2 = '/'.join(root_name_1) + "_frag_" + windows[0][0] + "-" + windows[0][1] + ".map"
+            start = windows[0][0]
+            end   = windows[0][1]
+
+            window1_1 = '/'.join(root_name_1) + "_full_" + start + "-" + end + ".map"
+            window1_2 = '/'.join(root_name_1) + "_frag_" + start + "-" + end + ".map"
             
-            window2_1 = '/'.join(root_name_2) + "_full_" + windows[0][0] + "-" + windows[0][1] + ".map"
-            window2_2 = '/'.join(root_name_2) + "_full_" + windows[0][0] + "-" + windows[0][1] + ".map"
+            window2_1 = '/'.join(root_name_2) + "_full_" + start + "-" + end + ".map"
+            window2_2 = '/'.join(root_name_2) + "_frag_" + start + "-" + end + ".map"
             
             files = [
                 genome_file,

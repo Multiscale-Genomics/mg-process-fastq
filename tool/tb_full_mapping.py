@@ -168,8 +168,8 @@ class tbFullMappingTool(Tool):
         output_metadata = {}
         
         if 'enzyme_name' in meta_data:
-            full_file = '/'.join(root_name) + "_full_1-100.map"
-            frag_file = '/'.join(root_name) + "_frag_1-100.map"
+            full_file = '/'.join(root_name) + "_full_" + windows[0][0] + "-" + windows[0][1] + ".map"
+            frag_file = '/'.join(root_name) + "_frag_" + windows[0][0] + "-" + windows[0][1] + ".map"
 
             # handle error
             if not self.tb_full_mapping_frag(gem_file, fastq_file, meta_data['enzyme_name'], windows, full_file, frag_file):
@@ -181,10 +181,10 @@ class tbFullMappingTool(Tool):
             output_metadata['func'] = 'frag'
             return ([full_file, frag_file], output_metadata)
         else:
-            window1 = '/'.join(root_name) + "_full_1-25.map"
-            window2 = '/'.join(root_name) + "_full_1-50.map"
-            window3 = '/'.join(root_name) + "_full_1-75.map"
-            window4 = '/'.join(root_name) + "_full_1-100.map"
+            window1 = '/'.join(root_name) + "_full_" + windows[0][0] + "-" + windows[0][1] + ".map"
+            window2 = '/'.join(root_name) + "_full_" + windows[1][0] + "-" + windows[1][1] + ".map"
+            window3 = '/'.join(root_name) + "_full_" + windows[2][0] + "-" + windows[2][1] + ".map"
+            window4 = '/'.join(root_name) + "_full_" + windows[3][0] + "-" + windows[3][1] + ".map"
 
             # handle error
             if not self.tb_full_mapping_iter(gem_file, fastq_file, windows, window1, window2, window3, window4):

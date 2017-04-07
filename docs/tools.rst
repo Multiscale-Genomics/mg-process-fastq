@@ -110,3 +110,8 @@ Tools for processing FastQ files
    ------------------------
    .. autoclass:: tool.tb_save_hdf5_matrix.tbSaveAdjacencyHDF5Tool
       :members:
+
+   Generate TAD Predictions
+   ------------------------
+   .. autoclass:: tool.tb_generate_tads.tbGenerateTADsTool
+      :members:

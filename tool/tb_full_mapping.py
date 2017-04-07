@@ -96,8 +96,8 @@ class tbFullMappingTool(Tool):
     @constraint(ProcessorCoreCount=16)
     def tb_full_mapping_iter(self, gem_file, fastq_file, enzyme_name, windows, full_file, frag_file):
         """
-        Function to map the FASTQ files to the GEM file over different window
-        sizes ready for alignment
+        Function to map the FASTQ files to the GEM file based on fragments
+        derived from the restriction enzyme that was used.
         
         Parameters
         ----------

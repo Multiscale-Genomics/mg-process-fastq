@@ -34,7 +34,6 @@ import pytadbit
 
 from pytadbit.mapping.filter import apply_filter
 from pytadbit.mapping.filter import filter_reads
-from common import common
 
 # ------------------------------------------------------------------------------
 

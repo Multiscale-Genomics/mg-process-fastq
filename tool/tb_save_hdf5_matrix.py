@@ -32,9 +32,7 @@ import numpy as np
 import h5py
 import pytadbit
 
-from pytadbit.mapping.filter import apply_filter
-from pytadbit.mapping.filter import filter_reads
-from common import common
+from pytadbit.parsers.hic_parser import load_hic_data_from_reads
 
 # ------------------------------------------------------------------------------
 

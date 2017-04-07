@@ -48,8 +48,8 @@ class tbFullMappingTool(Tool):
         print "TADbit full_mapping"
     
     @task(gem_file = FILE_IN, fastq_file = FILE_IN, windows = IN, window1 = FILE_INOUT, window2 = FILE_INOUT, window3 = FILE_INOUT, window4 = FILE_INOUT)
-    @constraint(ProcessorCoreCount=8)
-    def tb_full_mapping(self, gem_file, fastq_file, windows, window1, window2, window3, window4):
+    @constraint(ProcessorCoreCount=16)
+    def tb_full_mapping_frag(self, gem_file, fastq_file, windows, window1, window2, window3, window4):
         """
         Function to map the FASTQ files to the GEM file over different window
         sizes ready for alignment
@@ -87,10 +87,45 @@ class tbFullMappingTool(Tool):
         od = fastq_file.split("/")
         output_dir = "/".join(od[0:-1])
 
-        map_files = full_mapping(gem_file, fastq_file, output_dir, windows=windows, frag_map=False, nthreads=8, clean=True, temp_dir='/tmp/')
+        map_files = full_mapping(gem_file, fastq_file, output_dir, windows=windows, frag_map=False, nthreads=16, clean=True, temp_dir='/tmp/')
         
         return True
     
+
+    @task(gem_file = FILE_IN, fastq_file = FILE_IN, enzyme_name = IN, windows = IN, full_file = FILE_INOUT, frag_file = FILE_INOUT)
+    @constraint(ProcessorCoreCount=16)
+    def tb_full_mapping_iter(self, gem_file, fastq_file, enzyme_name, windows, full_file, frag_file):
+        """
+        Function to map the FASTQ files to the GEM file over different window
+        sizes ready for alignment
+        
+        Parameters
+        ----------
+        gem_file : str
+            Location of the genome GEM index file
+        fastq_file_bgd : str
+            Location of the FASTQ file
+        enzyme_name : str
+            Restriction enzyme name (MboI)
+        windows : list
+            List of lists with the window sizes to be computed
+        window_file : str
+            Location of the first window index file
+        
+        
+        Returns
+        -------
+        window_file : str
+            Location of the window index file
+        
+        """
+        od = fastq_file.split("/")
+        output_dir = "/".join(od[0:-1])
+
+        map_files = full_mapping(gem_file, fastq_file, output_dir, r_enz=enzyme_name, windows=windows, frag_map=True, nthreads=16, clean=True, temp_dir='/tmp/')
+        
+        return True
+
     
     def run(self, input_files, metadata):
         """
@@ -107,6 +142,8 @@ class tbFullMappingTool(Tool):
         metadata : dict
             windows : list
                 List of lists with the window sizes to be computed
+            enzyme_name : str
+                Restriction enzyme used [OPTIONAL]
         
         
         Returns
@@ -127,23 +164,35 @@ class tbFullMappingTool(Tool):
         
         name = root_name[-1]
         
-        window1 = '/'.join(root_name) + "_full_1-25.map"
-        window2 = '/'.join(root_name) + "_full_1-50.map"
-        window3 = '/'.join(root_name) + "_full_1-75.map"
-        window4 = '/'.join(root_name) + "_full_1-100.map"
-        
         # input and output share most metadata
         output_metadata = {}
         
-        # handle error
-        if not self.tb_full_mapping(gem_file, fastq_file, windows, window1, window2, window3, window4):
-            output_metadata.set_exception(
-                Exception(
-                    "tb_full_mapping: Could not process files {}, {}.".format(*input_files)))
-            window1 = None
-            window2 = None
-            window3 = None
-            window4 = None
-        return ([window1, window2, window3, window4], output_metadata)
+        if 'enzyme_name' in meta_data:
+            full_file = '/'.join(root_name) + "_full_1-100.map"
+            frag_file = '/'.join(root_name) + "_frag_1-100.map"
+
+            # handle error
+            if not self.tb_full_mapping_iter(gem_file, fastq_file, meta_data['enzyme_name'], windows, full_file, frag_file):
+                output_metadata.set_exception(
+                    Exception(
+                        "tb_full_mapping_iter: Could not process files {}, {}.".format(*input_files)))
+                full_file = None
+                frag_file = None
+            return ([full_file, frag_file], output_metadata)
+        else:
+            window1 = '/'.join(root_name) + "_full_1-25.map"
+            window2 = '/'.join(root_name) + "_full_1-50.map"
+            window3 = '/'.join(root_name) + "_full_1-75.map"
+            window4 = '/'.join(root_name) + "_full_1-100.map"
+
+            if not self.tb_full_mapping_frag(gem_file, fastq_file, windows, window1, window2, window3, window4):
+                output_metadata.set_exception(
+                    Exception(
+                        "tb_full_mapping_frag: Could not process files {}, {}.".format(*input_files)))
+                window1 = None
+                window2 = None
+                window3 = None
+                window4 = None
+            return ([window1, window2, window3, window4], output_metadata)
 
 # ------------------------------------------------------------------------------

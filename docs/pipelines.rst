@@ -49,6 +49,9 @@ Hi-C Anslysis
       FASTQ sampling window sizes to use for the second paired end FASTQ file,
       the default is to use `[[1,25], [1,50], [1,75], [1,100]]`. This would be
       represented as `1,25,50,75,100` as input for this variable
+   normalized : bool
+      True | [DEFAULT : False]. Determines whether the counts of alignments
+      should be normalized
 
    Returns
    -------
@@ -72,7 +75,8 @@ Hi-C Anslysis
          --resolution 1000000,10000000                        \\
          --enzyme_name MboI                                   \\
          --windows1 1,25,50,75,100                            \\
-         --windows2 1,25,50,75,100
+         --windows2 1,25,50,75,100                            \\
+         --normalized False
 
    When using a local verion of the [COMPS virtual machine](http://www.bsc.es/computer-sciences/grid-computing/comp-superscalar/downloads-and-documentation):
    
@@ -92,7 +96,8 @@ Hi-C Anslysis
             --resolution 1000000,10000000                             \\
             --enzyme_name MboI                                        \\
             --windows1 1,25,50,75,100                                 \\
-            --windows2 1,25,50,75,100
+            --windows2 1,25,50,75,100                                 \\
+            --normalized False
 
    Methods
    =======

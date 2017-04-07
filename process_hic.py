@@ -39,6 +39,7 @@ except ImportError :
 from tool import tb_full_mapping
 from tool import tb_parse_mapping
 from tool import tb_filter
+from tool import tb_generate_tads
 
 # ------------------------------------------------------------------------------
 class process_hic(Workflow):
@@ -67,8 +68,6 @@ class process_hic(Workflow):
             List of locations for the output bam, bed and tsv files
         """
         
-        from fastq2adjacency import fastq2adjacency
-
         genome_file  = files_ids[0]
         genome_gem   = files_ids[1]
         fastq_file_1 = files_ids[2]
@@ -77,6 +76,7 @@ class process_hic(Workflow):
         resolutions = metadata['resolutions']
         windows1    = metadata['windows1']
         windows2    = metadata['windows2']
+        normalized  = metadata['normalized']
 
         tmp_name = fastq_file_1.split('/')
         tmp_dir = '/'.join(tmp_name[0:-1])
@@ -101,8 +101,11 @@ class process_hic(Workflow):
 
         #adjlist_loc = f2a.save_hic_data()
 
+        tgt = tb_generate_tads.tbGenerateTADsTool()
+        tgt_files, tgt_meta = tgt.run(tf_files, {'resolutions' : resolutions, 'normalized' : normalized})
+
         # List of files to get saved
-        return (adjlist_filtered_loc, adjlist_loc)
+        return ([tf_files[0], tgt_files[0]], adjlist_loc)
 
 
 # ------------------------------------------------------------------------------
@@ -123,6 +126,7 @@ if __name__ == "__main__":
     parser.add_argument("--enzyme_name", help="Enzyme used to digest the DNA")
     parser.add_argument("--windows1", help="FASTQ windowing - start locations", default="1,25,50,75,100")
     parser.add_argument("--windows2", help="FASTQ windowing - paired end locations", default="1,25,50,75,100")
+    parser.add_argument("--normalized" help="Normalize the alignments", default=False)
     #parser.add_argument("--file_out")
     #parser.add_argument("--tmp_dir", help="Temporary data dir")
     
@@ -145,6 +149,7 @@ if __name__ == "__main__":
     resolutions   = args.resolutions
     windows1arg   = args.windows1
     windows2arg   = args.windows1
+    normalized    = args.normalized
 
     if windows1arg is not None:
         w1 = [int(i) for i in windows1arg.split(",")]
@@ -173,6 +178,7 @@ if __name__ == "__main__":
         'enzyme_name' : enzyme_name,
         'windows1'    : windows1,
         'windows2'    : windows2,
+        'normalized'  : normalized,
     }
 
     fastq_01_file_in = da.set_file("test", fastq_01_file, "fastq", "Hi-C", taxon_id, meta_data=metadata)

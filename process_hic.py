@@ -93,7 +93,7 @@ class process_hic(Workflow):
 
         tpm = tb_parse_mapping.tb_parse_mapping()
         files = [genome_file] + tfm1_files + tfm2_files
-        metadata = {'enzyme_name' : enzyme_name}
+        metadata = {'enzyme_name' : enzyme_name, 'mapping' : [tfm1_meta['func'], tfm2_meta['func']]}
         tpm_files, tpm_meta = tpm.run(files, metadata)
 
         tf = tb_filter.tbFilterTool()

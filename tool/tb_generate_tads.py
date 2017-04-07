@@ -90,14 +90,12 @@ class tbGenerateTADsTool(Tool):
         """
         The main function to the predict TAD sites for a given resolution from
         the Hi-C matrix
-        
+
         Parameters
         ----------
         input_files : list
             adj_list : str
                 Location of the adjacency list
-            hdf5_file : str
-                Location of the HDF5 output matrix file
         metadata : dict
             resolutions : list
                 Levels of resolution for the adjacency list to be daved at
@@ -134,7 +132,7 @@ class tbGenerateTADsTool(Tool):
         tad_files = []
 
         for resolution in resolutions:
-            hic_data = read_matrix(adj_list, resolution=int(resolution))
+            hic_data = load_hic_data_from_reads(adj_list, resolution=int(resolution))
 
             for chrom in hic_data.chromosomes.keys():
                 save_matrix_file = "/".join(root_name[0:-1]) + '/adjlist_map_' + chrom + '-' + chrom + '_' + str(resolution) + '.tsv'

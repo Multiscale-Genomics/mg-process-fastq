@@ -181,7 +181,12 @@ class tbParseMappingTool(Tool):
     
     def run(self, input_files, metadata):
         """
-        The main function to map the aligned reads and return the matching pairs
+        The main function to map the aligned reads and return the matching
+        pairs. Parsing of the mappings can be either iterative of fragment
+        based. If it is to be iteractive then the locations of 4 output file
+        windows for each end of the paired end window need to be provided. If
+        it is fragment based, then only 2 window locations need to be provided
+        along within an enzyme name.
         
         Parameters
         ----------
@@ -193,17 +198,17 @@ class tbParseMappingTool(Tool):
             window1_2 : str
                 Location of the second window index file
             window1_3 : str
-                Location of the third window index file
+                [OPTIONAL] Location of the third window index file
             window1_4 : str
-                Location of the fourth window index file
+                [OPTIONAL] Location of the fourth window index file
             window2_1 : str
                 Location of the first window index file
             window2_2 : str
                 Location of the second window index file
             window2_3 : str
-                Location of the third window index file
+                [OPTIONAL] Location of the third window index file
             window2_4 : str
-                Location of the fourth window index file
+                [OPTIONAL] Location of the fourth window index file
         metadata : dict
             windows : list
                 List of lists with the window sizes to be computed
@@ -219,6 +224,70 @@ class tbParseMappingTool(Tool):
             List of locations for the output files.
         output_metadata : list
             List of matching metadata dict objects
+
+        Example
+        -------
+        
+        Iterative:
+
+        .. code-block:: python
+
+            from tool import tb_parse_mapping
+            
+            genome_file = 'genome.fasta'
+
+            root_name_1 = "/tmp/data/expt_source_1".split
+            root_name_2 = "/tmp/data/expt_source_2".split
+            windows = [[1,25], [1,50], [1,75], [1,100]]
+
+            window1_1 = '/'.join(root_name_1) + "_full_" + windows[0][0] + "-" + windows[0][1] + ".map"
+            window1_2 = '/'.join(root_name_1) + "_full_" + windows[1][0] + "-" + windows[1][1] + ".map"
+            window1_3 = '/'.join(root_name_1) + "_full_" + windows[2][0] + "-" + windows[2][1] + ".map"
+            window1_4 = '/'.join(root_name_1) + "_full_" + windows[3][0] + "-" + windows[3][1] + ".map"
+
+            window2_1 = '/'.join(root_name_2) + "_full_" + windows[0][0] + "-" + windows[0][1] + ".map"
+            window2_2 = '/'.join(root_name_2) + "_full_" + windows[1][0] + "-" + windows[1][1] + ".map"
+            window2_3 = '/'.join(root_name_2) + "_full_" + windows[2][0] + "-" + windows[2][1] + ".map"
+            window2_4 = '/'.join(root_name_2) + "_full_" + windows[3][0] + "-" + windows[3][1] + ".map"
+            
+            files = [
+                genome_file,
+                window1_1, window1_2, window1_3, window1_4,
+                window2_1, window2_2, window2_3, window2_4,
+            ]
+
+            tpm = tb_parse_mapping.tb_parse_mapping()
+            metadata = {'enzyme_name' : 'MboI', 'mapping' : ['iter', 'iter']}
+            tpm_files, tpm_meta = tpm.run(files, metadata)
+
+
+        Fragment based mapping:
+
+        .. code-block:: python
+
+            from tool import tb_parse_mapping
+            
+            genome_file = 'genome.fasta'
+
+            root_name_1 = "/tmp/data/expt_source_1".split
+            root_name_2 = "/tmp/data/expt_source_2".split
+            windows = [[1,100]]
+
+            window1_1 = '/'.join(root_name_1) + "_full_" + windows[0][0] + "-" + windows[0][1] + ".map"
+            window1_2 = '/'.join(root_name_1) + "_frag_" + windows[0][0] + "-" + windows[0][1] + ".map"
+            
+            window2_1 = '/'.join(root_name_2) + "_full_" + windows[0][0] + "-" + windows[0][1] + ".map"
+            window2_2 = '/'.join(root_name_2) + "_full_" + windows[0][0] + "-" + windows[0][1] + ".map"
+            
+            files = [
+                genome_file,
+                window1_1, window1_2,
+                window2_1, window2_2,
+            ]
+
+            tpm = tb_parse_mapping.tb_parse_mapping()
+            metadata = {'enzyme_name' : 'MboI', 'mapping' : ['frag', 'frag']}
+            tpm_files, tpm_meta = tpm.run(files, metadata)
         
         """
         

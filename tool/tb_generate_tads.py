@@ -1,0 +1,161 @@
+"""
+.. Copyright 2017 EMBL-European Bioinformatics Institute
+ 
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at 
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+"""
+
+import os
+
+try :
+    from pycompss.api.parameter import FILE_IN, FILE_OUT, FILE_INOUT
+    from pycompss.api.task import task
+except ImportError :
+    print("[Warning] Cannot import \"pycompss\" API packages.")
+    print("          Using mock decorators.")
+    
+    from dummy_pycompss import *
+
+from basic_modules.metadata import Metadata
+from basic_modules.tool import Tool
+
+import numpy as np
+import h5py
+import pytadbit
+
+from pytadbit import Chromosome
+
+# ------------------------------------------------------------------------------
+
+class tbGenerateTADsTool(Tool):
+    """
+    Tool for taking the adjacency lists and predicting TADs
+    """
+    
+    def __init__(self):
+        """
+        Init function
+        """
+        print "TADbit - Generate TADs"
+    
+    @task(matrix_file = FILE_IN, resolution = IN, tad_file = FILE_INOUT)
+    @constraint(ProcessorCoreCount=16)
+    def tb_generate_tads(self, expt_name, matrix_file, resolution, tad_file):
+        """
+        Function to the predict TAD sites for a given resolution from the Hi-C
+        matrix
+        
+        Parameters
+        ----------
+        expt_name : str
+                Location of the adjacency list
+        matrix_file : str
+            Location of the HDF5 output matrix file
+        resolution : int
+            Resolution to read the Hi-C adjacency list at
+        tad_file : str
+            Location of the output TAD file
+        
+        Returns
+        -------
+        tad_file : str
+            Location of the output TAD file
+        
+        """
+        chr_hic_data = read_matrix(matrix_file, resolution=int(resolution))
+        
+        my_chrom = Chromosome(name=expt_name, centromere_search=True)
+        my_chrom.add_experiment(expt_name, hic_data=chr_hic_data, resolution=int(resolution))
+        
+        # Run core TADbit function to find TADs on each expt.
+        # For the current dataset required 61GB of RAM
+        my_chrom.find_tad(expt_name, n_cpus=15)
+        
+        exp = my_chrom.experiments[expt_name]
+        exp.write_tad_borders(savedata=tad_file)
+        
+        return True
+    
+    
+    def run(self, input_files, metadata):
+        """
+        The main function to the predict TAD sites for a given resolution from
+        the Hi-C matrix
+        
+        Parameters
+        ----------
+        input_files : list
+            adj_list : str
+                Location of the adjacency list
+            hdf5_file : str
+                Location of the HDF5 output matrix file
+        metadata : dict
+            resolutions : list
+                Levels of resolution for the adjacency list to be daved at
+            assembly : str
+                Assembly of the aligned sequences
+
+        
+        
+        Returns
+        -------
+        output_files : list
+            List of locations for the output files.
+        output_metadata : list
+            List of matching metadata dict objects
+        
+        """
+        
+        adj_list = input_files[0]
+        
+        resolutions = [1000000]
+        if 'resolutions' in metadata:
+            resolutions = metadata['resolutions']
+        
+        normalized = False
+        if 'normalized' in metadata:
+            normalized = metadata['normalized']
+
+        # input and output share most metadata
+        output_metadata = {}
+        
+        root_name = adj_list.split("/")
+
+        matrix_files = []
+        tad_files = []
+
+        for resolution in resolutions:
+            hic_data = read_matrix(adj_list, resolution=int(resolution))
+
+            for chrom in hic_data.chromosomes.keys():
+                save_matrix_file = "/".join(root_name[0:-1]) + '/adjlist_map_' + chrom + '-' + chrom + '_' + str(resolution) + '.tsv'
+                matrix_files.append(save_matrix_file)
+
+                save_tad_file = "/".join(root_name[0:-1]) + '/tad_' + chrom + '_' + str(resolution) + '.tsv'
+                tad_files.append(save_tad_file)
+
+                hic_data.write_matrix(save_matrix_file, (chroms[chrA], chroms[chrA]), normalized=normalized)
+
+                expt_name = 'tad_' + chrom + '_' + str(resolution)
+
+                # handle error
+                if not self.tb_generate_tads(expt_name, save_matrix_file, resolution, save_tad_file):
+                    output_metadata.set_exception(
+                        Exception(
+                            "tb_generate_tads: Could not process files {}, {}.".format(*input_files)))
+        
+        # Step to merge all the TAD files into a single bed file
+        tad_bed_file = "/".join(root_name[0:-1]) + '/tads.tsv'
+
+        return ([tad_bed_file], output_metadata)
+
+# ------------------------------------------------------------------------------

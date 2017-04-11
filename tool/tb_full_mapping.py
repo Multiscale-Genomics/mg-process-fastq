@@ -122,7 +122,7 @@ class tbFullMappingTool(Tool):
         od = fastq_file.split("/")
         output_dir = "/".join(od[0:-1])
 
-        map_files = full_mapping(gem_file, fastq_file, output_dir, r_enz=enzyme_name, windows=windows, frag_map=True, nthreads=16, clean=True, temp_dir='/tmp/')
+        map_files = full_mapping(gem_file, fastq_file, output_dir, r_enz=enzyme_name, windows=windows, frag_map=True, nthreads=32, clean=True, temp_dir='/tmp/')
         
         return True
 

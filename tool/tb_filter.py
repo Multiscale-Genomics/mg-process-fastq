@@ -49,7 +49,7 @@ class tbFilterTool(Tool):
         print "TADbit filter aligned reads"
     
     @task(reads = FILE_IN, filter_reads = FILE_INOUT, conservative = IN)
-    def tb_filter(self, reads, filter_reads, conservative):
+    def tb_filter(self, reads, filter_reads_file, conservative):
         """
         Function to filter out expoerimental artifacts
         
@@ -58,7 +58,7 @@ class tbFilterTool(Tool):
         reads : str
             Location of the reads thats that has a matching location at both
             ends of the paired reads
-        filtered_reads : str
+        filtered_reads_file : str
             Location of the filtered reads
         conservative : bool
             Level of filtering [DEFAULT : True]
@@ -82,10 +82,10 @@ class tbFilterTool(Tool):
 
         if conservative == True:
             # Ignore filter 5 (based on docs) as not very helpful
-            apply_filter(reads, filter_reads, masked, filters=[1,2,3,4,6,7,8,9,10])
+            apply_filter(reads, filter_reads_file, masked, filters=[1,2,3,4,6,7,8,9,10])
         else:
             # Less conservative option
-            apply_filter(reads, filter_reads, masked, filters=[1,2,3,9,10])
+            apply_filter(reads, filter_reads_file, masked, filters=[1,2,3,9,10])
         
         return True
     

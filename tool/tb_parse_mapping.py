@@ -222,8 +222,8 @@ class tbParseMappingTool(Tool):
         -------
         output_files : list
             List of locations for the output files.
-        output_metadata : list
-            List of matching metadata dict objects
+        output_metadata : dict
+            Dict of matching metadata dict objects
 
         Example
         -------
@@ -298,8 +298,14 @@ class tbParseMappingTool(Tool):
         
         genome_seq = parse_fasta(genome_file)
         
+        chromosome_meta = []
+        for k in genome_seq:
+            chromosome_meta.append([k, len(genome_seq[k])])
+
         # input and output share most metadata
-        output_metadata = {}
+        output_metadata = {
+            'chromosomes' : chromosome_meta
+        }
         
         if mapping_list[0] == mapping_list[1]:
             if mapping_list[0] == 'iter':

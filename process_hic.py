@@ -40,6 +40,7 @@ from tool import tb_full_mapping
 from tool import tb_parse_mapping
 from tool import tb_filter
 from tool import tb_generate_tads
+from tool import tb_save_hdf5_matrix
 
 # ------------------------------------------------------------------------------
 class process_hic(Workflow):
@@ -102,10 +103,30 @@ class process_hic(Workflow):
         #adjlist_loc = f2a.save_hic_data()
 
         tgt = tb_generate_tads.tbGenerateTADsTool()
-        tgt_files, tgt_meta = tgt.run(tf_files, {'resolutions' : resolutions, 'normalized' : normalized})
+        tgt_meta_in = {
+            'resolutions' : resolutions,
+            'normalized' : normalized
+        }
+        tgt_files, tgt_meta = tgt.run(tf_files, tgt_meta_in)
+
+        # Generate the HDF5 and meta data required for the RESTful API.
+        # - Chromosome meta is from the tb_parse_mapping step
+
+        if len(files_ids) == 5:
+            hdf5_file = files_ids[4]
+            th5 = tb_save_hdf5_matrix.tbSaveAdjacencyHDF5Tool()
+            tth5_files_in = [tf_files[0], hdf5_file]
+            tth5_meta_in = {
+                'resolutions' : resolutions,
+                'normalized' : normalized,
+                'chromosomes_meta' : tpm_meta['chromosomes']
+            }
+            th5_files, th5_meta = th5.run(th5_files_in, th5_meta_in)
+        else:
+            hdf5_file = None
 
         # List of files to get saved
-        return ([tf_files[0], tgt_files[0]], adjlist_loc)
+        return ([tf_files[0], tgt_files[0]], adjlist_loc, hdf5_file)
 
 
 # ------------------------------------------------------------------------------

@@ -147,7 +147,7 @@ if __name__ == "__main__":
     parser.add_argument("--enzyme_name", help="Enzyme used to digest the DNA")
     parser.add_argument("--windows1", help="FASTQ windowing - start locations", default="1,25,50,75,100")
     parser.add_argument("--windows2", help="FASTQ windowing - paired end locations", default="1,25,50,75,100")
-    parser.add_argument("--normalized" help="Normalize the alignments", default=False)
+    parser.add_argument("--normalized", help="Normalize the alignments", default=False)
     #parser.add_argument("--file_out")
     #parser.add_argument("--tmp_dir", help="Temporary data dir")
     

@@ -32,8 +32,8 @@ import numpy as np
 import h5py
 import pytadbit
 
-from pytadbit.parsers.hic_parser import load_hic_data_from_reads
-from pytadbit.parsers.hic_parser import read_matrix
+from pytadbit import load_hic_data_from_reads
+from pytadbit import read_matrix
 
 # ------------------------------------------------------------------------------
 
@@ -62,8 +62,8 @@ class tbSaveAdjacencyHDF5Tool(Tool):
         
         This needs to include attributes for the chromosomes for each resolution
         - See the mg-rest-adjacency hdf5_reader for further details about the
-          requirement. This prevents the need for secondary storage details
-          outside of the HDF5 file.
+        requirement. This prevents the need for secondary storage details
+        outside of the HDF5 file.
         
         Parameters
         ----------

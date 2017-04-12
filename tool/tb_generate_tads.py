@@ -157,12 +157,12 @@ class tbGenerateTADsTool(Tool):
 
         fo = open(tad_bed_file, 'w')
         for resolution in tad_files.keys():
-            from chrom in tad_files[resolution].keys():
+            for chrom in tad_files[resolution].keys():
                 fi_tmp = open(tad_files[resolution][chrom], 'r')
                 for line in fi_tmp:
                     line = line.split("\t")
                     line[-1] = line[-1].rstrip()
-                    fo.write(str(chrom) + "\t" line[1] + "\t" + line[2] + "\tTADs_" + str(resolution) + "\t" + line[3] + "\t.\n")
+                    fo.write(str(chrom) + "\t" + line[1] + "\t" + line[2] + "\tTADs_" + str(resolution) + "\t" + line[3] + "\t.\n")
                 fi_tmp.close()
         fo.close()
 

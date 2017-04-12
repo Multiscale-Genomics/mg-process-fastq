@@ -48,7 +48,7 @@ class tbFullMappingTool(Tool):
         print "TADbit full_mapping"
     
     @task(gem_file = FILE_IN, fastq_file = FILE_IN, windows = IN, window1 = FILE_INOUT, window2 = FILE_INOUT, window3 = FILE_INOUT, window4 = FILE_INOUT)
-    @constraint(ProcessorCoreCount=16)
+    @constraint(ProcessorCoreCount=32)
     def tb_full_mapping_iter(self, gem_file, fastq_file, windows, window1, window2, window3, window4):
         """
         Function to map the FASTQ files to the GEM file over different window
@@ -87,7 +87,7 @@ class tbFullMappingTool(Tool):
         od = fastq_file.split("/")
         output_dir = "/".join(od[0:-1])
 
-        map_files = full_mapping(gem_file, fastq_file, output_dir, windows=windows, frag_map=False, nthreads=16, clean=True, temp_dir='/tmp/')
+        map_files = full_mapping(gem_file, fastq_file, output_dir, windows=windows, frag_map=False, nthreads=32, clean=True, temp_dir='/tmp/')
         
         return True
     

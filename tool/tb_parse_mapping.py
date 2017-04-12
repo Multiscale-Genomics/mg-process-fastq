@@ -123,7 +123,7 @@ class tbParseMappingTool(Tool):
         window1_full = FILE_IN, window1_frag = FILE_IN,
         window2_full = FILE_IN, window2_frag = FILE_IN,
         reads = FILE_INOUT)
-    @constraint(ProcessorCoreCount=16)
+    @constraint(ProcessorCoreCount=32)
     def tb_parse_mapping_frag(self,
         genome_seq, enzyme_name,
         window1_full, window1_frag, window2_full, window2_frag,
@@ -171,7 +171,7 @@ class tbParseMappingTool(Tool):
             genome_seq=genome_seq,
             re_name=enzyme_name,
             verbose=True,
-            ncpus=16
+            ncpus=32
         )
 
         intersections = get_intersection(reads1, reads2, reads, verbose=True)

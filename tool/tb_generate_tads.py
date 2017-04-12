@@ -129,19 +129,20 @@ class tbGenerateTADsTool(Tool):
         root_name = adj_list.split("/")
 
         matrix_files = []
-        tad_files = []
+        tad_files = {}
 
         for resolution in resolutions:
             hic_data = load_hic_data_from_reads(adj_list, resolution=int(resolution))
+            tad_files[resolution] = {}
 
             for chrom in hic_data.chromosomes.keys():
                 save_matrix_file = "/".join(root_name[0:-1]) + '/adjlist_map_' + chrom + '-' + chrom + '_' + str(resolution) + '.tsv'
                 matrix_files.append(save_matrix_file)
 
                 save_tad_file = "/".join(root_name[0:-1]) + '/tad_' + chrom + '_' + str(resolution) + '.tsv'
-                tad_files.append(save_tad_file)
+                tad_files[resolution][chrom] = save_tad_file
 
-                hic_data.write_matrix(save_matrix_file, (chroms[chrA], chroms[chrA]), normalized=normalized)
+                hic_data.write_matrix(save_matrix_file, (chrom, chrom), normalized=normalized)
 
                 expt_name = 'tad_' + chrom + '_' + str(resolution)
 
@@ -153,6 +154,17 @@ class tbGenerateTADsTool(Tool):
         
         # Step to merge all the TAD files into a single bed file
         tad_bed_file = "/".join(root_name[0:-1]) + '/tads.tsv'
+
+        fo = open(tad_bed_file, 'w')
+        for resolution in tad_files.keys():
+            from chrom in tad_files[resolution].keys():
+                fi_tmp = open(tad_files[resolution][chrom], 'r')
+                for line in fi_tmp:
+                    line = line.split("\t")
+                    line[-1] = line[-1].rstrip()
+                    fo.write(str(chrom) + "\t" line[1] + "\t" + line[2] + "\tTADs_" + str(resolution) + "\t" + line[3] + "\t.\n")
+                fi_tmp.close()
+        fo.close()
 
         return ([tad_bed_file], output_metadata)
 

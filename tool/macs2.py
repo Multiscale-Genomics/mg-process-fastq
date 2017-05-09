@@ -43,8 +43,17 @@ class macs2(Tool):
         """
         print "MACS2 Peak Caller"
     
-    @task(name = IN, bam_file = FILE_IN, bam_file_bgd = FILE_IN, peak_bed = FILE_INOUT, summit_bed = FILE_INOUT, narrowPeak = FILE_INOUT, broadPeak = FILE_INOUT, gappedPeak = FILE_INOUT)
-    def macs2_peak_calling(self, name, bam_file, bam_file_bgd = None, peak_bed = None, summits_bed = None, narrowPeak = None, broadPeak = None, gappedPeak = None):
+    @task(
+            name = IN,
+            bam_file = FILE_IN,
+            bam_file_bgd = FILE_IN,
+            narrowPeak = FILE_INOUT,
+            summit_bed = FILE_INOUT,
+            broadPeak = FILE_INOUT,
+            gappedPeak = FILE_INOUT)
+    def macs2_peak_calling(self,
+        name, bam_file, bam_file_bgd = None,
+        narrowPeak = None, summits_bed = None, broadPeak = None, gappedPeak = None):
         """
         Function to run MACS2 for peak calling on aligned sequence files and
         normalised against a provided background set of alignments.
@@ -65,6 +74,8 @@ class macs2(Tool):
         narrowPeak : file
             BED6+4 file - ideal for transcription factor binding site
             identification
+        summitPeak : file
+            BED4+1 file - Contains the peak summit locations for everypeak
         broadPeak : file
             BED6+3 file - ideal for histone binding site identification
         gappedPeak : file
@@ -116,7 +127,7 @@ class macs2(Tool):
             bam_file_bgd = input_files[1]
         
         root_name = bam_file.split("/")
-        root_name[-1].replace('.fa', '')
+        root_name[-1] = root_name[-1].replace('.fa', '')
         
         name = root_name[-1]
         
@@ -127,7 +138,7 @@ class macs2(Tool):
         gappedPeak  = '/'.join(root_name) + "_gappedPeak"
         
         # input and output share most metadata
-        output_metadata = {}
+        output_metadata = {"bed_types" : ["bed4+1", "bed6+4", "bed6+3", "bed12+3"]}
         
         # handle error
         if not self.macs2_peak_calling(name, bam_file, bam_file_bgd, peak_bed, summits_bed, narrowPeak, broadPeak, gappedPeak):

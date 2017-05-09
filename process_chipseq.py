@@ -188,7 +188,10 @@ if __name__ == "__main__":
     #results = app.launch(process_chipseq, [genome_file, file_in, file_bg_in], {'user_id' : 'test'})
 
     pc = process_chipseq()
-    results = pc.run(files, {'user_id' : 'test'})
+    results_files, results_meta = pc.run(files, {'user_id' : 'test'})
+
+    print(results_files)
+    print(results_meta)
     
     print da.get_files_by_user("test")
     

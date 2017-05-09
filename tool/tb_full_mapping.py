@@ -160,7 +160,7 @@ class tbFullMappingTool(Tool):
         windows = meta_data['windows']
         
         root_name = fastq_file.split("/")
-        root_name[-1].replace('.fa', '')
+        root_name[-1] = root_name[-1].replace('.fa', '')
         
         name = root_name[-1]
         

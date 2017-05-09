@@ -402,7 +402,6 @@ class common:
             Location of the assembly file in the file system
         """
         file_name = genome_file.split("/")
-        file_name[-1].replace('.fa', '')
         
         with cd("/".join(file_name[0:-1])):
             command_line = 'bowtie2-build ' + genome_file + ' ' + file_name[-1].replace('.fa', '')

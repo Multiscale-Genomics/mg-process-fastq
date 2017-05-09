@@ -95,23 +95,23 @@ class bwaIndexerTool(Tool):
         genome_file = input_files[0]
         
         amb_name = genome_file.split("/")
-        amb_name[-1].replace('.fa', '.amb')
+        amb_name[-1] = amb_name[-1].replace('.fa', '.amb')
         amb_loc = '/'.join(amb_name)
         
         ann_name = genome_file.split("/")
-        ann_name[-1].replace('.fa', '.ann')
+        ann_name[-1] = ann_name[-1].replace('.fa', '.ann')
         ann_loc = '/'.join(ann_name)
         
         bwt_name = genome_file.split("/")
-        bwt_name[-1].replace('.fa', '.bwt')
+        bwt_name[-1] = bwt_name[-1].replace('.fa', '.bwt')
         bwt_loc = '/'.join(bwt_name)
         
         pac_name = genome_file.split("/")
-        pac_name[-1].replace('.fa', '.pac')
+        pac_name[-1] = pac_name[-1].replace('.fa', '.pac')
         pac_loc = '/'.join(pac_name)
         
         sa_name = genome_file.split("/")
-        sa_name[-1].replace('.fa', '.sa')
+        sa_name[-1] = sa_name[-1].replace('.fa', '.sa')
         sa_loc = '/'.join(sa_name)
         
         # handle error

@@ -131,7 +131,6 @@ class macs2(Tool):
         
         name = root_name[-1]
         
-        peak_bed    = '/'.join(root_name) + "_peaks.bed"
         summits_bed = '/'.join(root_name) + "_summits.bed"
         narrowPeak  = '/'.join(root_name) + "_narrowPeak"
         broadPeak   = '/'.join(root_name) + "_broadPeak"
@@ -141,7 +140,8 @@ class macs2(Tool):
         output_metadata = {"bed_types" : ["bed4+1", "bed6+4", "bed6+3", "bed12+3"]}
         
         # handle error
-        if not self.macs2_peak_calling(name, bam_file, bam_file_bgd, peak_bed, summits_bed, narrowPeak, broadPeak, gappedPeak):
+        if not self.macs2_peak_calling(name, bam_file, bam_file_bgd,
+            narrowPeak, summits_bed, broadPeak, gappedPeak):
             output_metadata.set_exception(
                 Exception(
                     "macs2_peak_calling: Could not process files {}, {}.".format(*input_files)))

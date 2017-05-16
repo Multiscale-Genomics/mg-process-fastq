@@ -11,6 +11,7 @@ MuG - FASTQ Pipelines's documentation!
    :caption: Contents:
    
    install
+   full_installation
    pipelines
    tools
    common

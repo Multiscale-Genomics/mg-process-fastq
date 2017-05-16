@@ -46,12 +46,14 @@ libraries.
 Installation
 ------------
 
+For a guide to the full installation procedure the :doc:`full_installation`.
+
 Directly from GitHub:
 
 .. code-block:: none
    :linenos:
    
-   code_root = pwd
+   cd ${HOME}/code
 
    git clone https://github.com/Multiscale-Genomics/mg-process-fastq.git
    
@@ -70,7 +72,7 @@ Install the pyTADbit modules
 .. code-block:: none
     :linenos:
 
-    cd <lib_dir>
+    cd ${HOME}/lib
     wget https://github.com/3DGenomes/tadbit/archive/master.zip -O tadbit.zip
     unzip tadbit.zip
     cd tadbit-master
@@ -83,15 +85,16 @@ Check out the following software for use by the process_wgbs.py pipeline:
 .. code-block:: none
 	:linenos:
 
-	cd $code_root
+	cd cd ${HOME}/lib
 	gti clone https://github.com/BSSeeker/BSseeker2.git
 
-	cd mg-process-fastq
+	cd ${HOME}/code
+  cd mg-process-fastq
 	ln -s $code_root/bs_align bs_align
 	ln -s $code_root/bs_index bs_index
 	ln -s $code_root/bs_utils bs_utils
 	
-	cd tool
+	cd cd ${HOME}/code/mg-process-fastq/tool
 	ln -s $code_root/FilterReads.py FilterReads.py
    
 

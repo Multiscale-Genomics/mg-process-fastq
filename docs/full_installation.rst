@@ -39,7 +39,7 @@ Setup the System Environment
 
    sudo apt-get install -y make build-essential libssl-dev zlib1g-dev       \\
    libbz2-dev libreadline-dev libsqlite3-dev wget curl llvm libncurses5-dev \\
-   libncursesw5-dev xz-utils tk-dev unzip mcl libgtk2.0-dev
+   libncursesw5-dev xz-utils tk-dev unzip mcl libgtk2.0-dev r-base-core
 
    cd ${HOME}
    mkdir bin lib code

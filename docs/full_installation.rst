@@ -273,6 +273,7 @@ Setup the symlinks
    ln -s ${HOME}/lib/biobambam2/bin/lasToBAM lasToBAM
    ln -s ${HOME}/lib/biobambam2/bin/normalisefasta normalisefasta
 
+
 Prepare the Python Environment
 ------------------------------
 

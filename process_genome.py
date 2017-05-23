@@ -22,7 +22,9 @@ from basic_modules import Tool, Workflow, Metadata
 
 from dmp import dmp
 
-import tool
+from tool import bowtie_indexer
+from tool import bwa_indexer
+from tool import gem_indexer
 
 import os
 
@@ -77,15 +79,15 @@ class process_genome(Workflow):
         genome_fa = file_ids[0]
         
         # Bowtie2 Indexer
-        bt = tool.bowtieIndexerTool()
+        bt = bowtie_indexer.bowtieIndexerTool()
         bti, btm = bt.run([genome_fa], metadata)
         
         # BWA Indexer
-        bwa = tool.bwaIndexerTool()
+        bwa = bwa_indexer.bwaIndexerTool()
         bwai, bwam = bwa.run([genome_fa], metadata)
         
         # GEM Indexer
-        gem = tool.gemIndexerTool()
+        gem = gem_indexer.gemIndexerTool()
         gemi, gemm = gem.run(([genome_fa], metadata)
 
 # ------------------------------------------------------------------------------

@@ -85,6 +85,16 @@ pipeline. It also requires the libmaus2 package to be installed.
    ./configure --with-libmaus2=${HOME}/lib/libmaus2 --prefix=${HOME}/lib/biobambam2
    make install
 
+Bowtie2 Aligner
+^^^^^^^^^^^^^^^
+
+.. code-block:: none
+   :linenos:
+
+   cd ${HOME}/lib
+   wget --max-redirect 1 https://downloads.sourceforge.net/project/bowtie-bio/bowtie2/2.3.2/bowtie2-2.3.2-linux-x86_64.zip
+   unzip bowtie2-2.3.2-linux-x86_64.zip
+
 BWA Sequence Aligner
 ^^^^^^^^^^^^^^^^^^^^
 

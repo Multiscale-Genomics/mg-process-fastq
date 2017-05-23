@@ -56,7 +56,7 @@ class bowtieIndexerTool(Tool):
             Location of the output index file
         """
         cf = common()
-        output_file = cf.bowtie_index_genome(file_loc)
+        output_file = cf.bowtie_index_genome(file_loc, idx_loc)
         return True
     
     def run(self, input_files, metadata):
@@ -79,16 +79,20 @@ class bowtieIndexerTool(Tool):
         """
         
         file_name = input_files[0].split('/')
-        output_file = '/'.join(file_name[-1].replace('.fa', ''))
+        file_name[-1] = file_name[-1].replace('.fasta', '')
+        file_name[-1].replace('.fa', '')
+        output_file = '/'.join(file_name)
         
         # input and output share most metadata
-        output_metadata = dict(
-            data_type=metadata[0]["data_type"],
-            file_type=metadata[0]["file_type"],
-            meta_data=metadata[0]["meta_data"])
+        #output_metadata = dict(
+        #    data_type=metadata[0]["data_type"],
+        #    file_type=metadata[0]["file_type"],
+        #    meta_data=metadata[0]["meta_data"])
+
+        output_metadata = {}
         
         # handle error
-        if not self.bowtie_indexer(input_files[0], output_file):
+        if not self.bowtie2_indexer(input_files[0], output_file):
             output_metadata.set_exception(
                 Exception(
                     "bowtie2_indexer: Could not process files {}, {}.".format(*input_files)))

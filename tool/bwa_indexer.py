@@ -114,6 +114,8 @@ class bwaIndexerTool(Tool):
         sa_name[-1] = sa_name[-1].replace('.fa', '.sa')
         sa_loc = '/'.join(sa_name)
         
+        output_metadata = {}
+
         # handle error
         if not self.bwa_indexer(genome_file, amb_loc, ann_loc, bwt_loc, pac_loc, sa_loc):
             output_metadata.set_exception(

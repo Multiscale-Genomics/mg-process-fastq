@@ -77,16 +77,16 @@ class process_genome(Workflow):
         genome_fa = file_ids[0]
         
         # Bowtie2 Indexer
-        bt = tool.bowtieIndexerTool(self.configuration)
-        bti, btm = bt.run((genome_fa), ())
+        bt = tool.bowtieIndexerTool()
+        bti, btm = bt.run([genome_fa], metadata)
         
         # BWA Indexer
-        bwa = tool.bwaIndexerTool(self.configuration)
-        bwai, bwam = bwa.run((genome_fa), ())
+        bwa = tool.bwaIndexerTool()
+        bwai, bwam = bwa.run([genome_fa], metadata)
         
         # GEM Indexer
-        gem = tool.gemIndexerTool(self.configuration)
-        gemi, gemm = gem.run((genome_fa), ())
+        gem = tool.gemIndexerTool()
+        gemi, gemm = gem.run(([genome_fa], metadata)
 
 # ------------------------------------------------------------------------------
 
@@ -133,7 +133,7 @@ if __name__ == "__main__":
     #results = app.launch(process_genome, [genome_file], {})
 
     pg = process_genome()
-    results = pg.run([genome_fa], {'user_id' : 'test'})
+    results = pg.run([genome_fa], {'user_id' : 'test', 'meta_data' : {'assembly' : assembly}})
 
     
     print da.get_files_by_user("test")

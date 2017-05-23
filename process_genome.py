@@ -135,7 +135,7 @@ if __name__ == "__main__":
     #results = app.launch(process_genome, [genome_file], {})
 
     pg = process_genome()
-    results = pg.run([genome_fa], {'user_id' : 'test', 'meta_data' : {'assembly' : assembly}})
+    results = pg.run([genome_fa], {'user_id' : 'test', "file_type" : "fasta","data_type" : "assembly" , "metadata" :{'assembly' : assembly} })
 
     
     print da.get_files_by_user("test")

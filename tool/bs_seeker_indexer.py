@@ -50,7 +50,7 @@ class bssIndexerTool(Tool):
         """
         Init function
         """
-        print "BS-Seeker FilterReads wrapper"
+        print "BS-Seeker Indexer wrapper"
 
     @task(fasta_file = FILE_IN, aligner = IN, aligner_path = IN, bss_path = IN, ref_path = IN, bam_out = FILE_INOUT)
     def bss_build_index(self, fasta_file, aligner, aligner_path, bss_path, ref_path, bam_out):

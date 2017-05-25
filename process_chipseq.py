@@ -103,11 +103,13 @@ class process_chipseq(Workflow):
             )
         
         # TODO - Multiple files need merging into a single bam file
-        
+       
+        b3f_file_bgd_out = ''
+
         # Filter the bams
         b3f = biobambam_filter.biobambam()
         b3f_file_out = file_loc.replace('.fastq', '.filtered.bam')
-        b3f_out = b3f.run([out_bam, b3f_file_out], {})
+        b3f_out,b3f_out_meta = b3f.run([out_bam, b3f_file_out], {})
         
         if file_bgd_loc != None:
             b3f_bgd_file_out = file_bgd_loc.replace('.fastq', '.filtered.bam')
@@ -122,7 +124,7 @@ class process_chipseq(Workflow):
         else:
             out_files, out_meta = m.run([b3f_file_out], {})
         
-        return (b3f_file_out, b3f_file_bgd_out, out_files[0], out_files[1], out_files[2], out_files[3], out_files[4])
+        return ([b3f_file_out, b3f_file_bgd_out, out_files[0], out_files[1], out_files[2], out_files[3], out_files[4]],[b3f_out_meta,out_meta])
 
 # ------------------------------------------------------------------------------
 
@@ -167,7 +169,8 @@ if __name__ == "__main__":
     genome_file_idx4 = da.set_file("test", genome_fa + ".pac", "fasta", "Assembly", taxon_id, meta_data={'assembly' : assembly})
     genome_file_idx5 = da.set_file("test", genome_fa + ".sa", "fasta", "Assembly", taxon_id, meta_data={'assembly' : assembly})
     file_in = da.set_file("test", file_loc, "fasta", "ChIP-seq", taxon_id, meta_data={'assembly' : assembly})
-    file_bg_in = da.set_file("test", file_bg_loc, "fasta", "ChIP-seq", taxon_id, meta_data={'assembly' : assembly})
+    if file_bg_loc:
+        file_bg_in = da.set_file("test", file_bg_loc, "fasta", "ChIP-seq", taxon_id, meta_data={'assembly' : assembly})
     
     print da.get_files_by_user("test")
 
@@ -189,7 +192,7 @@ if __name__ == "__main__":
 
     pc = process_chipseq()
     results_files, results_meta = pc.run(files, {'user_id' : 'test'})
-
+    print "THIS IS THE PRINT", results_files, results_meta
     print(results_files)
     print(results_meta)
     

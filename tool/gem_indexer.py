@@ -84,9 +84,9 @@ class gemIndexerTool(Tool):
         
         # input and output share most metadata
         output_metadata = dict(
-            data_type=metadata[0]["data_type"],
-            file_type=metadata[0]["file_type"],
-            meta_data=metadata[0]["meta_data"])
+            data_type=metadata["data_type"],
+            file_type=metadata["file_type"],
+            meta_data=metadata["metadata"])
         
         # handle error
         if not self.gem_indexer(input_files[0], output_file):

@@ -56,7 +56,7 @@ class bowtieIndexerTool(Tool):
             Location of the output index file
         """
         cf = common()
-        output_file = cf.bowtie_index_genome(file_loc, idx_loc)
+        output_file = cf.bowtie_index_genome(file_loc)
         return True
     
     def run(self, input_files, metadata):

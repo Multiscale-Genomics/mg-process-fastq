@@ -88,7 +88,7 @@ class process_genome(Workflow):
         
         # GEM Indexer
         gem = gem_indexer.gemIndexerTool()
-        gemi, gemm = gem.run(([genome_fa], metadata)
+        gemi, gemm = gem.run([genome_fa], metadata)
 
 # ------------------------------------------------------------------------------
 

@@ -139,6 +139,7 @@ class macs2(Tool):
         # input and output share most metadata
         output_metadata = {"bed_types" : ["bed4+1", "bed6+4", "bed6+3", "bed12+3"]}
         
+        peak_bed = None
         # handle error
         if not self.macs2_peak_calling(name, bam_file, bam_file_bgd,
             narrowPeak, summits_bed, broadPeak, gappedPeak):

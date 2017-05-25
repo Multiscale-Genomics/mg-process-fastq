@@ -385,8 +385,9 @@ class common:
         command_line = 'gem-indexer -i ' + genome_file + ' -o ' + file_name[-1].replace('.fa', '')
         
         args = shlex.split(command_line)
+	print "THIS IS THE PRINT ",args
         p = subprocess.Popen(args)
-        p.wait()
+	p.wait()
         
         return True
     
@@ -405,7 +406,7 @@ class common:
         
         with cd("/".join(file_name[0:-1])):
             command_line = 'bowtie2-build ' + genome_file + ' ' + file_name[-1].replace('.fa', '')
-            
+            print command_line
             args = shlex.split(command_line)
             p = subprocess.Popen(args)
             p.wait()
@@ -494,6 +495,7 @@ class common:
         
         for command_line in command_lines:
             args = shlex.split(command_line)
+            print "THIS IS THE PRINT", args
             p = subprocess.Popen(args)
             p.wait()
     

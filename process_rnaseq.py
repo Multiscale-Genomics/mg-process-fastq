@@ -66,6 +66,9 @@ class process_rnaseq(Workflow):
             List of locations for the output bam, bed and tsv files
         """
         
+        ki = kallisto_indexer.kallistoIndexerTool()
+        ki.run()
+
         genome_fa = file_ids[0]
         
         # Index the cDNA

@@ -11,6 +11,20 @@ steps. Likewise the bin, lib and code directories are relative to the home dir;
 if this is not the case for your system then make the required changes when
 running these commands.
 
+Setup the System Environment
+----------------------------
+
+.. code-block:: none
+   :linenos:
+
+   sudo apt-get install -y make build-essential libssl-dev zlib1g-dev       //
+   libbz2-dev libreadline-dev libsqlite3-dev wget curl llvm libncurses5-dev //
+   libncursesw5-dev xz-utils tk-dev unzip mcl libgtk2.0-dev r-base-core     //
+   libcurl4-gnutls-dev
+
+   cd ${HOME}
+   mkdir bin lib code
+
 Setup pyenv and pyenv-virtualenv
 --------------------------------
 
@@ -30,19 +44,6 @@ space.
 
    pyenv install 2.7.12
    pyenv virtualenv 2.7.12 mg-process-fastq
-
-Setup the System Environment
-----------------------------
-
-.. code-block:: none
-   :linenos:
-
-   sudo apt-get install -y make build-essential libssl-dev zlib1g-dev       \\
-   libbz2-dev libreadline-dev libsqlite3-dev wget curl llvm libncurses5-dev \\
-   libncursesw5-dev xz-utils tk-dev unzip mcl libgtk2.0-dev r-base-core
-
-   cd ${HOME}
-   mkdir bin lib code
 
 Installation Process
 --------------------
@@ -154,6 +155,7 @@ SAMtools
    cd ${HOME}/lib
    git clone https://github.com/samtools/samtools.git
    cd samtools
+   autoheader
    autoconf -Wno-syntax
    ./configure --prefix=${HOME}/lib/samtools
    make
@@ -307,6 +309,9 @@ Checkout the code for the DM API and the mg-process-fastq pipelines:
 Install MACS2
 ^^^^^^^^^^^^^
 
+This should get installed as part of the installation if the mg-process-fastq
+package, if not then it will need to be installed separately:
+
 .. code-block:: none
    :linenos:
 
@@ -338,9 +343,18 @@ Install BSseeker
    git clone https://github.com/BSSeeker/BSseeker2.git
 
    cd ${HOME}/code/mg-process-fastq
-   ln -s ${HOME}/lib/BSSeeker/bs_align bs_align
-   ln -s ${HOME}/lib/BSSeeker/bs_index bs_index
-   ln -s ${HOME}/lib/BSSeeker/bs_utils bs_utils
+   ln -s ${HOME}/lib/BSseeker2/bs_align bs_align
+   ln -s ${HOME}/lib/BSseeker2/bs_index bs_index
+   ln -s ${HOME}/lib/BSseeker2/bs_utils bs_utils
 
    cd ${HOME}/code/mg-process-fastq/tool
-   ln -s ${HOME}/lib/BSSeeker/FilterReads.py FilterReads.py
+   ln -s ${HOME}/lib/BSseeker2/FilterReads.py FilterReads.py
+
+Post Installation Tidyup
+------------------------
+
+.. code-block:: none
+   :linenos:
+
+   cd ${HOME}/lib
+   rm *.zip *.tar.gz

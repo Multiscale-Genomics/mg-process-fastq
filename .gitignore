@@ -8,3 +8,4 @@ TADbit-master/*
 env
 env/*
 *~
+*.DS_Store

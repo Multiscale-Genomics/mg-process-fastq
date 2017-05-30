@@ -28,5 +28,5 @@ def test_biobambam():
     
     bbb.biobambam_filter_alignments(
         resource_path + "fastQForSelRegion.bam",
-        resource_path +"_output_test.bam",resource_path
+        resource_path + "_output_test.bam",resource_path
     )

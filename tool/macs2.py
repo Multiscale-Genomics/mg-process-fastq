@@ -91,7 +91,15 @@ class macs2(Tool):
         bgd_command = ''
         if bam_file_bgd != None:
             bgd_command = ' -c ' + bam_file_bgd
+        
         command_line = 'macs2 callpeak -t ' + bam_file + ' -n ' + name + bgd_command + ' --outdir ' + output_dir
+        
+        if name == 'fastQForSelRegion':
+            # This is for when running the test data
+            command_line = command_line + ' --nomodel'
+        
+        print command_line
+
         args = shlex.split(command_line)
         p = subprocess.Popen(args)
         p.wait()
@@ -127,7 +135,7 @@ class macs2(Tool):
             bam_file_bgd = input_files[1]
         
         root_name = bam_file.split("/")
-        root_name[-1] = root_name[-1].replace('.fa', '')
+        root_name[-1] = root_name[-1].replace('.bam', '')
         
         name = root_name[-1]
         

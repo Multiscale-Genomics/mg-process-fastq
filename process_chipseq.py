@@ -86,17 +86,17 @@ class process_chipseq(Workflow):
         
 
         
-        out_bam = file_loc.replace('.fastq', '.bam')
+        out_bam = file_loc.replace(".fastq", '.bam')
         
         bwa = bwa_aligner.bwaAlignerTool()
-        out_bam = file_loc.replace('.fastq', '.bam')
+        out_bam = file_loc.replace(".fastq", '.bam')
         out_file_bam, out_bam_meta = bwa.run(
             [genome_fa, file_loc, out_bam, bwa_amb, bwa_ann, bwa_bwt, bwa_pac, bwa_sa],
             {}
         )
         
         if file_bgd_loc != None:
-            out_bgd_bam = file_bgd_loc.replace('.fastq', '.bam')
+            out_bgd_bam = file_bgd_loc.replace(".fastq", '.bam')
             out_bgd_bam_res, out_bgd_bam_meta = bwa.run(
                 [genome_fa, file_bgd_loc, out_bgd_bam, bwa_amb, bwa_ann, bwa_bwt, bwa_pac, bwa_sa],
                 {}
@@ -112,7 +112,7 @@ class process_chipseq(Workflow):
         b3f_out,b3f_out_meta = b3f.run([out_bam, b3f_file_out], {})
         
         if file_bgd_loc != None:
-            b3f_bgd_file_out = file_bgd_loc.replace('.fastq', '.filtered.bam')
+            b3f_bgd_file_out = file_bgd_loc.replace(".fastq", '.filtered.bam')
             b3f_bgd_out = b3f.run([out_bgd_bam, b3f_bgd_file_out], {})
         else:
             b3f_bgd_file_out = None
@@ -162,12 +162,13 @@ if __name__ == "__main__":
     
     print da.get_files_by_user("test")
     
-    genome_file = da.set_file("test", genome_fa, "fasta", "Assembly", taxon_id, meta_data={'assembly' : assembly})
+    genome_file = da.set_file("test", genome_fa, "fasta", "Assembly", taxon_id, meta_data={"assembly" : assembly})
     genome_file_idx1 = da.set_file("test", genome_fa + ".amb", "fasta", "Assembly", taxon_id, meta_data={'assembly' : assembly})
     genome_file_idx2 = da.set_file("test", genome_fa + ".ann", "fasta", "Assembly", taxon_id, meta_data={'assembly' : assembly})
     genome_file_idx3 = da.set_file("test", genome_fa + ".bwt", "fasta", "Assembly", taxon_id, meta_data={'assembly' : assembly})
     genome_file_idx4 = da.set_file("test", genome_fa + ".pac", "fasta", "Assembly", taxon_id, meta_data={'assembly' : assembly})
     genome_file_idx5 = da.set_file("test", genome_fa + ".sa", "fasta", "Assembly", taxon_id, meta_data={'assembly' : assembly})
+
     file_in = da.set_file("test", file_loc, "fasta", "ChIP-seq", taxon_id, meta_data={'assembly' : assembly})
     if file_bg_loc:
         file_bg_in = da.set_file("test", file_bg_loc, "fasta", "ChIP-seq", taxon_id, meta_data={'assembly' : assembly})
@@ -191,8 +192,8 @@ if __name__ == "__main__":
     #results = app.launch(process_chipseq, [genome_file, file_in, file_bg_in], {'user_id' : 'test'})
 
     pc = process_chipseq()
-    results_files, results_meta = pc.run(files, {'user_id' : 'test'})
-    print "THIS IS THE PRINT", results_files, results_meta
+    results_files, results_meta = pc.run(files, {"user_id" : "test"})
+
     print(results_files)
     print(results_meta)
     

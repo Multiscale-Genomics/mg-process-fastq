@@ -89,6 +89,12 @@ class process_genome(Workflow):
         # GEM Indexer
         gem = gem_indexer.gemIndexerTool()
         gemi, gemm = gem.run(([genome_fa], metadata)
+        output_metadata['genome_idx'] = gidx_meta
+
+        # Build the matching WGBS genome index
+        builder = bs_seeker_indexer.bssIndexerTool()
+        genome_idx, gidx_meta = builder.run([genome_fa], metadata)
+        output_metadata['genome_idx'] = gidx_meta
 
 # ------------------------------------------------------------------------------
 

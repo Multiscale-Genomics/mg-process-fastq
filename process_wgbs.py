@@ -51,6 +51,21 @@ class process_wgbs:
     methylation
     """
 
+    configuration = {}
+
+    def __init__(self, configuration={}):
+        """
+        Initialise the tool with its configuration.
+
+
+        Parameters
+        ----------
+        configuration : dict
+            a dictionary containing parameters that define how the operation
+            should be carried out, which are specific to each Tool.
+        """
+        self.configuration.update(configuration)
+
     def single_splitter(self, in_file1, tag = 'tmp'):
         """
         Function to divide the FastQ files into separte sub files of 1000000

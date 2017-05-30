@@ -452,6 +452,8 @@ class common:
         
         """
         command_line = 'bwa index ' + genome_file
+        print "the command line is : "
+        print command_line
         
         amb_name = genome_file + '.amb'
         ann_name = genome_file + '.ann'

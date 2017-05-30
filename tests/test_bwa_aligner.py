@@ -2,12 +2,14 @@
 
 import pytest
 import random
+import os.path
 
 from tool import bwa_aligner
 
 def test_bwa_aligner():
-    genome_fa = "/Users/reham/Documents/selectGenomeRegion.fasta"
-    fastqFile = "/Users/reham/Documents/fastQForSelRegion.fastq"
+    resource_path = os.path.join(os.path.dirname(__file__), "data/")
+    genome_fa = resource_path+ "selectGenomeRegion.fasta"
+    fastqFile = resource_path+ "fastQForSelRegion.fastq"
     out_bam = fastqFile.replace('.fastq', '.bam')
     
     files = [

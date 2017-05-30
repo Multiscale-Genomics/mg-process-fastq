@@ -1,5 +1,5 @@
 @SQ	SN:ENA|CM000684|CM000684.2	LN:2100
-@PG	ID:bwa	PN:bwa	VN:0.7.12-r1039	CL:bwa samse -f /Users/reham/Documents/fastQForSelRegion.sam /Users/reham/Documents/selectGenomeRegion.fasta /Users/reham/Documents/fastQForSelRegion.sai /Users/reham/Documents/fastQForSelRegion.fastq
+@PG	ID:bwa	PN:bwa	VN:0.7.12-r1039	CL:bwa samse -f /Users/reham/code/mg-process-fastq/tests/data/fastQForSelRegion.sam /Users/reham/code/mg-process-fastq/tests/data/selectGenomeRegion.fasta /Users/reham/code/mg-process-fastq/tests/data/fastQForSelRegion.sai /Users/reham/code/mg-process-fastq/tests/data/fastQForSelRegion.fastq
 DRR000150.7277509	0	ENA|CM000684|CM000684.2	1221	37	36M	*	0	0	ATTCCATTCGACAATGATTCCATTCGATTTCTTTCG	BCBBBCABB5BBBB@?B?@AABABA@<AAA@AA@A=	XT:A:U	NM:i:0	X0:i:1	X1:i:0	XM:i:0	XO:i:0	XG:i:0	MD:Z:36
 DRR000150.7296285	16	ENA|CM000684|CM000684.2	822	37	36M	*	0	0	CCATTCGAGTCCATTCAATGATTCCATTCGAATCCA	=?@>=?@@@??@A?A@ABAA@A@?<=@@;@@??ABB	XT:A:U	NM:i:1	X0:i:1	X1:i:0	XM:i:1	XO:i:0	XG:i:0	MD:Z:31T4
 DRR000150.7313123	0	ENA|CM000684|CM000684.2	1199	37	36M	*	0	0	TTCAATTCTTTGATTCCATTCCATTCCATTCGACAA	B?BBBBB@B=BBBBBBBBBBBBCAB@<AAB@@@A??	XT:A:U	NM:i:1	X0:i:1	X1:i:0	XM:i:1	XO:i:0	XG:i:0	MD:Z:3C32

@@ -2,12 +2,14 @@
 
 import pytest
 import random
+import os.path
 
 from tool import macs2
 
 def test_macs2():
     m = macs2.macs2()
-    m.macs2_peak_calling("I_Dont_know","/Users/reham/Documents/fastQForSelRegion.bam")
+    resource_path = os.path.join(os.path.dirname(__file__), "data/")
+    m.macs2_peak_calling("selectGenomeRegion_peakFiles",resource_path+"fastQForSelRegion.bam")
     
     
 test_macs2()

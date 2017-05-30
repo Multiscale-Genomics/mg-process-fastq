@@ -294,9 +294,10 @@ class process_wgbs:
             bam, bam_meta = bss_aligner.run(files, metadata)
             
             if 'alignment' in output_metadata:
-                output_metadata['alignment'] = bam_meta
-            else:
                 output_metadata['alignment'].append(bam_meta)
+
+            else:
+                output_metadata['alignment'] = [bam_meta]
 
         # Sort and merge the aligned bam files
         # Pre-sort the original input bam files
@@ -375,9 +376,9 @@ if __name__ == "__main__":
     
     print da.get_files_by_user("test")
     
-    genome_file = da.set_file("test", genome_fa, "fasta", "Assembly", taxon_id, meta_data=metadata)
-    fastq_file_1 = da.set_file("test", fastq1, "fastq", "wgbs", taxon_id, meta_data=metadata)
-    fastq_file_2 = da.set_file("test", fastq2, "fastq", "wgbs", taxon_id, meta_data=metadata)
+    genome_file = da.set_file("test", genome_fa, "fasta", "Assembly", taxon_id, None, [], meta_data=metadata)
+    fastq_file_1 = da.set_file("test", fastq1, "fastq", "wgbs", taxon_id, None, [], meta_data=metadata)
+    fastq_file_2 = da.set_file("test", fastq2, "fastq", "wgbs", taxon_id, None, [], meta_data=metadata)
     
     print da.get_files_by_user("test")
 

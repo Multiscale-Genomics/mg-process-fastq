@@ -53,8 +53,22 @@ class process_chipseq(Workflow):
     Functions for processing Chip-Seq FastQ files. Files are the aligned,
     filtered and analysed for peak calling
     """
+
+    def __init__(self, configuration={}):
+        """
+        Initialise the tool with its configuration.
+
+
+        Parameters
+        ----------
+        configuration : dict
+            a dictionary containing parameters that define how the operation
+            should be carried out, which are specific to each Tool.
+        """
+        self.configuration.update(configuration)
+
     
-    def run(self, file_ids, metadata):
+    def run(self, file_ids, metadata, output_files):
         """
         Main run function for processing ChIP-seq FastQ data. Pipeline aligns
         the FASTQ files to the genome using BWA. MACS 2 is then used for peak
@@ -67,6 +81,8 @@ class process_chipseq(Workflow):
             List of file locations
         metadata : list
             Required meta data
+        output_files : list
+            List of output file locations
         
         Returns
         -------
@@ -126,6 +142,29 @@ class process_chipseq(Workflow):
         
         return ([b3f_file_out, b3f_file_bgd_out, out_files[0], out_files[1], out_files[2], out_files[3], out_files[4]],[b3f_out_meta,out_meta])
 
+
+# -----------------------------------------------------------------------------
+
+def main(inputFiles, inputMetadata, outputFiles):
+    """
+    Main function
+    -------------
+
+    This function launches the app.
+    """
+
+    # import pprint  # Pretty print - module for dictionary fancy printing
+
+    # 1. Instantiate and launch the App
+    print "1. Instantiate and launch the App"
+    from apps.workflowapp import WorkflowApp
+    app = WorkflowApp()
+    result = app.launch(process_chipseq, inputFiles, inputMetadata,
+                        outputFiles, {})
+
+    # 2. The App has finished
+    print "2. Execution finished"
+
 # ------------------------------------------------------------------------------
 
 if __name__ == "__main__":
@@ -162,16 +201,39 @@ if __name__ == "__main__":
     
     print da.get_files_by_user("test")
     
-    genome_file = da.set_file("test", genome_fa, "fasta", "Assembly", taxon_id, meta_data={"assembly" : assembly})
-    genome_file_idx1 = da.set_file("test", genome_fa + ".amb", "fasta", "Assembly", taxon_id, meta_data={'assembly' : assembly})
-    genome_file_idx2 = da.set_file("test", genome_fa + ".ann", "fasta", "Assembly", taxon_id, meta_data={'assembly' : assembly})
-    genome_file_idx3 = da.set_file("test", genome_fa + ".bwt", "fasta", "Assembly", taxon_id, meta_data={'assembly' : assembly})
-    genome_file_idx4 = da.set_file("test", genome_fa + ".pac", "fasta", "Assembly", taxon_id, meta_data={'assembly' : assembly})
-    genome_file_idx5 = da.set_file("test", genome_fa + ".sa", "fasta", "Assembly", taxon_id, meta_data={'assembly' : assembly})
+    genome_file = da.set_file("test", genome_fa, "fasta", "Assembly",
+        taxon_id, None, [], meta_data={"assembly" : assembly})
+    genome_file_idx1 = da.set_file("test", genome_fa + ".amb", "index", "Assembly",
+        taxon_id, None, [genome_file], meta_data={'assembly' : assembly})
+    genome_file_idx2 = da.set_file("test", genome_fa + ".ann", "index", "Assembly",
+        taxon_id, None, [genome_file], meta_data={'assembly' : assembly})
+    genome_file_idx3 = da.set_file("test", genome_fa + ".bwt", "index", "Assembly",
+        taxon_id, None, [genome_file], meta_data={'assembly' : assembly})
+    genome_file_idx4 = da.set_file("test", genome_fa + ".pac", "index", "Assembly",
+        taxon_id, None, [genome_file], meta_data={'assembly' : assembly})
+    genome_file_idx5 = da.set_file("test", genome_fa + ".sa", "index", "Assembly",
+        taxon_id, None, [genome_file], meta_data={'assembly' : assembly})
 
-    file_in = da.set_file("test", file_loc, "fasta", "ChIP-seq", taxon_id, meta_data={'assembly' : assembly})
+    # Read metadata file and build a dictionary with the metadata:
+    from basic_modules.metadata import Metadata
+    # Maybe it is necessary to prepare a metadata parser from json file
+    # when building the Metadata objects.
+    metadata = [
+        Metadata("fasta", "Assembly"),
+        Metadata("index", "Assembly"),
+        Metadata("index", "Assembly"),
+        Metadata("index", "Assembly"),
+        Metadata("index", "Assembly"),
+        Metadata("index", "Assembly"),
+        Metadata("fasta", "ChIP-seq")
+    ]
+
+    file_in = da.set_file("test", file_loc, "fasta", "ChIP-seq", taxon_id,
+        None, [], meta_data={'assembly' : assembly})
     if file_bg_loc:
-        file_bg_in = da.set_file("test", file_bg_loc, "fasta", "ChIP-seq", taxon_id, meta_data={'assembly' : assembly})
+        file_bg_in = da.set_file("test", file_bg_loc, "fasta", "ChIP-seq",
+            taxon_id, None, [], meta_data={'assembly' : assembly})
+        metadata.append(Metadata("fasta", "ChIP-seq"))
     
     print da.get_files_by_user("test")
 
@@ -185,14 +247,33 @@ if __name__ == "__main__":
         file_loc,
         file_bg_loc
     ]
-    
+
+    out_bam = file_loc.replace(".fastq", '.filtered.bam')
+    out_peaks_narrow = file_loc.replace(".fastq", '_peaks.narrowPeak')
+    out_peaks_xls = file_loc.replace(".fastq", '_peaks.xls')
+    out_peaks_broad = file_loc.replace(".fastq", '_summits.bed')
+    out_peaks_gapped = file_loc.replace(".fastq", '_summits.bed')
+    out_summits = file_loc.replace(".fastq", '_summits.bed')
+
+
+    files_out = [
+        out_bam,
+        out_peaks_narrow,
+        out_peaks_xls,
+        out_peaks_broad,
+        out_peaks_gapped,
+        out_summits
+    ]
+
     # 3. Instantiate and launch the App
     #from basic_modules import WorkflowApp
     #app = WorkflowApp()
     #results = app.launch(process_chipseq, [genome_file, file_in, file_bg_in], {'user_id' : 'test'})
 
-    pc = process_chipseq()
-    results_files, results_meta = pc.run(files, {"user_id" : "test"})
+    #pc = process_chipseq()
+    #results_files, results_meta = pc.run(files, {"user_id" : "test"})
+
+    results_files, results_meta = main(files, metadata, files_out)    
 
     print(results_files)
     print(results_meta)

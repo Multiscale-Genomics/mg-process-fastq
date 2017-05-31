@@ -203,15 +203,15 @@ if __name__ == "__main__":
     
     genome_file = da.set_file("test", genome_fa, "fasta", "Assembly",
         taxon_id, None, [], meta_data={"assembly" : assembly})
-    genome_file_idx1 = da.set_file("test", genome_fa + ".amb", "index", "Assembly",
+    genome_file_idx1 = da.set_file("test", genome_fa + ".amb", "amb", "Assembly",
         taxon_id, None, [genome_file], meta_data={'assembly' : assembly})
-    genome_file_idx2 = da.set_file("test", genome_fa + ".ann", "index", "Assembly",
+    genome_file_idx2 = da.set_file("test", genome_fa + ".ann", "ann", "Assembly",
         taxon_id, None, [genome_file], meta_data={'assembly' : assembly})
-    genome_file_idx3 = da.set_file("test", genome_fa + ".bwt", "index", "Assembly",
+    genome_file_idx3 = da.set_file("test", genome_fa + ".bwt", "bwt", "Assembly",
         taxon_id, None, [genome_file], meta_data={'assembly' : assembly})
-    genome_file_idx4 = da.set_file("test", genome_fa + ".pac", "index", "Assembly",
+    genome_file_idx4 = da.set_file("test", genome_fa + ".pac", "pac", "Assembly",
         taxon_id, None, [genome_file], meta_data={'assembly' : assembly})
-    genome_file_idx5 = da.set_file("test", genome_fa + ".sa", "index", "Assembly",
+    genome_file_idx5 = da.set_file("test", genome_fa + ".sa", "sa", "Assembly",
         taxon_id, None, [genome_file], meta_data={'assembly' : assembly})
 
     # Read metadata file and build a dictionary with the metadata:

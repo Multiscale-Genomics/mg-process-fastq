@@ -74,6 +74,7 @@ class process_rnaseq(Workflow):
         metadata : list
             Required meta data
         output_files : list
+            List of output file locations
 
         
         Returns

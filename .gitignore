@@ -10,3 +10,9 @@ env/*
 *~
 *.DS_Store
 *_build*
+.eggs*
+bs_align
+bs_index
+bs_utils
+mg_process_fastq.egg-info*
+tool/FilterReads.py

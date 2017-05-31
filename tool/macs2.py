@@ -17,7 +17,7 @@
 import os, shutil, shlex, subprocess
 
 try :
-    from pycompss.api.parameter import FILE_IN, FILE_OUT, FILE_INOUT
+    from pycompss.api.parameter import FILE_IN, FILE_OUT, FILE_INOUT, IN
     from pycompss.api.task import task
 except ImportError :
     print("[Warning] Cannot import \"pycompss\" API packages.")

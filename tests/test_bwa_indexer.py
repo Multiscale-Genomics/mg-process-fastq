@@ -34,7 +34,7 @@ def test_bwa_indexer ():
     print bwa_sa
     
     bwaT = bwa_indexer.bwaIndexerTool()
-    bwaT.bwa_indexer(genome_fa, bwa_amb, bwa_ann, bwa_bwt,bwa_pac, bwa_sa) 
+    bwaT.run([genome_fa], {'assembly' : 'test'}) 
     
     
 test_bwa_indexer()

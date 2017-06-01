@@ -2,7 +2,6 @@
 *.tsv
 .python-version
 *.pyc
-pycompss*
 TADbit-master
 TADbit-master/*
 env

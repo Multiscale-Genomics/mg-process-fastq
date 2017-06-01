@@ -19,6 +19,7 @@ import os
 try:
     from pycompss.api.parameter import FILE_IN, FILE_OUT, FILE_INOUT
     from pycompss.api.task import task
+    from pycompss.api.api import compss_wait_on
 except ImportError :
     print "[Warning] Cannot import \"pycompss\" API packages."
     print "          Using mock decorators."
@@ -37,13 +38,13 @@ class bwaAlignerTool(Tool):
     Tool for aligning sequence reads to a genome using BWA
     """
 
-    def __init__(self):
+    def __init__(self, configuration={}):
         """
         Init function
         """
         print "BWA Aligner"
     
-    @task(genome_file_loc=FILE_IN, reads_file_loc=FILE_IN, bam_loc=FILE_OUT, amb_loc=FILE_IN, ann_loc=FILE_IN, bwt_loc=FILE_IN, pac_loc=FILE_IN, sa_loc=FILE_IN)
+    @task(returns=int, genome_file_loc=FILE_IN, reads_file_loc=FILE_IN, bam_loc=FILE_OUT, amb_loc=FILE_IN, ann_loc=FILE_IN, bwt_loc=FILE_IN, pac_loc=FILE_IN, sa_loc=FILE_IN)
     def bwa_aligner(self, genome_file_loc, read_file_loc, bam_loc, amb_loc, ann_loc, bwt_loc, pac_loc, sa_loc):
         """
         BWA Aligner
@@ -64,7 +65,7 @@ class bwaAlignerTool(Tool):
         cf = common()
         bam_loc = cf.bwa_align_reads(genome_file_loc, read_file_loc, bam_loc)
         
-        return True
+        return 1
     
     def run(self, input_files, metadata):
         """
@@ -87,6 +88,8 @@ class bwaAlignerTool(Tool):
         output_metadata = {}
         
         results = self.bwa_aligner(input_files[0], input_files[1], output_bam_file, input_files[2], input_files[3], input_files[4], input_files[5], input_files[6])
+        
+        results = compss_wait_on(results)
         
         # handle error
         #if not self.bwa_aligner(input_files[0], input_files[1], output_bam_file, input_files[2], input_files[3], input_files[4], input_files[5], input_files[6]):

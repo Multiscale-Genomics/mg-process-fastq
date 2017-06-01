@@ -37,6 +37,7 @@ try:
     from pycompss.api.parameter import FILE_IN, FILE_OUT
     from pycompss.api.task import task
     from pycompss.api.constraint import constraint
+    from pycompss.api.api import compss_wait_on
 except ImportError :
     print "[Warning] Cannot import \"pycompss\" API packages."
     print "          Using mock decorators."
@@ -56,7 +57,7 @@ class process_chipseq(Workflow):
     Functions for processing Chip-Seq FastQ files. Files are the aligned,
     filtered and analysed for peak calling
     """
-
+    
     def __init__(self, configuration={}):
         """
         Initialise the tool with its configuration.
@@ -107,43 +108,52 @@ class process_chipseq(Workflow):
         
         out_bam = file_loc.replace(".fastq", '.bam')
         
-        bwa = bwa_aligner.bwaAlignerTool()
+        bwa = bwa_aligner.bwaAlignerTool(self.configuration)
         out_bam = file_loc.replace(".fastq", '.bam')
-        out_file_bam, out_bam_meta = bwa.run(
+        bwa_results = bwa.run(
             [genome_fa, file_loc, out_bam, bwa_amb, bwa_ann, bwa_bwt, bwa_pac, bwa_sa],
             {}
         )
         
+        bwa_results = compss_wait_on(bwa_results)
+        
         if file_bgd_loc != None:
             out_bgd_bam = file_bgd_loc.replace(".fastq", '.bam')
-            out_bgd_bam_res, out_bgd_bam_meta = bwa.run(
+            bwa_results_bgd = bwa.run(
                 [genome_fa, file_bgd_loc, out_bgd_bam, bwa_amb, bwa_ann, bwa_bwt, bwa_pac, bwa_sa],
                 {}
             )
+            bwa_results_bgd = compss_wait_on(bwa_results_bgd)
+            
         
         # TODO - Multiple files need merging into a single bam file
        
         b3f_file_bgd_out = ''
 
         # Filter the bams
-        b3f = biobambam_filter.biobambam()
+        b3f = biobambam_filter.biobambam(self.configuration)
         b3f_file_out = file_loc.replace('.fastq', '.filtered.bam')
-        b3f_out,b3f_out_meta = b3f.run([out_bam, b3f_file_out], {})
+        b3f_results = b3f.run([out_bam, b3f_file_out], {})
+        
+        b3f_results = compss_wait_on(b3f_results)
         
         if file_bgd_loc != None:
             b3f_bgd_file_out = file_bgd_loc.replace(".fastq", '.filtered.bam')
-            b3f_bgd_out = b3f.run([out_bgd_bam, b3f_bgd_file_out], {})
+            b3f_results_bgd = b3f.run([out_bgd_bam, b3f_bgd_file_out], {})
+            b3f_results_bgd = compss_wait_on(b3f_results_bgd)
         else:
             b3f_bgd_file_out = None
         
         # MACS2 to call peaks
-        m = macs2.macs2()
+        m = macs2.macs2(self.configuration)
         if file_bgd_loc != None:
-            out_files, out_meta = m.run([b3f_file_out,  b3f_bgd_file_out], {})
+            m_results = m.run([b3f_file_out,  b3f_bgd_file_out], {})
         else:
-            out_files, out_meta = m.run([b3f_file_out], {})
+            m_results = m.run([b3f_file_out], {})
         
-        return ([b3f_file_out, b3f_file_bgd_out, out_files[0], out_files[1], out_files[2], out_files[3], out_files[4]],[b3f_out_meta,out_meta])
+        m_results = compss_wait_on(m_results)
+        
+        return ([b3f_file_out, b3f_file_bgd_out] + m_results[0], [b3f_results[1],m_results[1]])
 
 
 # -----------------------------------------------------------------------------

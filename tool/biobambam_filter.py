@@ -19,6 +19,7 @@ import os, shutil, shlex, subprocess
 try:
     from pycompss.api.parameter import FILE_IN, FILE_OUT, IN
     from pycompss.api.task import task
+    from pycompss.api.api import compss_wait_on
 except ImportError :
     print "[Warning] Cannot import \"pycompss\" API packages."
     print "          Using mock decorators."
@@ -37,13 +38,13 @@ class biobambam(Tool):
     Tool to sort and filter bam files
     """
 
-    def __init__(self):
+    def __init__(self, configuration={}):
         """
         Init function
         """
         print "BioBamBam2 Filter"
     
-    @task(bam_file_in = FILE_IN, bam_file_out = FILE_OUT, tmp_dir = IN)
+    @task(returns=int, bam_file_in = FILE_IN, bam_file_out = FILE_OUT, tmp_dir = IN)
     def biobambam_filter_alignments(self, bam_file_in, bam_file_out, tmp_dir):
         """
         Sorts and filters the bam file.
@@ -73,7 +74,7 @@ class biobambam(Tool):
                 p = subprocess.Popen(args, stdin=f_in, stdout=f_out)
                 p.wait()
         
-        return True
+        return 1
     
     
     def run(self, input_files, metadata):
@@ -103,6 +104,7 @@ class biobambam(Tool):
         output_metadata = {}
         
         results = self.biobambam_filter_alignments(input_file, output_file, tmp_dir)
+        results = compss_wait_on(results)
         
         # handle error
         #if not self.biobambam_filter_alignments(input_file, output_file, tmp_dir):

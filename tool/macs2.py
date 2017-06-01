@@ -89,7 +89,7 @@ class macs2(Tool):
         output_dir = "/".join(od[0:-1])
 
         bgd_command = ''
-        if bam_file_bgd != None:
+        if bam_file_bgd is not None:
             bgd_command = ' -c ' + bam_file_bgd
         
         command_line = 'macs2 callpeak -t ' + bam_file + ' -n ' + name + bgd_command + ' --outdir ' + output_dir
@@ -98,8 +98,58 @@ class macs2(Tool):
             # This is for when running the test data
             command_line = command_line + ' --nomodel'
         
-        print command_line
+        args = shlex.split(command_line)
+        p = subprocess.Popen(args)
+        p.wait()
+        
+        return True
+    
+    @task(
+            name = IN,
+            bam_file = FILE_IN,
+            narrowPeak = FILE_INOUT,
+            summit_bed = FILE_INOUT,
+            broadPeak = FILE_INOUT,
+            gappedPeak = FILE_INOUT)
+    def macs2_peak_calling_nobgd(self,
+        name, bam_file,
+        narrowPeak = None, summits_bed = None, broadPeak = None, gappedPeak = None):
+        """
+        Function to run MACS2 for peak calling on aligned sequence files without
+        a background dataset for normalisation.
+        
+        Parameters
+        ----------
+        name : str
+            Name to be used to identify the files
+        bam_file : str
+            Location of the aligned FASTQ files as a bam file
+        
+        Returns
+        -------
+        narrowPeak : file
+            BED6+4 file - ideal for transcription factor binding site
+            identification
+        summitPeak : file
+            BED4+1 file - Contains the peak summit locations for everypeak
+        broadPeak : file
+            BED6+3 file - ideal for histone binding site identification
+        gappedPeak : file
+            BED12+3 file - Contains a merged set of the broad and narrow peak
+            files
+        
+        Definitions defined for each of these files have come from the MACS2
+        documentation described in the docs at https://github.com/taoliu/MACS
+        """
+        od = bam_file.split("/")
+        output_dir = "/".join(od[0:-1])
 
+        command_line = 'macs2 callpeak -t ' + bam_file + ' -n ' + name + ' --outdir ' + output_dir
+        
+        if name == 'fastQForSelRegion':
+            # This is for when running the test data
+            command_line = command_line + ' --nomodel'
+        
         args = shlex.split(command_line)
         p = subprocess.Popen(args)
         p.wait()
@@ -131,7 +181,7 @@ class macs2(Tool):
         
         bam_file = input_files[0]
         bam_file_bgd = None
-        if len(input_files) == 2:
+        if len(input_files) == 2 and input_files[1] is not None:
             bam_file_bgd = input_files[1]
         
         root_name = bam_file.split("/")
@@ -149,16 +199,28 @@ class macs2(Tool):
         
         peak_bed = None
         # handle error
-        if not self.macs2_peak_calling(name, bam_file, bam_file_bgd,
-            narrowPeak, summits_bed, broadPeak, gappedPeak):
-            output_metadata['exception'] = Exception(
-                    "macs2_peak_calling: Could not process files {}, {}.".format(*input_files)
-            )
-            peak_bed    = None
-            summits_bed = None
-            narrowPeak  = None
-            broadPeak   = None
-            gappedPeak  = None
+        if bam_file_bgd is None:
+            if not self.macs2_peak_calling_nobgd(name, bam_file,
+                narrowPeak, summits_bed, broadPeak, gappedPeak):
+                output_metadata['exception'] = Exception(
+                        "macs2_peak_calling_nobgd: Could not process files {}, {}.".format(*input_files)
+                )
+                peak_bed    = None
+                summits_bed = None
+                narrowPeak  = None
+                broadPeak   = None
+                gappedPeak  = None
+        else:
+            if not self.macs2_peak_calling(name, bam_file, bam_file_bgd,
+                narrowPeak, summits_bed, broadPeak, gappedPeak):
+                output_metadata['exception'] = Exception(
+                        "macs2_peak_calling: Could not process files {}, {}.".format(*input_files)
+                )
+                peak_bed    = None
+                summits_bed = None
+                narrowPeak  = None
+                broadPeak   = None
+                gappedPeak  = None
         return ([peak_bed, summits_bed, narrowPeak, broadPeak, gappedPeak], output_metadata)
 
 # ------------------------------------------------------------------------------

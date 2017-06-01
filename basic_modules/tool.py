@@ -1,20 +1,12 @@
-#from mug import datatypes as mug_datatypes
-try:
-    from pycompss.api.parameter import FILE_IN, FILE_OUT
-    from pycompss.api.task import task
-    from pycompss.api.constraint import constraint
-except ImportError :
-    print "[Warning] Cannot import \"pycompss\" API packages."
-    print "          Using mock decorators."
-    
-    from dummy_pycompss import *
-
+# from mug import datatypes as mug_datatypes
+from pycompss.api.parameter import FILE_IN, FILE_OUT
+from pycompss.api.task import task
 from basic_modules.metadata import Metadata
 
 
-#------------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Main Tool interface
-#------------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 class Tool(object):
     """
     Abstract class describing a specific operation on a precise input data type
@@ -31,17 +23,16 @@ class Tool(object):
 
     The "run()" method calls the relevant methods that perform the operations
     require to implement the Tool's functionality. Each of these methods should
-    be decorated using the "@task" decorator. Further, the execution
-    environment in which each operation is run can be configured by decorating
-    the appropriate method(s) using the "@constraint" decorator.
+    be decorated using the "@task" decorator. Further, the task constraints can
+    be configured using the "@constraint" decorator.
 
     See also Workflow.
     """
     input_data_type = None
     output_data_type = None
     configuration = {}
-    
-    def __init__(self, configuration = {}):
+
+    def __init__(self, configuration={}):
         """
         Initialise the tool with its configuration.
 
@@ -49,13 +40,13 @@ class Tool(object):
         Parameters
         ----------
         configuration : dict
-        	a dictionary containing parameters that define how the operation
+            a dictionary containing parameters that define how the operation
             should be carried out, which are specific to each Tool.
         """
         self.configuration.update(configuration)
 
     # @constraint()
-    @task(input_file = FILE_IN, output_file = FILE_OUT, isModifier = False)
+    @task(input_file=FILE_IN, output_file=FILE_OUT, isModifier=False)
     def _taskMethod(self, input_file, output_file):
         """
         This method performs the actions required to achieve the Tool's
@@ -65,7 +56,7 @@ class Tool(object):
         output_file = "/path/to/output_file"
         return output_file
 
-    def run(self, input_files, metadata = None):
+    def run(self, input_files, output_files, metadata=None):
         """
         Perform the required operations to achieve the functionality of the
         Tool. This usually involves:
@@ -80,7 +71,7 @@ class Tool(object):
         In case of failure, the Tool should return None instead of the output
         file name, AND attach an Exception instance to the output metadata (see
         Metadata.set_exception), to allow the wrapping App to report the
-        error (see App). 
+        error (see App).
 
         Note that this method calls the actual task(s). Ideally, each task
         should have a unique name that identifies the operation: these will be
@@ -90,18 +81,18 @@ class Tool(object):
         Parameters
         ----------
         input_file : list
-        	List of valid file names (str) locally accessible to the Tool. 
+            List of valid file names (str) locally accessible to the Tool.
         metadata : list
-        	List of Metadata instances, one for each of the input_files.
+            List of Metadata instances, one for each of the input_files.
 
 
         Returns
         -------
         list, list
-        	 1. a list of output files (str), each a valid file name locally
-             	accessible to the Tool
+             1. a list of output files (str), each a valid file name locally
+                accessible to the Tool
              2. a list of Metadata instances, one for each of the
-             	output_files
+                output_files
 
 
         Example
@@ -122,6 +113,3 @@ class Tool(object):
         output_format = "OUTPUT_FILE_FORMAT"
         output_metadata = Metadata(self.output_data_type, output_format)
         return ([output_file], [output_metadata])
-
-
-

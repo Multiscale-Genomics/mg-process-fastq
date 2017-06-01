@@ -27,4 +27,3 @@ def test_macs2():
     resource_path = os.path.join(os.path.dirname(__file__), "data/")
     bam_file = resource_path + "fastQForSelRegion.bam"
     m.run([bam_file], {})
-

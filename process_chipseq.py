@@ -18,7 +18,10 @@
 
 import argparse, urllib2, gzip, shutil, shlex, subprocess, os.path, json
 
-from basic_modules import Tool, Workflow, Metadata
+from basic_modules.tool import Tool
+from basic_modules.workflow import Workflow
+from basic_modules.metadata import Metadata
+
 
 from functools import wraps
 

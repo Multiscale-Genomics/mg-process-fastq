@@ -36,6 +36,12 @@ class biobambam(Tool):
     """
     Tool to sort and filter bam files
     """
+
+    def __init__(self):
+        """
+        Init function
+        """
+        print "BioBamBam2 Filter"
     
     @task(bam_file_in = FILE_IN, bam_file_out = FILE_OUT, tmp_dir = IN)
     def biobambam_filter_alignments(self, bam_file_in, bam_file_out, tmp_dir):
@@ -98,9 +104,9 @@ class biobambam(Tool):
 
         # handle error
         if not self.biobambam_filter_alignments(input_file, output_file, tmp_dir):
-            output_metadata.set_exception(
-                Exception(
-                    "biobambamTool: Could not process files {}, {}.".format(*input_files)))
+            output_metadata['exception'] = Exception(
+                    "biobambamTool: Could not process files {}, {}.".format(*input_files)
+            )
             output_file = None
         return ([output_file], output_metadata)
 

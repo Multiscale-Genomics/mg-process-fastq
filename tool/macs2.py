@@ -151,9 +151,9 @@ class macs2(Tool):
         # handle error
         if not self.macs2_peak_calling(name, bam_file, bam_file_bgd,
             narrowPeak, summits_bed, broadPeak, gappedPeak):
-            output_metadata.set_exception(
-                Exception(
-                    "macs2_peak_calling: Could not process files {}, {}.".format(*input_files)))
+            output_metadata['exception'] = Exception(
+                    "macs2_peak_calling: Could not process files {}, {}.".format(*input_files)
+            )
             peak_bed    = None
             summits_bed = None
             narrowPeak  = None

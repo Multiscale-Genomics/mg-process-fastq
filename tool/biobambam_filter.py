@@ -101,7 +101,7 @@ class biobambam(Tool):
         tmp_dir = "/".join(td[0:-1])
         
         output_metadata = {}
-
+        
         # handle error
         if not self.biobambam_filter_alignments(input_file, output_file, tmp_dir):
             output_metadata['exception'] = Exception(

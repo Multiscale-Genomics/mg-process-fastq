@@ -167,6 +167,8 @@ def main(inputFiles, inputMetadata, outputFiles):
 
     # 2. The App has finished
     print "2. Execution finished"
+    print result
+    return result
 
 # ------------------------------------------------------------------------------
 
@@ -276,10 +278,12 @@ if __name__ == "__main__":
     #pc = process_chipseq()
     #results_files, results_meta = pc.run(files, {"user_id" : "test"})
 
-    results_files, results_meta = main(files, metadata, files_out)    
+    #results_files, results_meta = main(files, metadata, files_out)
+    results = main(files, metadata, files_out)
 
-    print(results_files)
-    print(results_meta)
+    #print(results_files)
+    #print(results_meta)
+    print(results)
     
     print da.get_files_by_user("test")
     

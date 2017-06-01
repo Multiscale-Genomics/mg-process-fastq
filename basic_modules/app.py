@@ -94,11 +94,11 @@ class App(object):
                                                        output_metadata)
 
         print "3) Check for errors"
-        if any([outmd.error for outmd in output_metadata]):
-            fatal = self._error(
-                [outmd for outmd in output_metadata if outmd.error])
-            if fatal:
-                return None
+        #if any([outmd.error for outmd in output_metadata]):
+        #    fatal = self._error(
+        #        [outmd for outmd in output_metadata if outmd.error])
+        #    if fatal:
+        #        return None
 
         print "Output_files: ", output_files
         return output_files

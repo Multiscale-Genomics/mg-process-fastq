@@ -47,10 +47,10 @@ class macs2(Tool):
             name = IN,
             bam_file = FILE_IN,
             bam_file_bgd = FILE_IN,
-            narrowPeak = FILE_INOUT,
-            summit_bed = FILE_INOUT,
-            broadPeak = FILE_INOUT,
-            gappedPeak = FILE_INOUT)
+            narrowPeak = FILE_OUT,
+            summit_bed = FILE_OUT,
+            broadPeak = FILE_OUT,
+            gappedPeak = FILE_OUT)
     def macs2_peak_calling(self,
         name, bam_file, bam_file_bgd = None,
         narrowPeak = None, summits_bed = None, broadPeak = None, gappedPeak = None):
@@ -107,10 +107,10 @@ class macs2(Tool):
     @task(
             name = IN,
             bam_file = FILE_IN,
-            narrowPeak = FILE_INOUT,
-            summit_bed = FILE_INOUT,
-            broadPeak = FILE_INOUT,
-            gappedPeak = FILE_INOUT)
+            narrowPeak = FILE_OUT,
+            summit_bed = FILE_OUT,
+            broadPeak = FILE_OUT,
+            gappedPeak = FILE_OUT)
     def macs2_peak_calling_nobgd(self,
         name, bam_file,
         narrowPeak = None, summits_bed = None, broadPeak = None, gappedPeak = None):
@@ -200,27 +200,31 @@ class macs2(Tool):
         peak_bed = None
         # handle error
         if bam_file_bgd is None:
-            if not self.macs2_peak_calling_nobgd(name, bam_file,
-                narrowPeak, summits_bed, broadPeak, gappedPeak):
-                output_metadata['exception'] = Exception(
-                        "macs2_peak_calling_nobgd: Could not process files {}, {}.".format(*input_files)
-                )
-                peak_bed    = None
-                summits_bed = None
-                narrowPeak  = None
-                broadPeak   = None
-                gappedPeak  = None
+            results = self.macs2_peak_calling_nobgd(name, bam_file,
+                narrowPeak, summits_bed, broadPeak, gappedPeak)
+            #if not self.macs2_peak_calling_nobgd(name, bam_file,
+            #    narrowPeak, summits_bed, broadPeak, gappedPeak):
+            #    output_metadata['error'] = Exception(
+            #            "macs2_peak_calling_nobgd: Could not process files {}, {}."#.format(*input_files)
+            #    )
+            #    peak_bed    = None
+            #    summits_bed = None
+            #    narrowPeak  = None
+            #    broadPeak   = None
+            #    gappedPeak  = None
         else:
-            if not self.macs2_peak_calling(name, bam_file, bam_file_bgd,
-                narrowPeak, summits_bed, broadPeak, gappedPeak):
-                output_metadata['exception'] = Exception(
-                        "macs2_peak_calling: Could not process files {}, {}.".format(*input_files)
-                )
-                peak_bed    = None
-                summits_bed = None
-                narrowPeak  = None
-                broadPeak   = None
-                gappedPeak  = None
+            results = self.macs2_peak_calling(name, bam_file, bam_file_bgd,
+                narrowPeak, summits_bed, broadPeak, gappedPeak)
+            #if not self.macs2_peak_calling(name, bam_file, bam_file_bgd,
+            #    narrowPeak, summits_bed, broadPeak, gappedPeak):
+            #    output_metadata['error'] = Exception(
+            #            "macs2_peak_calling: Could not process files {}, {}.".format(*input_files)
+            #    )
+            #    peak_bed    = None
+            #    summits_bed = None
+            #    narrowPeak  = None
+            #    broadPeak   = None
+            #    gappedPeak  = None
         return ([peak_bed, summits_bed, narrowPeak, broadPeak, gappedPeak], output_metadata)
 
 # ------------------------------------------------------------------------------

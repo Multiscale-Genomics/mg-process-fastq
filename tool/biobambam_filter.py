@@ -102,12 +102,14 @@ class biobambam(Tool):
         
         output_metadata = {}
         
+        results = self.biobambam_filter_alignments(input_file, output_file, tmp_dir)
+        
         # handle error
-        if not self.biobambam_filter_alignments(input_file, output_file, tmp_dir):
-            output_metadata['exception'] = Exception(
-                    "biobambamTool: Could not process files {}, {}.".format(*input_files)
-            )
-            output_file = None
+        #if not self.biobambam_filter_alignments(input_file, output_file, tmp_dir):
+        #    output_metadata['error'] = Exception(
+        #            "biobambamTool: Could not process files {}, {}.".format(*input_files)
+        #    )
+        #    output_file = None
         return ([output_file], output_metadata)
 
 # ------------------------------------------------------------------------------

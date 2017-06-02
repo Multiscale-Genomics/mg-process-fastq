@@ -6,7 +6,7 @@ import os.path
 
 from tool import bwa_indexer
 
-def test_bwa_indexer ():
+def test_bwa_indexer():
     
     resource_path = os.path.join(os.path.dirname(__file__), "data/")
     genome_fa = resource_path + "selectGenomeRegion.fasta"
@@ -33,8 +33,6 @@ def test_bwa_indexer ():
     print bwa_pac
     print bwa_sa
     
-    bwaT = bwa_indexer.bwaIndexerTool()
+    bwaT = bwa_indexer.bwaIndexerTool(test=True)
     bwaT.run([genome_fa], {'assembly' : 'test'}) 
-    
-    
-test_bwa_indexer()
+

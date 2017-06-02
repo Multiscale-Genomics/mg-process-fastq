@@ -19,6 +19,7 @@ import os, shutil, shlex, subprocess
 try :
     from pycompss.api.parameter import FILE_IN, FILE_OUT, FILE_INOUT, IN
     from pycompss.api.task import task
+    from pycompss.api.api import compss_wait_on
 except ImportError :
     print("[Warning] Cannot import \"pycompss\" API packages.")
     print("          Using mock decorators.")
@@ -225,6 +226,9 @@ class macs2(Tool):
             #    narrowPeak  = None
             #    broadPeak   = None
             #    gappedPeak  = None
+        
+        results = compss_wait_on(results)
+        
         return ([peak_bed, summits_bed, narrowPeak, broadPeak, gappedPeak], output_metadata)
 
 # ------------------------------------------------------------------------------

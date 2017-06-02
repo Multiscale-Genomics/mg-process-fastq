@@ -37,7 +37,7 @@ class bwaIndexerTool(Tool):
     Tool for running indexers over a genome FASTA file
     """
     
-    def __init__(self):
+    def __init__(self, test=False):
         """
         Init function
         """
@@ -115,13 +115,15 @@ class bwaIndexerTool(Tool):
         sa_loc = '/'.join(sa_name)
         
         output_metadata = {}
+        
+        results = self.bwa_indexer(genome_file, amb_loc, ann_loc, bwt_loc, pac_loc, sa_loc)
 
         # handle error
-        if not self.bwa_indexer(genome_file, amb_loc, ann_loc, bwt_loc, pac_loc, sa_loc):
-            output_metadata.set_exception(
-                Exception(
-                    "bwa_indexer: Could not process files {}, {}.".format(*input_files)))
-        output_file = None
+        #if not self.bwa_indexer(genome_file, amb_loc, ann_loc, bwt_loc, pac_loc, sa_loc):
+        #    output_metadata.set_exception(
+        #        Exception(
+        #            "bwa_indexer: Could not process files {}, {}.".format(*input_files)))
+        #output_file = None
         return ([amb_loc, ann_loc, bwt_loc, pac_loc, sa_loc], [output_metadata])
 
 # ------------------------------------------------------------------------------

@@ -115,7 +115,7 @@ class process_chipseq(Workflow):
             {}
         )
         
-        bwa_results = compss_wait_on(bwa_results)
+        #bwa_results = compss_wait_on(bwa_results)
         
         if file_bgd_loc != None:
             out_bgd_bam = file_bgd_loc.replace(".fastq", '.bam')
@@ -123,7 +123,7 @@ class process_chipseq(Workflow):
                 [genome_fa, file_bgd_loc, out_bgd_bam, bwa_amb, bwa_ann, bwa_bwt, bwa_pac, bwa_sa],
                 {}
             )
-            bwa_results_bgd = compss_wait_on(bwa_results_bgd)
+            #bwa_results_bgd = compss_wait_on(bwa_results_bgd)
             
         
         # TODO - Multiple files need merging into a single bam file
@@ -140,7 +140,7 @@ class process_chipseq(Workflow):
         if file_bgd_loc != None:
             b3f_bgd_file_out = file_bgd_loc.replace(".fastq", '.filtered.bam')
             b3f_results_bgd = b3f.run([out_bgd_bam, b3f_bgd_file_out], {})
-            b3f_results_bgd = compss_wait_on(b3f_results_bgd)
+            #b3f_results_bgd = compss_wait_on(b3f_results_bgd)
         else:
             b3f_bgd_file_out = None
         
@@ -151,7 +151,7 @@ class process_chipseq(Workflow):
         else:
             m_results = m.run([b3f_file_out], {})
         
-        m_results = compss_wait_on(m_results)
+        #m_results = compss_wait_on(m_results)
         
         return ([b3f_file_out, b3f_file_bgd_out] + m_results[0], [b3f_results[1],m_results[1]])
 

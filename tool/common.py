@@ -385,9 +385,8 @@ class common:
         command_line = 'gem-indexer -i ' + genome_file + ' -o ' + file_name[-1].replace('.fa', '')
         
         args = shlex.split(command_line)
-	print "THIS IS THE PRINT ",args
         p = subprocess.Popen(args)
-	p.wait()
+        p.wait()
         
         return True
     
@@ -406,7 +405,6 @@ class common:
         
         with cd("/".join(file_name[0:-1])):
             command_line = 'bowtie2-build ' + genome_file + ' ' + file_name[-1].replace('.fa', '')
-            print command_line
             args = shlex.split(command_line)
             p = subprocess.Popen(args)
             p.wait()
@@ -452,8 +450,6 @@ class common:
         
         """
         command_line = 'bwa index ' + genome_file
-        print "the command line is : "
-        print command_line
         
         amb_name = genome_file + '.amb'
         ann_name = genome_file + '.ann'
@@ -493,16 +489,12 @@ class common:
             'samtools view -b -o ' + output_bam_file + ' ' + intermediate_sam_file
         ]
         
-        #print command_lines
-        
         for command_line in command_lines:
             args = shlex.split(command_line)
-            print "THIS IS THE PRINT", args
             p = subprocess.Popen(args)
             p.wait()
     
     
-    #def merge_bam(self, data_dir, project_id, final_id, run_ids=[]):
     def merge_bam(self, data_dir, project_id, final_id, run_ids=[]):
         """
         Merge together all the bams in a directory and sort to create the final

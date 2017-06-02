@@ -58,6 +58,8 @@ class process_chipseq(Workflow):
     filtered and analysed for peak calling
     """
     
+    configuration = {}
+    
     def __init__(self, configuration={}):
         """
         Initialise the tool with its configuration.
@@ -111,8 +113,9 @@ class process_chipseq(Workflow):
         bwa = bwa_aligner.bwaAlignerTool(self.configuration)
         out_bam = file_loc.replace(".fastq", '.bam')
         bwa_results = bwa.run(
-            [genome_fa, file_loc, out_bam, bwa_amb, bwa_ann, bwa_bwt, bwa_pac, bwa_sa],
-            {}
+            [genome_fa, file_loc, bwa_amb, bwa_ann, bwa_bwt, bwa_pac, bwa_sa],
+            {},
+            [out_bam]
         )
         
         #bwa_results = compss_wait_on(bwa_results)
@@ -120,8 +123,9 @@ class process_chipseq(Workflow):
         if file_bgd_loc != None:
             out_bgd_bam = file_bgd_loc.replace(".fastq", '.bam')
             bwa_results_bgd = bwa.run(
-                [genome_fa, file_bgd_loc, out_bgd_bam, bwa_amb, bwa_ann, bwa_bwt, bwa_pac, bwa_sa],
-                {}
+                [genome_fa, file_bgd_loc, bwa_amb, bwa_ann, bwa_bwt, bwa_pac, bwa_sa],
+                {},
+                [out_bgd_bam]
             )
             #bwa_results_bgd = compss_wait_on(bwa_results_bgd)
             
@@ -133,9 +137,9 @@ class process_chipseq(Workflow):
         # Filter the bams
         b3f = biobambam_filter.biobambam(self.configuration)
         b3f_file_out = file_loc.replace('.fastq', '.filtered.bam')
-        b3f_results = b3f.run([out_bam, b3f_file_out], {})
+        b3f_results = b3f.run([out_bam], {}, [b3f_file_out])
         
-        b3f_results = compss_wait_on(b3f_results)
+        #b3f_results = compss_wait_on(b3f_results)
         
         if file_bgd_loc != None:
             b3f_bgd_file_out = file_bgd_loc.replace(".fastq", '.filtered.bam')
@@ -146,10 +150,28 @@ class process_chipseq(Workflow):
         
         # MACS2 to call peaks
         m = macs2.macs2(self.configuration)
+        
+        mac_root_name = b3f_file_out.split("/")
+        mac_root_name[-1] = mac_root_name[-1].replace('.bam', '')
+        
+        name = root_name[-1]
+        
+        summits_bed = '/'.join(mac_root_name) + "_summits.bed"
+        narrowPeak  = '/'.join(mac_root_name) + "_narrowPeak"
+        broadPeak   = '/'.join(mac_root_name) + "_broadPeak"
+        gappedPeak  = '/'.join(mac_root_name) + "_gappedPeak"
+        
+        output_files = [
+            summits_bed,
+            narrowPeak,
+            broadPeak,
+            gappedPeak
+        ]
+        
         if file_bgd_loc != None:
-            m_results = m.run([b3f_file_out,  b3f_bgd_file_out], {})
+            m_results = m.run([b3f_file_out,  b3f_bgd_file_out], {}, output_files)
         else:
-            m_results = m.run([b3f_file_out], {})
+            m_results = m.run([b3f_file_out], {}, output_files)
         
         #m_results = compss_wait_on(m_results)
         

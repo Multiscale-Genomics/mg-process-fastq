@@ -14,25 +14,25 @@
    limitations under the License.
 """
 # Indexers
-import bowtie_indexer
+from . import bowtie_indexer
 #import bs_seeker_indexer
-import bwa_indexer
-import gem_indexer
-import kallisto_indexer
+from . import bwa_indexer
+from . import gem_indexer
+from . import kallisto_indexer
 
 # Aligners
 #import bs_seeker_aligner
-import bwa_aligner
+from . import bwa_aligner
 
 # Filters
-import biobambam_filter
+from . import biobambam_filter
 #import bs_seeker_filter
 
 # Analysis
 #import bs_seeker_methylation_caller
-import inps
-import kallisto_quant
-import macs2
+from . import inps
+from . import kallisto_quant
+from . import macs2
 
 __author__  = 'Mark McDowall'
 __version__ = '0.0'

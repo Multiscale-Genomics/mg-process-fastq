@@ -20,15 +20,15 @@ try:
     from pycompss.api.parameter import FILE_IN, FILE_OUT, FILE_INOUT
     from pycompss.api.task import task
 except ImportError :
-    print "[Warning] Cannot import \"pycompss\" API packages."
-    print "          Using mock decorators."
+    print ("[Warning] Cannot import \"pycompss\" API packages.")
+    print ("          Using mock decorators.")
     
     from dummy_pycompss import *
 
 from basic_modules.metadata import Metadata
 from basic_modules.tool import Tool
 
-from common import common
+from . import common
 
 # ------------------------------------------------------------------------------
 
@@ -41,7 +41,7 @@ class kallistoIndexerTool(Tool):
         """
         Init function
         """
-        print "Kallisto Indexer"
+        print ("Kallisto Indexer")
     
     @task(cdna_file_loc=FILE_IN, cdna_idx_file=FILE_INOUT)
     def kallisto_indexer(self, cdna_file_loc, cdna_idx_file):

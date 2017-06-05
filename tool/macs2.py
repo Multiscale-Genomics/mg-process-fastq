@@ -28,7 +28,7 @@ except ImportError :
 from basic_modules.metadata import Metadata
 from basic_modules.tool import Tool
 
-from common import common
+from . import common
 
 # ------------------------------------------------------------------------------
 
@@ -41,7 +41,7 @@ class macs2(Tool):
         """
         Init function
         """
-        print "MACS2 Peak Caller"
+        print ("MACS2 Peak Caller")
     
     @task(
             name = IN,

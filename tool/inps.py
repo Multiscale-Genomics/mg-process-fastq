@@ -29,7 +29,7 @@ from basic_modules.metadata import Metadata
 from basic_modules.tool import Tool
 
 from . import common
-#from . import cd
+from tool.common import cd
 
 # ------------------------------------------------------------------------------
 

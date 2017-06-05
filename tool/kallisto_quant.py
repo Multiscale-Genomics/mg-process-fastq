@@ -29,7 +29,7 @@ except ImportError :
 from basic_modules.metadata import Metadata
 from basic_modules.tool import Tool
 
-from common import common
+from . import common
 
 # ------------------------------------------------------------------------------
 

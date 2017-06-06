@@ -1,0 +1,10 @@
+chromosome=19  total_nucleosome:8
+1:Chromosome	2:Start_inflection	3:End_inflection	4:Nucleosome_index	5:Width_between_inflection	6:Peak_height	7:Area_under_curve	8:Physical_property	9:"-log10(Pvalue_of_peak)"	10:"-log10(Pvalue_of_valley)"
+19	191	251	Nucleosome:1	70	553.8	3864.5	MainPeak	0.00128112	52.679756255
+19	301	371	Nucleosome:2	80	344.8	2603.6	MainPeak	-0.0	563.263790095
+19	671	811	Nucleosome:3	150	2.8	28.4	MainPeak	-0.0	920.88636193
+19	1061	1141	Nucleosome:4	90	535.9	4055.0	MainPeak	-0.0	400.80144046500004
+19	1191	1251	Nucleosome:5	70	283.6	1646.9	Shoulder	-0.0	320.158515195
+19	1441	1511	Nucleosome:6	80	11500.6	83996.5	MainPeak	8321.31630401	288.92894964
+19	1561	1631	Nucleosome:7	80	4639.6	31174.9	Shoulder	1251.54460016	527.99506721
+19	2011	2091	Nucleosome:8	90	2.0	12.5	MainPeak	-0.0	643.384698305

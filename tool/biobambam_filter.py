@@ -21,15 +21,15 @@ try:
     from pycompss.api.task import task
     from pycompss.api.api import compss_wait_on
 except ImportError :
-    print "[Warning] Cannot import \"pycompss\" API packages."
-    print "          Using mock decorators."
+    print("[Warning] Cannot import \"pycompss\" API packages.")
+    print("          Using mock decorators.")
     
     from dummy_pycompss import *
 
 from basic_modules.metadata import Metadata
 from basic_modules.tool import Tool
 
-from common import common
+from tool.common import common
 
 # ------------------------------------------------------------------------------
 
@@ -42,7 +42,7 @@ class biobambam(Tool):
         """
         Init function
         """
-        print "BioBamBam2 Filter"
+        print("BioBamBam2 Filter")
     
     @task(returns=int, bam_file_in = FILE_IN, bam_file_out = FILE_OUT, tmp_dir = IN)
     def biobambam_filter_alignments(self, bam_file_in, bam_file_out, tmp_dir):

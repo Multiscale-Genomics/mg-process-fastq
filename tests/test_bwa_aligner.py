@@ -47,4 +47,4 @@ def test_bwa_aligner():
     bwaT = bwa_aligner.bwaAlignerTool()
     bwaT.bwa_aligner(genome_fa, fastqFile, out_bam, bwa_amb, bwa_ann, bwa_bwt,bwa_pac, bwa_sa) 
     
-    print __file__
+    print(__file__)

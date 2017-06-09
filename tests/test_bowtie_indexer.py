@@ -26,12 +26,12 @@ def test_bowtie_indexer():
     bti = bowtie_indexer.bowtieIndexerTool()
     resource_path = os.path.join(os.path.dirname(__file__), "data/")
     
-    bti.run([resource_path+"selectGenomeRegion.fasta"],{})
+    bti.run([resource_path+"macs2.Human.GCA_000001405.22.fasta"],{})
 
 
 def test_bowtie_indexer_02():
     bti = bowtie_indexer.bowtieIndexerTool()
     resource_path = os.path.join(os.path.dirname(__file__), "data/")
     
-    bti.run([resource_path+"MouseSelRegion.fasta"],{})
+    bti.run([resource_path+"inps.Mouse.GRCm38.fasta"],{})
     

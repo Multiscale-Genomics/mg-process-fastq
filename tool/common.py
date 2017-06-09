@@ -104,7 +104,6 @@ class common:
             self.download_file(file_loc, ftp_url)
             
         if os.path.isfile(file_loc_unzipped) == False:
-            print("Unzipping")
             with gzip.open(file_loc, 'rb') as f_in, open(file_loc_unzipped, 'wb') as f_out:
                 shutil.copyfileobj(f_in, f_out)
         
@@ -235,8 +234,6 @@ class common:
             
             for fastq_file in fastq_files:
                 file_name = fastq_file.split("/")
-                
-                print(data_dir + project + "/" + file_name[-1])
                 
                 if os.path.isfile(data_dir + '/' + project + "/" + file_name[-1]) == False and os.path.isfile(data_dir + '/' + project + "/" + file_name[-1].replace('.fastq.gz', '.fastq')) == False:
                     file_location = data_dir + '/' + project + "/" + file_name[-1]

@@ -28,8 +28,8 @@ except ImportError :
 from basic_modules.metadata import Metadata
 from basic_modules.tool import Tool
 
-from common import common
-from common import cd
+from . import common
+from tool.common import cd
 
 # ------------------------------------------------------------------------------
 
@@ -42,7 +42,7 @@ class inps(Tool):
         """
         Init function
         """
-        print "iNPS Peak Caller"
+        print ("iNPS Peak Caller")
     
     @task(bam_file = FILE_IN, peak_bed = FILE_OUT)
     def inps_peak_calling(self, bam_file, peak_bed):
@@ -63,7 +63,7 @@ class inps(Tool):
             Location of the collated bed file of nucleosome peak calls
         """
         bed_file = bam_file + ".bed"
-        with cd('../../lib/iNPS'):
+        with cd('../../../lib/iNPS'):
             command_line_1 = 'bedtools bamtobed -i ' + bam_file
             command_line_2 = 'python iNPS_V1.2.2.py -i ' + bed_file + ' -o ' + peak_bed
             

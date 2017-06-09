@@ -1,11 +1,12 @@
-#!/usr/bin/python
+#!/bin/sh
+#!usr/bin/python
 
 """
 .. Copyright 2017 EMBL-European Bioinformatics Institute
-
+ 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
-   You may obtain a copy of the License at
+   You may obtain a copy of the License at 
 
        http://www.apache.org/licenses/LICENSE-2.0
 
@@ -16,19 +17,19 @@
    limitations under the License.
 """
 
-import os.path
 import pytest
+import random
+import os.path
 
-from tool.biobambam_filter import biobambam_filter
+from tool.kallisto_quant import kallistoQuantificationTool
 
-def test_biobambam():
-    """
-    Test case to ensure that BioBamBam works
-    """
-    bbb = biobambam_filter.biobambam()
+def test_kallisto_quant():
     resource_path = os.path.join(os.path.dirname(__file__), "data/")
-
-    bbb.run(
-        [resource_path + "macs2.Human.DRR000150.22.bam",
-        resource_path + "_output_test.bam",resource_path], {}
-    )
+    
+    kqft = kallistoQuantificationTool()
+    fastq1 = resource_path+"kallisto.Human.ERR030872_1.fastq"
+    fastq2 = resource_path+"kallisto.Human.ERR030872_2.fastq"
+    kqft.run ([resource_path+"kallisto.Human.GRCh38.fasta.idx", fastq1, fastq2],{}, )
+    
+    print(__file__)
+    

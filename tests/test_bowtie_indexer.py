@@ -1,11 +1,11 @@
-#!/usr/bin/python
+#!usr/bin/python
 
 """
 .. Copyright 2017 EMBL-European Bioinformatics Institute
-
+ 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
-   You may obtain a copy of the License at
+   You may obtain a copy of the License at 
 
        http://www.apache.org/licenses/LICENSE-2.0
 
@@ -16,19 +16,22 @@
    limitations under the License.
 """
 
-import os.path
 import pytest
+import random
+import os.path
 
-from tool.biobambam_filter import biobambam_filter
+from tool import bowtie_indexer
 
-def test_biobambam():
-    """
-    Test case to ensure that BioBamBam works
-    """
-    bbb = biobambam_filter.biobambam()
+def test_bowtie_indexer():
+    bti = bowtie_indexer.bowtieIndexerTool()
     resource_path = os.path.join(os.path.dirname(__file__), "data/")
+    
+    bti.run([resource_path+"macs2.Human.GCA_000001405.22.fasta"],{})
 
-    bbb.run(
-        [resource_path + "macs2.Human.DRR000150.22.bam",
-        resource_path + "_output_test.bam",resource_path], {}
-    )
+
+def test_bowtie_indexer_02():
+    bti = bowtie_indexer.bowtieIndexerTool()
+    resource_path = os.path.join(os.path.dirname(__file__), "data/")
+    
+    bti.run([resource_path+"inps.Mouse.GRCm38.fasta"],{})
+    

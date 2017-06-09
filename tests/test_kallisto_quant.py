@@ -27,9 +27,9 @@ def test_kallisto_quant():
     resource_path = os.path.join(os.path.dirname(__file__), "data/")
     
     kqft = kallistoQuantificationTool()
-    fastq1 = resource_path+"fastQForHumanRNA_1.fastq"
-    fastq2 = resource_path+"fastQForHumanRNA_2.fastq"
-    kqft.run ([resource_path+"chr7_geneForRNAseq.fasta.idx", fastq1, fastq2],{}, )
+    fastq1 = resource_path+"kallisto.Human.ERR030872_1.fastq"
+    fastq2 = resource_path+"kallisto.Human.ERR030872_2.fastq"
+    kqft.run ([resource_path+"kallisto.Human.GRCh38.fasta.idx", fastq1, fastq2],{}, )
     
     print(__file__)
     

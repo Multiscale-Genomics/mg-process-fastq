@@ -52,7 +52,7 @@ def test_bwa_aligner():
         
 def test_bwa_aligner_02():
     resource_path = os.path.join(os.path.dirname(__file__), "data/")
-    genome_fa = resource_path + "MouseSelRegion.fasta"
+    genome_fa = resource_path + "inps.Mouse.GRCm38.fasta"
     fastqFile = resource_path + "inps.Mouse.GRCm38.fastq"
     out_bam = fastqFile.replace('.fastq', '.bam')
     

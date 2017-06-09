@@ -27,6 +27,6 @@ def test_biobambam():
     resource_path = os.path.join(os.path.dirname(__file__), "data/")
     
     bbb.run(
-        [resource_path + "fastQForSelRegion.bam",
+        [resource_path + "macs2.Human.DRR000150.22.bam",
         resource_path + "_output_test.bam",resource_path], {}
     )

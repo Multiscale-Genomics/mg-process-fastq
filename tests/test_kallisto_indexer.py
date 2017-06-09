@@ -27,8 +27,8 @@ def test_kallisto_indexer():
     resource_path = os.path.join(os.path.dirname(__file__), "data/")
     ki= kallistoIndexerTool()
     
-    fasta_file = resource_path+"chr7_gene_Gene.fasta"
-    ki.run ([fasta_file],{}, [resource_path+"chr7_geneForRNAseq.fasta.idx"] )
+    fasta_file = resource_path+"kallisto.Human.GRCh38.fasta"
+    ki.run ([fasta_file],{}, [resource_path+"kallisto.Human.GRCh38.fasta.idx"] )
     
     print(__file__)
     

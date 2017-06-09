@@ -93,12 +93,9 @@ class bwaAlignerTool(Tool):
         results = self.bwa_aligner(input_files[0], input_files[1], output_files[0], input_files[2], input_files[3], input_files[4], input_files[5], input_files[6])
         
         results = compss_wait_on(results)
-<<<<<<< HEAD
+
         if results == 1:
             pass
-=======
-        print results
->>>>>>> 4d403d5238ef2d40609f4509adf2cbeb2c7131d3
         
         # handle error
         #if not self.bwa_aligner(input_files[0], input_files[1], output_bam_file, input_files[2], input_files[3], input_files[4], input_files[5], input_files[6]):

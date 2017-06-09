@@ -45,7 +45,7 @@ def test_bwa_aligner():
     bwa_sa  = files[5]
     
     bwaT = bwa_aligner.bwaAlignerTool()
-    bwaT.run([genome_fa, fastqFile, out_bam, bwa_amb, bwa_ann, bwa_bwt,bwa_pac, bwa_sa], {}) 
+    bwaT.run([genome_fa, fastqFile, bwa_amb, bwa_ann, bwa_bwt,bwa_pac, bwa_sa], {}, [out_bam]) 
     
     print(__file__)
     
@@ -73,6 +73,6 @@ def test_bwa_aligner_02():
     bwa_sa  = files[5]
     
     bwaT = bwa_aligner.bwaAlignerTool()
-    bwaT.run([genome_fa, fastqFile, out_bam, bwa_amb, bwa_ann, bwa_bwt,bwa_pac, bwa_sa], {}) 
+    bwaT.run([genome_fa, fastqFile, bwa_amb, bwa_ann, bwa_bwt,bwa_pac, bwa_sa], {}, [out_bam]) 
     
     print(__file__)

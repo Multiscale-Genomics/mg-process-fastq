@@ -31,5 +31,5 @@ def test_kallisto_quant():
     fastq2 = resource_path+"fastQForHumanRNA_2.fastq"
     kqft.run ([resource_path+"chr7_geneForRNAseq.fasta.idx", fastq1, fastq2],{}, )
     
-    print (__file__)
+    print(__file__)
     

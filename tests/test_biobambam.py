@@ -2,10 +2,10 @@
 
 """
 .. Copyright 2017 EMBL-European Bioinformatics Institute
- 
+
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
-   You may obtain a copy of the License at 
+   You may obtain a copy of the License at
 
        http://www.apache.org/licenses/LICENSE-2.0
 
@@ -16,17 +16,20 @@
    limitations under the License.
 """
 
-import pytest
-import random
 import os.path
+import pytest
 
 from tool import biobambam_filter
 
 def test_biobambam():
+    """
+    Test case to ensure that BioBamBam works
+    """
     bbb = biobambam_filter.biobambam()
     resource_path = os.path.join(os.path.dirname(__file__), "data/")
-    
+
     bbb.biobambam_filter_alignments(
         resource_path + "fastQForSelRegion.bam",
-        resource_path + "_output_test.bam",resource_path
+        resource_path + "_output_test.bam",
+        resource_path
     )

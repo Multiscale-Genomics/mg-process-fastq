@@ -30,5 +30,5 @@ def test_kallisto_indexer():
     fasta_file = resource_path+"chr7_gene_Gene.fasta"
     ki.run ([fasta_file],{}, [resource_path+"chr7_geneForRNAseq.fasta.idx"] )
     
-    print (__file__)
+    print(__file__)
     

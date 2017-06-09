@@ -1,2 +1,0 @@
-Chromosome	Tags	Max_coordinate	Recorded_chromosome_length
-19	19130	2154	2154

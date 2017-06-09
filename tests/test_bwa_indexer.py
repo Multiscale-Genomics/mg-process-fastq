@@ -27,11 +27,11 @@ def test_bwa_indexer ():
     bwa_pac = files[4]
     bwa_sa  = files[5]
     
-    print (bwa_amb)
-    print (bwa_ann)
-    print (bwa_bwt)
-    print (bwa_pac)
-    print (bwa_sa)
+    print(bwa_amb)
+    print(bwa_ann)
+    print(bwa_bwt)
+    print(bwa_pac)
+    print(bwa_sa)
     
     bwaT = bwa_indexer.bwaIndexerTool()
     bwaT.run([genome_fa], {'assembly' : 'test'}) 
@@ -57,11 +57,11 @@ def test_bwa_indexer_02 ():
     bwa_pac = files[4]
     bwa_sa  = files[5]
     
-    print (bwa_amb)
-    print (bwa_ann)
-    print (bwa_bwt)
-    print (bwa_pac)
-    print (bwa_sa)
+    print(bwa_amb)
+    print(bwa_ann)
+    print(bwa_bwt)
+    print(bwa_pac)
+    print(bwa_sa)
     
     bwaT = bwa_indexer.bwaIndexerTool()
     bwaT.run([genome_fa], {'assembly' : 'test'}) 

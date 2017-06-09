@@ -43,7 +43,7 @@ class bssMethylationCallerTool(Tool):
         """
         print "BS-Seeker Methylation Caller"
 
-    @task(bss_path = IN, bam_file = FILE_IN, db_dir = IN, wig_file = FILE_INOUT, cgmap_file = FILE_INOUT, atcgmap_file = FILE_INOUT)
+    @task(bss_path = IN, bam_file = FILE_IN, db_dir = IN, wig_file = FILE_OUT, cgmap_file = FILE_OUT, atcgmap_file = FILE_OUT)
     def bss_methylation_caller(self, bss_path, bam_file, db_dir, wig_file, cgmap_file, atcgmap_file):
         """
         Takes the merged and sorted bam file and calls the methylation sites.
@@ -59,6 +59,7 @@ class bssMethylationCallerTool(Tool):
         bam_file : str
             Location of the bam alignment file
         db_dir : str
+            Location of the FASTA file 
         wig_file : str
             Location of the wig results file
         cgmap_file : str

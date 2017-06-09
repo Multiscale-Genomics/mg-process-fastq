@@ -30,7 +30,7 @@ from tool import inps
 def test_inps():    
     
     resource_path = os.path.join(os.path.dirname(__file__), "data/")
-    bam_file = resource_path + "Mouse_selectedRegion.bam"
+    bam_file = resource_path + "inps.Mouse.GRCm38.bam"
     peak_bed = bam_file.replace('.bam', '.bed')
    
     inps_obj = inps.inps()      

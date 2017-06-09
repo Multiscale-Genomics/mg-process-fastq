@@ -9,8 +9,8 @@ from tool import bwa_indexer
 def test_bwa_indexer ():
     
     resource_path = os.path.join(os.path.dirname(__file__), "data/")
-    genome_fa = resource_path + "selectGenomeRegion.fasta"
-    fastqFile = resource_path + "fastQForSelRegion.fastq"
+    genome_fa = resource_path + "macs2.Human.GCA_000001405.22.fasta"
+    fastqFile = resource_path + "macs2.Human.DRR000150.22.fastq"
     
     files = [
         genome_fa,
@@ -39,7 +39,7 @@ def test_bwa_indexer ():
 def test_bwa_indexer_02 ():
     
     resource_path = os.path.join(os.path.dirname(__file__), "data/")
-    genome_fa = resource_path + "MouseSelRegion.fasta"
+    genome_fa = resource_path + "inps.Mouse.GRCm38.fasta"
     fastqFile = resource_path + "fastQForMouseRegion.fastq"
     
     files = [

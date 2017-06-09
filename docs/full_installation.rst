@@ -124,6 +124,8 @@ iNPS Peak Caller
    :linenos:
 
    cd ${HOME}/lib
+   mkdir iNPS
+   cd iNPS
    wget http://www.picb.ac.cn/hanlab/files/iNPS_V1.2.2.zip
    unzip iNPS_V1.2.2.zip
 

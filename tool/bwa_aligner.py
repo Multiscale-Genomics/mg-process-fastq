@@ -19,16 +19,17 @@ import os
 try:
     from pycompss.api.parameter import FILE_IN, FILE_OUT, FILE_INOUT
     from pycompss.api.task import task
+    from pycompss.api.api import compss_wait_on
 except ImportError :
-    print "[Warning] Cannot import \"pycompss\" API packages."
-    print "          Using mock decorators."
+    print("[Warning] Cannot import \"pycompss\" API packages.")
+    print("          Using mock decorators.")
     
     from dummy_pycompss import *
 
 from basic_modules.metadata import Metadata
 from basic_modules.tool import Tool
 
-from common import common
+from tool.common import common
 
 # ------------------------------------------------------------------------------
 
@@ -37,13 +38,15 @@ class bwaAlignerTool(Tool):
     Tool for aligning sequence reads to a genome using BWA
     """
 
-    def __init__(self):
+    def __init__(self, configuration={}):
         """
         Init function
         """
-        print "BWA Aligner"
+        print("BWA Aligner")
     
-    @task(genome_file_loc=FILE_IN, reads_file_loc=FILE_IN, bam_loc=FILE_OUT, amb_loc=FILE_IN, ann_loc=FILE_IN, bwt_loc=FILE_IN, pac_loc=FILE_IN, sa_loc=FILE_IN)
+    @task(returns=int, genome_file_loc=FILE_IN, read_file_loc=FILE_IN,
+          bam_loc=FILE_OUT, amb_loc=FILE_IN, ann_loc=FILE_IN, bwt_loc=FILE_IN,
+          pac_loc=FILE_IN, sa_loc=FILE_IN, isModifier=False)
     def bwa_aligner(self, genome_file_loc, read_file_loc, bam_loc, amb_loc, ann_loc, bwt_loc, pac_loc, sa_loc):
         """
         BWA Aligner
@@ -60,13 +63,14 @@ class bwaAlignerTool(Tool):
         bam_loc : str
             Location of the output file
         """
+        pass
         
         cf = common()
         bam_loc = cf.bwa_align_reads(genome_file_loc, read_file_loc, bam_loc)
         
-        return True
+        return 0
     
-    def run(self, input_files, metadata):
+    def run(self, input_files, metadata, output_files):
         """
         The main function to align bam files to a genome using BWA
         
@@ -82,11 +86,16 @@ class bwaAlignerTool(Tool):
             matching meta data
         """
         
-        output_bam_file = input_files[1].replace('.fastq', '.bam')
+        #output_bam_file = input_files[1].replace('.fastq', '.bam')
 
         output_metadata = {}
         
-        results = self.bwa_aligner(input_files[0], input_files[1], output_bam_file, input_files[2], input_files[3], input_files[4], input_files[5], input_files[6])
+        results = self.bwa_aligner(input_files[0], input_files[1], output_files[0], input_files[2], input_files[3], input_files[4], input_files[5], input_files[6])
+        
+        results = compss_wait_on(results)
+
+        if results == 1:
+            pass
         
         # handle error
         #if not self.bwa_aligner(input_files[0], input_files[1], output_bam_file, input_files[2], input_files[3], input_files[4], input_files[5], input_files[6]):
@@ -94,6 +103,6 @@ class bwaAlignerTool(Tool):
         #            "bwa_indexer: Could not process files {}, {}.".format(*input_files)
         #    )
         #    output_bam_file = None
-        return ([output_bam_file], [output_metadata])
+        return ([output_files], [output_metadata])
 
 # ------------------------------------------------------------------------------

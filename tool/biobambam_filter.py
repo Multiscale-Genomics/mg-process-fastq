@@ -19,16 +19,17 @@ import os, shutil, shlex, subprocess
 try:
     from pycompss.api.parameter import FILE_IN, FILE_OUT, IN
     from pycompss.api.task import task
+    from pycompss.api.api import compss_wait_on
 except ImportError :
-    print "[Warning] Cannot import \"pycompss\" API packages."
-    print "          Using mock decorators."
+    print("[Warning] Cannot import \"pycompss\" API packages.")
+    print("          Using mock decorators.")
     
     from dummy_pycompss import *
 
 from basic_modules.metadata import Metadata
 from basic_modules.tool import Tool
 
-from common import common
+from tool.common import common
 
 # ------------------------------------------------------------------------------
 
@@ -37,13 +38,14 @@ class biobambam(Tool):
     Tool to sort and filter bam files
     """
 
-    def __init__(self):
+    def __init__(self, configuration={}):
         """
         Init function
         """
-        print "BioBamBam2 Filter"
+        print("BioBamBam2 Filter")
     
-    @task(bam_file_in = FILE_IN, bam_file_out = FILE_OUT, tmp_dir = IN)
+    @task(returns=int, bam_file_in = FILE_IN, bam_file_out = FILE_OUT,
+          tmp_dir = IN, isModifier=False)
     def biobambam_filter_alignments(self, bam_file_in, bam_file_out, tmp_dir):
         """
         Sorts and filters the bam file.
@@ -66,6 +68,8 @@ class biobambam(Tool):
         bam_file_out : str
             Location of the output bam file
         """
+        pass
+        
         command_line = 'bamsormadup --tmpfile=' + tmp_dir
         args = shlex.split(command_line)
         with open(bam_file_in, "r") as f_in:
@@ -73,10 +77,10 @@ class biobambam(Tool):
                 p = subprocess.Popen(args, stdin=f_in, stdout=f_out)
                 p.wait()
         
-        return True
+        return 0
     
     
-    def run(self, input_files, metadata):
+    def run(self, input_files, metadata, output_files):
         """
         The main function to run BioBAMBAMfilter to remove duplicates and
         spurious reads from the FASTQ files before analysis.
@@ -102,7 +106,9 @@ class biobambam(Tool):
         
         output_metadata = {}
         
-        results = self.biobambam_filter_alignments(input_file, output_file, tmp_dir)
+        results = self.biobambam_filter_alignments(input_files[0], output_files[0], tmp_dir)
+        #results = compss_wait_on(results)
+        print results
         
         # handle error
         #if not self.biobambam_filter_alignments(input_file, output_file, tmp_dir):
@@ -110,6 +116,6 @@ class biobambam(Tool):
         #            "biobambamTool: Could not process files {}, {}.".format(*input_files)
         #    )
         #    output_file = None
-        return ([output_file], output_metadata)
+        return (output_files, metadata)
 
 # ------------------------------------------------------------------------------

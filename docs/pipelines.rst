@@ -78,7 +78,7 @@ Hi-C Anslysis
          --windows2 1,25,50,75,100                            \\
          --normalized False
 
-   When using a local verion of the [COMPS virtual machine](http://www.bsc.es/computer-sciences/grid-computing/comp-superscalar/downloads-and-documentation):
+   When using a local verion of the [COMPS virtual machine](https://www.bsc.es/research-and-development/software-and-apps/software-list/comp-superscalar/):
    
    .. code-block:: none
       :linenos:
@@ -145,7 +145,7 @@ ChIP-Seq Analysis
          --file /<dataset_dir>/<file_name>.fastq                     \\
          --bgd_file /<dataset_dir>/<bgd_file_name>.fastq
 
-   When using a local verion of the [COMPS virtual machine](http://www.bsc.es/computer-sciences/grid-computing/comp-superscalar/downloads-and-documentation):
+   When using a local verion of the [COMPS virtual machine](https://www.bsc.es/research-and-development/software-and-apps/software-list/comp-superscalar/):
    
    .. code-block:: none
       :linenos:
@@ -206,7 +206,7 @@ Mnase-Seq Analysis
          --taxon_id 9606                                             \\
          --file /<dataset_dir>/<file_name>.fastq
 
-   When using a local verion of the [COMPS virtual machine](http://www.bsc.es/computer-sciences/grid-computing/comp-superscalar/downloads-and-documentation):
+   When using a local verion of the [COMPS virtual machine](https://www.bsc.es/research-and-development/software-and-apps/software-list/comp-superscalar/):
    
    .. code-block:: none
       :linenos:
@@ -267,7 +267,7 @@ RNA-Seq Analysis
          --file /<dataset_dir>/expt1.fastq
 
 
-   When using a local verion of the [COMPS virtual machine](http://www.bsc.es/computer-sciences/grid-computing/comp-superscalar/downloads-and-documentation):
+   When using a local verion of the [COMPS virtual machine](https://www.bsc.es/research-and-development/software-and-apps/software-list/comp-superscalar/):
    
    .. code-block:: none
       :linenos:
@@ -344,7 +344,7 @@ Whole Genome BiSulphate Sequencing Analysis
          --aligner_path /home/compss/lib                          \\
          --bss_path <script_dir>/BS-Seeker2
 
-   When using a local verion of the [COMPS virtual machine](http://www.bsc.es/computer-sciences/grid-computing/comp-superscalar/downloads-and-documentation):
+   When using a local verion of the [COMPS virtual machine](https://www.bsc.es/research-and-development/software-and-apps/software-list/comp-superscalar/):
    
    .. code-block:: none
       :linenos:

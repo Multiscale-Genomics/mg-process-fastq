@@ -20,15 +20,15 @@ try:
     from pycompss.api.parameter import FILE_IN, FILE_OUT
     from pycompss.api.task import task
 except ImportError :
-    print "[Warning] Cannot import \"pycompss\" API packages."
-    print "          Using mock decorators."
+    print("[Warning] Cannot import \"pycompss\" API packages.")
+    print("          Using mock decorators.")
     
     from dummy_pycompss import *
 
 from basic_modules.metadata import Metadata
 from basic_modules.tool import Tool
 
-from common import common
+from tool.common import common
 
 # ------------------------------------------------------------------------------
 
@@ -37,13 +37,14 @@ class bwaIndexerTool(Tool):
     Tool for running indexers over a genome FASTA file
     """
     
-    def __init__(self):
+    def __init__(self, test=False):
         """
         Init function
         """
-        print "BWA Indexer"
-    
-    @task(file_loc=FILE_IN, amb_loc=FILE_OUT, ann_loc=FILE_OUT, bwt_loc=FILE_OUT, pac_loc=FILE_OUT, sa_loc=FILE_OUT)
+        print("BWA Indexer")
+
+    @task(file_loc=FILE_IN, amb_loc=FILE_OUT, ann_loc=FILE_OUT,
+        bwt_loc=FILE_OUT, pac_loc=FILE_OUT, sa_loc=FILE_OUT)
     def bwa_indexer(self, file_loc, amb_loc, ann_loc, bwt_loc, pac_loc, sa_loc):
         """
         BWA Indexer
@@ -115,13 +116,15 @@ class bwaIndexerTool(Tool):
         sa_loc = '/'.join(sa_name)
         
         output_metadata = {}
+        
+        results = self.bwa_indexer(genome_file, amb_loc, ann_loc, bwt_loc, pac_loc, sa_loc)
 
         # handle error
-        if not self.bwa_indexer(genome_file, amb_loc, ann_loc, bwt_loc, pac_loc, sa_loc):
-            output_metadata.set_exception(
-                Exception(
-                    "bwa_indexer: Could not process files {}, {}.".format(*input_files)))
-        output_file = None
+        #if not self.bwa_indexer(genome_file, amb_loc, ann_loc, bwt_loc, pac_loc, sa_loc):
+        #    output_metadata.set_exception(
+        #        Exception(
+        #            "bwa_indexer: Could not process files {}, {}.".format(*input_files)))
+        #output_file = None
         return ([amb_loc, ann_loc, bwt_loc, pac_loc, sa_loc], [output_metadata])
 
 # ------------------------------------------------------------------------------

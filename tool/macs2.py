@@ -19,6 +19,7 @@ import os, shutil, shlex, subprocess
 try :
     from pycompss.api.parameter import FILE_IN, FILE_OUT, FILE_INOUT, IN
     from pycompss.api.task import task
+    from pycompss.api.api import compss_wait_on
 except ImportError :
     print("[Warning] Cannot import \"pycompss\" API packages.")
     print("          Using mock decorators.")
@@ -28,7 +29,7 @@ except ImportError :
 from basic_modules.metadata import Metadata
 from basic_modules.tool import Tool
 
-from common import common
+from tool.common import common
 
 # ------------------------------------------------------------------------------
 
@@ -37,23 +38,24 @@ class macs2(Tool):
     Tool for peak calling for ChIP-seq data
     """
     
-    def __init__(self):
+    def __init__(self, configuration={}):
         """
         Init function
         """
-        print "MACS2 Peak Caller"
+        print("MACS2 Peak Caller")
     
-    @task(
+    @task(  returns=bool,
             name = IN,
             bam_file = FILE_IN,
             bam_file_bgd = FILE_IN,
             narrowPeak = FILE_OUT,
             summit_bed = FILE_OUT,
             broadPeak = FILE_OUT,
-            gappedPeak = FILE_OUT)
+            gappedPeak = FILE_OUT,
+            isModifier=False)
     def macs2_peak_calling(self,
-        name, bam_file, bam_file_bgd = None,
-        narrowPeak = None, summits_bed = None, broadPeak = None, gappedPeak = None):
+        name, bam_file, bam_file_bgd,
+        narrowPeak, summits_bed, broadPeak, gappedPeak):
         """
         Function to run MACS2 for peak calling on aligned sequence files and
         normalised against a provided background set of alignments.
@@ -85,6 +87,8 @@ class macs2(Tool):
         Definitions defined for each of these files have come from the MACS2
         documentation described in the docs at https://github.com/taoliu/MACS
         """
+        pass
+        
         od = bam_file.split("/")
         output_dir = "/".join(od[0:-1])
 
@@ -102,18 +106,19 @@ class macs2(Tool):
         p = subprocess.Popen(args)
         p.wait()
         
-        return True
+        return 0
     
-    @task(
+    @task(  returns=bool,
             name = IN,
             bam_file = FILE_IN,
             narrowPeak = FILE_OUT,
             summit_bed = FILE_OUT,
             broadPeak = FILE_OUT,
-            gappedPeak = FILE_OUT)
+            gappedPeak = FILE_OUT,
+            isModifier=False)
     def macs2_peak_calling_nobgd(self,
         name, bam_file,
-        narrowPeak = None, summits_bed = None, broadPeak = None, gappedPeak = None):
+        narrowPeak, summits_bed, broadPeak, gappedPeak):
         """
         Function to run MACS2 for peak calling on aligned sequence files without
         a background dataset for normalisation.
@@ -154,10 +159,10 @@ class macs2(Tool):
         p = subprocess.Popen(args)
         p.wait()
         
-        return True
+        return 0
     
     
-    def run(self, input_files, metadata):
+    def run(self, input_files, metadata, output_files):
         """
         The main function to run MACS 2 for peak calling over a given BAM file
         and matching background BAM file.
@@ -189,10 +194,10 @@ class macs2(Tool):
         
         name = root_name[-1]
         
-        summits_bed = '/'.join(root_name) + "_summits.bed"
-        narrowPeak  = '/'.join(root_name) + "_narrowPeak"
-        broadPeak   = '/'.join(root_name) + "_broadPeak"
-        gappedPeak  = '/'.join(root_name) + "_gappedPeak"
+        summits_bed = output_files[0]
+        narrowPeak  = output_files[1]
+        broadPeak   = output_files[2]
+        gappedPeak  = output_files[3]
         
         # input and output share most metadata
         output_metadata = {"bed_types" : ["bed4+1", "bed6+4", "bed6+3", "bed12+3"]}
@@ -225,6 +230,10 @@ class macs2(Tool):
             #    narrowPeak  = None
             #    broadPeak   = None
             #    gappedPeak  = None
-        return ([peak_bed, summits_bed, narrowPeak, broadPeak, gappedPeak], output_metadata)
+        
+        #results = compss_wait_on(results)
+        print results
+        
+        return ([peak_bed, summits_bed, narrowPeak, broadPeak, gappedPeak], metadata)
 
 # ------------------------------------------------------------------------------

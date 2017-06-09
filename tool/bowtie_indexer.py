@@ -20,15 +20,15 @@ try:
     from pycompss.api.parameter import FILE_IN, FILE_OUT
     from pycompss.api.task import task
 except ImportError :
-    print "[Warning] Cannot import \"pycompss\" API packages."
-    print "          Using mock decorators."
+    print ("[Warning] Cannot import \"pycompss\" API packages.")
+    print ("          Using mock decorators.")
     
     from dummy_pycompss import *
 
 from basic_modules.metadata import Metadata
 from basic_modules.tool import Tool
 
-from common import common
+from tool.common import common
 
 # ------------------------------------------------------------------------------
 
@@ -41,7 +41,7 @@ class bowtieIndexerTool(Tool):
         """
         Init function
         """
-        print "Bowtie2 Indexer"
+        print ("Bowtie2 Indexer")
     
     @task(file_loc=FILE_IN, idx_loc=FILE_OUT)
     def bowtie2_indexer(self, file_loc, idx_loc):

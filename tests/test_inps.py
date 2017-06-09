@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!usr/bin/env python3
 
 """
 .. Copyright 2017 EMBL-European Bioinformatics Institute
@@ -18,12 +18,23 @@
 
 import pytest
 import random
-import os.path
+import os
+import sys
 
-from tool import macs2
+#PACKAGE_PARENT = '..'
+#SCRIPT_DIR = os.path.dirname(os.path.realpath(os.path.join(os.getcwd(), os.path.expanduser(__file__))))
+#sys.path.append(os.path.normpath(os.path.join(SCRIPT_DIR, PACKAGE_PARENT)))
 
-def test_macs2():
-    m = macs2.macs2()
+from tool import inps
+
+def test_inps():    
+    
     resource_path = os.path.join(os.path.dirname(__file__), "data/")
-    bam_file = resource_path + "macs2.Human.DRR000150.22.bam"
-    m.run([bam_file], {})
+    bam_file = resource_path + "inps.Mouse.GRCm38.bam"
+    peak_bed = bam_file.replace('.bam', '.bed')
+   
+    inps_obj = inps.inps()      
+    inps_obj.run ([bam_file, peak_bed],{})
+    
+    
+    

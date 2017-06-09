@@ -20,15 +20,15 @@ try:
     from pycompss.api.parameter import FILE_IN, FILE_OUT, FILE_INOUT
     from pycompss.api.task import task
 except ImportError :
-    print "[Warning] Cannot import \"pycompss\" API packages."
-    print "          Using mock decorators."
+    print ("[Warning] Cannot import \"pycompss\" API packages.")
+    print ("          Using mock decorators.")
     
     from dummy_pycompss import *
 
 from basic_modules.metadata import Metadata
 from basic_modules.tool import Tool
 
-from common import common
+from tool.common import common
 
 # ------------------------------------------------------------------------------
 
@@ -41,7 +41,7 @@ class kallistoIndexerTool(Tool):
         """
         Init function
         """
-        print "Kallisto Indexer"
+        print ("Kallisto Indexer")
     
     @task(cdna_file_loc=FILE_IN, cdna_idx_file=FILE_INOUT)
     def kallisto_indexer(self, cdna_file_loc, cdna_idx_file):
@@ -57,6 +57,7 @@ class kallistoIndexerTool(Tool):
         """
         
         command_line = 'kallisto index -i ' + cdna_idx_file + ' ' + cdna_file_loc
+        print ("command : "+command_line)
         
         args = shlex.split(command_line)
         p = subprocess.Popen(args)
@@ -65,7 +66,7 @@ class kallistoIndexerTool(Tool):
         return True
     
     
-    def run(self, input_files, metadata):
+    def run(self, input_files, metadata, output_files):
         """
         Tool for generating assembly aligner index files for use with Kallisto
         
@@ -76,14 +77,14 @@ class kallistoIndexerTool(Tool):
         metadata : list
         
         Returns
-        -------
+        --------
         array : list
             First element is a list of the index files. Second element is a
             list of the matching metadata
         """
         
         file_name = input_files[0]
-        output_file = input_files[1]
+        output_file = output_files[0]
         
         # input and output share most metadata
         output_metadata = {}

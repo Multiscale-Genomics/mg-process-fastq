@@ -77,7 +77,7 @@ class bssMethylationCallerTool(Tool):
         
         command_line = ("python " + script_path + "/bs_seeker2-call_methylation.py"
             " --sorted --input " + str(bam_file) + " --wig " + str(wig_file) + ""
-            " --cgmap " + str(cgmap_file) + " --atcgmap " + str(atcgmap_file) + ""
+            " --CGmap " + str(cgmap_file) + " --ATCGmap " + str(atcgmap_file) + ""
             " --db " + db_dir).format()
         args = shlex.split(command_line)
         p = subprocess.Popen(args)

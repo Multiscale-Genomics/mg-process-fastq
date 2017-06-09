@@ -16,7 +16,13 @@
    limitations under the License.
 """
 
-import argparse, urllib2, gzip, shutil, shlex, subprocess, os.path
+import argparse, gzip, shutil, shlex, subprocess, os.path
+try:
+    from urllib2 import urlopen
+    from urllib2 import Request
+except ImportError :
+    from urllib.request import urlopen
+    from urllib.request import Request
 
 from socket import error as SocketError
 import errno
@@ -27,15 +33,15 @@ try:
     from pycompss.api.parameter import FILE_IN, FILE_OUT
     from pycompss.api.task import task
 except ImportError :
-    print "[Warning] Cannot import \"pycompss\" API packages."
-    print "          Using mock decorators."
+    print("[Warning] Cannot import \"pycompss\" API packages.")
+    print("          Using mock decorators.")
     
     from dummy_pycompss import *
 
 try :
     import pysam
 except ImportError :
-    print "[Error] Cannot import \"pysam\" package. Have you installed it?"
+    print("[Error] Cannot import \"pysam\" package. Have you installed it?")
     exit(-1)
 
 class cd:
@@ -63,7 +69,7 @@ class common:
         """
         Initialise the module
         """
-        print "Common functions"
+        print("Common functions")
     
     
     def getGenomeFile(self, file_loc, species, assembly, index = True):
@@ -91,8 +97,6 @@ class common:
         """
         
         file_loc_unzipped = file_loc.replace('.fa.gz', '.fa')
-        print file_loc
-        print file_loc_unzipped
         
         if os.path.isfile(file_loc) == False and os.path.isfile(file_loc_unzipped) == False:
             ftp_url = 'ftp://ftp.ensembl.org/pub/current_fasta/' + species.lower() + '/dna/' + species[0].upper() + species[1:] + '.' + assembly + '.dna.toplevel.fa.gz'
@@ -100,7 +104,6 @@ class common:
             self.download_file(file_loc, ftp_url)
             
         if os.path.isfile(file_loc_unzipped) == False:
-            print "Unzipping"
             with gzip.open(file_loc, 'rb') as f_in, open(file_loc_unzipped, 'wb') as f_out:
                 shutil.copyfileobj(f_in, f_out)
         
@@ -125,7 +128,7 @@ class common:
         
         if os.path.isfile(file_name) == False:
           ftp_list_url = 'ftp://ftp.ebi.ac.uk/pub/databases/ena/assembly/' + assembly[0:7] + '/' + assembly[0:10] + '/' + assembly + '_sequence_report.txt'
-          res_list = urllib2.urlopen(ftp_list_url)
+          res_list = urlopen(ftp_list_url)
           table = res_list.read()
           table = table.split("\n")
           
@@ -204,7 +207,7 @@ class common:
             Locations of the downloaded FASTQ files
         """
         
-        f_index = urllib2.urlopen(
+        f_index = urlopen(
         'http://www.ebi.ac.uk/ena/data/warehouse/filereport?accession=' + str(ena_err_id) + '&result=read_run&fields=study_accession,run_accession,tax_id,scientific_name,instrument_model,library_layout,fastq_ftp&download=txt')
         data = f_index.read()
         rows = data.split("\n")
@@ -231,8 +234,6 @@ class common:
             
             for fastq_file in fastq_files:
                 file_name = fastq_file.split("/")
-                
-                print data_dir + project + "/" + file_name[-1]
                 
                 if os.path.isfile(data_dir + '/' + project + "/" + file_name[-1]) == False and os.path.isfile(data_dir + '/' + project + "/" + file_name[-1].replace('.fastq.gz', '.fastq')) == False:
                     file_location = data_dir + '/' + project + "/" + file_name[-1]
@@ -261,15 +262,15 @@ class common:
         restart_counter = 0
         
         while True:
-            meta = urllib2.urlopen(url)
+            meta = urlopen(url)
             info = meta.info()
             if restart_counter > 0:
                 byte_start = int(os.stat(file_location).st_size) + 1
-                request = urllib2.Request(url, headers={"Range" : "bytes=" + str(byte_start) + "-" + str(info["content-length"])})
+                request = Request(url, headers={"Range" : "bytes=" + str(byte_start) + "-" + str(info["content-length"])})
             else:
-                request = urllib2.Request(url)
+                request = Request(url)
             
-            req = urllib2.urlopen(request)
+            req = urlopen(request)
             CHUNK = 16 * 1024
             
             try:
@@ -290,8 +291,8 @@ class common:
             except SocketError as e:
                 if e.errno != errno.ECONNRESET:
                     raise
-                print e
-                print "Attempting to restart download ..."
+                print(e)
+                print("Attempting to restart download ...")
                 restart_counter += 1
             
             if restart_counter >= 5 :
@@ -344,11 +345,11 @@ class common:
         file_name_nofa = file_name_unzipped.replace('.fa', '')
         
         if os.path.isfile(file_name_unzipped) == False:
-            print "Unzipping"
+            print("Unzipping")
             with gzip.open(file_name, 'rb') as f_in, open(file_name_unzipped, 'wb') as f_out:
                 shutil.copyfileobj(f_in, f_out)
         
-        print "Indexing - BWA"
+        print("Indexing - BWA")
         amn, ann, bwt, pac, sa = self.bwa_index_genome(file_name)
         bwa_indexes = {
             'amn' : amn,
@@ -359,11 +360,11 @@ class common:
         }
         
         if os.path.isfile(file_name_nofa + '.1.bt2l') == False:
-            print "Indexing - Bowtie"
+            print("Indexing - Bowtie")
             self.bowtie_index_genome(file_name_unzipped)
         
         if os.path.isfile(file_name_nofa + '.gem') == False:
-            print "Indexing - GEM"
+            print("Indexing - GEM")
             self.gem_index_genome(file_name_unzipped)
         
         return {'bowtie' : file_name_unzipped + '.1.bt2', 'bwa' : bwa_indexes + '.bwt', 'gem' : file_name_unzipped + '.gem'}
@@ -385,9 +386,8 @@ class common:
         command_line = 'gem-indexer -i ' + genome_file + ' -o ' + file_name[-1].replace('.fa', '')
         
         args = shlex.split(command_line)
-	print "THIS IS THE PRINT ",args
         p = subprocess.Popen(args)
-	p.wait()
+        p.wait()
         
         return True
     
@@ -406,7 +406,6 @@ class common:
         
         with cd("/".join(file_name[0:-1])):
             command_line = 'bowtie2-build ' + genome_file + ' ' + file_name[-1].replace('.fa', '')
-            print command_line
             args = shlex.split(command_line)
             p = subprocess.Popen(args)
             p.wait()
@@ -452,8 +451,6 @@ class common:
         
         """
         command_line = 'bwa index ' + genome_file
-        print "the command line is : "
-        print command_line
         
         amb_name = genome_file + '.amb'
         ann_name = genome_file + '.ann'
@@ -493,16 +490,12 @@ class common:
             'samtools view -b -o ' + output_bam_file + ' ' + intermediate_sam_file
         ]
         
-        #print command_lines
-        
         for command_line in command_lines:
             args = shlex.split(command_line)
-            print "THIS IS THE PRINT", args
             p = subprocess.Popen(args)
             p.wait()
     
     
-    #def merge_bam(self, data_dir, project_id, final_id, run_ids=[]):
     def merge_bam(self, data_dir, project_id, final_id, run_ids=[]):
         """
         Merge together all the bams in a directory and sort to create the final
@@ -526,7 +519,7 @@ class common:
             bam_merge_files.append(bam_loc)
 
         for bam_sort_file in bam_sort_files:
-            print bam_sort_file
+            print(bam_sort_file)
             pysam.sort("-o", str(bam_sort_file), str(bam_sort_file))
 
         if len(bam_sort_files) == 1:

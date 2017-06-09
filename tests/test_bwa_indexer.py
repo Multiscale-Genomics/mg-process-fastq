@@ -40,7 +40,7 @@ def test_bwa_indexer_02 ():
     
     resource_path = os.path.join(os.path.dirname(__file__), "data/")
     genome_fa = resource_path + "inps.Mouse.GRCm38.fasta"
-    fastqFile = resource_path + "fastQForMouseRegion.fastq"
+    fastqFile = resource_path + "inps.Mouse.DRR000386.fastq"
     
     files = [
         genome_fa,

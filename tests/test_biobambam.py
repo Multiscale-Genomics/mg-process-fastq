@@ -19,7 +19,7 @@
 import os.path
 import pytest
 
-from tool.biobambam_filter import biobambam_filter
+from tool import biobambam_filter
 
 def test_biobambam():
     """

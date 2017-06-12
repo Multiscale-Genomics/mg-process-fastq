@@ -100,7 +100,7 @@ class biobambam(Tool):
             List of matching metadata dict objects
         """
         input_file = input_files[0]
-        output_file = input_files[1]
+        output_file = output_files[0]
         td = input_file.split("/")
         tmp_dir = "/".join(td[0:-1])
         

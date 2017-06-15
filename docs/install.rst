@@ -98,3 +98,14 @@ Check out the following software for use by the process_wgbs.py pipeline:
 	ln -s $code_root/FilterReads.py FilterReads.py
    
 
+Documentation
+-------------
+To build the documentation:
+
+.. code-block:: none
+   :linenos:
+
+   pip install Sphinx
+   pip install sphinx-autobuild
+   cd docs
+   make html

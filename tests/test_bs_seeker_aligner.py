@@ -1,4 +1,4 @@
-#!usr/bin/env python3
+#!usr/bin/env python
 
 """
 .. Copyright 2017 EMBL-European Bioinformatics Institute
@@ -37,11 +37,15 @@ def test_bs_seeker_aligner():
     bt2_rev_2file = resource_path + "bsSeeker.Mouse.GRCm38_2.fasta_bowtie2/C_C2T.rev.2.bt2"
     out_file = resource_path + "bsSeeker.Mouse.GRCm38.bam"
     
+    home = os.path.expanduser('~')
+
     bsa = bs_seeker_aligner.bssAlignerTool()
-    bsa.run([genomefa_file, fastq1_file, fastq2_file, out_file, bt2_1file, bt2_2file, bt2_3file, bt2_4file, bt2_rev_1file, bt2_rev_2file ],{"aligner":"bowtie2", "aligner_path":"/Users/reham/lib/bowtie2-2.3.2","bss_path":"/Users/reham/lib/BSseeker2"})
-    
-    
-test_bs_seeker_aligner()
-
-
-   
+    output_files, output_meta = bsa.run(
+        [genomefa_file, fastq1_file, fastq2_file, out_file, bt2_1file, bt2_2file,
+            bt2_3file, bt2_4file, bt2_rev_1file, bt2_rev_2file ],
+        {
+            "aligner" : "bowtie2",
+            "aligner_path" : home + "/bin",
+            "bss_path" : home + "/lib/BSseeker2"
+        }
+    )

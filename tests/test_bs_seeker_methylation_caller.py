@@ -20,6 +20,7 @@ import pytest
 import random
 import os
 import sys
+import pysam
 
 from tool import bs_seeker_methylation_caller
 
@@ -27,13 +28,15 @@ def test_bs_seeker_methylation_caller():
     
     resource_path = os.path.join(os.path.dirname(__file__), "data/")
     genomefa_file = resource_path + "bsSeeker.Mouse.GRCm38.fasta_bowtie2"    
-    bam_file = resource_path + "bsSeeker.Mouse.GRCm38.bam.sorted" #pass the sorted bam to samtools index
+    bam_file = resource_path + "bsSeeker.Mouse.GRCm38.bam"
+
+    pysam.sort("-o", str(bam_file), str(bam_file))
+
+    home = os.path.expanduser('~')
     
     bsmc = bs_seeker_methylation_caller.bssMethylationCallerTool()
-    bsmc.run([genomefa_file, bam_file ],{'bss_path':"/Users/reham/lib/BSseeker2"})
-    
-    
-test_bs_seeker_methylation_caller()
-
-
+    bsmc.run(
+        [genomefa_file, bam_file ],
+        {'bss_path' : home + "/bin"}
+    )
    

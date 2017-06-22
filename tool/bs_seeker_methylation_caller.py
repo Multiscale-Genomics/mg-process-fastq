@@ -111,7 +111,7 @@ class bssMethylationCallerTool(Tool):
         gd = file_name.split("/")
         genome_dir = input_files[0]
 
-        bss_path = metadata['bss_path'] #rf fix : 
+        bss_path = metadata['bss_path']
         wig_file = input_files[1].replace('.bam', '.wig')
         cgmap_file = input_files[1].replace('.bam', '.cgmap.tsv')
         atcgmap_file = input_files[1].replace('.bam', '.atcgmap.tsv')

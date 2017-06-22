@@ -47,7 +47,7 @@ class bssMethylationCallerTool(Tool):
         """
         print "BS-Seeker Methylation Caller"
 
-    @task(bss_path = IN, bam_file = FILE_IN, db_dir = IN, wig_file = FILE_INOUT, cgmap_file = FILE_INOUT, atcgmap_file = FILE_INOUT)
+    @task(bss_path = IN, bam_file = FILE_IN, db_dir = IN, wig_file = FILE_OUT, cgmap_file = FILE_OUT, atcgmap_file = FILE_OUT)
     def bss_methylation_caller(self, bss_path, bam_file, db_dir, wig_file, cgmap_file, atcgmap_file):
         """
         Takes the merged and sorted bam file and calls the methylation sites.
@@ -63,6 +63,7 @@ class bssMethylationCallerTool(Tool):
         bam_file : str
             Location of the sorted bam alignment file
         db_dir : str
+            Location of the FASTA file 
         wig_file : str
             Location of the wig results file
         cgmap_file : str
@@ -78,10 +79,11 @@ class bssMethylationCallerTool(Tool):
         This is managed by pyCOMPS
         """
         
-        command_line = ("python " + script_path + "/bs_seeker2-call_methylation.py"
-            " --sorted --input " + str(bam_file) + " --wig " + str(wig_file) + ""
+        command_line = ("python " + bss_path + "/bs_seeker2-call_methylation.py"
+            " --sorted --input " + str(bam_file) + " --wig " + str(wig_file) + "" #rf fix : whats with --sorted ? --sorted --input " + str(bam_file)
             " --CGmap " + str(cgmap_file) + " --ATCGmap " + str(atcgmap_file) + ""
-            " --db " + db_dir).format()
+            " --db " + db_dir).format() #rf fix , 
+        print ("command for methyl caller :", command_line)
         args = shlex.split(command_line)
         p = subprocess.Popen(args)
         p.wait()
@@ -109,7 +111,7 @@ class bssMethylationCallerTool(Tool):
         gd = file_name.split("/")
         genome_dir = input_files[0]
 
-        script_path = metadata['bss_path']
+        bss_path = metadata['bss_path'] #rf fix : 
         wig_file = input_files[1].replace('.bam', '.wig')
         cgmap_file = input_files[1].replace('.bam', '.cgmap.tsv')
         atcgmap_file = input_files[1].replace('.bam', '.atcgmap.tsv')

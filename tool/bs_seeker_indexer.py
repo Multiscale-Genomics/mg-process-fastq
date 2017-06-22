@@ -81,7 +81,6 @@ class bssIndexerTool(Tool):
             " -f " + fasta_file + ""
             " --aligner " + aligner + " --path " + aligner_path + ""
             " --db " + ref_path).format()
-        
         args = shlex.split(command_line)
         p = subprocess.Popen(args)
         p.wait()
@@ -108,8 +107,9 @@ class bssIndexerTool(Tool):
         
         
         file_name = input_files[0]
+        print ("the file name : ",file_name)
         gd = file_name.split("/")
-        genome_dir = '/' + '/'.join(gd[:-1])
+        genome_dir = '/'.join(gd[:-1]) #rf fix : '/' + 
         
         aligner      = metadata['aligner']
         aligner_path = metadata['aligner_path']

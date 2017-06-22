@@ -14,7 +14,11 @@
    limitations under the License.
 """
 
-import os, shutil, shlex, subprocess
+import os
+import shutil
+import shlex
+import subprocess
+import pysam
 
 try:
     from pycompss.api.parameter import FILE_IN, FILE_OUT
@@ -91,7 +95,7 @@ class bssMethylationCallerTool(Tool):
         Parameters
         ----------
         input_files : list
-            BAM file with the sequence alignments
+            Sorted BAM file with the sequence alignments
         metadata : list
         
         Returns
@@ -113,6 +117,19 @@ class bssMethylationCallerTool(Tool):
         # input and output share most metadata
         output_metadata = {}
         
+        bam_file_handle = pysam.AlignmentFile(file_name, "rb")
+        if 'SO' not in bam_file_handle.header['HD'] or bam_file_handle.header['HD']['SO'] == 'unsorted':
+            bam_file_handle.close()
+
+            output_metadata.set_exception(
+                Exception(
+                    "bss_methylation_caller: Could not process files {}, {}.".format(*input_files)))
+            wig_file = None
+            cgmap_file = None
+            atcgmap_file = None
+
+            return ([wig_file, cgmap_file, atcgmap_file], [output_metadata])
+
         # handle error
         if not self.bss_methylation_caller(bss_path, file_name, genome_dir, wig_file, cgmap_file, atcgmap_file):
             output_metadata.set_exception(

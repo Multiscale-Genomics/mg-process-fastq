@@ -95,10 +95,11 @@ class bssAlignerTool(Tool):
             " --aligner " + aligner + " --path " + aligner_path + ""
             " --genome " + genome_fasta + " -d " + g_dir + ""
             " --bt2-p 4 -o " + bam_out).format()
-        
+        print ("command for aligner : ", command_line)
         args = shlex.split(command_line)
         p = subprocess.Popen(args)
         p.wait()
+        pysam.sort("-o", str(bam_out), str(bam_out))
 
         return True
 

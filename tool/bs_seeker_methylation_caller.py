@@ -57,7 +57,7 @@ class bssMethylationCallerTool(Tool):
         bss_path : str
             Location of the Methylation caller script
         bam_file : str
-            Location of the bam alignment file
+            Location of the sorted bam alignment file
         db_dir : str
         wig_file : str
             Location of the wig results file

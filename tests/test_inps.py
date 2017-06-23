@@ -1,4 +1,4 @@
-#!usr/bin/env python3
+#!usr/bin/env python
 
 """
 .. Copyright 2017 EMBL-European Bioinformatics Institute
@@ -21,12 +21,9 @@ import random
 import os
 import sys
 
-#PACKAGE_PARENT = '..'
-#SCRIPT_DIR = os.path.dirname(os.path.realpath(os.path.join(os.getcwd(), os.path.expanduser(__file__))))
-#sys.path.append(os.path.normpath(os.path.join(SCRIPT_DIR, PACKAGE_PARENT)))
-
 from tool import inps
 
+@pytest.mark.py3
 def test_inps():    
     
     resource_path = os.path.join(os.path.dirname(__file__), "data/")

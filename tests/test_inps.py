@@ -32,6 +32,3 @@ def test_inps():
    
     inps_obj = inps.inps()      
     inps_obj.run ([bam_file, peak_bed],{})
-    
-    
-    

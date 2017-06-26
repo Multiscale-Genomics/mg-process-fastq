@@ -33,8 +33,8 @@ from basic_modules.tool import Tool
 
 from common import common
 
-pwd = os.environ.get('PWD')
-pwd_split = pwd.split('/')
+#pwd = os.environ.get('PWD')
+#pwd_split = pwd.split('/')
 
 #if pwd_split[-1] != 'docs':
 #    on_rtd = os.environ.get('READTHEDOCS') == 'True'
@@ -48,7 +48,7 @@ class bssAlignerTool(Tool):
     Script from BS-Seeker2 for building the index for alignment. In this case
     it uses Bowtie2.
     """
-    
+
     def __init__(self):
         """
         Init function
@@ -63,9 +63,9 @@ class bssAlignerTool(Tool):
         genome_fasta, bam_out, bt2_1, bt2_2, bt2_3, bt2_4, bt2_rev_1, bt2_rev_2):
         """
         Alignment of the paired ends to the reference genome
-        
+
         Generates bam files for the alignments
-        
+
         This is performed by running the external program rather than
         reimplementing the code from the main function to make it easier when
         it comes to updating the changes in BS-Seeker2
@@ -73,7 +73,7 @@ class bssAlignerTool(Tool):
         Parameters
         ----------
         input_fastq1 : str
-            Location of paired end FASTQ file 
+            Location of paired end FASTQ file 1
         input_fastq2 : str
             Location of paired end FASTQ file 2
         aligner : str

@@ -23,8 +23,8 @@ import sys
 
 from tool import bs_seeker_indexer
 
-def test_bs_seeker_indexer():    
-    
+def test_bs_seeker_indexer():
+    #TODO Implement something
     resource_path = os.path.join(os.path.dirname(__file__), "data/")
     genomefa_file = resource_path + "bsSeeker.Mouse.GRCm38.fasta"
     

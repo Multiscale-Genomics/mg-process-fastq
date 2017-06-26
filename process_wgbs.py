@@ -16,9 +16,8 @@
    limitations under the License.
 """
 
-# -*- coding: utf-8 -*-
-"""process whole genome bisulfate sequencing FastQ files"""
-import argparse, time, urllib2, gzip, shutil
+import argparse
+import pysam
 
 try :
     from pycompss.api.parameter import *
@@ -27,20 +26,18 @@ try :
 except ImportError :
     print "[Warning] Cannot import \"pycompss\" API packages."
     print "          Using mock decorators."
-    
+
     from dummy_pycompss import *
 
 from dmp import dmp
 
-from tool.common import common
+from tool import common
 from tool import bs_seeker_aligner
 from tool import bs_seeker_filter
 from tool import bs_seeker_indexer
 from tool import bs_seeker_methylation_caller
 
 from fastqreader import fastqreader
-
-import pysam
 
 # ------------------------------------------------------------------------------
 

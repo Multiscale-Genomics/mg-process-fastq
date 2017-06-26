@@ -30,7 +30,7 @@ def test_bs_seeker_methylation_caller():
     bam_file = resource_path + "bsSeeker.Mouse.GRCm38.bam.sorted" #pass the sorted bam to samtools index
     
     bsmc = bs_seeker_methylation_caller.bssMethylationCallerTool()
-    bsmc.run([genomefa_file, bam_file ],{'bss_path':"/Users/reham/lib/BSseeker2"})
+    bsmc.run([genomefa_file, bam_file ],{'bss_path':"/Users/reham/lib/BSseeker2-2.1.2Beta"})
     
     
 test_bs_seeker_methylation_caller()

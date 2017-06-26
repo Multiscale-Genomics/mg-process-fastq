@@ -38,7 +38,18 @@ def test_bs_seeker_aligner():
     out_file = resource_path + "bsSeeker.Mouse.GRCm38.bam"
     
     bsa = bs_seeker_aligner.bssAlignerTool()
-    bsa.run([genomefa_file, fastq1_file, fastq2_file, out_file, bt2_1file, bt2_2file, bt2_3file, bt2_4file, bt2_rev_1file, bt2_rev_2file ],{"aligner":"bowtie2", "aligner_path":"/Users/reham/lib/bowtie2-2.3.2","bss_path":"/Users/reham/lib/BSseeker2"})
+    bsa.run(
+        [genomefa_file, 
+         fastq1_file, 
+         fastq2_file, 
+         out_file, 
+         bt2_1file, 
+         bt2_2file, 
+         bt2_3file, 
+         bt2_4file, 
+         bt2_rev_1file, 
+         bt2_rev_2file ],
+            {"aligner":"bowtie2", "aligner_path":"/Users/reham/lib/bowtie2-2.3.2","bss_path":"/Users/reham/lib/BSseeker2-2.1.2Beta"})
     
     
 test_bs_seeker_aligner()

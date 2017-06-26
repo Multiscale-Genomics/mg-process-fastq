@@ -1,6 +1,3 @@
-#!/bin/sh
-#!usr/bin/python
-
 """
 .. Copyright 2017 EMBL-European Bioinformatics Institute
  

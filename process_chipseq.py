@@ -16,14 +16,13 @@
    limitations under the License.
 """
 
-import argparse, urllib2, gzip, shutil, shlex, subprocess, os.path, json
+import argparse
 
-from basic_modules.tool import Tool
+from functools import wraps
+
 from basic_modules.workflow import Workflow
 from basic_modules.metadata import Metadata
 
-
-from functools import wraps
 
 from dmp import dmp
 
@@ -31,24 +30,22 @@ from tool import bwa_aligner
 from tool import biobambam_filter
 from tool import macs2
 
-import os
+#try:
+#    from pycompss.api.parameter import FILE_IN, FILE_OUT
+#    from pycompss.api.task import task
+#    from pycompss.api.constraint import constraint
+#    from pycompss.api.api import compss_wait_on
+#except ImportError :
+#    print("[Warning] Cannot import \"pycompss\" API packages.")
+#    print("          Using mock decorators.")
+#
+#    from dummy_pycompss import *
 
-try:
-    from pycompss.api.parameter import FILE_IN, FILE_OUT
-    from pycompss.api.task import task
-    from pycompss.api.constraint import constraint
-    from pycompss.api.api import compss_wait_on
-except ImportError :
-    print "[Warning] Cannot import \"pycompss\" API packages."
-    print "          Using mock decorators."
-    
-    from dummy_pycompss import *
-
-try :
-    import pysam
-except ImportError :
-    print "[Error] Cannot import \"pysam\" package. Have you installed it?"
-    exit(-1)
+#try:
+#    import pysam
+#except ImportError:
+#    print "[Error] Cannot import \"pysam\" package. Have you installed it?"
+#    exit(-1)
 
 # ------------------------------------------------------------------------------
 
@@ -57,10 +54,10 @@ class process_chipseq(Workflow):
     Functions for processing Chip-Seq FastQ files. Files are the aligned,
     filtered and analysed for peak calling
     """
-    
+
     configuration = {}
-    
-    def __init__(self, configuration={}):
+
+    def __init__(self, configuration):
         """
         Initialise the tool with its configuration.
 
@@ -73,14 +70,14 @@ class process_chipseq(Workflow):
         """
         self.configuration.update(configuration)
 
-    
+
     def run(self, file_ids, metadata, output_files):
         """
         Main run function for processing ChIP-seq FastQ data. Pipeline aligns
         the FASTQ files to the genome using BWA. MACS 2 is then used for peak
         calling to identify transcription factor binding sites within the
         genome.
-                
+
         Parameters
         ----------
         files_ids : list
@@ -89,13 +86,13 @@ class process_chipseq(Workflow):
             Required meta data
         output_files : list
             List of output file locations
-        
+
         Returns
         -------
         outputfiles : list
             List of locations for the output bam, bed and tsv files
         """
-        
+
         # TODO - Handle multiple file and background files
         genome_fa = file_ids[0]
         bwa_amb = file_ids[1]
@@ -105,11 +102,9 @@ class process_chipseq(Workflow):
         bwa_sa  = file_ids[5]
         file_loc = file_ids[6]
         file_bgd_loc = file_ids[7]
-        
 
-        
         out_bam = file_loc.replace(".fastq", '.bam')
-        
+
         bwa = bwa_aligner.bwaAlignerTool(self.configuration)
         out_bam = file_loc.replace(".fastq", '.bam')
         bwa_results = bwa.run(
@@ -117,9 +112,9 @@ class process_chipseq(Workflow):
             {},
             [out_bam]
         )
-        
+
         #bwa_results = compss_wait_on(bwa_results)
-        
+
         if file_bgd_loc != None:
             out_bgd_bam = file_bgd_loc.replace(".fastq", '.bam')
             bwa_results_bgd = bwa.run(
@@ -128,54 +123,53 @@ class process_chipseq(Workflow):
                 [out_bgd_bam]
             )
             #bwa_results_bgd = compss_wait_on(bwa_results_bgd)
-            
-        
+
         # TODO - Multiple files need merging into a single bam file
-       
+
         b3f_file_bgd_out = ''
 
         # Filter the bams
         b3f = biobambam_filter.biobambam(self.configuration)
         b3f_file_out = file_loc.replace('.fastq', '.filtered.bam')
         b3f_results = b3f.run([out_bam], {}, [b3f_file_out])
-        
+
         #b3f_results = compss_wait_on(b3f_results)
-        
+
         if file_bgd_loc != None:
             b3f_bgd_file_out = file_bgd_loc.replace(".fastq", '.filtered.bam')
             b3f_results_bgd = b3f.run([out_bgd_bam, b3f_bgd_file_out], {})
             #b3f_results_bgd = compss_wait_on(b3f_results_bgd)
         else:
             b3f_bgd_file_out = None
-        
+
         # MACS2 to call peaks
-        m = macs2.macs2(self.configuration)
-        
+        macs_caller = macs2.macs2(self.configuration)
+
         mac_root_name = b3f_file_out.split("/")
         mac_root_name[-1] = mac_root_name[-1].replace('.bam', '')
-        
-        name = root_name[-1]
-        
+
+        #name = mac_root_name[-1]
+
         summits_bed = '/'.join(mac_root_name) + "_summits.bed"
-        narrowPeak  = '/'.join(mac_root_name) + "_narrowPeak"
-        broadPeak   = '/'.join(mac_root_name) + "_broadPeak"
-        gappedPeak  = '/'.join(mac_root_name) + "_gappedPeak"
-        
+        narrow_peak = '/'.join(mac_root_name) + "_narrowPeak"
+        broad_peak = '/'.join(mac_root_name) + "_broadPeak"
+        gapped_peak = '/'.join(mac_root_name) + "_gappedPeak"
+
         output_files = [
             summits_bed,
-            narrowPeak,
-            broadPeak,
-            gappedPeak
+            narrow_peak,
+            broad_peak,
+            gapped_peak
         ]
-        
+
         if file_bgd_loc != None:
-            m_results = m.run([b3f_file_out,  b3f_bgd_file_out], {}, output_files)
+            m_results = macs_caller.run([b3f_file_out, b3f_bgd_file_out], {}, output_files)
         else:
-            m_results = m.run([b3f_file_out], {}, output_files)
-        
+            m_results = macs_caller.run([b3f_file_out], {}, output_files)
+
         #m_results = compss_wait_on(m_results)
-        
-        return ([b3f_file_out, b3f_file_bgd_out] + m_results[0], [b3f_results[1],m_results[1]])
+
+        return ([b3f_file_out, b3f_file_bgd_out] + m_results[0], [b3f_results[1], m_results[1]])
 
 
 # -----------------------------------------------------------------------------

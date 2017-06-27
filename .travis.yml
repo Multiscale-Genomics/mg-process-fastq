@@ -9,34 +9,45 @@ sudo: false
 addons:
   apt:
     packages:
+    #system environment
+    - make build-essential libssl-dev 
+    - zlib1g-dev
+    - libbz2-dev 
+    - libreadline-dev
+    - libsqlite3-dev 
+    - wget curl 
+    - llvm libncurses5-dev
+    - libncursesw5-dev
+    - xz-utils tk-dev
+    - unzip mcl 
+    - libgtk2.0-dev 
+    - r-base-core
+    - libcurl4-gnutls-dev
     - unzip
+    -	cd ${HOME}
+    -	mkdir bin lib code
+    
+    
+    
 
 env:
   - COVERALLS=false
 
 before_install:
-      #system environment
-    -	sudo apt-get install -y make build-essential libssl-dev zlib1g-dev       //
-    -	libbz2-dev libreadline-dev libsqlite3-dev wget curl llvm libncurses5-dev //
-    -	libncursesw5-dev xz-utils tk-dev unzip mcl libgtk2.0-dev r-base-core     //
-    -	libcurl4-gnutls-dev
-    
-    -	cd ${HOME}
-    -	mkdir bin lib code
-    
-      #pyenv-pyenv-virtualenv
-    -	git clone https://github.com/pyenv/pyenv.git ~/.pyenv
-		-	echo 'export PYENV_ROOT="$HOME/.pyenv"' >> ~/.bash_profile
-		-	echo 'export PATH="$PYENV_ROOT/bin:$PATH"' >> ~/.bash_profile
-		-	echo 'eval "$(pyenv init -)"' >> ~/.bash_profile
-			
-		-	git clone https://github.com/pyenv/pyenv-virtualenv.git ${PYENV_ROOT}/plugins/pyenv-virtualenv
-			
-		-	pyenv install 2.7.12
-		-	pyenv virtualenv 2.7.12 mg-process-fastq
+
+#pyenv-pyenv-virtualenv
+    - git clone https://github.com/pyenv/pyenv.git ~/.pyenv
+    - echo 'export PYENV_ROOT="$HOME/.pyenv"' >> ~/.bash_profile
+    - echo 'export PATH="$PYENV_ROOT/bin:$PATH"' >> ~/.bash_profile
+    - echo 'eval "$(pyenv init -)"' >> ~/.bash_profile
+     
+    - git clone https://github.com/pyenv/pyenv-virtualenv.git ${PYENV_ROOT}/plugins/pyenv-virtualenv
+     
+    - pyenv install 2.7.12
+    - pyenv virtualenv 2.7.12 mg-process-fastq
 			
 			
-			#UCSC Tools
+    #UCSC Tools
 		-	cd ${HOME}/lib
 		-	wget http://hgdownload.cse.ucsc.edu/admin/exe/linux.x86_64/bedToBigBed
 		-	wget http://hgdownload.cse.ucsc.edu/admin/exe/linux.x86_64/wigToBigWig
@@ -292,11 +303,7 @@ before_install:
 
 
 install:
-    - cpanm -v --installdeps --with-recommends --notest --cpanfile ensembl/cpanfile .
-    - cpanm -v --installdeps --with-recommends --notest .
-    - cpanm -n Devel::Cover::Report::Coveralls
-    - cpanm DBD::SQLite
-    - cp travisci/MultiTestDB.conf.travisci t/MultiTestDB.conf
+
 
 script: "./travisci/harness.sh"
 

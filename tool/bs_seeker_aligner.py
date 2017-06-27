@@ -53,7 +53,8 @@ class bssAlignerTool(Tool):
         """
         Init function
         """
-        print "BS-Seeker Aligner"
+        print("BS-Seeker Aligner")
+        Tool.__init__(self)
 
     @task(input_fastq1 = FILE_IN, input_fastq2 = FILE_IN, aligner = IN, aligner_path = IN,
         bss_path = IN,

@@ -42,7 +42,8 @@ class inps(Tool):
         """
         Init function
         """
-        print ("iNPS Peak Caller")
+        print("iNPS Peak Caller")
+        Tool.__init__(self)
     
     @task(bam_file = FILE_IN, peak_bed = FILE_OUT)
     def inps_peak_calling(self, bam_file, peak_bed):

@@ -43,7 +43,8 @@ class kallistoQuantificationTool(Tool):
         """
         Init function
         """
-        print ("Kallisto Quantification")
+        print("Kallisto Quantification")
+        Tool.__init__(self)
     
     @task(fastq_file_loc=FILE_IN, cdna_idx_file=FILE_IN, abundance_h5_file=FILE_OUT, abundance_tsv_file=FILE_OUT, run_info_file=FILE_OUT)
     def kallisto_quant_single(self, cdna_idx_file, fastq_file_loc, abundance_h5_file, abundance_tsv_file, run_info_file):

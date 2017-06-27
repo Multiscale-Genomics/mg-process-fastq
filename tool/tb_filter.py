@@ -47,6 +47,7 @@ class tbFilterTool(Tool):
         Init function
         """
         print "TADbit filter aligned reads"
+        Tool.__init__(self)
     
     @task(reads = FILE_IN, filter_reads = FILE_INOUT, conservative = IN)
     def tb_filter(self, reads, filter_reads_file, conservative):

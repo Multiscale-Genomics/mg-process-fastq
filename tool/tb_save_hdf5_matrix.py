@@ -41,12 +41,13 @@ class tbSaveAdjacencyHDF5Tool(Tool):
     """
     Tool for filtering out experimetnal artifacts from the aligned data
     """
-    
+
     def __init__(self):
         """
         Init function
         """
         print "TADbit save adjacency matrix"
+        Tool.__init__(self)
     
     
     def tb_matrix_hdf5(self, adj_list, adj_hdf5, resolution, chromosomes):

@@ -43,6 +43,7 @@ class macs2(Tool):
         Init function
         """
         print("MACS2 Peak Caller")
+        Tool.__init__(self)
     
     @task(  returns=bool,
             name = IN,

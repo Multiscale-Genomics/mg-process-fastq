@@ -49,7 +49,8 @@ class filterReadsTool(Tool):
         """
         Init function
         """
-        print "BS-Seeker FilterReads wrapper"
+        print("BS-Seeker FilterReads wrapper")
+        Tool.__init__(self)
 
     @task(infile = FILE_IN, outfile = FILE_OUT, bss_path = IN)
     def bss_seeker_filter(self, infile, outfile, bss_path):

@@ -49,6 +49,7 @@ class tbParseMappingTool(Tool):
         Init function
         """
         print "TADbit parse mapping"
+        Tool.__init__(self)
     
     @task(genome_seq = IN, enzyme_name = IN,
         window1_1 = FILE_IN, window1_2 = FILE_IN, window1_3 = FILE_IN, window1_4 = FILE_IN,

@@ -41,7 +41,8 @@ class mergeAdjacencyTool(Tool):
         """
         Init function
         """
-        print "GEM Indexer"
+        print("Merge Adjacency Tool")
+        Tool.__init__(self)
     
     def merge_adjacency_files(self, adjlist_files = []):
         """

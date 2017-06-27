@@ -43,6 +43,7 @@ class biobambam(Tool):
         Init function
         """
         print("BioBamBam2 Filter")
+        Tool.__init__(self)
     
     @task(returns=int, bam_file_in = FILE_IN, bam_file_out = FILE_OUT,
           tmp_dir = IN, isModifier=False)

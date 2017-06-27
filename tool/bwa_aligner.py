@@ -43,6 +43,7 @@ class bwaAlignerTool(Tool):
         Init function
         """
         print("BWA Aligner")
+        Tool.__init__(self)
     
     @task(returns=int, genome_file_loc=FILE_IN, read_file_loc=FILE_IN,
           bam_loc=FILE_OUT, amb_loc=FILE_IN, ann_loc=FILE_IN, bwt_loc=FILE_IN,

@@ -183,6 +183,7 @@ Setup the symlinks
 
    cd ${HOME}/bin
    
+   ln -s ${HOME}/lib/bedtools2/bin/bedtools bedtools
 
    ln -s ${HOME}/lib/bedToBigBed bedToBigBed
    ln -s ${HOME}/lib/wigToBigWig wigToBigWig

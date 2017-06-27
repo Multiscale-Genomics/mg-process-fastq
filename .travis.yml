@@ -24,8 +24,8 @@ addons:
     - r-base-core
     - libcurl4-gnutls-dev
     - unzip
-    -	cd ${HOME}
-    -	mkdir bin lib code
+    - cd ${HOME}
+    - mkdir bin lib code
     
     
     

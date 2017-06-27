@@ -10,7 +10,9 @@ addons:
   apt:
     packages:
     #system environment
-    - make build-essential libssl-dev 
+    - make 
+    - build-essential
+    - libssl-dev 
     - zlib1g-dev
     - libbz2-dev 
     - libreadline-dev
@@ -23,12 +25,7 @@ addons:
     - libgtk2.0-dev 
     - r-base-core
     - libcurl4-gnutls-dev
-    - unzip
-    - cd ${HOME}
-    - mkdir bin lib code
-    
-    
-    
+    - unzip   
 
 env:
   - COVERALLS=false
@@ -46,6 +43,8 @@ before_install:
     - pyenv install 2.7.12
     - pyenv virtualenv 2.7.12 mg-process-fastq
     
+    - cd ${HOME}
+    - mkdir bin lib code
     
     #UCSC Tools
     - cd ${HOME}/lib

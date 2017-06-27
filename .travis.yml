@@ -45,8 +45,8 @@ before_install:
      
     - pyenv install 2.7.12
     - pyenv virtualenv 2.7.12 mg-process-fastq
-			
-			
+    
+    
     #UCSC Tools
     - cd ${HOME}/lib
     - wget http://hgdownload.cse.ucsc.edu/admin/exe/linux.x86_64/bedToBigBed

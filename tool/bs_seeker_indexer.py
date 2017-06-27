@@ -28,7 +28,7 @@ except ImportError :
 from basic_modules.metadata import Metadata
 from basic_modules.tool import Tool
 
-from common import common
+from tool.common import common
 
 pwd = os.environ.get('PWD')
 pwd_split = pwd.split('/')

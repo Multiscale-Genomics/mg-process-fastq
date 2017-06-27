@@ -84,30 +84,29 @@ class inps(Tool):
         """
         The main function to run MACS 2 for peak calling over a given BAM file
         and matching background BAM file.
-        
+
         Parameters
         ----------
         input_files : list
             List of input bam file locations where 0 is the bam data file and 1
             is the matching background bam file
         metadata : dict
-        
-        
+
         Returns
         -------
         output_files : list
             List of locations for the output files.
         output_metadata : list
             List of matching metadata dict objects
-        
+
         """
-        
+
         bam_file = input_files[0]
         peak_bed = bam_file.replace('.bam', '.bed')
-        
+
         # input and output share most metadata
         output_metadata = {}
-        
+
         # handle error
         if not self.inps_peak_calling(bam_file, peak_bed):
             output_metadata.set_exception(

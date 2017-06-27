@@ -40,4 +40,5 @@ before_install:
     
 install:
 
+script : "./tests/test_biobambam.py"
 

@@ -28,7 +28,6 @@ except ImportError :
 from basic_modules.metadata import Metadata
 from basic_modules.tool import Tool
 
-from . import common
 from tool.common import cd
 
 # ------------------------------------------------------------------------------
@@ -37,50 +36,50 @@ class inps(Tool):
     """
     Tool for peak calling for MNase-seq data
     """
-    
+
     def __init__(self):
         """
         Init function
         """
         print("iNPS Peak Caller")
         Tool.__init__(self)
-    
-    @task(bam_file = FILE_IN, peak_bed = FILE_OUT)
+
+    @task(bam_file=FILE_IN, peak_bed=FILE_OUT)
     def inps_peak_calling(self, bam_file, peak_bed):
         """
         Convert Bam to Bed then make Nucleosome peak calls. These are saved as
         bed files That can then get displayed on genome browsers.
-        
+
         Parameters
         ----------
         bam_file : str
             Location of the aligned sequences in bam format
         peak_bed : str
             Location of the collated bed file of nucleosome peak calls
-        
+
         Returns
         -------
         peak_bed : str
             Location of the collated bed file of nucleosome peak calls
         """
         bed_file = bam_file + ".bed"
-        with cd('../../../lib'):
+        with cd(os.path.join(os.path.expanduser("~"), "bin/")):
             command_line_1 = 'bedtools bamtobed -i ' + bam_file
-            command_line_2 = 'python3 iNPS_V1.2.2.py -i ' + bed_file + ' -o ' + peak_bed
-            
-            
+            pyenv3 = os.path.join(os.path.expanduser("~"), ".pyenv/versions/3.5.2/bin/python")
+            command_line_2 = pyenv3 + ' iNPS_V1.2.2.py -i ' + bed_file + ' -o ' + peak_bed
+
             args = shlex.split(command_line_1)
             with open(bed_file, "w") as f_out:
-                p = subprocess.Popen(args, stdout=f_out)
-                p.wait()
-            
+                sub_proc = subprocess.Popen(args, stdout=f_out)
+                sub_proc.wait()
+
             args = shlex.split(command_line_2)
-            p = subprocess.Popen(args)
-            p.wait()
-        
+            sub_proc = subprocess.Popen(args)
+            sub_proc.wait()
+
         return peak_bed
-    
-    
+
+
     def run(self, input_files, metadata):
         """
         The main function to run MACS 2 for peak calling over a given BAM file

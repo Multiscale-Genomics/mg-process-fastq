@@ -44,23 +44,24 @@ class macs2(Tool):
         """
         print("MACS2 Peak Caller")
         Tool.__init__(self)
-    
-    @task(  returns=bool,
-            name = IN,
-            bam_file = FILE_IN,
-            bam_file_bgd = FILE_IN,
-            narrowPeak = FILE_OUT,
-            summit_bed = FILE_OUT,
-            broadPeak = FILE_OUT,
-            gappedPeak = FILE_OUT,
-            isModifier=False)
-    def macs2_peak_calling(self,
-        name, bam_file, bam_file_bgd,
-        narrowPeak, summits_bed, broadPeak, gappedPeak):
+
+    @task(
+        returns=bool,
+        name=IN,
+        bam_file=FILE_IN,
+        bam_file_bgd=FILE_IN,
+        narrowpeak=FILE_OUT,
+        summit_bed=FILE_OUT,
+        broadpeak=FILE_OUT,
+        gappedpeak=FILE_OUT,
+        isModifier=False)
+    def macs2_peak_calling(
+            self, name, bam_file, bam_file_bgd,
+            narrowpeak, summits_bed, broadpeak, gappedpeak):
         """
         Function to run MACS2 for peak calling on aligned sequence files and
         normalised against a provided background set of alignments.
-        
+
         Parameters
         ----------
         name : str
@@ -70,8 +71,7 @@ class macs2(Tool):
         bam_file_bgd : str
             Location of the aligned FASTQ files as a bam file representing
             background values for the cell
-        
-        
+
         Returns
         -------
         narrowPeak : file
@@ -84,53 +84,57 @@ class macs2(Tool):
         gappedPeak : file
             BED12+3 file - Contains a merged set of the broad and narrow peak
             files
-        
+
         Definitions defined for each of these files have come from the MACS2
         documentation described in the docs at https://github.com/taoliu/MACS
         """
-        pass
-        
-        od = bam_file.split("/")
-        output_dir = "/".join(od[0:-1])
+
+        od_list = bam_file.split("/")
+        output_dir = "/".join(od_list[0:-1])
 
         bgd_command = ''
         if bam_file_bgd is not None:
             bgd_command = ' -c ' + bam_file_bgd
-        
-        command_line = 'macs2 callpeak -t ' + bam_file + ' -n ' + name + bgd_command + ' --outdir ' + output_dir
-        
+
+        command_param = [
+            'macs2 callpeak', '-t', bam_file, 'n', name, bgd_command,
+            ' --outdir ', output_dir
+        ]
+        command_line = ' '.join(command_param)
+
         if name == 'fastQForSelRegion':
             # This is for when running the test data
             command_line = command_line + ' --nomodel'
-        
+
         args = shlex.split(command_line)
-        p = subprocess.Popen(args)
-        p.wait()
-        
+        sub_proc = subprocess.Popen(args)
+        sub_proc.wait()
+
         return 0
-    
-    @task(  returns=bool,
-            name = IN,
-            bam_file = FILE_IN,
-            narrowPeak = FILE_OUT,
-            summit_bed = FILE_OUT,
-            broadPeak = FILE_OUT,
-            gappedPeak = FILE_OUT,
-            isModifier=False)
-    def macs2_peak_calling_nobgd(self,
-        name, bam_file,
-        narrowPeak, summits_bed, broadPeak, gappedPeak):
+
+    @task(
+        returns=bool,
+        name=IN,
+        bam_file=FILE_IN,
+        narrowPeak=FILE_OUT,
+        summit_bed=FILE_OUT,
+        broadPeak=FILE_OUT,
+        gappedPeak=FILE_OUT,
+        isModifier=False)
+    def macs2_peak_calling_nobgd(
+            self, name, bam_file,
+            narrowpeak, summits_bed, broadpeak, gappedpeak):
         """
         Function to run MACS2 for peak calling on aligned sequence files without
         a background dataset for normalisation.
-        
+
         Parameters
         ----------
         name : str
             Name to be used to identify the files
         bam_file : str
             Location of the aligned FASTQ files as a bam file
-        
+
         Returns
         -------
         narrowPeak : file
@@ -143,71 +147,71 @@ class macs2(Tool):
         gappedPeak : file
             BED12+3 file - Contains a merged set of the broad and narrow peak
             files
-        
+
         Definitions defined for each of these files have come from the MACS2
         documentation described in the docs at https://github.com/taoliu/MACS
         """
-        od = bam_file.split("/")
-        output_dir = "/".join(od[0:-1])
+        od_list = bam_file.split("/")
+        output_dir = "/".join(od_list[0:-1])
 
         command_line = 'macs2 callpeak -t ' + bam_file + ' -n ' + name + ' --outdir ' + output_dir
-        
+
         if name == 'fastQForSelRegion':
             # This is for when running the test data
             command_line = command_line + ' --nomodel'
-        
+
         args = shlex.split(command_line)
-        p = subprocess.Popen(args)
-        p.wait()
-        
+        sub_proc = subprocess.Popen(args)
+        sub_proc.wait()
+
         return 0
-    
-    
+
+
     def run(self, input_files, metadata, output_files):
         """
         The main function to run MACS 2 for peak calling over a given BAM file
         and matching background BAM file.
-        
+
         Parameters
         ----------
         input_files : list
             List of input bam file locations where 0 is the bam data file and 1
             is the matching background bam file
         metadata : dict
-        
-        
+
+
         Returns
         -------
         output_files : list
             List of locations for the output files.
         output_metadata : list
             List of matching metadata dict objects
-        
+
         """
-        
+
         bam_file = input_files[0]
         bam_file_bgd = None
         if len(input_files) == 2 and input_files[1] is not None:
             bam_file_bgd = input_files[1]
-        
+
         root_name = bam_file.split("/")
         root_name[-1] = root_name[-1].replace('.bam', '')
-        
+
         name = root_name[-1]
-        
+
         summits_bed = output_files[0]
-        narrowPeak  = output_files[1]
-        broadPeak   = output_files[2]
-        gappedPeak  = output_files[3]
-        
+        narrowpeak = output_files[1]
+        broadpeak = output_files[2]
+        gappedpeak = output_files[3]
+
         # input and output share most metadata
         output_metadata = {"bed_types" : ["bed4+1", "bed6+4", "bed6+3", "bed12+3"]}
-        
+
         peak_bed = None
         # handle error
         if bam_file_bgd is None:
-            results = self.macs2_peak_calling_nobgd(name, bam_file,
-                narrowPeak, summits_bed, broadPeak, gappedPeak)
+            results = self.macs2_peak_calling_nobgd(
+                name, bam_file, narrowpeak, summits_bed, broadpeak, gappedpeak)
             #if not self.macs2_peak_calling_nobgd(name, bam_file,
             #    narrowPeak, summits_bed, broadPeak, gappedPeak):
             #    output_metadata['error'] = Exception(
@@ -219,8 +223,8 @@ class macs2(Tool):
             #    broadPeak   = None
             #    gappedPeak  = None
         else:
-            results = self.macs2_peak_calling(name, bam_file, bam_file_bgd,
-                narrowPeak, summits_bed, broadPeak, gappedPeak)
+            results = self.macs2_peak_calling(
+                name, bam_file, bam_file_bgd, narrowpeak, summits_bed, broadpeak, gappedpeak)
             #if not self.macs2_peak_calling(name, bam_file, bam_file_bgd,
             #    narrowPeak, summits_bed, broadPeak, gappedPeak):
             #    output_metadata['error'] = Exception(
@@ -231,10 +235,10 @@ class macs2(Tool):
             #    narrowPeak  = None
             #    broadPeak   = None
             #    gappedPeak  = None
-        
+
         #results = compss_wait_on(results)
-        print results
-        
-        return ([peak_bed, summits_bed, narrowPeak, broadPeak, gappedPeak], metadata)
+        print(results)
+
+        return ([peak_bed, summits_bed, narrowpeak, broadpeak, gappedpeak], metadata)
 
 # ------------------------------------------------------------------------------

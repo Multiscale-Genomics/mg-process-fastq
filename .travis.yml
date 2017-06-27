@@ -41,6 +41,3 @@ before_install:
 install:
 
 
-script: "./travisci/harness.sh"
-
-

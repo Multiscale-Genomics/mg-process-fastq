@@ -35,7 +35,7 @@ before_install:
     #pyenv-pyenv-virtualenv
     - |
       if [[ -n "$PYENV_VERSION" ]]; then
-        source setup-pyenv.sh
+        python setup-pyenv.sh
       fi
     - pyenv install 2.7.12
     - pyenv virtualenv 2.7.12 mg-process-fastq

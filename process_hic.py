@@ -18,23 +18,14 @@
 
 # -*- coding: utf-8 -*-
 
-import argparse, urllib2, gzip, shutil, shlex, subprocess, os, sys, json, time
+import argparse
+import os
+import time
 
-from basic_modules import Tool, Workflow, Metadata
+from basic_modules.workflow import Workflow
 from dmp import dmp
 
 from functools import wraps
-
-import tool
-
-try :
-    from pycompss.api.parameter import *
-    from pycompss.api.task import task
-except ImportError :
-    print "[Warning] Cannot import \"pycompss\" API packages."
-    print "          Using mock decorators."
-    
-    from dummy_pycompss import *
 
 from tool import tb_full_mapping
 from tool import tb_parse_mapping
@@ -69,18 +60,19 @@ class process_hic(Workflow):
             List of locations for the output bam, bed and tsv files
         """
         
-        genome_file  = files_ids[0]
-        genome_gem   = files_ids[1]
+        genome_file = files_ids[0]
+        genome_gem = files_ids[1]
         fastq_file_1 = files_ids[2]
         fastq_file_2 = files_ids[3]
         enzyme_name = metadata['enzyme_name']
         resolutions = metadata['resolutions']
-        windows1    = metadata['windows1']
-        windows2    = metadata['windows2']
-        normalized  = metadata['normalized']
+        windows1 = metadata['windows1']
+        windows2 = metadata['windows2']
+        normalized = metadata['normalized']
 
         tmp_name = fastq_file_1.split('/')
         tmp_dir = '/'.join(tmp_name[0:-1])
+        
         try:
             os.makedirs(tmp_dir)
         except:

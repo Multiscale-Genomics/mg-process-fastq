@@ -35,7 +35,6 @@ before_install:
     #pyenv-pyenv-virtualenv
     - |
       if [[ -n "$PYENV_VERSION" ]]; then
-        wget https://github.com/praekeltfoundation/travis-pyenv/releases/download/0.3.0/setup-pyenv.sh
         source setup-pyenv.sh
       fi
     - pyenv install 2.7.12

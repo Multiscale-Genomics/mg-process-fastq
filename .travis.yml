@@ -43,9 +43,7 @@ before_install:
 
     - pyenv install 2.7.12
     - pyenv virtualenv 2.7.12 mg-process-fastq
-    - pyenv install 2.7.12
-    - pyenv virtualenv 2.7.12 mg-process-fastq
-
+    
     - cd ${HOME}
     - mkdir bin lib code
 

@@ -29,6 +29,13 @@ addons:
 
 env:
   - COVERALLS=false
+  
+  
+matrix:
+  include:
+    - os: linux
+      dist: trusty
+      sudo: required
 
 before_install:
 

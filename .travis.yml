@@ -35,7 +35,6 @@ matrix:
   include:
     - os: linux
       dist: trusty
-      sudo: required
 
 before_install:
 

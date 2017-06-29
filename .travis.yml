@@ -35,6 +35,7 @@ matrix:
   include:
     - os: linux
       dist: trusty
+      sudo: required
 
 before_install:
 
@@ -47,8 +48,6 @@ before_install:
     - source ~/.bash_profile
 
     - git clone https://github.com/pyenv/pyenv-virtualenv.git ${PYENV_ROOT}/plugins/pyenv-virtualenv
-
-    - pyenv install 2.7.12
     - pyenv virtualenv 2.7.12 mg-process-fastq
     
     - cd ${HOME}

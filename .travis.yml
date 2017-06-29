@@ -48,7 +48,6 @@ before_install:
     - source ~/.bash_profile
 
     - git clone https://github.com/pyenv/pyenv-virtualenv.git ${PYENV_ROOT}/plugins/pyenv-virtualenv
-    - virtualenv 2.7.12 mg-process-fastq
     
     - cd ${HOME}
     - mkdir bin lib code

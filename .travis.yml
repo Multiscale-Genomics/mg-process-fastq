@@ -56,26 +56,6 @@ before_install:
 install:
 
     
-     #SAMtools
-    - cd ${HOME}/lib
-    - git clone https://github.com/samtools/htslib.git
-    - cd htslib
-    - autoheader
-    - autoconf
-    - ./configure --prefix=${HOME}/lib/htslib
-    - make
-    - make install
-
-    - cd ${HOME}/lib
-    - git clone https://github.com/samtools/samtools.git
-    - cd samtools
-    - autoheader
-    - autoconf -Wno-syntax
-    - ./configure --prefix=${HOME}/lib/samtools
-    - make
-    - make install
-
-
      #BioBamBam2
     - cd ${HOME}/lib
     - git clone https://github.com/gt1/libmaus2.git
@@ -96,6 +76,27 @@ install:
     - ./configure --with-libmaus2=${HOME}/lib/libmaus2 --prefix=${HOME}/lib/biobambam2
     - make install
     
+    
+     #SAMtools
+    - cd ${HOME}/lib
+    - git clone https://github.com/samtools/htslib.git
+    - cd htslib
+    - autoheader
+    - autoconf
+    - ./configure --prefix=${HOME}/lib/htslib
+    - make
+    - make install
+
+    - cd ${HOME}/lib
+    - git clone https://github.com/samtools/samtools.git
+    - cd samtools
+    - autoheader
+    - autoconf -Wno-syntax
+    - ./configure --prefix=${HOME}/lib/samtools
+    - make
+    - make install
+
+
 
      #bedTools
     - wget https://github.com/arq5x/bedtools2/releases/download/v2.26.0/bedtools-2.26.0.tar.gz

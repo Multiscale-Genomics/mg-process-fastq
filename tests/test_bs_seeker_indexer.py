@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 #!usr/bin/python
+=======
+#!usr/bin/env python
+>>>>>>> master
 
 """
 .. Copyright 2017 EMBL-European Bioinformatics Institute
@@ -21,10 +25,6 @@ import random
 import os
 import sys
 
-#PACKAGE_PARENT = '..'
-#SCRIPT_DIR = os.path.dirname(os.path.realpath(os.path.join(os.getcwd(), os.path.expanduser(__file__))))
-#sys.path.append(os.path.normpath(os.path.join(SCRIPT_DIR, PACKAGE_PARENT)))
-
 from tool import bs_seeker_indexer
 
 def test_bs_seeker_indexer():    
@@ -32,9 +32,20 @@ def test_bs_seeker_indexer():
     resource_path = os.path.join(os.path.dirname(__file__), "data/")
     genomefa_file = resource_path + "bsSeeker.Mouse.GRCm38.fasta"
     
+    home = os.path.expanduser('~')
+
     bsi = bs_seeker_indexer.bssIndexerTool()
+<<<<<<< HEAD
     bsi.run([genomefa_file],{"aligner":"bowtie", "aligner_path":"/usr/local/bin","bss_path":"/Users/reham/lib/BSseeker2-2.1.2Beta"})#/Users/reham/lib/bowtie2-2.3.2
     
 
+=======
+    bsi.run(
+        [genomefa_file],
+        {
+            "aligner" : "bowtie2",
+            "aligner_path" : home + "/bin",
+            "bss_path" : home + "/lib/BSseeker2"})
+>>>>>>> master
     
    

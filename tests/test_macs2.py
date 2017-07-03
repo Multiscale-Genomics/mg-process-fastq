@@ -25,5 +25,14 @@ from tool import macs2
 def test_macs2():
     m = macs2.macs2()
     resource_path = os.path.join(os.path.dirname(__file__), "data/")
-    bam_file = resource_path + "macs2.Human.DRR000150.22.bam"
-    m.run([bam_file], {})
+    
+    bam_file = resource_path + "biobambam.Human.DRR000150.22_output.bam"
+    if os.path.isfile(bam_file) == False:
+        bam_file = resource_path + "macs2.Human.DRR000150.22.bam"
+    
+    summits_bed = resource_path + "_summits.bed"
+    narrowPeak  = resource_path + "_narrowPeak"
+    broadPeak   = resource_path + "_broadPeak"
+    gappedPeak  = resource_path + "_gappedPeak"
+
+    m.run([bam_file], {}, [summits_bed, narrowPeak, broadPeak, gappedPeak])

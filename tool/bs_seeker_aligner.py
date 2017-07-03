@@ -14,7 +14,10 @@
    limitations under the License.
 """
 
-import os, shutil, shlex, subprocess
+import os
+import shutil
+import shlex
+import subprocess
 
 try:
     from pycompss.api.parameter import FILE_IN, FILE_OUT
@@ -99,7 +102,6 @@ class bssAlignerTool(Tool):
         args = shlex.split(command_line)
         p = subprocess.Popen(args)
         p.wait()
-        pysam.sort("-o", str(bam_out), str(bam_out))
 
         return True
 

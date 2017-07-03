@@ -1,4 +1,7 @@
 # mg-process-fastq
+
+[![Documentation Status](https://readthedocs.org/projects/mg-process-fastq/badge/?version=latest)](http://mg-process-fastq.readthedocs.org/en/latest/)
+
 Scripts required for the processing of FASTQ files (eg generating adjacency lists for Hi-C data)
 
 # Requirements

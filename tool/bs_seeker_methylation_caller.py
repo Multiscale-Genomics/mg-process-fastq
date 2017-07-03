@@ -14,7 +14,11 @@
    limitations under the License.
 """
 
-import os, shutil, shlex, subprocess
+import os
+import shutil
+import shlex
+import subprocess
+import pysam
 
 try:
     from pycompss.api.parameter import FILE_IN, FILE_OUT
@@ -57,7 +61,7 @@ class bssMethylationCallerTool(Tool):
         bss_path : str
             Location of the Methylation caller script
         bam_file : str
-            Location of the bam alignment file
+            Location of the sorted bam alignment file
         db_dir : str
             Location of the FASTA file 
         wig_file : str
@@ -93,7 +97,7 @@ class bssMethylationCallerTool(Tool):
         Parameters
         ----------
         input_files : list
-            BAM file with the sequence alignments
+            Sorted BAM file with the sequence alignments
         metadata : list
         
         Returns
@@ -107,7 +111,7 @@ class bssMethylationCallerTool(Tool):
         gd = file_name.split("/")
         genome_dir = input_files[0]
 
-        bss_path = metadata['bss_path'] #rf fix : 
+        bss_path = metadata['bss_path']
         wig_file = input_files[1].replace('.bam', '.wig')
         cgmap_file = input_files[1].replace('.bam', '.cgmap.tsv')
         atcgmap_file = input_files[1].replace('.bam', '.atcgmap.tsv')
@@ -115,6 +119,19 @@ class bssMethylationCallerTool(Tool):
         # input and output share most metadata
         output_metadata = {}
         
+        bam_file_handle = pysam.AlignmentFile(file_name, "rb")
+        if 'SO' not in bam_file_handle.header['HD'] or bam_file_handle.header['HD']['SO'] == 'unsorted':
+            bam_file_handle.close()
+
+            output_metadata.set_exception(
+                Exception(
+                    "bss_methylation_caller: Could not process files {}, {}.".format(*input_files)))
+            wig_file = None
+            cgmap_file = None
+            atcgmap_file = None
+
+            return ([wig_file, cgmap_file, atcgmap_file], [output_metadata])
+
         # handle error
         if not self.bss_methylation_caller(bss_path, file_name, genome_dir, wig_file, cgmap_file, atcgmap_file):
             output_metadata.set_exception(

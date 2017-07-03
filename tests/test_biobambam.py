@@ -31,6 +31,7 @@ def test_biobambam():
         [resource_path + "macs2.Human.DRR000150.22.bam"],
         {},
         [resource_path + "biobambam.Human.DRR000150.22_output.bam",resource_path]
+<<<<<<< HEAD
     )
 """   
     bbb.run(
@@ -40,5 +41,7 @@ def test_biobambam():
             resource_path
         ],
         {}
+=======
+>>>>>>> master
     )
 """

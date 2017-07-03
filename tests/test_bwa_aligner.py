@@ -27,10 +27,17 @@ def test_bwa_aligner():
     Function to test BWA Aligner
     """
     resource_path = os.path.join(os.path.dirname(__file__), "data/")
+<<<<<<< HEAD
     genome_fa = resource_path + "selectGenomeRegion.fasta"
     fastq_file = resource_path + "fastQForSelRegion.fastq"
     out_bam = fastq_file.replace('.fastq', '.bam')
 
+=======
+    genome_fa = resource_path + "macs2.Human.GCA_000001405.22.fasta"
+    fastqFile = resource_path + "macs2.Human.DRR000150.22.fastq"
+    out_bam = fastqFile.replace('.fastq', '.bam')
+    
+>>>>>>> master
     files = [
         genome_fa,
         genome_fa + ".amb",

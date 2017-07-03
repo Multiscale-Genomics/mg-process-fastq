@@ -1,12 +1,9 @@
-#!/bin/sh
-#!usr/bin/python
-
 """
 .. Copyright 2017 EMBL-European Bioinformatics Institute
- 
+
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
-   You may obtain a copy of the License at 
+   You may obtain a copy of the License at
 
        http://www.apache.org/licenses/LICENSE-2.0
 
@@ -17,18 +14,20 @@
    limitations under the License.
 """
 
-import pytest
 import random
 import os.path
+import pytest
 
 from tool.kallisto_indexer import kallistoIndexerTool
 
 def test_kallisto_indexer():
+    """
+    Function to test Kallisto indexer
+    """
     resource_path = os.path.join(os.path.dirname(__file__), "data/")
-    ki= kallistoIndexerTool()
-    
-    fasta_file = resource_path+"kallisto.Human.GRCh38.fasta"
-    ki.run ([fasta_file],{}, [resource_path+"kallisto.Human.GRCh38.fasta.idx"] )
-    
+    ki = kallistoIndexerTool()
+
+    fasta_file = resource_path + "kallisto.Human.GRCh38.fasta"
+    ki.run([fasta_file], {}, [resource_path + "kallisto.Human.GRCh38.fasta.idx"])
+
     print(__file__)
-    

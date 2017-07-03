@@ -1,11 +1,9 @@
-#!usr/bin/python
-
 """
 .. Copyright 2017 EMBL-European Bioinformatics Institute
- 
+
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
-   You may obtain a copy of the License at 
+   You may obtain a copy of the License at
 
        http://www.apache.org/licenses/LICENSE-2.0
 
@@ -16,26 +14,21 @@
    limitations under the License.
 """
 
-import pytest
 import random
 import os
 import sys
+import pytest
 
-#PACKAGE_PARENT = '..'
-#SCRIPT_DIR = os.path.dirname(os.path.realpath(os.path.join(os.getcwd(), os.path.expanduser(__file__))))
-#sys.path.append(os.path.normpath(os.path.join(SCRIPT_DIR, PACKAGE_PARENT)))
+import process_wgbs  # from mg-process-fastq
 
-import process_wgbs #from mg-process-fastq 
 
-def test_single_splitter():
-    
+def test_paired_splitter():
+    """
+    Function to test paired splitter
+    """
     resource_path = os.path.join(os.path.dirname(__file__), "data/")
     fastq_1file = resource_path + "bsSeeker.Mouse.GRCm38_1.fastq"
     fastq_2file = resource_path + "bsSeeker.Mouse.GRCm38_2.fastq"
-    
+
     ssp = process_wgbs.process_wgbs()
     ssp.paired_splitter(fastq_1file, fastq_2file)
-    
-
-    
-   

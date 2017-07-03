@@ -24,10 +24,6 @@ import pytest
 from tool import bs_seeker_filter
 
 def test_bs_seeker_filter():
-    """
-    Test to ensure BS-Seeker filter is working
-    """
-
     resource_path = os.path.join(os.path.dirname(__file__), "data/")
     genomefa_file = resource_path + "bsSeeker.Mouse.GRCm38_1.fastq"
 

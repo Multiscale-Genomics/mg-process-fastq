@@ -52,13 +52,7 @@ def test_bwa_indexer():
 
 def test_bwa_indexer_02():
     """
-<<<<<<< HEAD
     Test case to ensure that the BWA indexer works
-=======
-    Test case to ensure that the BWA indexer works.
-
-    Builds the assembly for Mouse for use with the iNPS tests
->>>>>>> master
     """
     resource_path = os.path.join(os.path.dirname(__file__), "data/")
     genome_fa = resource_path + "inps.Mouse.GRCm38.fasta"

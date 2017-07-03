@@ -1,15 +1,9 @@
-<<<<<<< HEAD
-#!usr/bin/python
-=======
-#!usr/bin/env python
->>>>>>> master
-
 """
 .. Copyright 2017 EMBL-European Bioinformatics Institute
- 
+
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
-   You may obtain a copy of the License at 
+   You may obtain a copy of the License at
 
        http://www.apache.org/licenses/LICENSE-2.0
 
@@ -20,37 +14,25 @@
    limitations under the License.
 """
 
-import pytest
 import random
 import os
 import sys
 import pysam
+import pytest
 
 from tool import bs_seeker_methylation_caller
 
-def test_bs_seeker_methylation_caller():    
-    
+def test_bs_seeker_methylation_caller():
+
     resource_path = os.path.join(os.path.dirname(__file__), "data/")
-    genomefa_file = resource_path + "bsSeeker.Mouse.GRCm38.fasta_bowtie2"    
-<<<<<<< HEAD
-    bam_file = resource_path + "bsSeeker.Mouse.GRCm38.bam.sorted" #pass the sorted bam to samtools index
-    
-    bsmc = bs_seeker_methylation_caller.bssMethylationCallerTool()
-    bsmc.run([genomefa_file, bam_file ],{'bss_path':"/Users/reham/lib/BSseeker2-2.1.2Beta"})
-    
-    
-test_bs_seeker_methylation_caller()
-=======
+    genomefa_file = resource_path + "bsSeeker.Mouse.GRCm38.fasta_bowtie2"
     bam_file = resource_path + "bsSeeker.Mouse.GRCm38.bam"
->>>>>>> master
-
-    pysam.sort("-o", str(bam_file), str(bam_file))
-
     home = os.path.expanduser('~')
-    
+    #TODO fix for pylint
+    pysam.sort("-o", str(bam_file+".sorted"), str(bam_file))
+
     bsmc = bs_seeker_methylation_caller.bssMethylationCallerTool()
     bsmc.run(
-        [genomefa_file, bam_file ],
-        {'bss_path' : home + "/bin"}
+        [genomefa_file, bam_file+".sorted"],
+        {'bss_path': home + "/lib/BSseeker2-2.1.2Beta"}
     )
-   

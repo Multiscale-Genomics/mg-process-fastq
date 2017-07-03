@@ -1,15 +1,11 @@
-<<<<<<< HEAD
 #!usr/bin/python
-=======
-#!usr/bin/env python
->>>>>>> master
 
 """
 .. Copyright 2017 EMBL-European Bioinformatics Institute
- 
+
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
-   You may obtain a copy of the License at 
+   You may obtain a copy of the License at
 
        http://www.apache.org/licenses/LICENSE-2.0
 
@@ -20,22 +16,22 @@
    limitations under the License.
 """
 
-import pytest
 import random
 import os
 import sys
+import pytest
 
 from tool import inps
 
 @pytest.mark.py3
-def test_inps():    
-    
+def test_inps():
+    """
+    Function to test INPS works.
+    """
+
     resource_path = os.path.join(os.path.dirname(__file__), "data/")
     bam_file = resource_path + "inps.Mouse.GRCm38.bam"
     peak_bed = bam_file.replace('.bam', '.bed')
-   
-    inps_obj = inps.inps()      
-    inps_obj.run ([bam_file, peak_bed],{})
-    
-    
-    
+
+    inps_obj = inps.inps()
+    inps_obj.run([bam_file, peak_bed], {})

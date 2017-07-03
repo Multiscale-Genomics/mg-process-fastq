@@ -2,7 +2,7 @@
 
 """
 .. Copyright 2017 EMBL-European Bioinformatics Institute
- 
+
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
    You may obtain a copy of the License at 
@@ -26,12 +26,12 @@ def test_bowtie_indexer():
     bti = bowtie_indexer.bowtieIndexerTool()
     resource_path = os.path.join(os.path.dirname(__file__), "data/")
     
-    bti.run([resource_path+"macs2.Human.GCA_000001405.22.fasta"],{})
+    bti.run([resource_path + "macs2.Human.GCA_000001405.22.fasta"], {})
 
 
 def test_bowtie_indexer_02():
     bti = bowtie_indexer.bowtieIndexerTool()
     resource_path = os.path.join(os.path.dirname(__file__), "data/")
     
-    bti.run([resource_path+"inps.Mouse.GRCm38.fasta"],{})
+    bti.run([resource_path + "inps.Mouse.GRCm38.fasta"], {})
     

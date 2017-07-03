@@ -213,7 +213,7 @@ class process_wgbs:
 
     def run(self, file_ids, metadata):
         """
-        This pipeline processes paired-end FASTQ files to idententify
+        This pipeline processes paired-end FASTQ files to identify
         methylated regions within the genome.
 
         Parameters

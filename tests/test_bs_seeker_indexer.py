@@ -35,7 +35,6 @@ def test_bs_seeker_indexer():
     bsi = bs_seeker_indexer.bssIndexerTool()
     bsi.run([genomefa_file],{"aligner":"bowtie", "aligner_path":"/usr/local/bin","bss_path":"/Users/reham/lib/BSseeker2-2.1.2Beta"})#/Users/reham/lib/bowtie2-2.3.2
     
-    
-test_bs_seeker_indexer()
+
     
    

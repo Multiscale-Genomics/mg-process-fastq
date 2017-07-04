@@ -53,28 +53,7 @@ before_install:
     - mkdir bin lib code
 
     
-install:
-      
-    #BioBamBam2
-    - cd ${HOME}/lib
-    - git clone https://github.com/gt1/libmaus2.git
-    - cd libmaus2
-    - libtoolize
-    - aclocal
-    - autoheader
-    - automake --force-missing --add-missing
-    - autoconf
-    - ./configure --prefix=${HOME}/lib/libmaus2
-    - make
-    - make install
-    
-    - cd ${HOME}/lib
-    - git clone https://github.com/gt1/biobambam2.git
-    - cd biobambam2
-    - autoreconf -i -f
-    - ./configure --with-libmaus2=${HOME}/lib/libmaus2 --prefix=${HOME}/lib/biobambam2
-    - make install
-    
+install:    
     
     #UCSC Tools
     - cd ${HOME}/lib
@@ -164,67 +143,6 @@ install:
     - ln -s ${HOME}/lib/samtools/bin/wgsim wgsim
     - ln -s ${HOME}/lib/samtools/bin/wgsim_eval.pl wgsim_eval.pl
     - ln -s ${HOME}/lib/samtools/bin/zoom2sam.pl zoom2sam.pl
-    - ln -s ${HOME}/lib/biobambam2/bin/bam12auxmerge bam12auxmerge
-    - ln -s ${HOME}/lib/biobambam2/bin/bam12split bam12split
-    - ln -s ${HOME}/lib/biobambam2/bin/bam12strip bam12strip
-    - ln -s ${HOME}/lib/biobambam2/bin/bamadapterclip bamadapterclip
-    - ln -s ${HOME}/lib/biobambam2/bin/bamadapterfind bamadapterfind
-    - ln -s ${HOME}/lib/biobambam2/bin/bamalignfrac bamalignfrac
-    - ln -s ${HOME}/lib/biobambam2/bin/bamauxmerge bamauxmerge
-    - ln -s ${HOME}/lib/biobambam2/bin/bamauxsort bamauxsort
-    - ln -s ${HOME}/lib/biobambam2/bin/bamcat bamcat
-    - ln -s ${HOME}/lib/biobambam2/bin/bamchecksort bamchecksort
-    - ln -s ${HOME}/lib/biobambam2/bin/bamclipreinsert bamclipreinsert
-    - ln -s ${HOME}/lib/biobambam2/bin/bamcollate bamcollate
-    - ln -s ${HOME}/lib/biobambam2/bin/bamcollate2 bamcollate2
-    - ln -s ${HOME}/lib/biobambam2/bin/bamdownsamplerandom bamdownsamplerandom
-    - ln -s ${HOME}/lib/biobambam2/bin/bamexplode bamexplode
-    - ln -s ${HOME}/lib/biobambam2/bin/bamfilteraux bamfilteraux
-    - ln -s ${HOME}/lib/biobambam2/bin/bamfilterflags bamfilterflags
-    - ln -s ${HOME}/lib/biobambam2/bin/bamfilterheader bamfilterheader
-    - ln -s ${HOME}/lib/biobambam2/bin/bamfilterheader2 bamfilterheader2
-    - ln -s ${HOME}/lib/biobambam2/bin/bamfilterlength bamfilterlength
-    - ln -s ${HOME}/lib/biobambam2/bin/bamfiltermc bamfiltermc
-    - ln -s ${HOME}/lib/biobambam2/bin/bamfilternames bamfilternames
-    - ln -s ${HOME}/lib/biobambam2/bin/bamfilterrg bamfilterrg
-    - ln -s ${HOME}/lib/biobambam2/bin/bamfixmateinformation bamfixmateinformation
-    - ln -s ${HOME}/lib/biobambam2/bin/bamflagsplit bamflagsplit
-    - ln -s ${HOME}/lib/biobambam2/bin/bamheap2 bamheap2
-    - ln -s ${HOME}/lib/biobambam2/bin/bamindex bamindex
-    - ln -s ${HOME}/lib/biobambam2/bin/bamintervalcomment bamintervalcomment
-    - ln -s ${HOME}/lib/biobambam2/bin/bamintervalcommenthist bamintervalcommenthist
-    - ln -s ${HOME}/lib/biobambam2/bin/bamlastfilter bamlastfilter
-    - ln -s ${HOME}/lib/biobambam2/bin/bammapdist bammapdist
-    - ln -s ${HOME}/lib/biobambam2/bin/bammarkduplicates bammarkduplicates
-    - ln -s ${HOME}/lib/biobambam2/bin/bammarkduplicates2 bammarkduplicates2
-    - ln -s ${HOME}/lib/biobambam2/bin/bammarkduplicatesopt bammarkduplicatesopt
-    - ln -s ${HOME}/lib/biobambam2/bin/bammaskflags bammaskflags
-    - ln -s ${HOME}/lib/biobambam2/bin/bammdnm bammdnm
-    - ln -s ${HOME}/lib/biobambam2/bin/bammerge bammerge
-    - ln -s ${HOME}/lib/biobambam2/bin/bamnumericalindex bamnumericalindex
-    - ln -s ${HOME}/lib/biobambam2/bin/bamrank bamrank
-    - ln -s ${HOME}/lib/biobambam2/bin/bamranksort bamranksort
-    - ln -s ${HOME}/lib/biobambam2/bin/bamrecalculatecigar bamrecalculatecigar
-    - ln -s ${HOME}/lib/biobambam2/bin/bamrecompress bamrecompress
-    - ln -s ${HOME}/lib/biobambam2/bin/bamreset bamreset
-    - ln -s ${HOME}/lib/biobambam2/bin/bamscrapcount bamscrapcount
-    - ln -s ${HOME}/lib/biobambam2/bin/bamseqchksum bamseqchksum
-    - ln -s ${HOME}/lib/biobambam2/bin/bamsormadup bamsormadup
-    - ln -s ${HOME}/lib/biobambam2/bin/bamsort bamsort
-    - ln -s ${HOME}/lib/biobambam2/bin/bamsplit bamsplit
-    - ln -s ${HOME}/lib/biobambam2/bin/bamsplitdiv bamsplitdiv
-    - ln -s ${HOME}/lib/biobambam2/bin/bamstreamingmarkduplicates bamstreamingmarkduplicates
-    - ln -s ${HOME}/lib/biobambam2/bin/bamtagconversion bamtagconversion
-    - ln -s ${HOME}/lib/biobambam2/bin/bamtofastq bamtofastq
-    - ln -s ${HOME}/lib/biobambam2/bin/bamvalidate bamvalidate
-    - ln -s ${HOME}/lib/biobambam2/bin/bamzztoname bamzztoname
-    - ln -s ${HOME}/lib/biobambam2/bin/fastaexplode fastaexplode
-    - ln -s ${HOME}/lib/biobambam2/bin/fastqtobam fastqtobam
-    - ln -s ${HOME}/lib/biobambam2/bin/fastqtobampar fastqtobampar
-    - ln -s ${HOME}/lib/biobambam2/bin/filtersam filtersam
-    - ln -s ${HOME}/lib/biobambam2/bin/kmerprob kmerprob
-    - ln -s ${HOME}/lib/biobambam2/bin/lasToBAM lasToBAM
-    - ln -s ${HOME}/lib/biobambam2/bin/normalisefasta normalisefasta
     
     ##Prepare the Python Environment
      #Install APIs and Pipelines

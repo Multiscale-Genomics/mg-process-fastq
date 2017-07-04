@@ -24,6 +24,7 @@ Setup the System Environment
 
    cd ${HOME}
    mkdir bin lib code
+   echo 'export PATH="${HOME}/bin:$PATH"' >> ~/.bash_profile
 
 Setup pyenv and pyenv-virtualenv
 --------------------------------

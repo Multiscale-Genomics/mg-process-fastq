@@ -83,7 +83,7 @@ install:
     - cd htslib
     - autoheader
     - autoconf
-    - ./configure --prefix=${HOME}/lib/htslib
+    - ./configure -x --prefix=${HOME}/lib/htslib
     - make
     - make install
 

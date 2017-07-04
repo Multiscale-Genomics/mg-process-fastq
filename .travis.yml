@@ -76,47 +76,7 @@ install:
     - ./configure --with-libmaus2=${HOME}/lib/libmaus2 --prefix=${HOME}/lib/biobambam2
     - make install
     
-    #UCSC Tools
-    - cd ${HOME}/lib
-    - wget http://hgdownload.cse.ucsc.edu/admin/exe/linux.x86_64/bedToBigBed
-    - wget http://hgdownload.cse.ucsc.edu/admin/exe/linux.x86_64/wigToBigWig
     
-    
-    
-    #Bowtie2 Aligner
-    - cd ${HOME}/lib
-    - wget --max-redirect 1 https://downloads.sourceforge.net/project/bowtie-bio/bowtie2/2.3.2/bowtie2-2.3.2-linux-x86_64.zip
-    - unzip bowtie2-2.3.2-linux-x86_64.zip
-
-
-    #BWA Sequence Aligner
-    - cd ${HOME}/lib
-    - git clone https://github.com/lh3/bwa.git
-    - cd bwa
-    - make
-
-    #iNPS Peak Caller
-    - cd ${HOME}/lib
-    - mkdir iNPS
-    - cd iNPS
-    - wget http://www.picb.ac.cn/hanlab/files/iNPS_V1.2.2.zip
-    - unzip iNPS_V1.2.2.zip
-
-
-    #Kallisto
-    - cd ${HOME}/lib
-    - wget https://github.com/pachterlab/kallisto/releases/download/v0.43.1/kallisto_linux-v0.43.1.tar.gz
-    - tar -xzf kallisto_linux-v0.43.1.tar.gz
-    
-
-     #bedTools
-    - wget https://github.com/arq5x/bedtools2/releases/download/v2.26.0/bedtools-2.26.0.tar.gz
-    - tar -zxvf bedtools-2.26.0.tar.gz
-    - cd bedtools2
-    - make
-    
-
-
       #SAMtools
     - cd ${HOME}/lib
     - git clone https://github.com/samtools/htslib.git
@@ -135,6 +95,15 @@ install:
     - ./configure --prefix=${HOME}/lib/samtools
     - make
     - make install
+
+   
+     #bedTools
+    - wget https://github.com/arq5x/bedtools2/releases/download/v2.26.0/bedtools-2.26.0.tar.gz
+    - tar -zxvf bedtools-2.26.0.tar.gz
+    - cd bedtools2
+    - make
+    
+
 
     # Setup Symlinks
     - cd ${HOME}/bin

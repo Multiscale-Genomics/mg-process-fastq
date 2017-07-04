@@ -73,8 +73,8 @@ install:
     #- cd ${HOME}/lib/samtools
     #- ./samtools
     - sudo apt-get install samtools
-    - make
-    - make install
+    - samtools
+    #- make install
 
    
      #bedTools

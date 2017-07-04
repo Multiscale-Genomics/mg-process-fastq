@@ -70,7 +70,8 @@ install:
     - autoheader
     - autoconf -Wno-syntax
     - chmod +x ${HOME}/lib/samtools
-    - ./${HOME}/lib/samtools
+    - cd ${HOME}/lib/samtools
+    - ./samtools
     - make
     - make install
 

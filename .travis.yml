@@ -31,11 +31,11 @@ env:
   - COVERALLS=false
   
   
-matrix:
-  include:
-    - os: linux
-      dist: trusty
-      sudo: required
+#matrix:
+#  include:
+#    - os: linux
+#      dist: trusty
+#      sudo: required
 
 before_install:
 
@@ -73,7 +73,7 @@ install:
     #- cd ${HOME}/lib/samtools
     #- ./samtools
     - sudo apt-get install samtools
-    - samtools
+    - samtools view
     #- make install
 
    

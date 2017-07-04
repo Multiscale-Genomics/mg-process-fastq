@@ -51,6 +51,7 @@ before_install:
     
     - cd ${HOME}
     - mkdir bin lib code
+    - pip --version
 
     
 install:    

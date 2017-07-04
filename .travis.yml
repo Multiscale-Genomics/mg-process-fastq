@@ -53,8 +53,63 @@ before_install:
     - mkdir bin lib code
 
     
-install:    
-      #SAMtools
+install:
+      
+    #BioBamBam2
+    - cd ${HOME}/lib
+    - git clone https://github.com/gt1/libmaus2.git
+    - cd libmaus2
+    - libtoolize
+    - aclocal
+    - autoheader
+    - automake --force-missing --add-missing
+    - autoconf
+    - ./configure --prefix=${HOME}/lib/libmaus2
+    - make
+    - make install
+    
+    - cd ${HOME}/lib
+    - git clone https://github.com/gt1/biobambam2.git
+    - cd biobambam2
+    - autoreconf -i -f
+    - ./configure --with-libmaus2=${HOME}/lib/libmaus2 --prefix=${HOME}/lib/biobambam2
+    - make install
+    
+    
+    #UCSC Tools
+    - cd ${HOME}/lib
+    - wget http://hgdownload.cse.ucsc.edu/admin/exe/linux.x86_64/bedToBigBed
+    - wget http://hgdownload.cse.ucsc.edu/admin/exe/linux.x86_64/wigToBigWig
+    
+        
+    #Bowtie2 Aligner
+    - cd ${HOME}/lib
+    - wget --max-redirect 1 https://downloads.sourceforge.net/project/bowtie-bio/bowtie2/2.3.2/bowtie2-2.3.2-linux-x86_64.zip
+    - unzip bowtie2-2.3.2-linux-x86_64.zip
+
+
+    #BWA Sequence Aligner
+    - cd ${HOME}/lib
+    - git clone https://github.com/lh3/bwa.git
+    - cd bwa
+    - make
+
+    
+    #iNPS Peak Caller
+    - cd ${HOME}/lib
+    - mkdir iNPS
+    - cd iNPS
+    - wget http://www.picb.ac.cn/hanlab/files/iNPS_V1.2.2.zip
+    - unzip iNPS_V1.2.2.zip
+
+
+    #Kallisto
+    - cd ${HOME}/lib
+    - wget https://github.com/pachterlab/kallisto/releases/download/v0.43.1/kallisto_linux-v0.43.1.tar.gz
+    - tar -xzf kallisto_linux-v0.43.1.tar.gz
+       
+    
+     #SAMtools
     - cd ${HOME}/lib
     - git clone https://github.com/samtools/htslib.git
     - cd htslib
@@ -65,16 +120,7 @@ install:
     - make install
 
     - cd ${HOME}/lib
-    #- git clone https://github.com/samtools/samtools.git
-    #- cd samtools
-    #- autoheader
-    #- autoconf -Wno-syntax
-    #- chmod +x ${HOME}/lib/samtools
-    #- cd ${HOME}/lib/samtools
-    #- ./samtools
     - sudo apt-get install samtools
-    - samtools view
-    #- make install
 
    
      #bedTools

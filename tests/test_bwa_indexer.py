@@ -22,8 +22,6 @@ from tool import bwa_indexer
 def test_bwa_indexer():
     """
     Test case to ensure that the BWA indexer works.
-
-    Builds the assembly for Human for use with the MACS2 tests
     """
     resource_path = os.path.join(os.path.dirname(__file__), "data/")
     genome_fa = resource_path + "macs2.Human.GCA_000001405.22.fasta"

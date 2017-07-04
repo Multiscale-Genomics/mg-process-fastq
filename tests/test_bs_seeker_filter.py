@@ -24,13 +24,14 @@ from tool import bs_seeker_filter
 def test_bs_seeker_filter():
     resource_path = os.path.join(os.path.dirname(__file__), "data/")
     genomefa_file = resource_path + "bsSeeker.Mouse.GRCm38_1.fastq"
+    home = os.path.expanduser('~')
 
     bsi = bs_seeker_filter.filterReadsTool()
     bsi.run(
         [genomefa_file],
         {
             "aligner":"bowtie",
-            "aligner_path":"/usr/local/bin",
-            "bss_path":"/Users/reham/lib/BSseeker2-2.1.2Beta"
+            "aligner_path":home + "/bin",
+            "bss_path":home + "/lib/BSseeker2-2.1.2Beta"
         }
     )

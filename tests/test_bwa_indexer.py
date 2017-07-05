@@ -14,8 +14,12 @@
    limitations under the License.
 """
 
+from __future__ import print_function
+
 import os.path
-import pytest
+import pytest # pylint: disable=unused-import
+
+
 
 from tool import bwa_indexer
 

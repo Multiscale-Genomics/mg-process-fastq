@@ -43,7 +43,7 @@ before_install:
     - pip --version
     - which R
     - pip
-    - uname -r
+    - lsb_release -a
 
     
 install:

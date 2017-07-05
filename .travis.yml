@@ -67,7 +67,7 @@ install:
 
     - git clone https://github.com/Multiscale-Genomics/mg-process-fastq.git
     - cd mg-process-fastq
-    - pip install --editable .
+    - pip install .
 
     
 

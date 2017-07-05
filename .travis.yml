@@ -69,6 +69,7 @@ install:
     - git clone https://github.com/Multiscale-Genomics/mg-process-fastq.git
     - cd mg-process-fastq
     - sudo pip install --upgrade pip
+    - sudo pip install -U setuptools
     - pip install .
 
     

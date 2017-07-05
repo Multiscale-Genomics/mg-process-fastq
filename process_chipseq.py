@@ -16,6 +16,8 @@
    limitations under the License.
 """
 
+from __future__ import print_function
+
 import argparse
 
 from functools import wraps
@@ -190,66 +192,41 @@ def main(input_files, input_metadata, output_files):
     # import pprint  # Pretty print - module for dictionary fancy printing
 
     # 1. Instantiate and launch the App
-    print "1. Instantiate and launch the App"
+    print("1. Instantiate and launch the App")
     from apps.workflowapp import WorkflowApp
     app = WorkflowApp()
     result = app.launch(process_chipseq, input_files, input_metadata,
                         output_files, {})
 
     # 2. The App has finished
-    print "2. Execution finished"
-    print result
+    print("2. Execution finished")
+    print(result)
     return result
 
-# ------------------------------------------------------------------------------
+def prepare_files( # pylint disable=too-many-arguments
+        dm_handler, taxon_id, genome_fa, assembly, file_loc, file_bg_loc=None):
+    """
+    Function to load the DM API with the required files and prepare the
+    parameters passed from teh command line ready for use in the main function
+    """
+    print(dm_handler.get_files_by_user("test"))
 
-if __name__ == "__main__":
-    # Set up the command line parameters
-    parser = argparse.ArgumentParser(description="ChIP-seq peak calling")
-    parser.add_argument("--taxon_id", help="Taxon_ID (9606)")
-    parser.add_argument("--genome", help="Genome FASTA file")
-    parser.add_argument("--assembly", help="Genome assembly ID (GCA_000001405.25)")
-    parser.add_argument("--file", help="Location of FASTQ input file")
-    parser.add_argument("--bgd_file", help="Location of FASTQ background file", default=None)
-
-    # Get the matching parameters from the command line
-    args = parser.parse_args()
-
-    taxon_id = args.taxon_id
-    genome_fa = args.genome
-    assembly = args.assembly
-    file_loc = args.file
-    file_bg_loc = args.bgd_file
-
-    #
-    # MuG Tool Steps
-    # --------------
-    #
-    # 1. Create data files
-
-    # Get the assembly
-
-    #2. Register the data with the DMP
-    da = dmp(test=True)
-
-    print(da.get_files_by_user("test"))
-
-    genome_file = da.set_file(
+    genome_file = dm_handler.set_file(
         "test", genome_fa, "fasta", "Assembly", taxon_id, None, [],
         meta_data={"assembly" : assembly})
-    genome_file_idx1 = da.set_file(
+    dm_handler.set_file(
         "test", genome_fa + ".amb", "amb", "Assembly", taxon_id, None, [genome_file],
         meta_data={'assembly' : assembly})
-    genome_file_idx2 = da.set_file(
+    dm_handler.set_file(
         "test", genome_fa + ".ann", "ann", "Assembly", taxon_id, None, [genome_file],
         meta_data={'assembly' : assembly})
-    genome_file_idx3 = da.set_file(
+    dm_handler.set_file(
         "test", genome_fa + ".bwt", "bwt", "Assembly", taxon_id, None, [genome_file],
         meta_data={'assembly' : assembly})
-    genome_file_idx4 = da.set_file(
+    dm_handler.set_file(
         "test", genome_fa + ".pac", "pac", "Assembly", taxon_id, None, [genome_file],
         meta_data={'assembly' : assembly})
-    genome_file_idx5 = da.set_file(
+    dm_handler.set_file(
         "test", genome_fa + ".sa", "sa", "Assembly", taxon_id, None, [genome_file],
         meta_data={'assembly' : assembly})
 
@@ -265,16 +242,16 @@ if __name__ == "__main__":
         Metadata("fasta", "ChIP-seq")
     ]
 
-    file_in = da.set_file(
+    dm_handler.set_file(
         "test", file_loc, "fasta", "ChIP-seq", taxon_id, None, [],
         meta_data={'assembly' : assembly})
     if file_bg_loc:
-        file_bg_in = da.set_file(
+        dm_handler.set_file(
             "test", file_bg_loc, "fasta", "ChIP-seq", taxon_id, None, [],
             meta_data={'assembly' : assembly})
         metadata.append(Metadata("fasta", "ChIP-seq"))
 
-    print(da.get_files_by_user("test"))
+    print(dm_handler.get_files_by_user("test"))
 
     files = [
         genome_fa,
@@ -303,6 +280,39 @@ if __name__ == "__main__":
         out_peaks_gapped,
         out_summits
     ]
+    return [files, metadata, files_out]
+
+# ------------------------------------------------------------------------------
+
+if __name__ == "__main__":
+    # Set up the command line parameters
+    PARSER = argparse.ArgumentParser(description="ChIP-seq peak calling")
+    PARSER.add_argument("--taxon_id", help="Taxon_ID (9606)")
+    PARSER.add_argument("--genome", help="Genome FASTA file")
+    PARSER.add_argument("--assembly", help="Genome assembly ID (GCA_000001405.25)")
+    PARSER.add_argument("--file", help="Location of FASTQ input file")
+    PARSER.add_argument("--bgd_file", help="Location of FASTQ background file", default=None)
+
+    # Get the matching parameters from the command line
+    ARGS = PARSER.parse_args()
+
+    TAXON_ID = ARGS.taxon_id
+    GENOME_FA = ARGS.genome
+    ASSEMBLY = ARGS.assembly
+    FILE_LOC = ARGS.file
+    FILE_BG_LOC = ARGS.bgd_file
+
+    #
+    # MuG Tool Steps
+    # --------------
+    #
+    # 1. Create data files
+    DM_HANDLER = dmp(test=True)
+
+    # Get the assembly
+
+    #2. Register the data with the DMP
+    PARAMS = prepare_files(DM_HANDLER, TAXON_ID, GENOME_FA, ASSEMBLY, FILE_LOC, FILE_BG_LOC)
 
     # 3. Instantiate and launch the App
     #from basic_modules import WorkflowApp
@@ -313,9 +323,9 @@ if __name__ == "__main__":
     #results_files, results_meta = pc.run(files, {"user_id" : "test"})
 
     #results_files, results_meta = main(files, metadata, files_out)
-    results = main(files, metadata, files_out)
+    RESULTS = main(PARAMS[0], PARAMS[1], PARAMS[2])
 
     #print(results_files)
     #print(results_meta)
-    print(results)
-    print(da.get_files_by_user("test"))
+    print(RESULTS)
+    print(DM_HANDLER.get_files_by_user("test"))

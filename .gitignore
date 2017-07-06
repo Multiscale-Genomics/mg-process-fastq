@@ -15,3 +15,5 @@ bs_index
 bs_utils
 mg_process_fastq.egg-info*
 tool/FilterReads.py
+.cache
+/tests/data/tmp

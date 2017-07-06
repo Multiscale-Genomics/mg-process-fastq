@@ -39,6 +39,7 @@ addons:
     - python-rpy2
     - libcurl4-gnutls-dev
     - unzip   
+    - samtools
 
 env:
   - COVERALLS=false
@@ -51,16 +52,23 @@ matrix:
       sudo: required
 
 before_install:
-    - cd ${HOME}
-    - mkdir bin lib code
+    - pwd
+    - mkdir ${HOME}/bin 
+    - mkdir ${HOME}/lib
     - pip --version
     - which R
     - pip
     - lsb_release -a
+    - pwd
 
     
 install:
 
+    - pwd
+    - pip install git+https://github.com/Multiscale-Genomics/mg-dm-api.git
+    - pip install --editable .
+    - pip install pytest
+    
      #SAMtools
     - cd ${HOME}/lib
     - git clone https://github.com/samtools/htslib.git
@@ -70,23 +78,12 @@ install:
     - ./configure --prefix=${HOME}/lib/htslib
     - make
     - make install
-
-    - cd ${HOME}/lib
-    - sudo apt-get install samtools   
     
     ##Prepare the Python Environment
-     #Install APIs and Pipelines
-    - cd ${HOME}/code
-    #- pyenv #activate mg-process-fastq
-    - pip install git+https://github.com/Multiscale-Genomics/mg-dm-api.git
 
-    - git clone https://github.com/Multiscale-Genomics/mg-process-fastq.git
-    - cd mg-process-fastq
-    - pip install --upgrade pip  
-    - pip install setuptools
-    - pip install --editable .
-    - pip install pytest
-      
+    #- pip install --upgrade pip  
+    #- pip install setuptools
+    #- cd 
 
 script : 
      pytest ./tests/test_bwa_indexer.py

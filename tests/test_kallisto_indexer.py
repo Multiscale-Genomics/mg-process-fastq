@@ -31,3 +31,6 @@ def test_kallisto_indexer():
     ki_handle.run([fasta_file], {}, [resource_path + "kallisto.Human.GRCh38.fasta.idx"])
 
     print(__file__)
+
+    assert os.path.isfile(resource_path + "kallisto.Human.GRCh38.fasta.idx") is True
+    assert os.path.getsize(resource_path + "kallisto.Human.GRCh38.fasta.idx") > 0

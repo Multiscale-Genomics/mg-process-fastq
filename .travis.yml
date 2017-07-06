@@ -73,9 +73,10 @@ install:
     - sudo apt-get install libtiff5-dev libjpeg8-dev libfreetype6-dev liblcms2-dev libwebp-dev tcl8.6-dev tk8.6-dev python-tk
     - pip install --upgrade pip
     - pip install -U setuptools
-    - pip install .
+    #- pip install .
+    - pip install pytest
+      
 
-    
-
-#script : "./tests/test_biobambam.py"
+script : 
+     pytest ./tests/test_bwa_indexer.py
 

@@ -22,9 +22,8 @@ import argparse
 
 from functools import wraps
 
-from basic_modules.workflow import Workflow
-from basic_modules.metadata import Metadata
-
+from basic_modules import Workflow
+from basic_modules import Metadata
 
 from dmp import dmp
 
@@ -80,6 +79,9 @@ class process_chipseq(Workflow):
         calling to identify transcription factor binding sites within the
         genome.
 
+        Currently this can only handle a single data file and a single
+        background file.
+
         Parameters
         ----------
         files_ids : list
@@ -95,7 +97,6 @@ class process_chipseq(Workflow):
             List of locations for the output bam, bed and tsv files
         """
 
-        # TODO - Handle multiple file and background files
         run_genome_fa = file_ids[0]
         bwa_amb = file_ids[1]
         bwa_ann = file_ids[2]
@@ -126,7 +127,7 @@ class process_chipseq(Workflow):
             )
             #bwa_results_bgd = compss_wait_on(bwa_results_bgd)
 
-        # TODO - Multiple files need merging into a single bam file
+        # For multiple files there will need to be merging into a single bam file
 
         b3f_bgd_file_out = None
 
@@ -176,10 +177,10 @@ class process_chipseq(Workflow):
 
         #m_results = compss_wait_on(m_results)
 
-        return ([b3f_file_out, b3f_bgd_file_out] + m_results[0], [b3f_results[1], m_results[1]])
+        return ([b3f_file_out, b3f_bgd_file_out] + m_results[0], metadata, [b3f_results[1], m_results[1]])
 
 
-# -----------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 
 def main(input_files, input_metadata, output_files):
     """
@@ -203,7 +204,7 @@ def main(input_files, input_metadata, output_files):
     print(result)
     return result
 
-def prepare_files( # pylint disable=too-many-arguments
+def prepare_files(
         dm_handler, taxon_id, genome_fa, assembly, file_loc, file_bg_loc=None):
     """
     Function to load the DM API with the required files and prepare the

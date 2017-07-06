@@ -1,9 +1,9 @@
 """
 .. Copyright 2017 EMBL-European Bioinformatics Institute
- 
+
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
-   You may obtain a copy of the License at 
+   You may obtain a copy of the License at
 
        http://www.apache.org/licenses/LICENSE-2.0
 
@@ -14,15 +14,15 @@
    limitations under the License.
 """
 
-import os
+from __future__ import print_function
 
 try:
     from pycompss.api.parameter import FILE_IN, FILE_OUT
     from pycompss.api.task import task
-except ImportError :
+except ImportError:
     print ("[Warning] Cannot import \"pycompss\" API packages.")
     print ("          Using mock decorators.")
-    
+
     from dummy_pycompss import *
 
 from basic_modules.metadata import Metadata
@@ -36,19 +36,19 @@ class bowtieIndexerTool(Tool):
     """
     Tool for running indexers over a genome FASTA file
     """
-    
+
     def __init__(self):
         """
         Init function
         """
         print("Bowtie2 Indexer")
         Tool.__init__(self)
-    
+
     @task(file_loc=FILE_IN, idx_loc=FILE_OUT)
     def bowtie2_indexer(self, file_loc, idx_loc):
         """
         Bowtie2 Indexer
-        
+
         Parameters
         ----------
         file_loc : str
@@ -59,31 +59,31 @@ class bowtieIndexerTool(Tool):
         cf = common()
         output_file = cf.bowtie_index_genome(file_loc)
         return True
-    
-    def run(self, input_files, metadata):
+
+    def run(self, input_files, metadata, output_files):
         """
         Tool for generating assembly aligner index files for use with the
         Bowtie 2 aligner
-        
+
         Parameters
         ----------
         input_files : list
             List with a single str element with the location of the genome
             assembly FASTA file
         metadata : list
-        
+
         Returns
         -------
         array : list
             First element is a list of the index files. Second element is a
             list of the matching metadata
         """
-        
+
         file_name = input_files[0].split('/')
         file_name[-1] = file_name[-1].replace('.fasta', '')
         file_name[-1].replace('.fa', '')
         output_file = '/'.join(file_name)
-        
+
         # input and output share most metadata
         #output_metadata = dict(
         #    data_type=metadata[0]["data_type"],
@@ -91,7 +91,7 @@ class bowtieIndexerTool(Tool):
         #    meta_data=metadata[0]["meta_data"])
 
         output_metadata = {}
-        
+
         # handle error
         if not self.bowtie2_indexer(input_files[0], output_file):
             output_metadata.set_exception(

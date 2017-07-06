@@ -1,9 +1,9 @@
 """
 .. Copyright 2017 EMBL-European Bioinformatics Institute
- 
+
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
-   You may obtain a copy of the License at 
+   You may obtain a copy of the License at
 
        http://www.apache.org/licenses/LICENSE-2.0
 
@@ -13,17 +13,19 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 """
+from __future__ import print_function
 
-import os, shutil, shlex, subprocess
+import shlex
+import subprocess
 
-try :
-    from pycompss.api.parameter import FILE_IN, FILE_OUT, FILE_INOUT, IN
+try:
+    from pycompss.api.parameter import FILE_IN, FILE_OUT, IN
     from pycompss.api.task import task
-    from pycompss.api.api import compss_wait_on
-except ImportError :
+    #from pycompss.api.api import compss_wait_on
+except ImportError:
     print("[Warning] Cannot import \"pycompss\" API packages.")
     print("          Using mock decorators.")
-    
+
     from dummy_pycompss import *
 
 from basic_modules.metadata import Metadata
@@ -37,7 +39,7 @@ class macs2(Tool):
     """
     Tool for peak calling for ChIP-seq data
     """
-    
+
     def __init__(self, configuration={}):
         """
         Init function

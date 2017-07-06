@@ -27,7 +27,18 @@ def test_bowtie_indexer():
     bti = bowtie_indexer.bowtieIndexerTool()
     resource_path = os.path.join(os.path.dirname(__file__), "data/")
 
-    bti.run([resource_path + "macs2.Human.GCA_000001405.22.fasta"], {})
+    genome_file = resource_path + "macs2.Human.GCA_000001405.22.fasta"
+
+    output_files = [
+        genome_file + '.1.bt2',
+        genome_file + '.2.bt2',
+        genome_file + '.3.bt2',
+        genome_file + '.4.bt2',
+        genome_file + '.rev.1.bt2',
+        genome_file + '.rev.2.bt2',
+    ]
+
+    bti.run([genome_file], {}, output_files)
 
 
 def test_bowtie_indexer_02():
@@ -37,4 +48,15 @@ def test_bowtie_indexer_02():
     bti = bowtie_indexer.bowtieIndexerTool()
     resource_path = os.path.join(os.path.dirname(__file__), "data/")
 
-    bti.run([resource_path + "inps.Mouse.GRCm38.fasta"], {})
+    genome_file = resource_path + "inps.Mouse.GRCm38.fasta"
+
+    output_files = [
+        genome_file + '.1.bt2',
+        genome_file + '.2.bt2',
+        genome_file + '.3.bt2',
+        genome_file + '.4.bt2',
+        genome_file + '.rev.1.bt2',
+        genome_file + '.rev.2.bt2',
+    ]
+
+    bti.run([genome_file], {}, output_files)

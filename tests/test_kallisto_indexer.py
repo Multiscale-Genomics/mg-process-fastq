@@ -13,10 +13,10 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 """
+from __future__ import print_function
 
-import random
 import os.path
-import pytest
+import pytest # pylint: disable=unused-import
 
 from tool.kallisto_indexer import kallistoIndexerTool
 
@@ -25,9 +25,9 @@ def test_kallisto_indexer():
     Function to test Kallisto indexer
     """
     resource_path = os.path.join(os.path.dirname(__file__), "data/")
-    ki = kallistoIndexerTool()
+    ki_handle = kallistoIndexerTool()
 
     fasta_file = resource_path + "kallisto.Human.GRCh38.fasta"
-    ki.run([fasta_file], {}, [resource_path + "kallisto.Human.GRCh38.fasta.idx"])
+    ki_handle.run([fasta_file], {}, [resource_path + "kallisto.Human.GRCh38.fasta.idx"])
 
     print(__file__)

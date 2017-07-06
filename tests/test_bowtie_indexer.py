@@ -14,9 +14,8 @@
    limitations under the License.
 """
 
-import random
 import os.path
-import pytest
+import pytest # pylint: disable=unused-import
 
 from tool import bowtie_indexer
 

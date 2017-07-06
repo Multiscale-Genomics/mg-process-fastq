@@ -45,7 +45,8 @@ class bssMethylationCallerTool(Tool):
         """
         Init function
         """
-        print "BS-Seeker Methylation Caller"
+        print("BS-Seeker Methylation Caller")
+        Tool.__init__(self)
 
     @task(bss_path = IN, bam_file = FILE_IN, db_dir = IN, wig_file = FILE_OUT, cgmap_file = FILE_OUT, atcgmap_file = FILE_OUT)
     def bss_methylation_caller(self, bss_path, bam_file, db_dir, wig_file, cgmap_file, atcgmap_file):

@@ -1,9 +1,9 @@
 """
 .. Copyright 2017 EMBL-European Bioinformatics Institute
- 
+
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
-   You may obtain a copy of the License at 
+   You may obtain a copy of the License at
 
        http://www.apache.org/licenses/LICENSE-2.0
 
@@ -14,7 +14,11 @@
    limitations under the License.
 """
 
+from __future__ import print_function
+
 import os
+
+from functools import wraps
 
 try:
     from pycompss.api.parameter import FILE_IN, FILE_OUT
@@ -42,13 +46,14 @@ class bwaIndexerTool(Tool):
         Init function
         """
         print("BWA Indexer")
+        Tool.__init__(self)
 
     @task(file_loc=FILE_IN, amb_loc=FILE_OUT, ann_loc=FILE_OUT,
-        bwt_loc=FILE_OUT, pac_loc=FILE_OUT, sa_loc=FILE_OUT)
+          bwt_loc=FILE_OUT, pac_loc=FILE_OUT, sa_loc=FILE_OUT)
     def bwa_indexer(self, file_loc, amb_loc, ann_loc, bwt_loc, pac_loc, sa_loc):
         """
         BWA Indexer
-        
+
         Parameters
         ----------
         file_loc : str

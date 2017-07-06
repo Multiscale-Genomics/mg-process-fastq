@@ -14,9 +14,8 @@
    limitations under the License.
 """
 
-import random
 import os.path
-import pytest
+import pytest # pylint: disable=unused-import
 
 from tool import macs2
 
@@ -25,11 +24,11 @@ def test_macs2():
     """
     Function to test MACS2
     """
-    m = macs2.macs2()
+    macs_handle = macs2.macs2()
     resource_path = os.path.join(os.path.dirname(__file__), "data/")
 
     bam_file = resource_path + "biobambam.Human.DRR000150.22_output.bam"
-    if not os.path.isfile(bam_file):
+    if os.path.isfile(bam_file) is False:
         bam_file = resource_path + "macs2.Human.DRR000150.22.bam"
 
     summits_bed = resource_path + "_summits.bed"
@@ -37,4 +36,4 @@ def test_macs2():
     broad_peak = resource_path + "_broadPeak"
     gapped_peak = resource_path + "_gappedPeak"
 
-    m.run([bam_file], {}, [summits_bed, narrow_peak, broad_peak, gapped_peak])
+    macs_handle.run([bam_file], {}, [summits_bed, narrow_peak, broad_peak, gapped_peak])

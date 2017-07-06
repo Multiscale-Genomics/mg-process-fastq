@@ -46,6 +46,7 @@ class tbFullMappingTool(Tool):
         Init function
         """
         print "TADbit full_mapping"
+        Tool.__init__(self)
     
     @task(gem_file = FILE_IN, fastq_file = FILE_IN, windows = IN, window1 = FILE_INOUT, window2 = FILE_INOUT, window3 = FILE_INOUT, window4 = FILE_INOUT)
     @constraint(ProcessorCoreCount=32)

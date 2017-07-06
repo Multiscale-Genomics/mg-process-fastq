@@ -1,11 +1,11 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 
 """
 .. Copyright 2017 EMBL-European Bioinformatics Institute
- 
+
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
-   You may obtain a copy of the License at 
+   You may obtain a copy of the License at
 
        http://www.apache.org/licenses/LICENSE-2.0
 
@@ -16,9 +16,8 @@
    limitations under the License.
 """
 
-# -*- coding: utf-8 -*-
-"""process whole genome bisulfate sequencing FastQ files"""
-import argparse, time, urllib2, gzip, shutil
+import argparse
+import pysam
 
 try :
     from pycompss.api.parameter import *
@@ -27,20 +26,18 @@ try :
 except ImportError :
     print "[Warning] Cannot import \"pycompss\" API packages."
     print "          Using mock decorators."
-    
+
     from dummy_pycompss import *
 
 from dmp import dmp
 
-from tool.common import common
+from tool import common
 from tool import bs_seeker_aligner
 from tool import bs_seeker_filter
 from tool import bs_seeker_indexer
 from tool import bs_seeker_methylation_caller
 
 from fastqreader import fastqreader
-
-import pysam
 
 # ------------------------------------------------------------------------------
 

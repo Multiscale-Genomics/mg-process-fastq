@@ -14,14 +14,15 @@
    limitations under the License.
 """
 
-import random
 import os
-import sys
-import pytest
+import pytest # pylint: disable=unused-import
 
 from tool import bs_seeker_filter
 
 def test_bs_seeker_filter():
+    """
+    Test that it is possible to call the BSseeker filter
+    """
     resource_path = os.path.join(os.path.dirname(__file__), "data/")
     genomefa_file = resource_path + "bsSeeker.Mouse.GRCm38_1.fastq"
     home = os.path.expanduser('~')

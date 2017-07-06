@@ -14,10 +14,8 @@
    limitations under the License.
 """
 
-import random
 import os
-import sys
-import pytest
+import pytest # pylint: disable=unused-import
 
 import process_wgbs  # from mg-process-fastq
 

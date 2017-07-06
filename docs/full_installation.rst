@@ -24,6 +24,7 @@ Setup the System Environment
 
    cd ${HOME}
    mkdir bin lib code
+   echo 'export PATH="${HOME}/bin:$PATH"' >> ~/.bash_profile
 
 Setup pyenv and pyenv-virtualenv
 --------------------------------
@@ -163,6 +164,17 @@ SAMtools
    make
    make install
 
+bedTools
+^^^^^^^^
+
+.. code-block:: none
+   :linenos:
+
+   wget https://github.com/arq5x/bedtools2/releases/download/v2.26.0/bedtools-2.26.0.tar.gz
+   tar -zxvf bedtools-2.26.0.tar.gz
+   cd bedtools2
+   make
+
 
 Setup the symlinks
 ------------------
@@ -171,9 +183,14 @@ Setup the symlinks
    :linenos:
 
    cd ${HOME}/bin
+   
+   ln -s ${HOME}/lib/bedtools2/bin/bedtools bedtools
+
    ln -s ${HOME}/lib/bedToBigBed bedToBigBed
    ln -s ${HOME}/lib/wigToBigWig wigToBigWig
+   
    ln -s ${HOME}/lib/bwa/bwa bwa
+   
    ln -s ${HOME}/lib/bowtie2-2.3.2/bowtie2 bowtie2
    ln -s ${HOME}/lib/bowtie2-2.3.2/bowtie2-align-s bowtie2-align-s
    ln -s ${HOME}/lib/bowtie2-2.3.2/bowtie2-align-l bowtie2-align-l

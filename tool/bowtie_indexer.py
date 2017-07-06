@@ -41,7 +41,8 @@ class bowtieIndexerTool(Tool):
         """
         Init function
         """
-        print ("Bowtie2 Indexer")
+        print("Bowtie2 Indexer")
+        Tool.__init__(self)
     
     @task(file_loc=FILE_IN, idx_loc=FILE_OUT)
     def bowtie2_indexer(self, file_loc, idx_loc):

@@ -42,6 +42,7 @@ class gemIndexerTool(Tool):
         Init function
         """
         print ("GEM Indexer")
+        Tool.__init__(self)
     
     @task(file_loc=FILE_IN, idx_loc=FILE_OUT)
     def gem_indexer(self, file_loc, idx_loc):

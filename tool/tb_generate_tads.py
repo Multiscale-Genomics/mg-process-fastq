@@ -46,6 +46,7 @@ class tbGenerateTADsTool(Tool):
         Init function
         """
         print "TADbit - Generate TADs"
+        Tool.__init__(self)
     
     @task(matrix_file = FILE_IN, resolution = IN, tad_file = FILE_INOUT)
     @constraint(ProcessorCoreCount=16)

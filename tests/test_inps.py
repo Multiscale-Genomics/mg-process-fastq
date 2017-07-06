@@ -14,9 +14,7 @@
    limitations under the License.
 """
 
-import random
 import os
-import sys
 import pytest
 
 from tool import inps

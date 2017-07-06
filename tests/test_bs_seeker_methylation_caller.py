@@ -14,20 +14,21 @@
    limitations under the License.
 """
 
-import random
 import os
-import sys
 import pysam
-import pytest
+import pytest # pylint: disable=unused-import
 
 from tool import bs_seeker_methylation_caller
 
 def test_bs_seeker_methylation_caller():
-
+    """
+    Test that it is possible to call the methylation called by BS seeker
+    """
     resource_path = os.path.join(os.path.dirname(__file__), "data/")
     genomefa_file = resource_path + "bsSeeker.Mouse.GRCm38.fasta_bowtie2"
     bam_file = resource_path + "bsSeeker.Mouse.GRCm38.bam"
     home = os.path.expanduser('~')
+
     #TODO fix for pylint
     pysam.sort("-o", str(bam_file+".sorted"), str(bam_file))
 

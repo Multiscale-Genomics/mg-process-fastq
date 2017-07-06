@@ -15,7 +15,7 @@
 """
 
 import os.path
-import pytest
+import pytest # pylint: disable=unused-import
 
 from tool import biobambam_filter
 

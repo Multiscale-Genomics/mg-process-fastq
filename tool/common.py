@@ -16,11 +16,17 @@
    limitations under the License.
 """
 
-import argparse, gzip, shutil, shlex, subprocess, os.path
+import argparse
+import gzip
+import shutil
+import shlex
+import subprocess
+import os.path
+
 try:
     from urllib2 import urlopen
     from urllib2 import Request
-except ImportError :
+except ImportError:
     from urllib.request import urlopen
     from urllib.request import Request
 
@@ -29,54 +35,54 @@ import errno
 
 from functools import wraps
 
-try:
-    from pycompss.api.parameter import FILE_IN, FILE_OUT
-    from pycompss.api.task import task
-except ImportError :
-    print("[Warning] Cannot import \"pycompss\" API packages.")
-    print("          Using mock decorators.")
-    
-    from dummy_pycompss import *
+#try:
+#    from pycompss.api.parameter import FILE_IN, FILE_OUT
+#    from pycompss.api.task import task
+#except ImportError :
+#    print("[Warning] Cannot import \"pycompss\" API packages.")
+#    print("          Using mock decorators.")
 
-try :
+#    from dummy_pycompss import *
+
+try:
     import pysam
-except ImportError :
+except ImportError:
     print("[Error] Cannot import \"pysam\" package. Have you installed it?")
     exit(-1)
 
-class cd:
+class cd(object):
     """
     Context manager for changing the current working directory
     """
-    
-    def __init__(self, newPath):
-        self.newPath = os.path.expanduser(newPath)
+
+    def __init__(self, newpath):
+        self.newpath = os.path.expanduser(newpath)
 
     def __enter__(self):
-        self.savedPath = os.getcwd()
-        os.chdir(self.newPath)
+        self.savedpath = os.getcwd()
+        os.chdir(self.newpath)
 
     def __exit__(self, etype, value, traceback):
-        os.chdir(self.savedPath)
+        os.chdir(self.savedpath)
 
-class common:
+class common(object):
     """
     Functions for downloading and processing \*-seq FastQ files. Functions
     provided allow for the downloading andindexing of the genome assemblies.
     """
-    
+
     def __init__ (self):
         """
         Initialise the module
         """
         print("Common functions")
-    
-    
-    def getGenomeFile(self, file_loc, species, assembly, index = True):
+
+
+    def getGenomeFile(self, file_loc, species, assembly, index=True):
         """
         Function for downloading and extracting the DNA files from the ensembl
         FTP
-        
+
         Parameters
         ----------
         file_loc : str
@@ -88,19 +94,19 @@ class common:
         index : bool
             Flag to indicate if the indexes are to be built for the downloaded
             assembly (default : True)
-        
+
         Returns
         -------
         dict
             zipped : str
-                This is the location of the 
+                This is the location of the
         """
-        
+
         file_loc_unzipped = file_loc.replace('.fa.gz', '.fa')
-        
-        if os.path.isfile(file_loc) == False and os.path.isfile(file_loc_unzipped) == False:
+
+        if os.path.isfile(file_loc) is False and os.path.isfile(file_loc_unzipped) is False:
             ftp_url = 'ftp://ftp.ensembl.org/pub/current_fasta/' + species.lower() + '/dna/' + species[0].upper() + species[1:] + '.' + assembly + '.dna.toplevel.fa.gz'
-            
+
             self.download_file(file_loc, ftp_url)
             
         if os.path.isfile(file_loc_unzipped) == False:

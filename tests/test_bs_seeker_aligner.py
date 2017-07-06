@@ -14,10 +14,8 @@
    limitations under the License.
 """
 
-import random
 import os
-import sys
-import pytest
+import pytest # pylint: disable=unused-import
 
 from tool import bs_seeker_aligner
 

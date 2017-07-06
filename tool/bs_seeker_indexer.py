@@ -28,7 +28,7 @@ except ImportError :
 from basic_modules.metadata import Metadata
 from basic_modules.tool import Tool
 
-from common import common
+from tool.common import common
 
 pwd = os.environ.get('PWD')
 pwd_split = pwd.split('/')
@@ -50,7 +50,8 @@ class bssIndexerTool(Tool):
         """
         Init function
         """
-        print "BS-Seeker Indexer wrapper"
+        print("BS-Seeker Indexer wrapper")
+        Tool.__init__(self)
 
     @task(fasta_file = FILE_IN, aligner = IN, aligner_path = IN, bss_path = IN, ref_path = IN, bam_out = FILE_INOUT)
     def bss_build_index(self, fasta_file, aligner, aligner_path, bss_path, ref_path, bam_out):

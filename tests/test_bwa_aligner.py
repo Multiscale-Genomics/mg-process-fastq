@@ -13,10 +13,10 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 """
+from __future__ import print_function
 
-import random
 import os.path
-import pytest
+import pytest # pylint: disable=unused-import
 
 from tool import bwa_aligner
 

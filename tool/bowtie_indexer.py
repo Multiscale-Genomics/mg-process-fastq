@@ -19,6 +19,7 @@ from __future__ import print_function
 try:
     from pycompss.api.parameter import FILE_IN, FILE_OUT
     from pycompss.api.task import task
+    from pycompss.api.api import compss_wait_on
 except ImportError:
     print ("[Warning] Cannot import \"pycompss\" API packages.")
     print ("          Using mock decorators.")
@@ -45,7 +46,8 @@ class bowtieIndexerTool(Tool):
         Tool.__init__(self)
 
     @task(file_loc=FILE_IN, idx_loc=FILE_OUT)
-    def bowtie2_indexer(self, file_loc, idx_loc):
+    def bowtie2_indexer(self, file_loc, bt_file1, bt_file2, bt_file3, # pylint: disable=unused-argument
+                        bt_file4, bt_filer1, bt_filer2): # pylint: disable=unused-argument
         """
         Bowtie2 Indexer
 
@@ -56,8 +58,8 @@ class bowtieIndexerTool(Tool):
         idx_loc : str
             Location of the output index file
         """
-        cf = common()
-        output_file = cf.bowtie_index_genome(file_loc)
+        common_handle = common()
+        common_handle.bowtie_index_genome(file_loc)
         return True
 
     def run(self, input_files, metadata, output_files):
@@ -91,13 +93,24 @@ class bowtieIndexerTool(Tool):
         #    meta_data=metadata[0]["meta_data"])
 
         output_metadata = {}
+        results = self.bowtie2_indexer(
+            input_files[0],
+            output_files[0],
+            output_files[1],
+            output_files[2],
+            output_files[3],
+            output_files[4],
+            output_files[5]
+        )
+
+        results = compss_wait_on(results)
 
         # handle error
-        if not self.bowtie2_indexer(input_files[0], output_file):
-            output_metadata.set_exception(
-                Exception(
-                    "bowtie2_indexer: Could not process files {}, {}.".format(*input_files)))
-            output_file = None
+        #if not self.bowtie2_indexer(input_files[0], output_file):
+        #    output_metadata.set_exception(
+        #        Exception(
+        #            "bowtie2_indexer: Could not process files {}, {}.".format(*input_files)))
+        #    output_file = None
         return ([output_file], [output_metadata])
 
 # ------------------------------------------------------------------------------

@@ -46,7 +46,7 @@ class bwaIndexerTool(Tool):
 
     @task(file_loc=FILE_IN, amb_loc=FILE_OUT, ann_loc=FILE_OUT,
           bwt_loc=FILE_OUT, pac_loc=FILE_OUT, sa_loc=FILE_OUT)
-    def bwa_indexer(self, file_loc, amb_loc, ann_loc, bwt_loc, pac_loc, sa_loc):
+    def bwa_indexer(self, file_loc, amb_loc, ann_loc, bwt_loc, pac_loc, sa_loc): # pylint: disable=unused-argument
         """
         BWA Indexer
 

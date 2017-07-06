@@ -59,7 +59,7 @@ class macs2(Tool):
         isModifier=False)
     def macs2_peak_calling(
             self, name, bam_file, bam_file_bgd,
-            narrowpeak, summits_bed, broadpeak, gappedpeak):
+            narrowpeak, summits_bed, broadpeak, gappedpeak): # pylint: disable=unused-argument
         """
         Function to run MACS2 for peak calling on aligned sequence files and
         normalised against a provided background set of alignments.
@@ -125,7 +125,7 @@ class macs2(Tool):
         isModifier=False)
     def macs2_peak_calling_nobgd(
             self, name, bam_file,
-            narrowpeak, summits_bed, broadpeak, gappedpeak):
+            narrowpeak, summits_bed, broadpeak, gappedpeak): # pylint: disable=unused-argument
         """
         Function to run MACS2 for peak calling on aligned sequence files without
         a background dataset for normalisation.
@@ -207,7 +207,8 @@ class macs2(Tool):
         gappedpeak = output_files[3]
 
         # input and output share most metadata
-        output_metadata = {"bed_types" : ["bed4+1", "bed6+4", "bed6+3", "bed12+3"]}
+        output_metadata = metadata
+        output_metadata["bed_types"] = ["bed4+1", "bed6+4", "bed6+3", "bed12+3"]
 
         peak_bed = None
         # handle error
@@ -241,6 +242,6 @@ class macs2(Tool):
         #results = compss_wait_on(results)
         print(results)
 
-        return ([peak_bed, summits_bed, narrowpeak, broadpeak, gappedpeak], metadata)
+        return ([peak_bed, summits_bed, narrowpeak, broadpeak, gappedpeak], output_metadata)
 
 # ------------------------------------------------------------------------------

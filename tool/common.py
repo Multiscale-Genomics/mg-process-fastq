@@ -291,7 +291,7 @@ class common(object):
             chunk_size = 16 * 1024
 
             try:
-                if restart_counter == 0 :
+                if restart_counter == 0:
                     with open(file_location, 'wb') as file_handle:
                         while True:
                             chunk = req.read(chunk_size)
@@ -314,7 +314,7 @@ class common(object):
                 print("Attempting to restart download ...")
                 restart_counter += 1
 
-            if restart_counter >= 5 :
+            if restart_counter >= 5:
                 return False
             break
 

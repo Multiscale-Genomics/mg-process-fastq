@@ -18,7 +18,7 @@ from __future__ import print_function
 import os.path
 import pytest # pylint: disable=unused-import
 
-from tool import bwa_aligner
+from tool.bwa_aligner import bwaAlignerTool
 
 def test_bwa_aligner():
     """
@@ -27,7 +27,6 @@ def test_bwa_aligner():
     resource_path = os.path.join(os.path.dirname(__file__), "data/")
     genome_fa = resource_path + "macs2.Human.GCA_000001405.22.fasta"
     fastq_file = resource_path + "macs2.Human.DRR000150.22.fastq"
-    out_bam = fastq_file.replace('.fastq', '.bam')
 
     files = [
         genome_fa,
@@ -45,8 +44,8 @@ def test_bwa_aligner():
     bwa_pac = files[4]
     bwa_sa = files[5]
 
-    bwa_t = bwa_aligner.bwaAlignerTool()
-    bwa_t.run([genome_fa, fastq_file, bwa_amb, bwa_ann, bwa_bwt, bwa_pac, bwa_sa], {}, [out_bam])
+    bwa_t = bwaAlignerTool()
+    bwa_t.run([genome_fa, fastq_file, bwa_amb, bwa_ann, bwa_bwt, bwa_pac, bwa_sa], [])
 
     print(__file__)
 
@@ -58,7 +57,6 @@ def test_bwa_aligner_02():
     resource_path = os.path.join(os.path.dirname(__file__), "data/")
     genome_fa = resource_path + "inps.Mouse.GRCm38.fasta"
     fastq_file = resource_path + "inps.Mouse.GRCm38.fastq"
-    out_bam = fastq_file.replace('.fastq', '.bam')
 
     files = [
         genome_fa,
@@ -76,7 +74,7 @@ def test_bwa_aligner_02():
     bwa_pac = files[4]
     bwa_sa = files[5]
 
-    bwa_t = bwa_aligner.bwaAlignerTool()
-    bwa_t.run([genome_fa, fastq_file, bwa_amb, bwa_ann, bwa_bwt, bwa_pac, bwa_sa], {}, [out_bam])
+    bwa_t = bwaAlignerTool()
+    bwa_t.run([genome_fa, fastq_file, bwa_amb, bwa_ann, bwa_bwt, bwa_pac, bwa_sa], [])
 
     print(__file__)

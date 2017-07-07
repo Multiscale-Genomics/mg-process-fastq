@@ -22,12 +22,14 @@ import subprocess
 try:
     from pycompss.api.parameter import FILE_IN, FILE_OUT, IN
     from pycompss.api.task import task
+    from pycompss.api.api import compss_wait_on
 except ImportError:
     print("[Warning] Cannot import \"pycompss\" API packages.")
     print("          Using mock decorators.")
 
-    from dummy_pycompss import FILE_IN, FILE_OUT
+    from dummy_pycompss import FILE_IN, FILE_OUT, IN
     from dummy_pycompss import task
+    from dummy_pycompss import compss_wait_on
 
 #from basic_modules.metadata import Metadata
 from basic_modules.tool import Tool
@@ -48,8 +50,7 @@ class biobambam(Tool):
 
     @task(returns=int, bam_file_in=FILE_IN, bam_file_out=FILE_OUT,
           tmp_dir=IN, isModifier=False)
-    @staticmethod
-    def biobambam_filter_alignments(bam_file_in, bam_file_out, tmp_dir):
+    def biobambam_filter_alignments(self, bam_file_in, bam_file_out, tmp_dir):
         """
         Sorts and filters the bam file.
 
@@ -111,15 +112,10 @@ class biobambam(Tool):
         output_metadata = {}
 
         results = self.biobambam_filter_alignments(in_bam, out_filtered_bam, tmp_dir)
-        #results = compss_wait_on(results)
+        results = compss_wait_on(results)
+
         print(results)
 
-        # handle error
-        #if not self.biobambam_filter_alignments(input_file, output_file, tmp_dir):
-        #    output_metadata['error'] = Exception(
-        #            "biobambamTool: Could not process files {}, {}.".format(*input_files)
-        #    )
-        #    output_file = None
         return ([out_filtered_bam], output_metadata)
 
 # ------------------------------------------------------------------------------

@@ -47,8 +47,7 @@ class bowtieIndexerTool(Tool):
         Tool.__init__(self)
 
     @task(file_loc=FILE_IN, idx_loc=FILE_OUT)
-    @staticmethod
-    def bowtie2_indexer(file_loc, bt_file1, bt_file2, bt_file3, # pylint: disable=unused-argument,too-many-arguments
+    def bowtie2_indexer(self, file_loc, bt_file1, bt_file2, bt_file3, # pylint: disable=unused-argument,too-many-arguments
                         bt_file4, bt_filer1, bt_filer2): # pylint: disable=unused-argument
         """
         Bowtie2 Indexer
@@ -88,29 +87,29 @@ class bowtieIndexerTool(Tool):
         file_name[-1].replace('.fa', '')
 
         # input and output share most metadata
-        output_metadata = dict(
-            data_type=metadata[0]["data_type"],
-            file_type=metadata[0]["file_type"],
-            meta_data=metadata[0]["meta_data"])
+        output_metadata = {}
+
+        files_out = [
+            input_files[0] + '.1.bt2',
+            input_files[0] + '.2.bt2',
+            input_files[0] + '.3.bt2',
+            input_files[0] + '.4.bt2',
+            input_files[0] + '.rev.1.bt2',
+            input_files[0] + '.rev.2.bt2',
+        ]
 
         results = self.bowtie2_indexer(
             input_files[0],
-            output_files[0],
-            output_files[1],
-            output_files[2],
-            output_files[3],
-            output_files[4],
-            output_files[5]
+            files_out[0],
+            files_out[1],
+            files_out[2],
+            files_out[3],
+            files_out[4],
+            files_out[5]
         )
 
         results = compss_wait_on(results)
 
-        # handle error
-        #if not self.bowtie2_indexer(input_files[0], output_file):
-        #    output_metadata.set_exception(
-        #        Exception(
-        #            "bowtie2_indexer: Could not process files {}, {}.".format(*input_files)))
-        #    output_file = None
-        return (output_files, output_metadata)
+        return (files_out, output_metadata)
 
 # ------------------------------------------------------------------------------

@@ -48,8 +48,7 @@ class bwaIndexerTool(Tool):
 
     @task(file_loc=FILE_IN, amb_loc=FILE_OUT, ann_loc=FILE_OUT,
           bwt_loc=FILE_OUT, pac_loc=FILE_OUT, sa_loc=FILE_OUT)
-    @staticmethod
-    def bwa_indexer(file_loc, amb_loc, ann_loc, bwt_loc, pac_loc, sa_loc): # pylint: disable=unused-argument
+    def bwa_indexer(self, file_loc, amb_loc, ann_loc, bwt_loc, pac_loc, sa_loc): # pylint: disable=unused-argument
         """
         BWA Indexer
 
@@ -101,13 +100,21 @@ class bwaIndexerTool(Tool):
         """
         output_metadata = {}
 
+        output_files = [
+            input_files[0] + ".amb",
+            input_files[0] + ".ann",
+            input_files[0] + ".bwt",
+            input_files[0] + ".pac",
+            input_files[0] + ".sa"
+        ]
+
         results = self.bwa_indexer(
             input_files[0],
-            output_files[0],
-            output_files[1],
-            output_files[2],
-            output_files[3],
-            output_files[4],
+            input_files[0] + ".amb",
+            input_files[0] + ".ann",
+            input_files[0] + ".bwt",
+            input_files[0] + ".pac",
+            input_files[0] + ".sa"
         )
 
         results = compss_wait_on(results)

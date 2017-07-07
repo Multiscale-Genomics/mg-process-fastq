@@ -19,9 +19,7 @@ from __future__ import print_function
 import os.path
 import pytest # pylint: disable=unused-import
 
-
-
-from tool import bwa_indexer
+from tool.bwa_indexer import bwaIndexerTool
 
 def test_bwa_indexer():
     """
@@ -47,7 +45,7 @@ def test_bwa_indexer():
 
     print(bwa_amb, bwa_ann, bwa_bwt, bwa_pac, bwa_sa)
 
-    bwa_it = bwa_indexer.bwaIndexerTool(test=True)
+    bwa_it = bwaIndexerTool()
     bwa_it.run([genome_fa], {'assembly' : 'test'})
 
 def test_bwa_indexer_02():
@@ -74,5 +72,5 @@ def test_bwa_indexer_02():
 
     print(bwa_amb, bwa_ann, bwa_bwt, bwa_pac, bwa_sa)
 
-    bwa_it = bwa_indexer.bwaIndexerTool(test=True)
+    bwa_it = bwaIndexerTool()
     bwa_it.run([genome_fa], {'assembly' : 'test'})

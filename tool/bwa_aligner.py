@@ -49,8 +49,7 @@ class bwaAlignerTool(Tool):
     @task(returns=int, genome_file_loc=FILE_IN, read_file_loc=FILE_IN,
           bam_loc=FILE_OUT, amb_loc=FILE_IN, ann_loc=FILE_IN, bwt_loc=FILE_IN,
           pac_loc=FILE_IN, sa_loc=FILE_IN, isModifier=False)
-    @staticmethod
-    def bwa_aligner(genome_file_loc, read_file_loc, bam_loc, amb_loc, # pylint: disable=unused-argument,too-many-arguments
+    def bwa_aligner(self, genome_file_loc, read_file_loc, bam_loc, amb_loc, # pylint: disable=unused-argument,too-many-arguments
                     ann_loc, bwt_loc, pac_loc, sa_loc): # pylint: disable=unused-argument
         """
         BWA Aligner

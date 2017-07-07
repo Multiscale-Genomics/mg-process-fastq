@@ -15,6 +15,7 @@
 """
 from __future__ import print_function
 
+import os
 import shlex
 import subprocess
 
@@ -112,6 +113,16 @@ class macs2(Tool):
         sub_proc = subprocess.Popen(args)
         sub_proc.wait()
 
+        out_peaks_narrow = bam_file + '_peaks.narrowPeak'
+        out_peaks_broad = bam_file + '_summits.bed'
+        out_peaks_gapped = bam_file + '_summits.bed'
+        out_summits = bam_file + '_summits.bed'
+
+        os.rename(out_peaks_narrow, narrowpeak)
+        os.rename(out_summits, summits_bed)
+        os.rename(out_peaks_broad, broadpeak)
+        os.rename(out_peaks_gapped, gappedpeak)
+
         return 0
 
     @task(
@@ -165,6 +176,16 @@ class macs2(Tool):
         args = shlex.split(command_line)
         sub_proc = subprocess.Popen(args)
         sub_proc.wait()
+
+        out_peaks_narrow = bam_file + '_peaks.narrowPeak'
+        out_peaks_broad = bam_file + '_summits.bed'
+        out_peaks_gapped = bam_file + '_summits.bed'
+        out_summits = bam_file + '_summits.bed'
+
+        os.rename(out_peaks_narrow, narrowpeak)
+        os.rename(out_summits, summits_bed)
+        os.rename(out_peaks_broad, broadpeak)
+        os.rename(out_peaks_gapped, gappedpeak)
 
         return 0
 

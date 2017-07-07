@@ -157,7 +157,14 @@ class process_chipseq(Workflow):
         mac_root_name[-1] = mac_root_name[-1].replace('.bam', '')
 
         #name = mac_root_name[-1]
-
+        out_bam = file_loc.replace(".fastq", '.filtered.bam')
+        
+        out_peaks_narrow = file_loc.replace(".fastq", '_peaks.narrowPeak')
+        out_peaks_xls = file_loc.replace(".fastq", '_peaks.xls')
+        out_peaks_broad = file_loc.replace(".fastq", '_summits.bed')
+        out_peaks_gapped = file_loc.replace(".fastq", '_summits.bed')
+        out_summits = file_loc.replace(".fastq", '_summits.bed')
+        
         summits_bed = '/'.join(mac_root_name) + "_summits.bed"
         narrow_peak = '/'.join(mac_root_name) + "_narrowPeak"
         broad_peak = '/'.join(mac_root_name) + "_broadPeak"

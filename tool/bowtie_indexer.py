@@ -85,15 +85,13 @@ class bowtieIndexerTool(Tool):
         file_name = input_files[0].split('/')
         file_name[-1] = file_name[-1].replace('.fasta', '')
         file_name[-1].replace('.fa', '')
-        output_file = '/'.join(file_name)
 
         # input and output share most metadata
-        #output_metadata = dict(
-        #    data_type=metadata[0]["data_type"],
-        #    file_type=metadata[0]["file_type"],
-        #    meta_data=metadata[0]["meta_data"])
+        output_metadata = dict(
+            data_type=metadata[0]["data_type"],
+            file_type=metadata[0]["file_type"],
+            meta_data=metadata[0]["meta_data"])
 
-        output_metadata = {}
         results = self.bowtie2_indexer(
             input_files[0],
             output_files[0],
@@ -112,6 +110,6 @@ class bowtieIndexerTool(Tool):
         #        Exception(
         #            "bowtie2_indexer: Could not process files {}, {}.".format(*input_files)))
         #    output_file = None
-        return ([output_file], [output_metadata])
+        return (output_files, output_metadata)
 
 # ------------------------------------------------------------------------------

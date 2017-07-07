@@ -503,8 +503,8 @@ class common(object):
             Location of the output file
         """
 
-        intermediate_file = reads_file.replace('.fastq', '.sai')
-        intermediate_sam_file = reads_file.replace('.fastq', '.sam')
+        intermediate_file = reads_file + '.sai'
+        intermediate_sam_file = reads_file + '.sam'
         output_bam_file = bam_loc
 
         command_lines = [

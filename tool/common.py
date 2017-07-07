@@ -509,14 +509,15 @@ class common(object):
 
         command_lines = [
             'bwa aln -q 5 -f ' + intermediate_file + ' ' + genome_file + ' ' + reads_file,
-            'bwa samse -f ' + intermediate_sam_file  + ' ' + genome_file + ' ' + intermediate_file + ' ' + reads_file,
+            'bwa samse -f ' + intermediate_sam_file  + ' ' + genome_file + ' ' +
+            intermediate_file + ' ' + reads_file,
             'samtools view -b -o ' + output_bam_file + ' ' + intermediate_sam_file
         ]
 
         for command_line in command_lines:
             args = shlex.split(command_line)
-            p = subprocess.Popen(args)
-            p.wait()
+            process = subprocess.Popen(args)
+            process.wait()
 
 
     def merge_bam(self, data_dir, project_id, final_id, run_ids=[]):
@@ -549,6 +550,10 @@ class common(object):
             pysam.sort("-o", str(out_bam_file), str(bam_sort_files[0]))
         else:
             pysam.merge(out_bam_file, *bam_merge_files)
-            pysam.sort("-o", str(out_bam_file), "-T", str(out_bam_file) + ".bam_sort", str(out_bam_file))
+            pysam.sort(
+                "-o", str(out_bam_file),
+                "-T", str(out_bam_file) + ".bam_sort",
+                str(out_bam_file)
+            )
 
         pysam.index(str(out_bam_file))

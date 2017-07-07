@@ -22,14 +22,14 @@ import argparse
 
 from functools import wraps
 
-from basic_modules import Workflow
-from basic_modules import Metadata
+from basic_modules.workflow import Workflow
+from basic_modules.metadata import Metadata
 
 from dmp import dmp
 
-from tool import bwa_aligner
-from tool import biobambam_filter
-from tool import macs2
+from tool.bwa_aligner import bwaAlignerTool
+from tool.biobambam_filter import biobambam
+from tool.macs2 import macs2
 
 #try:
 #    from pycompss.api.parameter import FILE_IN, FILE_OUT
@@ -108,7 +108,7 @@ class process_chipseq(Workflow):
 
         out_bam = file_loc.replace(".fastq", '.bam')
 
-        bwa = bwa_aligner.bwaAlignerTool(self.configuration)
+        bwa = bwaAlignerTool(self.configuration)
         out_bam = file_loc.replace(".fastq", '.bam')
         bwa_results = bwa.run(
             [run_genome_fa, file_loc, bwa_amb, bwa_ann, bwa_bwt, bwa_pac, bwa_sa],
@@ -132,7 +132,7 @@ class process_chipseq(Workflow):
         b3f_bgd_file_out = None
 
         # Filter the bams
-        b3f = biobambam_filter.biobambam(self.configuration)
+        b3f = biobambam(self.configuration)
         b3f_file_out = file_loc.replace('.fastq', '.filtered.bam')
         b3f_results = b3f.run(
             [out_bam],
@@ -151,7 +151,7 @@ class process_chipseq(Workflow):
             #b3f_results_bgd = compss_wait_on(b3f_results_bgd)
 
         # MACS2 to call peaks
-        macs_caller = macs2.macs2(self.configuration)
+        macs_caller = macs2(self.configuration)
 
         mac_root_name = b3f_file_out.split("/")
         mac_root_name[-1] = mac_root_name[-1].replace('.bam', '')

@@ -135,8 +135,9 @@ class macs2(Tool):
         broadPeak=FILE_OUT,
         gappedPeak=FILE_OUT,
         isModifier=False)
-    def macs2_peak_calling_nobgd(
-            self, name, bam_file,
+    @staticmethod
+    def macs2_peak_calling_nobgd( # pylint: disable=too-many-arguments
+            name, bam_file,
             narrowpeak, summits_bed, broadpeak, gappedpeak): # pylint: disable=unused-argument
         """
         Function to run MACS2 for peak calling on aligned sequence files without
@@ -192,7 +193,7 @@ class macs2(Tool):
         return 0
 
 
-    def run(self, input_files, metadata, output_files):
+    def run(self, input_files, output_files, metadata=None):
         """
         The main function to run MACS 2 for peak calling over a given BAM file
         and matching background BAM file.
@@ -230,7 +231,7 @@ class macs2(Tool):
         out_summits = bam_file + '_summits.bed'
 
         # input and output share most metadata
-        output_metadata = metadata
+        output_metadata = {}
         output_metadata["bed_types"] = ["bed4+1", "bed6+4", "bed6+3", "bed12+3"]
 
         # handle error

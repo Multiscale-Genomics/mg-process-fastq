@@ -70,17 +70,17 @@ class process_genome(Workflow):
 
         # Bowtie2 Indexer
         bowtie2 = bowtie_indexer.bowtieIndexerTool()
-        bti, btm = bowtie2.run([genome_fa], metadata, output_files[0:5])
+        bti, btm = bowtie2.run([genome_fa], output_files[0:5])
         output_metadata['genome_idx']['bowtie'] = btm
 
         # BWA Indexer
         bwa = bwa_indexer.bwaIndexerTool()
-        bwai, bwam = bwa.run([genome_fa], metadata, output_files[5:11])
+        bwai, bwam = bwa.run([genome_fa], output_files[5:11])
         output_metadata['genome_idx']['bwa'] = bwam
 
         # GEM Indexer
         gem = gem_indexer.gemIndexerTool()
-        gemi, gemm = gem.run([genome_fa], metadata, [output_files[11]])
+        gemi, gemm = gem.run([genome_fa], [output_files[11]])
         output_metadata['genome_idx']['gem'] = gemm
 
         return (bti + bwai + gemi, output_metadata)
@@ -92,7 +92,7 @@ class process_genome(Workflow):
 
 # ------------------------------------------------------------------------------
 
-def main(input_files, input_metadata, output_files):
+def main(input_files, output_files, input_metadata):
     """
     Main function
     -------------
@@ -332,7 +332,7 @@ def prepare_files(
         # genome_fa + "_bowtie2/refname.data",
 
     ]
-    return [files, metadata, files_out]
+    return [files, files_out, metadata]
 
 # ------------------------------------------------------------------------------
 

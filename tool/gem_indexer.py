@@ -16,8 +16,6 @@
 
 from __future__ import print_function
 
-import os
-
 try:
     from pycompss.api.parameter import FILE_IN, FILE_OUT
     from pycompss.api.task import task
@@ -28,7 +26,7 @@ except ImportError:
     from dummy_pycompss import FILE_IN, FILE_OUT
     from dummy_pycompss import task
 
-from basic_modules.metadata import Metadata
+#from basic_modules.metadata import Metadata
 from basic_modules.tool import Tool
 
 from tool.common import common
@@ -48,7 +46,8 @@ class gemIndexerTool(Tool):
         Tool.__init__(self)
 
     @task(file_loc=FILE_IN, idx_loc=FILE_OUT)
-    def gem_indexer(self, file_loc, idx_loc):
+    @staticmethod
+    def gem_indexer(file_loc, idx_loc): # pylint: disable=unused-argument
         """
         GEM Indexer
 
@@ -59,12 +58,12 @@ class gemIndexerTool(Tool):
         idx_loc : str
             Location of the output index file
         """
-        cf = common()
-        idx_loc = cf.gem_index_genome(file_loc)
+        common_handle = common()
+        idx_loc = common_handle.gem_index_genome(file_loc)
         return True
 
 
-    def run(self, input_files, metadata, output_files):
+    def run(self, input_files, output_files, metadata=None):
         """
         Tool for generating assembly aligner index files for use with the GEM
         indexer
@@ -83,8 +82,7 @@ class gemIndexerTool(Tool):
             list of the matching metadata
         """
 
-        file_name = input_files[0].split('/')
-        output_file = '/'.join(file_name[-1].replace('.fa', ''))
+        file_out = input_files[0] + ".gem"
 
         # input and output share most metadata
         output_metadata = dict(
@@ -92,14 +90,8 @@ class gemIndexerTool(Tool):
             file_type=metadata["file_type"],
             meta_data=metadata["metadata"])
 
-        result = self.gem_indexer(input_files[0], output_files[0])
+        result = self.gem_indexer(input_files[0], file_out)
 
-        # handle error
-        if not self.gem_indexer(input_files[0], output_file):
-            output_metadata.set_exception(
-                Exception(
-                    "gem_indexer: Could not process files {}, {}.".format(*input_files)))
-        output_file = None
-        return ([output_file], [output_metadata])
+        return ([file_out], [output_metadata])
 
 # ------------------------------------------------------------------------------

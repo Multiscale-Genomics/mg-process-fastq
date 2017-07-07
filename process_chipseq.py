@@ -31,23 +31,6 @@ from tool.bwa_aligner import bwaAlignerTool
 from tool.biobambam_filter import biobambam
 from tool.macs2 import macs2
 
-#try:
-#    from pycompss.api.parameter import FILE_IN, FILE_OUT
-#    from pycompss.api.task import task
-#    from pycompss.api.constraint import constraint
-#    from pycompss.api.api import compss_wait_on
-#except ImportError :
-#    print("[Warning] Cannot import \"pycompss\" API packages.")
-#    print("          Using mock decorators.")
-#
-#    from dummy_pycompss import *
-
-#try:
-#    import pysam
-#except ImportError:
-#    print "[Error] Cannot import \"pysam\" package. Have you installed it?"
-#    exit(-1)
-
 # ------------------------------------------------------------------------------
 
 class process_chipseq(Workflow):
@@ -72,7 +55,7 @@ class process_chipseq(Workflow):
         self.configuration.update(configuration)
 
 
-    def run(self, file_ids, metadata, output_files):
+    def run(self, file_ids, output_files, metadata):
         """
         Main run function for processing ChIP-seq FastQ data. Pipeline aligns
         the FASTQ files to the genome using BWA. MACS 2 is then used for peak
@@ -112,7 +95,6 @@ class process_chipseq(Workflow):
         #out_bam = file_loc.replace(".fastq", '.bam')
         bwa_results = bwa.run(
             [run_genome_fa, file_loc, bwa_amb, bwa_ann, bwa_bwt, bwa_pac, bwa_sa],
-            {},
             []
         )
         #bwa_results = compss_wait_on(bwa_results)
@@ -122,7 +104,6 @@ class process_chipseq(Workflow):
         if file_bgd_loc != None:
             bwa_results_bgd = bwa.run(
                 [run_genome_fa, file_bgd_loc, bwa_amb, bwa_ann, bwa_bwt, bwa_pac, bwa_sa],
-                {},
                 []
             )
             #bwa_results_bgd = compss_wait_on(bwa_results_bgd)
@@ -134,7 +115,6 @@ class process_chipseq(Workflow):
         b3f = biobambam(self.configuration)
         b3f_results = b3f.run(
             [out_bam],
-            {},
             []
         )
         #b3f_results = compss_wait_on(b3f_results)
@@ -144,7 +124,6 @@ class process_chipseq(Workflow):
         if file_bgd_loc != None:
             b3f_results_bgd = b3f.run(
                 [out_bgd_bam],
-                {},
                 []
             )
             #b3f_results_bgd = compss_wait_on(b3f_results_bgd)
@@ -154,9 +133,9 @@ class process_chipseq(Workflow):
         macs_caller = macs2(self.configuration)
 
         if file_bgd_loc != None:
-            m_results = macs_caller.run([out_filtered_bam, out_filtered_bgd_bam], {}, [])
+            m_results = macs_caller.run([out_filtered_bam, out_filtered_bgd_bam], [])
         else:
-            m_results = macs_caller.run([out_filtered_bam], {}, [])
+            m_results = macs_caller.run([out_filtered_bam], [])
         #m_results = compss_wait_on(m_results)
 
         return (
@@ -168,7 +147,7 @@ class process_chipseq(Workflow):
 
 # ------------------------------------------------------------------------------
 
-def main(input_files, input_metadata, output_files):
+def main(input_files, output_files, input_metadata):
     """
     Main function
     -------------
@@ -182,8 +161,8 @@ def main(input_files, input_metadata, output_files):
     print("1. Instantiate and launch the App")
     from apps.workflowapp import WorkflowApp
     app = WorkflowApp()
-    result = app.launch(process_chipseq, input_files, input_metadata,
-                        output_files, {})
+    result = app.launch(process_chipseq, input_files, output_files, input_metadata,
+                        {})
 
     # 2. The App has finished
     print("2. Execution finished")

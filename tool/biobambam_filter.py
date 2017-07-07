@@ -39,7 +39,7 @@ class biobambam(Tool):
     Tool to sort and filter bam files
     """
 
-    def __init__(self, configuration={}):
+    def __init__(self, configuration=None):
         """
         Init function
         """
@@ -48,7 +48,8 @@ class biobambam(Tool):
 
     @task(returns=int, bam_file_in=FILE_IN, bam_file_out=FILE_OUT,
           tmp_dir=IN, isModifier=False)
-    def biobambam_filter_alignments(self, bam_file_in, bam_file_out, tmp_dir):
+    @staticmethod
+    def biobambam_filter_alignments(bam_file_in, bam_file_out, tmp_dir):
         """
         Sorts and filters the bam file.
 
@@ -81,7 +82,7 @@ class biobambam(Tool):
         return 0
 
 
-    def run(self, input_files, metadata, output_files):
+    def run(self, input_files, output_files, metadata=None):
         """
         The main function to run BioBAMBAMfilter to remove duplicates and
         spurious reads from the FASTQ files before analysis.
@@ -107,7 +108,7 @@ class biobambam(Tool):
 
         out_filtered_bam = input_files[0].replace('.fastq', '.filtered.bam')
 
-        output_metadata = metadata
+        output_metadata = {}
 
         results = self.biobambam_filter_alignments(in_bam, out_filtered_bam, tmp_dir)
         #results = compss_wait_on(results)

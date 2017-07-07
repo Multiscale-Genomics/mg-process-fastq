@@ -47,7 +47,8 @@ class bowtieIndexerTool(Tool):
         Tool.__init__(self)
 
     @task(file_loc=FILE_IN, idx_loc=FILE_OUT)
-    def bowtie2_indexer(self, file_loc, bt_file1, bt_file2, bt_file3, # pylint: disable=unused-argument
+    @staticmethod
+    def bowtie2_indexer(file_loc, bt_file1, bt_file2, bt_file3, # pylint: disable=unused-argument,too-many-arguments
                         bt_file4, bt_filer1, bt_filer2): # pylint: disable=unused-argument
         """
         Bowtie2 Indexer
@@ -63,7 +64,7 @@ class bowtieIndexerTool(Tool):
         common_handle.bowtie_index_genome(file_loc)
         return True
 
-    def run(self, input_files, metadata, output_files):
+    def run(self, input_files, output_files, metadata=None):
         """
         Tool for generating assembly aligner index files for use with the
         Bowtie 2 aligner

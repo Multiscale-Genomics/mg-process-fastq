@@ -22,14 +22,16 @@ import subprocess
 try:
     from pycompss.api.parameter import FILE_IN, FILE_OUT
     from pycompss.api.task import task
+    from pycompss.api.api import compss_wait_on
 except ImportError:
     print("[Warning] Cannot import \"pycompss\" API packages.")
     print("          Using mock decorators.")
 
     from dummy_pycompss import FILE_IN, FILE_OUT
     from dummy_pycompss import task
+    from dummy_pycompss import compss_wait_on
 
-from basic_modules.metadata import Metadata
+#from basic_modules.metadata import Metadata
 from basic_modules.tool import Tool
 
 from tool.common import cd
@@ -49,7 +51,8 @@ class inps(Tool):
         Tool.__init__(self)
 
     @task(bam_file=FILE_IN, peak_bed=FILE_OUT)
-    def inps_peak_calling(self, bam_file, peak_bed):
+    @staticmethod
+    def inps_peak_calling(bam_file, peak_bed):
         """
         Convert Bam to Bed then make Nucleosome peak calls. These are saved as
         bed files That can then get displayed on genome browsers.
@@ -84,7 +87,7 @@ class inps(Tool):
         return peak_bed
 
 
-    def run(self, input_files, metadata):
+    def run(self, input_files, output_files, metadata=None):
         """
         The main function to run MACS 2 for peak calling over a given BAM file
         and matching background BAM file.
@@ -111,12 +114,9 @@ class inps(Tool):
         # input and output share most metadata
         output_metadata = {}
 
-        # handle error
-        if not self.inps_peak_calling(bam_file, peak_bed):
-            output_metadata.set_exception(
-                Exception(
-                    "inps_peak_calling: Could not process files {}, {}.".format(*input_files)))
-            peak_bed = None
+        results = self.inps_peak_calling(bam_file, peak_bed)
+        results = compss_wait_on(results)
+
         return ([peak_bed], output_metadata)
 
 # ------------------------------------------------------------------------------

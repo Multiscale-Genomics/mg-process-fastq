@@ -20,7 +20,7 @@ Setup the System Environment
    sudo apt-get install -y make build-essential libssl-dev zlib1g-dev       //
    libbz2-dev libreadline-dev libsqlite3-dev wget curl llvm libncurses5-dev //
    libncursesw5-dev xz-utils tk-dev unzip mcl libgtk2.0-dev r-base-core     //
-   libcurl4-gnutls-dev python-rpy2
+   libcurl4-gnutls-dev python-rpy2 git
 
    cd ${HOME}
    mkdir bin lib code
@@ -35,7 +35,7 @@ space.
 
 .. code-block:: none
    :linenos:
-   
+
    git clone https://github.com/pyenv/pyenv.git ~/.pyenv
    echo 'export PYENV_ROOT="$HOME/.pyenv"' >> ~/.bash_profile
    echo 'export PATH="$PYENV_ROOT/bin:$PATH"' >> ~/.bash_profile
@@ -183,14 +183,14 @@ Setup the symlinks
    :linenos:
 
    cd ${HOME}/bin
-   
+
    ln -s ${HOME}/lib/bedtools2/bin/bedtools bedtools
 
    ln -s ${HOME}/lib/bedToBigBed bedToBigBed
    ln -s ${HOME}/lib/wigToBigWig wigToBigWig
-   
+
    ln -s ${HOME}/lib/bwa/bwa bwa
-   
+
    ln -s ${HOME}/lib/bowtie2-2.3.2/bowtie2 bowtie2
    ln -s ${HOME}/lib/bowtie2-2.3.2/bowtie2-align-s bowtie2-align-s
    ln -s ${HOME}/lib/bowtie2-2.3.2/bowtie2-align-l bowtie2-align-l

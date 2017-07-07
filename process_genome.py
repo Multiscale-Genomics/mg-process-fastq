@@ -65,19 +65,25 @@ class process_genome(Workflow):
         """
 
         genome_fa = file_ids[0]
+        output_metadata = metadata
+        output_metadata['genome_idx'] = {}
 
         # Bowtie2 Indexer
-        bt = bowtie_indexer.bowtieIndexerTool()
-        bti, btm = bt.run([genome_fa], metadata, output_files[0:5])
+        bowtie2 = bowtie_indexer.bowtieIndexerTool()
+        bti, btm = bowtie2.run([genome_fa], metadata, output_files[0:5])
+        output_metadata['genome_idx']['bowtie'] = btm
 
         # BWA Indexer
         bwa = bwa_indexer.bwaIndexerTool()
         bwai, bwam = bwa.run([genome_fa], metadata, output_files[5:11])
+        output_metadata['genome_idx']['bwa'] = bwam
 
         # GEM Indexer
         gem = gem_indexer.gemIndexerTool()
-        gemi, gemm = gem.run([genome_fa], metadata, output_files[11])
-        output_metadata['genome_idx'] = gidx_meta
+        gemi, gemm = gem.run([genome_fa], metadata, [output_files[11]])
+        output_metadata['genome_idx']['gem'] = gemm
+
+        return (bti + bwai + gemi, output_metadata)
 
         # Build the matching WGBS genome index
         # builder = bs_seeker_indexer.bssIndexerTool()
@@ -119,7 +125,7 @@ def prepare_files(
     genome_file = dm_handler.set_file(
         "test", genome_fa, "fasta", "Assembly", taxon_id, None, [],
         meta_data={"assembly" : assembly})
-    
+
     # Index Files to get generated:
 
     # BWA
@@ -391,6 +397,4 @@ if __name__ == "__main__":
     #    }
     #)
 
-    
-    print DM_HANDLER.get_files_by_user("test")
-    
+    print(DM_HANDLER.get_files_by_user("test"))

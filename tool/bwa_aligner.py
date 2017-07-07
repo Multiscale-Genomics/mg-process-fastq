@@ -1,9 +1,9 @@
 """
 .. Copyright 2017 EMBL-European Bioinformatics Institute
- 
+
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
-   You may obtain a copy of the License at 
+   You may obtain a copy of the License at
 
        http://www.apache.org/licenses/LICENSE-2.0
 
@@ -70,12 +70,14 @@ class bwaAlignerTool(Tool):
         """
 
         # Rename all files for the genome and indexes so that they are in the
-        # expected format by BWA
-        os.rename(amb_loc, genome_file_loc + ".amb")
-        os.rename(ann_loc, genome_file_loc + ".ann")
-        os.rename(bwt_loc, genome_file_loc + ".bwt")
-        os.rename(pac_loc, genome_file_loc + ".pac")
-        os.rename(sa_loc, genome_file_loc + ".sa")
+        # expected format by BWA - Might not be an issue with PyCOMPSs v2.1
+        # Care needs to be taken when running this locally and the renaming
+        # should not happen
+        # os.rename(amb_loc, genome_file_loc + ".amb")
+        # os.rename(ann_loc, genome_file_loc + ".ann")
+        # os.rename(bwt_loc, genome_file_loc + ".bwt")
+        # os.rename(pac_loc, genome_file_loc + ".pac")
+        # os.rename(sa_loc, genome_file_loc + ".sa")
 
         common_handle = common()
         bam_loc = common_handle.bwa_align_reads(genome_file_loc, read_file_loc, bam_loc)
@@ -99,13 +101,14 @@ class bwaAlignerTool(Tool):
         """
 
         output_metadata = {}
+        out_bam = input_files[1].replace(".fastq", '.bam')
 
         results = self.bwa_aligner(
-            input_files[0], input_files[1], output_files[0], input_files[2],
+            input_files[0], input_files[1], out_bam, input_files[2],
             input_files[3], input_files[4], input_files[5], input_files[6])
 
         results = compss_wait_on(results)
 
-        return ([output_files], [output_metadata])
+        return ([out_bam], [output_metadata])
 
 # ------------------------------------------------------------------------------

@@ -109,82 +109,61 @@ class process_chipseq(Workflow):
         out_bam = file_loc.replace(".fastq", '.bam')
 
         bwa = bwaAlignerTool(self.configuration)
-        out_bam = file_loc.replace(".fastq", '.bam')
+        #out_bam = file_loc.replace(".fastq", '.bam')
         bwa_results = bwa.run(
             [run_genome_fa, file_loc, bwa_amb, bwa_ann, bwa_bwt, bwa_pac, bwa_sa],
             {},
-            [out_bam]
+            []
         )
-
         #bwa_results = compss_wait_on(bwa_results)
+        out_bam = bwa_results[0][0]
 
+        out_bgd_bam = None
         if file_bgd_loc != None:
-            out_bgd_bam = file_bgd_loc.replace(".fastq", '.bam')
             bwa_results_bgd = bwa.run(
                 [run_genome_fa, file_bgd_loc, bwa_amb, bwa_ann, bwa_bwt, bwa_pac, bwa_sa],
                 {},
-                [out_bgd_bam]
+                []
             )
             #bwa_results_bgd = compss_wait_on(bwa_results_bgd)
+            out_bgd_bam = bwa_results_bgd[0][0]
 
         # For multiple files there will need to be merging into a single bam file
 
-        b3f_bgd_file_out = None
-
         # Filter the bams
         b3f = biobambam(self.configuration)
-        b3f_file_out = file_loc.replace('.fastq', '.filtered.bam')
         b3f_results = b3f.run(
             [out_bam],
             {},
-            [b3f_file_out]
+            []
         )
-
         #b3f_results = compss_wait_on(b3f_results)
+        out_filtered_bam = b3f_results[0][0]
+
+        out_filtered_bgd_bam = None
         if file_bgd_loc != None:
-            b3f_bgd_file_out = file_bgd_loc.replace(".fastq", '.filtered.bam')
             b3f_results_bgd = b3f.run(
                 [out_bgd_bam],
                 {},
-                [b3f_bgd_file_out]
+                []
             )
             #b3f_results_bgd = compss_wait_on(b3f_results_bgd)
+            out_filtered_bgd_bam = b3f_results_bgd[0][0]
 
         # MACS2 to call peaks
         macs_caller = macs2(self.configuration)
 
-        mac_root_name = b3f_file_out.split("/")
-        mac_root_name[-1] = mac_root_name[-1].replace('.bam', '')
-
-        #name = mac_root_name[-1]
-        out_bam = file_loc.replace(".fastq", '.filtered.bam')
-        
-        out_peaks_narrow = file_loc.replace(".fastq", '_peaks.narrowPeak')
-        out_peaks_xls = file_loc.replace(".fastq", '_peaks.xls')
-        out_peaks_broad = file_loc.replace(".fastq", '_summits.bed')
-        out_peaks_gapped = file_loc.replace(".fastq", '_summits.bed')
-        out_summits = file_loc.replace(".fastq", '_summits.bed')
-        
-        summits_bed = '/'.join(mac_root_name) + "_summits.bed"
-        narrow_peak = '/'.join(mac_root_name) + "_narrowPeak"
-        broad_peak = '/'.join(mac_root_name) + "_broadPeak"
-        gapped_peak = '/'.join(mac_root_name) + "_gappedPeak"
-
-        output_files = [
-            summits_bed,
-            narrow_peak,
-            broad_peak,
-            gapped_peak
-        ]
-
         if file_bgd_loc != None:
-            m_results = macs_caller.run([b3f_file_out, b3f_bgd_file_out], {}, output_files)
+            m_results = macs_caller.run([out_filtered_bam, out_filtered_bgd_bam], {}, [])
         else:
-            m_results = macs_caller.run([b3f_file_out], {}, output_files)
-
+            m_results = macs_caller.run([out_filtered_bam], {}, [])
         #m_results = compss_wait_on(m_results)
 
-        return ([b3f_file_out, b3f_bgd_file_out] + m_results[0], metadata, [b3f_results[1], m_results[1]])
+        return (
+            [out_bam, out_filtered_bam] + m_results[0],
+            metadata,
+            [b3f_results[1], m_results[1]]
+        )
 
 
 # ------------------------------------------------------------------------------
@@ -317,23 +296,11 @@ if __name__ == "__main__":
     # 1. Create data files
     DM_HANDLER = dmp(test=True)
 
-    # Get the assembly
-
     #2. Register the data with the DMP
     PARAMS = prepare_files(DM_HANDLER, TAXON_ID, GENOME_FA, ASSEMBLY, FILE_LOC, FILE_BG_LOC)
 
     # 3. Instantiate and launch the App
-    #from basic_modules import WorkflowApp
-    #app = WorkflowApp()
-    #results = app.launch(process_chipseq, [genome_file, file_in, file_bg_in], {'user_id' : 'test'})
-
-    #pc = process_chipseq()
-    #results_files, results_meta = pc.run(files, {"user_id" : "test"})
-
-    #results_files, results_meta = main(files, metadata, files_out)
     RESULTS = main(PARAMS[0], PARAMS[1], PARAMS[2])
 
-    #print(results_files)
-    #print(results_meta)
     print(RESULTS)
     print(DM_HANDLER.get_files_by_user("test"))

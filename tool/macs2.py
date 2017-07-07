@@ -113,6 +113,7 @@ class macs2(Tool):
         sub_proc = subprocess.Popen(args)
         sub_proc.wait()
 
+        # Might not be an issue with PyCOMPSs v2.1
         out_peaks_narrow = bam_file + '_peaks.narrowPeak'
         out_peaks_broad = bam_file + '_summits.bed'
         out_peaks_gapped = bam_file + '_summits.bed'
@@ -169,7 +170,7 @@ class macs2(Tool):
 
         command_line = 'macs2 callpeak -t ' + bam_file + ' -n ' + name + ' --outdir ' + output_dir
 
-        if name == 'fastQForSelRegion':
+        if name == 'macs2.Human.DRR000150.22':
             # This is for when running the test data
             command_line = command_line + ' --nomodel'
 
@@ -177,9 +178,10 @@ class macs2(Tool):
         sub_proc = subprocess.Popen(args)
         sub_proc.wait()
 
+        # Might not be an issue with PyCOMPSs v2.1
         out_peaks_narrow = bam_file + '_peaks.narrowPeak'
-        out_peaks_broad = bam_file + '_summits.bed'
-        out_peaks_gapped = bam_file + '_summits.bed'
+        out_peaks_broad = bam_file + '_peaks.broadPeak'
+        out_peaks_gapped = bam_file + '_peaks.gappedPeak'
         out_summits = bam_file + '_summits.bed'
 
         os.rename(out_peaks_narrow, narrowpeak)
@@ -222,47 +224,31 @@ class macs2(Tool):
 
         name = root_name[-1]
 
-        summits_bed = output_files[0]
-        narrowpeak = output_files[1]
-        broadpeak = output_files[2]
-        gappedpeak = output_files[3]
+        out_peaks_narrow = bam_file + '_peaks.narrowPeak'
+        out_peaks_broad = bam_file + '_peaks.broadPeak'
+        out_peaks_gapped = bam_file + '_peaks.gappedPeak'
+        out_summits = bam_file + '_summits.bed'
 
         # input and output share most metadata
         output_metadata = metadata
         output_metadata["bed_types"] = ["bed4+1", "bed6+4", "bed6+3", "bed12+3"]
 
-        peak_bed = None
         # handle error
         if bam_file_bgd is None:
             results = self.macs2_peak_calling_nobgd(
-                name, bam_file, narrowpeak, summits_bed, broadpeak, gappedpeak)
-            #if not self.macs2_peak_calling_nobgd(name, bam_file,
-            #    narrowPeak, summits_bed, broadPeak, gappedPeak):
-            #    output_metadata['error'] = Exception(
-            #            "macs2_peak_calling_nobgd: Could not process files {}, {}."#.format(*input_files)
-            #    )
-            #    peak_bed    = None
-            #    summits_bed = None
-            #    narrowPeak  = None
-            #    broadPeak   = None
-            #    gappedPeak  = None
+                name, bam_file,
+                out_peaks_narrow, out_summits, out_peaks_broad, out_peaks_gapped)
         else:
             results = self.macs2_peak_calling(
-                name, bam_file, bam_file_bgd, narrowpeak, summits_bed, broadpeak, gappedpeak)
-            #if not self.macs2_peak_calling(name, bam_file, bam_file_bgd,
-            #    narrowPeak, summits_bed, broadPeak, gappedPeak):
-            #    output_metadata['error'] = Exception(
-            #            "macs2_peak_calling: Could not process files {}, {}.".format(*input_files)
-            #    )
-            #    peak_bed    = None
-            #    summits_bed = None
-            #    narrowPeak  = None
-            #    broadPeak   = None
-            #    gappedPeak  = None
-
+                name, bam_file, bam_file_bgd,
+                out_peaks_narrow, out_summits, out_peaks_broad, out_peaks_gapped)
         #results = compss_wait_on(results)
+
         print(results)
 
-        return ([peak_bed, summits_bed, narrowpeak, broadpeak, gappedpeak], output_metadata)
+        return (
+            [out_peaks_narrow, out_summits, out_peaks_broad, out_peaks_gapped],
+            output_metadata
+        )
 
 # ------------------------------------------------------------------------------

@@ -1,9 +1,9 @@
 """
 .. Copyright 2017 EMBL-European Bioinformatics Institute
- 
+
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
-   You may obtain a copy of the License at 
+   You may obtain a copy of the License at
 
        http://www.apache.org/licenses/LICENSE-2.0
 
@@ -13,17 +13,21 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 """
+from __future__ import print_function
 
-import os, shutil, shlex, subprocess
+import os
+import shlex
+import subprocess
 
-try :
-    from pycompss.api.parameter import *
+try:
+    from pycompss.api.parameter import FILE_IN, FILE_OUT
     from pycompss.api.task import task
-except ImportError :
+except ImportError:
     print("[Warning] Cannot import \"pycompss\" API packages.")
     print("          Using mock decorators.")
-    
-    from dummy_pycompss import *
+
+    from dummy_pycompss import FILE_IN, FILE_OUT
+    from dummy_pycompss import task
 
 from basic_modules.metadata import Metadata
 from basic_modules.tool import Tool

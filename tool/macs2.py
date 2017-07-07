@@ -135,9 +135,8 @@ class macs2(Tool):
         broadPeak=FILE_OUT,
         gappedPeak=FILE_OUT,
         isModifier=False)
-    @staticmethod
     def macs2_peak_calling_nobgd( # pylint: disable=too-many-arguments
-            name, bam_file,
+            self, name, bam_file,
             narrowpeak, summits_bed, broadpeak, gappedpeak): # pylint: disable=unused-argument
         """
         Function to run MACS2 for peak calling on aligned sequence files without
@@ -180,15 +179,15 @@ class macs2(Tool):
         sub_proc.wait()
 
         # Might not be an issue with PyCOMPSs v2.1
-        out_peaks_narrow = bam_file + '_peaks.narrowPeak'
-        out_peaks_broad = bam_file + '_peaks.broadPeak'
-        out_peaks_gapped = bam_file + '_peaks.gappedPeak'
-        out_summits = bam_file + '_summits.bed'
+        # out_peaks_narrow = bam_file + '_peaks.narrowPeak'
+        # out_peaks_broad = bam_file + '_peaks.broadPeak'
+        # out_peaks_gapped = bam_file + '_peaks.gappedPeak'
+        # out_summits = bam_file + '_summits.bed'
 
-        os.rename(out_peaks_narrow, narrowpeak)
-        os.rename(out_summits, summits_bed)
-        os.rename(out_peaks_broad, broadpeak)
-        os.rename(out_peaks_gapped, gappedpeak)
+        # os.rename(out_peaks_narrow, narrowpeak)
+        # os.rename(out_summits, summits_bed)
+        # os.rename(out_peaks_broad, broadpeak)
+        # os.rename(out_peaks_gapped, gappedpeak)
 
         return 0
 

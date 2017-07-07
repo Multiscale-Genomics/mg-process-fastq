@@ -50,7 +50,7 @@ class biobambam(Tool):
 
     @task(returns=int, bam_file_in=FILE_IN, bam_file_out=FILE_OUT,
           tmp_dir=IN, isModifier=False)
-    def biobambam_filter_alignments(self, bam_file_in, bam_file_out, tmp_dir):
+    def biobambam_filter_alignments(self, bam_file_in, bam_file_out):
         """
         Sorts and filters the bam file.
 
@@ -73,7 +73,11 @@ class biobambam(Tool):
             Location of the output bam file
         """
 
+        td_list = bam_file_in.split("/")
+        tmp_dir = "/".join(td_list[0:-1])
+
         command_line = 'bamsormadup --tmpfile=' + tmp_dir
+        print(command_line)
         args = shlex.split(command_line)
         with open(bam_file_in, "r") as f_in:
             with open(bam_file_out, "w") as f_out:
@@ -103,15 +107,11 @@ class biobambam(Tool):
             List of matching metadata dict objects
         """
         in_bam = input_files[0]
-
-        td_list = in_bam.split("/")
-        tmp_dir = "/".join(td_list[0:-1])
-
         out_filtered_bam = input_files[0].replace('.fastq', '.filtered.bam')
 
         output_metadata = {}
 
-        results = self.biobambam_filter_alignments(in_bam, out_filtered_bam, tmp_dir)
+        results = self.biobambam_filter_alignments(in_bam, out_filtered_bam)
         results = compss_wait_on(results)
 
         print(results)

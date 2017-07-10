@@ -1,9 +1,9 @@
 """
 .. Copyright 2017 EMBL-European Bioinformatics Institute
- 
+
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
-   You may obtain a copy of the License at 
+   You may obtain a copy of the License at
 
        http://www.apache.org/licenses/LICENSE-2.0
 
@@ -14,22 +14,23 @@
    limitations under the License.
 """
 
-import os, shutil, shlex, subprocess
+from __future__ import print_function
+
+import shlex
+import subprocess
 import itertools
 
 try:
     from pycompss.api.parameter import FILE_IN, FILE_OUT
     from pycompss.api.task import task
-except ImportError :
+except ImportError:
     print ("[Warning] Cannot import \"pycompss\" API packages.")
     print ("          Using mock decorators.")
-    
-    from dummy_pycompss import *
 
-from basic_modules.metadata import Metadata
+    from dummy_pycompss import FILE_IN, FILE_OUT
+    from dummy_pycompss import task
+
 from basic_modules.tool import Tool
-
-from . import common
 
 # ------------------------------------------------------------------------------
 
@@ -38,49 +39,64 @@ class kallistoQuantificationTool(Tool):
     Tool for quantifying RNA-seq alignments to calculate expression levels of
     genes within a genome.
     """
-    
+
     def __init__(self):
         """
         Init function
         """
         print("Kallisto Quantification")
         Tool.__init__(self)
-    
-    @task(fastq_file_loc=FILE_IN, cdna_idx_file=FILE_IN, abundance_h5_file=FILE_OUT, abundance_tsv_file=FILE_OUT, run_info_file=FILE_OUT)
-    def kallisto_quant_single(self, cdna_idx_file, fastq_file_loc, abundance_h5_file, abundance_tsv_file, run_info_file):
+
+    @task(
+        fastq_file_loc=FILE_IN,
+        cdna_idx_file=FILE_IN,
+        abundance_h5_file=FILE_OUT,
+        abundance_tsv_file=FILE_OUT,
+        run_info_file=FILE_OUT)
+    def kallisto_quant_single(
+            self, cdna_idx_file, fastq_file_loc,
+            abundance_h5_file, abundance_tsv_file, run_info_file):
         """
         Kallisto quantifier for single end RNA-seq data
-        
+
         Parameters
         ----------
         idx_loc : str
             Location of the output index file
         fastq_file_loc : str
             Location of the FASTQ sequence file
-        
+
         Returns
         -------
         wig_file_loc : loc
             Location of the wig file containing the levels of expression
         """
-        
+
         out_dir = abundance_h5_file.split("/")
         command_line = 'kallisto quant -i ' + cdna_idx_file + ' -o ' + "/".join(out_dir[0:-1]) + "/"
         fq_stats = self.seq_read_stats(fastq_file_loc)
         command_line += ' --single -l ' + str(fq_stats['mean']) + ' -s ' + str(fq_stats['std']) + ' ' + fastq_file_loc
-        
+
         args = shlex.split(command_line)
         p = subprocess.Popen(args)
         p.wait()
-        
+
         return True
-    
-    
-    @task(fastq_file_loc_01=FILE_IN, fastq_file_loc_02=FILE_IN, cdna_idx_file=FILE_IN, abundance_h5_file=FILE_OUT, abundance_tsv_file=FILE_OUT, run_info_file=FILE_OUT)
-    def kallisto_quant_paired(self, cdna_idx_file, fastq_file_loc_01, fastq_file_loc_02, abundance_h5_file, abundance_tsv_file, run_info_file):
+
+
+    @task(
+        fastq_file_loc_01=FILE_IN,
+        fastq_file_loc_02=FILE_IN,
+        cdna_idx_file=FILE_IN,
+        abundance_h5_file=FILE_OUT,
+        abundance_tsv_file=FILE_OUT,
+        run_info_file=FILE_OUT)
+    def kallisto_quant_paired(
+            self, cdna_idx_file, fastq_file_loc_01, fastq_file_loc_02,
+            abundance_h5_file, abundance_tsv_file, run_info_file):
         """
         Kallisto quantifier for paired end RNA-seq data
-        
+
         Parameters
         ----------
         idx_loc : str
@@ -89,108 +105,105 @@ class kallistoQuantificationTool(Tool):
             Location of the FASTQ sequence file
         fastq_file_loc_02 : str
             Location of the paired FASTQ sequence file
-        
+
         Returns
         -------
         wig_file_loc : loc
             Location of the wig file containing the levels of expression
         """
-        
+
         command_line = 'kallisto quant -i ' + cdna_idx_file + ' -o .'
         command_line += ' ' + fastq_file_loc_01 + ' ' + fastq_file_loc_02
-        
+
         args = shlex.split(command_line)
-        p = subprocess.Popen(args)
-        p.wait()
-        
+        process = subprocess.Popen(args)
+        process.wait()
+
         return True
-    
-    
-    def seq_read_stats(self, file_in):
+
+
+    @staticmethod
+    def seq_read_stats(file_in):
         """
         Calculate the mean and standard deviation of the reads in a fastq file
-        
+
         Parameters
         ----------
         file_in : str
             Location of a FASTQ file
-        
+
         Returns
         -------
         dict
             mean : Mean length of sequenced strands
             std  : Standard deviation of lengths of sequenced strands
-        
+
         """
-        
+
         from numpy import std
         from numpy import mean
 
         total_len = []
-        with open(file_in, 'r') as f:
-            forthlines = itertools.islice(f, 1, None, 4)
+        with open(file_in, 'r') as file_handle:
+            forthlines = itertools.islice(file_handle, 1, None, 4)
             for line in forthlines:
                 line = line.rstrip()
                 total_len.append(len(line))
 
-        s = std(total_len)
-        m = mean(total_len)
+        length_sd = std(total_len)
+        length_mean = mean(total_len)
 
-        return {'mean' : m, 'std' : s}
-    
-    
-    def run(self, input_files, metadata):
+        return {'mean' : length_mean, 'std' : length_sd}
+
+
+    def run(self, input_files, output_files, metadata=None):
         """
         Tool for calculating the level of expression
-        
+
         Parameters
         ----------
         input_files : list
-            Kallisto index file for the 
+            Kallisto index file for the
             FASTQ file for the experiemtnal alignments
         metadata : list
-        
+
         Returns
         -------
         array : list
             First element is a list of the index files. Second element is a
             list of the matching metadata
         """
-        
+
         # input and output share most metadata
         output_metadata = {}
-        
+
         file_loc = input_files[1].split("/")
         abundance_h5_file = "/".join(file_loc[0:-1]) + "/abundance.h5"
         abundance_tsv_file = "/".join(file_loc[0:-1]) + "/abundance.tsv"
         run_info_file = "/".join(file_loc[0:-1]) + "/run_info.json"
-        
+
         if len(input_files) == 2:
-            # handle error
-            if not self.kallisto_quant_single(input_files[0], input_files[1], abundance_h5_file, abundance_tsv_file, run_info_file):
-                output_metadata.set_exception(
-                    Exception(
-                        "kallisto_quant_single: Could not process files {}, {}.".format(*input_files)))
-            abundance_h5_file = None
-            abundance_tsv_file = None
-            run_info_file = None
+            self.kallisto_quant_single(
+                input_files[0], input_files[1], abundance_h5_file,
+                abundance_tsv_file, run_info_file)
+            # abundance_h5_file = None
+            # abundance_tsv_file = None
+            # run_info_file = None
         elif len(input_files) == 3:
             # handle error
-            if not self.kallisto_quant_paired(input_files[0], input_files[1], input_files[2], abundance_h5_file, abundance_tsv_file, run_info_file):
-                output_metadata.set_exception(
-                    Exception(
-                        "kallisto_quant_single: Could not process files {}, {}.".format(*input_files)))
-            abundance_h5_file = None
-            abundance_tsv_file = None
-            run_info_file = None
+            self.kallisto_quant_paired(
+                input_files[0], input_files[1], input_files[2],
+                abundance_h5_file, abundance_tsv_file, run_info_file)
+            # abundance_h5_file = None
+            # abundance_tsv_file = None
+            # run_info_file = None
         else:
-            output_metadata.set_exception(
-                Exception(
-                    "Error: Incorrect number of parameters {}, {}.".format(*input_files)))
             abundance_h5_file = None
             abundance_tsv_file = None
             run_info_file = None
-        
-        return ([abundance_h5_file, abundance_tsv_file, run_info_file], [output_metadata])
+
+        return (
+            [abundance_h5_file, abundance_tsv_file, run_info_file],
+            [output_metadata])
 
 # ------------------------------------------------------------------------------

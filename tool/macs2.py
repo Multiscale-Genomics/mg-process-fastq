@@ -42,7 +42,7 @@ class macs2(Tool):
     Tool for peak calling for ChIP-seq data
     """
 
-    def __init__(self, configuration={}):
+    def __init__(self, configuration=None):
         """
         Init function
         """

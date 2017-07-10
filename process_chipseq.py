@@ -20,8 +20,6 @@ from __future__ import print_function
 
 import argparse
 
-from functools import wraps
-
 from basic_modules.workflow import Workflow
 from basic_modules.metadata import Metadata
 

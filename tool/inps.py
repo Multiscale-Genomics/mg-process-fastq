@@ -117,6 +117,6 @@ class inps(Tool):
         results = self.inps_peak_calling(bam_file, peak_bed)
         results = compss_wait_on(results)
 
-        return ([peak_bed], output_metadata)
+        return (results[0], output_metadata)
 
 # ------------------------------------------------------------------------------

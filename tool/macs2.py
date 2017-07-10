@@ -27,12 +27,13 @@ except ImportError:
     print("[Warning] Cannot import \"pycompss\" API packages.")
     print("          Using mock decorators.")
 
-    from dummy_pycompss import *
+    from dummy_pycompss import FILE_IN, FILE_OUT
+    from dummy_pycompss import task
 
-from basic_modules.metadata import Metadata
+#from basic_modules.metadata import Metadata
 from basic_modules.tool import Tool
 
-from tool.common import common
+#from tool.common import common
 
 # ------------------------------------------------------------------------------
 

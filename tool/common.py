@@ -483,8 +483,8 @@ class common(object):
 
         if os.path.isfile(bwt_name) is False:
             args = shlex.split(command_line)
-            p = subprocess.Popen(args)
-            p.wait()
+            process = subprocess.Popen(args)
+            process.wait()
 
         return (amb_name, ann_name, bwt_name, pac_name, sa_name)
 

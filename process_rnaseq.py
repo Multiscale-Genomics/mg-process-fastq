@@ -97,7 +97,7 @@ class process_rnaseq(Workflow):
 
 # -----------------------------------------------------------------------------
 
-def main(inputFiles, inputMetadata, outputFiles):
+def main(input_files, input_metadata, output_files):
     """
     Main function
     -------------
@@ -111,11 +111,56 @@ def main(inputFiles, inputMetadata, outputFiles):
     print("1. Instantiate and launch the App")
     from apps.workflowapp import WorkflowApp
     app = WorkflowApp()
-    result = app.launch(process_rnaseq, inputFiles, inputMetadata,
-                        outputFiles, {})
+    result = app.launch(process_rnaseq, input_files, input_metadata,
+                        output_files, {})
 
     # 2. The App has finished
     print("2. Execution finished")
+    return result
+
+
+def prepare_files(
+        dm_handler, taxon_id, genome_fa, assembly, file_loc,
+        file_2_loc=None):
+    """
+    Function to load the DM API with the required files and prepare the
+    parameters passed from teh command line ready for use in the main function
+    """
+    print(dm_handler.get_files_by_user("test"))
+
+    input_files = [genome_fa]
+    dm_handler.set_file(
+        "test", genome_fa, "fasta", "Assembly", taxon_id, None, [],
+        meta_data={"assembly" : assembly})
+
+    input_files.append(file_loc)
+    fastq1_id = dm_handler.set_file(
+        "test", file_loc, "fasta", "RNA-seq", taxon_id, None, [],
+        meta_data={'assembly' : assembly})
+
+    metadata = [
+        Metadata("fasta", "Assembly"),
+        Metadata("fastq", "RNA-seq")
+    ]
+
+    if file_2_loc is not None:
+        input_files.append(file_2_loc)
+        metadata.append(Metadata("fastq", "RNA-seq"))
+        fastq2_id = dm_handler.set_file(
+            "test", file_loc, "fasta", "RNA-seq", taxon_id, None, [],
+            meta_data={
+                'assembly' : assembly,
+                'paired_end' : fastq1_id
+            }
+        )
+
+    dm_handler.add_file_metadata(fastq1_id, 'paired_end', fastq2_id)
+
+    return (
+        input_files,
+        metadata,
+        []
+    )
 
 # ------------------------------------------------------------------------------
 
@@ -149,71 +194,10 @@ if __name__ == "__main__":
     DM_HANDLER = dmp(test=True)
 
     #2. Register the data with the DMP
-    PARAMS = prepare_files(DM_HANDLER, TAXON_ID, GENOME_FA, ASSEMBLY, FILE_LOC, FILE_BG_LOC)
+    PARAMS = prepare_files(DM_HANDLER, TAXON_ID, GENOME_FA, ASSEMBLY, FILE_LOC, PAIRED_FILE)
 
     # 3. Instantiate and launch the App
     RESULTS = main(PARAMS[0], PARAMS[1], PARAMS[2])
 
     print(RESULTS)
     print(DM_HANDLER.get_files_by_user("test"))
-
-    ###########################################################
-
-    assembly = ARGS.assembly
-    taxon_id = ARGS.taxon_id
-    genome_fa = ARGS.genome
-    file_loc = ARGS.file
-    paired_file = ARGS.file2
-
-    da = dmp(test=True)
-
-    print(da.get_files_by_user("test"))
-
-    genome_file = da.set_file("test", genome_fa, "fasta", "cDNA", taxon_id, meta_data={'assembly' : assembly})
-    file_in = da.set_file("test", file_loc, "fasta", "RNA-seq", taxon_id, meta_data={'assembly' : assembly})
-
-    print(da.get_files_by_user("test"))
-
-    file_loc_split = file_loc.split("\t")
-    abundance_h5_file = "/".join(file_loc_split[0:-1]) + "/abundance.h5"
-    abundance_tsv_file = "/".join(file_loc_split[0:-1]) + "/abundance.tsv"
-    run_info_file = "/".join(file_loc[0:-1]) + "/run_info.json"
-
-    file_out_0 = da.set_file("test_abundance_h5", abundance_h5_file, "hdf5", "RNA-seq", taxon_id, None, [file_in], meta_data={'assembly' : assembly})
-    file_out_1 = da.set_file("test_abundance", abundance_tsv_file, "tsv", "RNA-seq", taxon_id, None, [file_in], meta_data={'assembly' : assembly})
-    file_out_2 = da.set_file("test_abundance_log", run_info_file, "log", "RNA-seq", taxon_id, None, [file_in], meta_data={'assembly' : assembly})
-
-    files_in = [
-        genome_fa,
-        file_loc
-    ]
-
-    files_out = [
-        abundance_h5_file,
-        abundance_tsv_file,
-        run_info_file
-    ]
-
-    # Read metadata file and build a dictionary with the metadata:
-    from basic_modules.metadata import Metadata
-    # Maybe it is necessary to prepare a metadata parser from json file
-    # when building the Metadata objects.
-    inputMetadata = [Metadata("fasta", "RNA-seq")]
-
-    if paired_file is not None:
-        files_in.append(paired_file)
-        file2_in = da.set_file("test", paired_file, "fasta", "RNA-seq", taxon_id, None, [], meta_data={'assembly' : assembly})
-        inputMetadata.append(Metadata("fasta", "RNA-seq"))
-
-
-
-    #pr = process_rnaseq()
-    #results = pr.run(files, {'user_id' : 'test'})
-
-    main(files_in, inputMetadata, files_out)
-
-    print(results)
-
-    print(da.get_files_by_user("test"))
-
-

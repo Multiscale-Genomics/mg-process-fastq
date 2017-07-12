@@ -324,9 +324,6 @@ class process_wgbs(Workflow):
         pysam.index(out_bam_file)
 
         # Methylation peak caller
-        wig_file     = out_bam_file.replace('.bam', '.wig')
-        cgmap_file   = out_bam_file.replace('.bam', '.cgmap')
-        atcgmap_file = out_bam_file.replace('.bam', '.atcgmap')
         peak_caller_handle = bssMethylationCallerTool()
 
         peak_files, peak_meta = peak_caller_handle.run(

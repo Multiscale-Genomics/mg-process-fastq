@@ -1,9 +1,9 @@
 """
 .. Copyright 2017 EMBL-European Bioinformatics Institute
- 
+
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
-   You may obtain a copy of the License at 
+   You may obtain a copy of the License at
 
        http://www.apache.org/licenses/LICENSE-2.0
 
@@ -14,29 +14,22 @@
    limitations under the License.
 """
 
-import os, shutil, shlex, subprocess
+from __future__ import print_function
+
+import shlex
+import subprocess
 
 try:
-    from pycompss.api.parameter import FILE_IN, FILE_OUT
+    from pycompss.api.parameter import FILE_IN, FILE_OUT, IN
     from pycompss.api.task import task
-except ImportError :
-    print "[Warning] Cannot import \"pycompss\" API packages."
-    print "          Using mock decorators."
-    
-    from dummy_pycompss import *
+except ImportError:
+    print("[Warning] Cannot import \"pycompss\" API packages.")
+    print("          Using mock decorators.")
 
-from basic_modules.metadata import Metadata
+    from dummy_pycompss import FILE_IN, FILE_OUT, IN
+    from dummy_pycompss import task
+
 from basic_modules.tool import Tool
-
-from tool.common import common
-
-pwd = os.environ.get('PWD')
-pwd_split = pwd.split('/')
-
-#if pwd_split[-1] != 'docs':
-#    on_rtd = os.environ.get('READTHEDOCS') == 'True'
-#    if on_rtd == False:
-#        from bs_index.wg_build import *
 
 # ------------------------------------------------------------------------------
 
@@ -45,7 +38,7 @@ class bssIndexerTool(Tool):
     Script from BS-Seeker2 for building the index for alignment. In this case
     it uses Bowtie2.
     """
-    
+
     def __init__(self):
         """
         Init function
@@ -53,12 +46,14 @@ class bssIndexerTool(Tool):
         print("BS-Seeker Indexer wrapper")
         Tool.__init__(self)
 
-    @task(fasta_file = FILE_IN, aligner = IN, aligner_path = IN, bss_path = IN, ref_path = IN, bam_out = FILE_INOUT)
+    @task(
+        fasta_file=FILE_IN, aligner=IN, aligner_path=IN, bss_path=IN, ref_path=IN,
+        bam_out=FILE_OUT)
     def bss_build_index(self, fasta_file, aligner, aligner_path, bss_path, ref_path, bam_out):
         """
         Function to submit the FASTA file for the reference sequence and build
         the required index file used by the aligner.
-        
+
         Parameters
         ----------
         fasta_file : str
@@ -78,56 +73,58 @@ class bssIndexerTool(Tool):
         bam_out : str
             Location of the output bam alignment file
         """
-        command_line = ("python " + bss_path + "/bs_seeker2-build.py"
+        command_line = (
+            "python " + bss_path + "/bs_seeker2-build.py"
             " -f " + fasta_file + ""
             " --aligner " + aligner + " --path " + aligner_path + ""
-            " --db " + ref_path).format()
+            " --db " + ref_path
+        ).format()
         args = shlex.split(command_line)
-        p = subprocess.Popen(args)
-        p.wait()
+        process = subprocess.Popen(args)
+        process.wait()
 
         return True
 
 
-    def run(self, input_files, metadata):
+    def run(self, input_files, output_files, metadata=None):
         """
         Tool for indexing the genome assembly using BS-Seeker2. In this case it
         is using Bowtie2
-        
+
         Parameters
         ----------
         input_files : list
             FASTQ file
         metadata : list
-        
+
         Returns
         -------
         array : list
             Location of the filtered FASTQ file
         """
-        
-        
+
+
         file_name = input_files[0]
-        print ("the file name : ",file_name)
-        gd = file_name.split("/")
-        genome_dir = '/'.join(gd[:-1]) #rf fix : '/' + 
-        
-        aligner      = metadata['aligner']
+        genome_dir_split = file_name.split("/")
+        genome_dir = '/'.join(genome_dir_split[:-1])
+
+        aligner = metadata['aligner']
         aligner_path = metadata['aligner_path']
-        bss_path     = metadata['bss_path']
+        bss_path = metadata['bss_path']
 
 
         output_file = file_name + '.filtered.bam'
-        
+
         # input and output share most metadata
         output_metadata = {}
-        
+
         # handle error
-        if not self.bss_build_index(file_name, aligner, aligner_path, bss_path, genome_dir, output_file):
-            output_metadata.set_exception(
-                Exception(
-                    "bs_seeker_filter: Could not process files {}, {}.".format(*input_files)))
-            output_file = None
+        results = self.bss_build_index(
+            file_name, aligner, aligner_path, bss_path, genome_dir, output_file)
+
+        if results is True:
+            pass
+
         return ([output_file], [output_metadata])
 
 # ------------------------------------------------------------------------------

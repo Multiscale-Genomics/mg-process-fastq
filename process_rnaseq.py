@@ -154,7 +154,7 @@ def prepare_files(
             }
         )
 
-    dm_handler.add_file_metadata(fastq1_id, 'paired_end', fastq2_id)
+        dm_handler.add_file_metadata(fastq1_id, 'paired_end', fastq2_id)
 
     return (
         input_files,

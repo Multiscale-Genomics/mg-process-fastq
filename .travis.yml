@@ -53,8 +53,8 @@ matrix:
 
 before_install:
     - pwd
-    - mkdir ${HOME}/bin 
-    - mkdir ${HOME}/lib
+    - mkdir -p ${HOME}/bin 
+    - mkdir -p ${HOME}/lib
     - pip --version
     - which R
     - pip

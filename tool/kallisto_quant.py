@@ -21,13 +21,13 @@ import subprocess
 import itertools
 
 try:
-    from pycompss.api.parameter import FILE_IN, FILE_OUT
+    from pycompss.api.parameter import FILE_IN, FILE_OUT, IN
     from pycompss.api.task import task
 except ImportError:
     print ("[Warning] Cannot import \"pycompss\" API packages.")
     print ("          Using mock decorators.")
 
-    from dummy_pycompss import FILE_IN, FILE_OUT
+    from dummy_pycompss import FILE_IN, FILE_OUT, IN
     from dummy_pycompss import task
 
 from basic_modules.tool import Tool
@@ -48,13 +48,14 @@ class kallistoQuantificationTool(Tool):
         Tool.__init__(self)
 
     @task(
-        fastq_file_loc=FILE_IN,
         cdna_idx_file=FILE_IN,
+        fastq_file_loc=FILE_IN,
+        output_dir=IN,
         abundance_h5_file=FILE_OUT,
         abundance_tsv_file=FILE_OUT,
         run_info_file=FILE_OUT)
     def kallisto_quant_single(
-            self, cdna_idx_file, fastq_file_loc,
+            self, cdna_idx_file, fastq_file_loc, output_dir,
             abundance_h5_file, abundance_tsv_file, run_info_file):
         """
         Kallisto quantifier for single end RNA-seq data
@@ -72,10 +73,11 @@ class kallistoQuantificationTool(Tool):
             Location of the wig file containing the levels of expression
         """
 
-        out_dir = abundance_h5_file.split("/")
-        command_line = 'kallisto quant -i ' + cdna_idx_file + ' -o ' + "/".join(out_dir[0:-1]) + "/"
+        command_line = 'kallisto quant -i ' + cdna_idx_file + ' '
+        command_line += ' -o ' + output_dir + "/"
         fq_stats = self.seq_read_stats(fastq_file_loc)
-        command_line += ' --single -l ' + str(fq_stats['mean']) + ' -s ' + str(fq_stats['std']) + ' ' + fastq_file_loc
+        command_line += ' --single -l ' + str(fq_stats['mean']) + ' '
+        command_line += '-s ' + str(fq_stats['std']) + ' ' + fastq_file_loc
 
         args = shlex.split(command_line)
         p = subprocess.Popen(args)
@@ -87,12 +89,13 @@ class kallistoQuantificationTool(Tool):
     @task(
         fastq_file_loc_01=FILE_IN,
         fastq_file_loc_02=FILE_IN,
+        output_dir=IN,
         cdna_idx_file=FILE_IN,
         abundance_h5_file=FILE_OUT,
         abundance_tsv_file=FILE_OUT,
         run_info_file=FILE_OUT)
     def kallisto_quant_paired(
-            self, cdna_idx_file, fastq_file_loc_01, fastq_file_loc_02,
+            self, cdna_idx_file, fastq_file_loc_01, fastq_file_loc_02, output_dir,
             abundance_h5_file, abundance_tsv_file, run_info_file):
         """
         Kallisto quantifier for paired end RNA-seq data
@@ -112,7 +115,7 @@ class kallistoQuantificationTool(Tool):
             Location of the wig file containing the levels of expression
         """
 
-        command_line = 'kallisto quant -i ' + cdna_idx_file + ' -o .'
+        command_line = 'kallisto quant -i ' + cdna_idx_file + ' -o ' + output_dir + "/"
         command_line += ' ' + fastq_file_loc_01 + ' ' + fastq_file_loc_02
 
         args = shlex.split(command_line)
@@ -178,13 +181,15 @@ class kallistoQuantificationTool(Tool):
         output_metadata = {}
 
         file_loc = input_files[1].split("/")
-        abundance_h5_file = "/".join(file_loc[0:-1]) + "/abundance.h5"
-        abundance_tsv_file = "/".join(file_loc[0:-1]) + "/abundance.tsv"
-        run_info_file = "/".join(file_loc[0:-1]) + "/run_info.json"
+        output_dir = "/".join(file_loc[0:-1])
+
+        abundance_h5_file = output_dir + "/abundance.h5"
+        abundance_tsv_file = output_dir + "/abundance.tsv"
+        run_info_file = output_dir + "/run_info.json"
 
         if len(input_files) == 2:
             self.kallisto_quant_single(
-                input_files[0], input_files[1], abundance_h5_file,
+                input_files[0], input_files[1], output_dir, abundance_h5_file,
                 abundance_tsv_file, run_info_file)
             # abundance_h5_file = None
             # abundance_tsv_file = None
@@ -192,8 +197,8 @@ class kallistoQuantificationTool(Tool):
         elif len(input_files) == 3:
             # handle error
             self.kallisto_quant_paired(
-                input_files[0], input_files[1], input_files[2],
-                abundance_h5_file, abundance_tsv_file, run_info_file)
+                input_files[0], input_files[1], input_files[2], output_dir,
+                abundance_h5_file, abundance_tsv_file, run_info_file,)
             # abundance_h5_file = None
             # abundance_tsv_file = None
             # run_info_file = None

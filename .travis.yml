@@ -61,6 +61,9 @@ before_install:
     - lsb_release -a
     - pwd
 
+
+services:
+    - docker
     
 install:
 
@@ -68,6 +71,8 @@ install:
     - pip install git+https://github.com/Multiscale-Genomics/mg-dm-api.git
     - pip install --editable .
     - pip install pytest
+    
+    - docker pull multiscalegenomics/mgprocessfastq
     
      #hts lib
     - cd ${HOME}/lib

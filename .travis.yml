@@ -179,9 +179,14 @@ before_script :
     - ln -s ${HOME}/lib/samtools/bin/wgsim wgsim
     - ln -s ${HOME}/lib/samtools/bin/wgsim_eval.pl wgsim_eval.pl
     - ln -s ${HOME}/lib/samtools/bin/zoom2sam.pl zoom2sam.pl
+    - docker run -d -p 80:80 --name biobambamcontainer -v /Users/reham/bin:/RehamCode/bin  multiscalegenomics/mgprocessfastq:biobambamimage
+    - docker start -i biobambamcontainer
+    - ln -s ${HOME}/lib/biobambam2/bin/bamcat bamcat
+    - ln -s ${HOME}/lib/biobambam2/bin/bamexplode bamexplode
+    - ln -s ${HOME}/lib/biobambam2/bin/bam12split bam12split
+    - exit
+    - bam12split
     - cd ${HOME}/build/Multiscale-Genomics/mg-process-fastq
-    - docker run -d -p 80:80 --name biobambamcontainer multiscalegenomics/mgprocessfastq:biobambamimage
-    - bwa
 
 
 script : 

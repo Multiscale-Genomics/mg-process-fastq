@@ -53,7 +53,7 @@ class bssAlignerTool(Tool):
         bt2_3=FILE_IN, bt2_4=FILE_IN, bt2_rev_1=FILE_IN, bt2_rev_2=FILE_IN)
     def bs_seeker_aligner(
             self, input_fastq1, input_fastq2, aligner, aligner_path, bss_path,
-            genome_fasta, bam_out, bt2_1, bt2_2, bt2_3, bt2_4, bt2_rev_1, bt2_rev_2):
+            genome_fasta, bam_out):
         """
         Alignment of the paired ends to the reference genome
 
@@ -124,12 +124,12 @@ class bssAlignerTool(Tool):
         fastq_file_1 = input_files[1]
         fastq_file_2 = input_files[2]
         output_file = output_files[0]
-        bt2_1 = input_files[4]
-        bt2_2 = input_files[5]
-        bt2_3 = input_files[6]
-        bt2_4 = input_files[7]
-        bt2_rev_1 = input_files[8]
-        bt2_rev_2 = input_files[9]
+        bt2_1 = input_files[3]
+        bt2_2 = input_files[4]
+        bt2_3 = input_files[5]
+        bt2_4 = input_files[6]
+        bt2_rev_1 = input_files[7]
+        bt2_rev_2 = input_files[8]
 
         aligner = metadata['aligner']
         aligner_path = metadata['aligner_path']
@@ -143,7 +143,7 @@ class bssAlignerTool(Tool):
 
         results = self.bs_seeker_aligner(
             fastq_file_1, fastq_file_2, aligner, aligner_path, bss_path, genome_fasta,
-            output_file, bt2_1, bt2_2, bt2_3, bt2_4, bt2_rev_1, bt2_rev_2)
+            output_file)
 
         if results is False:
             pass

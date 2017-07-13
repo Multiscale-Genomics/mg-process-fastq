@@ -326,6 +326,7 @@ class process_wgbs(Workflow):
         # Methylation peak caller
         peak_caller_handle = bssMethylationCallerTool()
 
+        metadata['index_path'] = genome_fa + '_bowtie2'
         peak_files, peak_meta = peak_caller_handle.run(
             [out_bam_file],
             [],

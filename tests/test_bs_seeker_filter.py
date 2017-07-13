@@ -30,9 +30,10 @@ def test_bs_seeker_filter():
     bsi = bs_seeker_filter.filterReadsTool()
     bsi.run(
         [genomefa_file],
+        [],
         {
             "aligner":"bowtie",
             "aligner_path":home + "/bin",
-            "bss_path":home + "/lib/BSseeker2-2.1.2Beta"
+            "bss_path":home + "/lib/BSseeker2"
         }
     )

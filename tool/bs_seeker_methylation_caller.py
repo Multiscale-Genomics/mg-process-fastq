@@ -85,7 +85,7 @@ class bssMethylationCallerTool(Tool):
             "python " + bss_path + "/bs_seeker2-call_methylation.py "
             "--sorted --input " + str(bam_file) + " --wig " + str(wig_file) + " "
             "--CGmap " + str(cgmap_file) + " --ATCGmap " + str(atcgmap_file) + " "
-            "--db " + db_dir).format() #rf fix ,
+            "--db " + db_dir).format()
         print ("command for methyl caller :", command_line)
         args = shlex.split(command_line)
         process = subprocess.Popen(args)
@@ -112,7 +112,7 @@ class bssMethylationCallerTool(Tool):
 
         file_name = input_files[0]
         #gd = file_name.split("/")
-        genome_dir = metadata['aligner_path']
+        genome_dir = metadata['index_path']
 
         bss_path = metadata['bss_path']
         wig_file = file_name.replace('.bam', '.wig')

@@ -25,15 +25,18 @@ def test_bs_seeker_methylation_caller():
     Test that it is possible to call the methylation called by BS seeker
     """
     resource_path = os.path.join(os.path.dirname(__file__), "data/")
-    genomefa_file = resource_path + "bsSeeker.Mouse.GRCm38.fasta_bowtie2"
+    genome_fa_file = resource_path + "bsSeeker.Mouse.GRCm38.fasta_bowtie2"
     bam_file = resource_path + "bsSeeker.Mouse.GRCm38.bam"
     home = os.path.expanduser('~')
 
-    #TODO fix for pylint
     pysam.sort("-o", str(bam_file+".sorted"), str(bam_file))
 
     bsmc = bs_seeker_methylation_caller.bssMethylationCallerTool()
     bsmc.run(
-        [genomefa_file, bam_file+".sorted"],
-        {'bss_path': home + "/lib/BSseeker2-2.1.2Beta"}
+        [bam_file+".sorted"],
+        [],
+        {
+            'bss_path': home + "/lib/BSseeker2",
+            'index_path' : genome_fa_file
+        }
     )

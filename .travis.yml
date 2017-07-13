@@ -180,7 +180,7 @@ before_script :
     - ln -s ${HOME}/lib/samtools/bin/wgsim_eval.pl wgsim_eval.pl
     - ln -s ${HOME}/lib/samtools/bin/zoom2sam.pl zoom2sam.pl
     - cd ${HOME}/build/Multiscale-Genomics/mg-process-fastq
-    - docker run -d -p 80:80 --name biobambamcontainer
+    - docker run -d -p 80:80 --name biobambamcontainer multiscalegenomics/mgprocessfastq:testdocker
 
 
 script : 

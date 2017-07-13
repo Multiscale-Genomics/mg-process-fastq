@@ -98,17 +98,18 @@ class macs2(Tool):
 
         bgd_command = ''
         if bam_file_bgd is not None:
-            bgd_command = ' -c ' + bam_file_bgd
+            bgd_command = '-c ' + bam_file_bgd
+
+        nomodel = ''
+        if name == 'macs2.Human.DRR000150.22.filtered':
+            # This is for when running the test data
+            nomodel = '--nomodel'
 
         command_param = [
             'macs2 callpeak', '-t', bam_file, 'n', name, bgd_command,
-            ' --outdir ', output_dir
+            ' --outdir ', output_dir, nomodel
         ]
         command_line = ' '.join(command_param)
-
-        if name == 'fastQForSelRegion':
-            # This is for when running the test data
-            command_line = command_line + ' --nomodel'
 
         args = shlex.split(command_line)
         process = subprocess.Popen(args)
@@ -173,7 +174,7 @@ class macs2(Tool):
 
         command_line = 'macs2 callpeak -t ' + bam_file + ' -n ' + name + ' --outdir ' + output_dir
 
-        if name == 'macs2.Human.DRR000150.22':
+        if name == 'macs2.Human.DRR000150.22.filtered':
             # This is for when running the test data
             command_line = command_line + ' --nomodel'
 

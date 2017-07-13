@@ -20,14 +20,14 @@ import shlex
 import subprocess
 
 try:
-    from pycompss.api.parameter import FILE_IN, FILE_OUT, IN
+    from pycompss.api.parameter import FILE_IN, FILE_OUT
     from pycompss.api.task import task
     from pycompss.api.api import compss_wait_on
 except ImportError:
     print("[Warning] Cannot import \"pycompss\" API packages.")
     print("          Using mock decorators.")
 
-    from dummy_pycompss import FILE_IN, FILE_OUT, IN
+    from dummy_pycompss import FILE_IN, FILE_OUT
     from dummy_pycompss import task
     from dummy_pycompss import compss_wait_on
 
@@ -49,7 +49,7 @@ class biobambam(Tool):
         Tool.__init__(self)
 
     @task(returns=int, bam_file_in=FILE_IN, bam_file_out=FILE_OUT,
-          tmp_dir=IN, isModifier=False)
+          isModifier=False)
     def biobambam_filter_alignments(self, bam_file_in, bam_file_out):
         """
         Sorts and filters the bam file.
@@ -98,7 +98,6 @@ class biobambam(Tool):
             List of input bam file locations where 0 is the bam data file
         metadata : dict
 
-
         Returns
         -------
         output_files : list
@@ -107,7 +106,7 @@ class biobambam(Tool):
             List of matching metadata dict objects
         """
         in_bam = input_files[0]
-        out_filtered_bam = input_files[0].replace('.fastq', '.filtered.bam')
+        out_filtered_bam = input_files[0].replace('.bam', '.filtered.bam')
 
         output_metadata = {}
 

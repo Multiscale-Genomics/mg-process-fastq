@@ -27,6 +27,12 @@ def test_macs2():
     macs_handle = macs2()
     resource_path = os.path.join(os.path.dirname(__file__), "data/")
 
-    bam_file = resource_path + "macs2.Human.DRR000150.22.bam"
+    bam_file_stub = resource_path + "macs2.Human.DRR000150.22.filtered"
+    bam_file = bam_file_stub + '.bam'
 
     macs_handle.run([bam_file], [])
+
+    assert os.path.isfile(bam_file_stub + '_peaks.narrowPeak') is True
+    assert os.path.getsize(bam_file_stub + '_peaks.narrowPeak') > 0
+    assert os.path.isfile(bam_file_stub + '_summits.bed') is True
+    assert os.path.getsize(bam_file_stub + '_summits.bed') > 0

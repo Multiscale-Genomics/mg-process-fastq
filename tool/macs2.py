@@ -27,7 +27,7 @@ except ImportError:
     print("[Warning] Cannot import \"pycompss\" API packages.")
     print("          Using mock decorators.")
 
-    from dummy_pycompss import FILE_IN, FILE_OUT
+    from dummy_pycompss import FILE_IN, FILE_OUT, IN
     from dummy_pycompss import task
 
 #from basic_modules.metadata import Metadata
@@ -111,19 +111,21 @@ class macs2(Tool):
             command_line = command_line + ' --nomodel'
 
         args = shlex.split(command_line)
-        sub_proc = subprocess.Popen(args)
-        sub_proc.wait()
+        process = subprocess.Popen(args)
+        process.wait()
+
+        print('Process Results:', process)
 
         # Might not be an issue with PyCOMPSs v2.1
-        out_peaks_narrow = bam_file + '_peaks.narrowPeak'
-        out_peaks_broad = bam_file + '_summits.bed'
-        out_peaks_gapped = bam_file + '_summits.bed'
-        out_summits = bam_file + '_summits.bed'
+        #out_peaks_narrow = bam_file + '_peaks.narrowPeak'
+        #out_peaks_broad = bam_file + '_summits.bed'
+        #out_peaks_gapped = bam_file + '_summits.bed'
+        #out_summits = bam_file + '_summits.bed'
 
-        os.rename(out_peaks_narrow, narrowpeak)
-        os.rename(out_summits, summits_bed)
-        os.rename(out_peaks_broad, broadpeak)
-        os.rename(out_peaks_gapped, gappedpeak)
+        #os.rename(out_peaks_narrow, narrowpeak)
+        #os.rename(out_summits, summits_bed)
+        #os.rename(out_peaks_broad, broadpeak)
+        #os.rename(out_peaks_gapped, gappedpeak)
 
         return 0
 
@@ -176,8 +178,10 @@ class macs2(Tool):
             command_line = command_line + ' --nomodel'
 
         args = shlex.split(command_line)
-        sub_proc = subprocess.Popen(args)
-        sub_proc.wait()
+        process = subprocess.Popen(args)
+        process.wait()
+
+        print('Process Results:', process.returncode)
 
         # Might not be an issue with PyCOMPSs v2.1
         # out_peaks_narrow = bam_file + '_peaks.narrowPeak'
@@ -190,7 +194,9 @@ class macs2(Tool):
         # os.rename(out_peaks_broad, broadpeak)
         # os.rename(out_peaks_gapped, gappedpeak)
 
-        return 0
+        if process.returncode is 1:
+            return False
+        return True
 
 
     def run(self, input_files, output_files, metadata=None):
@@ -244,6 +250,11 @@ class macs2(Tool):
                 name, bam_file, bam_file_bgd,
                 out_peaks_narrow, out_summits, out_peaks_broad, out_peaks_gapped)
         #results = compss_wait_on(results)
+
+        if results is False:
+            return (
+                [], []
+            )
 
         print(results)
 

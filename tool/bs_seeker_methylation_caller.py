@@ -90,6 +90,7 @@ class bssMethylationCallerTool(Tool):
         args = shlex.split(command_line)
         process = subprocess.Popen(args)
         process.wait()
+
         return True
 
 

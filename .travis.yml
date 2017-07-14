@@ -68,6 +68,25 @@ services:
 install:
 
     - pwd  
+    #UCSC Tools
+    - cd ${HOME}/lib
+    - wget http://hgdownload.cse.ucsc.edu/admin/exe/linux.x86_64/bedToBigBed
+    - wget http://hgdownload.cse.ucsc.edu/admin/exe/linux.x86_64/wigToBigWig
+    
+    
+    
+    #Bowtie2 Aligner
+    - cd ${HOME}/lib
+    - wget --max-redirect 1 https://downloads.sourceforge.net/project/bowtie-bio/bowtie2/2.3.2/bowtie2-2.3.2-linux-x86_64.zip
+    - unzip bowtie2-2.3.2-linux-x86_64.zip
+
+
+    #BWA Sequence Aligner
+    - cd ${HOME}/lib
+    - git clone https://github.com/lh3/bwa.git
+    - cd bwa
+    - make
+
     - cd ${HOME}/build/Multiscale-Genomics/mg-process-fastq    
     - ls
     #- docker run -d -p 80:80 --name biobambamcontainer -v ${HOME}/bin:/RehamCode/bin  multiscalegenomics/mgprocessfastq:biobambamimage #${HOME}/build/Multiscale-Genomics/mg-process-fastq/setup_docker_biobambam.sh
@@ -82,7 +101,7 @@ before_script :
     - docker run -p 80:80 --name biobambamcontainer -v ${HOME}/lib:/RehamCode/bin  multiscalegenomics/mgprocessfastq:biobambamimage #${HOME}/build/Multiscale-Genomics/mg-process-fastq/setup_docker_biobambam.sh
     #- docker start -i biobambamcontainer
     - pwd
-    - ls
+    - ls ${HOME}/lib
     - docker ps -a
     #- cd /RehamCode/bin
     #- ln -s ${HOME}/lib/biobambam2/bin/bamcat bamcat

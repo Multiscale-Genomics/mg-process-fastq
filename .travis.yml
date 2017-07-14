@@ -68,7 +68,8 @@ services:
 install:
 
     - pwd  
-    - cd ${HOME}/build/Multiscale-Genomics/mg-process-fastq
+    - cd ${HOME}/build/Multiscale-Genomics/mg-process-fastq    
+    - ls
     #- cd 
     
 before_script : 

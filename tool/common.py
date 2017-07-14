@@ -415,7 +415,7 @@ class common(object):
         return True
 
 
-    def bowtie_index_genome(self, genome_file):
+    def bowtie_index_genome(self, genome_file, index_name=None):
         """
         Create an index of the genome FASTA file with Bowtie2. These are saved
         alongside the assembly file.
@@ -427,8 +427,12 @@ class common(object):
         """
         file_name = genome_file.split("/")
 
+        output_file = index_name
+        if output_file is None:
+            output_file = file_name[-1].replace('.fa', '')
+
         with cd("/".join(file_name[0:-1])):
-            command_line = 'bowtie2-build ' + genome_file + ' ' + file_name[-1].replace('.fa', '')
+            command_line = 'bowtie2-build ' + genome_file + ' ' + output_file
             args = shlex.split(command_line)
             process = subprocess.Popen(args)
             process.wait()

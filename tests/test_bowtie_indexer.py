@@ -40,6 +40,17 @@ def test_bowtie_indexer():
 
     bti.run([genome_file], {}, output_files)
 
+    assert os.path.isfile(resource_path + "macs2.Human.GCA_000001405.22.1.bt2") is True
+    assert os.path.getsize(resource_path + "macs2.Human.GCA_000001405.22.1.bt2") > 0
+    assert os.path.isfile(resource_path + "macs2.Human.GCA_000001405.22.2.bt2") is True
+    assert os.path.getsize(resource_path + "macs2.Human.GCA_000001405.22.2.bt2") > 0
+    assert os.path.isfile(resource_path + "macs2.Human.GCA_000001405.22.3.bt2") is True
+    assert os.path.getsize(resource_path + "macs2.Human.GCA_000001405.22.3.bt2") > 0
+    assert os.path.isfile(resource_path + "macs2.Human.GCA_000001405.22.4.bt2") is True
+    assert os.path.getsize(resource_path + "macs2.Human.GCA_000001405.22.4.bt2") > 0
+    assert os.path.isfile(resource_path + "macs2.Human.GCA_000001405.22.rev.1.bt2") is True
+    assert os.path.getsize(resource_path + "macs2.Human.GCA_000001405.22.rev.2.bt2") > 0
+
 
 def test_bowtie_indexer_02():
     """
@@ -60,3 +71,14 @@ def test_bowtie_indexer_02():
     ]
 
     bti.run([genome_file], {}, output_files)
+
+    assert os.path.isfile(resource_path + "inps.Mouse.GRCm38.1.bt2") is True
+    assert os.path.getsize(resource_path + "inps.Mouse.GRCm38.1.bt2") > 0
+    assert os.path.isfile(resource_path + "inps.Mouse.GRCm38.2.bt2") is True
+    assert os.path.getsize(resource_path + "inps.Mouse.GRCm38.2.bt2") > 0
+    assert os.path.isfile(resource_path + "inps.Mouse.GRCm38.3.bt2") is True
+    assert os.path.getsize(resource_path + "inps.Mouse.GRCm38.3.bt2") > 0
+    assert os.path.isfile(resource_path + "inps.Mouse.GRCm38.4.bt2") is True
+    assert os.path.getsize(resource_path + "inps.Mouse.GRCm38.4.bt2") > 0
+    assert os.path.isfile(resource_path + "inps.Mouse.GRCm38.rev.1.bt2") is True
+    assert os.path.getsize(resource_path + "inps.Mouse.GRCm38.rev.2.bt2") > 0

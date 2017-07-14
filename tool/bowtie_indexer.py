@@ -47,8 +47,9 @@ class bowtieIndexerTool(Tool):
         Tool.__init__(self)
 
     @task(file_loc=FILE_IN, idx_loc=FILE_OUT)
-    def bowtie2_indexer(self, file_loc, bt_file1, bt_file2, bt_file3, # pylint: disable=unused-argument,too-many-arguments
-                        bt_file4, bt_filer1, bt_filer2): # pylint: disable=unused-argument
+    def bowtie2_indexer(
+            self, file_loc, idx_loc,
+            bt_file1, bt_file2, bt_file3, bt_file4, bt_filer1, bt_filer2): # pylint: disable=unused-argument
         """
         Bowtie2 Indexer
 
@@ -60,7 +61,7 @@ class bowtieIndexerTool(Tool):
             Location of the output index file
         """
         common_handle = common()
-        common_handle.bowtie_index_genome(file_loc)
+        common_handle.bowtie_index_genome(file_loc, idx_loc)
         return True
 
     def run(self, input_files, output_files, metadata=None):
@@ -100,6 +101,7 @@ class bowtieIndexerTool(Tool):
 
         results = self.bowtie2_indexer(
             input_files[0],
+            '/'.join(file_name),
             files_out[0],
             files_out[1],
             files_out[2],

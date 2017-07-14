@@ -70,13 +70,16 @@ install:
     - pwd  
     - cd ${HOME}/build/Multiscale-Genomics/mg-process-fastq    
     - ls
-    #- cd 
+    #- docker run -d -p 80:80 --name biobambamcontainer -v ${HOME}/bin:/RehamCode/bin  multiscalegenomics/mgprocessfastq:biobambamimage #${HOME}/build/Multiscale-Genomics/mg-process-fastq/setup_docker_biobambam.sh
+    #- docker start -i biobambamcontainer
+#- cd 
     
 before_script : 
     #- cd ${HOME} #/bin
     - echo 'export PATH="${HOME}/build/Multiscale-Genomics/mg-process-fastq:$PATH"' >> ~/.bash_profile
     - source ~/.bash_profile
-    - docker run -p 80:80 --name biobambamcontainer -v ${HOME}/bin:/RehamCode/bin  multiscalegenomics/mgprocessfastq:biobambamimage #${HOME}/build/Multiscale-Genomics/mg-process-fastq/setup_docker_biobambam.sh
+    - ls ${HOME}/lib
+    - docker run -p 80:80 --name biobambamcontainer -v ${HOME}/lib:/RehamCode/bin  multiscalegenomics/mgprocessfastq:biobambamimage #${HOME}/build/Multiscale-Genomics/mg-process-fastq/setup_docker_biobambam.sh
     #- docker start -i biobambamcontainer
     - pwd
     - ls

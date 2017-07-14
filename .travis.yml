@@ -73,8 +73,8 @@ install:
     
 before_script : 
     - cd ${HOME}/bin
-    - docker run -it -p 80:80 --name biobambamcontainer -v /Users/reham/bin:/RehamCode/bin  multiscalegenomics/mgprocessfastq:biobambamimage
-    #- docker start -i biobambamcontainer
+    - docker run -p 80:80 --name biobambamcontainer -v /home/travis/build/Multiscale-Genomics/mg-process-fastq:/RehamCode/bin  multiscalegenomics/mgprocessfastq:biobambamimage 
+    - docker start -i biobambamcontainer
     - cd /RehamCode/bin
     - ln -s ${HOME}/lib/biobambam2/bin/bamcat bamcat
     - ln -s ${HOME}/lib/biobambam2/bin/bamexplode bamexplode

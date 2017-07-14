@@ -17,6 +17,9 @@
 """
 from __future__ import print_function
 
+# Required for ReadTheDocs
+from functools import wraps # pylint: disable=unused-import
+
 import argparse
 
 from basic_modules.tool import Tool
@@ -25,10 +28,10 @@ from basic_modules.metadata import Metadata
 
 from dmp import dmp
 
-from tool import bowtie_indexer
-from tool import bwa_indexer
-from tool import gem_indexer
-from tool import bs_seeker_indexer
+from tool.bowtie_indexer import bowtieIndexerTool
+from tool.bwa_indexer import bwaIndexerTool
+from tool.gem_indexer import gemIndexerTool
+#from tool.bs_seeker_indexer import bssIndexerTool
 
 
 # ------------------------------------------------------------------------------
@@ -69,24 +72,24 @@ class process_genome(Workflow):
         output_metadata['genome_idx'] = {}
 
         # Bowtie2 Indexer
-        bowtie2 = bowtie_indexer.bowtieIndexerTool()
+        bowtie2 = bowtieIndexerTool()
         bti, btm = bowtie2.run([genome_fa], output_files[0:5])
         output_metadata['genome_idx']['bowtie'] = btm
 
         # BWA Indexer
-        bwa = bwa_indexer.bwaIndexerTool()
+        bwa = bwaIndexerTool()
         bwai, bwam = bwa.run([genome_fa], output_files[5:11])
         output_metadata['genome_idx']['bwa'] = bwam
 
         # GEM Indexer
-        gem = gem_indexer.gemIndexerTool()
+        gem = gemIndexerTool()
         gemi, gemm = gem.run([genome_fa], [output_files[11]])
         output_metadata['genome_idx']['gem'] = gemm
 
         return (bti + bwai + gemi, output_metadata)
 
         # Build the matching WGBS genome index
-        # builder = bs_seeker_indexer.bssIndexerTool()
+        # builder = bssIndexerTool()
         # genome_idx, gidx_meta = builder.run([genome_fa], metadata)
         # output_metadata['genome_idx'] = gidx_meta
 

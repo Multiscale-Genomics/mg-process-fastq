@@ -3,8 +3,9 @@ Pipelines
 
 Download and index genome files
 -------------------------------
+
 .. automodule:: process_genome
-   
+
    Methods
    =======
    .. autoclass:: process_genome.process_genome
@@ -13,6 +14,7 @@ Download and index genome files
 
 Hi-C Anslysis
 -------------
+
 .. automodule:: process_hic
 
    This piplien can process paired end FASTQ files to identify structural
@@ -21,7 +23,7 @@ Hi-C Anslysis
 
    Running from the command line
    =============================
-   
+
    Parameters
    ----------
    genome : str
@@ -79,10 +81,10 @@ Hi-C Anslysis
          --normalized False
 
    When using a local verion of the [COMPS virtual machine](https://www.bsc.es/research-and-development/software-and-apps/software-list/comp-superscalar/):
-   
+
    .. code-block:: none
       :linenos:
-      
+
       runcompss
          --comm=integratedtoolkit.gat.master.GATAdaptor               \\
          --log_level=debug                                            \\
@@ -108,12 +110,12 @@ Hi-C Anslysis
 ChIP-Seq Analysis
 -----------------
 .. automodule:: process_chipseq
-   
+
    This pipeline can process FASTQ to identify protein-DNA binding sites.
-   
+
    Running from the command line
    =============================
-   
+
    Parameters
    ----------
    genome : str
@@ -124,13 +126,13 @@ ChIP-Seq Analysis
       Location of FASTQ input file
    bgd_file : str
       Location of FASTQ background file
-   
+
    Returns
    -------
    bed : file
       Bed files with the locations of transcription factor binding sites
       within the genome
-   
+
    Example
    -------
    When running the pipeline on a local machine:
@@ -146,10 +148,10 @@ ChIP-Seq Analysis
          --bgd_file /<dataset_dir>/<bgd_file_name>.fastq
 
    When using a local verion of the [COMPS virtual machine](https://www.bsc.es/research-and-development/software-and-apps/software-list/comp-superscalar/):
-   
+
    .. code-block:: none
       :linenos:
-      
+
       runcompss
          --comm=integratedtoolkit.gat.master.GATAdaptor                   \\
          --log_level=debug                                                \\
@@ -158,8 +160,8 @@ ChIP-Seq Analysis
             --assembly GCA_000001405.25                                   \\
             --file /<dataset_dir>/<file_name>.fastq                       \\
             --bgd_file /<dataset_dir>/<bgd_file_name>.fastq
-            
-   
+
+
    Methods
    =======
    .. autoclass:: process_chipseq.process_chipseq
@@ -169,12 +171,12 @@ ChIP-Seq Analysis
 Mnase-Seq Analysis
 ------------------
 .. automodule:: process_mnaseseq
-   
+
    This pipeline can process FASTQ to identify nucleosome binding sites.
-   
+
    Running from the command line
    =============================
-   
+
    Parameters
    ----------
    assembly : str
@@ -187,12 +189,12 @@ Mnase-Seq Analysis
       Species (e.g. mus_musculus)
    file : str
       Location of FASTQ input file
-   
+
    Returns
    -------
    bed : file
       Bed files with the locations of nucleosome binding sites within the genome
-   
+
    Example
    -------
    When running the pipeline on a local machine:
@@ -207,10 +209,10 @@ Mnase-Seq Analysis
          --file /<dataset_dir>/<file_name>.fastq
 
    When using a local verion of the [COMPS virtual machine](https://www.bsc.es/research-and-development/software-and-apps/software-list/comp-superscalar/):
-   
+
    .. code-block:: none
       :linenos:
-      
+
       runcompss
          --comm=integratedtoolkit.gat.master.GATAdaptor                  \\
          --log_level=debug                                               \\
@@ -219,7 +221,7 @@ Mnase-Seq Analysis
             --taxon_id 10090                                             \\
             --genome <data_dir>/GCA_000001635.2.fa                       \\
             --file /<dataset_dir>/<file_name>.fastq
-   
+
    Methods
    =======
    .. autoclass:: process_mnaseseq.process_mnaseseq
@@ -229,12 +231,12 @@ Mnase-Seq Analysis
 RNA-Seq Analysis
 ----------------
 .. automodule:: process_rnaseq
-   
+
    This pipeline can process FASTQ to quantify the level of expression of cDNAs.
-   
+
    Running from the command line
    =============================
-   
+
    Parameters
    ----------
    assembly : str
@@ -247,12 +249,12 @@ RNA-Seq Analysis
       Location of FASTQ input file
    file2 : str
       [OPTIONAL] Location if FASTQ file if the data is paired end
-   
+
    Returns
    -------
    bed : file
       WIG file with the levels of expression for genes
-   
+
    Example
    -------
    When running the pipeline on a local machine:
@@ -268,10 +270,10 @@ RNA-Seq Analysis
 
 
    When using a local verion of the [COMPS virtual machine](https://www.bsc.es/research-and-development/software-and-apps/software-list/comp-superscalar/):
-   
+
    .. code-block:: none
       :linenos:
-      
+
       runcompss
          --comm=integratedtoolkit.gat.master.GATAdaptor                   \\
          --log_level=debug                                                \\
@@ -280,7 +282,7 @@ RNA-Seq Analysis
             --taxon_id 9606                                               \\
             --genome <data_dir>/GCA_000001405.25.fa                       \\
             --file <data_dir>/expt1.fastq
-   
+
    Methods
    =======
    .. autoclass:: process_rnaseq.process_rnaseq
@@ -290,12 +292,12 @@ RNA-Seq Analysis
 Whole Genome BiSulphate Sequencing Analysis
 -------------------------------------------
 .. automodule:: process_wgbs
-   
+
    This pipeline can process FASTQ to identify methylation sites.
 
    Running from the command line
    =============================
-   
+
    Parameters
    ----------
    assembly : str
@@ -345,10 +347,10 @@ Whole Genome BiSulphate Sequencing Analysis
          --bss_path <script_dir>/BS-Seeker2
 
    When using a local verion of the [COMPS virtual machine](https://www.bsc.es/research-and-development/software-and-apps/software-list/comp-superscalar/):
-   
+
    .. code-block:: none
       :linenos:
-      
+
       runcompss
          --comm=integratedtoolkit.gat.master.GATAdaptor              \\
          --log_level=debug                                           \\

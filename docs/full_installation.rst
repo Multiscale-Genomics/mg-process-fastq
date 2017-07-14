@@ -30,7 +30,7 @@ Setup pyenv and pyenv-virtualenv
 --------------------------------
 
 This is required for managing the version of Python and the installation
-environment for the Python modules so that they can be installed in teh user
+environment for the Python modules so that they can be installed in the user
 space.
 
 .. code-block:: none
@@ -328,7 +328,7 @@ Checkout the code for the DM API and the mg-process-fastq pipelines:
 Install MACS2
 ^^^^^^^^^^^^^
 
-This should get installed as part of the installation if the mg-process-fastq
+This should get installed as part of the installation in the mg-process-fastq
 package, if not then it will need to be installed separately:
 
 .. code-block:: none

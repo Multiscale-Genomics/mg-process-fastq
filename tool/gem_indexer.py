@@ -46,8 +46,7 @@ class gemIndexerTool(Tool):
         Tool.__init__(self)
 
     @task(file_loc=FILE_IN, idx_loc=FILE_OUT)
-    @staticmethod
-    def gem_indexer(file_loc, idx_loc): # pylint: disable=unused-argument
+    def gem_indexer(self, file_loc, idx_loc): # pylint: disable=unused-argument
         """
         GEM Indexer
 

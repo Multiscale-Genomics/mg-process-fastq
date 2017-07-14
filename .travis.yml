@@ -98,7 +98,7 @@ before_script :
     - echo 'export PATH="${HOME}/build/Multiscale-Genomics/mg-process-fastq:$PATH"' >> ~/.bash_profile
     - source ~/.bash_profile
     - ls ${HOME}/lib
-    - docker run -p 80:80 --name biobambamcontainer -v ${HOME}/lib:/RehamCode/bin  multiscalegenomics/mgprocessfastq:biobambamimage #${HOME}/build/Multiscale-Genomics/mg-process-fastq/setup_docker_biobambam.sh
+    - docker run -p 80:80 --name biobambamcontainer -v ${HOME}/lib:/RehamCode/lib  multiscalegenomics/mgprocessfastq:biobambamimage #${HOME}/build/Multiscale-Genomics/mg-process-fastq/setup_docker_biobambam.sh
     #- docker start -i biobambamcontainer
     - pwd
     - ls ${HOME}/lib

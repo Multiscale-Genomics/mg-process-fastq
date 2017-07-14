@@ -382,7 +382,10 @@ if __name__ == "__main__":
 
     #print da.get_files_by_user("test")
 
-    #genome_file = da.set_file("test", genome_fa, "fasta", "Assembly", species, meta_data={'assembly' : assembly})
+    #genome_file = da.set_file(
+    #    "test", genome_fa, "fasta", "Assembly", species,
+    #    meta_data={'assembly' : assembly}
+    #)
 
     #print da.get_files_by_user("test")
 

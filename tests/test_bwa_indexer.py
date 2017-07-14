@@ -48,6 +48,18 @@ def test_bwa_indexer():
     bwa_it = bwaIndexerTool()
     bwa_it.run([genome_fa], {'assembly' : 'test'})
 
+    assert os.path.isfile(resource_path + "macs2.Human.GCA_000001405.22.fasta.amb") is True
+    assert os.path.getsize(resource_path + "macs2.Human.GCA_000001405.22.fasta.amb") > 0
+    assert os.path.isfile(resource_path + "macs2.Human.GCA_000001405.22.fasta.ann") is True
+    assert os.path.getsize(resource_path + "macs2.Human.GCA_000001405.22.fasta.ann") > 0
+    assert os.path.isfile(resource_path + "macs2.Human.GCA_000001405.22.fasta.bwt") is True
+    assert os.path.getsize(resource_path + "macs2.Human.GCA_000001405.22.fasta.bwt") > 0
+    assert os.path.isfile(resource_path + "macs2.Human.GCA_000001405.22.fasta.pac") is True
+    assert os.path.getsize(resource_path + "macs2.Human.GCA_000001405.22.fasta.pac") > 0
+    assert os.path.isfile(resource_path + "macs2.Human.GCA_000001405.22.fasta.sa") is True
+    assert os.path.getsize(resource_path + "macs2.Human.GCA_000001405.22.fasta.sa") > 0
+
+
 def test_bwa_indexer_02():
     """
     Test case to ensure that the BWA indexer works
@@ -74,3 +86,14 @@ def test_bwa_indexer_02():
 
     bwa_it = bwaIndexerTool()
     bwa_it.run([genome_fa], {'assembly' : 'test'})
+
+    assert os.path.isfile(resource_path + "inps.Mouse.GRCm38.fasta.amb") is True
+    assert os.path.getsize(resource_path + "inps.Mouse.GRCm38.fasta.amb") > 0
+    assert os.path.isfile(resource_path + "inps.Mouse.GRCm38.fasta.ann") is True
+    assert os.path.getsize(resource_path + "inps.Mouse.GRCm38.fasta.ann") > 0
+    assert os.path.isfile(resource_path + "inps.Mouse.GRCm38.fasta.bwt") is True
+    assert os.path.getsize(resource_path + "inps.Mouse.GRCm38.fasta.bwt") > 0
+    assert os.path.isfile(resource_path + "inps.Mouse.GRCm38.fasta.pac") is True
+    assert os.path.getsize(resource_path + "inps.Mouse.GRCm38.fasta.pac") > 0
+    assert os.path.isfile(resource_path + "inps.Mouse.GRCm38.fasta.sa") is True
+    assert os.path.getsize(resource_path + "inps.Mouse.GRCm38.fasta.sa") > 0

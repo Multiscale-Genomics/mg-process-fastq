@@ -49,6 +49,9 @@ def test_bwa_aligner():
 
     print(__file__)
 
+    assert os.path.isfile(resource_path + "macs2.Human.DRR000150.22.bam") is True
+    assert os.path.getsize(resource_path + "macs2.Human.DRR000150.22.bam") > 0
+
 
 def test_bwa_aligner_02():
     """
@@ -78,3 +81,6 @@ def test_bwa_aligner_02():
     bwa_t.run([genome_fa, fastq_file, bwa_amb, bwa_ann, bwa_bwt, bwa_pac, bwa_sa], [])
 
     print(__file__)
+
+    assert os.path.isfile(resource_path + "inps.Mouse.DRR000386.bam") is True
+    assert os.path.getsize(resource_path + "inps.Mouse.DRR000386.bam") > 0

@@ -51,8 +51,7 @@ class inps(Tool):
         Tool.__init__(self)
 
     @task(bam_file=FILE_IN, peak_bed=FILE_OUT)
-    @staticmethod
-    def inps_peak_calling(bam_file, peak_bed):
+    def inps_peak_calling(self, bam_file, peak_bed):
         """
         Convert Bam to Bed then make Nucleosome peak calls. These are saved as
         bed files That can then get displayed on genome browsers.
@@ -89,7 +88,7 @@ class inps(Tool):
 
     def run(self, input_files, output_files, metadata=None):
         """
-        The main function to run MACS 2 for peak calling over a given BAM file
+        The main function to run iNPS for peak calling over a given BAM file
         and matching background BAM file.
 
         Parameters

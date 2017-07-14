@@ -26,8 +26,19 @@ def test_inps():
     """
 
     resource_path = os.path.join(os.path.dirname(__file__), "data/")
-    bam_file = resource_path + "inps.Mouse.GRCm38.bam"
+    bam_file = resource_path + "inps.Mouse.DRR000386.bam"
     peak_bed = bam_file.replace('.bam', '.bed')
 
     inps_obj = inps.inps()
     inps_obj.run([bam_file, peak_bed], {})
+
+    assert os.path.isfile(resource_path + "inps.Mouse.DRR000386.bam.bed") is True
+    assert os.path.getsize(resource_path + "inps.Mouse.DRR000386.bam.bed") > 0
+    assert os.path.isfile(resource_path + "inps.Mouse.DRR000386.bed_19.like_bed") is True
+    assert os.path.getsize(resource_path + "inps.Mouse.DRR000386.bed_19.like_bed") > 0
+    assert os.path.isfile(resource_path + "inps.Mouse.DRR000386.bed_19.like_wig") is True
+    assert os.path.getsize(resource_path + "inps.Mouse.DRR000386.bed_19.like_wig") > 0
+
+    # All results final file
+    assert os.path.isfile(resource_path + "inps.Mouse.DRR000386.bed_Gathering.like_bed") is True
+    assert os.path.getsize(resource_path + "inps.Mouse.DRR000386.bed_Gathering.like_bed") > 0

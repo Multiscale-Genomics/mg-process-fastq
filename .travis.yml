@@ -183,6 +183,7 @@ before_script :
     - export PATH="$PWD/shims:$PATH"
     - docker ps -a
     - cd ${HOME}/build/Multiscale-Genomics/mg-process-fastq
+    - chmod +x harness.sh
 
 
 script : 

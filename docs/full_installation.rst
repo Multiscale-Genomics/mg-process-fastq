@@ -213,7 +213,7 @@ Setup the symlinks
    ln -s ${HOME}/lib/gemtools-1.7.1-core2/bin/gem-mapper gem-mapper
    ln -s ${HOME}/lib/gemtools-1.7.1-core2/bin/gemtools gemtools
 
-   ln -s ${HOME}/lib/iNPS_V1.2.2.py iNPS_V1.2.2.py
+   ln -s ${HOME}/lib/iNPS/iNPS_V1.2.2.py iNPS_V1.2.2.py
    ln -s ${HOME}/lib/kallisto_linux-v0.43.1/kallisto kallisto
 
    ln -s ${HOME}/lib/htslib/bin/bgzip bgzip

@@ -319,6 +319,7 @@ Checkout the code for the DM API and the mg-process-fastq pipelines:
    cd ${HOME}/code
    pyenv activate mg-process-fastq
    pip install git+https://github.com/Multiscale-Genomics/mg-dm-api.git
+   pip install git+https://github.com/Multiscale-Genomics/mg-tool-api.git
 
    git clone https://github.com/Multiscale-Genomics/mg-process-fastq.git
    cd mg-process-fastq

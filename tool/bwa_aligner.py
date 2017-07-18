@@ -14,6 +14,7 @@
    limitations under the License.
 """
 from __future__ import print_function
+import os
 import sys
 
 try:
@@ -74,11 +75,11 @@ class bwaAlignerTool(Tool):
         # expected format by BWA - Might not be an issue with PyCOMPSs v2.1
         # Care needs to be taken when running this locally and the renaming
         # should not happen
-        # os.rename(amb_loc, genome_file_loc + ".amb")
-        # os.rename(ann_loc, genome_file_loc + ".ann")
-        # os.rename(bwt_loc, genome_file_loc + ".bwt")
-        # os.rename(pac_loc, genome_file_loc + ".pac")
-        # os.rename(sa_loc, genome_file_loc + ".sa")
+        os.rename(amb_loc, genome_file_loc + ".amb")
+        os.rename(ann_loc, genome_file_loc + ".ann")
+        os.rename(bwt_loc, genome_file_loc + ".bwt")
+        os.rename(pac_loc, genome_file_loc + ".pac")
+        os.rename(sa_loc, genome_file_loc + ".sa")
 
         common_handle = common()
         bam_loc = common_handle.bwa_align_reads(genome_file_loc, read_file_loc, bam_loc)

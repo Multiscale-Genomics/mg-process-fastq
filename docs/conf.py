@@ -28,7 +28,7 @@ class Mock(MagicMock):
             return MagicMock()
 
 MOCK_MODULES = [
-    'rpy2', 'pyBigWig', 'pycompss',
+    'rpy2', 'pyBigWig', 'pycompss', 'pysam',
     'bs_index', 'bs_index.wg_build', 'FilterReads'
 ]
 sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
@@ -60,7 +60,7 @@ autodoc_mock_imports = [
     'pycompss.api.parameter.FILE_IN', 'pycompss.api.parameter.FILE_OUT',
     'pycompss.api.parameter.IN', 'pycompss.api.parameter.OUT',
     'pycompss.api.task', 'pycompss.api.api',
-
+    'pysam', 'pysam.sort', 'pysam.merge',
 ]
 
 # Add any paths that contain templates here, relative to this directory.

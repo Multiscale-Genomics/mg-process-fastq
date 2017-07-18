@@ -18,8 +18,11 @@ from __future__ import print_function
 
 import shlex
 import subprocess
+import sys
 
 try:
+    if hasattr(sys, '_run_from_cmdl') is True:
+        raise ImportError
     from pycompss.api.parameter import FILE_IN, FILE_OUT
     from pycompss.api.task import task
 except ImportError:

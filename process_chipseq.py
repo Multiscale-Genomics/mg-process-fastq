@@ -252,6 +252,9 @@ def prepare_files(
 # ------------------------------------------------------------------------------
 
 if __name__ == "__main__":
+    import sys
+    sys._run_from_cmdl = True
+
     # Set up the command line parameters
     PARSER = argparse.ArgumentParser(description="ChIP-seq peak calling")
     PARSER.add_argument("--taxon_id", help="Taxon_ID (9606)")

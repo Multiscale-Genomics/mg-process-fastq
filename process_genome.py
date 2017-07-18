@@ -340,6 +340,9 @@ def prepare_files(
 # ------------------------------------------------------------------------------
 
 if __name__ == "__main__":
+    import sys
+    sys._run_from_cmdl = True
+
     # Set up the command line parameters
     PARSER = argparse.ArgumentParser(description="Index the genome file")
     PARSER.add_argument("--species", help="Species (9606)")

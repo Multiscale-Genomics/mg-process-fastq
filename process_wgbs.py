@@ -443,6 +443,9 @@ def prepare_files(
 
 
 if __name__ == "__main__":
+    import sys
+    sys._run_from_cmdl = True
+
     # Set up the command line parameters
     PARSER = argparse.ArgumentParser(description="Parse WGBS data")
     PARSER.add_argument("--fastq1", help="Location of first paired end FASTQ")

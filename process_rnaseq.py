@@ -166,6 +166,9 @@ def prepare_files(
 
 
 if __name__ == "__main__":
+    import sys
+    sys._run_from_cmdl = True
+
     # Set up the command line parameters
     PARSER = argparse.ArgumentParser(description="Parse RNA-seq for expression analysis")
     PARSER.add_argument("--assembly", help="Genome assembly ID (GCA_000001405.25)")

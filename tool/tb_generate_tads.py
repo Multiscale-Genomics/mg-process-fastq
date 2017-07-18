@@ -20,13 +20,15 @@ import sys
 try:
     if hasattr(sys, '_run_from_cmdl') is True:
         raise ImportError
-    from pycompss.api.parameter import FILE_IN, FILE_OUT, FILE_INOUT
+    from pycompss.api.parameter import FILE_IN, FILE_OUT, FILE_INOUT, IN
     from pycompss.api.task import task
 except ImportError:
     print("[Warning] Cannot import \"pycompss\" API packages.")
     print("          Using mock decorators.")
 
-    from dummy_pycompss import *
+    from dummy_pycompss import FILE_IN, FILE_OUT, FILE_INOUT, IN
+    from dummy_pycompss import task
+    from dummy_pycompss import constraint
 
 from basic_modules.metadata import Metadata
 from basic_modules.tool import Tool

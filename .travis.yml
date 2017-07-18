@@ -186,5 +186,5 @@ before_script :
 
 
 script : 
-    harness.sh
+    "./harness.sh"
 

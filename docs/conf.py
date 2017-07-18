@@ -28,7 +28,7 @@ class Mock(MagicMock):
             return MagicMock()
 
 MOCK_MODULES = [
-    'rpy2', 'pyBigWig',
+    'rpy2', 'pyBigWig', 'pycompss',
     'bs_index', 'bs_index.wg_build', 'FilterReads'
 ]
 sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
@@ -56,7 +56,11 @@ autodoc_mock_imports = [
     'pytadbit.mapping.mapper', 'pytadbit.mapping.mapper.full_mapping', 'full_mapping',
     'pytadbit.parsers.genome_parser', 'pytadbit.parsers.genome_parser.parse_fasta', 'parse_fasta',
     'pytadbit.parsers.map_parser', 'pytadbit.parsers.map_parser.parse_map', 'parse_map',
-    'pytadbit.mapping.filter', 'pytadbit.mapping.filter.apply_filter', 'apply_filter'
+    'pytadbit.mapping.filter', 'pytadbit.mapping.filter.apply_filter', 'apply_filter',
+    'pycompss.api.parameter.FILE_IN', 'pycompss.api.parameter.FILE_OUT',
+    'pycompss.api.parameter.IN', 'pycompss.api.parameter.OUT',
+    'pycompss.api.task', 'pycompss.api.api',
+
 ]
 
 # Add any paths that contain templates here, relative to this directory.

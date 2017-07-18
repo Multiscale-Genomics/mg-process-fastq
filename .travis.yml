@@ -71,7 +71,7 @@ install:
     - pip install git+https://github.com/Multiscale-Genomics/mg-dm-api.git
     - pip install --editable .
     - pip install pytest
-	
+
      #hts lib
     - cd ${HOME}/lib
     - git clone https://github.com/samtools/htslib.git
@@ -81,8 +81,8 @@ install:
     - ./configure --prefix=${HOME}/lib/htslib
     - make
     - make install
-	
-	
+
+
     #UCSC Tools
     - cd ${HOME}/lib
     - wget http://hgdownload.cse.ucsc.edu/admin/exe/linux.x86_64/bedToBigBed
@@ -127,7 +127,7 @@ install:
     - make    
     - cd ${HOME}/build/Multiscale-Genomics/mg-process-fastq
     
-	
+
 before_script : 
     - cd ${HOME}/bin
 

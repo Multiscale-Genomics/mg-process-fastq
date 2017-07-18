@@ -20,13 +20,16 @@ import sys
 try:
     if hasattr(sys, '_run_from_cmdl') is True:
         raise ImportError
-    from pycompss.api.parameter import FILE_IN, FILE_OUT, FILE_INOUT
+    from pycompss.api.parameter import FILE_IN, FILE_OUT, FILE_INOUT, IN
     from pycompss.api.task import task
+    from pycompss.api.constraint import constraint
 except ImportError:
     print("[Warning] Cannot import \"pycompss\" API packages.")
     print("          Using mock decorators.")
 
-    from dummy_pycompss import *
+    from dummy_pycompss import FILE_IN, FILE_OUT, FILE_INOUT, IN
+    from dummy_pycompss import task
+    from dummy_pycompss import constraint
 
 from basic_modules.metadata import Metadata
 from basic_modules.tool import Tool
@@ -59,11 +62,11 @@ class tbParseMappingTool(Tool):
         window2_1 = FILE_IN, window2_2 = FILE_IN, window2_3 = FILE_IN, window2_4 = FILE_IN,
         reads = FILE_INOUT)
     @constraint(ProcessorCoreCount=32)
-    def tb_parse_mapping_iter(self,
-        genome_seq, enzyme_name,
-        window1_1, window1_2, window1_3, window1_4,
-        window2_1, window2_2, window2_3, window2_4,
-        reads):
+    def tb_parse_mapping_iter(
+            self, genome_seq, enzyme_name,
+            window1_1, window1_2, window1_3, window1_4,
+            window2_1, window2_2, window2_3, window2_4,
+            reads):
         """
         Function to map the aligned reads and return the matching pairs
 

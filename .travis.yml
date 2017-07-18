@@ -97,8 +97,8 @@ before_script :
     - cd ${HOME}/build/Multiscale-Genomics/mg-process-fastq
     - chmod +x shims/bam12split
     - export PATH="$PWD/shims:$PATH"
-    - bam12split
     - docker ps -a
+    - bam12split
     - cd ${HOME}/build/Multiscale-Genomics/mg-process-fastq
 
 

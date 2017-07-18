@@ -1,0 +1,3 @@
+#!/bin/bash
+
+exec docker run -it  multiscalegenomics/mgprocessfastq:biobambamimage /RehamCode/lib/biobambam2/bin/bamvalidate $@ 

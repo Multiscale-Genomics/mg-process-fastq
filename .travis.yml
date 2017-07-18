@@ -93,7 +93,7 @@ install:
 before_script : 
     - cd ${HOME}  
     - pwd
-    - ls
+    - ls /home/travis/build/Multiscale-Genomics/mg-process-fastq
     - bam12split
     - cd ${HOME}/build/Multiscale-Genomics/mg-process-fastq
 

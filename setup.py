@@ -21,7 +21,7 @@ setup(
     packages=find_packages(),
     include_package_data=True,
     install_requires=[
-        'numpy', 'h5py', 'scipy', 'matplotlib', 'pytest'
+        'numpy', 'h5py', 'pytest'
     ],
     setup_requires=[
         'pytest-runner',

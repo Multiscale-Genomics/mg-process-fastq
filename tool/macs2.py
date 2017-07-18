@@ -260,7 +260,7 @@ class macs2(Tool):
                 [], []
             )
 
-        print(results)
+        print('Results:', results)
 
         return (
             [out_peaks_narrow, out_summits, out_peaks_broad, out_peaks_gapped],

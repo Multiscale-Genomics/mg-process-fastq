@@ -235,10 +235,10 @@ class macs2(Tool):
 
         name = root_name[-1]
 
-        out_peaks_narrow = bam_file + '_peaks.narrowPeak'
-        out_peaks_broad = bam_file + '_peaks.broadPeak'
-        out_peaks_gapped = bam_file + '_peaks.gappedPeak'
-        out_summits = bam_file + '_summits.bed'
+        out_peaks_narrow = '/'.join(root_name) + '_peaks.narrowPeak'
+        out_peaks_broad = '/'.join(root_name) + '_peaks.broadPeak'
+        out_peaks_gapped = '/'.join(root_name) + '_peaks.gappedPeak'
+        out_summits = '/'.join(root_name) + '_summits.bed'
 
         # input and output share most metadata
         output_metadata = {}

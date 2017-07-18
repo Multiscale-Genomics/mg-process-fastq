@@ -92,8 +92,11 @@ install:
     
 before_script : 
     - cd ${HOME}  
+    - docker run -p 80:80 --name biobambamcontainer multiscalegenomics/mgprocessfastq:biobambamimage
     - pwd
-    - ls /home/travis/build/Multiscale-Genomics/mg-process-fastq
+    - cd ${HOME}/build/Multiscale-Genomics/mg-process-fastq
+    - chmod +x shims/bam12split
+    - export PATH $PWD/shims:$PWD
     - bam12split
     - cd ${HOME}/build/Multiscale-Genomics/mg-process-fastq
 

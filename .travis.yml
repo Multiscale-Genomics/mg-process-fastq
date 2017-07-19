@@ -68,9 +68,9 @@ services:
 install:
 
     - pwd
+    - pip install git+https://github.com/Multiscale-Genomics/mg-tool-api.git
     - pip install git+https://github.com/Multiscale-Genomics/mg-dm-api.git
     - pip install --editable .
-    - pip install pytest
 
      #hts lib
     - cd ${HOME}/lib
@@ -179,7 +179,7 @@ before_script :
     - docker run -p 80:80 --name biobambamcontainer multiscalegenomics/mgprocessfastq:biobambamimage
     - pwd
     - cd ${HOME}/build/Multiscale-Genomics/mg-process-fastq
-    - chmod +x shims/bam12split
+    - chmod +x shims/*
     - export PATH="$PWD/shims:$PATH"
     - docker ps -a
     - cd ${HOME}/build/Multiscale-Genomics/mg-process-fastq

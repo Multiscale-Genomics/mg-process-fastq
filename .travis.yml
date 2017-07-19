@@ -81,14 +81,14 @@ install:
     - make install
     
     #SAMtools 
-     - cd ${HOME}/lib
-     - git clone https://github.com/samtools/samtools.git
-     - cd samtools
-     - autoheader
-     - autoconf -Wno-syntax
-     - ./configure --prefix=${HOME}/lib/samtools
-     - make
-     - make install
+    - cd ${HOME}/lib
+    - git clone https://github.com/samtools/samtools.git
+    - cd samtools
+    - autoheader
+    - autoconf -Wno-syntax
+    - ./configure --prefix=${HOME}/lib/samtools
+    - make
+    - make install
 
 
     #UCSC Tools

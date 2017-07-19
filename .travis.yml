@@ -83,8 +83,8 @@ install:
     - make
     - make install
     
-    #SAMtoolscd 
-     - ${HOME}/lib
+    #SAMtools 
+     - cd ${HOME}/lib
      - git clone https://github.com/samtools/samtools.git
      - cd samtools
      - autoheader

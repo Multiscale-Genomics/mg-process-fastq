@@ -31,16 +31,6 @@ except ImportError:
 from socket import error as SocketError
 import errno
 
-
-#try:
-#    from pycompss.api.parameter import FILE_IN, FILE_OUT
-#    from pycompss.api.task import task
-#except ImportError :
-#    print("[Warning] Cannot import \"pycompss\" API packages.")
-#    print("          Using mock decorators.")
-
-#    from dummy_pycompss import *
-
 try:
     import pysam
 except ImportError:

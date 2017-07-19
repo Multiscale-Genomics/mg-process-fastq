@@ -240,6 +240,8 @@ class macs2(Tool):
         out_peaks_gapped = '/'.join(root_name) + '_peaks.gappedPeak'
         out_summits = '/'.join(root_name) + '_summits.bed'
 
+        print("MACS2 output files:", name, out_peaks_narrow, out_peaks_broad, out_peaks_gapped, out_summits)
+
         # input and output share most metadata
         output_metadata = {}
         output_metadata["bed_types"] = ["bed4+1", "bed6+4", "bed6+3", "bed12+3"]

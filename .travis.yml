@@ -52,7 +52,6 @@ matrix:
       sudo: required
 
 before_install:
-    - samtools
     - pwd
     - mkdir -p ${HOME}/bin 
     - mkdir -p ${HOME}/lib

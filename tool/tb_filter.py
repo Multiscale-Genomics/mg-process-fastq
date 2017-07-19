@@ -1,9 +1,9 @@
 """
 .. Copyright 2017 EMBL-European Bioinformatics Institute
- 
+
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
-   You may obtain a copy of the License at 
+   You may obtain a copy of the License at
 
        http://www.apache.org/licenses/LICENSE-2.0
 
@@ -14,22 +14,23 @@
    limitations under the License.
 """
 
-import os
+from __future__ import print_function
+import sys
 
-try :
-    from pycompss.api.parameter import FILE_IN, FILE_OUT, FILE_INOUT
+try:
+    if hasattr(sys, '_run_from_cmdl') is True:
+        raise ImportError
+    from pycompss.api.parameter import FILE_IN, FILE_OUT, IN
     from pycompss.api.task import task
-except ImportError :
+except ImportError:
     print("[Warning] Cannot import \"pycompss\" API packages.")
     print("          Using mock decorators.")
-    
-    from dummy_pycompss import *
 
-from basic_modules.metadata import Metadata
+    from dummy_pycompss import FILE_IN, FILE_OUT, IN
+    from dummy_pycompss import task
+
 from basic_modules.tool import Tool
 
-import numpy as np
-import h5py
 import pytadbit
 
 from pytadbit.mapping.filter import apply_filter
@@ -41,19 +42,19 @@ class tbFilterTool(Tool):
     """
     Tool for filtering out experimetnal artifacts from the aligned data
     """
-    
+
     def __init__(self):
         """
         Init function
         """
-        print "TADbit filter aligned reads"
+        print("TADbit filter aligned reads")
         Tool.__init__(self)
-    
-    @task(reads = FILE_IN, filter_reads = FILE_INOUT, conservative = IN)
+
+    @task(reads=FILE_IN, filter_reads=FILE_OUT, conservative=IN)
     def tb_filter(self, reads, filter_reads_file, conservative):
         """
         Function to filter out expoerimental artifacts
-        
+
         Parameters
         ----------
         reads : str
@@ -63,13 +64,13 @@ class tbFilterTool(Tool):
             Location of the filtered reads
         conservative : bool
             Level of filtering [DEFAULT : True]
-        
-        
+
+
         Returns
         -------
         filtered_reads : str
             Location of the filtered reads
-        
+
         """
 
         masked = filter_reads(
@@ -81,20 +82,20 @@ class tbFilterTool(Tool):
             min_frag_size=100,
             re_proximity=4)
 
-        if conservative == True:
+        if conservative is True:
             # Ignore filter 5 (based on docs) as not very helpful
-            apply_filter(reads, filter_reads_file, masked, filters=[1,2,3,4,6,7,8,9,10])
+            apply_filter(reads, filter_reads_file, masked, filters=[1, 2, 3, 4, 6, 7, 8, 9, 10])
         else:
             # Less conservative option
-            apply_filter(reads, filter_reads_file, masked, filters=[1,2,3,9,10])
-        
+            apply_filter(reads, filter_reads_file, masked, filters=[1, 2, 3, 9, 10])
+
         return True
-    
-    
+
+
     def run(self, input_files, metadata):
         """
         The main function to filter the reads to remove experimental artifacts
-        
+
         Parameters
         ----------
         input_files : list
@@ -104,34 +105,30 @@ class tbFilterTool(Tool):
         metadata : dict
             conservative : bool
                 Level of filtering to apply [DEFAULT : True]
-        
-        
+
+
         Returns
         -------
         output_files : list
             List of locations for the output files.
         output_metadata : list
             List of matching metadata dict objects
-        
+
         """
-        
+
         reads = input_files[0]
         conservative = True
         if 'conservative_filtering' in metadata:
             conservative = metadata['conservative_filtering']
 
-        root_name = fastq_file.split("/")
-        filtered_reads  = "/".join(root_name[0:-1]) + '/filtered_map.tsv'
-        
+        root_name = reads.split("/")
+        filtered_reads = "/".join(root_name[0:-1]) + '/filtered_map.tsv'
+
         # input and output share most metadata
         output_metadata = {}
-        
+
         # handle error
-        if not self.tb_filter(reads, filter_reads, conservative):
-            output_metadata.set_exception(
-                Exception(
-                    "tb_filter: Could not process files {}, {}.".format(*input_files)))
-            filtered_reads = None
+        results = self.tb_filter(reads, filter_reads, conservative)
         return ([filtered_reads], output_metadata)
 
 # ------------------------------------------------------------------------------

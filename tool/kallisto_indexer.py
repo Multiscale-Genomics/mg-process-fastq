@@ -1,9 +1,9 @@
 """
 .. Copyright 2017 EMBL-European Bioinformatics Institute
- 
+
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
-   You may obtain a copy of the License at 
+   You may obtain a copy of the License at
 
        http://www.apache.org/licenses/LICENSE-2.0
 
@@ -14,21 +14,25 @@
    limitations under the License.
 """
 
-import os, shutil, shlex, subprocess
+from __future__ import print_function
+
+import shlex
+import subprocess
+import sys
 
 try:
-    from pycompss.api.parameter import FILE_IN, FILE_OUT, FILE_INOUT
+    if hasattr(sys, '_run_from_cmdl') is True:
+        raise ImportError
+    from pycompss.api.parameter import FILE_IN, FILE_OUT
     from pycompss.api.task import task
-except ImportError :
+except ImportError:
     print ("[Warning] Cannot import \"pycompss\" API packages.")
     print ("          Using mock decorators.")
-    
-    from dummy_pycompss import *
 
-from basic_modules.metadata import Metadata
+    from dummy_pycompss import FILE_IN, FILE_OUT
+    from dummy_pycompss import task
+
 from basic_modules.tool import Tool
-
-from tool.common import common
 
 # ------------------------------------------------------------------------------
 
@@ -36,19 +40,19 @@ class kallistoIndexerTool(Tool):
     """
     Tool for running indexers over a genome FASTA file
     """
-    
+
     def __init__(self):
         """
         Init function
         """
         print("Kallisto Indexer")
         Tool.__init__(self)
-    
-    @task(cdna_file_loc=FILE_IN, cdna_idx_file=FILE_INOUT)
+
+    @task(cdna_file_loc=FILE_IN, cdna_idx_file=FILE_OUT)
     def kallisto_indexer(self, cdna_file_loc, cdna_idx_file):
         """
         Kallisto Indexer
-        
+
         Parameters
         ----------
         file_loc : str
@@ -56,46 +60,43 @@ class kallistoIndexerTool(Tool):
         idx_loc : str
             Location of the output index file
         """
-        
+
         command_line = 'kallisto index -i ' + cdna_idx_file + ' ' + cdna_file_loc
         print ("command : "+command_line)
-        
+
         args = shlex.split(command_line)
-        p = subprocess.Popen(args)
-        p.wait()
-        
+        process = subprocess.Popen(args)
+        process.wait()
+
         return True
-    
-    
-    def run(self, input_files, metadata, output_files):
+
+
+    def run(self, input_files, output_files, metadata=None):
         """
         Tool for generating assembly aligner index files for use with Kallisto
-        
+
         Parameters
         ----------
         input_files : list
             FASTA file location will all the cDNA sequences for a given genome
         metadata : list
-        
+
         Returns
         --------
         array : list
             First element is a list of the index files. Second element is a
             list of the matching metadata
         """
-        
+
         file_name = input_files[0]
-        output_file = output_files[0]
-        
+        genome_idx_loc = file_name.replace('.fasta', '.idx')
+        genome_idx_loc = genome_idx_loc.replace('.fa', '.idx')
+
         # input and output share most metadata
         output_metadata = {}
-        
-        # handle error
-        if not self.kallisto_indexer(input_files[0], output_file):
-            output_metadata.set_exception(
-                Exception(
-                    "kallisto_indexer: Could not process files {}, {}.".format(*input_files)))
-        output_file = None
-        return ([output_file], [output_metadata])
+
+        self.kallisto_indexer(input_files[0], genome_idx_loc)
+
+        return ([genome_idx_loc], [output_metadata])
 
 # ------------------------------------------------------------------------------

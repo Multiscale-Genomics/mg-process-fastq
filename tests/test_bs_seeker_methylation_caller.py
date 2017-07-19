@@ -1,11 +1,9 @@
-#!usr/bin/env python
-
 """
 .. Copyright 2017 EMBL-European Bioinformatics Institute
- 
+
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
-   You may obtain a copy of the License at 
+   You may obtain a copy of the License at
 
        http://www.apache.org/licenses/LICENSE-2.0
 
@@ -16,27 +14,29 @@
    limitations under the License.
 """
 
-import pytest
-import random
 import os
-import sys
 import pysam
+import pytest # pylint: disable=unused-import
 
 from tool import bs_seeker_methylation_caller
 
-def test_bs_seeker_methylation_caller():    
-    
+def test_bs_seeker_methylation_caller():
+    """
+    Test that it is possible to call the methylation called by BS seeker
+    """
     resource_path = os.path.join(os.path.dirname(__file__), "data/")
-    genomefa_file = resource_path + "bsSeeker.Mouse.GRCm38.fasta_bowtie2"    
+    genome_fa_file = resource_path + "bsSeeker.Mouse.GRCm38.fasta_bowtie2"
     bam_file = resource_path + "bsSeeker.Mouse.GRCm38.bam"
-
-    pysam.sort("-o", str(bam_file), str(bam_file))
-
     home = os.path.expanduser('~')
-    
+
+    pysam.sort("-o", str(bam_file+".sorted"), str(bam_file))
+
     bsmc = bs_seeker_methylation_caller.bssMethylationCallerTool()
     bsmc.run(
-        [genomefa_file, bam_file ],
-        {'bss_path' : home + "/bin"}
+        [bam_file+".sorted"],
+        [],
+        {
+            'bss_path': home + "/lib/BSseeker2",
+            'index_path' : genome_fa_file
+        }
     )
-   

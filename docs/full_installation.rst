@@ -20,21 +20,22 @@ Setup the System Environment
    sudo apt-get install -y make build-essential libssl-dev zlib1g-dev       //
    libbz2-dev libreadline-dev libsqlite3-dev wget curl llvm libncurses5-dev //
    libncursesw5-dev xz-utils tk-dev unzip mcl libgtk2.0-dev r-base-core     //
-   libcurl4-gnutls-dev
+   libcurl4-gnutls-dev python-rpy2 git
 
    cd ${HOME}
    mkdir bin lib code
+   echo 'export PATH="${HOME}/bin:$PATH"' >> ~/.bash_profile
 
 Setup pyenv and pyenv-virtualenv
 --------------------------------
 
 This is required for managing the version of Python and the installation
-environment for the Python modules so that they can be installed in teh user
+environment for the Python modules so that they can be installed in the user
 space.
 
 .. code-block:: none
    :linenos:
-   
+
    git clone https://github.com/pyenv/pyenv.git ~/.pyenv
    echo 'export PYENV_ROOT="$HOME/.pyenv"' >> ~/.bash_profile
    echo 'export PATH="$PYENV_ROOT/bin:$PATH"' >> ~/.bash_profile
@@ -163,6 +164,17 @@ SAMtools
    make
    make install
 
+bedTools
+^^^^^^^^
+
+.. code-block:: none
+   :linenos:
+
+   wget https://github.com/arq5x/bedtools2/releases/download/v2.26.0/bedtools-2.26.0.tar.gz
+   tar -zxvf bedtools-2.26.0.tar.gz
+   cd bedtools2
+   make
+
 
 Setup the symlinks
 ------------------
@@ -171,9 +183,14 @@ Setup the symlinks
    :linenos:
 
    cd ${HOME}/bin
+
+   ln -s ${HOME}/lib/bedtools2/bin/bedtools bedtools
+
    ln -s ${HOME}/lib/bedToBigBed bedToBigBed
    ln -s ${HOME}/lib/wigToBigWig wigToBigWig
+
    ln -s ${HOME}/lib/bwa/bwa bwa
+
    ln -s ${HOME}/lib/bowtie2-2.3.2/bowtie2 bowtie2
    ln -s ${HOME}/lib/bowtie2-2.3.2/bowtie2-align-s bowtie2-align-s
    ln -s ${HOME}/lib/bowtie2-2.3.2/bowtie2-align-l bowtie2-align-l
@@ -196,7 +213,7 @@ Setup the symlinks
    ln -s ${HOME}/lib/gemtools-1.7.1-core2/bin/gem-mapper gem-mapper
    ln -s ${HOME}/lib/gemtools-1.7.1-core2/bin/gemtools gemtools
 
-   ln -s ${HOME}/lib/iNPS_V1.2.2.py iNPS_V1.2.2.py
+   ln -s ${HOME}/lib/iNPS/iNPS_V1.2.2.py iNPS_V1.2.2.py
    ln -s ${HOME}/lib/kallisto_linux-v0.43.1/kallisto kallisto
 
    ln -s ${HOME}/lib/htslib/bin/bgzip bgzip
@@ -302,6 +319,7 @@ Checkout the code for the DM API and the mg-process-fastq pipelines:
    cd ${HOME}/code
    pyenv activate mg-process-fastq
    pip install git+https://github.com/Multiscale-Genomics/mg-dm-api.git
+   pip install git+https://github.com/Multiscale-Genomics/mg-tool-api.git
 
    git clone https://github.com/Multiscale-Genomics/mg-process-fastq.git
    cd mg-process-fastq
@@ -311,7 +329,7 @@ Checkout the code for the DM API and the mg-process-fastq pipelines:
 Install MACS2
 ^^^^^^^^^^^^^
 
-This should get installed as part of the installation if the mg-process-fastq
+This should get installed as part of the installation in the mg-process-fastq
 package, if not then it will need to be installed separately:
 
 .. code-block:: none

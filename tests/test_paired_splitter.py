@@ -14,21 +14,19 @@
    limitations under the License.
 """
 
-import os.path
+import os
 import pytest # pylint: disable=unused-import
 
-from tool import biobambam_filter
+import process_wgbs  # from mg-process-fastq
 
-def test_biobambam():
+
+def test_paired_splitter():
     """
-    Test case to ensure that BioBamBam works
+    Function to test paired splitter
     """
-    bbb = biobambam_filter.biobambam()
     resource_path = os.path.join(os.path.dirname(__file__), "data/")
-    bbb.run(
-        [resource_path + "macs2.Human.DRR000150.22.bam"],
-        []
-    )
+    fastq_1file = resource_path + "bsSeeker.Mouse.GRCm38_1.fastq"
+    fastq_2file = resource_path + "bsSeeker.Mouse.GRCm38_2.fastq"
 
-    assert os.path.isfile(resource_path + "macs2.Human.DRR000150.22.filtered.bam") is True
-    assert os.path.getsize(resource_path + "macs2.Human.DRR000150.22.filtered.bam") > 0
+    ssp = process_wgbs.process_wgbs()
+    ssp.paired_splitter(fastq_1file, fastq_2file)

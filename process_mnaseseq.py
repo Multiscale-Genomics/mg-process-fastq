@@ -16,24 +16,17 @@
    limitations under the License.
 """
 
-import argparse, urllib2, gzip, shutil, shlex, subprocess, os, json
+from __future__ import print_function
 
-from basic_modules import Tool, Workflow, Metadata
+import argparse
+
+from basic_modules.workflow import Workflow
+from basic_modules.metadata import Metadata
+
 from dmp import dmp
 
-from functools import wraps
-
-from tool import bwa_aligner
-from tool import inps
-
-try :
-    from pycompss.api.parameter import *
-    from pycompss.api.task import task
-except ImportError :
-    print "[Warning] Cannot import \"pycompss\" API packages."
-    print "          Using mock decorators."
-    
-    from dummy_pycompss import *
+from tool.bwa_aligner import bwaAlignerTool
+from tool.inps import inps
 
 # ------------------------------------------------------------------------------
 
@@ -43,101 +36,143 @@ class process_mnaseseq(Workflow):
     downloaded from the European Nucleotide Archive (ENA), then aligned,
     filtered and analysed for peak calling
     """
-    
+
     def run(self, file_ids, metadata):
         """
         Main run function for processing MNase-Seq FastQ data. Pipeline aligns
         the FASTQ files to the genome using BWA. iNPS is then used for peak
         calling to identify nucleosome position sites within the genome.
-                
+
         Parameters
         ----------
         files_ids : list
             List of file locations
         metadata : list
             Required meta data
-        
+
         Returns
         -------
         outputfiles : list
             List of locations for the output bam, bed and tsv files
         """
 
-        genome_fa = file_ids[0]
+        genome_file = file_ids[0]
         bwa_amb = file_ids[1]
         bwa_ann = file_ids[2]
         bwa_bwt = file_ids[3]
         bwa_pac = file_ids[4]
-        bwa_sa  = file_ids[5]
+        bwa_sa = file_ids[5]
         file_loc = file_ids[6]
-        
-        out_bam = file_loc.replace('.fastq', '.bam')
-        
-        bwa = bwa_aligner.bwaAlignerTool()
-        out_bam = file_loc.replace('.fastq', '.bam')
+
+        bwa = bwaAlignerTool()
         out_file_bam, out_bam_meta = bwa.run(
-            [genome_fa, file_loc, out_bam, bwa_amb, bwa_ann, bwa_bwt, bwa_pac, bwa_sa],
-            {}
+            [genome_file, file_loc, bwa_amb, bwa_ann, bwa_bwt, bwa_pac, bwa_sa],
+            []
         )
-        
+
         # Needs moving to its own tool
-        inps_tool = inps.inps()
-        out_peak_bed, out_meta = inps_tool.run([out_bam], {})
-        
-        return (out_peak_bed[0])
+        inps_tool = inps()
+        out_peak_bed, out_meta = inps_tool.run([out_file_bam[0]], [])
+
+        return ([out_file_bam[0], out_peak_bed], [out_bam_meta, out_meta])
 
 # ------------------------------------------------------------------------------
 
-if __name__ == "__main__":
-    import sys
-    import os
-    
-    # Set up the command line parameters
-    parser = argparse.ArgumentParser(description="Mnase-seq peak calling")
-    parser.add_argument("--assembly", help="Genome assembly ID (GCA_000001635.2)")
-    parser.add_argument("--taxon_id", help="Taxon ID (10090)")
-    parser.add_argument("--genome", help="Genome assembly FASTA file")
-    parser.add_argument("--file", help="Location of FASTQ file")
-    
-    # Get the matching parameters from the command line
-    args = parser.parse_args()
-    
-    genome_fa  = args.genome
-    taxon_id   = args.taxon_id
-    assembly   = args.assembly
-    fastq_file = args.file
-    
-    da = dmp(test=True)
-    
-    print da.get_files_by_user("test")
-    
-    genome_file = da.set_file("test", genome_fa, "fasta", "Assembly", taxon_id, meta_data={'assembly' : assembly})
-    genome_file_idx1 = da.set_file("test", genome_fa + ".amb", "fasta", "Assembly", taxon_id, meta_data={'assembly' : assembly})
-    genome_file_idx2 = da.set_file("test", genome_fa + ".ann", "fasta", "Assembly", taxon_id, meta_data={'assembly' : assembly})
-    genome_file_idx3 = da.set_file("test", genome_fa + ".bwt", "fasta", "Assembly", taxon_id, meta_data={'assembly' : assembly})
-    genome_file_idx4 = da.set_file("test", genome_fa + ".pac", "fasta", "Assembly", taxon_id, meta_data={'assembly' : assembly})
-    genome_file_idx5 = da.set_file("test", genome_fa + ".sa", "fasta", "Assembly", taxon_id, meta_data={'assembly' : assembly})
-    file_in = da.set_file("test", fastq_file, "fastq", "Mnase-seq", taxon_id, meta_data={'assembly' : assembly})
-    
-    print da.get_files_by_user("test")
+def main(input_files, output_files, input_metadata):
+    """
+    Main function
+    -------------
 
-    files = [
+    This function launches the app.
+    """
+
+    # import pprint  # Pretty print - module for dictionary fancy printing
+
+    # 1. Instantiate and launch the App
+    print("1. Instantiate and launch the App")
+    from apps.workflowapp import WorkflowApp
+    app = WorkflowApp()
+    result = app.launch(process_mnaseseq, input_files, output_files, input_metadata,
+                        {})
+
+    # 2. The App has finished
+    print("2. Execution finished")
+    print(result)
+    return result
+
+def prepare_files( # pylint: disable=too-many-arguments
+        dm_handler, taxon_id, genome_fa, assembly, file_loc):
+    """
+    Function to load the DM API with the required files and prepare the
+    parameters passed from teh command line ready for use in the main function
+    """
+    print(dm_handler.get_files_by_user("test"))
+
+    genome_file = dm_handler.set_file(
+        "test", genome_fa, "fasta", "Assembly", taxon_id, None, [],
+        meta_data={"assembly" : assembly})
+    dm_handler.set_file(
+        "test", genome_fa + ".amb", "amb", "Assembly", taxon_id, None, [genome_file],
+        meta_data={'assembly' : assembly})
+    dm_handler.set_file(
+        "test", genome_fa + ".ann", "ann", "Assembly", taxon_id, None, [genome_file],
+        meta_data={'assembly' : assembly})
+    dm_handler.set_file(
+        "test", genome_fa + ".bwt", "bwt", "Assembly", taxon_id, None, [genome_file],
+        meta_data={'assembly' : assembly})
+    dm_handler.set_file(
+        "test", genome_fa + ".pac", "pac", "Assembly", taxon_id, None, [genome_file],
+        meta_data={'assembly' : assembly})
+    dm_handler.set_file(
+        "test", genome_fa + ".sa", "sa", "Assembly", taxon_id, None, [genome_file],
+        meta_data={'assembly' : assembly})
+
+    in_files = [
         genome_fa,
         genome_fa + ".amb",
         genome_fa + ".ann",
         genome_fa + ".bwt",
         genome_fa + ".pac",
         genome_fa + ".sa",
-        fastq_file
+        file_loc
     ]
-    
-    # 3. Instantiate and launch the App
-    #from basic_modules import WorkflowApp
-    #app = WorkflowApp()
-    #results = app.launch(process_mnaseseq, [genome_fa, fastq_file], 'user_id' : 'test'})
-    
-    pm = process_mnaseseq()
-    peak_file = pm.run(files, {'user_id' : 'test'})
-    
-    print peak_files
 
+    return [in_files, [], {}]
+
+
+# ------------------------------------------------------------------------------
+
+if __name__ == "__main__":
+    import sys
+    sys._run_from_cmdl = True
+
+    # Set up the command line parameters
+    PARSER = argparse.ArgumentParser(description="Mnase-seq peak calling")
+    PARSER.add_argument("--assembly", help="Genome assembly ID (GCA_000001635.2)")
+    PARSER.add_argument("--taxon_id", help="Taxon ID (10090)")
+    PARSER.add_argument("--genome", help="Genome assembly FASTA file")
+    PARSER.add_argument("--file", help="Location of FASTQ file")
+
+    # Get the matching parameters from the command line
+    ARGS = PARSER.parse_args()
+
+    GENOME_FA = ARGS.genome
+    TAXON_ID = ARGS.taxon_id
+    ASSEMBLY = ARGS.assembly
+    FILE_LOC = ARGS.file
+
+    #
+    # MuG Tool Steps
+    # --------------
+    #
+    # 1. Create data files
+    DM_HANDLER = dmp(test=True)
+
+    #2. Register the data with the DMP
+    PARAMS = prepare_files(DM_HANDLER, TAXON_ID, GENOME_FA, ASSEMBLY, FILE_LOC)
+
+    # 3. Instantiate and launch the App
+    RESULTS = main(PARAMS[0], PARAMS[1], PARAMS[2])
+
+    print(RESULTS)
+    print(DM_HANDLER.get_files_by_user("test"))

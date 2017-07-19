@@ -1,9 +1,9 @@
 """
 .. Copyright 2017 EMBL-European Bioinformatics Institute
- 
+
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
-   You may obtain a copy of the License at 
+   You may obtain a copy of the License at
 
        http://www.apache.org/licenses/LICENSE-2.0
 
@@ -15,15 +15,21 @@
 """
 
 import os
+import sys
 
-try :
-    from pycompss.api.parameter import FILE_IN, FILE_OUT, FILE_INOUT
+try:
+    if hasattr(sys, '_run_from_cmdl') is True:
+        raise ImportError
+    from pycompss.api.parameter import FILE_IN, FILE_OUT, FILE_INOUT, IN
     from pycompss.api.task import task
-except ImportError :
+    from pycompss.api.constraint import constraint
+except ImportError:
     print("[Warning] Cannot import \"pycompss\" API packages.")
     print("          Using mock decorators.")
-    
-    from dummy_pycompss import *
+
+    from dummy_pycompss import FILE_IN, FILE_OUT, FILE_INOUT, IN
+    from dummy_pycompss import task
+    from dummy_pycompss import constraint
 
 from basic_modules.metadata import Metadata
 from basic_modules.tool import Tool
@@ -40,21 +46,21 @@ class tbGenerateTADsTool(Tool):
     """
     Tool for taking the adjacency lists and predicting TADs
     """
-    
+
     def __init__(self):
         """
         Init function
         """
         print "TADbit - Generate TADs"
         Tool.__init__(self)
-    
+
     @task(matrix_file = FILE_IN, resolution = IN, tad_file = FILE_INOUT)
     @constraint(ProcessorCoreCount=16)
     def tb_generate_tads(self, expt_name, matrix_file, resolution, tad_file):
         """
         Function to the predict TAD sites for a given resolution from the Hi-C
         matrix
-        
+
         Parameters
         ----------
         expt_name : str
@@ -65,28 +71,28 @@ class tbGenerateTADsTool(Tool):
             Resolution to read the Hi-C adjacency list at
         tad_file : str
             Location of the output TAD file
-        
+
         Returns
         -------
         tad_file : str
             Location of the output TAD file
-        
+
         """
         chr_hic_data = read_matrix(matrix_file, resolution=int(resolution))
-        
+
         my_chrom = Chromosome(name=expt_name, centromere_search=True)
         my_chrom.add_experiment(expt_name, hic_data=chr_hic_data, resolution=int(resolution))
-        
+
         # Run core TADbit function to find TADs on each expt.
         # For the current dataset required 61GB of RAM
         my_chrom.find_tad(expt_name, n_cpus=15)
-        
+
         exp = my_chrom.experiments[expt_name]
         exp.write_tad_borders(savedata=tad_file)
-        
+
         return True
-    
-    
+
+
     def run(self, input_files, metadata):
         """
         The main function to the predict TAD sites for a given resolution from
@@ -103,30 +109,30 @@ class tbGenerateTADsTool(Tool):
             assembly : str
                 Assembly of the aligned sequences
 
-        
-        
+
+
         Returns
         -------
         output_files : list
             List of locations for the output files.
         output_metadata : list
             List of matching metadata dict objects
-        
+
         """
-        
+
         adj_list = input_files[0]
-        
+
         resolutions = [1000000]
         if 'resolutions' in metadata:
             resolutions = metadata['resolutions']
-        
+
         normalized = False
         if 'normalized' in metadata:
             normalized = metadata['normalized']
 
         # input and output share most metadata
         output_metadata = {}
-        
+
         root_name = adj_list.split("/")
 
         matrix_files = []
@@ -152,7 +158,7 @@ class tbGenerateTADsTool(Tool):
                     output_metadata.set_exception(
                         Exception(
                             "tb_generate_tads: Could not process files {}, {}.".format(*input_files)))
-        
+
         # Step to merge all the TAD files into a single bed file
         tad_bed_file = "/".join(root_name[0:-1]) + '/tads.tsv'
 

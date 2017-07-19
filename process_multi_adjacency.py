@@ -2,10 +2,10 @@
 
 """
 .. Copyright 2017 EMBL-European Bioinformatics Institute
- 
+
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
-   You may obtain a copy of the License at 
+   You may obtain a copy of the License at
 
        http://www.apache.org/licenses/LICENSE-2.0
 
@@ -32,7 +32,7 @@ try :
 except ImportError :
     print "[Warning] Cannot import \"pycompss\" API packages."
     print "          Using mock decorators."
-    
+
     from dummy_pycompss import *
 
 from tool.common import common
@@ -44,33 +44,33 @@ class process_multi_adjacency(Workflow):
     downloaded from the European Nucleotide Archive (ENA), then aligned,
     filtered and analysed for peak calling
     """
-    
+
     def run(self, file_ids, metadata):
         """
         Main run function for processing MNase-Seq FastQ data. Pipeline aligns
         the FASTQ files to the genome using BWA. iNPS is then used for peak
         calling to identify nucleosome position sites within the genome.
-                
+
         Parameters
         ----------
         files_ids : list
             List of file locations
         metadata : list
             Required meta data
-        
+
         Returns
         -------
         outputfiles : list
             List of locations for the output bam, bed and tsv files
         """
-        
+
         cwa_align = tool.bwaAlignerTool(self.configuration)
         out_bam, out_meta = cwa_align.run((files_ids[0], files_ids[1]), ())
-        
+
         # Needs moving to its own tool
         inps = tool.inps(self.configuration)
         out_peak_bed, out_meta = inps.inps_peak_calling(out_bam, ())
-        
+
         return (out_peak_bed[0])
 
 
@@ -80,9 +80,11 @@ class process_multi_adjacency(Workflow):
 if __name__ == "__main__":
     import sys
     import os
-    
+
+    sys._run_from_cmdl = True
+
     start = time.time()
-    
+
     # Set up the command line parameters
     parser = argparse.ArgumentParser(description="Generate adjacency files")
     parser.add_argument("--genome", help="Genome assembly FASTA file") #             default="GCA_000001405.22")
@@ -96,7 +98,7 @@ if __name__ == "__main__":
     parser.add_argument("--windows2")
     parser.add_argument("--file_out")
     parser.add_argument("--tmp_dir", help="Temporary data dir")
-    
+
     # Get the matching parameters from the command line
     args = parser.parse_args()
 
@@ -104,7 +106,7 @@ if __name__ == "__main__":
     windows1 = ((1,25), (1,50), (1,75),(1,100))
     windows2 = ((1,25), (1,50), (1,75),(1,100))
     #windows2 = ((101,125), (101,150), (101,175),(101,200))
-    
+
     species       = args.species
     genome_fa     = args.genome
     taxon_id      = args.taxon_id
@@ -129,11 +131,11 @@ if __name__ == "__main__":
         resolutions = resolutions.split(',')
 
     da = dmp()
-    
+
     print da.get_files_by_user("test")
-    
+
     genome_file = da.set_file("test", genome_fa, "fasta", "Assembly", taxon_id, meta_data={'assembly' : assembly})
-    
+
     metadata = {
         'user_id'     : 'test'
         'assembly'    : assembly,
@@ -145,9 +147,9 @@ if __name__ == "__main__":
 
     fastq_01_file_in = da.set_file("test", fastq_01_file, "fastq", "Hi-C", taxon_id, meta_data=metadata)
     fastq_02_file_in = da.set_file("test", fastq_02_file, "fastq", "Hi-C", taxon_id, meta_data=metadata)
-    
+
     print da.get_files_by_user("test")
-    
+
     files = [
         genome_fa,
         fastq_01_file,
@@ -161,5 +163,5 @@ if __name__ == "__main__":
 
     pma = process_multi_adjacency()
     results = pma.run(files, metadata)
-    
+
     print results[0]

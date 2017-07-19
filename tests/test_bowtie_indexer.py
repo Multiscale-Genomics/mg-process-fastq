@@ -1,11 +1,9 @@
-#!usr/bin/python
-
 """
 .. Copyright 2017 EMBL-European Bioinformatics Institute
- 
+
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
-   You may obtain a copy of the License at 
+   You may obtain a copy of the License at
 
        http://www.apache.org/licenses/LICENSE-2.0
 
@@ -16,22 +14,71 @@
    limitations under the License.
 """
 
-import pytest
-import random
 import os.path
+import pytest # pylint: disable=unused-import
 
 from tool import bowtie_indexer
 
+
 def test_bowtie_indexer():
+    """
+    Test to ensure Bowtie indexer is working for macs data set
+    """
     bti = bowtie_indexer.bowtieIndexerTool()
     resource_path = os.path.join(os.path.dirname(__file__), "data/")
-    
-    bti.run([resource_path+"macs2.Human.GCA_000001405.22.fasta"],{})
+
+    genome_file = resource_path + "macs2.Human.GCA_000001405.22.fasta"
+
+    output_files = [
+        genome_file + '.1.bt2',
+        genome_file + '.2.bt2',
+        genome_file + '.3.bt2',
+        genome_file + '.4.bt2',
+        genome_file + '.rev.1.bt2',
+        genome_file + '.rev.2.bt2',
+    ]
+
+    bti.run([genome_file], {}, output_files)
+
+    assert os.path.isfile(resource_path + "macs2.Human.GCA_000001405.22.1.bt2") is True
+    assert os.path.getsize(resource_path + "macs2.Human.GCA_000001405.22.1.bt2") > 0
+    assert os.path.isfile(resource_path + "macs2.Human.GCA_000001405.22.2.bt2") is True
+    assert os.path.getsize(resource_path + "macs2.Human.GCA_000001405.22.2.bt2") > 0
+    assert os.path.isfile(resource_path + "macs2.Human.GCA_000001405.22.3.bt2") is True
+    assert os.path.getsize(resource_path + "macs2.Human.GCA_000001405.22.3.bt2") > 0
+    assert os.path.isfile(resource_path + "macs2.Human.GCA_000001405.22.4.bt2") is True
+    assert os.path.getsize(resource_path + "macs2.Human.GCA_000001405.22.4.bt2") > 0
+    assert os.path.isfile(resource_path + "macs2.Human.GCA_000001405.22.rev.1.bt2") is True
+    assert os.path.getsize(resource_path + "macs2.Human.GCA_000001405.22.rev.2.bt2") > 0
 
 
 def test_bowtie_indexer_02():
+    """
+    Test to ensure Bowtie indexer is working for macs data set
+    """
     bti = bowtie_indexer.bowtieIndexerTool()
     resource_path = os.path.join(os.path.dirname(__file__), "data/")
-    
-    bti.run([resource_path+"inps.Mouse.GRCm38.fasta"],{})
-    
+
+    genome_file = resource_path + "inps.Mouse.GRCm38.fasta"
+
+    output_files = [
+        genome_file + '.1.bt2',
+        genome_file + '.2.bt2',
+        genome_file + '.3.bt2',
+        genome_file + '.4.bt2',
+        genome_file + '.rev.1.bt2',
+        genome_file + '.rev.2.bt2',
+    ]
+
+    bti.run([genome_file], {}, output_files)
+
+    assert os.path.isfile(resource_path + "inps.Mouse.GRCm38.1.bt2") is True
+    assert os.path.getsize(resource_path + "inps.Mouse.GRCm38.1.bt2") > 0
+    assert os.path.isfile(resource_path + "inps.Mouse.GRCm38.2.bt2") is True
+    assert os.path.getsize(resource_path + "inps.Mouse.GRCm38.2.bt2") > 0
+    assert os.path.isfile(resource_path + "inps.Mouse.GRCm38.3.bt2") is True
+    assert os.path.getsize(resource_path + "inps.Mouse.GRCm38.3.bt2") > 0
+    assert os.path.isfile(resource_path + "inps.Mouse.GRCm38.4.bt2") is True
+    assert os.path.getsize(resource_path + "inps.Mouse.GRCm38.4.bt2") > 0
+    assert os.path.isfile(resource_path + "inps.Mouse.GRCm38.rev.1.bt2") is True
+    assert os.path.getsize(resource_path + "inps.Mouse.GRCm38.rev.2.bt2") > 0

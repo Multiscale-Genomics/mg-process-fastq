@@ -16,36 +16,21 @@
    limitations under the License.
 """
 
-import argparse
+from __future__ import print_function
 
-from functools import wraps
+# Required for ReadTheDocs
+from functools import wraps # pylint: disable=unused-import
+
+import argparse
 
 from basic_modules.workflow import Workflow
 from basic_modules.metadata import Metadata
 
-
 from dmp import dmp
 
-from tool import bwa_aligner
-from tool import biobambam_filter
-from tool import macs2
-
-#try:
-#    from pycompss.api.parameter import FILE_IN, FILE_OUT
-#    from pycompss.api.task import task
-#    from pycompss.api.constraint import constraint
-#    from pycompss.api.api import compss_wait_on
-#except ImportError :
-#    print("[Warning] Cannot import \"pycompss\" API packages.")
-#    print("          Using mock decorators.")
-#
-#    from dummy_pycompss import *
-
-#try:
-#    import pysam
-#except ImportError:
-#    print "[Error] Cannot import \"pysam\" package. Have you installed it?"
-#    exit(-1)
+from tool.bwa_aligner import bwaAlignerTool
+from tool.biobambam_filter import biobambam
+from tool.macs2 import macs2
 
 # ------------------------------------------------------------------------------
 
@@ -71,12 +56,15 @@ class process_chipseq(Workflow):
         self.configuration.update(configuration)
 
 
-    def run(self, file_ids, metadata, output_files):
+    def run(self, file_ids, output_files, metadata):
         """
         Main run function for processing ChIP-seq FastQ data. Pipeline aligns
         the FASTQ files to the genome using BWA. MACS 2 is then used for peak
         calling to identify transcription factor binding sites within the
         genome.
+
+        Currently this can only handle a single data file and a single
+        background file.
 
         Parameters
         ----------
@@ -93,7 +81,6 @@ class process_chipseq(Workflow):
             List of locations for the output bam, bed and tsv files
         """
 
-        # TODO - Handle multiple file and background files
         run_genome_fa = file_ids[0]
         bwa_amb = file_ids[1]
         bwa_ann = file_ids[2]
@@ -105,81 +92,63 @@ class process_chipseq(Workflow):
 
         out_bam = file_loc.replace(".fastq", '.bam')
 
-        bwa = bwa_aligner.bwaAlignerTool(self.configuration)
-        out_bam = file_loc.replace(".fastq", '.bam')
+        bwa = bwaAlignerTool(self.configuration)
+        #out_bam = file_loc.replace(".fastq", '.bam')
         bwa_results = bwa.run(
             [run_genome_fa, file_loc, bwa_amb, bwa_ann, bwa_bwt, bwa_pac, bwa_sa],
-            {},
-            [out_bam]
+            []
         )
-
         #bwa_results = compss_wait_on(bwa_results)
+        out_bam = bwa_results[0][0]
 
+        out_bgd_bam = None
         if file_bgd_loc != None:
-            out_bgd_bam = file_bgd_loc.replace(".fastq", '.bam')
             bwa_results_bgd = bwa.run(
                 [run_genome_fa, file_bgd_loc, bwa_amb, bwa_ann, bwa_bwt, bwa_pac, bwa_sa],
-                {},
-                [out_bgd_bam]
+                []
             )
             #bwa_results_bgd = compss_wait_on(bwa_results_bgd)
+            out_bgd_bam = bwa_results_bgd[0][0]
 
-        # TODO - Multiple files need merging into a single bam file
-
-        b3f_bgd_file_out = None
+        # For multiple files there will need to be merging into a single bam file
 
         # Filter the bams
-        b3f = biobambam_filter.biobambam(self.configuration)
-        b3f_file_out = file_loc.replace('.fastq', '.filtered.bam')
+        b3f = biobambam(self.configuration)
         b3f_results = b3f.run(
             [out_bam],
-            {},
-            [b3f_file_out]
+            []
         )
-
         #b3f_results = compss_wait_on(b3f_results)
+        out_filtered_bam = b3f_results[0][0]
+
+        out_filtered_bgd_bam = None
         if file_bgd_loc != None:
-            b3f_bgd_file_out = file_bgd_loc.replace(".fastq", '.filtered.bam')
             b3f_results_bgd = b3f.run(
                 [out_bgd_bam],
-                {},
-                [b3f_bgd_file_out]
+                []
             )
             #b3f_results_bgd = compss_wait_on(b3f_results_bgd)
+            out_filtered_bgd_bam = b3f_results_bgd[0][0]
 
         # MACS2 to call peaks
-        macs_caller = macs2.macs2(self.configuration)
-
-        mac_root_name = b3f_file_out.split("/")
-        mac_root_name[-1] = mac_root_name[-1].replace('.bam', '')
-
-        #name = mac_root_name[-1]
-
-        summits_bed = '/'.join(mac_root_name) + "_summits.bed"
-        narrow_peak = '/'.join(mac_root_name) + "_narrowPeak"
-        broad_peak = '/'.join(mac_root_name) + "_broadPeak"
-        gapped_peak = '/'.join(mac_root_name) + "_gappedPeak"
-
-        output_files = [
-            summits_bed,
-            narrow_peak,
-            broad_peak,
-            gapped_peak
-        ]
+        macs_caller = macs2(self.configuration)
 
         if file_bgd_loc != None:
-            m_results = macs_caller.run([b3f_file_out, b3f_bgd_file_out], {}, output_files)
+            m_results = macs_caller.run([out_filtered_bam, out_filtered_bgd_bam], [])
         else:
-            m_results = macs_caller.run([b3f_file_out], {}, output_files)
-
+            m_results = macs_caller.run([out_filtered_bam], [])
         #m_results = compss_wait_on(m_results)
 
-        return ([b3f_file_out, b3f_bgd_file_out] + m_results[0], [b3f_results[1], m_results[1]])
+        return (
+            [out_bam, out_filtered_bam] + m_results[0],
+            metadata,
+            [b3f_results[1], m_results[1]]
+        )
 
 
-# -----------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 
-def main(input_files, input_metadata, output_files):
+def main(input_files, output_files, input_metadata):
     """
     Main function
     -------------
@@ -190,66 +159,41 @@ def main(input_files, input_metadata, output_files):
     # import pprint  # Pretty print - module for dictionary fancy printing
 
     # 1. Instantiate and launch the App
-    print "1. Instantiate and launch the App"
+    print("1. Instantiate and launch the App")
     from apps.workflowapp import WorkflowApp
     app = WorkflowApp()
-    result = app.launch(process_chipseq, input_files, input_metadata,
-                        output_files, {})
+    result = app.launch(process_chipseq, input_files, output_files, input_metadata,
+                        {})
 
     # 2. The App has finished
-    print "2. Execution finished"
-    print result
+    print("2. Execution finished")
+    print(result)
     return result
 
-# ------------------------------------------------------------------------------
+def prepare_files(
+        dm_handler, taxon_id, genome_fa, assembly, file_loc, file_bg_loc=None):
+    """
+    Function to load the DM API with the required files and prepare the
+    parameters passed from teh command line ready for use in the main function
+    """
+    print(dm_handler.get_files_by_user("test"))
 
-if __name__ == "__main__":
-    # Set up the command line parameters
-    parser = argparse.ArgumentParser(description="ChIP-seq peak calling")
-    parser.add_argument("--taxon_id", help="Taxon_ID (9606)")
-    parser.add_argument("--genome", help="Genome FASTA file")
-    parser.add_argument("--assembly", help="Genome assembly ID (GCA_000001405.25)")
-    parser.add_argument("--file", help="Location of FASTQ input file")
-    parser.add_argument("--bgd_file", help="Location of FASTQ background file", default=None)
-
-    # Get the matching parameters from the command line
-    args = parser.parse_args()
-
-    taxon_id = args.taxon_id
-    genome_fa = args.genome
-    assembly = args.assembly
-    file_loc = args.file
-    file_bg_loc = args.bgd_file
-
-    #
-    # MuG Tool Steps
-    # --------------
-    #
-    # 1. Create data files
-
-    # Get the assembly
-
-    #2. Register the data with the DMP
-    da = dmp(test=True)
-
-    print(da.get_files_by_user("test"))
-
-    genome_file = da.set_file(
+    genome_file = dm_handler.set_file(
         "test", genome_fa, "fasta", "Assembly", taxon_id, None, [],
         meta_data={"assembly" : assembly})
-    genome_file_idx1 = da.set_file(
+    dm_handler.set_file(
         "test", genome_fa + ".amb", "amb", "Assembly", taxon_id, None, [genome_file],
         meta_data={'assembly' : assembly})
-    genome_file_idx2 = da.set_file(
+    dm_handler.set_file(
         "test", genome_fa + ".ann", "ann", "Assembly", taxon_id, None, [genome_file],
         meta_data={'assembly' : assembly})
-    genome_file_idx3 = da.set_file(
+    dm_handler.set_file(
         "test", genome_fa + ".bwt", "bwt", "Assembly", taxon_id, None, [genome_file],
         meta_data={'assembly' : assembly})
-    genome_file_idx4 = da.set_file(
+    dm_handler.set_file(
         "test", genome_fa + ".pac", "pac", "Assembly", taxon_id, None, [genome_file],
         meta_data={'assembly' : assembly})
-    genome_file_idx5 = da.set_file(
+    dm_handler.set_file(
         "test", genome_fa + ".sa", "sa", "Assembly", taxon_id, None, [genome_file],
         meta_data={'assembly' : assembly})
 
@@ -265,16 +209,16 @@ if __name__ == "__main__":
         Metadata("fasta", "ChIP-seq")
     ]
 
-    file_in = da.set_file(
+    dm_handler.set_file(
         "test", file_loc, "fasta", "ChIP-seq", taxon_id, None, [],
         meta_data={'assembly' : assembly})
     if file_bg_loc:
-        file_bg_in = da.set_file(
+        dm_handler.set_file(
             "test", file_bg_loc, "fasta", "ChIP-seq", taxon_id, None, [],
             meta_data={'assembly' : assembly})
         metadata.append(Metadata("fasta", "ChIP-seq"))
 
-    print(da.get_files_by_user("test"))
+    print(dm_handler.get_files_by_user("test"))
 
     files = [
         genome_fa,
@@ -303,19 +247,43 @@ if __name__ == "__main__":
         out_peaks_gapped,
         out_summits
     ]
+    return [files, metadata, files_out]
+
+# ------------------------------------------------------------------------------
+
+if __name__ == "__main__":
+    import sys
+    sys._run_from_cmdl = True
+
+    # Set up the command line parameters
+    PARSER = argparse.ArgumentParser(description="ChIP-seq peak calling")
+    PARSER.add_argument("--taxon_id", help="Taxon_ID (9606)")
+    PARSER.add_argument("--genome", help="Genome FASTA file")
+    PARSER.add_argument("--assembly", help="Genome assembly ID (GCA_000001405.25)")
+    PARSER.add_argument("--file", help="Location of FASTQ input file")
+    PARSER.add_argument("--bgd_file", help="Location of FASTQ background file", default=None)
+
+    # Get the matching parameters from the command line
+    ARGS = PARSER.parse_args()
+
+    TAXON_ID = ARGS.taxon_id
+    GENOME_FA = ARGS.genome
+    ASSEMBLY = ARGS.assembly
+    FILE_LOC = ARGS.file
+    FILE_BG_LOC = ARGS.bgd_file
+
+    #
+    # MuG Tool Steps
+    # --------------
+    #
+    # 1. Create data files
+    DM_HANDLER = dmp(test=True)
+
+    #2. Register the data with the DMP
+    PARAMS = prepare_files(DM_HANDLER, TAXON_ID, GENOME_FA, ASSEMBLY, FILE_LOC, FILE_BG_LOC)
 
     # 3. Instantiate and launch the App
-    #from basic_modules import WorkflowApp
-    #app = WorkflowApp()
-    #results = app.launch(process_chipseq, [genome_file, file_in, file_bg_in], {'user_id' : 'test'})
+    RESULTS = main(PARAMS[0], PARAMS[1], PARAMS[2])
 
-    #pc = process_chipseq()
-    #results_files, results_meta = pc.run(files, {"user_id" : "test"})
-
-    #results_files, results_meta = main(files, metadata, files_out)
-    results = main(files, metadata, files_out)
-
-    #print(results_files)
-    #print(results_meta)
-    print(results)
-    print(da.get_files_by_user("test"))
+    print(RESULTS)
+    print(DM_HANDLER.get_files_by_user("test"))

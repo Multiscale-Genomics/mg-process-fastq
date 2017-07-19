@@ -14,16 +14,16 @@
    limitations under the License.
 """
 
-import os.path
-import pytest
+from __future__ import print_function
 
-from tool import bwa_indexer
+import os.path
+import pytest # pylint: disable=unused-import
+
+from tool.bwa_indexer import bwaIndexerTool
 
 def test_bwa_indexer():
     """
     Test case to ensure that the BWA indexer works.
-
-    Builds the assembly for Human for use with the MACS2 tests
     """
     resource_path = os.path.join(os.path.dirname(__file__), "data/")
     genome_fa = resource_path + "macs2.Human.GCA_000001405.22.fasta"
@@ -45,14 +45,24 @@ def test_bwa_indexer():
 
     print(bwa_amb, bwa_ann, bwa_bwt, bwa_pac, bwa_sa)
 
-    bwa_it = bwa_indexer.bwaIndexerTool(test=True)
+    bwa_it = bwaIndexerTool()
     bwa_it.run([genome_fa], {'assembly' : 'test'})
+
+    assert os.path.isfile(resource_path + "macs2.Human.GCA_000001405.22.fasta.amb") is True
+    assert os.path.getsize(resource_path + "macs2.Human.GCA_000001405.22.fasta.amb") > 0
+    assert os.path.isfile(resource_path + "macs2.Human.GCA_000001405.22.fasta.ann") is True
+    assert os.path.getsize(resource_path + "macs2.Human.GCA_000001405.22.fasta.ann") > 0
+    assert os.path.isfile(resource_path + "macs2.Human.GCA_000001405.22.fasta.bwt") is True
+    assert os.path.getsize(resource_path + "macs2.Human.GCA_000001405.22.fasta.bwt") > 0
+    assert os.path.isfile(resource_path + "macs2.Human.GCA_000001405.22.fasta.pac") is True
+    assert os.path.getsize(resource_path + "macs2.Human.GCA_000001405.22.fasta.pac") > 0
+    assert os.path.isfile(resource_path + "macs2.Human.GCA_000001405.22.fasta.sa") is True
+    assert os.path.getsize(resource_path + "macs2.Human.GCA_000001405.22.fasta.sa") > 0
+
 
 def test_bwa_indexer_02():
     """
-    Test case to ensure that the BWA indexer works.
-
-    Builds the assembly for Mouse for use with the iNPS tests
+    Test case to ensure that the BWA indexer works
     """
     resource_path = os.path.join(os.path.dirname(__file__), "data/")
     genome_fa = resource_path + "inps.Mouse.GRCm38.fasta"
@@ -74,5 +84,16 @@ def test_bwa_indexer_02():
 
     print(bwa_amb, bwa_ann, bwa_bwt, bwa_pac, bwa_sa)
 
-    bwa_it = bwa_indexer.bwaIndexerTool(test=True)
+    bwa_it = bwaIndexerTool()
     bwa_it.run([genome_fa], {'assembly' : 'test'})
+
+    assert os.path.isfile(resource_path + "inps.Mouse.GRCm38.fasta.amb") is True
+    assert os.path.getsize(resource_path + "inps.Mouse.GRCm38.fasta.amb") > 0
+    assert os.path.isfile(resource_path + "inps.Mouse.GRCm38.fasta.ann") is True
+    assert os.path.getsize(resource_path + "inps.Mouse.GRCm38.fasta.ann") > 0
+    assert os.path.isfile(resource_path + "inps.Mouse.GRCm38.fasta.bwt") is True
+    assert os.path.getsize(resource_path + "inps.Mouse.GRCm38.fasta.bwt") > 0
+    assert os.path.isfile(resource_path + "inps.Mouse.GRCm38.fasta.pac") is True
+    assert os.path.getsize(resource_path + "inps.Mouse.GRCm38.fasta.pac") > 0
+    assert os.path.isfile(resource_path + "inps.Mouse.GRCm38.fasta.sa") is True
+    assert os.path.getsize(resource_path + "inps.Mouse.GRCm38.fasta.sa") > 0

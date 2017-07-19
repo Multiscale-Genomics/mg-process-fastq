@@ -14,21 +14,26 @@
    limitations under the License.
 """
 
-import os.path
+import os
 import pytest # pylint: disable=unused-import
 
-from tool import biobambam_filter
+from tool import bs_seeker_filter
 
-def test_biobambam():
+def test_bs_seeker_filter():
     """
-    Test case to ensure that BioBamBam works
+    Test that it is possible to call the BSseeker filter
     """
-    bbb = biobambam_filter.biobambam()
     resource_path = os.path.join(os.path.dirname(__file__), "data/")
-    bbb.run(
-        [resource_path + "macs2.Human.DRR000150.22.bam"],
-        []
-    )
+    genomefa_file = resource_path + "bsSeeker.Mouse.GRCm38_1.fastq"
+    home = os.path.expanduser('~')
 
-    assert os.path.isfile(resource_path + "macs2.Human.DRR000150.22.filtered.bam") is True
-    assert os.path.getsize(resource_path + "macs2.Human.DRR000150.22.filtered.bam") > 0
+    bsi = bs_seeker_filter.filterReadsTool()
+    bsi.run(
+        [genomefa_file],
+        [],
+        {
+            "aligner":"bowtie",
+            "aligner_path":home + "/bin",
+            "bss_path":home + "/lib/BSseeker2"
+        }
+    )

@@ -18,29 +18,23 @@
 
 # -*- coding: utf-8 -*-
 
-import argparse, urllib2, gzip, shutil, shlex, subprocess, os, sys, json, time
+from __future__ import print_function
 
-from basic_modules import Tool, Workflow, Metadata
+import argparse
+import os
+import time
+
+from basic_modules.workflow import Workflow
 from dmp import dmp
 
-from functools import wraps
+# Required for ReadTheDocs
+from functools import wraps # pylint: disable=unused-import
 
-import tool
-
-try :
-    from pycompss.api.parameter import *
-    from pycompss.api.task import task
-except ImportError :
-    print "[Warning] Cannot import \"pycompss\" API packages."
-    print "          Using mock decorators."
-    
-    from dummy_pycompss import *
-
-from tool import tb_full_mapping
-from tool import tb_parse_mapping
-from tool import tb_filter
-from tool import tb_generate_tads
-from tool import tb_save_hdf5_matrix
+from tool.tb_full_mapping import tbFullMappingTool
+from tool.tb_parse_mapping import tbParseMappingTool
+from tool.tb_filter import tbFilterTool
+from tool.tb_generate_tads import tbGenerateTADsTool
+from tool.tb_save_hdf5_matrix import tbSaveAdjacencyHDF5Tool
 
 # ------------------------------------------------------------------------------
 class process_hic(Workflow):
@@ -49,60 +43,61 @@ class process_hic(Workflow):
     downloaded from the European Nucleotide Archive (ENA), then aligned,
     filtered and analysed for peak calling
     """
-    
+
     def run(self, file_ids, metadata):
         """
         Main run function for processing MNase-Seq FastQ data. Pipeline aligns
         the FASTQ files to the genome using BWA. iNPS is then used for peak
         calling to identify nucleosome position sites within the genome.
-                
+
         Parameters
         ----------
         files_ids : list
             List of file locations
         metadata : list
             Required meta data
-        
+
         Returns
         -------
         outputfiles : list
             List of locations for the output bam, bed and tsv files
         """
-        
-        genome_file  = files_ids[0]
-        genome_gem   = files_ids[1]
-        fastq_file_1 = files_ids[2]
-        fastq_file_2 = files_ids[3]
+
+        genome_file = file_ids[0]
+        genome_gem = file_ids[1]
+        fastq_file_1 = file_ids[2]
+        fastq_file_2 = file_ids[3]
         enzyme_name = metadata['enzyme_name']
         resolutions = metadata['resolutions']
-        windows1    = metadata['windows1']
-        windows2    = metadata['windows2']
-        normalized  = metadata['normalized']
+        windows1 = metadata['windows1']
+        windows2 = metadata['windows2']
+        normalized = metadata['normalized']
 
         tmp_name = fastq_file_1.split('/')
         tmp_dir = '/'.join(tmp_name[0:-1])
+
         try:
             os.makedirs(tmp_dir)
-        except:
+        except OSError:
             pass
 
-        tfm1 = tb_full_mapping.tbFullMappingTool()
+        tfm1 = tbFullMappingTool()
         tfm1_files, tfm1_meta = tfm1.run([genome_gem, fastq_file_1], {'windows' : windows1})
 
-        tfm2 = tb_full_mapping.tbFullMappingTool()
+        tfm2 = tbFullMappingTool()
         tfm2_files, tfm2_meta = tfm2.run([genome_gem, fastq_file_2], {'windows' : windows2})
 
-        tpm = tb_parse_mapping.tb_parse_mapping()
+        tpm = tbParseMappingTool()
         files = [genome_file] + tfm1_files + tfm2_files
         metadata = {'enzyme_name' : enzyme_name, 'mapping' : [tfm1_meta['func'], tfm2_meta['func']]}
         tpm_files, tpm_meta = tpm.run(files, metadata)
 
-        tf = tb_filter.tbFilterTool()
+        tf = tbFilterTool()
         tf_files, tf_meta = tf.run(tpm_files, {'conservative' : True})
 
         #adjlist_loc = f2a.save_hic_data()
 
-        tgt = tb_generate_tads.tbGenerateTADsTool()
+        tgt = tbGenerateTADsTool()
         tgt_meta_in = {
             'resolutions' : resolutions,
             'normalized' : normalized
@@ -112,11 +107,11 @@ class process_hic(Workflow):
         # Generate the HDF5 and meta data required for the RESTful API.
         # - Chromosome meta is from the tb_parse_mapping step
 
-        if len(files_ids) == 5:
-            hdf5_file = files_ids[4]
-            th5 = tb_save_hdf5_matrix.tbSaveAdjacencyHDF5Tool()
-            tth5_files_in = [tf_files[0], hdf5_file]
-            tth5_meta_in = {
+        if len(file_ids) == 5:
+            hdf5_file = file_ids[4]
+            th5 = tbSaveAdjacencyHDF5Tool()
+            th5_files_in = [tf_files[0], hdf5_file]
+            th5_meta_in = {
                 'resolutions' : resolutions,
                 'normalized' : normalized,
                 'chromosomes_meta' : tpm_meta['chromosomes']
@@ -126,15 +121,19 @@ class process_hic(Workflow):
             hdf5_file = None
 
         # List of files to get saved
-        return ([tf_files[0], tgt_files[0]], adjlist_loc, hdf5_file)
+        #return ([tf_files[0], tgt_files[0]], adjlist_loc, hdf5_file)
+        return ([tf_files[0], tgt_files[0]], hdf5_file)
 
 
 # ------------------------------------------------------------------------------
 
 
 if __name__ == "__main__":
+    import sys
+    sys._run_from_cmdl = True
+
     start = time.time()
-    
+
     # Set up the command line parameters
     parser = argparse.ArgumentParser(description="Generate adjacency files")
     parser.add_argument("--genome", help="Genome assembly FASTA file") #             default="GCA_000001405.22")
@@ -150,7 +149,7 @@ if __name__ == "__main__":
     parser.add_argument("--normalized", help="Normalize the alignments", default=False)
     #parser.add_argument("--file_out")
     #parser.add_argument("--tmp_dir", help="Temporary data dir")
-    
+
     # Get the matching parameters from the command line
     args = parser.parse_args()
 
@@ -158,7 +157,7 @@ if __name__ == "__main__":
     #windows1 = ((1,25), (1,50), (1,75),(1,100))
     #windows2 = ((1,25), (1,50), (1,75),(1,100))
     #windows2 = ((101,125), (101,150), (101,175),(101,200))
-    
+
     genome_fa     = args.genome
     genome_gem    = args.genome_gem
     taxon_id      = args.taxon_id
@@ -186,12 +185,12 @@ if __name__ == "__main__":
         resolutions = resolutions.split(',')
 
     da = dmp(test=True)
-    
-    print da.get_files_by_user("test")
-    
+
+    print(da.get_files_by_user("test"))
+
     genome_file = da.set_file("test", genome_fa, "fasta", "Assembly", taxon_id, meta_data={'assembly' : assembly})
     genome_idx  = da.set_file("test", genome_gem, "gem", "Assembly Index", taxon_id, meta_data={'assembly' : assembly})
-    
+
     metadata = {
         'user_id'     : 'test',
         'assembly'    : assembly,
@@ -204,13 +203,13 @@ if __name__ == "__main__":
 
     fastq_01_file_in = da.set_file("test", fastq_01_file, "fastq", "Hi-C", taxon_id, meta_data=metadata)
     fastq_02_file_in = da.set_file("test", fastq_02_file, "fastq", "Hi-C", taxon_id, meta_data=metadata)
-    
-    print da.get_files_by_user("test")
-    
+
+    print(da.get_files_by_user("test"))
+
     # 3. Instantiate and launch the App
     #from basic_modules import WorkflowApp
     #app = WorkflowApp()
-    
+
     files = [
         genome_fa,
         genome_gem,
@@ -222,5 +221,5 @@ if __name__ == "__main__":
 
     ph = process_hic()
     results = ph.run(files, metadata)
-    
-    print results
+
+    print(results)

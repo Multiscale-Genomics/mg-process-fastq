@@ -52,51 +52,51 @@ Directly from GitHub:
 
 .. code-block:: none
    :linenos:
-   
+
    cd ${HOME}/code
 
    git clone https://github.com/Multiscale-Genomics/mg-process-fastq.git
-   
+
    cd mg-process-fastq
 
 Create the Python environment
 
 .. code-block:: none
    :linenos:
-   
+
    pyenv-virtualenv 2.7.10 mg-process-fastq
    pip install --editable .
 
 Install the pyTADbit modules
 
 .. code-block:: none
-    :linenos:
+   :linenos:
 
-    cd ${HOME}/lib
-    wget https://github.com/3DGenomes/tadbit/archive/master.zip -O tadbit.zip
-    unzip tadbit.zip
-    cd tadbit-master
+   cd ${HOME}/lib
+   wget https://github.com/3DGenomes/tadbit/archive/master.zip -O tadbit.zip
+   unzip tadbit.zip
+   cd tadbit-master
 
-    pyenv activate mg-process-fastq
-    pip install .
+   pyenv activate mg-process-fastq
+   pip install .
 
 Check out the following software for use by the process_wgbs.py pipeline:
 
 .. code-block:: none
-	:linenos:
+   :linenos:
 
-	cd cd ${HOME}/lib
-	gti clone https://github.com/BSSeeker/BSseeker2.git
+   cd cd ${HOME}/lib
+   gti clone https://github.com/BSSeeker/BSseeker2.git
 
-	cd ${HOME}/code
-  cd mg-process-fastq
-	ln -s $code_root/bs_align bs_align
-	ln -s $code_root/bs_index bs_index
-	ln -s $code_root/bs_utils bs_utils
-	
-	cd cd ${HOME}/code/mg-process-fastq/tool
-	ln -s $code_root/FilterReads.py FilterReads.py
-   
+   cd ${HOME}/code
+   cd mg-process-fastq
+   ln -s $code_root/bs_align bs_align
+   ln -s $code_root/bs_index bs_index
+   ln -s $code_root/bs_utils bs_utils
+
+   cd cd ${HOME}/code/mg-process-fastq/tool
+   ln -s $code_root/FilterReads.py FilterReads.py
+
 
 Documentation
 -------------

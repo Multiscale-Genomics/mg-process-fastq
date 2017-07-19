@@ -14,6 +14,6 @@
    limitations under the License.
 """
 
-__author__  = 'Mark McDowall'
+__author__ = 'Mark McDowall'
 __version__ = '0.0'
 __license__ = 'Apache 2.0'

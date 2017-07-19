@@ -39,7 +39,7 @@ addons:
     - python-rpy2
     - libcurl4-gnutls-dev
     - unzip   
-    - samtools
+    #- samtools
 
 env:
   - COVERALLS=false
@@ -83,6 +83,19 @@ install:
     - ./configure --prefix=${HOME}/lib/htslib
     - make
     - make install
+    
+    #SAMtools
+    - cd ${HOME}/lib
+    - git clone https://github.com/samtools/htslib.git
+    - cd htslib
+    - autoheader
+    - autoconf
+    - ./configure --prefix=${HOME}/lib/htslib
+    - make
+    - make install
+
+    - cd ${HOME}/lib
+    - sudo apt-get install samtools
 
 
     #UCSC Tools

@@ -48,7 +48,7 @@ env:
 matrix:
   include:
     - os: linux
-      dist: trusty
+      dist: vivid
       sudo: required
 
 before_install:

@@ -91,6 +91,7 @@ class bwaAlignerTool(Tool):
         bam_loc1 = common_handle.bwa_align_reads(genome_file_loc, read_file_loc, bam_loc)
 
         print("Output files:", os.listdir(output_dir))
+        print("BWA ALIGNER TASK:", os.path.isfile(bam_loc), os.path.getsize(bam_loc))
         print("Files to return:", bam_loc, bam_loc1)
 
         return 0
@@ -119,6 +120,8 @@ class bwaAlignerTool(Tool):
             input_files[3], input_files[4], input_files[5], input_files[6])
 
         results = compss_wait_on(results)
+
+        print("BWA ALIGNER:", os.path.isfile(out_bam)
 
         return ([out_bam], [output_metadata])
 

@@ -30,7 +30,7 @@ def test_biobambam():
         [resource_path + "macs2.Human.DRR000150.22.bam"],
         []
     )
-   time.sleep (10)
+    time.sleep (10)
 
     assert os.path.isfile(resource_path + "macs2.Human.DRR000150.22.filtered.bam") is True
     assert os.path.getsize(resource_path + "macs2.Human.DRR000150.22.filtered.bam") > 0

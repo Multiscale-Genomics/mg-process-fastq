@@ -196,7 +196,7 @@ before_script :
     - docker ps -a
     - cd ${HOME}/build/Multiscale-Genomics/mg-process-fastq
     - chmod +x harness.sh
-    - bamsormadup --tmpfile="/home/travis/build/Multiscale-Genomics/mg-process-fastq/tests/data" <tests/data/macs2.Human.DRR000150.22.bam >testFile.f.bam
+    - bamsormadup --tmpfile="/home/travis/build/Multiscale-Genomics/mg-process-fastq/tests/data" </home/travis/build/Multiscale-Genomics/mg-process-fastq/tests/data/macs2.Human.DRR000150.22.bam >testFile.f.bam
 
 script : 
     "./harness.sh"

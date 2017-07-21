@@ -192,7 +192,7 @@ class macs2(Tool):
 
         print('Process Results 2:', process.returncode)
         print('LIST DIR 2:', os.listdir(output_dir))
-        
+
 
         # Might not be an issue with PyCOMPSs v2.1
         # out_peaks_narrow = bam_file + '_peaks.narrowPeak'

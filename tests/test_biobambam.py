@@ -35,4 +35,7 @@ def test_biobambam():
     print "End : %s" % time.ctime()
 
     assert os.path.isfile(resource_path + "macs2.Human.DRR000150.22.filtered.bam") is True
+    testFile = open(resource_path + "macs2.Human.DRR000150.22.filtered.bam")
+    print ("read line: ")
+    print (testFile.readline())
     assert os.path.getsize(resource_path + "macs2.Human.DRR000150.22.filtered.bam") > 0

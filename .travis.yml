@@ -56,7 +56,6 @@ before_install:
     - mkdir -p ${HOME}/bin 
     - mkdir -p ${HOME}/lib
     - pip --version
-    - which R
     - pip
     - lsb_release -a
 

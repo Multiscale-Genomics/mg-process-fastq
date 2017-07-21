@@ -39,6 +39,8 @@ addons:
     - python-rpy2
     - libcurl4-gnutls-dev
     - unzip   
+    - liblzma-dev
+    - libtool
     #- samtools
 
 env:
@@ -83,7 +85,7 @@ install:
     - cd ${HOME}/lib
     - git clone https://github.com/samtools/samtools.git
     - cd samtools
-    - autoheader
+    #- autoheader
     - autoconf -Wno-syntax
     - chmod +x configure
     - ./configure --prefix=${HOME}/lib/samtools

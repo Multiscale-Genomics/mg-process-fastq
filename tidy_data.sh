@@ -37,7 +37,3 @@ for i in $b; do
         rm $i
     fi
 done
-
-#diff <$(echo $a) <$(echo $b)
-#declare -l a3
-#cd -

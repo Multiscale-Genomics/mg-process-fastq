@@ -118,7 +118,8 @@ class macs2(Tool):
         process = subprocess.Popen(args)
         process.wait()
 
-        print('Process Results:', process)
+        print('Process Results 1:', process)
+        print('LIST DIR 1:', os.listdir(output_dir))
 
         # Might not be an issue with PyCOMPSs v2.1
         #out_peaks_narrow = bam_file + '_peaks.narrowPeak'
@@ -173,6 +174,7 @@ class macs2(Tool):
         documentation described in the docs at https://github.com/taoliu/MACS
         """
         od_list = bam_file.split("/")
+        #od_list = narrowpeak.split("/")
         output_dir = "/".join(od_list[0:-1])
 
         command_line = 'macs2 callpeak -t ' + bam_file + ' -n ' + name + ' --outdir ' + output_dir
@@ -181,11 +183,16 @@ class macs2(Tool):
             # This is for when running the test data
             command_line = command_line + ' --nomodel'
 
+        print('Output Files:', narrowpeak, summits_bed, broadpeak, gappedpeak)
+        print(command_line)
+
         args = shlex.split(command_line)
         process = subprocess.Popen(args)
         process.wait()
 
-        print('Process Results:', process.returncode)
+        print('Process Results 2:', process.returncode)
+        print('LIST DIR 2:', os.listdir(output_dir))
+        
 
         # Might not be an issue with PyCOMPSs v2.1
         # out_peaks_narrow = bam_file + '_peaks.narrowPeak'
@@ -226,6 +233,9 @@ class macs2(Tool):
         """
 
         bam_file = input_files[0]
+
+        print("Check bam file exists:", os.path.isfile(bam_file), os.path.getsize(bam_file))
+
         bam_file_bgd = None
         if len(input_files) == 2 and input_files[1] is not None:
             bam_file_bgd = input_files[1]
@@ -234,6 +244,7 @@ class macs2(Tool):
         root_name[-1] = root_name[-1].replace('.bam', '')
 
         name = root_name[-1]
+        #name = '/'.join(root_name)
 
         out_peaks_narrow = '/'.join(root_name) + '_peaks.narrowPeak'
         out_peaks_broad = '/'.join(root_name) + '_peaks.broadPeak'
@@ -262,7 +273,7 @@ class macs2(Tool):
                 [], []
             )
 
-        print(results)
+        print('Results:', results)
 
         return (
             [out_peaks_narrow, out_summits, out_peaks_broad, out_peaks_gapped],

@@ -116,7 +116,7 @@ class biobambam(Tool):
         results = self.biobambam_filter_alignments(in_bam, out_filtered_bam)
         results = compss_wait_on(results)
 
-        print(results)
+        print('BioBamBam2 Results:', results)
 
         return ([out_filtered_bam], output_metadata)
 

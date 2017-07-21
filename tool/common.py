@@ -513,6 +513,7 @@ class common(object):
             process = subprocess.Popen(args)
             process.wait()
 
+        return output_bam_file
 
     def merge_bam(self, data_dir, project_id, final_id, run_ids=[]):
         """

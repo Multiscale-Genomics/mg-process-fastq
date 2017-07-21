@@ -134,15 +134,14 @@ class process_chipseq(Workflow):
         macs_caller = macs2(self.configuration)
 
         if file_bgd_loc != None:
-            m_results = macs_caller.run([out_filtered_bam, out_filtered_bgd_bam], [])
+            m_results_files, m_results_meta = macs_caller.run([out_filtered_bam, out_filtered_bgd_bam], [])
         else:
-            m_results = macs_caller.run([out_filtered_bam], [])
+            m_results_files, m_results_meta = macs_caller.run([out_filtered_bam], [])
         #m_results = compss_wait_on(m_results)
 
         return (
-            [out_bam, out_filtered_bam] + m_results[0],
-            metadata,
-            [b3f_results[1], m_results[1]]
+            [out_bam, out_filtered_bam] + m_results_files,
+            [{}, m_results_meta]
         )
 
 

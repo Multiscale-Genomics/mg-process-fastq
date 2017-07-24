@@ -16,7 +16,8 @@ bamsormadup --tmpfile="/home/travis/build/Multiscale-Genomics/mg-process-fastq/t
 set +x
 echo "after bams"
 ls /home/travis/build/Multiscale-Genomics/mg-process-fastq/tests/data
+ls $PWD
 
-pytest -s tests/test_biobambam.py
-echo "after bams test"
-ls /home/travis/build/Multiscale-Genomics/mg-process-fastq/tests/data
+# pytest -s tests/test_biobambam.py
+# echo "after bams test"
+# ls /home/travis/build/Multiscale-Genomics/mg-process-fastq/tests/data

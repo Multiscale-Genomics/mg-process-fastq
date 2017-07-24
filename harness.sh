@@ -10,11 +10,13 @@ bgzip --help
 htsfile --help
 tabix --help
 
-
-exec bamsormadup --tmpfile="/home/travis/build/Multiscale-Genomics/mg-process-fastq/tests/data" </home/travis/build/Multiscale-Genomics/mg-process-fastq/tests/data/macs2.Human.DRR000150.22.bam >testFile.f.bam 
+echo $PATH
+set -x
+bamsormadup --tmpfile="/home/travis/build/Multiscale-Genomics/mg-process-fastq/tests/data" </home/travis/build/Multiscale-Genomics/mg-process-fastq/tests/data/macs2.Human.DRR000150.22.bam >testFile.f.bam 
+set +x
 echo "after bams"
-exec ls /home/travis/build/Multiscale-Genomics/mg-process-fastq/tests/data
+ls /home/travis/build/Multiscale-Genomics/mg-process-fastq/tests/data
 
 pytest -s tests/test_biobambam.py
 echo "after bams test"
-exec ls /home/travis/build/Multiscale-Genomics/mg-process-fastq/tests/data
+ls /home/travis/build/Multiscale-Genomics/mg-process-fastq/tests/data

@@ -2,7 +2,7 @@
 
 
 echo "before tests"
-exec ls /home/travis/build/Multiscale-Genomics/mg-process-fastq/tests/data
+ls /home/travis/build/Multiscale-Genomics/mg-process-fastq/tests/data
 
 pytest -s tests/test_bwa_indexer.py
 pytest -s tests/test_bwa_aligner.py 

@@ -1,3 +1,3 @@
 #!/bin/bash
 
-docker run  multiscalegenomics/mgprocessfastq:biobambamimage -v ${HOME}/bin:/RehamCode/bin /RehamCode/lib/biobambam2/bin/bamsormadup $@ 
+docker run -v ${HOME}/bin:/RehamCode/bin multiscalegenomics/mgprocessfastq:biobambamimage /RehamCode/lib/biobambam2/bin/bamsormadup $@ 

@@ -139,16 +139,16 @@ install:
     - make    
     - cd ${HOME}/build/Multiscale-Genomics/mg-process-fastq
     
+    
+    
+    - cd ${HOME}/code
+    - pyenv activate mg-process-fastq
+    - pip install git+https://github.com/Multiscale-Genomics/mg-dm-api.git
+    - pip install git+https://github.com/Multiscale-Genomics/mg-tool-api.git
 
-	
-	- cd ${HOME}/code
-	- pyenv activate mg-process-fastq
-	- pip install git+https://github.com/Multiscale-Genomics/mg-dm-api.git
-	- pip install git+https://github.com/Multiscale-Genomics/mg-tool-api.git
-
-	- git clone https://github.com/Multiscale-Genomics/mg-process-fastq.git
-	- cd mg-process-fastq
-	- pip install --editable .
+    - git clone https://github.com/Multiscale-Genomics/mg-process-fastq.git
+    - cd mg-process-fastq
+    - pip install --editable .
     
 
 before_script : 
@@ -207,7 +207,8 @@ before_script :
     - docker ps -a
     - cd ${HOME}/build/Multiscale-Genomics/mg-process-fastq
     - chmod +x harness.sh
-    - ls /home/travis/build/Multiscale-Genomics/mg-process-fastq/tests/data
+    - ls tests/data
+
 
 script : 
     "./harness.sh"

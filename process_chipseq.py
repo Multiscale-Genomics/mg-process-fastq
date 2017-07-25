@@ -56,7 +56,7 @@ class process_chipseq(Workflow):
         self.configuration.update(configuration)
 
 
-    def run(self, file_ids, output_files, metadata):
+    def run(self, file_ids, metadata, output_files):
         """
         Main run function for processing ChIP-seq FastQ data. Pipeline aligns
         the FASTQ files to the genome using BWA. MACS 2 is then used for peak
@@ -161,7 +161,7 @@ def main(input_files, output_files, input_metadata):
     print("1. Instantiate and launch the App")
     from apps.workflowapp import WorkflowApp
     app = WorkflowApp()
-    result = app.launch(process_chipseq, input_files, output_files, input_metadata,
+    result = app.launch(process_chipseq, input_files, input_metadata, output_files,
                         {})
 
     # 2. The App has finished

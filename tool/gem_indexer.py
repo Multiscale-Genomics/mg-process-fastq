@@ -23,12 +23,14 @@ try:
         raise ImportError
     from pycompss.api.parameter import FILE_IN, FILE_OUT
     from pycompss.api.task import task
+    from pycompss.api.api import compss_wait_on
 except ImportError:
     print("[Warning] Cannot import \"pycompss\" API packages.")
     print("          Using mock decorators.")
 
     from dummy_pycompss import FILE_IN, FILE_OUT
     from dummy_pycompss import task
+    from dummy_pycompss import compss_wait_on
 
 #from basic_modules.metadata import Metadata
 from basic_modules.tool import Tool
@@ -90,7 +92,8 @@ class gemIndexerTool(Tool):
         # input and output share most metadata
         output_metadata = {}
 
-        result = self.gem_indexer(input_files[0], file_out)
+        results = self.gem_indexer(input_files[0], file_out)
+        results = compss_wait_on(results)
 
         return ([file_out], [output_metadata])
 

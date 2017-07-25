@@ -24,11 +24,11 @@ import argparse
 import os
 import time
 
-from basic_modules.workflow import Workflow
-from dmp import dmp
-
 # Required for ReadTheDocs
 from functools import wraps # pylint: disable=unused-import
+
+from basic_modules.workflow import Workflow
+from dmp import dmp
 
 from tool.tb_full_mapping import tbFullMappingTool
 from tool.tb_parse_mapping import tbParseMappingTool
@@ -44,7 +44,22 @@ class process_hic(Workflow):
     filtered and analysed for peak calling
     """
 
-    def run(self, file_ids, metadata):
+    configuration = {}
+
+    def __init__(self, configuration):
+        """
+        Initialise the tool with its configuration.
+
+
+        Parameters
+        ----------
+        configuration : dict
+            a dictionary containing parameters that define how the operation
+            should be carried out, which are specific to each Tool.
+        """
+        self.configuration.update(configuration)
+
+    def run(self, file_ids, metadata, output_files):
         """
         Main run function for processing MNase-Seq FastQ data. Pipeline aligns
         the FASTQ files to the genome using BWA. iNPS is then used for peak
@@ -56,6 +71,8 @@ class process_hic(Workflow):
             List of file locations
         metadata : list
             Required meta data
+        output_files : list
+            List of output file locations
 
         Returns
         -------
@@ -127,99 +144,119 @@ class process_hic(Workflow):
 
 # ------------------------------------------------------------------------------
 
+def main(input_files, output_files, input_metadata):
+    """
+    Main function
+    -------------
+
+    This function launches the app.
+    """
+
+    # import pprint  # Pretty print - module for dictionary fancy printing
+
+    # 1. Instantiate and launch the App
+    print("1. Instantiate and launch the App")
+    from apps.workflowapp import WorkflowApp
+    app = WorkflowApp()
+    result = app.launch(process_hic, input_files, input_metadata, output_files,
+                        {})
+
+    # 2. The App has finished
+    print("2. Execution finished")
+    print(result)
+    return result
+
+
+# ------------------------------------------------------------------------------
+
 
 if __name__ == "__main__":
     import sys
     sys._run_from_cmdl = True
 
-    start = time.time()
-
     # Set up the command line parameters
-    parser = argparse.ArgumentParser(description="Generate adjacency files")
-    parser.add_argument("--genome", help="Genome assembly FASTA file") #             default="GCA_000001405.22")
-    parser.add_argument("--genome_gem", help="Genome assembly GEM file")
-    parser.add_argument("--taxon_id", help="Species (9606)")
-    parser.add_argument("--assembly", help="Assembly (GRCh38)")
-    parser.add_argument("--file1", help="Location of FASTQ file 1")
-    parser.add_argument("--file2", help="Location of FASTQ file 2")
-    parser.add_argument("--resolutions", help="CSV string of the resolutions to be computed for the models")
-    parser.add_argument("--enzyme_name", help="Enzyme used to digest the DNA")
-    parser.add_argument("--windows1", help="FASTQ windowing - start locations", default="1,25,50,75,100")
-    parser.add_argument("--windows2", help="FASTQ windowing - paired end locations", default="1,25,50,75,100")
-    parser.add_argument("--normalized", help="Normalize the alignments", default=False)
-    #parser.add_argument("--file_out")
-    #parser.add_argument("--tmp_dir", help="Temporary data dir")
+    PARSER = argparse.ArgumentParser(description="Generate adjacency files")
+    PARSER.add_argument("--genome", help="Genome assembly FASTA file")
+    PARSER.add_argument("--genome_gem", help="Genome assembly GEM file")
+    PARSER.add_argument("--taxon_id", help="Species (9606)")
+    PARSER.add_argument("--assembly", help="Assembly (GRCh38)")
+    PARSER.add_argument("--file1", help="Location of FASTQ file 1")
+    PARSER.add_argument("--file2", help="Location of FASTQ file 2")
+    PARSER.add_argument("--resolutions", help="CSV string of the resolutions to be computed for the models")
+    PARSER.add_argument("--enzyme_name", help="Enzyme used to digest the DNA")
+    PARSER.add_argument("--windows1", help="FASTQ windowing - start locations", default="1,25,50,75,100")
+    PARSER.add_argument("--windows2", help="FASTQ windowing - paired end locations", default="1,25,50,75,100")
+    PARSER.add_argument("--normalized", help="Normalize the alignments", default=False)
 
     # Get the matching parameters from the command line
-    args = parser.parse_args()
+    ARGS = PARSER.parse_args()
 
     # Assumes that there are 2 fastq files for the paired ends
     #windows1 = ((1,25), (1,50), (1,75),(1,100))
     #windows2 = ((1,25), (1,50), (1,75),(1,100))
     #windows2 = ((101,125), (101,150), (101,175),(101,200))
 
-    genome_fa     = args.genome
-    genome_gem    = args.genome_gem
-    taxon_id      = args.taxon_id
-    assembly      = args.assembly
-    fastq_01_file = args.file1
-    fastq_02_file = args.file2
-    tmp_dir       = args.tmp_dir
-    enzyme_name   = args.enzyme_name
-    resolutions   = args.resolutions
-    windows1arg   = args.windows1
-    windows2arg   = args.windows1
-    normalized    = args.normalized
+    GENOME_FA = ARGS.genome
+    GENOME_GEM = ARGS.genome_gem
+    TAXON_ID = ARGS.taxon_id
+    ASSEMBLY = ARGS.assembly
+    FASTQ_01_FILE = ARGS.file1
+    FASTQ_02_FILE = ARGS.file2
+    TMP_DIR = ARGS.tmp_dir
+    ENZYME_NAME = ARGS.enzyme_name
+    RESOLUTIONS = ARGS.resolutions
+    WINDOWS1ARG = ARGS.windows1
+    WINDOWS2ARG = ARGS.windows1
+    NORMALIZED = ARGS.normalized
 
-    if windows1arg is not None:
-        w1 = [int(i) for i in windows1arg.split(",")]
-        windows1 = ((w1[0], j) for j in w1[1:])
-    if windows2arg is not None:
-        w2 = [int(i) for i in windows2arg.split(",")]
-        windows2 = ((w1[0], j) for j in w2[1:])
+    if WINDOWS1ARG is not None:
+        w1 = [int(i) for i in WINDOWS1ARG.split(",")]
+        WINDOWS1 = ((w1[0], j) for j in w1[1:])
+    if WINDOWS2ARG is not None:
+        w2 = [int(i) for i in WINDOWS2ARG.split(",")]
+        WINDOWS2 = ((w1[0], j) for j in w2[1:])
 
-    if resolutions is None:
-         #resolutions = [1000, 2500, 5000, 10000, 25000, 50000, 100000, 250000, 500000, 1000000, 10000000]
-        resolutions = [1000000, 10000000]
+    if RESOLUTIONS is None:
+        # RESOLUTIONS = [
+        #     1000, 2500, 5000, 10000, 25000, 50000, 100000, 250000, 500000,
+        #     1000000, 10000000
+        # ]
+        RESOLUTIONS = [1000000, 10000000]
     else:
-        resolutions = resolutions.split(',')
+        RESOLUTIONS = RESOLUTIONS.split(',')
 
-    da = dmp(test=True)
-
-    print(da.get_files_by_user("test"))
-
-    genome_file = da.set_file("test", genome_fa, "fasta", "Assembly", taxon_id, meta_data={'assembly' : assembly})
-    genome_idx  = da.set_file("test", genome_gem, "gem", "Assembly Index", taxon_id, meta_data={'assembly' : assembly})
-
-    metadata = {
+    METADATA = {
         'user_id'     : 'test',
-        'assembly'    : assembly,
-        'resolutions' : resolutions,
-        'enzyme_name' : enzyme_name,
-        'windows1'    : windows1,
-        'windows2'    : windows2,
-        'normalized'  : normalized,
+        'assembly'    : ASSEMBLY,
+        'resolutions' : RESOLUTIONS,
+        'enzyme_name' : ENZYME_NAME,
+        'windows1'    : WINDOWS1,
+        'windows2'    : WINDOWS2,
+        'normalized'  : NORMALIZED,
     }
 
-    fastq_01_file_in = da.set_file("test", fastq_01_file, "fastq", "Hi-C", taxon_id, meta_data=metadata)
-    fastq_02_file_in = da.set_file("test", fastq_02_file, "fastq", "Hi-C", taxon_id, meta_data=metadata)
+    #
+    # MuG Tool Steps
+    # --------------
+    #
+    # 1. Create data files
+    DM_HANDLER = dmp(test=True)
 
-    print(da.get_files_by_user("test"))
+    #2. Register the data with the DMP
+    genome_file = DM_HANDLER.set_file("test", GENOME_FA, "fasta", "Assembly", TAXON_ID, meta_data={'assembly' : ASSEMBLY})
+    genome_idx = DM_HANDLER.set_file("test", GENOME_GEM, "gem", "Assembly Index", TAXON_ID, meta_data={'assembly' : ASSEMBLY})
+    fastq_01_file_in = DM_HANDLER.set_file("test", FASTQ_01_FILE, "fastq", "Hi-C", TAXON_ID, meta_data=METADATA)
+    fastq_02_file_in = DM_HANDLER.set_file("test", FASTQ_02_FILE, "fastq", "Hi-C", TAXON_ID, meta_data=METADATA)
 
-    # 3. Instantiate and launch the App
-    #from basic_modules import WorkflowApp
-    #app = WorkflowApp()
-
-    files = [
-        genome_fa,
-        genome_gem,
-        fastq_01_file_in,
-        fastq_02_file_in
+    FILES = [
+        GENOME_FA,
+        GENOME_GEM,
+        FASTQ_01_FILE,
+        FASTQ_02_FILE
     ]
 
-    #results = app.launch(process_hic, files, metadata)
+    # 3. Instantiate and launch the App
+    RESULTS = main(FILES, [], METADATA)
 
-    ph = process_hic()
-    results = ph.run(files, metadata)
-
-    print(results)
+    print(RESULTS)
+    print(DM_HANDLER.get_files_by_user("test"))

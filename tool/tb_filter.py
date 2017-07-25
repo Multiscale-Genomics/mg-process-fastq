@@ -31,8 +31,6 @@ except ImportError:
 
 from basic_modules.tool import Tool
 
-import pytadbit
-
 from pytadbit.mapping.filter import apply_filter
 from pytadbit.mapping.filter import filter_reads
 

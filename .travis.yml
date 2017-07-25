@@ -140,9 +140,10 @@ install:
     - make    
     - cd ${HOME}/build/Multiscale-Genomics/mg-process-fastq    
     
+    
+    
      #Install APIs and Pipelines
     - cd ${HOME}/code
-    - pyenv activate mg-process-fastq
     - pip install git+https://github.com/Multiscale-Genomics/mg-dm-api.git
     - pip install git+https://github.com/Multiscale-Genomics/mg-tool-api.git
 
@@ -153,9 +154,7 @@ install:
     
      #Install MACS2
     - cd ${HOME}/code
-    - pyenv activate mg-process-fastq
-    - pip install MACS2
-    
+    - pip install MACS2    
     
     
      #Install TADbit

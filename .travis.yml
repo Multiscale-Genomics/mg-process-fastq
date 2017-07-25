@@ -56,7 +56,8 @@ matrix:
 before_install:
     - pwd
     - mkdir -p ${HOME}/bin 
-    - mkdir -p ${HOME}/lib
+    - mkdir -p ${HOME}/lib 
+    - mkdir -p ${HOME}/code
     - pip --version
     - pip
     - lsb_release -a

@@ -137,10 +137,9 @@ install:
     - tar -zxvf bedtools-2.26.0.tar.gz
     - cd bedtools2
     - make    
-    - cd ${HOME}/build/Multiscale-Genomics/mg-process-fastq
+    - cd ${HOME}/build/Multiscale-Genomics/mg-process-fastq    
     
-    
-    
+     #Install APIs and Pipelines
     - cd ${HOME}/code
     - pyenv activate mg-process-fastq
     - pip install git+https://github.com/Multiscale-Genomics/mg-dm-api.git
@@ -149,6 +148,40 @@ install:
     - git clone https://github.com/Multiscale-Genomics/mg-process-fastq.git
     - cd mg-process-fastq
     - pip install --editable .
+    
+    
+     #Install MACS2
+    - cd ${HOME}/code
+    - pyenv activate mg-process-fastq
+    - pip install MACS2
+    
+    
+    
+     #Install TADbit
+    - cd ${HOME}/lib
+    - wget https://github.com/3DGenomes/tadbit/archive/master.zip -O tadbit.zip
+    - unzip tadbit.zip
+    - cd TADbit-master
+    # Need to edit the setup.py to remove the dependency for IMP line ~64
+    - pip install .
+    
+        
+     #Install BSseeker
+    - cd ${HOME}/lib
+    - git clone https://github.com/BSSeeker/BSseeker2.git
+
+    - cd ${HOME}/code/mg-process-fastq
+    - ln -s ${HOME}/lib/BSseeker2/bs_align bs_align
+    - ln -s ${HOME}/lib/BSseeker2/bs_index bs_index
+    - ln -s ${HOME}/lib/BSseeker2/bs_utils bs_utils
+
+    - cd ${HOME}/code/mg-process-fastq/tool
+    - ln -s ${HOME}/lib/BSseeker2/FilterReads.py FilterReads.py
+    
+     #Post Installation Tidyup
+    - cd ${HOME}/lib
+    - rm *.zip *.tar.gz
+    
     
 
 before_script : 

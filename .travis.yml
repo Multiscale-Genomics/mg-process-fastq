@@ -67,6 +67,7 @@ services:
     - docker
     
 install:
+    - travis_wait mvn install
     - pip install git+https://github.com/Multiscale-Genomics/mg-tool-api.git
     - pip install git+https://github.com/Multiscale-Genomics/mg-dm-api.git
     - pip install --editable .
@@ -163,7 +164,7 @@ install:
     - unzip tadbit.zip
     - cd TADbit-master
     # Need to edit the setup.py to remove the dependency for IMP line ~64
-    - pip install .
+    - travis_wait pip install .
     
         
      #Install BSseeker

@@ -24,8 +24,8 @@ try:
     from pycompss.api.parameter import FILE_IN, FILE_OUT
     from pycompss.api.task import task
 except ImportError:
-    print ("[Warning] Cannot import \"pycompss\" API packages.")
-    print ("          Using mock decorators.")
+    print("[Warning] Cannot import \"pycompss\" API packages.")
+    print("          Using mock decorators.")
 
     from dummy_pycompss import FILE_IN, FILE_OUT
     from dummy_pycompss import task
@@ -62,7 +62,7 @@ class gemIndexerTool(Tool):
             Location of the output index file
         """
         common_handle = common()
-        idx_loc = common_handle.gem_index_genome(file_loc)
+        idx_loc = common_handle.gem_index_genome(file_loc, file_loc)
         return True
 
 
@@ -88,10 +88,7 @@ class gemIndexerTool(Tool):
         file_out = input_files[0] + ".gem"
 
         # input and output share most metadata
-        output_metadata = dict(
-            data_type=metadata["data_type"],
-            file_type=metadata["file_type"],
-            meta_data=metadata["metadata"])
+        output_metadata = {}
 
         result = self.gem_indexer(input_files[0], file_out)
 

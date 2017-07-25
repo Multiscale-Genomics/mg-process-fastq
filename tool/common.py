@@ -383,7 +383,7 @@ class common(object):
         }
 
 
-    def gem_index_genome(self, genome_file):
+    def gem_index_genome(self, genome_file, gem_file):
         """
         Create an index of the genome FASTA file with GEM. These are saved
         alongside the assembly file.
@@ -396,7 +396,7 @@ class common(object):
         """
         file_name = genome_file.split("/")
 
-        command_line = 'gem-indexer -i ' + genome_file + ' -o ' + file_name[-1].replace('.fa', '')
+        command_line = 'gem-indexer -i ' + genome_file + ' -o ' + gem_file
 
         args = shlex.split(command_line)
         process = subprocess.Popen(args)

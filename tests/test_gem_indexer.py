@@ -23,7 +23,7 @@ from tool.gem_indexer import gemIndexerTool
 
 def test_gem_indexer():
     """
-    Test case to ensure that the BWA indexer works.
+    Test case to ensure that the GEM indexer works.
     """
     resource_path = os.path.join(os.path.dirname(__file__), "data/")
     genome_fa = resource_path + "tb.Human.GCA_000001405.22.fasta"

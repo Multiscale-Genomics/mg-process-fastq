@@ -23,6 +23,7 @@ try:
     from pycompss.api.parameter import FILE_IN, FILE_OUT, FILE_INOUT, IN
     from pycompss.api.task import task
     from pycompss.api.constraint import constraint
+    from pycompss.api.api import compss_wait_on
 except ImportError:
     print("[Warning] Cannot import \"pycompss\" API packages.")
     print("          Using mock decorators.")
@@ -30,6 +31,7 @@ except ImportError:
     from dummy_pycompss import FILE_IN, FILE_OUT, FILE_INOUT, IN
     from dummy_pycompss import task
     from dummy_pycompss import constraint
+    from dummy_pycompss import compss_wait_on
 
 from basic_modules.metadata import Metadata
 from basic_modules.tool import Tool
@@ -57,11 +59,13 @@ class tbParseMappingTool(Tool):
         print "TADbit parse mapping"
         Tool.__init__(self)
 
-    @task(genome_seq = IN, enzyme_name = IN,
-        window1_1 = FILE_IN, window1_2 = FILE_IN, window1_3 = FILE_IN, window1_4 = FILE_IN,
-        window2_1 = FILE_IN, window2_2 = FILE_IN, window2_3 = FILE_IN, window2_4 = FILE_IN,
-        reads = FILE_INOUT)
-    @constraint(ProcessorCoreCount=32)
+    @task(
+        genome_seq=IN, enzyme_name=IN,
+        window1_1=FILE_IN, window1_2=FILE_IN, window1_3=FILE_IN, window1_4=FILE_IN,
+        window2_1=FILE_IN, window2_2=FILE_IN, window2_3=FILE_IN, window2_4=FILE_IN,
+        reads=FILE_INOUT
+    )
+    #@constraint(ProcessorCoreCount=32)
     def tb_parse_mapping_iter(
             self, genome_seq, enzyme_name,
             window1_1, window1_2, window1_3, window1_4,
@@ -110,6 +114,8 @@ class tbParseMappingTool(Tool):
         reads1 = "/".join(root_name[0:-1]) + '/reads_1.tsv'
         reads2 = "/".join(root_name[0:-1]) + '/reads_2.tsv'
 
+        print(reads1, reads2)
+
         parse_map(
             [window1_1, window1_2, window1_3, window1_4],
             [window2_1, window2_2, window2_3, window2_4],
@@ -118,7 +124,7 @@ class tbParseMappingTool(Tool):
             genome_seq=genome_seq,
             re_name=enzyme_name,
             verbose=True,
-            ncpus=32
+            ncpus=2
         )
 
         intersections = get_intersection(reads1, reads2, reads, verbose=True)
@@ -126,15 +132,16 @@ class tbParseMappingTool(Tool):
         return True
 
 
-    @task(genome_seq = IN, enzyme_name = IN,
-        window1_full = FILE_IN, window1_frag = FILE_IN,
-        window2_full = FILE_IN, window2_frag = FILE_IN,
-        reads = FILE_INOUT)
+    @task(
+        genome_seq=IN, enzyme_name=IN,
+        window1_full=FILE_IN, window1_frag=FILE_IN,
+        window2_full=FILE_IN, window2_frag=FILE_IN,
+        reads=FILE_INOUT)
     @constraint(ProcessorCoreCount=32)
-    def tb_parse_mapping_frag(self,
-        genome_seq, enzyme_name,
-        window1_full, window1_frag, window2_full, window2_frag,
-        reads):
+    def tb_parse_mapping_frag(
+            self, genome_seq, enzyme_name,
+            window1_full, window1_frag, window2_full, window2_frag,
+            reads):
         """
         Function to map the aligned reads and return the matching pairs
 
@@ -186,7 +193,7 @@ class tbParseMappingTool(Tool):
         return True
 
 
-    def run(self, input_files, metadata):
+    def run(self, input_files, output_files, metadata=None):
         """
         The main function to map the aligned reads and return the matching
         pairs. Parsing of the mappings can be either iterative of fragment
@@ -219,7 +226,7 @@ class tbParseMappingTool(Tool):
         metadata : dict
             windows : list
                 List of lists with the window sizes to be computed
-            enzyme_namer : str
+            enzyme_name : str
                 Restricture enzyme name
             mapping : list
                 The mapping function used. The options are iter or frag.
@@ -300,8 +307,8 @@ class tbParseMappingTool(Tool):
         enzyme_name = metadata['enzyme_name']
         mapping_list = metadata['mapping']
 
-        root_name = fastq_file.split("/")
-        reads  = "/".join(root_name[0:-1]) + '/both_map.tsv'
+        root_name = input_files[1].split("/")
+        reads = "/".join(root_name[0:-1]) + '/both_map.tsv'
 
         genome_seq = parse_fasta(genome_file)
 
@@ -326,40 +333,33 @@ class tbParseMappingTool(Tool):
                 window2_3 = input_files[7]
                 window2_4 = input_files[8]
 
-                # handle error
-                if not self.tb_parse_mapping_iter(genome_seq, enzyme_name,
+                results = self.tb_parse_mapping_iter(
+                    genome_seq, enzyme_name,
                     window1_1, window1_2, window1_3, window1_4,
                     window2_1, window2_2, window2_3, window2_4,
-                    reads):
-
-                    output_metadata.set_exception(
-                        Exception(
-                            "tb_parse_mapping_iter: Could not process files {}, {}.".format(*input_files)))
-                    reads = None
+                    reads)
+                reads = None
+                results = compss_wait_on(results)
                 return ([reads], output_metadata)
+
             elif mapping_list[0] == 'frag':
-                window1_1 = input_files[1]
-                window1_2 = input_files[2]
+                window1_full = input_files[1]
+                window1_frag = input_files[2]
 
-                window2_1 = input_files[3]
-                window2_2 = input_files[4]
+                window2_full = input_files[3]
+                window2_frag = input_files[4]
 
-                # handle error
-                if not self.tb_parse_mapping_iter(genome_seq, enzyme_name,
+                results = self.tb_parse_mapping_frag(
+                    genome_seq, enzyme_name,
                     window1_full, window1_frag,
                     window2_full, window2_frag,
-                    reads):
+                    reads)
 
-                    output_metadata.set_exception(
-                        Exception(
-                            "tb_parse_mapping_iter: Could not process files {}, {}.".format(*input_files)))
-                    reads = None
-                return ([reads], output_metadata)
-            else:
-                output_metadata.set_exception(
-                    Exception(
-                        "tb_parse_mapping_*: Unspecified mapping version {}, {}.".format(*metadata)))
                 reads = None
+                results = compss_wait_on(results)
                 return ([reads], output_metadata)
+
+            reads = None
+            return ([reads], output_metadata)
 
 # ------------------------------------------------------------------------------

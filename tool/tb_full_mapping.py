@@ -93,10 +93,15 @@ class tbFullMappingTool(Tool):
             Location of the fourth window index file
 
         """
+        print("tb_full_mapping_iter")
         od_loc = fastq_file.split("/")
         output_dir = "/".join(od_loc[0:-1])
 
-        map_files = full_mapping(gem_file, fastq_file, output_dir, windows=windows, frag_map=False, nthreads=32, clean=True, temp_dir='/tmp/')
+        map_files = full_mapping(
+            gem_file, fastq_file, output_dir,
+            windows=windows, frag_map=False, nthreads=32, clean=True,
+            temp_dir='/tmp/'
+        )
 
         return True
 
@@ -132,10 +137,15 @@ class tbFullMappingTool(Tool):
             Location of the window index file
 
         """
+        print("tb_full_mapping_frag")
         od_loc = fastq_file.split("/")
         output_dir = "/".join(od_loc[0:-1])
 
-        map_files = full_mapping(gem_file, fastq_file, output_dir, r_enz=enzyme_name, windows=windows, frag_map=True, nthreads=32, clean=True, temp_dir='/tmp/')
+        map_files = full_mapping(
+            gem_file, fastq_file, output_dir,
+            r_enz=enzyme_name, windows=windows, frag_map=True, nthreads=32,
+            clean=True, temp_dir='/tmp/'
+        )
 
         return True
 
@@ -184,8 +194,8 @@ class tbFullMappingTool(Tool):
         root_path = '/'.join(root_name)
 
         if 'enzyme_name' in metadata:
-            full_file = root_path + "_full_" + windows[0][0] + "-" + windows[0][1] + ".map"
-            frag_file = root_path + "_frag_" + windows[0][0] + "-" + windows[0][1] + ".map"
+            full_file = root_path + "_full_" + str(windows[0][0]) + "-" + str(windows[0][1]) + ".map"
+            frag_file = root_path + "_frag_" + str(windows[0][0]) + "-" + str(windows[0][1]) + ".map"
 
             results = self.tb_full_mapping_frag(
                 gem_file, fastq_file, metadata['enzyme_name'], windows,
@@ -196,10 +206,10 @@ class tbFullMappingTool(Tool):
             output_metadata['func'] = 'frag'
             return ([full_file, frag_file], output_metadata)
 
-        window1 = root_path + "_full_" + windows[0][0] + "-" + windows[0][1] + ".map"
-        window2 = root_path + "_full_" + windows[1][0] + "-" + windows[1][1] + ".map"
-        window3 = root_path + "_full_" + windows[2][0] + "-" + windows[2][1] + ".map"
-        window4 = root_path + "_full_" + windows[3][0] + "-" + windows[3][1] + ".map"
+        window1 = root_path + "_full_" + str(windows[0][0]) + "-" + str(windows[0][1]) + ".map"
+        window2 = root_path + "_full_" + str(windows[1][0]) + "-" + str(windows[1][1]) + ".map"
+        window3 = root_path + "_full_" + str(windows[2][0]) + "-" + str(windows[2][1]) + ".map"
+        window4 = root_path + "_full_" + str(windows[3][0]) + "-" + str(windows[3][1]) + ".map"
 
         results = self.tb_full_mapping_iter(
             gem_file, fastq_file, windows,

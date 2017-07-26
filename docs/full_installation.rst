@@ -350,8 +350,10 @@ Install TADbit
    wget https://github.com/3DGenomes/tadbit/archive/master.zip -O tadbit.zip
    unzip tadbit.zip
    cd TADbit-master
-   # Need to edit the setup.py to remove the dependency for IMP line ~64
-   pip install .
+
+   # If the pyenv env is not called mg-process-fastq then change this to match,
+   # the sme is true for teh version of python
+   python setup.py install --install-lib=${HOME}/.pyenv/versions/mg-process-fastq/lib/python2.7/site-packages/ --install-scripts=${HOME}/bin
 
 Install BSseeker
 ^^^^^^^^^^^^^^^^

@@ -163,7 +163,7 @@ install:
     - unzip tadbit.zip
     - cd TADbit-master
     # Need to edit the setup.py to remove the dependency for IMP line ~64
-    - yes | sudo python setup.py install
+    - yes | python setup.py install --install-lib=${HOME}/.pyenv/versions/mg-process-fastq/lib/python2.7/site-packages/ --install-scripts=${HOME}/bin 
     
         
      #Install BSseeker

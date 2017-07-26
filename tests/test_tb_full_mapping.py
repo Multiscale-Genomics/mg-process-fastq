@@ -23,7 +23,8 @@ from tool.tb_full_mapping import tbFullMappingTool
 
 def test_tb_full_mapping_frag_01():
     """
-    Test case to ensure that the BWA indexer works.
+    Test case to ensure that the fragment based full mapping works as expected
+    for the first paired end
     """
     resource_path = os.path.join(os.path.dirname(__file__), "data/")
     gem_file = resource_path + "tb.Human.GCA_000001405.22.fasta.gem"
@@ -48,23 +49,18 @@ def test_tb_full_mapping_frag_01():
     tfm1 = tbFullMappingTool()
     tfm1_files, tfm1_meta = tfm1.run(files, [], metadata)
 
-    map25 = resource_path + "tb.Human.SRR1658573_1_full_1-25.map"
-    map50 = resource_path + "tb.Human.SRR1658573_1_full_1-50.map"
-    map75 = resource_path + "tb.Human.SRR1658573_1_full_1-75.map"
-    map100 = resource_path + "tb.Human.SRR1658573_1_full_1-100.map"
+    map_frag = resource_path + "tb.Human.SRR1658573_1_frag_1-end.map"
+    map_full = resource_path + "tb.Human.SRR1658573_1_full_1-end.map"
 
-    assert os.path.isfile(map25) is True
-    assert os.path.getsize(map25) > 0
-    assert os.path.isfile(map50) is True
-    assert os.path.getsize(map50) > 0
-    assert os.path.isfile(map75) is True
-    assert os.path.getsize(map75) > 0
-    assert os.path.isfile(map100) is True
-    assert os.path.getsize(map100) > 0
+    assert os.path.isfile(map_frag) is True
+    assert os.path.getsize(map_frag) > 0
+    assert os.path.isfile(map_full) is True
+    assert os.path.getsize(map_full) > 0
 
 def test_tb_full_mapping_frag_02():
     """
-    Test case to ensure that the BWA indexer works.
+    Test case to ensure that the fragment based full mapping works as expected
+    for the second paired end
     """
     resource_path = os.path.join(os.path.dirname(__file__), "data/")
     gem_file = resource_path + "tb.Human.GCA_000001405.22.fasta.gem"
@@ -89,23 +85,18 @@ def test_tb_full_mapping_frag_02():
     tfm2 = tbFullMappingTool()
     tfm2_files, tfm2_meta = tfm2.run(files, [], metadata)
 
-    map25 = resource_path + "tb.Human.SRR1658573_2_full_1-25.map"
-    map50 = resource_path + "tb.Human.SRR1658573_2_full_1-50.map"
-    map75 = resource_path + "tb.Human.SRR1658573_2_full_1-75.map"
-    map100 = resource_path + "tb.Human.SRR1658573_2_full_1-100.map"
+    map_frag = resource_path + "tb.Human.SRR1658573_2_frag_1-end.map"
+    map_full = resource_path + "tb.Human.SRR1658573_2_full_1-end.map"
 
-    assert os.path.isfile(map25) is True
-    assert os.path.getsize(map25) > 0
-    assert os.path.isfile(map50) is True
-    assert os.path.getsize(map50) > 0
-    assert os.path.isfile(map75) is True
-    assert os.path.getsize(map75) > 0
-    assert os.path.isfile(map100) is True
-    assert os.path.getsize(map100) > 0
+    assert os.path.isfile(map_frag) is True
+    assert os.path.getsize(map_frag) > 0
+    assert os.path.isfile(map_full) is True
+    assert os.path.getsize(map_full) > 0
 
 def test_tb_full_mapping_iter_01():
     """
-    Test case to ensure that the BWA indexer works.
+    Test case to ensure that the iterative based full mapping works as expected
+    for the first paired end
     """
     resource_path = os.path.join(os.path.dirname(__file__), "data/")
     gem_file = resource_path + "tb.Human.GCA_000001405.22.fasta.gem"
@@ -119,7 +110,7 @@ def test_tb_full_mapping_iter_01():
 
     metadata = {
         'assembly' : 'test',
-        'enzyme_name' : 'MboI',
+        # 'enzyme_name' : 'MboI',
         'windows' : ((1, 25), (1, 50), (1, 75), (1, 100))
     }
 
@@ -146,7 +137,8 @@ def test_tb_full_mapping_iter_01():
 
 def test_tb_full_mapping_iter_02():
     """
-    Test case to ensure that the BWA indexer works.
+    Test case to ensure that the iterative based full mapping works as expected
+    for the second paired end
     """
     resource_path = os.path.join(os.path.dirname(__file__), "data/")
     gem_file = resource_path + "tb.Human.GCA_000001405.22.fasta.gem"
@@ -160,7 +152,7 @@ def test_tb_full_mapping_iter_02():
 
     metadata = {
         'assembly' : 'test',
-        'enzyme_name' : 'MboI',
+        # 'enzyme_name' : 'MboI',
         'windows' : ((1, 25), (1, 50), (1, 75), (1, 100))
     }
 

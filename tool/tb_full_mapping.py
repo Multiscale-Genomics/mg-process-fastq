@@ -194,8 +194,8 @@ class tbFullMappingTool(Tool):
         root_path = '/'.join(root_name)
 
         if 'enzyme_name' in metadata:
-            full_file = root_path + "_full_" + str(windows[0][0]) + "-" + str(windows[0][1]) + ".map"
-            frag_file = root_path + "_frag_" + str(windows[0][0]) + "-" + str(windows[0][1]) + ".map"
+            full_file = root_path + "_full.map"
+            frag_file = root_path + "_frag.map"
 
             results = self.tb_full_mapping_frag(
                 gem_file, fastq_file, metadata['enzyme_name'], windows,

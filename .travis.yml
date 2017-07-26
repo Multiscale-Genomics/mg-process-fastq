@@ -161,9 +161,9 @@ install:
     - cd ${HOME}/lib
     - wget https://github.com/3DGenomes/tadbit/archive/master.zip -O tadbit.zip
     - unzip tadbit.zip
-    - cd TADbit-master
+    - cd tadbit-master
     # Need to edit the setup.py to remove the dependency for IMP line ~64
-    - travis_wait pip install .
+    - yes | sudo python setup.py install
     
         
      #Install BSseeker

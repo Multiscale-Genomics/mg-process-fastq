@@ -51,20 +51,24 @@ class gemIndexerTool(Tool):
         print ("GEM Indexer")
         Tool.__init__(self)
 
-    @task(file_loc=FILE_IN, idx_loc=FILE_OUT)
-    def gem_indexer(self, file_loc, idx_loc): # pylint: disable=unused-argument
+    @task(genome_file=FILE_IN, new_genome_file=FILE_OUT, idx_loc=FILE_OUT)
+    def gem_indexer(self, genome_file, new_genome_file, idx_loc): # pylint: disable=unused-argument
         """
         GEM Indexer
 
         Parameters
         ----------
-        file_loc : str
+        genome_file : str
             Location of the genome assembly FASTA file
+        new_genome_file : str
+            Location of the genome assembly formated for GEM indexing
         idx_loc : str
             Location of the output index file
         """
         common_handle = common()
-        idx_loc = common_handle.gem_index_genome(file_loc, file_loc)
+        common_handle.replaceENAHeader(genome_file, new_genome_file)
+
+        idx_loc = common_handle.gem_index_genome(new_genome_file, new_genome_file)
         return True
 
 
@@ -87,14 +91,17 @@ class gemIndexerTool(Tool):
             list of the matching metadata
         """
 
-        file_out = input_files[0] + ".gem"
+        fa_file_out = input_files[0].replace(".fasta", "")
+        fa_file_out = fa_file_out.replace(".fa", "")
+        fa_file_out += "_gem.fasta"
+        idx_file_out = fa_file_out + ".gem"
 
         # input and output share most metadata
         output_metadata = {}
 
-        results = self.gem_indexer(input_files[0], file_out)
+        results = self.gem_indexer(input_files[0], fa_file_out, idx_file_out)
         results = compss_wait_on(results)
 
-        return ([file_out], [output_metadata])
+        return ([fa_file_out, idx_file_out], [output_metadata])
 
 # ------------------------------------------------------------------------------

@@ -48,8 +48,16 @@ class tbFilterTool(Tool):
         print("TADbit filter aligned reads")
         Tool.__init__(self)
 
-    @task(reads=FILE_IN, filter_reads=FILE_OUT, conservative=IN)
-    def tb_filter(self, reads, filter_reads_file, conservative):
+    @task(
+        reads=FILE_IN, filter_reads_file=FILE_OUT, conservative=IN,
+        output_de=FILE_OUT, output_d=FILE_OUT, output_e=FILE_OUT,
+        output_ed=FILE_OUT, output_or=FILE_OUT, output_rb=FILE_OUT,
+        output_sc=FILE_OUT, output_tc=FILE_OUT, output_tl=FILE_OUT,
+        output_ts=FILE_OUT)
+    def tb_filter(
+            self, reads, filter_reads_file, conservative, output_de, output_d,
+            output_e, output_ed, output_or, output_rb, output_sc, output_tc,
+            output_tl, output_ts):
         """
         Function to filter out expoerimental artifacts
 
@@ -90,7 +98,7 @@ class tbFilterTool(Tool):
         return True
 
 
-    def run(self, input_files, metadata):
+    def run(self, input_files, output_files, metadata=None):
         """
         The main function to filter the reads to remove experimental artifacts
 
@@ -120,13 +128,27 @@ class tbFilterTool(Tool):
             conservative = metadata['conservative_filtering']
 
         root_name = reads.split("/")
-        filtered_reads = "/".join(root_name[0:-1]) + '/filtered_map.tsv'
+        filtered_reads_file = "/".join(root_name[0:-1]) + '/' + metadata['expt_name'] + '_filtered_map.tsv'
+
+        output_de = filtered_reads_file + '_dangling-end.tsv'
+        output_d = filtered_reads_file + '_duplicated.tsv'
+        output_e = filtered_reads_file + '_error.tsv'
+        output_ed = filtered_reads_file + '_extra_dangling-end.tsv'
+        output_or = filtered_reads_file + '_over-represented.tsv'
+        output_rb = filtered_reads_file + '_random_breaks.tsv'
+        output_sc = filtered_reads_file + '_self-circle.tsv'
+        output_tc = filtered_reads_file + '_too_close_from_RES.tsv'
+        output_tl = filtered_reads_file + '_too_large.tsv'
+        output_ts = filtered_reads_file + '_too_short.tsv'
 
         # input and output share most metadata
         output_metadata = {}
 
         # handle error
-        results = self.tb_filter(reads, filter_reads, conservative)
-        return ([filtered_reads], output_metadata)
+        results = self.tb_filter(
+            reads, filtered_reads_file, conservative,
+            output_de, output_d, output_e, output_ed, output_or, output_rb,
+            output_sc, output_tc, output_tl, output_ts)
+        return ([filtered_reads_file], output_metadata)
 
 # ------------------------------------------------------------------------------

@@ -27,7 +27,7 @@ def test_tb_full_mapping_frag_01():
     for the first paired end
     """
     resource_path = os.path.join(os.path.dirname(__file__), "data/")
-    gem_file = resource_path + "tb.Human.GCA_000001405.22.fasta.gem"
+    gem_file = resource_path + "tb.Human.GCA_000001405.22_gem.fasta.gem"
 
     fastq_file_1 = resource_path + "tb.Human.SRR1658573_1.fastq"
 
@@ -63,7 +63,7 @@ def test_tb_full_mapping_frag_02():
     for the second paired end
     """
     resource_path = os.path.join(os.path.dirname(__file__), "data/")
-    gem_file = resource_path + "tb.Human.GCA_000001405.22.fasta.gem"
+    gem_file = resource_path + "tb.Human.GCA_000001405.22_gem.fasta.gem"
 
     fastq_file_2 = resource_path + "tb.Human.SRR1658573_2.fastq"
 
@@ -99,7 +99,7 @@ def test_tb_full_mapping_iter_01():
     for the first paired end
     """
     resource_path = os.path.join(os.path.dirname(__file__), "data/")
-    gem_file = resource_path + "tb.Human.GCA_000001405.22.fasta.gem"
+    gem_file = resource_path + "tb.Human.GCA_000001405.22_gem.fasta.gem"
 
     fastq_file_1 = resource_path + "tb.Human.SRR1658573_1.fastq"
 
@@ -141,7 +141,7 @@ def test_tb_full_mapping_iter_02():
     for the second paired end
     """
     resource_path = os.path.join(os.path.dirname(__file__), "data/")
-    gem_file = resource_path + "tb.Human.GCA_000001405.22.fasta.gem"
+    gem_file = resource_path + "tb.Human.GCA_000001405.22_gem.fasta.gem"
 
     fastq_file_2 = resource_path + "tb.Human.SRR1658573_2.fastq"
 

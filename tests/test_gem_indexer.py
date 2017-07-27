@@ -27,18 +27,13 @@ def test_gem_indexer():
     """
     resource_path = os.path.join(os.path.dirname(__file__), "data/")
     genome_fa = resource_path + "tb.Human.GCA_000001405.22.fasta"
-
-    files = [
-        genome_fa,
-        genome_fa + ".gem"
-    ]
-
-    gem_file = files[1]
-
-    print(gem_file)
+    genome_gem_fa = resource_path + "tb.Human.GCA_000001405.22_gem.fasta"
+    genome_gem = resource_path + "tb.Human.GCA_000001405.22_gem.fasta.gem"
 
     gem_it = gemIndexerTool()
     gem_it.run([genome_fa], {'assembly' : 'test'})
 
-    assert os.path.isfile(gem_file) is True
-    assert os.path.getsize(gem_file) > 0
+    assert os.path.isfile(genome_gem_fa) is True
+    assert os.path.getsize(genome_gem_fa) > 0
+    assert os.path.isfile(genome_gem) is True
+    assert os.path.getsize(genome_gem) > 0

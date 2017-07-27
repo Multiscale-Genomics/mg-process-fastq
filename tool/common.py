@@ -144,31 +144,31 @@ class common(object):
         return {'unzipped': file_name, 'index' : indexes}
 
 
-    def replaceENAHeader(self, file_path):
+    def replaceENAHeader(self, file_path, file_out):
         """
         The ENA header has pipes in the header as part of teh stable_id. This
         function removes the ENA stable_id and replaces it with the final
         section after splitting the stable ID on the pipe.
         """
-        from tempfile import mkstemp
-        from shutil import move
-        from os import remove, close
+        #from tempfile import mkstemp
+        #from shutil import move
+        #from os import remove, close
 
         #Create temp file
-        file_handle, abs_path = mkstemp()
-        with open(abs_path, 'w') as new_file:
+        #file_handle, abs_path = mkstemp()
+        with open(file_out, 'w') as new_file:
             with open(file_path) as old_file:
                 for line in old_file:
                     if line[0] == '>':
                         space_line = line.split(" ")
-                        new_file.write(">" + space_line[0].split("|")[-1].replace(">", "") + " " + " ".join(space_line[1:]))
+                        new_file.write(">" + space_line[0].split("|")[-1].replace(">", "") + "\n")
                     else:
                         new_file.write(line)
-        close(file_handle)
+        #close(file_handle)
         #Remove original file
-        remove(file_path)
+        #remove(file_path)
         #Move new file
-        move(abs_path, file_path)
+        #move(abs_path, file_path)
 
         return True
 

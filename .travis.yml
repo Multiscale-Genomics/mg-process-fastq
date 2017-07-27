@@ -187,6 +187,7 @@ install:
     
 
 before_script : 
+    - yum install tbb tbb-devel
     - cd ${HOME}/bin
 
     - ln -s ${HOME}/lib/bedtools2/bin/bedtools bedtools

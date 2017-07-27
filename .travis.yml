@@ -41,8 +41,8 @@ addons:
     - unzip   
     - liblzma-dev
     - libtool
-    - tbb
-    - libtbb.so.2
+    #- tbb
+    - libtbb2
     #- samtools
 
 env:

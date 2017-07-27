@@ -54,6 +54,7 @@ matrix:
 
 before_install:
     - pwd
+    - ls /usr/lib/
     - mkdir -p ${HOME}/bin 
     - mkdir -p ${HOME}/lib 
     - mkdir -p ${HOME}/code

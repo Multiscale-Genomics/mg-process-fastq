@@ -11,6 +11,7 @@ addons:
     packages:
     #system environment
     - make 
+    - yum
     - python-dev
     - build-essential
     - libssl-dev 
@@ -241,6 +242,7 @@ before_script :
     - cd ${HOME}/build/Multiscale-Genomics/mg-process-fastq
     - chmod +x harness.sh
     - ls tests/data
+    - yum install tbb tbb-devel
 
 
 script : 

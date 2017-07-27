@@ -41,7 +41,7 @@ addons:
     - unzip   
     - liblzma-dev
     - libtool
-    - libtbb2
+    - libtbb-dev
 env:
   - COVERALLS=false
   

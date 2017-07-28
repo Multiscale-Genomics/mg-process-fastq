@@ -72,5 +72,13 @@ def test_bowtie_indexer_02():
 
     bti.run([genome_file], {}, output_files)
 
-#    assert os.path.isfile(resource_path + "inps.Mouse.GRCm38.1.bt2") is True
-#    assert os.path.getsize(resource_path + "inps.Mouse.GRCm38.1.bt2") > 0
+    assert os.path.isfile(resource_path + "inps.Mouse.GRCm38.1.bt2") is True
+    assert os.path.getsize(resource_path + "inps.Mouse.GRCm38.1.bt2") > 0
+    assert os.path.isfile(resource_path + "inps.Mouse.GRCm38.2.bt2") is True
+    assert os.path.getsize(resource_path + "inps.Mouse.GRCm38.2.bt2") > 0
+    assert os.path.isfile(resource_path + "inps.Mouse.GRCm38.3.bt2") is True
+    assert os.path.getsize(resource_path + "inps.Mouse.GRCm38.3.bt2") > 0
+    assert os.path.isfile(resource_path + "inps.Mouse.GRCm38.4.bt2") is True
+    assert os.path.getsize(resource_path + "inps.Mouse.GRCm38.4.bt2") > 0
+    assert os.path.isfile(resource_path + "inps.Mouse.GRCm38.rev.1.bt2") is True
+    assert os.path.getsize(resource_path + "inps.Mouse.GRCm38.rev.2.bt2") > 0

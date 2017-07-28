@@ -55,6 +55,7 @@ class process_wgbs(Workflow):
             a dictionary containing parameters that define how the operation
             should be carried out, which are specific to each Tool.
         """
+        print "configuration", configuration
         self.configuration.update(configuration)
 
     def single_splitter(self, in_file1, tag='tmp'):

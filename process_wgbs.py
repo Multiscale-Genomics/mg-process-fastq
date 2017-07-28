@@ -56,6 +56,8 @@ class process_wgbs(Workflow):
             should be carried out, which are specific to each Tool.
         """
         print "configuration", configuration
+        if configuration is None : 
+            configuration = {}
         self.configuration.update(configuration)
 
     def single_splitter(self, in_file1, tag='tmp'):

@@ -47,7 +47,7 @@ addons:
     - libtbb.so.2
     - libtbbmalloc.so.2
     - libtbbmalloc_proxy.so.2
-    - libtbb2
+    #- libtbb2
     
 env:
   - COVERALLS=false

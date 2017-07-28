@@ -23,6 +23,7 @@ import pytadbit
 
 from pytadbit import load_hic_data_from_reads
 from pytadbit import read_matrix
+from pytadbit.parsers.genome_parser import parse_fasta
 
 # ------------------------------------------------------------------------------
 
@@ -39,7 +40,7 @@ class tbSaveAdjacencyHDF5Tool(Tool):
         Tool.__init__(self)
 
 
-    def tb_matrix_hdf5(self, adj_list, adj_hdf5, resolution, chromosomes):
+    def tb_matrix_hdf5(self, hic_data, adj_hdf5, resolution, chromosomes):
         """
         Function to the Hi-C matrix into an HDF5 file
 
@@ -57,8 +58,8 @@ class tbSaveAdjacencyHDF5Tool(Tool):
 
         Parameters
         ----------
-        adj_list : str
-                Location of the adjacency list
+        hic_data : hic_data
+            Hi-C data object
         hdf5_file : str
             Location of the HDF5 output matrix file
         resolution : int
@@ -73,7 +74,7 @@ class tbSaveAdjacencyHDF5Tool(Tool):
             Location of the HDF5 output matrix file
 
         """
-        hic_data = read_matrix(adj_list, resolution=resolution)
+        #hic_data = read_matrix(adj_list, resolution=resolution)
 
         d_size = len(hic_data)
         d = np.zeros([d_size, d_size], dtype='int32')
@@ -94,7 +95,7 @@ class tbSaveAdjacencyHDF5Tool(Tool):
         return True
 
 
-    def run(self, input_files, metadata):
+    def run(self, input_files, output_files, metadata=None):
         """
         The main function save the adjacency list from Hi-C into an HDF5 index
         file at the defined resolutions.
@@ -125,30 +126,39 @@ class tbSaveAdjacencyHDF5Tool(Tool):
         """
 
         adjlist_file = input_files[0]
-        hdf5_file    = input_files[1]
+        genome_file = input_files[1]
+        hdf5_file    = adjlist_file.replace(".tsv", ".hdf5")
+
+        genome_seq = parse_fasta(genome_file)
+        chromosomes = []
+        for chr_id in genome_seq:
+            chromosomes.append([chr_id, len(genome_seq[chr_id])])
 
         assembly = metadata['assembly']
-        resolutions = metadata['resolution']
-        chromosomes = metadata['chromosomes_meta']
+        resolutions = metadata['resolutions']
 
-        root_name = adjlist_file.split("/")
+        normalized = False
+        if 'normalized' in metadata:
+            normalized = metadata['normalized']
 
-        matrix_files = []
+        #root_name = adjlist_file.split("/")
+
+        #matrix_files = []
         tad_files = {}
+        output_metadata = {}
 
         for resolution in resolutions:
             hic_data = load_hic_data_from_reads(adjlist_file, resolution=int(resolution))
             tad_files[resolution] = {}
 
-            save_matrix_file = "/".join(root_name[0:-1]) + '/adjlist_map_' + str(resolution) + '.tsv'
-            matrix_files.append(save_matrix_file)
-            hic_data.write_matrix(save_matrix_file, normalized=normalized)
+            if normalized is False:
+                hic_data.normalize_hic(iterations=9, max_dev=0.1)
 
-            # handle error
-            if not self.tb_matrix_hdf5(adjlist_file, hdf5_file, resolution, chromosomes):
-                output_metadata.set_exception(
-                    Exception(
-                        "tb_matrix_hdf5: Could not process files {}, {}.".format(*input_files)))
+            #save_matrix_file = "/".join(root_name[0:-1]) + '/adjlist_map_' + str(resolution) + '.tsv'
+            #matrix_files.append(save_matrix_file)
+            #hic_data.write_matrix(save_matrix_file, normalized=normalized)
+
+            results = self.tb_matrix_hdf5(hic_data, hdf5_file, resolution, chromosomes)
 
         return ([hdf5_file], [output_metadata])
 

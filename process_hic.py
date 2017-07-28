@@ -83,7 +83,7 @@ class process_hic(Workflow):
             List of locations for the output bam, bed and tsv files
         """
 
-        genome_file = file_ids[0]
+        genome_fa = file_ids[0]
         genome_gem = file_ids[1]
         fastq_file_1 = file_ids[2]
         fastq_file_2 = file_ids[3]
@@ -92,6 +92,7 @@ class process_hic(Workflow):
         windows1 = metadata['windows1']
         windows2 = metadata['windows2']
         normalized = metadata['normalized']
+        saveas_hdf5 = metadata['hdf5']
 
         tmp_name = fastq_file_1.split('/')
         tmp_dir = '/'.join(tmp_name[0:-1])
@@ -108,7 +109,7 @@ class process_hic(Workflow):
         tfm2_files, tfm2_meta = tfm2.run([genome_gem, fastq_file_2], {'windows' : windows2})
 
         tpm = tbParseMappingTool()
-        files = [genome_file] + tfm1_files + tfm2_files
+        files = [genome_fa] + tfm1_files + tfm2_files
         metadata = {'enzyme_name' : enzyme_name, 'mapping' : [tfm1_meta['func'], tfm2_meta['func']]}
         tpm_files, tpm_meta = tpm.run(files, metadata)
 
@@ -127,16 +128,15 @@ class process_hic(Workflow):
         # Generate the HDF5 and meta data required for the RESTful API.
         # - Chromosome meta is from the tb_parse_mapping step
 
-        if len(file_ids) == 5:
-            hdf5_file = file_ids[4]
+        if saveas_hdf5 is True:
             th5 = tbSaveAdjacencyHDF5Tool()
-            th5_files_in = [tf_files[0], hdf5_file]
+            th5_files_in = [tf_files[0], genome_fa]
             th5_meta_in = {
                 'resolutions' : resolutions,
                 'normalized' : normalized,
                 'chromosomes_meta' : tpm_meta['chromosomes']
             }
-            th5_files, th5_meta = th5.run(th5_files_in, th5_meta_in)
+            th5_files, th5_meta = th5.run(th5_files_in, [], th5_meta_in)
         else:
             hdf5_file = None
 

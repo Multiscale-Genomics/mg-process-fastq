@@ -41,12 +41,6 @@ addons:
     - unzip   
     - liblzma-dev
     - libtool
-    - libtbb-dev
-    - tbb
-    - tbb-devel
-    - libtbb.so.2
-    - libtbbmalloc.so.2
-    - libtbbmalloc_proxy.so.2
     #- libtbb2
     
 env:
@@ -74,6 +68,7 @@ services:
     - docker
     
 install:
+    # libtbb-dev did not seem to be installing correctly without using sudo
     - sudo apt-get install libtbb-dev
     - pip install git+https://github.com/Multiscale-Genomics/mg-tool-api.git
     - pip install git+https://github.com/Multiscale-Genomics/mg-dm-api.git
@@ -94,7 +89,6 @@ install:
     - cd ${HOME}/lib
     - git clone https://github.com/samtools/samtools.git
     - cd samtools
-    #- autoheader
     - autoconf -Wno-syntax
     - rm -rf autom4te.cache
     - rm config.mk configure

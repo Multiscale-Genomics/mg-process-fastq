@@ -17,9 +17,31 @@
 from __future__ import print_function
 
 import os.path
+import gzip
 import pytest # pylint: disable=unused-import
 
 from tool.tb_full_mapping import tbFullMappingTool
+
+def test_tb_extract_fastq():
+    """
+    Extract the compressed FASTQ files
+    """
+    resource_path = os.path.join(os.path.dirname(__file__), "data/")
+    fastq_file_1 = resource_path + "tb.Human.SRR1658573_1.fastq"
+    fastq_file_2 = resource_path + "tb.Human.SRR1658573_2.fastq"
+
+    with gzip.open(fastq_file_1 + '.gz', 'rb') as fgz_in:
+        with open(fastq_file_1, 'w') as f_out:
+            f_out.write(fgz_in.read())
+
+    with gzip.open(fastq_file_2 + '.gz', 'rb') as fgz_in:
+        with open(fastq_file_2, 'w') as f_out:
+            f_out.write(fgz_in.read())
+
+    assert os.path.isfile(fastq_file_1) is True
+    assert os.path.getsize(fastq_file_1) > 0
+    assert os.path.isfile(fastq_file_2) is True
+    assert os.path.getsize(fastq_file_2) > 0
 
 def test_tb_full_mapping_frag_01():
     """

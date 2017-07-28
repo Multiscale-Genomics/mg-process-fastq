@@ -17,6 +17,7 @@
 from __future__ import print_function
 
 import os.path
+import gzip
 import pytest # pylint: disable=unused-import
 
 from tool.gem_indexer import gemIndexerTool
@@ -28,6 +29,12 @@ def test_gem_indexer():
     resource_path = os.path.join(os.path.dirname(__file__), "data/")
     genome_fa = resource_path + "tb.Human.GCA_000001405.22.fasta"
     genome_gem_fa = resource_path + "tb.Human.GCA_000001405.22_gem.fasta"
+
+    with gzip.open(genome_fa + '.gz', 'rb') as fgz_in:
+        with open(genome_fa, 'w') as f_out:
+            f_out.write(fgz_in.read())
+
+
     genome_gem = resource_path + "tb.Human.GCA_000001405.22_gem.fasta.gem"
 
     gem_it = gemIndexerTool()

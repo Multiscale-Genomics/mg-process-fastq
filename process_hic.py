@@ -122,7 +122,7 @@ class process_hic(Workflow):
             'resolutions' : resolutions,
             'normalized' : normalized
         }
-        tgt_files, tgt_meta = tgt.run(tf_files, tgt_meta_in)
+        tgt_files, tgt_meta = tgt.run(tf_files, [], tgt_meta_in)
 
         # Generate the HDF5 and meta data required for the RESTful API.
         # - Chromosome meta is from the tb_parse_mapping step

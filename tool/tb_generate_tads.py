@@ -56,7 +56,7 @@ class tbGenerateTADsTool(Tool):
         print("TADbit - Generate TADs")
         Tool.__init__(self)
 
-    @task(matrix_file = FILE_IN, resolution = IN, tad_file = FILE_OUT)
+    @task(matrix_file=FILE_IN, resolution=IN, tad_file=FILE_OUT)
     @constraint(ProcessorCoreCount=16)
     def tb_generate_tads(self, expt_name, matrix_file, resolution, tad_file):
         """
@@ -95,7 +95,7 @@ class tbGenerateTADsTool(Tool):
         return True
 
 
-    def run(self, input_files, metadata):
+    def run(self, input_files, output_files, metadata=None):
         """
         The main function to the predict TAD sites for a given resolution from
         the Hi-C matrix
@@ -142,6 +142,10 @@ class tbGenerateTADsTool(Tool):
 
         for resolution in resolutions:
             hic_data = load_hic_data_from_reads(adj_list, resolution=int(resolution))
+
+            if normalized is False:
+                hic_data.normalize_hic(iterations=9, max_dev=0.1)
+
             tad_files[resolution] = {}
 
             for chrom in hic_data.chromosomes.keys():
@@ -151,14 +155,14 @@ class tbGenerateTADsTool(Tool):
                 save_tad_file = "/".join(root_name[0:-1]) + '/' + metadata['expt_name'] + '_tad_' + chrom + '_' + str(resolution) + '.tsv'
                 tad_files[resolution][chrom] = save_tad_file
 
-                hic_data.write_matrix(save_matrix_file, (chrom, chrom), normalized=normalized)
+                hic_data.write_matrix(save_matrix_file, (chrom, chrom), normalized=True)
 
                 expt_name = metadata['expt_name'] + '_tad_' + chrom + '_' + str(resolution)
 
                 results = self.tb_generate_tads(expt_name, save_matrix_file, resolution, save_tad_file)
 
         # Step to merge all the TAD files into a single bed file
-        tad_bed_file = "/".join(root_name[0:-1]) + '/tads.tsv'
+        tad_bed_file = "/".join(root_name[0:-1]) + '/' + metadata['expt_name'] + '_tads.tsv'
 
         fo = open(tad_bed_file, 'w')
         for resolution in tad_files.keys():

@@ -47,6 +47,7 @@ addons:
     - libtbb.so.2
     - libtbbmalloc.so.2
     - libtbbmalloc_proxy.so.2
+    - libtbb2
     
 env:
   - COVERALLS=false
@@ -73,6 +74,7 @@ services:
     - docker
     
 install:
+    - sudo apt-get install libtbb-dev
     - pip install git+https://github.com/Multiscale-Genomics/mg-tool-api.git
     - pip install git+https://github.com/Multiscale-Genomics/mg-dm-api.git
     - pip install --editable .

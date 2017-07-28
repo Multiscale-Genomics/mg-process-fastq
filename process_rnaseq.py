@@ -38,7 +38,7 @@ class process_rnaseq(Workflow):
     to quantify the amount of cDNA
     """
 
-    def __init__(self, configuration={}):
+    def __init__(self, configuration=None):
         """
         Initialise the tool with its configuration.
 
@@ -49,6 +49,9 @@ class process_rnaseq(Workflow):
             a dictionary containing parameters that define how the operation
             should be carried out, which are specific to each Tool.
         """
+        if configuration is None:
+            configuration = {}
+
         self.configuration.update(configuration)
 
 

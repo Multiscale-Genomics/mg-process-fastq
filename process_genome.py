@@ -41,10 +41,20 @@ class process_genome(Workflow):
     Workflow to download and pre-index a given genome
     """
 
-    def __init__(self):
+    def __init__(self, configuration=None):
         """
         Initialise the class
+
+        Parameters
+        ----------
+        configuration : dict
+            a dictionary containing parameters that define how the operation
+            should be carried out, which are specific to each Tool.
         """
+        if configuration is None:
+            configuration = {}
+
+        self.configuration.update(configuration)
 
     def run(self, file_ids, metadata, output_files):
         """

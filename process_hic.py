@@ -46,7 +46,7 @@ class process_hic(Workflow):
 
     configuration = {}
 
-    def __init__(self, configuration):
+    def __init__(self, configuration=None):
         """
         Initialise the tool with its configuration.
 
@@ -57,6 +57,9 @@ class process_hic(Workflow):
             a dictionary containing parameters that define how the operation
             should be carried out, which are specific to each Tool.
         """
+        if configuration is None:
+            configuration = {}
+
         self.configuration.update(configuration)
 
     def run(self, file_ids, metadata, output_files):

@@ -13,32 +13,34 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 """
+from __future__ import print_function
 
-import os
 import sys
 
 try:
     if hasattr(sys, '_run_from_cmdl') is True:
         raise ImportError
-    from pycompss.api.parameter import FILE_IN, FILE_OUT, FILE_INOUT, IN
+    from pycompss.api.parameter import FILE_IN, FILE_OUT, IN
     from pycompss.api.task import task
     from pycompss.api.constraint import constraint
 except ImportError:
     print("[Warning] Cannot import \"pycompss\" API packages.")
     print("          Using mock decorators.")
 
-    from dummy_pycompss import FILE_IN, FILE_OUT, FILE_INOUT, IN
+    from dummy_pycompss import FILE_IN, FILE_OUT, IN
     from dummy_pycompss import task
     from dummy_pycompss import constraint
 
-from basic_modules.metadata import Metadata
+#from basic_modules.metadata import Metadata
 from basic_modules.tool import Tool
 
-import numpy as np
-import h5py
-import pytadbit
+#import numpy as np
+#import h5py
+#import pytadbit
 
 from pytadbit import Chromosome
+from pytadbit import read_matrix
+from pytadbit import load_hic_data_from_reads
 
 # ------------------------------------------------------------------------------
 
@@ -51,10 +53,10 @@ class tbGenerateTADsTool(Tool):
         """
         Init function
         """
-        print "TADbit - Generate TADs"
+        print("TADbit - Generate TADs")
         Tool.__init__(self)
 
-    @task(matrix_file = FILE_IN, resolution = IN, tad_file = FILE_INOUT)
+    @task(matrix_file = FILE_IN, resolution = IN, tad_file = FILE_OUT)
     @constraint(ProcessorCoreCount=16)
     def tb_generate_tads(self, expt_name, matrix_file, resolution, tad_file):
         """
@@ -143,21 +145,17 @@ class tbGenerateTADsTool(Tool):
             tad_files[resolution] = {}
 
             for chrom in hic_data.chromosomes.keys():
-                save_matrix_file = "/".join(root_name[0:-1]) + '/adjlist_map_' + chrom + '-' + chrom + '_' + str(resolution) + '.tsv'
+                save_matrix_file = "/".join(root_name[0:-1]) + '/' + metadata['expt_name'] + '_adjlist_map_' + chrom + '-' + chrom + '_' + str(resolution) + '.tsv'
                 matrix_files.append(save_matrix_file)
 
-                save_tad_file = "/".join(root_name[0:-1]) + '/tad_' + chrom + '_' + str(resolution) + '.tsv'
+                save_tad_file = "/".join(root_name[0:-1]) + '/' + metadata['expt_name'] + '_tad_' + chrom + '_' + str(resolution) + '.tsv'
                 tad_files[resolution][chrom] = save_tad_file
 
                 hic_data.write_matrix(save_matrix_file, (chrom, chrom), normalized=normalized)
 
-                expt_name = 'tad_' + chrom + '_' + str(resolution)
+                expt_name = metadata['expt_name'] + '_tad_' + chrom + '_' + str(resolution)
 
-                # handle error
-                if not self.tb_generate_tads(expt_name, save_matrix_file, resolution, save_tad_file):
-                    output_metadata.set_exception(
-                        Exception(
-                            "tb_generate_tads: Could not process files {}, {}.".format(*input_files)))
+                results = self.tb_generate_tads(expt_name, save_matrix_file, resolution, save_tad_file)
 
         # Step to merge all the TAD files into a single bed file
         tad_bed_file = "/".join(root_name[0:-1]) + '/tads.tsv'

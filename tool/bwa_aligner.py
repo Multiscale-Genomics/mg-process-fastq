@@ -121,7 +121,7 @@ class bwaAlignerTool(Tool):
 
         results = compss_wait_on(results)
 
-        print("BWA ALIGNER:", os.path.isfile(out_bam)
+        print("BWA ALIGNER:", os.path.isfile(out_bam))
 
         return ([out_bam], [output_metadata])
 

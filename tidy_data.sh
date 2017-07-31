@@ -35,6 +35,6 @@ for i in $b; do
         fi
     done
     if [ $skip != 1 ]; then
-        rm $i
+        rm -r $i
     fi
 done

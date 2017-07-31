@@ -93,7 +93,7 @@ if __name__ == '__main__':
     # Get the matching parameters from the command line
     ARGS = PARSER.parse_args()
 
-    PIPELINES = ARGS.pipelines
+    PIPELINES = ARGS.pipeline
     PIPELINES = PIPELINES.split(",")
     print(PIPELINES)
 

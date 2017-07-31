@@ -40,8 +40,8 @@ The IDs were filtered to ensure matching pairs in both files:
 
    grep -Fx -f SRR1658573_1_chr21_1-100.row SRR1658573_2_chr21_1-100.row > SRR1658573_chr21.row
 
-The split_paired_fastq.py was used to divide the original FASTQ files into
-chunks of 1000000 reads. The ExtractRowsFromFASTQ.py script was then used to
+The `split_paired_fastq.py` was used to divide the original FASTQ files into
+chunks of 1000000 reads. The `ExtractRowsFromFASTQ.py` script was then used to
 extract the matching FASTQ pairs from each of the FASTQ files in parallel. All
 of the individual FASTQ files were then concatenated together to form the final
 2 FASTQ test files.
@@ -49,6 +49,12 @@ of the individual FASTQ files were then concatenated together to form the final
 
 Test Scripts
 ------------
+
+The following are the tests for checking that the tools in the Hi-C pipeline are
+functioning correctly.
+
+The tests should be run in this order so that the required input files are
+generated at the correct stage.
 
 .. code-block:: none
    :linenos:

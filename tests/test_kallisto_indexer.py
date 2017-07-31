@@ -20,7 +20,7 @@ import pytest # pylint: disable=unused-import
 
 from tool.kallisto_indexer import kallistoIndexerTool
 
-@pytest.mark.ranseq
+@pytest.mark.rnaseq
 def test_kallisto_indexer():
     """
     Function to test Kallisto indexer

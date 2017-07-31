@@ -20,6 +20,7 @@ import pytest # pylint: disable=unused-import
 
 from tool import bs_seeker_methylation_caller
 
+@pytest.mark.wgbs
 def test_bs_seeker_methylation_caller():
     """
     Test that it is possible to call the methylation called by BS seeker

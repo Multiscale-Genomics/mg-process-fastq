@@ -20,7 +20,7 @@ import pytest # pylint: disable=unused-import
 
 from tool.kallisto_quant import kallistoQuantificationTool
 
-@pytest.mark.ranseq
+@pytest.mark.rnaseq
 def test_kallisto_quant():
     """
     Function to test Kallisto quantifier

@@ -16,6 +16,7 @@ MuG - FASTQ Pipelines's documentation!
    tools
    common
    fastqreader
+   testData
    license
 
 

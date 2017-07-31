@@ -21,6 +21,7 @@ import pytest # pylint: disable=unused-import
 
 def chipseq_toolchain():
     """
+    Runs the tests for all of the tools from the ChIP-seq pipeline
     """
     pytest.main(
         [
@@ -34,6 +35,7 @@ def chipseq_toolchain():
 
 def hic_toolchain():
     """
+    Runs the tests for all of the tools from the Hi-C pipeline
     """
     pytest.main(
         [
@@ -49,6 +51,7 @@ def hic_toolchain():
 
 def mnaseseq_toolchain():
     """
+    Runs the tests for all of the tools from the MNase-seq pipeline
     """
     pytest.main(
         [
@@ -61,6 +64,7 @@ def mnaseseq_toolchain():
 
 def rnaseq_toolchain():
     """
+    Runs the tests for all of the tools from the RNA-seq pipeline
     """
     pytest.main(
         [
@@ -72,6 +76,7 @@ def rnaseq_toolchain():
 
 def wgbs_toolchain():
     """
+    Runs the tests for all of the tools from the WGBS pipeline
     """
     pytest.main(
         [

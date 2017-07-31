@@ -65,3 +65,10 @@ generated at the correct stage.
    pytest tests/test_tb_filter.py
    pytest tests/test_tb_generate_tads.py
    pytest tests/test_tb_save_hdf5_matrix.py
+
+These can be called as part of a single tool chain with:
+
+.. code-block:: none
+   :linenos:
+
+   python tests/test_toolchains.py --pipeline hic

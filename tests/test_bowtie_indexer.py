@@ -19,7 +19,7 @@ import pytest # pylint: disable=unused-import
 
 from tool import bowtie_indexer
 
-
+@pytest.mark.chipseq
 def test_bowtie_indexer():
     """
     Test to ensure Bowtie indexer is working for macs data set
@@ -52,6 +52,7 @@ def test_bowtie_indexer():
     assert os.path.getsize(resource_path + "macs2.Human.GCA_000001405.22.rev.2.bt2") > 0
 
 
+@pytest.mark.mnaseseq
 def test_bowtie_indexer_02():
     """
     Test to ensure Bowtie indexer is working for macs data set

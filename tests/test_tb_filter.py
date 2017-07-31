@@ -21,7 +21,8 @@ import pytest # pylint: disable=unused-import
 
 from tool.tb_filter import tbFilterTool
 
-def test_tb_parse_mapping_frag_01():
+@pytest.mark.hic
+def test_tb_filter_frag_01():
     """
     Test case to ensure that the BWA indexer works.
     """
@@ -62,7 +63,8 @@ def test_tb_parse_mapping_frag_01():
     assert os.path.isfile(reads_tsv + '_too_short.tsv') is True
     assert os.path.getsize(reads_tsv + '_too_short.tsv') > 0
 
-def test_tb_parse_mapping_frag_02():
+@pytest.mark.hic
+def test_tb_filter_frag_02():
     """
     Test case to ensure that the BWA indexer works.
     """
@@ -104,7 +106,8 @@ def test_tb_parse_mapping_frag_02():
     assert os.path.isfile(reads_tsv + '_too_short.tsv') is True
     assert os.path.getsize(reads_tsv + '_too_short.tsv') > 0
 
-def test_tb_parse_mapping_iter_01():
+@pytest.mark.hic
+def test_tb_filter_iter_01():
     """
     Test case to ensure that the BWA indexer works.
     """
@@ -145,7 +148,8 @@ def test_tb_parse_mapping_iter_01():
     assert os.path.isfile(reads_tsv + '_too_short.tsv') is True
     assert os.path.getsize(reads_tsv + '_too_short.tsv') > 0
 
-def test_tb_parse_mapping_iter_02():
+@pytest.mark.hic
+def test_tb_filter_iter_02():
     """
     Test case to ensure that the BWA indexer works.
     """

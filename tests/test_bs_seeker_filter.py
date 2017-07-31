@@ -19,6 +19,7 @@ import pytest # pylint: disable=unused-import
 
 from tool import bs_seeker_filter
 
+@pytest.mark.wgbs
 def test_bs_seeker_filter():
     """
     Test that it is possible to call the BSseeker filter

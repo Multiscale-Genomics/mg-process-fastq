@@ -19,6 +19,7 @@ import pytest # pylint: disable=unused-import
 
 import process_wgbs  # from mg-process-fastq
 
+@pytest.mark.wgbs
 def test_single_splitter():
     """
     Function to test single splitter

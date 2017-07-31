@@ -20,6 +20,7 @@ import pytest
 from tool import inps
 
 @pytest.mark.py3
+@pytest.mark.mnaseseq
 def test_inps():
     """
     Function to test INPS works.

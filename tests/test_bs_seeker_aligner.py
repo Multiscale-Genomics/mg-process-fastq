@@ -19,6 +19,7 @@ import pytest # pylint: disable=unused-import
 
 from tool import bs_seeker_aligner
 
+@pytest.mark.wgbs
 def test_bs_seeker_aligner():
     """
     Test to ensure bs-Seeker aligner works

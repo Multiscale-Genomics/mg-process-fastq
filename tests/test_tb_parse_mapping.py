@@ -21,6 +21,7 @@ import pytest # pylint: disable=unused-import
 
 from tool.tb_parse_mapping import tbParseMappingTool
 
+@pytest.mark.hic
 def test_tb_parse_mapping_frag():
     """
     Test case to ensure that the BWA indexer works.
@@ -56,6 +57,7 @@ def test_tb_parse_mapping_frag():
     assert os.path.isfile(output_frag) is True
     assert os.path.getsize(output_frag) > 0
 
+@pytest.mark.hic
 def test_tb_parse_mapping_iter():
     """
     Test case to ensure that the BWA indexer works.

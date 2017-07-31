@@ -19,7 +19,7 @@ import pytest # pylint: disable=unused-import
 
 from tool.macs2 import macs2
 
-
+@pytest.mark.chipseq
 def test_macs2():
     """
     Function to test MACS2

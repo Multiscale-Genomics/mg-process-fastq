@@ -21,7 +21,8 @@ import pytest # pylint: disable=unused-import
 
 from tool.tb_save_hdf5_matrix import tbSaveAdjacencyHDF5Tool
 
-def test_tb_parse_mapping_frag_01():
+@pytest.mark.hic
+def test_tb_save_hdf5_matrix_frag_01():
     """
     Test case to ensure that the BWA indexer works.
     """
@@ -47,7 +48,8 @@ def test_tb_parse_mapping_frag_01():
     assert os.path.isfile(tgt_files[0]) is True
     assert os.path.getsize(tgt_files[0]) > 0
 
-def test_tb_parse_mapping_frag_02():
+@pytest.mark.hic
+def test_tb_save_hdf5_matrix_frag_02():
     """
     Test case to ensure that the BWA indexer works.
     """
@@ -73,7 +75,8 @@ def test_tb_parse_mapping_frag_02():
     assert os.path.isfile(tgt_files[0]) is True
     assert os.path.getsize(tgt_files[0]) > 0
 
-def test_tb_parse_mapping_iter_01():
+@pytest.mark.hic
+def test_tb_save_hdf5_matrix_iter_01():
     """
     Test case to ensure that the BWA indexer works.
     """
@@ -99,7 +102,8 @@ def test_tb_parse_mapping_iter_01():
     assert os.path.isfile(tgt_files[0]) is True
     assert os.path.getsize(tgt_files[0]) > 0
 
-def test_tb_parse_mapping_iter_02():
+@pytest.mark.hic
+def test_tb_save_hdf5_matrix_iter_02():
     """
     Test case to ensure that the BWA indexer works.
     """

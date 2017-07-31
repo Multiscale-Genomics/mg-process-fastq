@@ -21,6 +21,7 @@ import pytest # pylint: disable=unused-import
 
 from tool.bwa_indexer import bwaIndexerTool
 
+@pytest.mark.chipseq
 def test_bwa_indexer():
     """
     Test case to ensure that the BWA indexer works.
@@ -60,6 +61,7 @@ def test_bwa_indexer():
     assert os.path.getsize(resource_path + "macs2.Human.GCA_000001405.22.fasta.sa") > 0
 
 
+@pytest.mark.mnaseseq
 def test_bwa_indexer_02():
     """
     Test case to ensure that the BWA indexer works

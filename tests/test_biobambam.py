@@ -19,6 +19,7 @@ import pytest # pylint: disable=unused-import
 
 from tool import biobambam_filter
 
+@pytest.mark.chipseq
 def test_biobambam():
     """
     Test case to ensure that BioBamBam works

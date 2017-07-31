@@ -22,6 +22,7 @@ import pytest # pylint: disable=unused-import
 
 from tool.gem_indexer import gemIndexerTool
 
+@pytest.mark.hic
 def test_gem_indexer():
     """
     Test case to ensure that the GEM indexer works.

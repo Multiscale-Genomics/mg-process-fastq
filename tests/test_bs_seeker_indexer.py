@@ -19,6 +19,7 @@ import pytest # pylint: disable=unused-import
 
 from tool import bs_seeker_indexer
 
+@pytest.mark.wgbs
 def test_bs_seeker_indexer():
     """
     Test to ensure BS-Seeker indexer is working

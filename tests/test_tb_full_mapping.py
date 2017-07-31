@@ -22,6 +22,7 @@ import pytest # pylint: disable=unused-import
 
 from tool.tb_full_mapping import tbFullMappingTool
 
+@pytest.mark.hic
 def test_tb_extract_fastq():
     """
     Extract the compressed FASTQ files
@@ -43,6 +44,7 @@ def test_tb_extract_fastq():
     assert os.path.isfile(fastq_file_2) is True
     assert os.path.getsize(fastq_file_2) > 0
 
+@pytest.mark.hic
 def test_tb_full_mapping_frag_01():
     """
     Test case to ensure that the fragment based full mapping works as expected
@@ -79,6 +81,7 @@ def test_tb_full_mapping_frag_01():
     assert os.path.isfile(map_full) is True
     assert os.path.getsize(map_full) > 0
 
+@pytest.mark.hic
 def test_tb_full_mapping_frag_02():
     """
     Test case to ensure that the fragment based full mapping works as expected
@@ -115,6 +118,7 @@ def test_tb_full_mapping_frag_02():
     assert os.path.isfile(map_full) is True
     assert os.path.getsize(map_full) > 0
 
+@pytest.mark.hic
 def test_tb_full_mapping_iter_01():
     """
     Test case to ensure that the iterative based full mapping works as expected
@@ -157,6 +161,7 @@ def test_tb_full_mapping_iter_01():
     assert os.path.isfile(map100) is True
     assert os.path.getsize(map100) > 0
 
+@pytest.mark.hic
 def test_tb_full_mapping_iter_02():
     """
     Test case to ensure that the iterative based full mapping works as expected

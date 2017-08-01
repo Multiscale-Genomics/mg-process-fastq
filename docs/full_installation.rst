@@ -339,6 +339,8 @@ package, if not then it will need to be installed separately:
    pyenv activate mg-process-fastq
    pip install MACS2
 
+   ln -s ${HOME}/.pyenv/versions/mg-process-fastq/bin/macs2 ${HOME}/bin/macs2
+
 
 Install TADbit
 ^^^^^^^^^^^^^^

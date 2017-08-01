@@ -59,7 +59,7 @@ class process_chipseq(Workflow):
         self.configuration.update(configuration)
 
 
-    def run(self, file_ids, metadata, output_files):
+    def run(self, input_files, metadata, output_files):
         """
         Main run function for processing ChIP-seq FastQ data. Pipeline aligns
         the FASTQ files to the genome using BWA. MACS 2 is then used for peak
@@ -84,14 +84,14 @@ class process_chipseq(Workflow):
             List of locations for the output bam, bed and tsv files
         """
 
-        run_genome_fa = file_ids[0]
-        bwa_amb = file_ids[1]
-        bwa_ann = file_ids[2]
-        bwa_bwt = file_ids[3]
-        bwa_pac = file_ids[4]
-        bwa_sa = file_ids[5]
-        file_loc = file_ids[6]
-        file_bgd_loc = file_ids[7]
+        run_genome_fa = input_files[0]
+        bwa_amb = input_files[1]
+        bwa_ann = input_files[2]
+        bwa_bwt = input_files[3]
+        bwa_pac = input_files[4]
+        bwa_sa = input_files[5]
+        file_loc = input_files[6]
+        file_bgd_loc = input_files[7]
 
         out_bam = file_loc.replace(".fastq", '.bam')
 
@@ -137,7 +137,8 @@ class process_chipseq(Workflow):
         macs_caller = macs2(self.configuration)
 
         if file_bgd_loc != None:
-            m_results_files, m_results_meta = macs_caller.run([out_filtered_bam, out_filtered_bgd_bam], [])
+            m_results_files, m_results_meta = macs_caller.run(
+                [out_filtered_bam, out_filtered_bgd_bam], [])
         else:
             m_results_files, m_results_meta = macs_caller.run([out_filtered_bam], [])
         #m_results = compss_wait_on(m_results)

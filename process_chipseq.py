@@ -40,7 +40,7 @@ class process_chipseq(Workflow):
     filtered and analysed for peak calling
     """
 
-    configuration = {}
+    #configuration = {}
 
     def __init__(self, configuration=None):
         """
@@ -96,21 +96,18 @@ class process_chipseq(Workflow):
         out_bam = file_loc.replace(".fastq", '.bam')
 
         bwa = bwaAlignerTool(self.configuration)
-        #out_bam = file_loc.replace(".fastq", '.bam')
         bwa_results = bwa.run(
             [run_genome_fa, file_loc, bwa_amb, bwa_ann, bwa_bwt, bwa_pac, bwa_sa],
             []
         )
-        #bwa_results = compss_wait_on(bwa_results)
         out_bam = bwa_results[0][0]
-
+        
         out_bgd_bam = None
         if file_bgd_loc != None:
             bwa_results_bgd = bwa.run(
                 [run_genome_fa, file_bgd_loc, bwa_amb, bwa_ann, bwa_bwt, bwa_pac, bwa_sa],
                 []
             )
-            #bwa_results_bgd = compss_wait_on(bwa_results_bgd)
             out_bgd_bam = bwa_results_bgd[0][0]
 
         # For multiple files there will need to be merging into a single bam file
@@ -121,7 +118,6 @@ class process_chipseq(Workflow):
             [out_bam],
             []
         )
-        #b3f_results = compss_wait_on(b3f_results)
         out_filtered_bam = b3f_results[0][0]
 
         out_filtered_bgd_bam = None
@@ -130,23 +126,20 @@ class process_chipseq(Workflow):
                 [out_bgd_bam],
                 []
             )
-            #b3f_results_bgd = compss_wait_on(b3f_results_bgd)
             out_filtered_bgd_bam = b3f_results_bgd[0][0]
 
-        # MACS2 to call peaks
+        ## MACS2 to call peaks
         macs_caller = macs2(self.configuration)
 
         if file_bgd_loc != None:
             m_results_files, m_results_meta = macs_caller.run([out_filtered_bam, out_filtered_bgd_bam], [])
         else:
             m_results_files, m_results_meta = macs_caller.run([out_filtered_bam], [])
-        #m_results = compss_wait_on(m_results)
 
         return (
             [out_bam, out_filtered_bam] + m_results_files,
             [{}, m_results_meta]
         )
-
 
 # ------------------------------------------------------------------------------
 
@@ -164,8 +157,7 @@ def main(input_files, output_files, input_metadata):
     print("1. Instantiate and launch the App")
     from apps.workflowapp import WorkflowApp
     app = WorkflowApp()
-    result = app.launch(process_chipseq, input_files, input_metadata, output_files,
-                        {})
+    result = app.launch(process_chipseq, input_files, input_metadata, output_files, {})
 
     # 2. The App has finished
     print("2. Execution finished")
@@ -249,7 +241,7 @@ def prepare_files(
         out_peaks_gapped,
         out_summits
     ]
-    return [files, metadata, files_out]
+    return [files, files_out, metadata]
 
 # ------------------------------------------------------------------------------
 

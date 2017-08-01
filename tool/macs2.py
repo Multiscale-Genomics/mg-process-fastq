@@ -25,13 +25,14 @@ try:
         raise ImportError
     from pycompss.api.parameter import FILE_IN, FILE_OUT, IN
     from pycompss.api.task import task
-    #from pycompss.api.api import compss_wait_on
+    from pycompss.api.api import compss_wait_on
 except ImportError:
     print("[Warning] Cannot import \"pycompss\" API packages.")
     print("          Using mock decorators.")
 
     from dummy_pycompss import FILE_IN, FILE_OUT, IN
     from dummy_pycompss import task
+    from dummy_pycompss import compss_wait_on
 
 #from basic_modules.metadata import Metadata
 from basic_modules.tool import Tool
@@ -53,7 +54,7 @@ class macs2(Tool):
         Tool.__init__(self)
 
     @task(
-        returns=bool,
+        returns=int,
         name=IN,
         bam_file=FILE_IN,
         bam_file_bgd=FILE_IN,
@@ -121,21 +122,10 @@ class macs2(Tool):
         print('Process Results 1:', process)
         print('LIST DIR 1:', os.listdir(output_dir))
 
-        # Might not be an issue with PyCOMPSs v2.1
-        #out_peaks_narrow = bam_file + '_peaks.narrowPeak'
-        #out_peaks_broad = bam_file + '_summits.bed'
-        #out_peaks_gapped = bam_file + '_summits.bed'
-        #out_summits = bam_file + '_summits.bed'
-
-        #os.rename(out_peaks_narrow, narrowpeak)
-        #os.rename(out_summits, summits_bed)
-        #os.rename(out_peaks_broad, broadpeak)
-        #os.rename(out_peaks_gapped, gappedpeak)
-
         return 0
 
     @task(
-        returns=bool,
+        returns=int,
         name=IN,
         bam_file=FILE_IN,
         narrowPeak=FILE_OUT,
@@ -174,10 +164,11 @@ class macs2(Tool):
         documentation described in the docs at https://github.com/taoliu/MACS
         """
         od_list = bam_file.split("/")
-        #od_list = narrowpeak.split("/")
         output_dir = "/".join(od_list[0:-1])
-
-        command_line = 'macs2 callpeak -t ' + bam_file + ' -n ' + name + ' --outdir ' + output_dir
+        
+        print("MACS2: Check bam file exists:", os.path.isfile(bam_file), os.path.getsize(bam_file))
+        
+        command_line = 'macs2 callpeak -t ' + bam_file + ' -n ' + name + '_out --outdir ' + output_dir
 
         if name == 'macs2.Human.DRR000150.22.filtered':
             # This is for when running the test data
@@ -185,29 +176,46 @@ class macs2(Tool):
 
         print('Output Files:', narrowpeak, summits_bed, broadpeak, gappedpeak)
         print(command_line)
+        
+        #tmp_file = output_dir + '/macs2_version.txt'
+        #print('MACS2 TMP FILE:', tmp_file)
+        #process = subprocess.Popen(shlex.split("macs2 --version"))
+        #process.wait()
+        #print('MACS2: Version:', process.returncode)
 
         args = shlex.split(command_line)
         process = subprocess.Popen(args)
         process.wait()
-
+        
         print('Process Results 2:', process.returncode)
         print('LIST DIR 2:', os.listdir(output_dir))
+        
+        out_suffix = ['peaks.narrowPeak', 'peaks.broadPeak', 'peaks.gappedPeak', 'summits.bed']
+        for f_suf in out_suffix:
+            output_tmp = output_dir + '/' + name + '_out_' + f_suf
+            output_file = output_dir + '/' + name + f_suf
+            print(output_tmp, os.path.isfile(output_tmp))
+            if os.path.isfile(output_tmp) is True and os.path.getsize(output_tmp) > 0:
+                if f_suf == 'peaks.narrowPeak':
+                    with open(narrowpeak, "wb") as f_out:
+                        with open(output_tmp, "rb") as f_in:
+                            f_out.write(f_in.read())
+                elif f_suf == 'summits.bed':
+                    with open(summits_bed, "wb") as f_out:
+                        with open(output_tmp, "rb") as f_in:
+                            f_out.write(f_in.read())
+                elif f_suf == 'peaks.broadPeak':
+                    with open(broadpeak, "wb") as f_out:
+                        with open(output_tmp, "rb") as f_in:
+                            f_out.write(f_in.read())
+                elif f_suf == 'peaks.gappedPeak':
+                    with open(gappedpeak, "wb") as f_out:
+                        with open(output_tmp, "rb") as f_in:
+                            f_out.write(f_in.read())
 
-
-        # Might not be an issue with PyCOMPSs v2.1
-        # out_peaks_narrow = bam_file + '_peaks.narrowPeak'
-        # out_peaks_broad = bam_file + '_peaks.broadPeak'
-        # out_peaks_gapped = bam_file + '_peaks.gappedPeak'
-        # out_summits = bam_file + '_summits.bed'
-
-        # os.rename(out_peaks_narrow, narrowpeak)
-        # os.rename(out_summits, summits_bed)
-        # os.rename(out_peaks_broad, broadpeak)
-        # os.rename(out_peaks_gapped, gappedpeak)
-
-        if process.returncode is 1:
-            return False
-        return True
+        if process.returncode is not 0:
+            return process.returncode
+        return 0
 
 
     def run(self, input_files, output_files, metadata=None):
@@ -250,6 +258,8 @@ class macs2(Tool):
         out_peaks_broad = '/'.join(root_name) + '_peaks.broadPeak'
         out_peaks_gapped = '/'.join(root_name) + '_peaks.gappedPeak'
         out_summits = '/'.join(root_name) + '_summits.bed'
+        
+        output_files_tmp = [out_peaks_narrow, out_summits, out_peaks_broad, out_peaks_gapped]
 
         print("MACS2 output files:", name, out_peaks_narrow, out_peaks_broad, out_peaks_gapped, out_summits)
 
@@ -266,17 +276,24 @@ class macs2(Tool):
             results = self.macs2_peak_calling(
                 name, bam_file, bam_file_bgd,
                 out_peaks_narrow, out_summits, out_peaks_broad, out_peaks_gapped)
-        #results = compss_wait_on(results)
+        results = compss_wait_on(results)
 
-        if results is False:
+        if results > 0:
             return (
                 [], []
             )
 
         print('Results:', results)
+        
+        output_files = []
+        for result_file in output_files:
+            if os.path.isfile(result_file) is True and os.path.getsize(result_file) > 0:
+                output_files.append(result_file)
+        
+        print('MACS2: GENERATED FILES:', output_files)
 
         return (
-            [out_peaks_narrow, out_summits, out_peaks_broad, out_peaks_gapped],
+            output_files,
             output_metadata
         )
 

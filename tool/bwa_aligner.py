@@ -71,27 +71,25 @@ class bwaAlignerTool(Tool):
             Location of the output file
         """
 
-        # Rename all files for the genome and indexes so that they are in the
-        # expected format by BWA - Might not be an issue with PyCOMPSs v2.1
-        # Care needs to be taken when running this locally and the renaming
-        # should not happen
-        os.rename(amb_loc, genome_file_loc + ".amb")
-        os.rename(ann_loc, genome_file_loc + ".ann")
-        os.rename(bwt_loc, genome_file_loc + ".bwt")
-        os.rename(pac_loc, genome_file_loc + ".pac")
-        os.rename(sa_loc, genome_file_loc + ".sa")
-
-        od_list = genome_file_loc.split("/")
-        #od_list = narrowpeak.split("/")
+        od_list = bam_loc.split("/")
         output_dir = "/".join(od_list[0:-1])
 
-        print("Input files:", os.listdir(output_dir))
-
+        print("BWA INPUT FILES:", os.listdir(output_dir))
+        out_bam = bam_loc.replace(".bam", '.out.bam')
         common_handle = common()
-        bam_loc1 = common_handle.bwa_align_reads(genome_file_loc, read_file_loc, bam_loc)
+        bam_loc1 = common_handle.bwa_align_reads(genome_file_loc, read_file_loc, out_bam)
+        
+        print("BWA FINAL OUTPUT FILE:", bam_loc)
+        print("BWA ALIGNER TASK (start):", os.path.isfile(bam_loc), os.path.islink(bam_loc))
+        
+        with open(bam_loc, "wb") as f_out:
+            with open(out_bam, "rb") as f_in:
+                f_out.write(f_in.read())
 
         print("Output files:", os.listdir(output_dir))
-        print("BWA ALIGNER TASK:", os.path.isfile(bam_loc), os.path.getsize(bam_loc))
+        print("BWA MIDDLE OUTPUT FILE:", out_bam)
+        print("BWA ALIGNER TASK (mid):", os.path.isfile(out_bam), os.path.getsize(out_bam))
+        print("BWA ALIGNER TASK (final):", os.path.isfile(bam_loc), os.path.getsize(bam_loc))
         print("Files to return:", bam_loc, bam_loc1)
 
         return 0
@@ -114,6 +112,8 @@ class bwaAlignerTool(Tool):
 
         output_metadata = {}
         out_bam = input_files[1].replace(".fastq", '.bam')
+        
+        print("BWA ALIGNER (before):", out_bam)
 
         results = self.bwa_aligner(
             input_files[0], input_files[1], out_bam, input_files[2],

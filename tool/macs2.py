@@ -166,7 +166,10 @@ class macs2(Tool):
         od_list = bam_file.split("/")
         output_dir = "/".join(od_list[0:-1])
         
-        print("MACS2: Check bam file exists:", os.path.isfile(bam_file), os.path.getsize(bam_file))
+        #print("MACS2: Check bam file exists:", os.path.isfile(bam_file), os.path.getsize(bam_file))
+        
+        print("MACS2 INPUT FILE:", bam_file)
+        print("MACS2 INPUT FILE (start):", os.path.isfile(bam_file), os.path.islink(bam_file), os.path.getsize(bam_file))
         
         command_line = 'macs2 callpeak -t ' + bam_file + ' -n ' + name + '_out --outdir ' + output_dir
 
@@ -177,12 +180,6 @@ class macs2(Tool):
         print('Output Files:', narrowpeak, summits_bed, broadpeak, gappedpeak)
         print(command_line)
         
-        #tmp_file = output_dir + '/macs2_version.txt'
-        #print('MACS2 TMP FILE:', tmp_file)
-        #process = subprocess.Popen(shlex.split("macs2 --version"))
-        #process.wait()
-        #print('MACS2: Version:', process.returncode)
-
         args = shlex.split(command_line)
         process = subprocess.Popen(args)
         process.wait()
@@ -241,8 +238,6 @@ class macs2(Tool):
         """
 
         bam_file = input_files[0]
-
-        print("Check bam file exists:", os.path.isfile(bam_file), os.path.getsize(bam_file))
 
         bam_file_bgd = None
         if len(input_files) == 2 and input_files[1] is not None:

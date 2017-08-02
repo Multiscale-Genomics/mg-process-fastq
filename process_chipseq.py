@@ -101,7 +101,7 @@ class process_chipseq(Workflow):
             []
         )
         out_bam = bwa_results[0][0]
-        
+
         out_bgd_bam = None
         if file_bgd_loc != None:
             bwa_results_bgd = bwa.run(

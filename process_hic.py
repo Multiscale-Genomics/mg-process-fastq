@@ -94,14 +94,6 @@ class process_hic(Workflow):
         normalized = metadata['normalized']
         saveas_hdf5 = metadata['hdf5']
 
-        tmp_name = fastq_file_1.split('/')
-        tmp_dir = '/'.join(tmp_name[0:-1])
-
-        try:
-            os.makedirs(tmp_dir)
-        except OSError:
-            pass
-
         tfm1 = tbFullMappingTool()
         tfm1_files, tfm1_meta = tfm1.run([genome_gem, fastq_file_1], {'windows' : windows1})
 
@@ -205,7 +197,6 @@ if __name__ == "__main__":
     ASSEMBLY = ARGS.assembly
     FASTQ_01_FILE = ARGS.file1
     FASTQ_02_FILE = ARGS.file2
-    TMP_DIR = ARGS.tmp_dir
     ENZYME_NAME = ARGS.enzyme_name
     RESOLUTIONS = ARGS.resolutions
     WINDOWS1ARG = ARGS.windows1

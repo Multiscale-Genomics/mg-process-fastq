@@ -323,14 +323,15 @@ Checkout the code for the DM API and the mg-process-fastq pipelines:
 
    git clone https://github.com/Multiscale-Genomics/mg-process-fastq.git
    cd mg-process-fastq
-   pip install --editable .
+   pip install -e .
+   pip install -r requirements.txt
 
 
 Install MACS2
 ^^^^^^^^^^^^^
 
 This should get installed as part of the installation in the mg-process-fastq
-package, if not then it will need to be installed separately:
+package, if not then it will need to be installed separately.
 
 .. code-block:: none
    :linenos:
@@ -338,6 +339,13 @@ package, if not then it will need to be installed separately:
    cd ${HOME}/code
    pyenv activate mg-process-fastq
    pip install MACS2
+
+Whether this package is installed as part of the mg-process-fastq package or
+manually the following symlink should also be created if it is to be run within
+the COMPSs environment.
+
+.. code-block:: none
+   :linenos:
 
    ln -s ${HOME}/.pyenv/versions/mg-process-fastq/bin/macs2 ${HOME}/bin/macs2
 

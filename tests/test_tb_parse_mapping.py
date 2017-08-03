@@ -29,11 +29,11 @@ def test_tb_parse_mapping_frag():
     resource_path = os.path.join(os.path.dirname(__file__), "data/")
     genome_fa = resource_path + "tb.Human.GCA_000001405.22_gem.fasta"
 
-    map_frag_1 = resource_path + "tb.Human.SRR1658573_1_frag_1-end.map"
-    map_full_1 = resource_path + "tb.Human.SRR1658573_1_full_1-end.map"
+    map_frag_1 = resource_path + "tb.Human.SRR1658573_1_frag.map"
+    map_full_1 = resource_path + "tb.Human.SRR1658573_1_full.map"
 
-    map_frag_2 = resource_path + "tb.Human.SRR1658573_2_frag_1-end.map"
-    map_full_2 = resource_path + "tb.Human.SRR1658573_2_full_1-end.map"
+    map_frag_2 = resource_path + "tb.Human.SRR1658573_2_frag.map"
+    map_full_2 = resource_path + "tb.Human.SRR1658573_2_full.map"
 
     files = [
         genome_fa,
@@ -42,10 +42,8 @@ def test_tb_parse_mapping_frag():
     ]
 
     metadata = {
-        'assembly' : 'test',
         'expt_name' : 'tb.Human.SRR1658573',
         'enzyme_name' : 'MboI',
-        'windows' : ((1, 'end')),
         'mapping' : ['frag', 'frag']
     }
 

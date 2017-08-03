@@ -22,7 +22,7 @@ try:
         raise ImportError
     from pycompss.api.parameter import FILE_IN, FILE_OUT, IN
     from pycompss.api.task import task
-    from pycompss.api.constraint import constraint
+    #from pycompss.api.constraint import constraint
     from pycompss.api.api import compss_wait_on
 except ImportError:
     print("[Warning] Cannot import \"pycompss\" API packages.")
@@ -30,15 +30,11 @@ except ImportError:
 
     from dummy_pycompss import FILE_IN, FILE_OUT, IN
     from dummy_pycompss import task
-    from dummy_pycompss import constraint
+    #from dummy_pycompss import constraint
     from dummy_pycompss import compss_wait_on
 
 from basic_modules.metadata import Metadata
 from basic_modules.tool import Tool
-
-#import numpy as np
-#import h5py
-#import pytadbit
 
 from pytadbit.parsers.genome_parser import parse_fasta
 from pytadbit.parsers.map_parser import parse_map
@@ -65,7 +61,7 @@ class tbParseMappingTool(Tool):
         window2_1=FILE_IN, window2_2=FILE_IN, window2_3=FILE_IN, window2_4=FILE_IN,
         reads=FILE_OUT
     )
-    @constraint(ProcessorCoreCount=32)
+    #@constraint(ProcessorCoreCount=32)
     def tb_parse_mapping_iter(
             self, genome_seq, enzyme_name,
             window1_1, window1_2, window1_3, window1_4,
@@ -115,6 +111,7 @@ class tbParseMappingTool(Tool):
         #reads2 = "/".join(root_name) + '/reads_2.tsv'
         reads1 = reads + '_reads_1.tsv'
         reads2 = reads + '_reads_2.tsv'
+        reads_both = reads + '_reads_both.tsv'
 
         parse_map(
             [window1_1, window1_2, window1_3, window1_4],
@@ -124,10 +121,14 @@ class tbParseMappingTool(Tool):
             genome_seq=genome_seq,
             re_name=enzyme_name,
             verbose=True,
-            ncpus=32
+            #ncpus=32
         )
 
-        intersections = get_intersection(reads1, reads2, reads, verbose=True)
+        intersections = get_intersection(reads1, reads2, reads_both, verbose=True)
+        
+        with open(reads, "wb") as f_out:
+            with open(reads_both, "rb") as f_in:
+                f_out.write(f_in.read())
 
         return True
 
@@ -137,7 +138,7 @@ class tbParseMappingTool(Tool):
         window1_full=FILE_IN, window1_frag=FILE_IN,
         window2_full=FILE_IN, window2_frag=FILE_IN,
         reads=FILE_OUT)
-    @constraint(ProcessorCoreCount=32)
+    #@constraint(ProcessorCoreCount=32)
     def tb_parse_mapping_frag(
             self, genome_seq, enzyme_name,
             window1_full, window1_frag, window2_full, window2_frag,
@@ -153,8 +154,8 @@ class tbParseMappingTool(Tool):
             Name of the enzyme used to digest the genome
         window1_full : str
             Location of the first window index file
-        window1_full : str
-            Location of the first window index file
+        window1_frag : str
+            Location of the second window index file
         window2_full : str
             Location of the first window index file
         window2_frag : str
@@ -171,13 +172,19 @@ class tbParseMappingTool(Tool):
             reads in both pair end files
 
         """
-
+        
+        print("TB WINDOWS - full 1", window1_full)
+        print("TB WINDOWS - frag 1", window1_frag)
+        print("TB WINDOWS - full 2", window2_full)
+        print("TB WINDOWS - frag 2", window2_frag)
+        
         #root_name = reads.split("/")
 
         #reads1 = "/".join(root_name) + '/reads_1.tsv'
         #reads2 = "/".join(root_name) + '/reads_2.tsv'
         reads1 = reads + '_reads_1.tsv'
         reads2 = reads + '_reads_2.tsv'
+        reads_both = reads + '_reads_both.tsv'
 
         parse_map(
             [window1_frag, window1_full],
@@ -186,11 +193,14 @@ class tbParseMappingTool(Tool):
             out_file2=reads2,
             genome_seq=genome_seq,
             re_name=enzyme_name,
-            verbose=True,
-            ncpus=32
+            verbose=True
         )
 
-        intersections = get_intersection(reads1, reads2, reads, verbose=True)
+        intersections = get_intersection(reads1, reads2, reads_both, verbose=True)
+        
+        with open(reads, "wb") as f_out:
+            with open(reads_both, "rb") as f_in:
+                f_out.write(f_in.read())
 
         return True
 
@@ -267,7 +277,7 @@ class tbParseMappingTool(Tool):
             files = [genome_file] + windows1 + windows2
 
             tpm = tb_parse_mapping.tb_parse_mapping()
-            metadata = {'enzyme_name' : 'MboI', 'mapping' : ['iter', 'iter']}
+            metadata = {'enzyme_name' : 'MboI', 'mapping' : ['iter', 'iter'], 'expt_name' = 'test'}
             tpm_files, tpm_meta = tpm.run(files, metadata)
 
 
@@ -299,7 +309,7 @@ class tbParseMappingTool(Tool):
             ]
 
             tpm = tb_parse_mapping.tb_parse_mapping()
-            metadata = {'enzyme_name' : 'MboI', 'mapping' : ['frag', 'frag']}
+            metadata = {'enzyme_name' : 'MboI', 'mapping' : ['frag', 'frag'], 'expt_name' = 'test'}
             tpm_files, tpm_meta = tpm.run(files, metadata)
 
         """

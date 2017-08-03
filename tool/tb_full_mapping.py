@@ -35,7 +35,6 @@ except ImportError:
 
 from basic_modules.tool import Tool
 
-import pytadbit
 from pytadbit.mapping.mapper import full_mapping
 
 # ------------------------------------------------------------------------------
@@ -55,7 +54,7 @@ class tbFullMappingTool(Tool):
     @task(
         gem_file=FILE_IN, fastq_file=FILE_IN, windows=IN, window1=FILE_OUT,
         window2=FILE_OUT, window3=FILE_OUT, window4=FILE_OUT)
-    @constraint(ProcessorCoreCount=32)
+    #@constraint(ProcessorCoreCount=32)
     def tb_full_mapping_iter(
             self, gem_file, fastq_file, windows,
             window1, window2, window3, window4):
@@ -109,7 +108,7 @@ class tbFullMappingTool(Tool):
     @task(
         gem_file=FILE_IN, fastq_file=FILE_IN, enzyme_name=IN, windows=IN,
         full_file=FILE_OUT, frag_file=FILE_OUT)
-    @constraint(ProcessorCoreCount=16)
+    #@constraint(ProcessorCoreCount=16)
     def tb_full_mapping_frag(
             self, gem_file, fastq_file, enzyme_name, windows,
             full_file, frag_file):
@@ -140,12 +139,31 @@ class tbFullMappingTool(Tool):
         print("tb_full_mapping_frag")
         od_loc = fastq_file.split("/")
         output_dir = "/".join(od_loc[0:-1])
+        
+        print("TB MAPPING - output_dir:", output_dir)
+        print("TB MAPPING - full_file dir:", full_file)
+        print("TB MAPPING - frag_file dir:", frag_file)
+        
+        fastq_file_tmp = fastq_file.replace(".fastq", '')
+        fastq_file_tmp = fastq_file_tmp.replace(".fq", '')
+        
+        with open(fastq_file_tmp + "_tmp.fastq", "wb") as f_out:
+            with open(fastq_file, "rb") as f_in:
+                f_out.write(f_in.read())
 
         map_files = full_mapping(
-            gem_file, fastq_file, output_dir,
+            gem_file, fastq_file_tmp + "_tmp.fastq", output_dir,
             r_enz=enzyme_name, windows=windows, frag_map=True, nthreads=32,
             clean=True, temp_dir='/tmp/'
         )
+        
+        with open(full_file, "wb") as f_out:
+            with open(fastq_file_tmp + "_tmp_full_1-end.map", "rb") as f_in:
+                f_out.write(f_in.read())
+
+        with open(frag_file, "wb") as f_out:
+            with open(fastq_file_tmp + "_tmp_frag_1-end.map", "rb") as f_in:
+                f_out.write(f_in.read())
 
         return True
 
@@ -183,8 +201,8 @@ class tbFullMappingTool(Tool):
         windows = metadata['windows']
 
         root_name = fastq_file.split("/")
-        root_name[-1] = root_name[-1].replace('.fasta', '')
-        root_name[-1] = root_name[-1].replace('.fa', '')
+        root_name[-1] = root_name[-1].replace('.fastq', '')
+        root_name[-1] = root_name[-1].replace('.fq', '')
 
         #name = root_name[-1]
 
@@ -193,7 +211,7 @@ class tbFullMappingTool(Tool):
 
         root_path = '/'.join(root_name)
 
-        if 'enzyme_name' in metadata:
+        if windows is None:
             full_file = root_path + "_full.map"
             frag_file = root_path + "_frag.map"
 

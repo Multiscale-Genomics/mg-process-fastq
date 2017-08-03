@@ -22,7 +22,7 @@ import pytest # pylint: disable=unused-import
 
 from tool.tb_full_mapping import tbFullMappingTool
 
-@pytest.mark.hic
+#@pytest.mark.hic
 def test_tb_extract_fastq():
     """
     Extract the compressed FASTQ files
@@ -73,8 +73,8 @@ def test_tb_full_mapping_frag_01():
     tfm1 = tbFullMappingTool()
     tfm1_files, tfm1_meta = tfm1.run(files, [], metadata)
 
-    map_frag = resource_path + "tb.Human.SRR1658573_1_frag_1-end.map"
-    map_full = resource_path + "tb.Human.SRR1658573_1_full_1-end.map"
+    map_frag = resource_path + "tb.Human.SRR1658573_1_frag.map"
+    map_full = resource_path + "tb.Human.SRR1658573_1_full.map"
 
     assert os.path.isfile(map_frag) is True
     assert os.path.getsize(map_frag) > 0
@@ -110,8 +110,8 @@ def test_tb_full_mapping_frag_02():
     tfm2 = tbFullMappingTool()
     tfm2_files, tfm2_meta = tfm2.run(files, [], metadata)
 
-    map_frag = resource_path + "tb.Human.SRR1658573_2_frag_1-end.map"
-    map_full = resource_path + "tb.Human.SRR1658573_2_full_1-end.map"
+    map_frag = resource_path + "tb.Human.SRR1658573_2_frag.map"
+    map_full = resource_path + "tb.Human.SRR1658573_2_full.map"
 
     assert os.path.isfile(map_frag) is True
     assert os.path.getsize(map_frag) > 0

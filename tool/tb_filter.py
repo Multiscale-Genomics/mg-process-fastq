@@ -16,18 +16,21 @@
 
 from __future__ import print_function
 import sys
+import os.path
 
 try:
     if hasattr(sys, '_run_from_cmdl') is True:
         raise ImportError
     from pycompss.api.parameter import FILE_IN, FILE_OUT, IN
     from pycompss.api.task import task
+    from pycompss.api.api import compss_wait_on
 except ImportError:
     print("[Warning] Cannot import \"pycompss\" API packages.")
     print("          Using mock decorators.")
 
     from dummy_pycompss import FILE_IN, FILE_OUT, IN
     from dummy_pycompss import task
+    from dummy_pycompss import compss_wait_on
 
 from basic_modules.tool import Tool
 
@@ -78,22 +81,82 @@ class tbFilterTool(Tool):
             Location of the filtered reads
 
         """
-
+        
+        reads_tmp = reads.replace(".tsv", '')
+        
+        with open(reads_tmp + "_tmp.tsv", "wb") as f_out:
+            with open(reads, "rb") as f_in:
+                f_out.write(f_in.read())
+        
         masked = filter_reads(
-            reads,
+            reads_tmp + "_tmp.tsv",
             max_molecule_length=610,
             min_dist_to_re=915,
             over_represented=0.005,
             max_frag_size=100000,
             min_frag_size=100,
             re_proximity=4)
-
+        
+        filter_reads_file_tmp = filter_reads_file.replace(".tsv", '')
+        
         if conservative is True:
             # Ignore filter 5 (based on docs) as not very helpful
-            apply_filter(reads, filter_reads_file, masked, filters=[1, 2, 3, 4, 6, 7, 8, 9, 10])
+            apply_filter(reads_tmp + "_tmp.tsv", filter_reads_file_tmp + "_tmp.tsv", masked, filters=[1, 2, 3, 4, 6, 7, 8, 9, 10])
         else:
             # Less conservative option
-            apply_filter(reads, filter_reads_file, masked, filters=[1, 2, 3, 9, 10])
+            apply_filter(reads_tmp + "_tmp.tsv", filter_reads_file_tmp + "_tmp.tsv", masked, filters=[1, 2, 3, 9, 10])
+        
+        with open(filter_reads_file, "wb") as f_out:
+            with open(filter_reads_file_tmp + "_tmp.tsv", "rb") as f_in:
+                f_out.write(f_in.read())
+        
+        filters_suffixes = ['dangling-end', 'duplicated', 'error', 'extra_dangling-end', 'over-represented', 'random_breaks', 'self-circle', 'too_close_from_RES', 'too_large', 'too_short']
+        for i in filters_suffixes:
+            report_file_loc = reads_tmp + '_tmp.tsv_' + i + '.tsv'
+            print(report_file_loc)
+            if os.path.isfile(report_file_loc) is True:
+                print("- Present", os.path.getsize(report_file_loc))
+                with open(report_file_loc, "rb") as f_in:
+                    if i == 'dangling-end':
+                        print("- Saving to:", output_de)
+                        with open(output_de, "wb") as f_out:
+                            f_out.write(f_in.read())
+                    elif i == 'duplicated':
+                        print("- Saving to:", output_d)
+                        with open(output_d, "wb") as f_out:
+                            f_out.write(f_in.read())
+                    elif i == 'error':
+                        print("- Saving to:", output_e)
+                        with open(output_e, "wb") as f_out:
+                            f_out.write(f_in.read())
+                    elif i == 'extra_dangling-end':
+                        print("- Saving to:", output_ed)
+                        with open(output_ed, "wb") as f_out:
+                            f_out.write(f_in.read())
+                    elif i == 'over-represented':
+                        print("- Saving to:", output_or)
+                        with open(output_or, "wb") as f_out:
+                            f_out.write(f_in.read())
+                    elif i == 'random_breaks':
+                        print("- Saving to:", output_rb)
+                        with open(output_rb, "wb") as f_out:
+                            f_out.write(f_in.read())
+                    elif i == 'self-circle':
+                        print("- Saving to:", output_sc)
+                        with open(output_sc, "wb") as f_out:
+                            f_out.write(f_in.read())
+                    elif i == 'too_close_from_RES':
+                        print("- Saving to:", output_tc)
+                        with open(output_tc, "wb") as f_out:
+                            f_out.write(f_in.read())
+                    elif i == 'too_large':
+                        print("- Saving to:", output_tl)
+                        with open(output_tl, "wb") as f_out:
+                            f_out.write(f_in.read())
+                    elif i == 'too_short':
+                        print("- Saving to:", output_ts)
+                        with open(output_ts, "wb") as f_out:
+                            f_out.write(f_in.read())
 
         return True
 
@@ -149,6 +212,8 @@ class tbFilterTool(Tool):
             reads, filtered_reads_file, conservative,
             output_de, output_d, output_e, output_ed, output_or, output_rb,
             output_sc, output_tc, output_tl, output_ts)
+        results = compss_wait_on(results)
+
         return ([filtered_reads_file], output_metadata)
 
 # ------------------------------------------------------------------------------

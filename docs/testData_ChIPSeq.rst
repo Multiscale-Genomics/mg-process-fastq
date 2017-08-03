@@ -41,15 +41,21 @@ Download the genome file from
 
 Checkout https://github.com/Multiscale-Genomics/mg-misc-scripts/blob/master/ChIPSeq_Scripts/extract_chromosomeForChIP.py and extract chromosome 22 from the above file using the following command.
 
+.. code-block:: none
+
+   python extract_chromosomeForChIP.py path/to/your/input/file path/to/output/file
+
 Download the fastq file from
 
 .. code-block:: none
 
-   wget <URL>/DRR000150.fastq
+   wget ftp://ftp.sra.ebi.ac.uk/vol1/fastq/DRR000/DRR000150/DRR000150.fastq.gz
+   
+Unzip this file.
 
 .. code-block:: none
 
-   python extract_chromosomeForChIP.py path/to/your/input/file path/to/output/file
+   unzip DRR000150.fastq.gz
 
 
 Index the fasta file
@@ -90,13 +96,13 @@ From the depth file, find regions with >= 70 depth, spanning over >=55 base pair
 
    python traverseForCoverageRegion_ChIP.py path/to/GCA_000001405.22.chr22.dp
 
-Running this script would print the spanning regions. If it is a continuous region, you may only take the first starting base pair and the last ending base pair, as inputs for the next step.
+Running this script would print the spanning regions. If it is a continuous region, you may only take the first starting base pair and the last ending base pair, as inputs for the next step. (Take out 1000 and add in 1000 to these respectively to get upstream and downstream spanning bases)
 
 Extract the corresponding fasta sequence from the chromosome file for the positions retrieved from the above step. Checkout file from https://github.com/Multiscale-Genomics/mg-misc-scripts/blob/master/ChIPSeq_Scripts/extractChromosomalRegion.py and run using command:
 
 .. code-block:: none
 
-   python extractChromosomalRegion.py path/to/fasta/file path/to/output/file/for/region starting_base_position ending_base_position
+   python extractChromosomalRegion.py path/to/original/fasta/file path/to/output/file/for/region/macs2.Human.GCA_000001405.22.fasta starting_base_position ending_base_position
 
 Index the fasta file for the selected region
 
@@ -120,7 +126,7 @@ Filter this sam file for the reads which aligned with chromosome 22 using the fo
 
 .. code-block:: none
 
-   awk '$3 == 22' macs2.Human.GCA_000001405.22.sam >macs2.Human.GCA_000001405.22.22.sam
+   awk '$3 == chr22' macs2.Human.GCA_000001405.22.sam >macs2.Human.GCA_000001405.22.22.sam
 
 From the filtered reads from the above output file, extract the corresponding entries in fastq file. You may do this using the file at :
 

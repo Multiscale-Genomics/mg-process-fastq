@@ -56,7 +56,7 @@ class tbFilterTool(Tool):
         output_de=FILE_OUT, output_d=FILE_OUT, output_e=FILE_OUT,
         output_ed=FILE_OUT, output_or=FILE_OUT, output_rb=FILE_OUT,
         output_sc=FILE_OUT, output_tc=FILE_OUT, output_tl=FILE_OUT,
-        output_ts=FILE_OUT)
+        output_ts=FILE_OUT, returns=int)
     def tb_filter(
             self, reads, filter_reads_file, conservative, output_de, output_d,
             output_e, output_ed, output_or, output_rb, output_sc, output_tc,
@@ -81,13 +81,13 @@ class tbFilterTool(Tool):
             Location of the filtered reads
 
         """
-        
+
         reads_tmp = reads.replace(".tsv", '')
-        
+
         with open(reads_tmp + "_tmp.tsv", "wb") as f_out:
             with open(reads, "rb") as f_in:
                 f_out.write(f_in.read())
-        
+
         masked = filter_reads(
             reads_tmp + "_tmp.tsv",
             max_molecule_length=610,
@@ -96,20 +96,20 @@ class tbFilterTool(Tool):
             max_frag_size=100000,
             min_frag_size=100,
             re_proximity=4)
-        
+
         filter_reads_file_tmp = filter_reads_file.replace(".tsv", '')
-        
+
         if conservative is True:
             # Ignore filter 5 (based on docs) as not very helpful
             apply_filter(reads_tmp + "_tmp.tsv", filter_reads_file_tmp + "_tmp.tsv", masked, filters=[1, 2, 3, 4, 6, 7, 8, 9, 10])
         else:
             # Less conservative option
             apply_filter(reads_tmp + "_tmp.tsv", filter_reads_file_tmp + "_tmp.tsv", masked, filters=[1, 2, 3, 9, 10])
-        
+
         with open(filter_reads_file, "wb") as f_out:
             with open(filter_reads_file_tmp + "_tmp.tsv", "rb") as f_in:
                 f_out.write(f_in.read())
-        
+
         filters_suffixes = ['dangling-end', 'duplicated', 'error', 'extra_dangling-end', 'over-represented', 'random_breaks', 'self-circle', 'too_close_from_RES', 'too_large', 'too_short']
         for i in filters_suffixes:
             report_file_loc = reads_tmp + '_tmp.tsv_' + i + '.tsv'
@@ -217,3 +217,4 @@ class tbFilterTool(Tool):
         return ([filtered_reads_file], output_metadata)
 
 # ------------------------------------------------------------------------------
+

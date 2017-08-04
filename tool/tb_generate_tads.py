@@ -16,31 +16,34 @@
 from __future__ import print_function
 
 import sys
+import os.path
 
 try:
     if hasattr(sys, '_run_from_cmdl') is True:
         raise ImportError
-    from pycompss.api.parameter import FILE_IN, FILE_OUT, IN
+    from pycompss.api.parameter import FILE_IN, FILE_OUT, IN, OUT
     from pycompss.api.task import task
-    from pycompss.api.constraint import constraint
+    from pycompss.api.api import compss_wait_on
+    from pycompss.api.api import barrier
+    #from pycompss.api.constraint import constraint
 except ImportError:
     print("[Warning] Cannot import \"pycompss\" API packages.")
     print("          Using mock decorators.")
 
-    from dummy_pycompss import FILE_IN, FILE_OUT, IN
+    from dummy_pycompss import FILE_IN, FILE_OUT, IN, OUT
     from dummy_pycompss import task
-    from dummy_pycompss import constraint
+    from dummy_pycompss import compss_wait_on
+    from dummy_pycompss import barrier
+    #from dummy_pycompss import constraint
 
 #from basic_modules.metadata import Metadata
 from basic_modules.tool import Tool
 
-#import numpy as np
-#import h5py
-#import pytadbit
-
 from pytadbit import Chromosome
-from pytadbit import read_matrix
+#from pytadbit import read_matrix
 from pytadbit import load_hic_data_from_reads
+from pytadbit import HiC_data
+
 
 # ------------------------------------------------------------------------------
 
@@ -56,9 +59,25 @@ class tbGenerateTADsTool(Tool):
         print("TADbit - Generate TADs")
         Tool.__init__(self)
 
-    @task(matrix_file=FILE_IN, resolution=IN, tad_file=FILE_OUT)
-    @constraint(ProcessorCoreCount=16)
-    def tb_generate_tads(self, expt_name, matrix_file, resolution, tad_file):
+    #@task(adj_list=FILE_IN, resolution=IN, normalized=IN, returns=HiC_data)
+    @task(adj_list=FILE_IN, resolution=IN, normalized=IN, returns=list)
+    def tb_hic_chr(self, adj_list, resolution):
+        """
+        """
+        print("TB LOADED HIC MATRIX")
+        print("TB adj_list:", adj_list)
+        print("TB adj_list:", os.path.isfile(adj_list), os.path.islink(adj_list), os.path.getsize(adj_list))
+
+        hic_data = load_hic_data_from_reads(adj_list, resolution=int(resolution))
+
+        print("TB LOADED HIC MATRIX")
+
+        return hic_data.chromosomes.keys()
+
+
+    @task(expt_name=IN, adj_list=FILE_IN, chrom=IN, resolution=IN, normalized=IN, tad_file=FILE_OUT)
+    #@constraint(ProcessorCoreCount=16)
+    def tb_generate_tads(self, expt_name, adj_list, chrom, resolution, normalized, tad_file):
         """
         Function to the predict TAD sites for a given resolution from the Hi-C
         matrix
@@ -80,17 +99,47 @@ class tbGenerateTADsTool(Tool):
             Location of the output TAD file
 
         """
-        chr_hic_data = read_matrix(matrix_file, resolution=int(resolution))
+        #chr_hic_data = read_matrix(matrix_file, resolution=int(resolution))
 
-        my_chrom = Chromosome(name=expt_name, centromere_search=True)
-        my_chrom.add_experiment(expt_name, hic_data=chr_hic_data, resolution=int(resolution))
+        print("TB TAD GENERATOR:", expt_name, adj_list, chrom, resolution, normalized, tad_file)
+
+        hic_data = load_hic_data_from_reads(adj_list, resolution=int(resolution))
+
+        if normalized is False:
+            hic_data.normalize_hic(iterations=9, max_dev=0.1)
+
+        save_matrix_file = adj_list + "_" + str(chrom) + "_tmp.txt"
+        hic_data.write_matrix(save_matrix_file, (chrom, chrom), normalized=True)
+
+        chr_hic_data = hic_data.get_matrix((chrom, chrom))
+        print("TB - chr_hic_data:", chr_hic_data)
+
+        my_chrom = Chromosome(name=chrom, centromere_search=True)
+        my_chrom.add_experiment(expt_name, hic_data=save_matrix_file, resolution=int(resolution))
 
         # Run core TADbit function to find TADs on each expt.
-        # For the current dataset required 61GB of RAM
         my_chrom.find_tad(expt_name, n_cpus=15)
 
         exp = my_chrom.experiments[expt_name]
-        exp.write_tad_borders(savedata=tad_file)
+        exp.write_tad_borders(savedata=tad_file + ".tmp")
+
+        with open(tad_file, "wb") as f_out:
+            with open(tad_file + ".tmp", "rb") as f_in:
+                f_out.write(f_in.read())
+
+        return True
+
+
+    @task(input_file=FILE_IN, chrom=IN, resolution=IN, output_file=FILE_OUT)
+    def tb_merge_tad_files(self, input_file, chrom, resolution, output_file):
+        """
+        """
+        with open(output_file, 'w') as f_out:
+            with open(input_file, 'r') as f_in:
+                for line in f_in:
+                    line = line.split("\t")
+                    line[-1] = line[-1].rstrip()
+                    f_out.write(str(chrom) + "\t" + line[1] + "\t" + line[2] + "\tTADs_" + str(resolution) + "\t" + line[3] + "\t.\n")
 
         return True
 
@@ -137,43 +186,49 @@ class tbGenerateTADsTool(Tool):
 
         root_name = adj_list.split("/")
 
-        matrix_files = []
         tad_files = {}
 
+        results =[]
         for resolution in resolutions:
-            hic_data = load_hic_data_from_reads(adj_list, resolution=int(resolution))
+            print("TB LOADING Hi-C:", adj_list, resolution, normalized)
+            hic_data_chr = self.tb_hic_chr(adj_list, resolution)
+            hic_data_chr = compss_wait_on(hic_data_chr)
+            print("TB LOADED Hi-C!")
 
-            if normalized is False:
-                hic_data.normalize_hic(iterations=9, max_dev=0.1)
+            print("TB CHROMOSOMES", hic_data_chr)
 
             tad_files[resolution] = {}
 
-            for chrom in hic_data.chromosomes.keys():
-                save_matrix_file = "/".join(root_name[0:-1]) + '/' + metadata['expt_name'] + '_adjlist_map_' + chrom + '-' + chrom + '_' + str(resolution) + '.tsv'
-                matrix_files.append(save_matrix_file)
-
+            for chrom in hic_data_chr:
                 save_tad_file = "/".join(root_name[0:-1]) + '/' + metadata['expt_name'] + '_tad_' + chrom + '_' + str(resolution) + '.tsv'
                 tad_files[resolution][chrom] = save_tad_file
 
-                hic_data.write_matrix(save_matrix_file, (chrom, chrom), normalized=True)
-
                 expt_name = metadata['expt_name'] + '_tad_' + chrom + '_' + str(resolution)
 
-                results = self.tb_generate_tads(expt_name, save_matrix_file, resolution, save_tad_file)
+                print("TB Generate TADS:", resolution, normalized)
+                results.append(self.tb_generate_tads(
+                    expt_name, adj_list, chrom, resolution, normalized, save_tad_file)
+                )
+
+        results = compss_wait_on(results)
 
         # Step to merge all the TAD files into a single bed file
         tad_bed_file = "/".join(root_name[0:-1]) + '/' + metadata['expt_name'] + '_tads.tsv'
 
-        fo = open(tad_bed_file, 'w')
-        for resolution in tad_files.keys():
-            for chrom in tad_files[resolution].keys():
-                fi_tmp = open(tad_files[resolution][chrom], 'r')
-                for line in fi_tmp:
-                    line = line.split("\t")
-                    line[-1] = line[-1].rstrip()
-                    fo.write(str(chrom) + "\t" + line[1] + "\t" + line[2] + "\tTADs_" + str(resolution) + "\t" + line[3] + "\t.\n")
-                fi_tmp.close()
-        fo.close()
+        print("TB tad_files:", tad_files)
+
+        # Step to merge all the TAD files into a single bed file
+        tad_bed_file = "/".join(root_name[0:-1]) + '/' + metadata['expt_name'] + '_tads.tsv'
+
+        for resolution in tad_files:
+            for chrom in tad_files[resolution]:
+                results = self.tb_merge_tad_files(
+                    tad_files[resolution][chrom],
+                    chrom,
+                    resolution,
+                    tad_bed_file
+                )
+                results = compss_wait_on(results)
 
         return ([tad_bed_file], output_metadata)
 

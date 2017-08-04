@@ -23,9 +23,20 @@ from __future__ import print_function
 import argparse
 import os
 import time
+import sys
 
 # Required for ReadTheDocs
 from functools import wraps # pylint: disable=unused-import
+
+try:
+    if hasattr(sys, '_run_from_cmdl') is True:
+        raise ImportError
+    from pycompss.api.api import compss_wait_on
+except ImportError:
+    print("[Warning] Cannot import \"pycompss\" API packages.")
+    print("          Using mock decorators.")
+
+    from dummy_pycompss import compss_wait_on
 
 from basic_modules.workflow import Workflow
 from dmp import dmp
@@ -89,52 +100,83 @@ class process_hic(Workflow):
         fastq_file_2 = file_ids[3]
         enzyme_name = metadata['enzyme_name']
         resolutions = metadata['resolutions']
+        window_type = metadata['window_type']
         windows1 = metadata['windows1']
         windows2 = metadata['windows2']
         normalized = metadata['normalized']
         saveas_hdf5 = metadata['hdf5']
+        expt_name = metadata['expt_name']
+
+        print("HIC - metadata:", metadata)
+
+        input_metadata_mapping1 = {
+            'windows' : windows1,
+        }
+        input_metadata_mapping2 = {
+            'windows' : windows2,
+        }
+
+        if window_type == 'frag':
+            input_metadata_mapping1['windows'] = None
+            input_metadata_mapping2['windows'] = None
+
+        if enzyme_name is not None:
+            input_metadata_mapping1['enzyme_name'] = enzyme_name
+            input_metadata_mapping2['enzyme_name'] = enzyme_name
 
         tfm1 = tbFullMappingTool()
-        tfm1_files, tfm1_meta = tfm1.run([genome_gem, fastq_file_1], {'windows' : windows1})
+        tfm1_files, tfm1_meta = tfm1.run([genome_gem, fastq_file_1], [], input_metadata_mapping1)
 
         tfm2 = tbFullMappingTool()
-        tfm2_files, tfm2_meta = tfm2.run([genome_gem, fastq_file_2], {'windows' : windows2})
+        tfm2_files, tfm2_meta = tfm2.run([genome_gem, fastq_file_2], [], input_metadata_mapping2)
 
         tpm = tbParseMappingTool()
         files = [genome_fa] + tfm1_files + tfm2_files
-        metadata = {'enzyme_name' : enzyme_name, 'mapping' : [tfm1_meta['func'], tfm2_meta['func']]}
-        tpm_files, tpm_meta = tpm.run(files, metadata)
+        input_metadata_parser = {
+            'enzyme_name' : enzyme_name,
+            'mapping' : [tfm1_meta['func'], tfm2_meta['func']],
+            'expt_name' : expt_name
+        }
+        print("TB MAPPED FILES:", files)
+        print("TB PARSE METADATA:", input_metadata_parser)
+        tpm_files, tpm_meta = tpm.run(files, [], input_metadata_parser)
+
+        print("TB PARSED FILES:", tpm_files)
 
         tf = tbFilterTool()
-        tf_files, tf_meta = tf.run(tpm_files, {'conservative' : True})
+        tf_files, tf_meta = tf.run(tpm_files, [], {'conservative' : True, 'expt_name' : expt_name})
 
         #adjlist_loc = f2a.save_hic_data()
+
+        print("TB FILTER FILES:", tf_files[0])
 
         tgt = tbGenerateTADsTool()
         tgt_meta_in = {
             'resolutions' : resolutions,
-            'normalized' : normalized
+            'normalized' : False,
+            'expt_name' : expt_name
         }
-        tgt_files, tgt_meta = tgt.run(tf_files, [], tgt_meta_in)
+        tgt_files, tgt_meta = tgt.run([tf_files[0]], [], tgt_meta_in)
 
         # Generate the HDF5 and meta data required for the RESTful API.
         # - Chromosome meta is from the tb_parse_mapping step
 
-        if saveas_hdf5 is True:
-            th5 = tbSaveAdjacencyHDF5Tool()
-            th5_files_in = [tf_files[0], genome_fa]
-            th5_meta_in = {
-                'resolutions' : resolutions,
-                'normalized' : normalized,
-                'chromosomes_meta' : tpm_meta['chromosomes']
-            }
-            th5_files, th5_meta = th5.run(th5_files_in, [], th5_meta_in)
-        else:
-            hdf5_file = None
+        #if saveas_hdf5 is True:
+        #    th5 = tbSaveAdjacencyHDF5Tool()
+        #    th5_files_in = [tf_files[0], genome_fa]
+        #    th5_meta_in = {
+        #        'resolutions' : resolutions,
+        #        'normalized' : normalized,
+        #        'chromosomes_meta' : tpm_meta['chromosomes']
+        #    }
+        #    th5_files, th5_meta = th5.run(th5_files_in, [], th5_meta_in)
+        #else:
+        #    hdf5_file = None
 
         # List of files to get saved
         #return ([tf_files[0], tgt_files[0]], adjlist_loc, hdf5_file)
-        return ([tf_files[0], tgt_files[0]], hdf5_file)
+        #return ([tf_files[0], tgt_files[0]], hdf5_file)
+        return ([tfm1_files[0] + tfm2_files[0] + tpm_files[0] + tf_files[0]], [])
 
 
 # ------------------------------------------------------------------------------
@@ -179,9 +221,12 @@ if __name__ == "__main__":
     PARSER.add_argument("--file2", help="Location of FASTQ file 2")
     PARSER.add_argument("--resolutions", help="CSV string of the resolutions to be computed for the models")
     PARSER.add_argument("--enzyme_name", help="Enzyme used to digest the DNA")
+    PARSER.add_argument("--window_type", help="Windowing type [frag, iter]", default="frag")
     PARSER.add_argument("--windows1", help="FASTQ windowing - start locations", default="1,25,50,75,100")
     PARSER.add_argument("--windows2", help="FASTQ windowing - paired end locations", default="1,25,50,75,100")
     PARSER.add_argument("--normalized", help="Normalize the alignments", default=False)
+    PARSER.add_argument("--tag", help="tag", default='test_name')
+
 
     # Get the matching parameters from the command line
     ARGS = PARSER.parse_args()
@@ -199,16 +244,22 @@ if __name__ == "__main__":
     FASTQ_02_FILE = ARGS.file2
     ENZYME_NAME = ARGS.enzyme_name
     RESOLUTIONS = ARGS.resolutions
+    WINDOW_TYPE = ARGS.window_type
     WINDOWS1ARG = ARGS.windows1
     WINDOWS2ARG = ARGS.windows1
     NORMALIZED = ARGS.normalized
+    EXPT_NAME = ARGS.tag
 
     if WINDOWS1ARG is not None:
         w1 = [int(i) for i in WINDOWS1ARG.split(",")]
-        WINDOWS1 = ((w1[0], j) for j in w1[1:])
+        WINDOWS1 = [[w1[0], j] for j in w1[1:]]
     if WINDOWS2ARG is not None:
         w2 = [int(i) for i in WINDOWS2ARG.split(",")]
-        WINDOWS2 = ((w1[0], j) for j in w2[1:])
+        WINDOWS2 = [[w1[0], j] for j in w2[1:]]
+
+    print("WINDOWS1:", WINDOWS1ARG, WINDOWS1)
+    print("WINDOWS2:", WINDOWS2ARG, WINDOWS2)
+    print("ENZYME_NAME:", ENZYME_NAME)
 
     if RESOLUTIONS is None:
         # RESOLUTIONS = [
@@ -220,13 +271,16 @@ if __name__ == "__main__":
         RESOLUTIONS = RESOLUTIONS.split(',')
 
     METADATA = {
-        'user_id'     : 'test',
-        'assembly'    : ASSEMBLY,
+        'user_id' : 'test',
+        'assembly' : ASSEMBLY,
         'resolutions' : RESOLUTIONS,
         'enzyme_name' : ENZYME_NAME,
-        'windows1'    : WINDOWS1,
-        'windows2'    : WINDOWS2,
-        'normalized'  : NORMALIZED,
+        'windows1' : WINDOWS1,
+        'windows2' : WINDOWS2,
+        'normalized' : NORMALIZED,
+        'hdf5' : True,
+        'expt_name' : EXPT_NAME,
+        'window_type' : WINDOW_TYPE
     }
 
     #
@@ -237,10 +291,10 @@ if __name__ == "__main__":
     DM_HANDLER = dmp(test=True)
 
     #2. Register the data with the DMP
-    genome_file = DM_HANDLER.set_file("test", GENOME_FA, "fasta", "Assembly", TAXON_ID, meta_data={'assembly' : ASSEMBLY})
-    genome_idx = DM_HANDLER.set_file("test", GENOME_GEM, "gem", "Assembly Index", TAXON_ID, meta_data={'assembly' : ASSEMBLY})
-    fastq_01_file_in = DM_HANDLER.set_file("test", FASTQ_01_FILE, "fastq", "Hi-C", TAXON_ID, meta_data=METADATA)
-    fastq_02_file_in = DM_HANDLER.set_file("test", FASTQ_02_FILE, "fastq", "Hi-C", TAXON_ID, meta_data=METADATA)
+    #genome_file = DM_HANDLER.set_file("test", GENOME_FA, "fasta", "Assembly", TAXON_ID, meta_data={'assembly' : ASSEMBLY})
+    #genome_idx = DM_HANDLER.set_file("test", GENOME_GEM, "gem", "Assembly Index", TAXON_ID, meta_data={'assembly' : ASSEMBLY})
+    #fastq_01_file_in = DM_HANDLER.set_file("test", FASTQ_01_FILE, "fastq", "Hi-C", TAXON_ID, meta_data=METADATA)
+    #fastq_02_file_in = DM_HANDLER.set_file("test", FASTQ_02_FILE, "fastq", "Hi-C", TAXON_ID, meta_data=METADATA)
 
     FILES = [
         GENOME_FA,

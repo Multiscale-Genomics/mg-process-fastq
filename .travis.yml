@@ -46,12 +46,6 @@ addons:
 env:
   - COVERALLS=false
   
-  
-matrix:
-  include:
-    - os: linux
-      dist: xenial
-      sudo: required
 
 before_install:
     - pwd
@@ -59,8 +53,6 @@ before_install:
     - mkdir -p ${HOME}/bin 
     - mkdir -p ${HOME}/lib 
     - mkdir -p ${HOME}/code
-    - pip --version
-    - pip
     - lsb_release -a
 
 

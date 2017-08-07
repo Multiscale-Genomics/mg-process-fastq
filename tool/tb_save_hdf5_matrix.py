@@ -13,13 +13,29 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 """
+from __future__ import print_function
+
+import sys
 
 #from basic_modules.metadata import Metadata
 from basic_modules.tool import Tool
 
 import numpy as np
 import h5py
-import pytadbit
+
+try:
+    if hasattr(sys, '_run_from_cmdl') is True:
+        raise ImportError
+    from pycompss.api.parameter import FILE_IN, FILE_INOUT, IN
+    from pycompss.api.task import task
+    from pycompss.api.api import compss_wait_on
+except ImportError:
+    print("[Warning] Cannot import \"pycompss\" API packages.")
+    print("          Using mock decorators.")
+
+    from dummy_pycompss import FILE_IN, FILE_INOUT, IN
+    from dummy_pycompss import task
+    from dummy_pycompss import compss_wait_on
 
 from pytadbit import load_hic_data_from_reads
 from pytadbit import read_matrix
@@ -36,11 +52,12 @@ class tbSaveAdjacencyHDF5Tool(Tool):
         """
         Init function
         """
-        print "TADbit save adjacency matrix"
+        print("TADbit save adjacency matrix")
         Tool.__init__(self)
 
 
-    def tb_matrix_hdf5(self, hic_data, adj_hdf5, resolution, chromosomes):
+    @task(adjlist_file=FILE_IN, adj_hdf5=FILE_INOUT, normalized=IN, resolution=IN, chromosomes=IN)
+    def tb_matrix_hdf5(self, adjlist_file, adj_hdf5, normalized, resolution, chromosomes):
         """
         Function to the Hi-C matrix into an HDF5 file
 
@@ -75,6 +92,12 @@ class tbSaveAdjacencyHDF5Tool(Tool):
 
         """
         #hic_data = read_matrix(adj_list, resolution=resolution)
+
+        hic_data = load_hic_data_from_reads(adjlist_file, resolution=int(resolution))
+        #tad_files[resolution] = {}
+
+        if normalized is False:
+            hic_data.normalize_hic(iterations=9, max_dev=0.1)
 
         d_size = len(hic_data)
         d = np.zeros([d_size, d_size], dtype='int32')
@@ -127,38 +150,35 @@ class tbSaveAdjacencyHDF5Tool(Tool):
 
         adjlist_file = input_files[0]
         genome_file = input_files[1]
-        hdf5_file    = adjlist_file.replace(".tsv", ".hdf5")
+        hdf5_file = adjlist_file.replace(".tsv", ".hdf5")
 
         genome_seq = parse_fasta(genome_file)
         chromosomes = []
         for chr_id in genome_seq:
             chromosomes.append([chr_id, len(genome_seq[chr_id])])
 
-        assembly = metadata['assembly']
+        #assembly = metadata['assembly']
         resolutions = metadata['resolutions']
 
         normalized = False
         if 'normalized' in metadata:
             normalized = metadata['normalized']
 
-        #root_name = adjlist_file.split("/")
-
-        #matrix_files = []
-        tad_files = {}
         output_metadata = {}
 
+        hdf5_handle = h5py.File(hdf5_file, "w")
+        hdf5_handle.close()
+
         for resolution in resolutions:
-            hic_data = load_hic_data_from_reads(adjlist_file, resolution=int(resolution))
-            tad_files[resolution] = {}
+            # hic_data = load_hic_data_from_reads(adjlist_file, resolution=int(resolution))
+            # tad_files[resolution] = {}
 
-            if normalized is False:
-                hic_data.normalize_hic(iterations=9, max_dev=0.1)
+            # if normalized is False:
+            #     hic_data.normalize_hic(iterations=9, max_dev=0.1)
 
-            #save_matrix_file = "/".join(root_name[0:-1]) + '/adjlist_map_' + str(resolution) + '.tsv'
-            #matrix_files.append(save_matrix_file)
-            #hic_data.write_matrix(save_matrix_file, normalized=normalized)
-
-            results = self.tb_matrix_hdf5(hic_data, hdf5_file, resolution, chromosomes)
+            results = self.tb_matrix_hdf5(
+                adjlist_file, hdf5_file, normalized, resolution, chromosomes)
+            results = compss_wait_on(results)
 
         return ([hdf5_file], [output_metadata])
 

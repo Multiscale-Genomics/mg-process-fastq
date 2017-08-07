@@ -40,6 +40,8 @@ def test_tb_filter_frag_01():
     tpm = tbFilterTool()
     tpm_files, tpm_meta = tpm.run([reads_tsv], [], metadata)
 
+    reads_tsv = resource_path + metadata['expt_name'] + "_filtered_map.tsv"
+
     assert os.path.isfile(resource_path + "tb.Human.SRR1658573_frag_01_filtered_map.tsv") is True
     assert os.path.getsize(resource_path + "tb.Human.SRR1658573_frag_01_filtered_map.tsv") > 0
     assert os.path.isfile(reads_tsv + '_dangling-end.tsv') is True
@@ -83,6 +85,8 @@ def test_tb_filter_frag_02():
     tpm = tbFilterTool()
     tpm_files, tpm_meta = tpm.run([reads_tsv], [], metadata)
 
+    reads_tsv = resource_path + metadata['expt_name'] + "_filtered_map.tsv"
+
     assert os.path.isfile(resource_path + "tb.Human.SRR1658573_frag_02_filtered_map.tsv") is True
     assert os.path.getsize(resource_path + "tb.Human.SRR1658573_frag_02_filtered_map.tsv") > 0
     assert os.path.isfile(reads_tsv + '_dangling-end.tsv') is True
@@ -124,6 +128,8 @@ def test_tb_filter_iter_01():
 
     tpm = tbFilterTool()
     tpm_files, tpm_meta = tpm.run([reads_tsv], [], metadata)
+
+    reads_tsv = resource_path + metadata['expt_name'] + "_filtered_map.tsv"
 
     assert os.path.isfile(resource_path + "tb.Human.SRR1658573_iter_01_filtered_map.tsv") is True
     assert os.path.getsize(resource_path + "tb.Human.SRR1658573_iter_01_filtered_map.tsv") > 0
@@ -167,6 +173,8 @@ def test_tb_filter_iter_02():
 
     tpm = tbFilterTool()
     tpm_files, tpm_meta = tpm.run([reads_tsv], [], metadata)
+
+    reads_tsv = resource_path + metadata['expt_name'] + "_filtered_map.tsv"
 
     assert os.path.isfile(resource_path + "tb.Human.SRR1658573_iter_02_filtered_map.tsv") is True
     assert os.path.getsize(resource_path + "tb.Human.SRR1658573_iter_02_filtered_map.tsv") > 0

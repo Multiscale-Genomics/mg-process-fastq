@@ -28,16 +28,6 @@ import sys
 # Required for ReadTheDocs
 from functools import wraps # pylint: disable=unused-import
 
-try:
-    if hasattr(sys, '_run_from_cmdl') is True:
-        raise ImportError
-    from pycompss.api.api import compss_wait_on
-except ImportError:
-    print("[Warning] Cannot import \"pycompss\" API packages.")
-    print("          Using mock decorators.")
-
-    from dummy_pycompss import compss_wait_on
-
 from basic_modules.workflow import Workflow
 from dmp import dmp
 
@@ -96,6 +86,7 @@ class process_hic(Workflow):
 
         genome_fa = file_ids[0]
         genome_gem = file_ids[1]
+        assembly = metadata['assembly']
         fastq_file_1 = file_ids[2]
         fastq_file_2 = file_ids[3]
         enzyme_name = metadata['enzyme_name']
@@ -143,8 +134,8 @@ class process_hic(Workflow):
 
         print("TB PARSED FILES:", tpm_files)
 
-        tf = tbFilterTool()
-        tf_files, tf_meta = tf.run(tpm_files, [], {'conservative' : True, 'expt_name' : expt_name})
+        tbf = tbFilterTool()
+        tf_files, tf_meta = tbf.run(tpm_files, [], {'conservative' : True, 'expt_name' : expt_name})
 
         #adjlist_loc = f2a.save_hic_data()
 
@@ -161,22 +152,23 @@ class process_hic(Workflow):
         # Generate the HDF5 and meta data required for the RESTful API.
         # - Chromosome meta is from the tb_parse_mapping step
 
-        #if saveas_hdf5 is True:
-        #    th5 = tbSaveAdjacencyHDF5Tool()
-        #    th5_files_in = [tf_files[0], genome_fa]
-        #    th5_meta_in = {
-        #        'resolutions' : resolutions,
-        #        'normalized' : normalized,
-        #        'chromosomes_meta' : tpm_meta['chromosomes']
-        #    }
-        #    th5_files, th5_meta = th5.run(th5_files_in, [], th5_meta_in)
-        #else:
-        #    hdf5_file = None
+        hdf5_file = None
+        if saveas_hdf5 is True:
+            th5 = tbSaveAdjacencyHDF5Tool()
+            th5_files_in = [tf_files[0], genome_fa]
+            th5_meta_in = {
+                'assembly' : assembly,
+                'resolutions' : resolutions,
+                'normalized' : normalized,
+                'chromosomes_meta' : tpm_meta['chromosomes']
+            }
+            th5_files, th5_meta = th5.run(th5_files_in, [], th5_meta_in)
+            hdf5_file = th5_files[0]
 
         # List of files to get saved
         #return ([tf_files[0], tgt_files[0]], adjlist_loc, hdf5_file)
         #return ([tf_files[0], tgt_files[0]], hdf5_file)
-        return ([tfm1_files[0] + tfm2_files[0] + tpm_files[0] + tf_files[0]], [])
+        return ([tfm1_files[0], tfm2_files[0], tpm_files[0], tf_files[0], hdf5_file], [])
 
 
 # ------------------------------------------------------------------------------

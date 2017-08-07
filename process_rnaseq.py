@@ -85,7 +85,7 @@ class process_rnaseq(Workflow):
         k_index = kallistoIndexerTool()
         genome_idx_loc = genome_fa.replace('.fasta', '.idx')
         genome_idx_loc = genome_idx_loc.replace('.fa', '.idx')
-        gi_out = k_index.run([genome_fa, genome_idx_loc], metadata)
+        gi_out = k_index.run([genome_fa], [genome_idx_loc], metadata)
 
         # Quantification
         k_quant = kallistoQuantificationTool()
@@ -93,7 +93,7 @@ class process_rnaseq(Workflow):
         if len(file_ids) == 2:
             results = k_quant.run([genome_idx_loc, file_ids[1]], metadata)
         elif len(file_ids) == 3:
-            results = k_quant.run([genome_idx_loc, file_ids[1], file_ids[2]], metadata)
+            results = k_quant.run([genome_idx_loc, file_ids[1], file_ids[2]], [], metadata)
 
         return results
 

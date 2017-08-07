@@ -21,7 +21,7 @@ import os.path
 try:
     if hasattr(sys, '_run_from_cmdl') is True:
         raise ImportError
-    from pycompss.api.parameter import FILE_IN, FILE_OUT, IN, OUT
+    from pycompss.api.parameter import FILE_IN, FILE_OUT, FILE_INOUT, IN, OUT
     from pycompss.api.task import task
     from pycompss.api.api import compss_wait_on
     from pycompss.api.api import barrier
@@ -30,7 +30,7 @@ except ImportError:
     print("[Warning] Cannot import \"pycompss\" API packages.")
     print("          Using mock decorators.")
 
-    from dummy_pycompss import FILE_IN, FILE_OUT, IN, OUT
+    from dummy_pycompss import FILE_IN, FILE_OUT, FILE_INOUT, IN, OUT
     from dummy_pycompss import task
     from dummy_pycompss import compss_wait_on
     from dummy_pycompss import barrier
@@ -130,11 +130,11 @@ class tbGenerateTADsTool(Tool):
         return True
 
 
-    @task(input_file=FILE_IN, chrom=IN, resolution=IN, output_file=FILE_OUT)
+    @task(input_file=FILE_IN, chrom=IN, resolution=IN, output_file=FILE_INOUT)
     def tb_merge_tad_files(self, input_file, chrom, resolution, output_file):
         """
         """
-        with open(output_file, 'w') as f_out:
+        with open(output_file, 'a') as f_out:
             with open(input_file, 'r') as f_in:
                 for line in f_in:
                     line = line.split("\t")
@@ -219,6 +219,8 @@ class tbGenerateTADsTool(Tool):
 
         # Step to merge all the TAD files into a single bed file
         tad_bed_file = "/".join(root_name[0:-1]) + '/' + metadata['expt_name'] + '_tads.tsv'
+        f_prepare = open(tad_bed_file, 'w')
+        f_prepare.close()
 
         for resolution in tad_files:
             for chrom in tad_files[resolution]:

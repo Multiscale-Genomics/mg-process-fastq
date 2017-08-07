@@ -379,9 +379,6 @@ Install BSseeker
    ln -s ${HOME}/lib/BSseeker2/bs_index bs_index
    ln -s ${HOME}/lib/BSseeker2/bs_utils bs_utils
 
-   cd ${HOME}/code/mg-process-fastq/tool
-   ln -s ${HOME}/lib/BSseeker2/FilterReads.py FilterReads.py
-
 Post Installation Tidyup
 ------------------------
 

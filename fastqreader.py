@@ -17,6 +17,7 @@ limitations under the License.
 """
 
 import os
+import re
 
 class fastqreader:
     """
@@ -156,10 +157,8 @@ class fastqreader:
             self.output_tag = tag
 
         f1 = self.fastq1.split("/")
-        f1[-1] = f1[-1].replace(
-            ".fastq",
-            "." + str(self.output_tag) + "_" + str(self.output_file_count) + ".fastq"
-        )
+        new_suffix = "." + str(self.output_tag) + "_" + str(self.output_file_count) + ".fastq"
+        f1[-1] = re.sub('.fastq$', new_suffix, f1[-1])
         f1.insert(-1, "tmp")
 
         if os.path.isdir("/".join(f1[0:-1])) is False:
@@ -169,10 +168,8 @@ class fastqreader:
 
         if self.paired is True:
             f2 = self.fastq2.split("/")
-            f2[-1] = f2[-1].replace(
-                ".fastq",
-                "." + str(self.output_tag) + "_" + str(self.output_file_count) + ".fastq"
-            )
+            new_suffix = "." + str(self.output_tag) + "_" + str(self.output_file_count) + ".fastq"
+            f2[-1] = re.sub('.fastq$', new_suffix, f2[-1])
             f2.insert(-1, "tmp")
             self.f2_output_file = open("/".join(f2), "w")
 

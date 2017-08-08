@@ -116,9 +116,9 @@ class process_wgbs(Workflow):
         # Split the FASTQ files into smaller, easier to align packets
         fqs = fastq_splitter()
         if fastq2 is not None:
-            tmp_fastq_gz, tmp_fastq_list = fqs.run(fastq1f[0], fastq2f[0], 'tmp')
+            tmp_fastq_gz, tmp_fastq_list = fqs.run([fastq1f[0], fastq2f[0]], [], {})
         else:
-            tmp_fastq_gz, tmp_fastq_list = fqs.run(fastq1f[0], 'tmp')
+            tmp_fastq_gz, tmp_fastq_list = fqs.run([fastq1f[0]], 'tmp')
 
         # bam_sort_files = []
         # bam_merge_files = []

@@ -181,7 +181,7 @@ class fastq_splitter(Tool):
         file_loc_2[-1] = re.sub('.fastq$', new_suffix, file_loc_2[-1])
 
         file_loc_2.insert(-1, tag)
-        files_out = [["/".join(file_loc_1), "/".join(file_loc_2)]]
+        files_out = [[file_loc_1[-1], file_loc_2[-1]]]
 
         while fqr.eof(1) is False and fqr.eof(2) is False:
             r1_id = record1["id"].split(" ")

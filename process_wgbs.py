@@ -19,7 +19,7 @@
 from __future__ import print_function
 
 import argparse
-import pysam
+import re
 
 from basic_modules.workflow import Workflow
 from basic_modules.metadata import Metadata
@@ -92,6 +92,9 @@ class process_wgbs(Workflow):
         fastq1 = input_files[1]
         fastq2 = input_files[2]
 
+        fq_split = fastq1.split("/")
+        expt_name = re.sub('_1.fastq', '', fq_split[-1])
+
         output_metadata = {}
 
         print("PIPELINE - metadata:", metadata)
@@ -119,6 +122,16 @@ class process_wgbs(Workflow):
             tmp_fastq_gz, tmp_fastq_list = fqs.run([fastq1f[0], fastq2f[0]], [], {})
         else:
             tmp_fastq_gz, tmp_fastq_list = fqs.run([fastq1f[0]], 'tmp')
+
+        print("WGBS genome_idx:", genome_idx)
+        print("WGBS tmp_fastq_gz:", tmp_fastq_gz)
+        print("WGBS tmp_fastq_list:", tmp_fastq_list)
+
+        metadata['fastq_list'] = tmp_fastq_list
+        metadata['expt_name'] = expt_name
+
+        bss_aligner = bssAlignerTool()
+        bam, bam_meta = bss_aligner.run([genome_fa, genome_idx[0], tmp_fastq_gz], [], metadata)
 
         # bam_sort_files = []
         # bam_merge_files = []
@@ -170,15 +183,15 @@ class process_wgbs(Workflow):
         # pysam.index(out_bam_file)
 
         # Methylation peak caller
-        # peak_caller_handle = bssMethylationCallerTool()
+        peak_caller_handle = bssMethylationCallerTool()
 
-        # metadata['index_path'] = genome_fa + '_bowtie2'
-        # peak_files, peak_meta = peak_caller_handle.run(
-        #     [out_bam_file],
-        #     [],
-        #     metadata
-        # )
-        # output_metadata['peak_calling'] = peak_meta
+        metadata['index_path'] = genome_fa + '_bowtie2'
+        peak_files, peak_meta = peak_caller_handle.run(
+            [out_bam_file],
+            [],
+            metadata
+        )
+        output_metadata['peak_calling'] = peak_meta
 
 
 

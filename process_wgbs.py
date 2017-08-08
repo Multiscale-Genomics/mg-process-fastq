@@ -133,55 +133,6 @@ class process_wgbs(Workflow):
         bss_aligner = bssAlignerTool()
         bam, bam_meta = bss_aligner.run([genome_fa, genome_idx[0], tmp_fastq_gz], [], metadata)
 
-        # bam_sort_files = []
-        # bam_merge_files = []
-        # fastq_for_alignment = []
-        # for bams in tmp_fastq_list:
-        #     bam_root = bams[0] + "_bspe.bam"
-        #     tmp = bams
-        #     tmp.append(bam_root)
-
-        #     fastq_for_alignment.append(tmp)
-
-        #     bam_sort_files.append([bam_root, bam_root + ".sorted.bam"])
-        #     bam_merge_files.append(bam_root + ".sorted.bam")
-
-        # Run the bs_seeker2-align.py steps on the split up fastq files
-        #for ffa in fastq_for_alignment:
-        # for ffa in tmp_fastq_list:
-        #     if fastq2 is not None:
-        #         input_files = [
-        #             genome_fa, ffa[0], ffa[1], genome_idx[0]]
-        #         output_files = [ffa[2]]
-        #     else:
-        #         input_files = [
-        #             genome_fa, ffa[0], None, genome_idx[0]]
-        #         output_files = [ffa[1]]
-
-        #     bss_aligner = bssAlignerTool()
-        #     bam, bam_meta = bss_aligner.run(input_files, [], metadata)
-
-        #     if 'alignment' in output_metadata:
-        #         output_metadata['alignment'].append(bam_meta)
-        #     else:
-        #         output_metadata['alignment'] = [bam_meta]
-
-        # This needs moving to its own Tool
-        # # Sort and merge the aligned bam files
-        # # Pre-sort the original input bam files
-        # for bfs in bam_sort_files:
-        #     pysam.sort("-o", bfs[1], bfs[0])
-
-        # f_bam = fastq1.split("/")
-        # f_bam[-1] = f_bam[-1].replace(".fastq", ".sorted.bam")
-        # out_bam_file = "/".join(f_bam)
-
-        # pysam.merge(out_bam_file, *bam_merge_files)
-
-        # pysam.sort("-o", out_bam_file, "-T", out_bam_file + "_sort", out_bam_file)
-
-        # pysam.index(out_bam_file)
-
         # Methylation peak caller
         peak_caller_handle = bssMethylationCallerTool()
 

@@ -87,7 +87,7 @@ class bssIndexerTool(Tool):
             "python " + bss_path + "/bs_seeker2-build.py"
             " -f " + fasta_file + ""
             " --aligner " + aligner + " --path " + aligner_path + ""
-            " --db " + "/".join(ff_split[0:-1])
+            " --db " + "/".join(ff_split[:-1])
         ).format()
 
         print("BS - INDEX CMD:", command_line)
@@ -98,7 +98,7 @@ class bssIndexerTool(Tool):
         # tar.gz the index
         print("BS - idx_out", idx_out, idx_out.replace('.tar.gz', ''))
         tar = tarfile.open(idx_out, "w:gz")
-        tar.add(fasta_file + "_" + aligner)
+        tar.add(fasta_file + "_" + aligner, arcname=ff_split[-1] + "_" + aligner)
         tar.close()
 
         return True

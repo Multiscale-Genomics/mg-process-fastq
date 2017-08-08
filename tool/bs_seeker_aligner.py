@@ -19,6 +19,7 @@ from __future__ import print_function
 import shlex
 import subprocess
 import sys
+import tarfile
 
 try:
     if hasattr(sys, '_run_from_cmdl') is True:
@@ -52,11 +53,10 @@ class bssAlignerTool(Tool):
     @task(
         input_fastq1=FILE_IN, input_fastq2=FILE_IN,
         aligner=IN, aligner_path=IN, bss_path=IN,
-        genome_fasta=FILE_IN, bam_out=FILE_OUT, bt2_1=FILE_IN, bt2_2=FILE_IN,
-        bt2_3=FILE_IN, bt2_4=FILE_IN, bt2_rev_1=FILE_IN, bt2_rev_2=FILE_IN)
+        genome_fasta=FILE_IN, genome_idx=FILE_IN, bam_out=FILE_OUT)
     def bs_seeker_aligner(
             self, input_fastq1, input_fastq2, aligner, aligner_path, bss_path,
-            genome_fasta, bam_out):
+            genome_fasta, genome_idx, bam_out):
         """
         Alignment of the paired ends to the reference genome
 
@@ -78,6 +78,8 @@ class bssAlignerTool(Tool):
             Location of the aligner
         genome_fasta : str
             Location of the genome FASTA file
+        genome_idx : str
+            Location of the tar.gz genome index file
         bam_out : str
             Location of the aligned bam file
 
@@ -88,6 +90,10 @@ class bssAlignerTool(Tool):
         """
         g_dir = genome_fasta.split("/")
         g_dir = "/".join(g_dir[0:-1])
+
+        tar = tarfile.open(genome_idx)
+        tar.extractall()
+        tar.close()
 
         command_line = (
             "python " + bss_path + "/bs_seeker2-align.py"
@@ -124,15 +130,9 @@ class bssAlignerTool(Tool):
         """
 
         genome_fasta = input_files[0]
-        fastq_file_1 = input_files[1]
-        fastq_file_2 = input_files[2]
-        output_file = output_files[0]
-        bt2_1 = input_files[3]
-        bt2_2 = input_files[4]
-        bt2_3 = input_files[5]
-        bt2_4 = input_files[6]
-        bt2_rev_1 = input_files[7]
-        bt2_rev_2 = input_files[8]
+        genome_idx = input_files[1]
+        fastq_file_1 = input_files[2]
+        fastq_file_2 = input_files[3]
 
         aligner = metadata['aligner']
         aligner_path = metadata['aligner_path']
@@ -141,12 +141,14 @@ class bssAlignerTool(Tool):
         # input and output share most metadata
         output_metadata = {}
 
-        if output_file is None:
-            output_file = fastq_file_1.replace('.fastq', '.bam')
+        output_file = fastq_file_1.replace('_1.fastq', '.bam')
 
         results = self.bs_seeker_aligner(
-            fastq_file_1, fastq_file_2, aligner, aligner_path, bss_path, genome_fasta,
-            output_file)
+            fastq_file_1, fastq_file_2,
+            aligner, aligner_path, bss_path,
+            genome_fasta, genome_idx,
+            output_file
+        )
 
         if results is False:
             pass

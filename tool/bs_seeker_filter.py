@@ -25,12 +25,14 @@ try:
         raise ImportError
     from pycompss.api.parameter import FILE_IN, FILE_OUT, IN
     from pycompss.api.task import task
+    from pycompss.api.api import compss_wait_on
 except ImportError:
     print("[Warning] Cannot import \"pycompss\" API packages.")
     print("          Using mock decorators.")
 
     from dummy_pycompss import FILE_IN, FILE_OUT, IN
     from dummy_pycompss import task
+    from dummy_pycompss import compss_wait_on
 
 from basic_modules.tool import Tool
 
@@ -72,12 +74,18 @@ class filterReadsTool(Tool):
         command_line = (
             "python " + bss_path + "/FilterReads.py"
             " -i " + infile + ""
-            " -o " + outfile + ""
+            " -o " + outfile + ".tmp"
         ).format()
+
+        print(command_line)
 
         args = shlex.split(command_line)
         process = subprocess.Popen(args)
         process.wait()
+
+        with open(outfile, 'wb') as f_out:
+            with open(outfile + '.tmp', 'rb') as f_in:
+                f_out.write(f_in.read())
 
         return True
 
@@ -103,7 +111,10 @@ class filterReadsTool(Tool):
 
         output_metadata = {}
 
+        print("BS FILTER PARAMS:", file_name, output_file, metadata["bss_path"])
         results = self.bss_seeker_filter(file_name, output_file, metadata["bss_path"])
+
+        results = compss_wait_on(results)
 
         if results is False:
             pass

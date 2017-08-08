@@ -19,6 +19,8 @@ from __future__ import print_function
 import shlex
 import subprocess
 import sys
+import tarfile
+
 import pysam
 
 try:
@@ -51,9 +53,10 @@ class bssMethylationCallerTool(Tool):
         Tool.__init__(self)
 
     @task(
-        bss_path=IN, bam_file=FILE_IN, db_dir=IN,
+        bss_path=IN, bam_file=FILE_IN, genome_idx=FILE_IN,
         wig_file=FILE_OUT, cgmap_file=FILE_OUT, atcgmap_file=FILE_OUT)
-    def bss_methylation_caller(self, bss_path, bam_file, db_dir, wig_file, cgmap_file, atcgmap_file):
+    def bss_methylation_caller(
+            self, bss_path, bam_file, genome_idx, wig_file, cgmap_file, atcgmap_file):
         """
         Takes the merged and sorted bam file and calls the methylation sites.
         Generates a wig file of the potential sites.
@@ -67,7 +70,7 @@ class bssMethylationCallerTool(Tool):
             Location of the Methylation caller script
         bam_file : str
             Location of the sorted bam alignment file
-        db_dir : str
+        genome_idx : str
             Location of the FASTA file
         wig_file : str
             Location of the wig results file
@@ -84,11 +87,15 @@ class bssMethylationCallerTool(Tool):
         This is managed by pyCOMPS
         """
 
+        tar = tarfile.open(genome_idx)
+        tar.extractall()
+        tar.close()
+
         command_line = (
             "python " + bss_path + "/bs_seeker2-call_methylation.py "
             "--sorted --input " + str(bam_file) + " --wig " + str(wig_file) + " "
             "--CGmap " + str(cgmap_file) + " --ATCGmap " + str(atcgmap_file) + " "
-            "--db " + db_dir).format()
+            "--db " + genome_idx.replace('.tar.gz', '')).format()
         print ("command for methyl caller :", command_line)
         args = shlex.split(command_line)
         process = subprocess.Popen(args)

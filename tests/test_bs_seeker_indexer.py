@@ -30,7 +30,7 @@ def test_bs_seeker_indexer():
     home = os.path.expanduser('~')
 
     bsi = bs_seeker_indexer.bssIndexerTool()
-    bsi.run(
+    bs_files, bs_meta = bsi.run(
         [genomefa_file],
         [],
         {
@@ -38,4 +38,7 @@ def test_bs_seeker_indexer():
             "aligner_path" : home + "/lib/bowtie2-2.3.2",
             "bss_path" : home + "/lib/BSseeker2"
         }
-        )
+    )
+
+    assert os.path.isfile(bs_files[0]) is True
+    assert os.path.getsize(bs_files[0]) > 0

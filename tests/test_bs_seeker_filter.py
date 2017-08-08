@@ -29,12 +29,15 @@ def test_bs_seeker_filter():
     home = os.path.expanduser('~')
 
     bsi = bs_seeker_filter.filterReadsTool()
-    bsi.run(
+    bs_files, bs_meta = bsi.run(
         [genomefa_file],
         [],
         {
-            "aligner":"bowtie",
-            "aligner_path":home + "/bin",
-            "bss_path":home + "/lib/BSseeker2"
+            "aligner" : "bowtie",
+            "aligner_path" : home + "/bin",
+            "bss_path" : home + "/lib/BSseeker2"
         }
     )
+
+    assert os.path.isfile(bs_files[0]) is True
+    assert os.path.getsize(bs_files[0]) > 0

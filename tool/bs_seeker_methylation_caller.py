@@ -28,12 +28,14 @@ try:
         raise ImportError
     from pycompss.api.parameter import FILE_IN, FILE_OUT, IN
     from pycompss.api.task import task
+    from pycompss.api.api import compss_wait_on
 except ImportError:
     print("[Warning] Cannot import \"pycompss\" API packages.")
     print("          Using mock decorators.")
 
     from dummy_pycompss import FILE_IN, FILE_OUT, IN
     from dummy_pycompss import task
+    from dummy_pycompss import compss_wait_on
 
 from basic_modules.tool import Tool
 
@@ -56,7 +58,8 @@ class bssMethylationCallerTool(Tool):
         bss_path=IN, bam_file=FILE_IN, genome_idx=FILE_IN,
         wig_file=FILE_OUT, cgmap_file=FILE_OUT, atcgmap_file=FILE_OUT)
     def bss_methylation_caller(
-            self, bss_path, bam_file, genome_idx, wig_file, cgmap_file, atcgmap_file):
+            self, bss_path, bam_file, genome_idx,
+            wig_file, cgmap_file, atcgmap_file):
         """
         Takes the merged and sorted bam file and calls the methylation sites.
         Generates a wig file of the potential sites.
@@ -87,8 +90,11 @@ class bssMethylationCallerTool(Tool):
         This is managed by pyCOMPS
         """
 
+        g_dir = genome_idx.split("/")
+        g_dir = "/".join(g_dir[:-1])
+
         tar = tarfile.open(genome_idx)
-        tar.extractall()
+        tar.extractall(path=g_dir)
         tar.close()
 
         command_line = (
@@ -102,6 +108,29 @@ class bssMethylationCallerTool(Tool):
         process.wait()
 
         return True
+
+
+    @task(bam_file=FILE_IN, returns=int)
+    def check_header(self, bam_file):
+        """
+        Wrapper for the pysam SAMtools merge function
+
+        Parameters
+        ----------
+        bam_file_1 : str
+            Location of the bam file to merge into
+        bam_file_2 : str
+            Location of the bam file that is to get merged into bam_file_1
+        """
+        output = True
+
+        bam_file_handle = pysam.AlignmentFile(bam_file, "rb")
+        if ('SO' not in bam_file_handle.header['HD'] or
+            bam_file_handle.header['HD']['SO'] == 'unsorted'):
+            output = False
+        bam_file_handle.close()
+
+        return output
 
 
     def run(self, input_files, output_files, metadata=None):
@@ -123,7 +152,7 @@ class bssMethylationCallerTool(Tool):
 
         file_name = input_files[0]
         #gd = file_name.split("/")
-        genome_dir = metadata['index_path']
+        genome_idx = input_files[1]
 
         bss_path = metadata['bss_path']
         wig_file = file_name.replace('.bam', '.wig')
@@ -133,12 +162,9 @@ class bssMethylationCallerTool(Tool):
         # input and output share most metadata
         output_metadata = {}
 
-        bam_file_handle = pysam.AlignmentFile(file_name, "rb")
-        if ('SO' not in bam_file_handle.header['HD'] or
-                bam_file_handle.header['HD']['SO'] == 'unsorted'):
-
-            bam_file_handle.close()
-
+        results = self.check_header(file_name)
+        results = compss_wait_on(results)
+        if results is False:
             output_metadata['error'] = "bss_methylation_caller: Could not process files {}, {}.".format(*input_files)
             wig_file = None
             cgmap_file = None
@@ -146,8 +172,10 @@ class bssMethylationCallerTool(Tool):
 
             return ([wig_file, cgmap_file, atcgmap_file], [output_metadata])
 
-        self.bss_methylation_caller(
-            bss_path, file_name, genome_dir, wig_file, cgmap_file, atcgmap_file)
+        results = self.bss_methylation_caller(
+            bss_path, file_name, genome_idx, wig_file, cgmap_file, atcgmap_file)
+        results = compss_wait_on(results)
+
         return ([wig_file, cgmap_file, atcgmap_file], [output_metadata])
 
 # ------------------------------------------------------------------------------

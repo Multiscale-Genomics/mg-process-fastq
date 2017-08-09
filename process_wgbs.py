@@ -138,7 +138,7 @@ class process_wgbs(Workflow):
 
         metadata['index_path'] = genome_fa + '_bowtie2'
         peak_files, peak_meta = peak_caller_handle.run(
-            [out_bam_file],
+            [bam[0], genome_idx[0]],
             [],
             metadata
         )

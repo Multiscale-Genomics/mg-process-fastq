@@ -236,7 +236,7 @@ class bssAlignerTool(Tool):
         output_bam_list = []
         for fastq_file_pair in fastq_file_list:
             print("WGBS - fastq_file_pair:", fastq_file_pair)
-            output_bam_file_tmp = fastq_file_pair[0] + ".bam"
+            output_bam_file_tmp = "/".join(ffgz_split[:-1]) + "/" + fastq_file_pair[0] + ".bam"
             output_bam_list.append(output_bam_file_tmp)
             results = self.bs_seeker_aligner(
                 fastq_file_gz, fastq_file_pair,

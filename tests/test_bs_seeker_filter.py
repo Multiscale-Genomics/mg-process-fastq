@@ -20,12 +20,35 @@ import pytest # pylint: disable=unused-import
 from tool import bs_seeker_filter
 
 @pytest.mark.wgbs
-def test_bs_seeker_filter():
+def test_bs_seeker_filter_01():
     """
     Test that it is possible to call the BSseeker filter
     """
     resource_path = os.path.join(os.path.dirname(__file__), "data/")
     genomefa_file = resource_path + "bsSeeker.Mouse.GRCm38_1.fastq"
+    home = os.path.expanduser('~')
+
+    bsi = bs_seeker_filter.filterReadsTool()
+    bs_files, bs_meta = bsi.run(
+        [genomefa_file],
+        [],
+        {
+            "aligner" : "bowtie",
+            "aligner_path" : home + "/bin",
+            "bss_path" : home + "/lib/BSseeker2"
+        }
+    )
+
+    assert os.path.isfile(bs_files[0]) is True
+    assert os.path.getsize(bs_files[0]) > 0
+
+@pytest.mark.wgbs
+def test_bs_seeker_filter_02():
+    """
+    Test that it is possible to call the BSseeker filter
+    """
+    resource_path = os.path.join(os.path.dirname(__file__), "data/")
+    genomefa_file = resource_path + "bsSeeker.Mouse.GRCm38_2.fastq"
     home = os.path.expanduser('~')
 
     bsi = bs_seeker_filter.filterReadsTool()

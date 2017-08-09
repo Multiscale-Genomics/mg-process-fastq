@@ -15,7 +15,6 @@
 """
 
 import os
-import pysam
 import pytest # pylint: disable=unused-import
 
 from tool import bs_seeker_methylation_caller
@@ -30,17 +29,22 @@ def test_bs_seeker_methylation_caller():
     bam_file = resource_path + "bsSeeker.Mouse.GRCm38.bam"
     home = os.path.expanduser('~')
 
-    pysam.sort("-o", str(bam_file+".sorted"), str(bam_file))
-
     bsmc = bs_seeker_methylation_caller.bssMethylationCallerTool()
-    bsmc.run(
+    bs_files, bs_meta = bsmc.run(
         [
-          bam_file+".sorted",
-          genome_fa_file
+            bam_file,
+            genome_fa_file
         ],
         [],
         {
-            'bss_path': home + "/lib/BSseeker2",
-            'index_path' : genome_fa_file
+            'bss_path': home + "/lib/BSseeker2"
         }
     )
+
+    assert os.path.isfile(bs_files[0]) is True
+    assert os.path.getsize(bs_files[0]) > 0
+    assert os.path.isfile(bs_files[1]) is True
+    # Blank file for this small dataset
+    #assert os.path.getsize(bs_files[1]) > 0
+    assert os.path.isfile(bs_files[2]) is True
+    assert os.path.getsize(bs_files[2]) > 0

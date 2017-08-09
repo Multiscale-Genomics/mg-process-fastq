@@ -151,7 +151,6 @@ class bssMethylationCallerTool(Tool):
 
 
         file_name = input_files[0]
-        #gd = file_name.split("/")
         genome_idx = input_files[1]
 
         bss_path = metadata['bss_path']

@@ -89,7 +89,7 @@ class process_mnaseseq(Workflow):
         inps_tool = inps()
         out_peak_bed, out_meta = inps_tool.run([out_file_bam[0]], [])
 
-        return ([out_file_bam[0], out_peak_bed], [out_bam_meta, out_meta])
+        return ([out_file_bam[0], out_peak_bed[0]], [out_bam_meta, out_meta])
 
 # ------------------------------------------------------------------------------
 

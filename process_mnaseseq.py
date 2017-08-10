@@ -37,7 +37,22 @@ class process_mnaseseq(Workflow):
     filtered and analysed for peak calling
     """
 
-    def run(self, file_ids, metadata):
+    def __init__(self, configuration=None):
+        """
+        Initialise the class
+
+        Parameters
+        ----------
+        configuration : dict
+            a dictionary containing parameters that define how the operation
+            should be carried out, which are specific to each Tool.
+        """
+        if configuration is None:
+            configuration = {}
+
+        self.configuration.update(configuration)
+
+    def run(self, file_ids, metadata, output_files):
         """
         Main run function for processing MNase-Seq FastQ data. Pipeline aligns
         the FASTQ files to the genome using BWA. iNPS is then used for peak
@@ -92,8 +107,8 @@ def main(input_files, output_files, input_metadata):
     print("1. Instantiate and launch the App")
     from apps.workflowapp import WorkflowApp
     app = WorkflowApp()
-    result = app.launch(process_mnaseseq, input_files, output_files, input_metadata,
-                        {})
+    result = app.launch(process_mnaseseq, input_files, input_metadata,
+                        output_files, {})
 
     # 2. The App has finished
     print("2. Execution finished")
@@ -172,7 +187,7 @@ if __name__ == "__main__":
     PARAMS = prepare_files(DM_HANDLER, TAXON_ID, GENOME_FA, ASSEMBLY, FILE_LOC)
 
     # 3. Instantiate and launch the App
-    RESULTS = main(PARAMS[0], PARAMS[1], PARAMS[2])
+    RESULTS = main(PARAMS[0], [], [PARAMS[2]])
 
     print(RESULTS)
     print(DM_HANDLER.get_files_by_user("test"))

@@ -27,7 +27,7 @@ def test_tb_pipeline():
     """
     Test case to ensure that the Hi-C pipeline code works.
 
-    Running the pipelien with the test data from the command line:
+    Running the pipeline with the test data from the command line:
 
     .. code-block:: none
        runcompss --lang=python --library_path=/home/compss/bin --pythonpath=/home/compss/.pyenv/versions/2.7.12/envs/mg-process-fastq/lib/python2.7/site-packages/ --log_level=debug

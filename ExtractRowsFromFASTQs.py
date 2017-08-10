@@ -1,7 +1,8 @@
 #!/usr/bin/python
 
 """
-Some docs about this filter
+Script to extract FASTQ entry pairs from paired end FASTQ files given a list of
+FASTQ IDs.
 """
 
 import argparse
@@ -16,7 +17,7 @@ from fastqreader import fastqreader
 
 def paired_selector(in_file1, in_file2, rows, tag='tmp'):
     """
-    Function to divide the FastQ files into separte sub files of 1000000
+    Function to divide the FastQ files into separate sub files of 1000000
     sequences so that the aligner can run in parallel.
 
     Parameters
@@ -101,7 +102,7 @@ def paired_selector(in_file1, in_file2, rows, tag='tmp'):
 
 def get_if_list(row_file):
     """
-    Get the IDs from teh specified file
+    Get the IDs from the specified file
     """
     fid = open(row_file, 'r')
 
@@ -117,9 +118,6 @@ def get_if_list(row_file):
 
 
 if __name__ == "__main__":
-    # FILE_01 = '/nfs/panda/ensembl/mug/datasets/hic_test/SRR1658573_1.fastq'
-    # FILE_02 = '/nfs/panda/ensembl/mug/datasets/hic_test/SRR1658573_2.fastq'
-    # fid = open('/nfs/panda/ensembl/mug/datasets/hic_test/SRR1658573_chr21.row', 'r')
 
     # Set up the command line parameters
     PARSER = argparse.ArgumentParser(description="Load adjacency list into HDF5 file")

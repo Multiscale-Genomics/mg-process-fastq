@@ -19,6 +19,19 @@ from __future__ import print_function
 import argparse
 import pytest # pylint: disable=unused-import
 
+def genome_toolchain():
+    """
+    Runs the tests for all of the tools from the ChIP-seq pipeline
+    """
+    return pytest.main(
+        [
+            '-m genome',
+            'tests/test_bowtie_indexer.py',
+            'tests/test_bwa_indexer.py',
+            'tests/test_gem_indexer.py',
+        ]
+    )
+
 def chipseq_toolchain():
     """
     Runs the tests for all of the tools from the ChIP-seq pipeline
@@ -102,6 +115,11 @@ if __name__ == '__main__':
     PIPELINES = ARGS.pipeline
     PIPELINES = PIPELINES.split(",")
     print(PIPELINES)
+
+    if 'genome' in PIPELINES or 'all' in PIPELINES:
+        print('GENOME')
+        if genome_toolchain() > 0:
+            sys.exit(1)
 
     if 'chipseq' in PIPELINES or 'all' in PIPELINES:
         print('CHIPSEQ')

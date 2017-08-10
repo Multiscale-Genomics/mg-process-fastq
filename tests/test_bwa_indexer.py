@@ -22,6 +22,7 @@ import pytest # pylint: disable=unused-import
 from tool.bwa_indexer import bwaIndexerTool
 
 @pytest.mark.chipseq
+@pytest.mark.genome
 def test_bwa_indexer():
     """
     Test case to ensure that the BWA indexer works.
@@ -62,6 +63,7 @@ def test_bwa_indexer():
 
 
 @pytest.mark.mnaseseq
+@pytest.mark.genome
 def test_bwa_indexer_02():
     """
     Test case to ensure that the BWA indexer works

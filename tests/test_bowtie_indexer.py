@@ -20,6 +20,7 @@ import pytest # pylint: disable=unused-import
 from tool import bowtie_indexer
 
 @pytest.mark.chipseq
+@pytest.mark.genome
 def test_bowtie_indexer():
     """
     Test to ensure Bowtie indexer is working for macs data set
@@ -53,6 +54,7 @@ def test_bowtie_indexer():
 
 
 @pytest.mark.mnaseseq
+@pytest.mark.genome
 def test_bowtie_indexer_02():
     """
     Test to ensure Bowtie indexer is working for macs data set

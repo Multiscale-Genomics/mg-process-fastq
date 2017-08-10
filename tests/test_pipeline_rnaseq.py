@@ -25,7 +25,7 @@ from process_rnaseq import process_rnaseq
 @pytest.mark.pipeline
 def test_tb_pipeline():
     """
-    Test case to ensure that the ChIP-seq pipeline code works.
+    Test case to ensure that the RNA-seq pipeline code works.
 
     Running the pipeline with the test data from the command line:
 

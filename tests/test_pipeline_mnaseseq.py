@@ -31,16 +31,16 @@ def test_mnaseseq_pipeline():
     Running the pipeline with the test data from the command line:
 
     .. code-block:: none
-       runcompss                     \
-          --lang=python              \
-          --library_path=${HOME}/bin \
+       runcompss                                        \
+          --lang=python                                 \
+          --library_path=${HOME}/bin                    \
           --pythonpath=/<pyenv_virtenv_dir>/lib/python2.7/site-packages/ \
-          --log_level=debug          \
-          process_chipseq.py         \
-             --taxon_id 9606         \
-             --genome /<dataset_dir>/Human.GCA_000001405.22.fasta \
-             --assembly GRCh38       \
-             --file /<dataset_dir>/DRR000150.22.fastq
+          --log_level=debug                             \
+          process_mnaseseq.py                           \
+             --taxon_id 10090                           \
+             --genome /<dataset_dir>/Mouse.GRCm38.fasta \
+             --assembly GRCm38                          \
+             --file /<dataset_dir>/DRR000386.fastq
     """
     resource_path = os.path.join(os.path.dirname(__file__), "data/")
 

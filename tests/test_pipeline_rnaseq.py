@@ -23,7 +23,7 @@ from process_rnaseq import process_rnaseq
 
 @pytest.mark.rnaseq
 @pytest.mark.pipeline
-def test_tb_pipeline():
+def test_rnaseq_pipeline():
     """
     Test case to ensure that the RNA-seq pipeline code works.
 

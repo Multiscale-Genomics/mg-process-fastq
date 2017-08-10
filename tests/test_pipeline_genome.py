@@ -23,7 +23,7 @@ from process_genome import process_genome
 
 @pytest.mark.genome
 @pytest.mark.pipeline
-def test_tb_pipeline():
+def test_genome_pipeline():
     """
     Test case to ensure that the ChIP-seq pipeline code works.
 

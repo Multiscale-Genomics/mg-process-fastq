@@ -24,7 +24,7 @@ from process_chipseq import process_chipseq
 
 @pytest.mark.chipseq
 @pytest.mark.pipeline
-def test_tb_pipeline():
+def test_chipseq_pipeline():
     """
     Test case to ensure that the ChIP-seq pipeline code works.
 

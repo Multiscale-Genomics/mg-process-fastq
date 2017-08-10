@@ -23,7 +23,7 @@ def chipseq_toolchain():
     """
     Runs the tests for all of the tools from the ChIP-seq pipeline
     """
-    pytest.main(
+    return pytest.main(
         [
             '-m chipseq',
             'tests/test_bwa_indexer.py',
@@ -37,7 +37,7 @@ def hic_toolchain():
     """
     Runs the tests for all of the tools from the Hi-C pipeline
     """
-    pytest.main(
+    return pytest.main(
         [
             '-m hic',
             'tests/test_gem_indexer.py',
@@ -53,7 +53,7 @@ def mnaseseq_toolchain():
     """
     Runs the tests for all of the tools from the MNase-seq pipeline
     """
-    pytest.main(
+    return pytest.main(
         [
             '-m mnaseseq',
             'tests/test_bwa_indexer.py',
@@ -66,7 +66,7 @@ def rnaseq_toolchain():
     """
     Runs the tests for all of the tools from the RNA-seq pipeline
     """
-    pytest.main(
+    return pytest.main(
         [
             '-m rnaseq',
             'tests/test_kallisto_indexer.py',
@@ -78,11 +78,12 @@ def wgbs_toolchain():
     """
     Runs the tests for all of the tools from the WGBS pipeline
     """
-    pytest.main(
+    return pytest.main(
         [
             '-m wgbs',
             'tests/test_bs_seeker_filter.py',
             'tests/test_bs_seeker_indexer.py',
+            #'tests/test_fastq_splitter.py',
             'tests/test_bs_seeker_aligner.py',
             'tests/test_bs_seeker_methylation_caller.py',
         ]
@@ -104,20 +105,25 @@ if __name__ == '__main__':
 
     if 'chipseq' in PIPELINES or 'all' in PIPELINES:
         print('CHIPSEQ')
-        chipseq_toolchain()
+        if chipseq_toolchain() > 0:
+            sys.exit(1)
 
     if 'hic' in PIPELINES or 'all' in PIPELINES:
         print('HIC')
-        hic_toolchain()
+        if hic_toolchain() > 0:
+            sys.exit(1)
 
     if 'mnaseseq' in PIPELINES or 'all' in PIPELINES:
         print('MNASESEQ')
-        mnaseseq_toolchain()
+        if mnaseseq_toolchain() > 0:
+            sys.exit(1)
 
     if 'rnaseq' in PIPELINES or 'all' in PIPELINES:
         print('RNASEQ')
-        rnaseq_toolchain()
+        if rnaseq_toolchain() > 0:
+            sys.exit(1)
 
     if 'wgbs' in PIPELINES or 'all' in PIPELINES:
         print('WGBS')
-        wgbs_toolchain()
+        if wgbs_toolchain() > 0:
+            sys.exit(1)

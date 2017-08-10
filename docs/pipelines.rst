@@ -135,7 +135,7 @@ Hi-C Anslysis
          --windows1 1,100                                     \
          --windows2 1,100                                     \
          --normalized 1                                       \
-         --tag tb.Human.SRR1658573                            \
+         --tag Human.SRR1658573                            \
          --window_type frag
 
    When using a local version of the [COMPS virtual machine](https://www.bsc.es/research-and-development/software-and-apps/software-list/comp-superscalar/):
@@ -150,17 +150,17 @@ Hi-C Anslysis
          --log_level=debug             \
          process_hic.py                \
             --taxon_id 9606            \
-            --genome /<dataset_dir>/tb.Human.GCA_000001405.22_gem.fasta \
+            --genome /<dataset_dir>/.Human.GCA_000001405.22_gem.fasta \
             --assembly GRCh38          \
-            --file1 /<dataset_dir>/tb.Human.SRR1658573_1.fastq \
-            --file2 /<dataset_dir>/tb.Human.SRR1658573_2.fastq \
-            --genome_gem /<dataset_dir>/tb.Human.GCA_000001405.22_gem.fasta.gem \
+            --file1 /<dataset_dir>/Human.SRR1658573_1.fastq \
+            --file2 /<dataset_dir>/Human.SRR1658573_2.fastq \
+            --genome_gem /<dataset_dir>/Human.GCA_000001405.22_gem.fasta.gem \
             --enzyme_name MboI         \
             --resolutions 10000,100000 \
             --windows1 1,100           \
             --windows2 1,100           \
             --normalized 1             \
-            --tag tb.Human.SRR1658573  \
+            --tag Human.SRR1658573     \
             --window_type frag
 
    Methods
@@ -204,11 +204,11 @@ ChIP-Seq Analysis
    .. code-block:: none
       :linenos:
 
-      python process_chipseq.py                                      \
-         --genome /<dataset_dir>/Homo_sapiens.GRCh38.fasta           \
-         --assembly GCA_000001405.25                                 \
-         --taxon_id 9606                                             \
-         --file /<dataset_dir>/<file_name>.fastq                     \
+      python process_chipseq.py                            \
+         --genome /<dataset_dir>/Homo_sapiens.GRCh38.fasta \
+         --assembly GCA_000001405.25                       \
+         --taxon_id 9606                                   \
+         --file /<dataset_dir>/<file_name>.fastq           \
          --bgd_file /<dataset_dir>/<bgd_file_name>.fastq
 
    When using a local version of the [COMPS virtual machine](https://www.bsc.es/research-and-development/software-and-apps/software-list/comp-superscalar/):
@@ -223,9 +223,9 @@ ChIP-Seq Analysis
          --log_level=debug          \
          process_chipseq.py         \
             --taxon_id 9606         \
-            --genome /<dataset_dir>/macs2.Human.GCA_000001405.22.fasta \
+            --genome /<dataset_dir>/Human.GCA_000001405.22.fasta \
             --assembly GRCh38       \
-            --file /<dataset_dir>/macs2.Human.DRR000150.22.fastq
+            --file /<dataset_dir>/DRR000150.22.fastq
 
 
    Methods
@@ -263,15 +263,17 @@ Mnase-Seq Analysis
 
    Example
    -------
+   REQUIREMENT - Needs the indexing step to be run first
+
    When running the pipeline on a local machine:
 
    .. code-block:: none
       :linenos:
 
-      python process_mnaseseq.py                                     \\
-         --genome /<dataset_dir>/Homo_sapiens.GRCh38.fasta           \\
-         --assembly GCA_000001405.25                                 \\
-         --taxon_id 9606                                             \\
+      python process_mnaseseq.py                           \
+         --genome /<dataset_dir>/Homo_sapiens.GRCh38.fasta \
+         --assembly GCA_000001405.25                       \
+         --taxon_id 9606                                   \
          --file /<dataset_dir>/<file_name>.fastq
 
    When using a local version of the [COMPS virtual machine](https://www.bsc.es/research-and-development/software-and-apps/software-list/comp-superscalar/):
@@ -279,14 +281,17 @@ Mnase-Seq Analysis
    .. code-block:: none
       :linenos:
 
-      runcompss
-         --comm=integratedtoolkit.gat.master.GATAdaptor                  \\
-         --log_level=debug                                               \\
-         --lang=python /home/compss/mg-process-fastq/process_mnaseseq.py \\
-            --assembly GCA_000001635.2                                   \\
-            --taxon_id 10090                                             \\
-            --genome <data_dir>/GCA_000001635.2.fa                       \\
-            --file /<dataset_dir>/<file_name>.fastq
+      runcompss                                        \
+         --lang=python                                 \
+         --library_path=${HOME}/bin                    \
+         --pythonpath=/<pyenv_virtenv_dir>/lib/python2.7/site-packages/ \
+         --log_level=debug                             \
+         process_mnaseseq.py                           \
+            --taxon_id 10090                           \
+            --genome /<dataset_dir>/Mouse.GRCm38.fasta \
+            --assembly GRCm38                          \
+            --file /<dataset_dir>/DRR000386.fastq
+
 
    Methods
    =======
@@ -328,11 +333,12 @@ RNA-Seq Analysis
    .. code-block:: none
       :linenos:
 
-      python process_rnaseq.py                                       \\
-         --genome /<dataset_dir>/Homo_sapiens.GRCh38.cdna.all.fasta  \\
-         --assembly GCA_000001405.25                                 \\
-         --taxon_id 9606                                             \\
-         --file /<dataset_dir>/expt1.fastq
+      python process_rnaseq.py                                       \
+         --genome /<dataset_dir>/Homo_sapiens.GRCh38.cdna.all.fasta  \
+         --assembly GCA_000001405.25                                 \
+         --taxon_id 9606                                             \
+         --file /<dataset_dir>/expt_1.fastq                          \
+         --file2 /<dataset_dir>/expt_2.fastq
 
 
    When using a local version of the [COMPS virtual machine](https://www.bsc.es/research-and-development/software-and-apps/software-list/comp-superscalar/):
@@ -340,14 +346,17 @@ RNA-Seq Analysis
    .. code-block:: none
       :linenos:
 
-      runcompss
-         --comm=integratedtoolkit.gat.master.GATAdaptor                   \\
-         --log_level=debug                                                \\
-         --lang=python /home/compss/mg-process-fastq/process_rnaseq.py    \\
-            --assembly GCA_000001405.22                                   \\
-            --taxon_id 9606                                               \\
-            --genome <data_dir>/GCA_000001405.25.fa                       \\
-            --file <data_dir>/expt1.fastq
+      runcompss                                        \
+         --lang=python                                 \
+         --library_path=${HOME}/bin                    \
+         --pythonpath=/<pyenv_virtenv_dir>/lib/python2.7/site-packages/ \
+         --log_level=debug                             \
+         process_rnaseq.py                             \
+            --taxon_id 9606                            \
+            --genome /<dataset_dir>/Human.GRCh38.fasta \
+            --assembly GRCh38                          \
+            --file /<dataset_dir>/ERR030872_1.fastq    \
+            --file2 /<dataset_dir>/ERR030872_2.fastq
 
    Methods
    =======
@@ -402,14 +411,14 @@ Whole Genome BiSulphate Sequencing Analysis
    .. code-block:: none
       :linenos:
 
-      python process_rnaseq.py                                    \\
-         --assembly GCA_000001405.22                              \\
-         --taxon_id 9606                                          \\
-         --genome <data_dir>/GCA_000001405.22.fa                  \\
-         --fastq1 <data_dir>/expt1_a.fastq                        \\
-         --fastq2 <data_dir>/expt1_b.fastq                        \\
-         --aligner bowtie2                                        \\
-         --aligner_path /home/compss/lib                          \\
+      python process_rnaseq.py                   \
+         --assembly GCA_000001405.22             \
+         --taxon_id 9606                         \
+         --genome <data_dir>/GCA_000001405.22.fa \
+         --fastq1 <data_dir>/expt1_a.fastq       \
+         --fastq2 <data_dir>/expt1_b.fastq       \
+         --aligner bowtie2                       \
+         --aligner_path /home/compss/lib         \
          --bss_path <script_dir>/BS-Seeker2
 
    When using a local version of the [COMPS virtual machine](https://www.bsc.es/research-and-development/software-and-apps/software-list/comp-superscalar/):
@@ -417,18 +426,20 @@ Whole Genome BiSulphate Sequencing Analysis
    .. code-block:: none
       :linenos:
 
-      runcompss
-         --comm=integratedtoolkit.gat.master.GATAdaptor              \\
-         --log_level=debug                                           \\
-         --lang=python /home/compss/mg-process-fastq/process_wgbs.py \\
-            --assembly GCA_000001405.22                              \\
-            --taxon_id 9606                                          \\
-            --genome <data_dir>/GCA_000001405.22.fa                  \\
-            --fastq1 <data_dir>/expt1_a.fastq                        \\
-            --fastq2 <data_dir>/expt1_b.fastq                        \\
-            --aligner bowtie2                                        \\
-            --aligner_path /home/compss/lib                          \\
-            --bss_path <script_dir>/BS-Seeker2
+      runcompss                                  \
+         --lang=python                           \
+         --library_path=${HOME}/bin              \
+         --pythonpath=/<pyenv_virtenv_dir>/lib/python2.7/site-packages/ \
+         --log_level=debug                       \
+         process_wgbs.py                         \
+            --taxon_id 10090                     \
+            --genome /<dataset_dir>/Mouse.GRCm38.fasta \
+            --assembly GRCm38                    \
+            --fastq1 /<dataset_dir>/expt_1.fastq \
+            --fastq2 /<dataset_dir>/expt_2.fastq \
+            --aligner bowtie2                    \
+            --aligner_path ${HOME}/lib/bowtie2-2.3.2 \
+            --bss_path ${HOME}/lib/BSseeker2
 
 
    Methods

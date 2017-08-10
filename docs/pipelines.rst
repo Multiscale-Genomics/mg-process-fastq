@@ -62,7 +62,7 @@ Download and index genome files
       :members:
 
 
-Hi-C Anslysis
+Hi-C Analysis
 -------------
 
 .. automodule:: process_hic

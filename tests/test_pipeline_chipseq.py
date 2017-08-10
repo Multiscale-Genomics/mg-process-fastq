@@ -19,6 +19,7 @@ from __future__ import print_function
 import os.path
 import pytest # pylint: disable=unused-import
 
+from process_genome import process_genome
 from process_chipseq import process_chipseq
 
 @pytest.mark.chipseq
@@ -43,13 +44,16 @@ def test_tb_pipeline():
     """
     resource_path = os.path.join(os.path.dirname(__file__), "data/")
 
-    files = [
-        resource_path + 'macs2.Human.GCA_000001405.22.fasta',
-        resource_path + 'macs2.Human.GCA_000001405.22.fasta.ann',
-        resource_path + 'macs2.Human.GCA_000001405.22.fasta.amb',
-        resource_path + 'macs2.Human.GCA_000001405.22.fasta.bwt',
-        resource_path + 'macs2.Human.GCA_000001405.22.fasta.pac',
-        resource_path + 'macs2.Human.GCA_000001405.22.fasta.sa',
+    genome_handle = process_genome()
+    genome_files, genome_meta = genome_handle.run(
+        [resource_path + 'macs2.Human.GCA_000001405.22.fasta'],
+        {'assembly' : 'GRCh38'},
+        []
+    )
+
+    files = [resource_path + 'macs2.Human.GCA_000001405.22.fasta']
+    files += genome_files[6:11]
+    files += [
         resource_path + 'macs2.Human.DRR000150.22.fastq',
         None
     ]

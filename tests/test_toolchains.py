@@ -21,7 +21,7 @@ import pytest # pylint: disable=unused-import
 
 def genome_toolchain():
     """
-    Runs the tests for all of the tools from the ChIP-seq pipeline
+    Runs the tests for all of the tools from the Genome indexing pipeline
     """
     return pytest.main(
         [
@@ -96,7 +96,7 @@ def wgbs_toolchain():
             '-m wgbs',
             'tests/test_bs_seeker_filter.py',
             'tests/test_bs_seeker_indexer.py',
-            #'tests/test_fastq_splitter.py',
+            'tests/test_fastq_splitter.py',
             'tests/test_bs_seeker_aligner.py',
             'tests/test_bs_seeker_methylation_caller.py',
         ]

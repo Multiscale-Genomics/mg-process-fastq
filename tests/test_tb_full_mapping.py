@@ -22,7 +22,7 @@ import pytest # pylint: disable=unused-import
 
 from tool.tb_full_mapping import tbFullMappingTool
 
-#@pytest.mark.hic
+@pytest.mark.hic
 def test_tb_extract_fastq():
     """
     Extract the compressed FASTQ files

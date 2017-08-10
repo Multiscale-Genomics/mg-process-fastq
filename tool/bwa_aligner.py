@@ -79,10 +79,10 @@ class bwaAlignerTool(Tool):
         out_bam = read_file_loc + '.out.bam'
         common_handle = common()
         bam_loc1 = common_handle.bwa_align_reads(genome_file_loc, read_file_loc, out_bam)
-        
+
         print("BWA FINAL OUTPUT FILE:", bam_loc)
         print("BWA ALIGNER TASK (start):", os.path.isfile(bam_loc), os.path.islink(bam_loc))
-        
+
         with open(bam_loc, "wb") as f_out:
             with open(out_bam, "rb") as f_in:
                 f_out.write(f_in.read())
@@ -91,9 +91,9 @@ class bwaAlignerTool(Tool):
         print("BWA ALIGNER TASK (mid):", os.path.isfile(out_bam), os.path.getsize(out_bam))
         print("BWA FINAL OUTPUT FILE:", bam_loc)
         print("BWA ALIGNER TASK (final):", os.path.isfile(bam_loc), os.path.getsize(bam_loc))
-        
+
         print("BWA OUTPUT FILES:", os.listdir(output_dir))
-        
+
         return True
 
     def run(self, input_files, output_files, metadata=None):
@@ -114,7 +114,7 @@ class bwaAlignerTool(Tool):
 
         output_metadata = {}
         out_bam = input_files[1].replace(".fastq", '.bam')
-        
+
         print("BWA ALIGNER (before):", out_bam)
 
         results = self.bwa_aligner(

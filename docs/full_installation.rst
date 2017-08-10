@@ -46,6 +46,10 @@ space.
    pyenv install 2.7.12
    pyenv virtualenv 2.7.12 mg-process-fastq
 
+   # Python 3 environment required by iNPS
+   pyenv install 3.5.3
+   ln -s ${HOME}/.pyenv/versions/3.5.3/bin/python ${HOME}/bin/py3
+
 Installation Process
 --------------------
 

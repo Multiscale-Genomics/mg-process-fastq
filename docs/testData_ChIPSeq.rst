@@ -37,7 +37,7 @@ Download the genome file from
 
 .. code-block:: none
 
-   wget http://www.ebi.ac.uk/ena/data/view/CM000663.2,CM000664.2,CM000665.2,CM000666.2,CM000667.2,CM000668.2,CM000669.2,CM000670.2,CM000671.2,CM000672.2,CM000673.2,CM000674.2,CM000675.2,CM000676.2,CM000677.2,CM000678.2,CM000679.2,CM000680.2,CM000681.2,CM000682.2,CM000683.2,CM000684.2,CM000685.2,CM000686.2,J01415.2&display=fasta&download=fasta&filename=entry.fasta -O GCA_000001405.22.fasta
+   wget "http://www.ebi.ac.uk/ena/data/view/CM000663.2,CM000664.2,CM000665.2,CM000666.2,CM000667.2,CM000668.2,CM000669.2,CM000670.2,CM000671.2,CM000672.2,CM000673.2,CM000674.2,CM000675.2,CM000676.2,CM000677.2,CM000678.2,CM000679.2,CM000680.2,CM000681.2,CM000682.2,CM000683.2,CM000684.2,CM000685.2,CM000686.2,J01415.2&display=fasta&download=fasta&filename=entry.fasta" -O GCA_000001405.22.fasta
 
 
 Checkout https://github.com/Multiscale-Genomics/mg-misc-scripts/blob/master/ChIPSeq_Scripts/extract_chromosomeForChIP.py and extract chromosome 22 from the above file using the following command.
@@ -56,7 +56,7 @@ Unzip this file.
 
 .. code-block:: none
 
-   unzip DRR000150.fastq.gz
+   gunzip DRR000150.fastq.gz
 
 
 Index the fasta file

@@ -48,10 +48,10 @@ Download and index genome files
       runcompss                               \
           --lang=python                       \
           --library_path=${HOME}/bin          \
-          --pythonpath=${HOME}/.pyenv/versions/2.7.12/envs/mg-process-fastq/lib/python2.7/site-packages/ \
+          --pythonpath=/<pyenv_virtenv_dir>/lib/python2.7/site-packages/ \
           --log_level=debug process_genome.py \
           --taxon_id 9606                     \
-          --genome ${HOME}/code/mg-process-fastq/tests/data/tb.Human.GCA_000001405.22.fasta \
+          --genome /<dataset_dir>/tb.Human.GCA_000001405.22.fasta \
           --assembly GRCh38
 
 
@@ -146,15 +146,15 @@ Hi-C Anslysis
       runcompss                        \
          --lang=python                 \
          --library_path=${HOME}/bin    \
-         --pythonpath=${HOME}/.pyenv/versions/2.7.12/envs/mg-process-fastq/lib/python2.7/site-packages/ \
+         --pythonpath=/<pyenv_virtenv_dir>/lib/python2.7/site-packages/ \
          --log_level=debug             \
          process_hic.py                \
             --taxon_id 9606            \
-            --genome ${HOME}/code/mg-process-fastq/tests/data/tb.Human.GCA_000001405.22_gem.fasta \
+            --genome /<dataset_dir>/tb.Human.GCA_000001405.22_gem.fasta \
             --assembly GRCh38          \
-            --file1 ${HOME}/code/mg-process-fastq/tests/data/tb.Human.SRR1658573_1.fastq \
-            --file2 ${HOME}/code/mg-process-fastq/tests/data/tb.Human.SRR1658573_2.fastq \
-            --genome_gem ${HOME}/code/mg-process-fastq/tests/data/tb.Human.GCA_000001405.22_gem.fasta.gem \
+            --file1 /<dataset_dir>/tb.Human.SRR1658573_1.fastq \
+            --file2 /<dataset_dir>/tb.Human.SRR1658573_2.fastq \
+            --genome_gem /<dataset_dir>/tb.Human.GCA_000001405.22_gem.fasta.gem \
             --enzyme_name MboI         \
             --resolutions 10000,100000 \
             --windows1 1,100           \
@@ -204,11 +204,11 @@ ChIP-Seq Analysis
    .. code-block:: none
       :linenos:
 
-      python process_chipseq.py                                      \\
-         --genome /<dataset_dir>/Homo_sapiens.GRCh38.fasta           \\
-         --assembly GCA_000001405.25                                 \\
-         --taxon_id 9606                                             \\
-         --file /<dataset_dir>/<file_name>.fastq                     \\
+      python process_chipseq.py                                      \
+         --genome /<dataset_dir>/Homo_sapiens.GRCh38.fasta           \
+         --assembly GCA_000001405.25                                 \
+         --taxon_id 9606                                             \
+         --file /<dataset_dir>/<file_name>.fastq                     \
          --bgd_file /<dataset_dir>/<bgd_file_name>.fastq
 
    When using a local version of the [COMPS virtual machine](https://www.bsc.es/research-and-development/software-and-apps/software-list/comp-superscalar/):
@@ -216,14 +216,16 @@ ChIP-Seq Analysis
    .. code-block:: none
       :linenos:
 
-      runcompss
-         --comm=integratedtoolkit.gat.master.GATAdaptor                   \\
-         --log_level=debug                                                \\
-         --lang=python /home/compss/mg-process-fastq/process_chipseq.py   \\
-            --taxon_id 9606                                               \\
-            --assembly GCA_000001405.25                                   \\
-            --file /<dataset_dir>/<file_name>.fastq                       \\
-            --bgd_file /<dataset_dir>/<bgd_file_name>.fastq
+      runcompss                     \
+         --lang=python              \
+         --library_path=${HOME}/bin \
+         --pythonpath=/<pyenv_virtenv_dir>/lib/python2.7/site-packages/ \
+         --log_level=debug          \
+         process_chipseq.py         \
+            --taxon_id 9606         \
+            --genome /<dataset_dir>/macs2.Human.GCA_000001405.22.fasta \
+            --assembly GRCh38       \
+            --file /<dataset_dir>/macs2.Human.DRR000150.22.fastq
 
 
    Methods

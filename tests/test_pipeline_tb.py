@@ -30,22 +30,28 @@ def test_tb_pipeline():
     Running the pipeline with the test data from the command line:
 
     .. code-block:: none
-       runcompss --lang=python --library_path=/home/compss/bin --pythonpath=/home/compss/.pyenv/versions/2.7.12/envs/mg-process-fastq/lib/python2.7/site-packages/ --log_level=debug
-            process_hic.py
-                --taxon_id 9606
-                --genome ${HOME}/code/mg-process-fastq/tests/data/tb.Human.GCA_000001405.22_gem.fasta
-                --assembly GRCh38
-                --file1 ${HOME}/code/mg-process-fastq/tests/data/tb.Human.SRR1658573_1.fastq
-                --file2 ${HOME}/code/mg-process-fastq/tests/data/tb.Human.SRR1658573_2.fastq
-                --genome_gem ${HOME}/code/mg-process-fastq/tests/data/tb.Human.GCA_000001405.22_gem.fasta.gem
-                --taxon_id 9606
-                --enzyme_name MboI
-                --resolutions 10000,100000
-                --windows1 1,100
-                --windows2 1,100
-                --normalized 1
-                --tag tb.Human.SRR1658573
-                --window_type frag
+
+       runcompss                                                                 \\
+          --lang=python                                                          \\
+          --library_path=/home/compss/bin                                        \\
+          --pythonpath=/<pyenv_virtenv_dir>//lib/python2.7/site-packages/        \\
+          --log_level=debug                                                      \\
+          process_hic.py                                                         \\
+             --taxon_id 9606                                                     \\
+             --genome /<dataset_dir>/tb.Human.GCA_000001405.22_gem.fasta         \\
+             --assembly GRCh38                                                   \\
+             --file1 /<dataset_dir>/tb.Human.SRR1658573_1.fastq                  \\
+             --file2 /<dataset_dir>/tb.Human.SRR1658573_2.fastq                  \\
+             --genome_gem /<dataset_dir>/tb.Human.GCA_000001405.22_gem.fasta.gem \\
+             --taxon_id 9606                                                     \\
+             --enzyme_name MboI                                                  \\
+             --resolutions 10000,100000                                          \\
+             --windows1 1,100                                                    \\
+             --windows2 1,100                                                    \\
+             --normalized 1                                                      \\
+             --tag tb.Human.SRR1658573                                           \\
+             --window_type frag                                                  \\
+
     """
     resource_path = os.path.join(os.path.dirname(__file__), "data/")
 

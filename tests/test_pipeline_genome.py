@@ -25,20 +25,21 @@ from process_genome import process_genome
 @pytest.mark.pipeline
 def test_genome_pipeline():
     """
-    Test case to ensure that the ChIP-seq pipeline code works.
+    Test case to ensure that the Genome indexing pipeline code works.
 
     Running the pipeline with the test data from the command line:
 
     .. code-block:: none
-       runcompss                     \
-          --lang=python              \
-          --library_path=${HOME}/bin \
-          --pythonpath=/<pyenv_virtenv_dir>/lib/python2.7/site-packages/ \
-          --log_level=debug          \
-          process_chipseq.py         \
-             --taxon_id 9606         \
-             --genome /<dataset_dir>/Human.GCA_000001405.22.fasta \
-             --assembly GRCh38       \
+
+       runcompss                                                         \\
+          --lang=python                                                  \\
+          --library_path=${HOME}/bin                                     \\
+          --pythonpath=/<pyenv_virtenv_dir>/lib/python2.7/site-packages/ \\
+          --log_level=debug                                              \\
+          process_genome.py                                              \\
+             --taxon_id 9606                                             \\
+             --genome /<dataset_dir>/Human.GCA_000001405.22.fasta        \\
+             --assembly GRCh38                                           \\
              --file /<dataset_dir>/DRR000150.22.fastq
     """
     resource_path = os.path.join(os.path.dirname(__file__), "data/")

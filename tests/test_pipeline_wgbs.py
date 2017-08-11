@@ -30,20 +30,22 @@ def test_wgbs_pipeline():
     Running the pipeline with the test data from the command line:
 
     .. code-block:: none
-       runcompss                                  \
-          --lang=python                           \
-          --library_path=${HOME}/bin              \
-          --pythonpath=/<pyenv_virtenv_dir>/lib/python2.7/site-packages/ \
-          --log_level=debug                       \
-          process_wgbs.py                         \
-             --taxon_id 10090                     \
-             --genome /<dataset_dir>/Mouse.GRCm38.fasta \
-             --assembly GRCm38                    \
-             --fastq1 /<dataset_dir>/expt_1.fastq \
-             --fastq2 /<dataset_dir>/expt_2.fastq \
-             --aligner bowtie2                    \
-             --aligner_path ${HOME}/lib/bowtie2-2.3.2 \
+
+       runcompss                                                         \\
+          --lang=python                                                  \\
+          --library_path=${HOME}/bin                                     \\
+          --pythonpath=/<pyenv_virtenv_dir>/lib/python2.7/site-packages/ \\
+          --log_level=debug                                              \\
+          process_wgbs.py                                                \\
+             --taxon_id 10090                                            \\
+             --genome /<dataset_dir>/Mouse.GRCm38.fasta                  \\
+             --assembly GRCm38                                           \\
+             --fastq1 /<dataset_dir>/expt_1.fastq                        \\
+             --fastq2 /<dataset_dir>/expt_2.fastq                        \\
+             --aligner bowtie2                                           \\
+             --aligner_path ${HOME}/lib/bowtie2-2.3.2                    \\
              --bss_path ${HOME}/lib/BSseeker2
+
     """
     home = os.path.expanduser('~')
     resource_path = os.path.join(os.path.dirname(__file__), "data/")

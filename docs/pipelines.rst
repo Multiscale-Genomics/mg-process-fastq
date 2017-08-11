@@ -54,7 +54,7 @@ Download and index genome files
           --assembly GRCh38                                 \
           --genome /<dataset_dir>/Homo_sapiens.GRCh38.fasta
 
-      When using a local version of the [COMPS virtual machine](https://www.bsc.es/research-and-development/software-and-apps/software-list/comp-superscalar/):
+   When using a local version of the [COMPS virtual machine](https://www.bsc.es/research-and-development/software-and-apps/software-list/comp-superscalar/):
 
    .. code-block:: none
       :linenos:

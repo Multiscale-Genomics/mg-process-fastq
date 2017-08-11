@@ -72,27 +72,28 @@ class inps(Tool):
             Location of the collated bed file of nucleosome peak calls
         """
         bed_file = bam_file + ".bed"
+        pyenv3 = os.path.join(os.path.expanduser("~"), "bin/py3")
+        inps_cmd = os.path.join(os.path.expanduser("~"), "bin/iNPS_V1.2.2.py")
 
-        with cd(os.path.join(os.path.expanduser("~"), "bin/")):
-            command_line_1 = 'bedtools bamtobed -i ' + bam_file
-            pyenv3 = os.path.join(os.path.expanduser("~"), "bin/py3")
-            command_line_2 = pyenv3 + ' iNPS_V1.2.2.py -i ' + bed_file + ' -o ' + peak_bed + "_tmp"
+        command_line_1 = 'bedtools bamtobed -i ' + bam_file
+        pyenv3 = os.path.join(os.path.expanduser("~"), "bin/py3")
+        command_line_2 = pyenv3 + ' ' + inps_cmd + ' -i ' + bed_file + ' -o ' + peak_bed + "_tmp"
 
-            print("iNPS - cmd1:", command_line_1)
-            print("iNPS - cmd2:", command_line_2)
+        print("iNPS - cmd1:", command_line_1)
+        print("iNPS - cmd2:", command_line_2)
 
-            args = shlex.split(command_line_1)
-            with open(bed_file, "w") as f_out:
-                sub_proc = subprocess.Popen(args, stdout=f_out)
-                sub_proc.wait()
-
-            args = shlex.split(command_line_2)
-            sub_proc = subprocess.Popen(args)
+        args = shlex.split(command_line_1)
+        with open(bed_file, "w") as f_out:
+            sub_proc = subprocess.Popen(args, stdout=f_out)
             sub_proc.wait()
 
-            with open(peak_bed + "_tmp_Gathering.like_bed", "rb") as f_in:
-                with open(peak_bed, "wb") as f_out:
-                    f_out.write(f_in.read())
+        args = shlex.split(command_line_2)
+        sub_proc = subprocess.Popen(args)
+        sub_proc.wait()
+
+        with open(peak_bed + "_tmp_Gathering.like_bed", "rb") as f_in:
+            with open(peak_bed, "wb") as f_out:
+                f_out.write(f_in.read())
 
         return True
 

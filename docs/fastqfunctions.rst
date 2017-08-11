@@ -36,5 +36,5 @@ files.
    chunks for parallel processing. It is able to work on single and paired end
    files.
 
-   .. autoclass:: tool.fastq_splitter
+   .. autoclass:: tool.fastq_splitter.fastq_splitter
      :members:

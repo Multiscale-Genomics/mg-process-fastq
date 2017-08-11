@@ -66,6 +66,7 @@ Tools for processing FastQ files
    .. autoclass:: tool.fastq_splitter.fastq_splitter
       :members: run
 
+   .. autoclass:: tool.fastq_splitter.fastq_splitter
       :exclude-members: run
 
 

@@ -22,7 +22,7 @@ MuG - FASTQ Pipelines's documentation!
 
 .. toctree::
    :maxdepth: 2
-   :caption: Contents:
+   :caption: Main Sections:
 
    install
    full_installation
@@ -30,8 +30,14 @@ MuG - FASTQ Pipelines's documentation!
    tools
    common
    fastqfunctions
+   testing
    license
 
+.. toctree::
+   :maxdepth: 2
+   :caption: Test Datasets:
+
+   tests_hic
 
 Indices and tables
 ==================

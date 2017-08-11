@@ -105,6 +105,10 @@ Extract the corresponding fasta sequence from the chromosome file for the positi
 
    python extractChromosomalRegion.py path/to/original/fasta/file path/to/output/file/for/region/macs2.Human.GCA_000001405.22.fasta starting_base_position ending_base_position
 
+
+Making the Fastq file
+^^^^^^^^^^^^^^^^^^^^^^
+
 Index the fasta file for the selected region
 
 .. code-block:: none

@@ -22,7 +22,7 @@ from fastqreader import fastqreader
 
 
 # Set up the command line parameters
-parser = argparse.ArgumentParser(description="Load adjacency list into HDF5 file")
+parser = argparse.ArgumentParser(description="Split FASTQ files into manageable chunks")
 parser.add_argument("--input_1", help="File 1")
 parser.add_argument("--input_2", help="File 2")
 parser.add_argument("--output_tag", help="Inserted before the file descriptor and after the file name: e.g. 'matching' would convert file_id-1.fastq to file_id-1.matching.fastq")

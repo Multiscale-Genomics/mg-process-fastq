@@ -139,4 +139,18 @@ There is a test for each of the tools. This uses the "process" scripts to run ea
 
 Tools
 -----
-As the data stored is only the raw data, each of the sets of tools has been packaged up into a tool chain to run each of the tools
+As the data stored is only the raw data, each of the sets of tools has been packaged up into a tool chain to run each of the tools without failing. This has been done with the tests.test_toolchains.py script.
+
+.. code-block:: none
+
+   python tests/test_toolchains.py --pipeline [genome | chipseq | hic | mnaseseq | rnaseq | wgbs]
+
+This script automates the running of each of the tools that are required for a given pipeline.
+
+
+Methods
+^^^^^^^
+.. automodule:: tests
+
+   .. automodule:: tests.test_toolchains
+      :members:

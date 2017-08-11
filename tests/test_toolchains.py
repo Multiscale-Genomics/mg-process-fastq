@@ -22,6 +22,14 @@ import pytest # pylint: disable=unused-import
 def genome_toolchain():
     """
     Runs the tests for all of the tools from the Genome indexing pipeline
+
+    Runs the following tests:
+
+    .. code-block:: none
+
+       pytest -m genome tests/test_bowtie_indexer.py
+       pytest -m genome tests/test_bwa_indexer.py
+       pytest -m genome tests/test_gem_indexer.py
     """
     return pytest.main(
         [
@@ -35,6 +43,15 @@ def genome_toolchain():
 def chipseq_toolchain():
     """
     Runs the tests for all of the tools from the ChIP-seq pipeline
+
+    Runs the following tests:
+
+    .. code-block:: none
+
+       pytest -m chipseq tests/test_bwa_indexer.py
+       pytest -m chipseq tests/test_bwa_aligner.py
+       pytest -m chipseq tests/test_biobambam.py
+       pytest -m chipseq tests/test_macs2.py
     """
     return pytest.main(
         [
@@ -49,6 +66,17 @@ def chipseq_toolchain():
 def hic_toolchain():
     """
     Runs the tests for all of the tools from the Hi-C pipeline
+
+    Runs the following tests:
+
+    .. code-block:: none
+
+       pytest -m hic tests/test_gem_indexer.py
+       pytest -m hic tests/test_tb_full_mapping.py
+       pytest -m hic tests/test_tb_parse_mapping.py
+       pytest -m hic tests/test_tb_filter.py
+       pytest -m hic tests/test_tb_generate_tads.py
+       pytest -m hic tests/test_tb_save_hdf5_matrix.py
     """
     return pytest.main(
         [
@@ -65,6 +93,14 @@ def hic_toolchain():
 def mnaseseq_toolchain():
     """
     Runs the tests for all of the tools from the MNase-seq pipeline
+
+    Runs the following tests:
+
+    .. code-block:: none
+
+       pytest -m mnaseseq tests/test_bwa_indexer.py
+       pytest -m mnaseseq tests/test_bwa_aligner.py
+       pytest -m mnaseseq tests/test_inps.py
     """
     return pytest.main(
         [
@@ -78,6 +114,13 @@ def mnaseseq_toolchain():
 def rnaseq_toolchain():
     """
     Runs the tests for all of the tools from the RNA-seq pipeline
+
+    Runs the following tests:
+
+    .. code-block:: none
+
+       pytest -m rnaseq tests/test_kallisto_indexer.py
+       pytest -m rnaseq tests/test_kallisto_quant.py
     """
     return pytest.main(
         [
@@ -90,6 +133,16 @@ def rnaseq_toolchain():
 def wgbs_toolchain():
     """
     Runs the tests for all of the tools from the WGBS pipeline
+
+    Runs the following tests:
+
+    .. code-block:: none
+
+       pytest -m wgbs tests/test_bs_seeker_filter.py
+       pytest -m wgbs tests/test_bs_seeker_indexer.py
+       pytest -m wgbs tests/test_fastq_splitter.py
+       pytest -m wgbs tests/test_bs_seeker_aligner.py
+       pytest -m wgbs tests/test_bs_seeker_methylation_caller.py
     """
     return pytest.main(
         [

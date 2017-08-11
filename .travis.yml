@@ -147,12 +147,8 @@ install:
     
     
      #Install MACS2
-    - python_version=$(python --version 2>&1)
-    - echo $python_version
-    - if [[ $python_version != *"3."* ]]; then
-    - cd ${HOME}/code
-    - pip install MACS2    
-    - fi
+    - chmod +x includeMAC2.sh
+    - ./ includeMAC2.sh
     
     
      #Install TADbit

@@ -107,12 +107,20 @@ if __name__ == '__main__':
     sys._run_from_cmdl = True
 
     PARSER = argparse.ArgumentParser(description="Test runner for tool chains")
-    PARSER.add_argument("--pipeline", default=None)
+    PARSER.add_argument("--pipeline", type=str, help="""
+        Options: genome, chipseq, hic, mnaseseq, rnaseq, wgbs, all
+    """)
+
+    if len(sys.argv)==1:
+        PARSER.print_help()
+        sys.exit(1)
 
     # Get the matching parameters from the command line
     ARGS = PARSER.parse_args()
+    #print(ARGS)
 
     PIPELINES = ARGS.pipeline
+
     PIPELINES = PIPELINES.split(",")
     print(PIPELINES)
 

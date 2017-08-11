@@ -112,7 +112,7 @@ class bssAlignerTool(Tool):
         bam_file : str
             Location of the bam file that is to be indexed
         bam_idx_file : str
-            Location of the bam index file (*.bai)
+            Location of the bam index file (.bai)
         """
         pysam.index(bam_file, bam_file + "_tmp.bai")
 

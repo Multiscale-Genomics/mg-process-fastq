@@ -64,7 +64,9 @@ Tools for processing FastQ files
    File Manipultation
    ==================
    .. autoclass:: tool.fastq_splitter.fastq_splitter
-      :members:
+      :members: run
+
+      :exclude-members: run
 
 
    Filters

@@ -149,6 +149,6 @@ using
 
 .. code-block:: none
 
-   python PythonScripts/randomSeqSelector.py DRR000386.MNaseseq.fastq inps.Mouse.DRR000386.fastq
+   python randomSeqSelector.py DRR000386.MNaseseq.fastq inps.Mouse.DRR000386.fastq
 
 The fastq file in the above step and fasta file inps.Mouse.GRCm38.fasta together make up the data set for MNase-seq pipeline

@@ -149,7 +149,7 @@ install:
      #Install MACS2
     - cd ${HOME}/build/Multiscale-Genomics/mg-process-fastq
     #- chmod +x includeMAC2.sh
-    - ./ includeMAC2.sh
+    - ./includeMAC2.sh
     
     
      #Install TADbit

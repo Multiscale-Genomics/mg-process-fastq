@@ -19,7 +19,7 @@ from __future__ import print_function
 import argparse
 import pytest # pylint: disable=unused-import
 
-def genome_toolchain():
+def genome_toolchain(verbose=False):
     """
     Runs the tests for all of the tools from the Genome indexing pipeline
 
@@ -40,7 +40,7 @@ def genome_toolchain():
         ]
     )
 
-def chipseq_toolchain():
+def chipseq_toolchain(verbose=False):
     """
     Runs the tests for all of the tools from the ChIP-seq pipeline
 
@@ -63,7 +63,7 @@ def chipseq_toolchain():
         ]
     )
 
-def hic_toolchain():
+def hic_toolchain(verbose=False):
     """
     Runs the tests for all of the tools from the Hi-C pipeline
 
@@ -90,7 +90,7 @@ def hic_toolchain():
         ]
     )
 
-def mnaseseq_toolchain():
+def mnaseseq_toolchain(verbose=False):
     """
     Runs the tests for all of the tools from the MNase-seq pipeline
 
@@ -111,7 +111,7 @@ def mnaseseq_toolchain():
         ]
     )
 
-def rnaseq_toolchain():
+def rnaseq_toolchain(verbose=False):
     """
     Runs the tests for all of the tools from the RNA-seq pipeline
 
@@ -130,7 +130,7 @@ def rnaseq_toolchain():
         ]
     )
 
-def wgbs_toolchain():
+def wgbs_toolchain(verbose=0):
     """
     Runs the tests for all of the tools from the WGBS pipeline
 
@@ -144,9 +144,14 @@ def wgbs_toolchain():
        pytest -m wgbs tests/test_bs_seeker_aligner.py
        pytest -m wgbs tests/test_bs_seeker_methylation_caller.py
     """
+
+    v_str = ''
+    if verbose == 1:
+        v_str = '-s'
     return pytest.main(
         [
             '-m wgbs',
+            v_str,
             'tests/test_bs_seeker_filter.py',
             'tests/test_bs_seeker_indexer.py',
             'tests/test_fastq_splitter.py',
@@ -163,8 +168,9 @@ if __name__ == '__main__':
     PARSER.add_argument("--pipeline", type=str, help="""
         Options: genome, chipseq, hic, mnaseseq, rnaseq, wgbs, all
     """)
+    PARSER.add_argument("--verbose", type=int, default=0)
 
-    if len(sys.argv)==1:
+    if len(sys.argv) < 2:
         PARSER.print_help()
         sys.exit(1)
 
@@ -174,35 +180,41 @@ if __name__ == '__main__':
 
     PIPELINES = ARGS.pipeline
 
+    if PIPELINES is None:
+        PARSER.print_help()
+        sys.exit(1)
+
     PIPELINES = PIPELINES.split(",")
     print(PIPELINES)
 
+    VERBOSE = ARGS.verbose
+
     if 'genome' in PIPELINES or 'all' in PIPELINES:
         print('GENOME')
-        if genome_toolchain() > 0:
+        if genome_toolchain(VERBOSE) > 0:
             sys.exit(1)
 
     if 'chipseq' in PIPELINES or 'all' in PIPELINES:
         print('CHIPSEQ')
-        if chipseq_toolchain() > 0:
+        if chipseq_toolchain(VERBOSE) > 0:
             sys.exit(1)
 
     if 'hic' in PIPELINES or 'all' in PIPELINES:
         print('HIC')
-        if hic_toolchain() > 0:
+        if hic_toolchain(VERBOSE) > 0:
             sys.exit(1)
 
     if 'mnaseseq' in PIPELINES or 'all' in PIPELINES:
         print('MNASESEQ')
-        if mnaseseq_toolchain() > 0:
+        if mnaseseq_toolchain(VERBOSE) > 0:
             sys.exit(1)
 
     if 'rnaseq' in PIPELINES or 'all' in PIPELINES:
         print('RNASEQ')
-        if rnaseq_toolchain() > 0:
+        if rnaseq_toolchain(VERBOSE) > 0:
             sys.exit(1)
 
     if 'wgbs' in PIPELINES or 'all' in PIPELINES:
         print('WGBS')
-        if wgbs_toolchain() > 0:
+        if wgbs_toolchain(VERBOSE) > 0:
             sys.exit(1)

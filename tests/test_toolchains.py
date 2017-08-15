@@ -31,9 +31,15 @@ def genome_toolchain(verbose=False):
        pytest -m genome tests/test_bwa_indexer.py
        pytest -m genome tests/test_gem_indexer.py
     """
+
+    v_str = ''
+    if verbose == 1:
+        v_str = '-s'
+
     return pytest.main(
         [
             '-m genome',
+            v_str,
             'tests/test_bowtie_indexer.py',
             'tests/test_bwa_indexer.py',
             'tests/test_gem_indexer.py',
@@ -53,9 +59,15 @@ def chipseq_toolchain(verbose=False):
        pytest -m chipseq tests/test_biobambam.py
        pytest -m chipseq tests/test_macs2.py
     """
+
+    v_str = ''
+    if verbose == 1:
+        v_str = '-s'
+
     return pytest.main(
         [
             '-m chipseq',
+            v_str,
             'tests/test_bwa_indexer.py',
             'tests/test_bwa_aligner.py',
             'tests/test_biobambam.py',
@@ -78,9 +90,15 @@ def hic_toolchain(verbose=False):
        pytest -m hic tests/test_tb_generate_tads.py
        pytest -m hic tests/test_tb_save_hdf5_matrix.py
     """
+
+    v_str = ''
+    if verbose == 1:
+        v_str = '-s'
+
     return pytest.main(
         [
             '-m hic',
+            v_str,
             'tests/test_gem_indexer.py',
             'tests/test_tb_full_mapping.py',
             'tests/test_tb_parse_mapping.py',
@@ -102,9 +120,15 @@ def mnaseseq_toolchain(verbose=False):
        pytest -m mnaseseq tests/test_bwa_aligner.py
        pytest -m mnaseseq tests/test_inps.py
     """
+
+    v_str = ''
+    if verbose == 1:
+        v_str = '-s'
+
     return pytest.main(
         [
             '-m mnaseseq',
+            v_str,
             'tests/test_bwa_indexer.py',
             'tests/test_bwa_aligner.py',
             'tests/test_inps.py',
@@ -122,9 +146,15 @@ def rnaseq_toolchain(verbose=False):
        pytest -m rnaseq tests/test_kallisto_indexer.py
        pytest -m rnaseq tests/test_kallisto_quant.py
     """
+
+    v_str = ''
+    if verbose == 1:
+        v_str = '-s'
+
     return pytest.main(
         [
             '-m rnaseq',
+            v_str,
             'tests/test_kallisto_indexer.py',
             'tests/test_kallisto_quant.py',
         ]
@@ -148,6 +178,7 @@ def wgbs_toolchain(verbose=0):
     v_str = ''
     if verbose == 1:
         v_str = '-s'
+
     return pytest.main(
         [
             '-m wgbs',

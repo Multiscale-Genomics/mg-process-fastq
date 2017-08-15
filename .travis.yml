@@ -41,6 +41,7 @@ addons:
     - unzip   
     - liblzma-dev
     - libtool
+    - pigz
     #- libtbb2
     
 #env:

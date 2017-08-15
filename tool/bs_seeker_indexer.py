@@ -97,9 +97,16 @@ class bssIndexerTool(Tool):
 
         # tar.gz the index
         print("BS - idx_out", idx_out, idx_out.replace('.tar.gz', ''))
-        tar = tarfile.open(idx_out, "w:gz")
+        idx_out_pregz = idx_out.replace('.tar.gz', '.tar')
+
+        tar = tarfile.open(idx_out_pregz, "w")
         tar.add(fasta_file + "_" + aligner, arcname=ff_split[-1] + "_" + aligner)
         tar.close()
+
+        command_line = 'pigz ' + idx_out_pregz
+        args = shlex.split(command_line)
+        process = subprocess.Popen(args)
+        process.wait()
 
         return True
 

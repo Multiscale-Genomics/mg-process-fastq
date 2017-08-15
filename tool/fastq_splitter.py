@@ -16,6 +16,8 @@
 
 from __future__ import print_function
 
+import shlex
+import subprocess
 import sys
 import re
 import tarfile
@@ -121,9 +123,16 @@ class fastq_splitter(Tool):
         fqr.closeFastQ()
         fqr.closeOutputFiles()
 
-        tar = tarfile.open(out_file, "w:gz")
+        output_file_pregz = out_file.replace('.tar.gz', '.tar')
+
+        tar = tarfile.open(output_file_pregz, "w")
         tar.add("/".join(file_loc_1[:-1]), arcname='tmp')
         tar.close()
+
+        command_line = 'pigz ' + output_file_pregz
+        args = shlex.split(command_line)
+        process = subprocess.Popen(args)
+        process.wait()
 
         return files_out
 
@@ -221,9 +230,16 @@ class fastq_splitter(Tool):
         fqr.closeFastQ()
         fqr.closeOutputFiles()
 
-        tar = tarfile.open(out_file, "w:gz")
+        output_file_pregz = out_file.replace('.tar.gz', '.tar')
+
+        tar = tarfile.open(output_file_pregz, "w")
         tar.add("/".join(file_loc_1[:-1]), arcname='tmp')
         tar.close()
+
+        command_line = 'pigz ' + output_file_pregz
+        args = shlex.split(command_line)
+        process = subprocess.Popen(args)
+        process.wait()
 
         return files_out
 

@@ -31,6 +31,7 @@ MuG - FASTQ Pipelines's documentation!
    common
    fastqfunctions
    testing
+   adr
    license
 
 .. toctree::

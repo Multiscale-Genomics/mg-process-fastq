@@ -196,14 +196,14 @@ if __name__ == '__main__':
     sys._run_from_cmdl = True
 
     PARSER = argparse.ArgumentParser(description="Test runner for tool chains")
-    PARSER.add_argument("--pipeline", type=str, help="""
-        Options: genome, chipseq, hic, mnaseseq, rnaseq, wgbs, all
-    """)
+    PARSER.add_argument(
+        "--pipeline",
+        required=True,
+        type=str,
+        choices=['genome', 'chipseq', 'hic', 'mnaseseq', 'rnaseq', 'wgbs', 'all'],
+        help=""
+    )
     PARSER.add_argument("--verbose", type=int, default=0)
-
-    if len(sys.argv) < 2:
-        PARSER.print_help()
-        sys.exit(1)
 
     # Get the matching parameters from the command line
     ARGS = PARSER.parse_args()

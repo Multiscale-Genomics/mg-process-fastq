@@ -144,7 +144,7 @@ Hi-C Analysis
          --taxon_id 9606                                      \
          --file1 /<dataset_dir>/<file_name>_1.fastq           \
          --file2 /<dataset_dir>/<file_name>_2.fastq           \
-         --resolutionz 1000000,10000000                       \
+         --resolutions 1000000,10000000                       \
          --enzyme_name MboI                                   \
          --windows1 1,100                                     \
          --windows2 1,100                                     \

@@ -198,7 +198,6 @@ def main(input_files, output_files, input_metadata):
 
 
 if __name__ == "__main__":
-    import sys
     sys._run_from_cmdl = True
 
     # Set up the command line parameters
@@ -209,11 +208,19 @@ if __name__ == "__main__":
     PARSER.add_argument("--assembly", help="Assembly (GRCh38)")
     PARSER.add_argument("--file1", help="Location of FASTQ file 1")
     PARSER.add_argument("--file2", help="Location of FASTQ file 2")
-    PARSER.add_argument("--resolutions", help="CSV string of the resolutions to be computed for the models")
+    PARSER.add_argument(
+        "--resolutions",
+        help="CSV string of the resolutions to be computed for the models")
     PARSER.add_argument("--enzyme_name", help="Enzyme used to digest the DNA")
     PARSER.add_argument("--window_type", help="Windowing type [frag, iter]", default="frag")
-    PARSER.add_argument("--windows1", help="FASTQ windowing - start locations", default="1,25,50,75,100")
-    PARSER.add_argument("--windows2", help="FASTQ windowing - paired end locations", default="1,25,50,75,100")
+    PARSER.add_argument(
+        "--windows1",
+        help="FASTQ windowing - start locations",
+        default="1,25,50,75,100")
+    PARSER.add_argument(
+        "--windows2",
+        help="FASTQ windowing - paired end locations",
+        default="1,25,50,75,100")
     PARSER.add_argument("--normalized", help="Normalize the alignments", default=False)
     PARSER.add_argument("--tag", help="tag", default='test_name')
 
@@ -241,11 +248,11 @@ if __name__ == "__main__":
     EXPT_NAME = ARGS.tag
 
     if WINDOWS1ARG is not None:
-        w1 = [int(i) for i in WINDOWS1ARG.split(",")]
-        WINDOWS1 = [[w1[0], j] for j in w1[1:]]
+        W1 = [int(i) for i in WINDOWS1ARG.split(",")]
+        WINDOWS1 = [[W1[0], j] for j in W1[1:]]
     if WINDOWS2ARG is not None:
-        w2 = [int(i) for i in WINDOWS2ARG.split(",")]
-        WINDOWS2 = [[w1[0], j] for j in w2[1:]]
+        W2 = [int(i) for i in WINDOWS2ARG.split(",")]
+        WINDOWS2 = [[W2[0], j] for j in W2[1:]]
 
     print("WINDOWS1:", WINDOWS1ARG, WINDOWS1)
     print("WINDOWS2:", WINDOWS2ARG, WINDOWS2)
@@ -281,10 +288,18 @@ if __name__ == "__main__":
     DM_HANDLER = dmp(test=True)
 
     #2. Register the data with the DMP
-    #genome_file = DM_HANDLER.set_file("test", GENOME_FA, "fasta", "Assembly", TAXON_ID, meta_data={'assembly' : ASSEMBLY})
-    #genome_idx = DM_HANDLER.set_file("test", GENOME_GEM, "gem", "Assembly Index", TAXON_ID, meta_data={'assembly' : ASSEMBLY})
-    #fastq_01_file_in = DM_HANDLER.set_file("test", FASTQ_01_FILE, "fastq", "Hi-C", TAXON_ID, meta_data=METADATA)
-    #fastq_02_file_in = DM_HANDLER.set_file("test", FASTQ_02_FILE, "fastq", "Hi-C", TAXON_ID, meta_data=METADATA)
+    genome_file = DM_HANDLER.set_file(
+        "test", GENOME_FA, "fasta", "Assembly", TAXON_ID,
+        meta_data={'assembly' : ASSEMBLY})
+    genome_idx = DM_HANDLER.set_file(
+        "test", GENOME_GEM, "gem", "Assembly Index", TAXON_ID,
+        meta_data={'assembly' : ASSEMBLY})
+    fastq_01_file_in = DM_HANDLER.set_file(
+        "test", FASTQ_01_FILE, "fastq", "Hi-C", TAXON_ID,
+        meta_data=METADATA)
+    fastq_02_file_in = DM_HANDLER.set_file(
+        "test", FASTQ_02_FILE, "fastq", "Hi-C", TAXON_ID,
+        meta_data=METADATA)
 
     FILES = [
         GENOME_FA,

@@ -21,8 +21,6 @@
 from __future__ import print_function
 
 import argparse
-import os
-import time
 import sys
 
 # Required for ReadTheDocs
@@ -63,7 +61,7 @@ class process_hic(Workflow):
 
         self.configuration.update(configuration)
 
-    def run(self, file_ids, metadata, output_files):
+    def run(self, input_files, metadata, output_files):
         """
         Main run function for processing MNase-Seq FastQ data. Pipeline aligns
         the FASTQ files to the genome using BWA. iNPS is then used for peak
@@ -84,11 +82,11 @@ class process_hic(Workflow):
             List of locations for the output bam, bed and tsv files
         """
 
-        genome_fa = file_ids[0]
-        genome_gem = file_ids[1]
+        genome_fa = input_files[0]
+        genome_gem = input_files[1]
         assembly = metadata['assembly']
-        fastq_file_1 = file_ids[2]
-        fastq_file_2 = file_ids[3]
+        fastq_file_1 = input_files[2]
+        fastq_file_2 = input_files[3]
         enzyme_name = metadata['enzyme_name']
         resolutions = metadata['resolutions']
         window_type = metadata['window_type']

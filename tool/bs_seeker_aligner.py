@@ -30,7 +30,6 @@ try:
     from pycompss.api.parameter import FILE_IN, FILE_INOUT, FILE_OUT, IN
     from pycompss.api.task import task
     from pycompss.api.api import compss_wait_on
-    from pycompss.api.api import compss_open
 except ImportError:
     print("[Warning] Cannot import \"pycompss\" API packages.")
     print("          Using mock decorators.")

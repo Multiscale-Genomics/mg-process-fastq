@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 
 """
 .. Copyright 2017 EMBL-European Bioinformatics Institute
@@ -16,26 +16,17 @@
    limitations under the License.
 """
 
-# -*- coding: utf-8 -*-
-"""process Hi-C paired end FastQ files"""
-import argparse, urllib2, gzip, shutil, shlex, subprocess, os, json, time
+from __future__ import print_function
 
-from basic_modules import Tool, Workflow, Metadata
+import argparse, urllib2, gzip, shutil, shlex, subprocess, os, json, time
+import sys
+import os
+
+from basic_modules.workflow import Workflow
 
 from functools import wraps
 
-import tool
-
-try :
-    from pycompss.api.parameter import *
-    from pycompss.api.task import task
-except ImportError :
-    print "[Warning] Cannot import \"pycompss\" API packages."
-    print "          Using mock decorators."
-
-    from dummy_pycompss import *
-
-from tool.common import common
+from tool.mergeAdjacencyTool import mergeAdjacencyTool
 
 # ------------------------------------------------------------------------------
 class process_multi_adjacency(Workflow):
@@ -45,7 +36,7 @@ class process_multi_adjacency(Workflow):
     filtered and analysed for peak calling
     """
 
-    def run(self, file_ids, metadata):
+    def run(self, input_files, metadata, output_files):
         """
         Main run function for processing MNase-Seq FastQ data. Pipeline aligns
         the FASTQ files to the genome using BWA. iNPS is then used for peak
@@ -64,30 +55,46 @@ class process_multi_adjacency(Workflow):
             List of locations for the output bam, bed and tsv files
         """
 
-        cwa_align = tool.bwaAlignerTool(self.configuration)
-        out_bam, out_meta = cwa_align.run((files_ids[0], files_ids[1]), ())
-
-        # Needs moving to its own tool
-        inps = tool.inps(self.configuration)
-        out_peak_bed, out_meta = inps.inps_peak_calling(out_bam, ())
+        mat = mergeAdjacencyTool()
+        mat_files, mat_meta = mat.run([files_ids[0], files_ids[1]], [], {})
 
         return (out_peak_bed[0])
 
+# ------------------------------------------------------------------------------
+
+def main(input_files, output_files, input_metadata):
+    """
+    Main function
+    -------------
+
+    This function launches the app.
+    """
+
+    # import pprint  # Pretty print - module for dictionary fancy printing
+
+    # 1. Instantiate and launch the App
+    print("1. Instantiate and launch the App")
+    from apps.workflowapp import WorkflowApp
+    app = WorkflowApp()
+    result = app.launch(process_hic, input_files, input_metadata, output_files,
+                        {})
+
+    # 2. The App has finished
+    print("2. Execution finished")
+    print(result)
+    return result
 
 # ------------------------------------------------------------------------------
 
 
 if __name__ == "__main__":
-    import sys
-    import os
-
     sys._run_from_cmdl = True
 
     start = time.time()
 
     # Set up the command line parameters
     parser = argparse.ArgumentParser(description="Generate adjacency files")
-    parser.add_argument("--genome", help="Genome assembly FASTA file") #             default="GCA_000001405.22")
+    parser.add_argument("--genome", help="Genome assembly FASTA file") # default="GCA_000001405.22")
     parser.add_argument("--species", help="Species (homo_sapiens)")
     parser.add_argument("--assembly", help="Assembly (GRCh38)")
     parser.add_argument("--file1", help="Location of FASTQ file 1")
@@ -132,12 +139,12 @@ if __name__ == "__main__":
 
     da = dmp()
 
-    print da.get_files_by_user("test")
+    print(da.get_files_by_user("test"))
 
     genome_file = da.set_file("test", genome_fa, "fasta", "Assembly", taxon_id, meta_data={'assembly' : assembly})
 
     metadata = {
-        'user_id'     : 'test'
+        'user_id'     : 'test',
         'assembly'    : assembly,
         'resolutions' : resolutions,
         'enzyme_name' : enzyme_name,
@@ -148,7 +155,7 @@ if __name__ == "__main__":
     fastq_01_file_in = da.set_file("test", fastq_01_file, "fastq", "Hi-C", taxon_id, meta_data=metadata)
     fastq_02_file_in = da.set_file("test", fastq_02_file, "fastq", "Hi-C", taxon_id, meta_data=metadata)
 
-    print da.get_files_by_user("test")
+    print(da.get_files_by_user("test"))
 
     files = [
         genome_fa,
@@ -157,11 +164,6 @@ if __name__ == "__main__":
     ]
 
     # 3. Instantiate and launch the App
-    #from basic_modules import WorkflowApp
-    #app = WorkflowApp()
-    #results = app.launch(process_multi_adjacency, files, metadata)
+    results = main(files, metadata)
 
-    pma = process_multi_adjacency()
-    results = pma.run(files, metadata)
-
-    print results[0]
+    print(results[0])

@@ -14,7 +14,6 @@
    limitations under the License.
 """
 
-import os
 import sys
 
 try:
@@ -22,16 +21,16 @@ try:
         raise ImportError
     from pycompss.api.parameter import FILE_IN, FILE_OUT
     from pycompss.api.task import task
-except ImportError :
-    print "[Warning] Cannot import \"pycompss\" API packages."
-    print "          Using mock decorators."
+    from pycompss.api.api import compss_wait_on
+except ImportError:
+    print("[Warning] Cannot import \"pycompss\" API packages.")
+    print("          Using mock decorators.")
 
-    from dummy_pycompss import *
+    from dummy_pycompss import FILE_IN, FILE_OUT
+    from dummy_pycompss import task
+    from dummy_pycompss import compss_wait_on
 
-from basic_modules.metadata import Metadata
 from basic_modules.tool import Tool
-
-from common import common
 
 # ------------------------------------------------------------------------------
 
@@ -104,12 +103,9 @@ class mergeAdjacencyTool(Tool):
             file_type=metadata[0]["file_type"],
             meta_data=metadata[0]["meta_data"])
 
-        # handle error
-        if not self.gem_indexer(input_files[0], output_file):
-            output_metadata.set_exception(
-                Exception(
-                    "gem_indexer: Could not process files {}, {}.".format(*input_files)))
-        output_file = None
+        results = self.merge_adjacency_files(input_files[0], output_file)
+        resutls = compss_wait_on(results)
+
         return ([output_file], [output_metadata])
 
 # ------------------------------------------------------------------------------

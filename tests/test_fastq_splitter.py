@@ -43,10 +43,10 @@ def test_single_splitter():
     Function to test single splitter
     """
     resource_path = os.path.join(os.path.dirname(__file__), "data/")
-    fastq_1file = resource_path + "bsSeeker.Mouse.GRCm38_1.fastq"
+    fastq_2file = resource_path + "bsSeeker.Mouse.GRCm38_2.fastq"
 
     fqs_handle = fastq_splitter()
-    results = fqs_handle.run([fastq_1file], [], {})
+    results = fqs_handle.run([fastq_2file], [], {})
 
     print("WGBS - SINGLE RESULTS:", results)
 

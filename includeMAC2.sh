@@ -12,5 +12,10 @@ if [[ $python_version != *"3."* ]]; then
      unzip tadbit.zip
      cd TADbit-master
      yes | python setup.py install --install-lib=${HOME}/.pyenv/versions/mg-process-fastq/lib/python2.7/site-packages/ --install-scripts=${HOME}/bin 
+     
+else 
+     cd ${HOME}/code
+     pip install MACS2 == MACS2p3
+     ln -s ${HOME}/.pyenv/versions/mg-process-fastq/bin/macs2p3 ${HOME}/bin/macs2
     
 fi

@@ -1,5 +1,6 @@
 """
-.. Copyright 2017 EMBL-European Bioinformatics Institute
+.. See the NOTICE file distributed with this work for additional information
+   regarding copyright ownership.
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -38,7 +39,6 @@ except ImportError:
     from dummy_pycompss import compss_wait_on
 
 from pytadbit import load_hic_data_from_reads
-from pytadbit import read_matrix
 from pytadbit.parsers.genome_parser import parse_fasta
 
 # ------------------------------------------------------------------------------
@@ -91,17 +91,15 @@ class tbSaveAdjacencyHDF5Tool(Tool):
             Location of the HDF5 output matrix file
 
         """
-        #hic_data = read_matrix(adj_list, resolution=resolution)
 
         hic_data = load_hic_data_from_reads(adjlist_file, resolution=int(resolution))
-        #tad_files[resolution] = {}
 
         if normalized is False:
             hic_data.normalize_hic(iterations=9, max_dev=0.1)
 
         d_size = len(hic_data)
-        d = np.zeros([d_size, d_size], dtype='int32')
-        d += hic_data.get_matrix()
+        d_tmp = np.zeros([d_size, d_size], dtype='int32')
+        d_tmp += hic_data.get_matrix()
 
         hdf5_handle = h5py.File(adj_hdf5, "a")
         dset = hdf5_handle.create_dataset(
@@ -112,11 +110,10 @@ class tbSaveAdjacencyHDF5Tool(Tool):
             compression="gzip"
         )
         dset.attrs['chromosomes'] = chromosomes
-        dset[0:d_size,0:d_size] += d
+        dset[0:d_size, 0:d_size] += d_tmp
         hdf5_handle.close()
 
         return True
-
 
     def run(self, input_files, output_files, metadata=None):
         """

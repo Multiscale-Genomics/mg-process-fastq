@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 
 """
-.. Copyright 2017 EMBL-European Bioinformatics Institute
+.. See the NOTICE file distributed with this work for additional information
+   regarding copyright ownership.
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -27,7 +28,6 @@ from basic_modules.metadata import Metadata
 from dmp import dmp
 
 from tool.fastq_splitter import fastq_splitter
-
 from tool.bs_seeker_aligner import bssAlignerTool
 from tool.bs_seeker_filter import filterReadsTool
 from tool.bs_seeker_indexer import bssIndexerTool
@@ -58,9 +58,6 @@ class process_wgbs(Workflow):
         if configuration is None:
             configuration = {}
         self.configuration.update(configuration)
-
-
-
 
     def run(self, input_files, metadata, output_files):
         """
@@ -150,7 +147,6 @@ class process_wgbs(Workflow):
         #return (peak_files, output_metadata)
         return ([fastq1f, fastq2f], output_metadata)
 
-
 # ------------------------------------------------------------------------------
 
 def main(input_files, output_files, input_metadata):
@@ -221,7 +217,6 @@ def prepare_files(
     )
 
 # ------------------------------------------------------------------------------
-
 
 if __name__ == "__main__":
     import sys

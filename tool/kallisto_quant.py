@@ -1,5 +1,6 @@
 """
-.. Copyright 2017 EMBL-European Bioinformatics Institute
+.. See the NOTICE file distributed with this work for additional information
+   regarding copyright ownership.
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -91,7 +92,6 @@ class kallistoQuantificationTool(Tool):
 
         return True
 
-
     @task(
         fastq_file_loc_01=FILE_IN,
         fastq_file_loc_02=FILE_IN,
@@ -132,7 +132,6 @@ class kallistoQuantificationTool(Tool):
 
         return True
 
-
     def seq_read_stats(self, file_in):
         """
         Calculate the mean and standard deviation of the reads in a fastq file
@@ -164,7 +163,6 @@ class kallistoQuantificationTool(Tool):
         length_mean = mean(total_len)
 
         return {'mean' : length_mean, 'std' : length_sd}
-
 
     def run(self, input_files, output_files, metadata=None):
         """
@@ -200,18 +198,12 @@ class kallistoQuantificationTool(Tool):
                 input_files[0], input_files[1], fq_stats, abundance_h5_file,
                 abundance_tsv_file, run_info_file)
             results = compss_wait_on(results)
-            # abundance_h5_file = None
-            # abundance_tsv_file = None
-            # run_info_file = None
         elif len(input_files) == 3:
             # handle error
             results = self.kallisto_quant_paired(
                 input_files[0], input_files[1], input_files[2],
                 abundance_h5_file, abundance_tsv_file, run_info_file,)
             results = compss_wait_on(results)
-            # abundance_h5_file = None
-            # abundance_tsv_file = None
-            # run_info_file = None
         else:
             abundance_h5_file = None
             abundance_tsv_file = None

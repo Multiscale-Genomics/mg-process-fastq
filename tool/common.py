@@ -1,5 +1,6 @@
 """
-.. Copyright 2017 EMBL-European Bioinformatics Institute
+.. See the NOTICE file distributed with this work for additional information
+   regarding copyright ownership.
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -64,7 +65,6 @@ class common(object):
         """
         print("Common functions")
 
-
     def getGenomeFile(self, file_loc, species, assembly):
         """
         Function for downloading and extracting the DNA files from the ensembl
@@ -102,16 +102,7 @@ class common(object):
             with gzip.open(file_loc, 'rb') as f_in, open(file_loc_unzipped, 'wb') as f_out:
                 shutil.copyfileobj(f_in, f_out)
 
-        # indexes = {}
-        # if index is True:
-        #     indexes = self.run_indexers(file_loc_unzipped)
-            #bowtie_index = indexes['bowtie']
-            #bwa_index = indexes['bwa']
-            #gem_index = indexes['gem']
-
-        #return {'zipped': file_loc, 'unzipped': file_loc_unzipped, 'index' : indexes}
         return True
-
 
     def getGenomeFromENA(self, data_dir, species, assembly, index = True):
         """
@@ -143,7 +134,6 @@ class common(object):
 
         return {'unzipped': file_name, 'index' : indexes}
 
-
     def replaceENAHeader(self, file_path, file_out):
         """
         The ENA header has pipes in the header as part of teh stable_id. This
@@ -161,7 +151,6 @@ class common(object):
 
         return True
 
-
     def getcDNAFiles(self, data_dir, species, assembly, e_release):
         """
         Function for downloading and extracting the CDNA files from the ensembl FTP
@@ -178,7 +167,6 @@ class common(object):
             self.download_file(file_name, ftp_url)
 
         return file_name
-
 
     def getFastqFiles(self, ena_err_id, data_dir, ena_srr_id = None):
         """
@@ -251,7 +239,6 @@ class common(object):
 
         return files
 
-
     def download_file(self, file_location, url):
         """
         Function to download a file to a given location and file name. Will
@@ -307,7 +294,6 @@ class common(object):
             break
 
         return True
-
 
     def run_indexers(self, file_name):
         """
@@ -380,7 +366,6 @@ class common(object):
             'gem' : file_name_unzipped + '.gem'
         }
 
-
     def gem_index_genome(self, genome_file, gem_file):
         """
         Create an index of the genome FASTA file with GEM. These are saved
@@ -399,7 +384,6 @@ class common(object):
         process.wait()
 
         return True
-
 
     def bowtie_index_genome(self, genome_file, index_name=None):
         """
@@ -424,7 +408,6 @@ class common(object):
             process.wait()
 
         return True
-
 
     def bwa_index_genome(self, genome_file):
         """
@@ -477,7 +460,6 @@ class common(object):
             process.wait()
 
         return (amb_name, ann_name, bwt_name, pac_name, sa_name)
-
 
     def bwa_align_reads(self, genome_file, reads_file, bam_loc):
         """

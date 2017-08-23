@@ -1,5 +1,6 @@
 """
-.. Copyright 2017 EMBL-European Bioinformatics Institute
+.. See the NOTICE file distributed with this work for additional information
+   regarding copyright ownership.
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -31,7 +32,6 @@ except ImportError:
     from dummy_pycompss import task
     from dummy_pycompss import compss_wait_on
 
-#from basic_modules.metadata import Metadata
 from basic_modules.tool import Tool
 
 from tool.common import common
@@ -53,8 +53,9 @@ class bwaAlignerTool(Tool):
     @task(returns=bool, genome_file_loc=FILE_IN, read_file_loc=FILE_IN,
           bam_loc=FILE_OUT, amb_loc=FILE_IN, ann_loc=FILE_IN, bwt_loc=FILE_IN,
           pac_loc=FILE_IN, sa_loc=FILE_IN, isModifier=False)
-    def bwa_aligner(self, genome_file_loc, read_file_loc, bam_loc, amb_loc, # pylint: disable=unused-argument,too-many-arguments
-                    ann_loc, bwt_loc, pac_loc, sa_loc): # pylint: disable=unused-argument
+    def bwa_aligner( # pylint: disable=too-many-arguments
+            self, genome_file_loc, read_file_loc, bam_loc, amb_loc, # pylint: disable=unused-argument,too-many-arguments
+            ann_loc, bwt_loc, pac_loc, sa_loc): # pylint: disable=unused-argument
         """
         BWA Aligner
 

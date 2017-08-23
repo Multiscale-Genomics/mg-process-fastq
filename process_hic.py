@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 
 """
-.. Copyright 2017 EMBL-European Bioinformatics Institute
+.. See the NOTICE file distributed with this work for additional information
+   regarding copyright ownership.
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -164,10 +165,7 @@ class process_hic(Workflow):
             hdf5_file = th5_files[0]
 
         # List of files to get saved
-        #return ([tf_files[0], tgt_files[0]], adjlist_loc, hdf5_file)
-        #return ([tf_files[0], tgt_files[0]], hdf5_file)
         return ([tfm1_files[0], tfm2_files[0], tpm_files[0], tf_files[0], hdf5_file], [])
-
 
 # ------------------------------------------------------------------------------
 
@@ -193,9 +191,7 @@ def main(input_files, output_files, input_metadata):
     print(result)
     return result
 
-
 # ------------------------------------------------------------------------------
-
 
 if __name__ == "__main__":
     sys._run_from_cmdl = True

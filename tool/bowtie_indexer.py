@@ -1,5 +1,6 @@
 """
-.. Copyright 2017 EMBL-European Bioinformatics Institute
+.. See the NOTICE file distributed with this work for additional information
+   regarding copyright ownership.
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -49,7 +50,8 @@ class bowtieIndexerTool(Tool):
         print("Bowtie2 Indexer")
         Tool.__init__(self)
 
-    @task(file_loc=FILE_IN, bt_file1=FILE_OUT, bt_file2=FILE_OUT,
+    @task(
+        file_loc=FILE_IN, bt_file1=FILE_OUT, bt_file2=FILE_OUT,
         bt_file3=FILE_OUT, bt_file4=FILE_OUT, bt_filer1=FILE_OUT, bt_filer2=FILE_OUT)
     def bowtie2_indexer(
             self, file_loc,

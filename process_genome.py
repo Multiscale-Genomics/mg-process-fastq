@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 
 """
-.. Copyright 2017 EMBL-European Bioinformatics Institute
+.. See the NOTICE file distributed with this work for additional information
+   regarding copyright ownership.
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -31,8 +32,6 @@ from dmp import dmp
 from tool.bowtie_indexer import bowtieIndexerTool
 from tool.bwa_indexer import bwaIndexerTool
 from tool.gem_indexer import gemIndexerTool
-#from tool.bs_seeker_indexer import bssIndexerTool
-
 
 # ------------------------------------------------------------------------------
 
@@ -56,7 +55,7 @@ class process_genome(Workflow):
 
         self.configuration.update(configuration)
 
-    def run(self, file_ids, metadata, output_files):
+    def run(self, input_files, metadata, output_files):
         """
         The downloading can be done using the current common.py functions. These
         should be prevented from running the indexing step as this will be done
@@ -64,7 +63,7 @@ class process_genome(Workflow):
 
         Parameters
         ----------
-        file_ids : list
+        input_files : list
             List of file locations
         metadata : list
             Required meta data
@@ -77,7 +76,7 @@ class process_genome(Workflow):
             List of locations for the output index files
         """
 
-        genome_fa = file_ids[0]
+        genome_fa = input_files[0]
         output_metadata = {}
         output_metadata['genome_idx'] = {}
 
@@ -97,11 +96,6 @@ class process_genome(Workflow):
         output_metadata['genome_idx']['gem'] = gemm
 
         return (bti + bwai + gemi, output_metadata)
-
-        # Build the matching WGBS genome index
-        # builder = bssIndexerTool()
-        # genome_idx, gidx_meta = builder.run([genome_fa], metadata)
-        # output_metadata['genome_idx'] = gidx_meta
 
 # ------------------------------------------------------------------------------
 

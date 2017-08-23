@@ -1,5 +1,6 @@
 """
-.. Copyright 2017 EMBL-European Bioinformatics Institute
+.. See the NOTICE file distributed with this work for additional information
+   regarding copyright ownership.
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -70,7 +71,6 @@ class gemIndexerTool(Tool):
 
         idx_loc = common_handle.gem_index_genome(new_genome_file, new_genome_file)
         return True
-
 
     def run(self, input_files, output_files, metadata=None):
         """

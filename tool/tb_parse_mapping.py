@@ -1,5 +1,6 @@
 """
-.. Copyright 2017 EMBL-European Bioinformatics Institute
+.. See the NOTICE file distributed with this work for additional information
+   regarding copyright ownership.
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -14,7 +15,8 @@
    limitations under the License.
 """
 
-import os
+from __future__ import print_function
+
 import sys
 
 try:
@@ -30,10 +32,9 @@ except ImportError:
 
     from dummy_pycompss import FILE_IN, FILE_OUT, IN
     from dummy_pycompss import task
-    #from dummy_pycompss import constraint
+    # from dummy_pycompss import constraint
     from dummy_pycompss import compss_wait_on
 
-from basic_modules.metadata import Metadata
 from basic_modules.tool import Tool
 
 from pytadbit.parsers.genome_parser import parse_fasta
@@ -52,16 +53,15 @@ class tbParseMappingTool(Tool):
         """
         Init function
         """
-        print "TADbit parse mapping"
+        print("TADbit parse mapping")
         Tool.__init__(self)
 
     @task(
         genome_seq=IN, enzyme_name=IN,
         window1_1=FILE_IN, window1_2=FILE_IN, window1_3=FILE_IN, window1_4=FILE_IN,
         window2_1=FILE_IN, window2_2=FILE_IN, window2_3=FILE_IN, window2_4=FILE_IN,
-        reads=FILE_OUT
-    )
-    #@constraint(ProcessorCoreCount=32)
+        reads=FILE_OUT)
+    # @constraint(ProcessorCoreCount=32)
     def tb_parse_mapping_iter(
             self, genome_seq, enzyme_name,
             window1_1, window1_2, window1_3, window1_4,
@@ -105,10 +105,6 @@ class tbParseMappingTool(Tool):
 
         """
 
-        #root_name = reads.split("/")
-
-        #reads1 = "/".join(root_name) + '/reads_1.tsv'
-        #reads2 = "/".join(root_name) + '/reads_2.tsv'
         reads1 = reads + '_reads_1.tsv'
         reads2 = reads + '_reads_2.tsv'
         reads_both = reads + '_reads_both.tsv'
@@ -125,20 +121,19 @@ class tbParseMappingTool(Tool):
         )
 
         intersections = get_intersection(reads1, reads2, reads_both, verbose=True)
-        
+
         with open(reads, "wb") as f_out:
             with open(reads_both, "rb") as f_in:
                 f_out.write(f_in.read())
 
         return True
 
-
     @task(
         genome_seq=IN, enzyme_name=IN,
         window1_full=FILE_IN, window1_frag=FILE_IN,
         window2_full=FILE_IN, window2_frag=FILE_IN,
         reads=FILE_OUT)
-    #@constraint(ProcessorCoreCount=32)
+    # @constraint(ProcessorCoreCount=32)
     def tb_parse_mapping_frag(
             self, genome_seq, enzyme_name,
             window1_full, window1_frag, window2_full, window2_frag,
@@ -172,12 +167,12 @@ class tbParseMappingTool(Tool):
             reads in both pair end files
 
         """
-        
+
         print("TB WINDOWS - full 1", window1_full)
         print("TB WINDOWS - frag 1", window1_frag)
         print("TB WINDOWS - full 2", window2_full)
         print("TB WINDOWS - frag 2", window2_frag)
-        
+
         #root_name = reads.split("/")
 
         #reads1 = "/".join(root_name) + '/reads_1.tsv'
@@ -197,13 +192,12 @@ class tbParseMappingTool(Tool):
         )
 
         intersections = get_intersection(reads1, reads2, reads_both, verbose=True)
-        
+
         with open(reads, "wb") as f_out:
             with open(reads_both, "rb") as f_in:
                 f_out.write(f_in.read())
 
         return True
-
 
     def run(self, input_files, output_files, metadata=None):
         """

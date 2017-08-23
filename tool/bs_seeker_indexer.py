@@ -1,5 +1,6 @@
 """
-.. Copyright 2017 EMBL-European Bioinformatics Institute
+.. See the NOTICE file distributed with this work for additional information
+   regarding copyright ownership.
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -19,7 +20,6 @@ from __future__ import print_function
 import shlex
 import subprocess
 import sys
-import os
 import tarfile
 
 try:
@@ -110,7 +110,6 @@ class bssIndexerTool(Tool):
 
         return True
 
-
     def run(self, input_files, output_files, metadata=None):
         """
         Tool for indexing the genome assembly using BS-Seeker2. In this case it
@@ -127,7 +126,6 @@ class bssIndexerTool(Tool):
         array : list
             Location of the filtered FASTQ file
         """
-
 
         file_name = input_files[0]
         genome_dir_split = file_name.split("/")

@@ -1,5 +1,6 @@
 """
-.. Copyright 2017 EMBL-European Bioinformatics Institute
+.. See the NOTICE file distributed with this work for additional information
+   regarding copyright ownership.
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -22,7 +23,7 @@ try:
         raise ImportError
     from pycompss.api.parameter import FILE_IN, FILE_OUT, IN
     from pycompss.api.task import task
-    from pycompss.api.constraint import constraint
+    # from pycompss.api.constraint import constraint
     from pycompss.api.api import compss_wait_on
 except ImportError:
     print("[Warning] Cannot import \"pycompss\" API packages.")
@@ -54,7 +55,7 @@ class tbFullMappingTool(Tool):
     @task(
         gem_file=FILE_IN, fastq_file=FILE_IN, windows=IN, window1=FILE_OUT,
         window2=FILE_OUT, window3=FILE_OUT, window4=FILE_OUT)
-    #@constraint(ProcessorCoreCount=32)
+    # @constraint(ProcessorCoreCount=32)
     def tb_full_mapping_iter(
             self, gem_file, fastq_file, windows,
             window1, window2, window3, window4):
@@ -104,11 +105,10 @@ class tbFullMappingTool(Tool):
 
         return True
 
-
     @task(
         gem_file=FILE_IN, fastq_file=FILE_IN, enzyme_name=IN, windows=IN,
         full_file=FILE_OUT, frag_file=FILE_OUT)
-    #@constraint(ProcessorCoreCount=16)
+    # @constraint(ProcessorCoreCount=16)
     def tb_full_mapping_frag(
             self, gem_file, fastq_file, enzyme_name, windows,
             full_file, frag_file):
@@ -139,14 +139,14 @@ class tbFullMappingTool(Tool):
         print("tb_full_mapping_frag")
         od_loc = fastq_file.split("/")
         output_dir = "/".join(od_loc[0:-1])
-        
+
         print("TB MAPPING - output_dir:", output_dir)
         print("TB MAPPING - full_file dir:", full_file)
         print("TB MAPPING - frag_file dir:", frag_file)
-        
+
         fastq_file_tmp = fastq_file.replace(".fastq", '')
         fastq_file_tmp = fastq_file_tmp.replace(".fq", '')
-        
+
         with open(fastq_file_tmp + "_tmp.fastq", "wb") as f_out:
             with open(fastq_file, "rb") as f_in:
                 f_out.write(f_in.read())
@@ -156,7 +156,7 @@ class tbFullMappingTool(Tool):
             r_enz=enzyme_name, windows=windows, frag_map=True, nthreads=32,
             clean=True, temp_dir='/tmp/'
         )
-        
+
         with open(full_file, "wb") as f_out:
             with open(fastq_file_tmp + "_tmp_full_1-end.map", "rb") as f_in:
                 f_out.write(f_in.read())
@@ -166,7 +166,6 @@ class tbFullMappingTool(Tool):
                 f_out.write(f_in.read())
 
         return True
-
 
     def run(self, input_files, output_files, metadata=None):
         """

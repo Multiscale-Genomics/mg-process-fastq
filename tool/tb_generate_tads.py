@@ -1,5 +1,6 @@
 """
-.. Copyright 2017 EMBL-European Bioinformatics Institute
+.. See the NOTICE file distributed with this work for additional information
+   regarding copyright ownership.
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -16,34 +17,27 @@
 from __future__ import print_function
 
 import sys
-import os.path
 
 try:
     if hasattr(sys, '_run_from_cmdl') is True:
         raise ImportError
-    from pycompss.api.parameter import FILE_IN, FILE_OUT, FILE_INOUT, IN, OUT
+    from pycompss.api.parameter import FILE_IN, FILE_OUT, FILE_INOUT, IN
     from pycompss.api.task import task
     from pycompss.api.api import compss_wait_on
-    from pycompss.api.api import barrier
-    #from pycompss.api.constraint import constraint
+    # from pycompss.api.constraint import constraint
 except ImportError:
     print("[Warning] Cannot import \"pycompss\" API packages.")
     print("          Using mock decorators.")
 
-    from dummy_pycompss import FILE_IN, FILE_OUT, FILE_INOUT, IN, OUT
+    from dummy_pycompss import FILE_IN, FILE_OUT, FILE_INOUT, IN
     from dummy_pycompss import task
     from dummy_pycompss import compss_wait_on
-    from dummy_pycompss import barrier
     #from dummy_pycompss import constraint
 
-#from basic_modules.metadata import Metadata
 from basic_modules.tool import Tool
 
 from pytadbit import Chromosome
-#from pytadbit import read_matrix
 from pytadbit import load_hic_data_from_reads
-from pytadbit import HiC_data
-
 
 # ------------------------------------------------------------------------------
 
@@ -59,15 +53,11 @@ class tbGenerateTADsTool(Tool):
         print("TADbit - Generate TADs")
         Tool.__init__(self)
 
-    #@task(adj_list=FILE_IN, resolution=IN, normalized=IN, returns=HiC_data)
     @task(adj_list=FILE_IN, resolution=IN, normalized=IN, returns=list)
     def tb_hic_chr(self, adj_list, resolution):
         """
         """
         print("TB LOADED HIC MATRIX")
-        print("TB adj_list:", adj_list)
-        print("TB adj_list:", os.path.isfile(adj_list), os.path.islink(adj_list), os.path.getsize(adj_list))
-
         hic_data = load_hic_data_from_reads(adj_list, resolution=int(resolution))
 
         print("TB LOADED HIC MATRIX")
@@ -76,7 +66,7 @@ class tbGenerateTADsTool(Tool):
 
 
     @task(expt_name=IN, adj_list=FILE_IN, chrom=IN, resolution=IN, normalized=IN, tad_file=FILE_OUT)
-    #@constraint(ProcessorCoreCount=16)
+    # @constraint(ProcessorCoreCount=16)
     def tb_generate_tads(self, expt_name, adj_list, chrom, resolution, normalized, tad_file):
         """
         Function to the predict TAD sites for a given resolution from the Hi-C
@@ -129,7 +119,6 @@ class tbGenerateTADsTool(Tool):
 
         return True
 
-
     @task(input_file=FILE_IN, chrom=IN, resolution=IN, output_file=FILE_INOUT)
     def tb_merge_tad_files(self, input_file, chrom, resolution, output_file):
         """
@@ -142,7 +131,6 @@ class tbGenerateTADsTool(Tool):
                     f_out.write(str(chrom) + "\t" + line[1] + "\t" + line[2] + "\tTADs_" + str(resolution) + "\t" + line[3] + "\t.\n")
 
         return True
-
 
     def run(self, input_files, output_files, metadata=None):
         """
@@ -206,8 +194,11 @@ class tbGenerateTADsTool(Tool):
                 expt_name = metadata['expt_name'] + '_tad_' + chrom + '_' + str(resolution)
 
                 print("TB Generate TADS:", resolution, normalized)
-                results.append(self.tb_generate_tads(
-                    expt_name, adj_list, chrom, resolution, normalized, save_tad_file)
+                results.append(
+                    self.tb_generate_tads(
+                        expt_name, adj_list, chrom, resolution, normalized,
+                        save_tad_file
+                    )
                 )
 
         results = compss_wait_on(results)

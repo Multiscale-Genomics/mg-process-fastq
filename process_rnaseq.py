@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 
 """
-.. Copyright 2017 EMBL-European Bioinformatics Institute
+.. See the NOTICE file distributed with this work for additional information
+   regarding copyright ownership.
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -24,7 +25,6 @@ from basic_modules.workflow import Workflow
 from basic_modules.metadata import Metadata
 
 from dmp import dmp
-
 
 from tool.kallisto_indexer import kallistoIndexerTool
 from tool.kallisto_quant import kallistoQuantificationTool
@@ -53,7 +53,6 @@ class process_rnaseq(Workflow):
             configuration = {}
 
         self.configuration.update(configuration)
-
 
     def run(self, file_ids, metadata, output_files):
         """
@@ -97,7 +96,6 @@ class process_rnaseq(Workflow):
 
         return results
 
-
 # -----------------------------------------------------------------------------
 
 def main(input_files, input_metadata, output_files):
@@ -120,7 +118,6 @@ def main(input_files, input_metadata, output_files):
     # 2. The App has finished
     print("2. Execution finished")
     return result
-
 
 def prepare_files(
         dm_handler, taxon_id, genome_fa, assembly, file_loc,
@@ -166,7 +163,6 @@ def prepare_files(
     )
 
 # ------------------------------------------------------------------------------
-
 
 if __name__ == "__main__":
     import sys

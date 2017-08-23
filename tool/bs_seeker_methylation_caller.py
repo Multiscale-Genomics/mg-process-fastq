@@ -1,5 +1,6 @@
 """
-.. Copyright 2017 EMBL-European Bioinformatics Institute
+.. See the NOTICE file distributed with this work for additional information
+   regarding copyright ownership.
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -38,7 +39,6 @@ except ImportError:
     from dummy_pycompss import compss_wait_on
 
 from basic_modules.tool import Tool
-
 
 # ------------------------------------------------------------------------------
 
@@ -109,7 +109,6 @@ class bssMethylationCallerTool(Tool):
 
         return True
 
-
     @task(bam_file=FILE_IN, returns=int)
     def check_header(self, bam_file):
         """
@@ -126,12 +125,11 @@ class bssMethylationCallerTool(Tool):
 
         bam_file_handle = pysam.AlignmentFile(bam_file, "rb")
         if ('SO' not in bam_file_handle.header['HD'] or
-            bam_file_handle.header['HD']['SO'] == 'unsorted'):
+                bam_file_handle.header['HD']['SO'] == 'unsorted'):
             output = False
         bam_file_handle.close()
 
         return output
-
 
     def run(self, input_files, output_files, metadata=None):
         """

@@ -1,5 +1,6 @@
 """
-.. Copyright 2017 EMBL-European Bioinformatics Institute
+.. See the NOTICE file distributed with this work for additional information
+   regarding copyright ownership.
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -166,11 +167,6 @@ class macs2(Tool):
         od_list = bam_file.split("/")
         output_dir = "/".join(od_list[0:-1])
 
-        #print("MACS2: Check bam file exists:", os.path.isfile(bam_file), os.path.getsize(bam_file))
-
-        print("MACS2 INPUT FILE:", bam_file)
-        print("MACS2 INPUT FILE (start):", os.path.isfile(bam_file), os.path.islink(bam_file), os.path.getsize(bam_file))
-
         command_line = 'macs2 callpeak -t ' + bam_file + ' -n ' + name + '_out --outdir ' + output_dir
 
         if name == 'macs2.Human.DRR000150.22.filtered':
@@ -183,9 +179,6 @@ class macs2(Tool):
         args = shlex.split(command_line)
         process = subprocess.Popen(args)
         process.wait()
-
-        print('Process Results 2:', process.returncode)
-        print('LIST DIR 2:', os.listdir(output_dir))
 
         out_suffix = ['peaks.narrowPeak', 'peaks.broadPeak', 'peaks.gappedPeak', 'summits.bed']
         for f_suf in out_suffix:
@@ -213,7 +206,6 @@ class macs2(Tool):
         if process.returncode is not 0:
             return process.returncode
         return 0
-
 
     def run(self, input_files, output_files, metadata=None):
         """
@@ -255,8 +247,6 @@ class macs2(Tool):
         out_summits = '/'.join(root_name) + '_summits.bed'
 
         output_files_tmp = [out_peaks_narrow, out_summits, out_peaks_broad, out_peaks_gapped]
-
-        print("MACS2 output files:", name, out_peaks_narrow, out_peaks_broad, out_peaks_gapped, out_summits)
 
         # input and output share most metadata
         output_metadata = {}

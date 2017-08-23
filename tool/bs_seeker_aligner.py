@@ -1,5 +1,6 @@
 """
-.. Copyright 2017 EMBL-European Bioinformatics Institute
+.. See the NOTICE file distributed with this work for additional information
+   regarding copyright ownership.
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -19,7 +20,6 @@ from __future__ import print_function
 import shlex
 import subprocess
 import sys
-import re
 import tarfile
 
 import pysam
@@ -121,8 +121,6 @@ class bssAlignerTool(Tool):
 
         return True
 
-
-
     @task(
         input_fastq_gz=FILE_IN, input_fastq_list=IN,
         aligner=IN, aligner_path=IN, bss_path=IN,
@@ -194,7 +192,6 @@ class bssAlignerTool(Tool):
                 f_out.write(f_in.read())
 
         return True
-
 
     def run(self, input_files, output_files, metadata=None):
         """

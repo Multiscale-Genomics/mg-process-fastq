@@ -129,7 +129,7 @@ def prepare_files(
     print(dm_handler.get_files_by_user("test"))
 
     input_files = [genome_fa]
-    dm_handler.set_file(
+    genome_file = dm_handler.set_file(
         "test", genome_fa, "fasta", "Assembly", taxon_id, None, [],
         meta_data={"assembly" : assembly})
 
@@ -139,8 +139,8 @@ def prepare_files(
         meta_data={'assembly' : assembly})
 
     metadata = [
-        Metadata("fasta", "Assembly"),
-        Metadata("fastq", "RNA-seq")
+        Metadata("fasta", "Assembly", None, {'assembly' : assembly}, genome_file),
+        Metadata("fastq", "RNA-seq", None, {'assembly' : assembly}, fastq1_id)
     ]
 
     if file_2_loc is not None:
@@ -155,6 +155,25 @@ def prepare_files(
         )
 
         dm_handler.add_file_metadata(fastq1_id, 'paired_end', fastq2_id)
+
+        metadata.append(
+            Metadata(
+                "fastq", "RNA-seq", None,
+                {'assembly' : assembly, 'paired_end' : fastq2_id},
+                fastq1_id
+            )
+        )
+        metadata.append(
+            Metadata(
+                "fastq", "RNA-seq", None,
+                {'assembly' : assembly, 'paired_end' : fastq1_id},
+                fastq2_id
+            )
+        )
+    else:
+        metadata.append(
+            Metadata("fastq", "RNA-seq", None, {'assembly' : assembly}, fastq1_id)
+        )
 
     return (
         input_files,

@@ -93,32 +93,34 @@ class process_chipseq(Workflow):
         file_loc = input_files[6]
         file_bgd_loc = input_files[7]
 
+        output_json = {'output_files': []}
+
         out_bam = file_loc.replace(".fastq", '.bam')
 
         bwa = bwaAlignerTool(self.configuration)
-        bwa_results = bwa.run(
+        bwa_files, bwa_meta = bwa.run(
             [run_genome_fa, file_loc, bwa_amb, bwa_ann, bwa_bwt, bwa_pac, bwa_sa],
             []
         )
-        out_bam = bwa_results[0][0]
+        out_bam = bwa_files[0]
 
         out_bgd_bam = None
         if file_bgd_loc != None:
-            bwa_results_bgd = bwa.run(
+            bwa_bgd_files, bwa_bgd_meta = bwa.run(
                 [run_genome_fa, file_bgd_loc, bwa_amb, bwa_ann, bwa_bwt, bwa_pac, bwa_sa],
                 []
             )
-            out_bgd_bam = bwa_results_bgd[0][0]
+            out_bgd_bam = bwa_bgd_files[0]
 
         # For multiple files there will need to be merging into a single bam file
 
         # Filter the bams
         b3f = biobambam(self.configuration)
-        b3f_results = b3f.run(
+        b3f_files, b3f_meta = b3f.run(
             [out_bam],
             []
         )
-        out_filtered_bam = b3f_results[0][0]
+        out_filtered_bam = b3f_files[0]
 
         out_filtered_bgd_bam = None
         if file_bgd_loc != None:
@@ -163,6 +165,9 @@ def main(input_files, output_files, input_metadata):
     # 2. The App has finished
     print("2. Execution finished")
     print(result)
+
+
+
     return result
 
 def prepare_files(
@@ -176,42 +181,54 @@ def prepare_files(
     genome_file = dm_handler.set_file(
         "test", genome_fa, "fasta", "Assembly", taxon_id, None, [],
         meta_data={"assembly" : assembly})
-    dm_handler.set_file(
+    amb_file = dm_handler.set_file(
         "test", genome_fa + ".amb", "amb", "Assembly", taxon_id, None, [genome_file],
         meta_data={'assembly' : assembly})
-    dm_handler.set_file(
+    ann_file = dm_handler.set_file(
         "test", genome_fa + ".ann", "ann", "Assembly", taxon_id, None, [genome_file],
         meta_data={'assembly' : assembly})
-    dm_handler.set_file(
+    bwt_file = dm_handler.set_file(
         "test", genome_fa + ".bwt", "bwt", "Assembly", taxon_id, None, [genome_file],
         meta_data={'assembly' : assembly})
-    dm_handler.set_file(
+    pac_file = dm_handler.set_file(
         "test", genome_fa + ".pac", "pac", "Assembly", taxon_id, None, [genome_file],
         meta_data={'assembly' : assembly})
-    dm_handler.set_file(
+    sa_file = dm_handler.set_file(
         "test", genome_fa + ".sa", "sa", "Assembly", taxon_id, None, [genome_file],
         meta_data={'assembly' : assembly})
 
     # Maybe it is necessary to prepare a metadata parser from json file
     # when building the Metadata objects.
     metadata = [
-        Metadata("fasta", "Assembly"),
-        Metadata("index", "Assembly"),
-        Metadata("index", "Assembly"),
-        Metadata("index", "Assembly"),
-        Metadata("index", "Assembly"),
-        Metadata("index", "Assembly"),
-        Metadata("fasta", "ChIP-seq")
+        Metadata("fasta", "Assembly", None, {'assembly' : assembly}, genome_file),
+        Metadata("index", "Assembly", [genome_file], {'assembly' : assembly}, amb_file),
+        Metadata("index", "Assembly", [genome_file], {'assembly' : assembly}, ann_file),
+        Metadata("index", "Assembly", [genome_file], {'assembly' : assembly}, bwt_file),
+        Metadata("index", "Assembly", [genome_file], {'assembly' : assembly}, pac_file),
+        Metadata("index", "Assembly", [genome_file], {'assembly' : assembly}, sa_file),
     ]
 
-    dm_handler.set_file(
-        "test", file_loc, "fasta", "ChIP-seq", taxon_id, None, [],
+    fq1_file = dm_handler.set_file(
+        "test", file_loc, "fastq", "ChIP-seq", taxon_id, None, [],
         meta_data={'assembly' : assembly})
+    metadata.append(
+        Metadata(
+            "fastq", "ChIP-seq", None,
+            {'assembly' : assembly,
+            fq1_file
+        )
+    )
     if file_bg_loc:
-        dm_handler.set_file(
-            "test", file_bg_loc, "fasta", "ChIP-seq", taxon_id, None, [],
+        fq2_file = dm_handler.set_file(
+            "test", file_bg_loc, "fastq", "ChIP-seq", taxon_id, None, [],
             meta_data={'assembly' : assembly})
-        metadata.append(Metadata("fasta", "ChIP-seq"))
+        metadata.append(
+            Metadata(
+                "fastq", "ChIP-seq", None,
+                {'assembly' : assembly, 'background' : True},
+                fq2_file
+            )
+        )
 
     print(dm_handler.get_files_by_user("test"))
 
@@ -226,22 +243,8 @@ def prepare_files(
         file_bg_loc
     ]
 
-    out_bam = file_loc.replace(".fastq", '.filtered.bam')
-    out_peaks_narrow = file_loc.replace(".fastq", '_peaks.narrowPeak')
-    out_peaks_xls = file_loc.replace(".fastq", '_peaks.xls')
-    out_peaks_broad = file_loc.replace(".fastq", '_summits.bed')
-    out_peaks_gapped = file_loc.replace(".fastq", '_summits.bed')
-    out_summits = file_loc.replace(".fastq", '_summits.bed')
+    files_out = []
 
-
-    files_out = [
-        out_bam,
-        out_peaks_narrow,
-        out_peaks_xls,
-        out_peaks_broad,
-        out_peaks_gapped,
-        out_summits
-    ]
     return [files, files_out, metadata]
 
 # ------------------------------------------------------------------------------

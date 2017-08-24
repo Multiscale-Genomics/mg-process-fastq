@@ -182,14 +182,6 @@ def prepare_files(
         "test", genome_fa, "fasta", "Assembly", taxon_id, None, [],
         meta_data={"assembly" : assembly})
 
-    # Maybe it is necessary to prepare a metadata parser from json file
-    # when building the Metadata objects.
-    metadata = {'files' : [
-        Metadata("fasta", "Assembly"),
-        Metadata("fastq", "WGBS"),
-        Metadata("fastq", "WGBS"),
-    ]}
-
     fastq1_id = dm_handler.set_file(
         "test", file_1_loc, "fasta", "WGBS", taxon_id, None, [],
         meta_data={'assembly' : assembly})
@@ -202,6 +194,24 @@ def prepare_files(
         })
 
     dm_handler.add_file_metadata(fastq1_id, 'paired_end', fastq2_id)
+
+    # Maybe it is necessary to prepare a metadata parser from json file
+    # when building the Metadata objects.
+    metadata = [
+        Metadata("fasta", "Assembly", None, {'assembly' : assembly}, genome_file),
+        Metadata("fastq", "WGBS"),
+        Metadata("fastq", "WGBS"),
+        Metadata(
+            "fastq", "ChIP-seq", None,
+            {'assembly' : assembly, 'paired_end' : fastq2_id},
+            fastq1_id
+        ),
+        Metadata(
+            "fastq", "ChIP-seq", None,
+            {'assembly' : assembly, 'paired_end' : fastq1_id},
+            fastq2_id
+        )
+    ]
 
     files_input = [
         genome_fa,

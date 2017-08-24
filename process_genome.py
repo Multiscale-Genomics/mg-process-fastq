@@ -95,6 +95,14 @@ class process_genome(Workflow):
         gemi, gemm = gem.run([genome_fa], [], {})
         output_metadata['genome_idx']['gem'] = gemm
 
+        # Need to get the file_id for the FASTA file to use as source_id
+        # Also need to get the accession of the assembly from the parent
+        output_metadata['output_files'] = [
+            Metadata("index", "Assembly"),
+            Metadata("index", "Assembly"),
+            Metadata("index", "Assembly"),
+        ]
+
         return (bti + bwai + gemi, output_metadata)
 
 # ------------------------------------------------------------------------------
@@ -136,7 +144,7 @@ def prepare_files(
     # Maybe it is necessary to prepare a metadata parser from json file
     # when building the Metadata objects.
     metadata = [
-        Metadata("fasta", "Assembly"),
+        Metadata("fasta", "Assembly", None, {'assembly' : assembly}, genome_file),
     ]
 
     files = [

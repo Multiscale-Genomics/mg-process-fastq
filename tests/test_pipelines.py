@@ -31,17 +31,14 @@ def genome_pipeline(verbose=False):
        pytest -m genome tests/test_pipeline_genome.py
     """
 
-    v_str = ''
-    if verbose == 1:
-        v_str = '-s'
+    params = ['-m genome']
 
-    return pytest.main(
-        [
-            '-m genome',
-            v_str,
-            'tests/test_pipeline_genome.py',
-        ]
-    )
+    if verbose == 1:
+        params.append('-s')
+
+    params.append('tests/test_pipeline_genome.py')
+
+    return pytest.main(params)
 
 def chipseq_pipeline(verbose=False):
     """
@@ -54,17 +51,14 @@ def chipseq_pipeline(verbose=False):
        pytest -m chipseq tests/test_pipeline_chipseq.py
     """
 
-    v_str = ''
-    if verbose == 1:
-        v_str = '-s'
+    params = ['-m chipseq']
 
-    return pytest.main(
-        [
-            '-m chipseq',
-            v_str,
-            'tests/test_chipseq.py',
-        ]
-    )
+    if verbose == 1:
+        params.append('-s')
+
+    params.append('tests/test_pipeline_chipseq.py')
+
+    return pytest.main(params)
 
 def hic_pipeline(verbose=False):
     """
@@ -77,17 +71,12 @@ def hic_pipeline(verbose=False):
        pytest -m hic tests/test_pipeline_tb.py
     """
 
-    v_str = ''
-    if verbose == 1:
-        v_str = '-s'
+    params = ['-m hic']
 
-    return pytest.main(
-        [
-            '-m hic',
-            v_str,
-            'tests/test_pipeline_tb.py',
-        ]
-    )
+    if verbose == 1:
+        params.append('-s')
+
+    params.append('tests/test_pipeline_tb.py')
 
 def mnaseseq_pipeline(verbose=False):
     """
@@ -100,17 +89,14 @@ def mnaseseq_pipeline(verbose=False):
        pytest -m mnaseseq tests/test_pipeline_mnaseseq.py
     """
 
-    v_str = ''
-    if verbose == 1:
-        v_str = '-s'
+    params = ['-m mnaseseq']
 
-    return pytest.main(
-        [
-            '-m mnaseseq',
-            v_str,
-            'tests/test_pipeline_mnaseseq.py',
-        ]
-    )
+    if verbose == 1:
+        params.append('-s')
+
+    params.append('tests/test_pipeline_mnaseseq.py')
+
+    return pytest.main(params)
 
 def rnaseq_pipeline(verbose=False):
     """
@@ -123,17 +109,14 @@ def rnaseq_pipeline(verbose=False):
        pytest -m rnaseq tests/test_pipeline_rnaseq.py
     """
 
-    v_str = ''
-    if verbose == 1:
-        v_str = '-s'
+    params = ['-m rnaseq']
 
-    return pytest.main(
-        [
-            '-m rnaseq',
-            v_str,
-            'tests/test_pipeline_rnaseq.py',
-        ]
-    )
+    if verbose == 1:
+        params.append('-s')
+
+    params.append('tests/test_pipeline_rnaseq.py')
+
+    return pytest.main(params)
 
 def wgbs_pipeline(verbose=0):
     """
@@ -146,17 +129,14 @@ def wgbs_pipeline(verbose=0):
        pytest -m wgbs tests/test_pipeline_wgbs.py
     """
 
-    v_str = ''
-    if verbose == 1:
-        v_str = '-s'
+    params = ['-m wgbs']
 
-    return pytest.main(
-        [
-            '-m wgbs',
-            v_str,
-            'tests/test_pipeline_wgbs.py',
-        ]
-    )
+    if verbose == 1:
+        params.append('-s')
+
+    params.append('tests/test_pipeline_wgbs.py')
+
+    return pytest.main(params)
 
 if __name__ == '__main__':
     import sys

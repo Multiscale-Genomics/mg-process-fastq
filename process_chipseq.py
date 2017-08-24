@@ -214,7 +214,7 @@ def prepare_files(
     metadata.append(
         Metadata(
             "fastq", "ChIP-seq", None,
-            {'assembly' : assembly,
+            {'assembly' : assembly},
             fq1_file
         )
     )

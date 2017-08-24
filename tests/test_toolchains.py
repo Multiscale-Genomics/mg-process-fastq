@@ -33,19 +33,16 @@ def genome_toolchain(verbose=False):
        pytest -m genome tests/test_gem_indexer.py
     """
 
-    v_str = ''
-    if verbose == 1:
-        v_str = '-s'
+    params = ['-m genome']
 
-    return pytest.main(
-        [
-            '-m genome',
-            v_str,
-            'tests/test_bowtie_indexer.py',
-            'tests/test_bwa_indexer.py',
-            'tests/test_gem_indexer.py',
-        ]
-    )
+    if verbose == 1:
+        params.append('-s')
+
+    params.append('tests/test_bowtie_indexer.py')
+    params.append('tests/test_bwa_indexer.py')
+    params.append('tests/test_gem_indexer.py')
+
+    return pytest.main(params)
 
 def chipseq_toolchain(verbose=False):
     """
@@ -61,20 +58,17 @@ def chipseq_toolchain(verbose=False):
        pytest -m chipseq tests/test_macs2.py
     """
 
-    v_str = ''
-    if verbose == 1:
-        v_str = '-s'
+    params = ['-m chipseq']
 
-    return pytest.main(
-        [
-            '-m chipseq',
-            v_str,
-            'tests/test_bwa_indexer.py',
-            'tests/test_bwa_aligner.py',
-            'tests/test_biobambam.py',
-            'tests/test_macs2.py',
-        ]
-    )
+    if verbose == 1:
+        params.append('-s')
+
+    params.append('tests/test_bwa_indexer.py')
+    params.append('tests/test_bwa_aligner.py')
+    params.append('tests/test_biobambam.py')
+    params.append('tests/test_macs2.py')
+
+    return pytest.main(params)
 
 def hic_toolchain(verbose=False):
     """
@@ -92,22 +86,19 @@ def hic_toolchain(verbose=False):
        pytest -m hic tests/test_tb_save_hdf5_matrix.py
     """
 
-    v_str = ''
-    if verbose == 1:
-        v_str = '-s'
+    params = ['-m hic']
 
-    return pytest.main(
-        [
-            '-m hic',
-            v_str,
-            'tests/test_gem_indexer.py',
-            'tests/test_tb_full_mapping.py',
-            'tests/test_tb_parse_mapping.py',
-            'tests/test_tb_filter.py',
-            'tests/test_tb_generate_tads.py',
-            'tests/test_tb_save_hdf5_matrix.py',
-        ]
-    )
+    if verbose == 1:
+        params.append('-s')
+
+    params.append('tests/test_gem_indexer.py')
+    params.append('tests/test_tb_full_mapping.py')
+    params.append('tests/test_tb_parse_mapping.py')
+    params.append('tests/test_tb_filter.py')
+    params.append('tests/test_tb_generate_tads.py')
+    params.append('tests/test_tb_save_hdf5_matrix.py')
+
+    return pytest.main(params)
 
 def mnaseseq_toolchain(verbose=False):
     """
@@ -122,19 +113,16 @@ def mnaseseq_toolchain(verbose=False):
        pytest -m mnaseseq tests/test_inps.py
     """
 
-    v_str = ''
-    if verbose == 1:
-        v_str = '-s'
+    params = ['-m mnaseseq']
 
-    return pytest.main(
-        [
-            '-m mnaseseq',
-            v_str,
-            'tests/test_bwa_indexer.py',
-            'tests/test_bwa_aligner.py',
-            'tests/test_inps.py',
-        ]
-    )
+    if verbose == 1:
+        params.append('-s')
+
+    params.append('tests/test_bwa_indexer.py')
+    params.append('tests/test_bwa_aligner.py')
+    params.append('tests/test_inps.py')
+
+    return pytest.main(params)
 
 def rnaseq_toolchain(verbose=False):
     """
@@ -148,18 +136,15 @@ def rnaseq_toolchain(verbose=False):
        pytest -m rnaseq tests/test_kallisto_quant.py
     """
 
-    v_str = ''
-    if verbose == 1:
-        v_str = '-s'
+    params = ['-m rnaseq']
 
-    return pytest.main(
-        [
-            '-m rnaseq',
-            v_str,
-            'tests/test_kallisto_indexer.py',
-            'tests/test_kallisto_quant.py',
-        ]
-    )
+    if verbose == 1:
+        params.append('-s')
+
+    params.append('tests/test_kallisto_indexer.py')
+    params.append('tests/test_kallisto_quant.py')
+
+    return pytest.main(params)
 
 def wgbs_toolchain(verbose=0):
     """
@@ -176,21 +161,18 @@ def wgbs_toolchain(verbose=0):
        pytest -m wgbs tests/test_bs_seeker_methylation_caller.py
     """
 
-    v_str = ''
-    if verbose == 1:
-        v_str = '-s'
+    params = ['-m wgbs']
 
-    return pytest.main(
-        [
-            '-m wgbs',
-            v_str,
-            'tests/test_bs_seeker_filter.py',
-            'tests/test_bs_seeker_indexer.py',
-            'tests/test_fastq_splitter.py',
-            'tests/test_bs_seeker_aligner.py',
-            'tests/test_bs_seeker_methylation_caller.py',
-        ]
-    )
+    if verbose == 1:
+        params.append('-s')
+
+    params.append('tests/test_bs_seeker_filter.py')
+    params.append('tests/test_bs_seeker_indexer.py')
+    params.append('tests/test_fastq_splitter.py')
+    params.append('tests/test_bs_seeker_aligner.py')
+    params.append('tests/test_bs_seeker_methylation_caller.py')
+
+    return pytest.main(params)
 
 if __name__ == '__main__':
     import sys

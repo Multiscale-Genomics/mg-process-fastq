@@ -27,7 +27,7 @@ To your added .travis.yml file in your GitHub repository include :
    - "python" in "language". With version/s specified in "python: " 
    - All packages required for running the pipelines in "addons: apt: packages: ". (For more information on the packages please see Full Installation from : http://multiscale-genomics.readthedocs.io/projects/mg-process-fastq/en/latest/full_installation.html#setup-the-system-environment )
    - Docker in "services" to tell Travis it needs to have docker installed.
-   - All tools to be installed within "install:" section (For more information on the packages please see Full Installation from : link )
+   - All tools to be installed within "install:" section (For more information on the packages please see Full Installation from : http://multiscale-genomics.readthedocs.io/projects/mg-process-fastq/en/latest/full_installation.html#setup-the-system-environment )
    .. note:: libtbb did not seem to be installing correctly when put in "apt: packages: ". It has therefore been done with sudo in "install:"
    
    - Setup all symlinks in "before_script: "
@@ -51,9 +51,10 @@ To run docker within Travis, it has been included within the "services" in the .
 using command : 
 
 .. code-block:: none
+
    $ docker pull multiscalegenomics/mgprocessfastq:testdocker
    
-For more details on the docker container, please refer to : :link:  
+For more details on the docker container, please refer to : https://github.com/Multiscale-Genomics/mg-process-fastq/blob/rf-docs-for-testData/docs/docker.rst
 
 
 Setting up Shims 

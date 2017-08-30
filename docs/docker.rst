@@ -5,9 +5,9 @@ Setting up and using a Docker Container
 Our reason for using a container
 --------------------------------
 
-While working with Travis, the installation of libmaus2 and biobambam2 were took up more than 45 minutes (accumulative with the rest of the installations), which caused Travis to time out. We therefore resorted to putting both tools in a container and accessing the commands from there. This document summarizes the steps involved in making a docker image and running a container from that image. As well as uploading your image to docker hub to make it publically accessible.
+While working with Travis, the installation of libmaus2 and biobambam2 took up more than 45 minutes (accumulative with the rest of the installations), which caused Travis to time out. We therefore resorted to putting both tools in a container and accessing the commands from there. This document summarizes the steps involved in making a docker image for the above two tools and running a container from that image. As well as uploading your image to docker hub to make it publically accessible.
 
-This document has been prepared keeping macOS Sierra mind, although many of the commands are cross platform (\*nix) complient.
+This document has been prepared keeping macOS Sierra in mind, although many of the commands are cross platform (\*nix) complient.
 
 
 Getting Started
@@ -15,28 +15,44 @@ Getting Started
 
 To be able to build a docker container you must have : 
 
-a) docker installed on your machine
-b) an account on one of the docker repositories (Docker Hub or Quay). We have used Docker Hub as this was free access. 
+a) Docker installed on your machine
+b) An account on one of the docker repositories (Docker Hub or Quay). We have used Docker Hub as this was free access. 
 
 a) Installing docker to your machine 
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-For this work I had installed a command line based docker. Along with the Virtual machine boot2docker. There is however a GUI distribution available for MAC as well.
+For this work I had installed a command line based docker, along with the Virtual machine boot2docker. There is however a GUI distribution available for MAC as well.
 
 b) Setting up account on Docker Hub
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Go to https://hub.docker.com and setup an account with Docker Hub. Add Multiscale genomics to your organizations and create a repository : mgprocessfastq. You will be uploading your docker images to this repository later. 
+Go to https://hub.docker.com and setup an account with Docker Hub. Add Multiscale Genomics to your organizations and create a repository : mgprocessfastq. You will be uploading your docker images to this repository later. 
 
 Constructing a docker container
 --------------------------------
 
-Run the following preliminary commands to get your docker up : 
+Run the following preliminary commands to get your boot2docker running : 
 
 .. code-block:: none  
 
    $ boot2docker up
    $ eval "$(boot2docker shellinit)"
+   
+You would also need to have : 
+
+.. code-block:: none  
+   :linenos:
+   
+   docker-machine
+   virtual box
+   
+installed on your Mac. After these, execute the following commands : 
+
+.. code-block:: none  
+
+   $ docker-machine create -d virtualbox dev 
+   $ eval $(docker-machine env dev)  
+   
 
 To ensure your docker is running : 
 
@@ -66,7 +82,7 @@ You may want to create a new folder for this purpose, as the docker command comp
     && apt-get -y install git \
     && git config --global user.name "your_username"	\
     && git config --global user.email "your_emailId"	\
-   	&& pwd  	\
+    && pwd  	\
     && mkdir bin lib code 	\
     && cd lib	\
     && git clone https://github.com/gt1/libmaus2.git 	
@@ -81,7 +97,7 @@ You may want to create a new folder for this purpose, as the docker command comp
 	
     && make  \
     && make install \
-    && cd / Mug/lib 	\
+    && cd /Mug/lib 	\
 	
 	
     && git clone https://github.com/gt1/biobambam2.git 	&& cd biobambam2 	\
@@ -115,13 +131,13 @@ Push the above image to your docker hub repository
 Running a docker container 
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
    
-You should be able to run the above image locally on your machine as well as pulling it else where (on a system which has docker) : 
+You should be able to run the above image locally on your machine as well as pulling it elsewhere (on a system which has docker) : 
 
 .. code-block:: none  
 
    $ docker pull multiscalegenomics/mgprocessfastq:biobambamimage
 
- and then running a container via : 
+and then running a container via : 
  
 .. code-block:: none  
 

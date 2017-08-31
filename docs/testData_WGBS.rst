@@ -121,81 +121,51 @@ Run the methylation caller. Alter the following lines within test_bs_seeker_meth
 
 .. code-block:: none
 
-    resource_path = "/nfs/nobackup/ensembl/reham_ens/BS_seeker_tests/" #os.path.join(os.path.dirname(__file__), "data/")
-    genome_fa_file = resource_path + "Mouse.selected_region.fasta_bowtie2.tar.gz"#"bsSeeker.Mouse.GRCm38.fasta_bowtie2.tar.gz"
-    bam_file = resource_path + "bsSeeker.Mouse.GRCm38.bam"
+    resource_path = os.path.join(os.path.dirname(__file__), "data/") # change to your file path 
+    genome_fa_file = resource_path + "bsSeeker.Mouse.GRCm38.fasta_bowtie2.tar.gz" # change to your file path for the indexed files
+    bam_file = resource_path + "bsSeeker.Mouse.GRCm38.bam" # change to your file for an intermediate bam file
     
 
-This would give the wig file. 
-
-Traverse wig file for a suitable region 
-
-Select chromosomal region corresponding to the above
-
-Re run pipeline till aligner.     
-    
-
-And make the sam file
+This would give the wig file. Traverse this wig file for a suitable region. Download the script : 
 
 .. code-block:: none
 
-   bwa samse GCA_000001405.22.chr22.fa.fasta GCA_000001405.22.chr22.sai DRR000150.chr22.fastq >GCA_000001405.22.chr22.sam
-
-
-===========
-
-
+   https://github.com/Multiscale-Genomics/mg-misc-scripts/blob/master/WGBS_Scripts/regionsFromWig.py
+   
+Run it using : 
 
 .. code-block:: none
 
-   python traverseForCoverageRegion_ChIP.py path/to/GCA_000001405.22.chr22.dp
+   python regionsFromWig.py /path/to/bsSeeker.Mouse.GRCm38.wig
+   
+Select the following coordinates from the output 55844491 55847491
 
-Running this script would print the spanning regions. If it is a continuous region, you may only take the first starting base pair and the last ending base pair, as inputs for the next step. (Take out 1000 and add in 1000 to these respectively to get upstream and downstream spanning bases)
-
-Extract the corresponding fasta sequence from the chromosome file for the positions retrieved from the above step. Checkout file from https://github.com/Multiscale-Genomics/mg-misc-scripts/blob/master/ChIPSeq_Scripts/extractChromosomalRegion.py and run using command:
-
-.. code-block:: none
-
-   python extractChromosomalRegion.py path/to/original/fasta/file path/to/output/file/for/region/macs2.Human.GCA_000001405.22.fasta starting_base_position (39112298) ending_base_position (39112402)
-
-
-Making the Fastq file
-^^^^^^^^^^^^^^^^^^^^^^
-
-Index the fasta file for the selected region
+Select chromosomal region corresponding to the above by getting the script at : 
 
 .. code-block:: none
 
-   bwa index macs2.Human.GCA_000001405.22.fasta
+   https://github.com/Multiscale-Genomics/mg-misc-scripts/blob/master/ChIPSeq_Scripts/extractChromosomalRegion.py
 
-Align the fastq file
-
-.. code-block:: none
-
-   bwa aln macs2.Human.GCA_000001405.22.fasta DRR000150.chr22.fastq >macs2.Human.GCA_000001405.22.sai
-
-And make the sam file
+And run it using 
 
 .. code-block:: none
 
-   bwa samse macs2.Human.GCA_000001405.22.fasta macs2.Human.GCA_000001405.22.sai DRR000150.chr22.fastq >macs2.Human.GCA_000001405.22.sam
+   python extractChromosomalRegion.py /path/to/Mouse.CM001012.2.fasta /path/to/output/bsSeeker.Mouse.GRCm38.fasta 55844491 55847491
 
-Filter this sam file for the reads which aligned with chromosome 22 using the following command:
 
-.. code-block:: none
-
-   awk '$3 == chr22' macs2.Human.GCA_000001405.22.sam >macs2.Human.GCA_000001405.22.22.sam
-
-From the filtered reads from the above output file, extract the corresponding entries in fastq file. You may do this using the file at :
+Re run the pipeline with this fasta file and original fastq files till the alignment step. Take the .bam file and convert it to sam using : 
 
 .. code-block:: none
 
-   https://github.com/Multiscale-Genomics/mg-misc-scripts/blob/master/ChIPSeq_Scripts/makeFastQFiles.py
-
-and running it via command line:
+   samtools view -h -o /path/to/BS_seeker_tests/bsSeeker.Mouse.GRCm38.sam  /path/to/bsSeeker.Mouse.GRCm38.bam
+   
+Use this sam file to extract the fastq entries from the larger fastq files. 
 
 .. code-block:: none
 
-   python makeFastQFiles.py --samfile macs2.Human.GCA_000001405.22.22.sam --fastQfile /path/to/DRR000150.chr22.fastq --pathToOutput /path/to/save/output/fastq/file/to/ --fastqOut macs2.Human.DRR000150.22.fastq
+   python makeFastQFiles.py --samfile /path/to/bsSeeker.Mouse.GRCm38.sam --fastQfile /path/to/SRR892982_1.fastq --pathToOutput /path/to/output/ --fastqOut bsSeeker.Mouse.GRCm38_1.fastq
+   
+   python makeFastQFiles.py --samfile /path/to/bsSeeker.Mouse.GRCm38.sam --fastQfile /path/to/SRR892982_2.fastq --pathToOutput /path/to/output/ --fastqOut bsSeeker.Mouse.GRCm38_2.fastq
 
-The fastq file in the above step and fasta file macs2.Human.GCA_000001405.22.fasta together make up the data set for ChIP-seq pipeline
+   
+The fastq files in the above steps along with the bsSeeker.Mouse.GRCm38.fasta make up the test data for the WGBS pipeline.

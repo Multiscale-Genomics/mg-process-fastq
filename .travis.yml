@@ -2,7 +2,7 @@ language: "python"
 
 python:
   - "2.7.12"
-  - "3.5.0"
+  - "3.5.2"
 
 #sudo: false
 
@@ -41,6 +41,7 @@ addons:
     - unzip   
     - liblzma-dev
     - libtool
+    - pigz
     #- libtbb2
     
 #env:
@@ -146,18 +147,11 @@ install:
     - pip install --editable .
     
     
-     #Install MACS2
-    - cd ${HOME}/code
-    - pip install MACS2    
-    
-    
+     #Install MACS2 
      #Install TADbit
-    - cd ${HOME}/lib
-    - wget https://github.com/3DGenomes/tadbit/archive/master.zip -O tadbit.zip
-    - unzip tadbit.zip
-    - cd TADbit-master
-    # Need to edit the setup.py to remove the dependency for IMP line ~64
-    - yes | python setup.py install --install-lib=${HOME}/.pyenv/versions/mg-process-fastq/lib/python2.7/site-packages/ --install-scripts=${HOME}/bin 
+    - cd ${HOME}/build/Multiscale-Genomics/mg-process-fastq
+    - chmod +x includeMAC2.sh
+    - ./includeMAC2.sh
     
         
      #Install BSseeker

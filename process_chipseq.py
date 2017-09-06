@@ -317,7 +317,7 @@ def remap(indict, *args, **kwargs):
 
     and act as a translation table for new key names.
     """
-    outdict = {role: metadata[role] for role in args}
+    outdict = {role: indict[role] for role in args}
     outdict.update(
         {new: indict[old] for old, new in kwargs.items()}
     )

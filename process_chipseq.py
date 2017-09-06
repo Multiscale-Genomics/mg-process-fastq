@@ -216,51 +216,52 @@ def prepare_files(
 
     # Maybe it is necessary to prepare a metadata parser from json file
     # when building the Metadata objects.
-    metadata = [
-        Metadata("fasta", "Assembly", None, {'assembly' : assembly}, genome_file),
-        Metadata("index", "Assembly", [genome_file], {'assembly' : assembly}, amb_file),
-        Metadata("index", "Assembly", [genome_file], {'assembly' : assembly}, ann_file),
-        Metadata("index", "Assembly", [genome_file], {'assembly' : assembly}, bwt_file),
-        Metadata("index", "Assembly", [genome_file], {'assembly' : assembly}, pac_file),
-        Metadata("index", "Assembly", [genome_file], {'assembly' : assembly}, sa_file),
-    ]
+    metadata = {
+        "genome": Metadata("fasta", "Assembly", None, {'assembly' : assembly}, genome_file),
+        "amb": Metadata("index", "Assembly", [genome_file], {'assembly' : assembly}, amb_file),
+        "ann": Metadata("index", "Assembly", [genome_file], {'assembly' : assembly}, ann_file),
+        "bwt": Metadata("index", "Assembly", [genome_file], {'assembly' : assembly}, bwt_file),
+        "pac": Metadata("index", "Assembly", [genome_file], {'assembly' : assembly}, pac_file),
+        "sa": Metadata("index", "Assembly", [genome_file], {'assembly' : assembly}, sa_file),
+    }
 
     fq1_file = dm_handler.set_file(
         "test", file_loc, "fastq", "ChIP-seq", taxon_id, None, [],
         meta_data={'assembly' : assembly})
-    metadata.append(
-        Metadata(
-            "fastq", "ChIP-seq", None,
-            {'assembly' : assembly},
-            fq1_file
-        )
+    metadata["loc"] = Metadata(
+        "fastq", "ChIP-seq", None,
+        {'assembly' : assembly},
+        fq1_file
     )
     if file_bg_loc:
         fq2_file = dm_handler.set_file(
             "test", file_bg_loc, "fastq", "ChIP-seq", taxon_id, None, [],
             meta_data={'assembly' : assembly})
-        metadata.append(
-            Metadata(
-                "fastq", "ChIP-seq", None,
-                {'assembly' : assembly, 'background' : True},
-                fq2_file
-            )
+        metadata["bg_loc"] = Metadata(
+            "fastq", "ChIP-seq", None,
+            {'assembly' : assembly, 'background' : True},
+            fq2_file
         )
 
     print(dm_handler.get_files_by_user("test"))
 
-    files = [
-        genome_fa,
-        genome_fa + ".amb",
-        genome_fa + ".ann",
-        genome_fa + ".bwt",
-        genome_fa + ".pac",
-        genome_fa + ".sa",
-        file_loc,
-        file_bg_loc
-    ]
+    files = {
+        "genome": genome_fa,
+        "amb": genome_fa + ".amb",
+        "ann": genome_fa + ".ann",
+        "bwt": genome_fa + ".bwt",
+        "pac": genome_fa + ".pac",
+        "sa": genome_fa + ".sa",
+        "loc": file_loc
+    }
+    if file_bg_loc:
+        files["bg_loc"] = file_bg_loc
 
-    files_out = []
+    files_out = {
+        "bam": genome_fa + "_out.bam",
+        "filtered": genome_fa + "_filtered.bam",
+        "output": genome_fa + ".tsv"
+    }
 
     return [files, files_out, metadata]
 

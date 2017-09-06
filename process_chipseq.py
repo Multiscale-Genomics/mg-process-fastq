@@ -71,78 +71,95 @@ class process_chipseq(Workflow):
 
         Parameters
         ----------
-        files_ids : list
-            List of file locations
-        metadata : list
-            Required meta data
-        output_files : list
-            List of output file locations
+        files_ids : dict
+            Input file locations associated with their roles
+        metadata : dict
+            Input file meta data associated with their roles
+        output_files : dict
+             Output file locations associated with their roles
 
         Returns
         -------
-        outputfiles : list
-            List of locations for the output bam, bed and tsv files
+        output_files : dict
+             Output file locations associated with their roles, for the output
+             bam, bed and tsv files
         """
 
-        run_genome_fa = input_files[0]
-        bwa_amb = input_files[1]
-        bwa_ann = input_files[2]
-        bwa_bwt = input_files[3]
-        bwa_pac = input_files[4]
-        bwa_sa = input_files[5]
-        file_loc = input_files[6]
-        file_bgd_loc = input_files[7]
+        # XXX input_files.keys()  # also metadata.keys()
+        # "genome", "amb", "ann", "bwt", "pac", "sa", "loc" [, "bg_loc"]
 
-        output_json = {'output_files': []}
-
-        out_bam = file_loc.replace(".fastq", '.bam')
+        # XXX output_files.keys()
+        # "bam", "filtered", "output"
 
         bwa = bwaAlignerTool(self.configuration)
         bwa_files, bwa_meta = bwa.run(
-            [run_genome_fa, file_loc, bwa_amb, bwa_ann, bwa_bwt, bwa_pac, bwa_sa],
-            []
+            # ideally parameter "roles" don't change
+            remap(input_files,
+                  "genome", "loc", "amb", "ann", "bwt", "pac"),
+            remap(metadata,
+                  "genome", "loc", "amb", "ann", "bwt", "pac"),
+            {"output": output_files["bam"]}
         )
-        out_bam = bwa_files[0]
 
-        out_bgd_bam = None
-        if file_bgd_loc != None:
-            bwa_bgd_files, bwa_bgd_meta = bwa.run(
-                [run_genome_fa, file_bgd_loc, bwa_amb, bwa_ann, bwa_bwt, bwa_pac, bwa_sa],
-                []
+        if "bg_loc" in input_files:
+            bwa_bg_files, bwa_bg_meta = bwa.run(
+                # XXX: small changes can be handled easily using "remap"
+                remap(input_files,
+                      "genome", "amb", "ann", "bwt", "pac", bg_loc="loc"),
+                remap(metadata,
+                      "genome", "amb", "ann", "bwt", "pac", bg_loc="loc"),
+                # XXX intermediate outputs should be created via tempfile?
+                {"output": "bg.bam"}
             )
-            out_bgd_bam = bwa_bgd_files[0]
 
         # For multiple files there will need to be merging into a single bam file
 
         # Filter the bams
         b3f = biobambam(self.configuration)
         b3f_files, b3f_meta = b3f.run(
-            [out_bam],
-            []
+            # XXX alternatively, we can rebuild the dict
+            {"input": bwa_files["output"]},
+            {"input": bwa_meta["output"]},
+            # XXX intermediate outputs should be created via tempfile?
+            {"output": "filtered.bam"}
         )
-        out_filtered_bam = b3f_files[0]
 
-        out_filtered_bgd_bam = None
-        if file_bgd_loc != None:
-            b3f_results_bgd = b3f.run(
-                [out_bgd_bam],
-                []
+        if "bg_loc" in input_files:
+            b3f_bg_files, b3f_bg_meta = b3f.run(
+                {"input": bwa_bg_files["output"]},
+                {"input": bwa_bg_meta["output"]},
+                # XXX intermediate outputs should be created via tempfile?
+                {"output": "bg_filtered.bam"}
             )
-            out_filtered_bgd_bam = b3f_results_bgd[0][0]
 
         ## MACS2 to call peaks
         macs_caller = macs2(self.configuration)
+        macs_inputs = {"input": b3f_files["output"]}
+        macs_metadt = {"input": b3f_meta["output"]}
 
-        if file_bgd_loc != None:
-            m_results_files, m_results_meta = macs_caller.run(
-                [out_filtered_bam, out_filtered_bgd_bam], [])
-        else:
-            m_results_files, m_results_meta = macs_caller.run([out_filtered_bam], [])
+        if "bg_loc" in input_files:
+            # XXX the dicts can be built incrementally
+            macs_inputs["background"] = b3f_bg_files["output"]
+            macs_metadt["background"] = b3f_bg_meta["output"]
 
-        return (
-            [out_bam, out_filtered_bam] + m_results_files,
-            [{}, m_results_meta]
+        m_results_files, m_results_meta = macs_caller.run(
+            macs_inputs, macs_metadt,
+            # XXX outputs of the final step may match workflow outputs;
+            # XXX extra entries in output_files will be disregarded.
+            output_files)
+
+        # XXX outputs are collected with some name changes
+        m_results_files.update(
+            remap(bwa_files, output="bam")
+        ).update(
+            remap(b3f_files, output="filtered")
         )
+
+        # XXX or equivalently
+        m_results_meta["bam"] = bwa_meta["output"]
+        m_results_meta["filtered"] = b3f_meta["output"]
+
+        return m_results_files, m_results_meta
 
 # ------------------------------------------------------------------------------
 
@@ -285,3 +302,22 @@ if __name__ == "__main__":
 
     print(RESULTS)
     print(DM_HANDLER.get_files_by_user("test"))
+
+# ------------------------------------------------------------------------------
+
+def remap(indict, *args, **kwargs):
+    """
+    Re-map keys of indict using information from arguments.
+
+    Non-keyword arguments are keys of input dictionary that are passed
+    unchanged to the output. Keyword arguments must be in the form
+
+    old="new"
+
+    and act as a translation table for new key names.
+    """
+    outdict = {role: metadata[role] for role in args}
+    outdict.update(
+        {new: indict[old] for old, new in kwargs.items()}
+    )
+    return outdict

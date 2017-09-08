@@ -71,7 +71,7 @@ class process_chipseq(Workflow):
 
         Parameters
         ----------
-        files_ids : dict
+        input_files : dict
             Input file locations associated with their roles
         metadata : dict
             Input file meta data associated with their roles

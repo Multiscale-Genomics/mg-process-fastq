@@ -241,26 +241,35 @@ class macs2(Tool):
         name = root_name[-1]
         #name = '/'.join(root_name)
 
-        out_peaks_narrow = '/'.join(root_name) + '_peaks.narrowPeak'
-        out_peaks_broad = '/'.join(root_name) + '_peaks.broadPeak'
-        out_peaks_gapped = '/'.join(root_name) + '_peaks.gappedPeak'
-        out_summits = '/'.join(root_name) + '_summits.bed'
-
-        output_files_tmp = [out_peaks_narrow, out_summits, out_peaks_broad, out_peaks_gapped]
+        output_files_tmp = {
+            'narrow_peak': '/'.join(root_name) + '_peaks.narrowPeak',
+            'summits': '/'.join(root_name) + '_summits.bed',
+            'broad_peak': '/'.join(root_name) + '_peaks.broadPeak',
+            'gapped_peak': '/'.join(root_name) + '_peaks.gappedPeak'
+        }
 
         # input and output share most metadata
-        output_metadata = {}
+        output_metadata = {
+            "output": {
+                'narrow_peak': {"bed_type": "bed4+1"},
+                'summits': {"bed_type": "bed6+4"},
+                'broad_peak': {"bed_type": "bed6+3"},
+                'gapped_peak': {"bed_type": "bed12+3"}
+            }
+        }
         output_metadata["bed_types"] = ["bed4+1", "bed6+4", "bed6+3", "bed12+3"]
 
         # handle error
         if bam_file_bgd is None:
             results = self.macs2_peak_calling_nobgd(
                 name, bam_file,
-                out_peaks_narrow, out_summits, out_peaks_broad, out_peaks_gapped)
+                output_files_tmp['narrow_peak'], output_files_tmp['summits'],
+                output_files_tmp['broad_peak'], output_files_tmp['gapped_peak'])
         else:
             results = self.macs2_peak_calling(
                 name, bam_file, bam_file_bgd,
-                out_peaks_narrow, out_summits, out_peaks_broad, out_peaks_gapped)
+                output_files_tmp['narrow_peak'], output_files_tmp['summits'],
+                output_files_tmp['broad_peak'], output_files_tmp['gapped_peak'])
         results = compss_wait_on(results)
 
         if results > 0:
@@ -270,16 +279,16 @@ class macs2(Tool):
 
         print('Results:', results)
 
-        output_files = []
+        output_files = {}
         for result_file in output_files_tmp:
-            if os.path.isfile(result_file) is True and os.path.getsize(result_file) > 0:
-                output_files.append(result_file)
+            if (
+                    os.path.isfile(output_files_tmp[result_file]) is True
+                    and os.path.getsize(output_files_tmp[result_file]) > 0
+                ):
+                output_files[result_file] = output_files_tmp[result_file]
 
         print('MACS2: GENERATED FILES:', output_files)
 
-        return (
-            output_files,
-            output_metadata
-        )
+        return ({"output": output_files}, output_metadata)
 
 # ------------------------------------------------------------------------------

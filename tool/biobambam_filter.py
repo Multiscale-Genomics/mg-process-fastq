@@ -150,14 +150,14 @@ class biobambam(Tool):
         in_bam = input_files[0]
         out_filtered_bam = in_bam.replace('.bam', '.filtered.bam')
 
-        output_metadata = {}
+        output_metadata = {"tool": "biobambam_filter"}
 
-        results = self.biobambam_filter_alignments(in_bam, out_filtered_bam)
+        results = self.biobambam_filter_alignments(input_files['input'], output_files['output'])
 
         results = compss_wait_on(results)
 
         print("BIOBAMBAM FILTER:", os.path.isfile(out_filtered_bam))
 
-        return ([out_filtered_bam], output_metadata)
+        return ({"output": {"bam": out_filtered_bam}}, {"output": {"bam": output_metadata}})
 
 # ------------------------------------------------------------------------------

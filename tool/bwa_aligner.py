@@ -38,6 +38,7 @@ from tool.common import common
 
 # ------------------------------------------------------------------------------
 
+
 class bwaAlignerTool(Tool):
     """
     Tool for aligning sequence reads to a genome using BWA
@@ -53,9 +54,9 @@ class bwaAlignerTool(Tool):
     @task(returns=bool, genome_file_loc=FILE_IN, read_file_loc=FILE_IN,
           bam_loc=FILE_OUT, amb_loc=FILE_IN, ann_loc=FILE_IN, bwt_loc=FILE_IN,
           pac_loc=FILE_IN, sa_loc=FILE_IN, isModifier=False)
-    def bwa_aligner( # pylint: disable=too-many-arguments
-            self, genome_file_loc, read_file_loc, bam_loc, amb_loc, # pylint: disable=unused-argument,too-many-arguments
-            ann_loc, bwt_loc, pac_loc, sa_loc): # pylint: disable=unused-argument
+    def bwa_aligner(  # pylint: disable=too-many-arguments
+            self, genome_file_loc, read_file_loc, bam_loc, amb_loc,  # pylint: disable=unused-argument,too-many-arguments
+            ann_loc, bwt_loc, pac_loc, sa_loc):  # pylint: disable=unused-argument
         """
         BWA Aligner
 
@@ -79,7 +80,7 @@ class bwaAlignerTool(Tool):
         #out_bam = bam_loc.replace(".bam", '.out.bam')
         out_bam = read_file_loc + '.out.bam'
         common_handle = common()
-        bam_loc1 = common_handle.bwa_align_reads(genome_file_loc, read_file_loc, out_bam)
+        common_handle.bwa_align_reads(genome_file_loc, read_file_loc, out_bam)
 
         print("BWA FINAL OUTPUT FILE:", bam_loc)
         print("BWA ALIGNER TASK (start):", os.path.isfile(bam_loc), os.path.islink(bam_loc))
@@ -113,19 +114,19 @@ class bwaAlignerTool(Tool):
             matching meta data
         """
 
-        output_metadata = {}
-        out_bam = input_files[1].replace(".fastq", '.bam')
+        output_metadata = {"tool": "bwa_aligner"}
 
-        print("BWA ALIGNER (before):", out_bam)
+        print("BWA ALIGNER (before):", output_files["output"])
 
         results = self.bwa_aligner(
-            input_files[0], input_files[1], out_bam, input_files[2],
-            input_files[3], input_files[4], input_files[5], input_files[6])
+            input_files["genome"], input_files["loc"], output_files["output"],
+            input_files["amb"], input_files["ann"], input_files["bwt"],
+            input_files["pac"], input_files["sa"])
 
         results = compss_wait_on(results)
 
-        print("BWA ALIGNER:", os.path.isfile(out_bam))
+        print("BWA ALIGNER:", os.path.isfile(output_files["output"]))
 
-        return ([out_bam], [output_metadata])
+        return ({"output": {"bam": output_files["output"]}}, {"output": {"bam": output_metadata}})
 
 # ------------------------------------------------------------------------------

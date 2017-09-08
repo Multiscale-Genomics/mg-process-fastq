@@ -118,29 +118,29 @@ class process_chipseq(Workflow):
         b3f = biobambam(self.configuration)
         b3f_files, b3f_meta = b3f.run(
             # XXX alternatively, we can rebuild the dict
-            {"input": bwa_files["output"]},
-            {"input": bwa_meta["output"]},
+            {"input": bwa_files["output"]['bam']},
+            {"input": bwa_meta["output"]['bam']},
             # XXX intermediate outputs should be created via tempfile?
             {"output": "filtered.bam"}
         )
 
         if "bg_loc" in input_files:
             b3f_bg_files, b3f_bg_meta = b3f.run(
-                {"input": bwa_bg_files["output"]},
-                {"input": bwa_bg_meta["output"]},
+                {"input": bwa_bg_files["output"]['bam']},
+                {"input": bwa_bg_meta["output"]['bam']},
                 # XXX intermediate outputs should be created via tempfile?
                 {"output": "bg_filtered.bam"}
             )
 
         ## MACS2 to call peaks
         macs_caller = macs2(self.configuration)
-        macs_inputs = {"input": b3f_files["output"]}
-        macs_metadt = {"input": b3f_meta["output"]}
+        macs_inputs = {"input": b3f_files["output"]['bam']}
+        macs_metadt = {"input": b3f_meta["output"]['bam']}
 
         if "bg_loc" in input_files:
             # XXX the dicts can be built incrementally
-            macs_inputs["background"] = b3f_bg_files["output"]
-            macs_metadt["background"] = b3f_bg_meta["output"]
+            macs_inputs["background"] = b3f_bg_files["output"]['bam']
+            macs_metadt["background"] = b3f_bg_meta["output"]['bam']
 
         m_results_files, m_results_meta = macs_caller.run(
             macs_inputs, macs_metadt,

@@ -74,27 +74,14 @@ class bwaAlignerTool(Tool):
         """
 
         od_list = read_file_loc.split("/")
-        output_dir = "/".join(od_list[0:-1])
 
-        print("BWA INPUT FILES:", os.listdir(output_dir))
-        #out_bam = bam_loc.replace(".bam", '.out.bam')
         out_bam = read_file_loc + '.out.bam'
         common_handle = common()
         common_handle.bwa_align_reads(genome_file_loc, read_file_loc, out_bam)
 
-        print("BWA FINAL OUTPUT FILE:", bam_loc)
-        print("BWA ALIGNER TASK (start):", os.path.isfile(bam_loc), os.path.islink(bam_loc))
-
         with open(bam_loc, "wb") as f_out:
             with open(out_bam, "rb") as f_in:
                 f_out.write(f_in.read())
-
-        print("BWA MIDDLE OUTPUT FILE:", out_bam)
-        print("BWA ALIGNER TASK (mid):", os.path.isfile(out_bam), os.path.getsize(out_bam))
-        print("BWA FINAL OUTPUT FILE:", bam_loc)
-        print("BWA ALIGNER TASK (final):", os.path.isfile(bam_loc), os.path.getsize(bam_loc))
-
-        print("BWA OUTPUT FILES:", os.listdir(output_dir))
 
         return True
 

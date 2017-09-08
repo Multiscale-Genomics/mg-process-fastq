@@ -82,50 +82,18 @@ class biobambam(Tool):
         tmp_dir = "/".join(td_list[0:-1])
 
         command_line = 'bamsormadup --tmpfile=' + tmp_dir
-        print(command_line)
         args = shlex.split(command_line)
 
         bam_tmp_out = tmp_dir + '/' + td_list[-1] + '.filtered.tmp.bam'
-
-        print("BIOBAMBAM INPUT FILE:", bam_file_in)
-        print(
-            "BIOBAMBAM INPUT FILE (start):",
-            os.path.isfile(bam_file_in),
-            os.path.islink(bam_file_in),
-            os.path.getsize(bam_file_in)
-        )
-
-        print("BIOBAMBAM OUTPUT FILE:", bam_file_out)
-        print(
-            "BIOBAMBAM OUTPUT FILE (start):",
-            os.path.isfile(bam_file_out),
-            os.path.islink(bam_file_out)
-        )
 
         with open(bam_file_in, "r") as f_in:
             with open(bam_tmp_out, "w") as f_out:
                 process = subprocess.Popen(args, stdin=f_in, stdout=f_out)
                 process.wait()
 
-        print("BIOBAMBAM TMP FILE:", bam_tmp_out)
-        print(
-            "BIOBAMBAM TMP FILE (end):",
-            os.path.isfile(bam_tmp_out),
-            os.path.islink(bam_tmp_out),
-            os.path.getsize(bam_tmp_out)
-        )
-
         with open(bam_file_out, "wb") as f_out:
             with open(bam_tmp_out, "rb") as f_in:
                 f_out.write(f_in.read())
-
-        print("BIOBAMBAM OUTPUT FILE:", bam_file_out)
-        print(
-            "BIOBAMBAM OUTPUT FILE (end):",
-            os.path.isfile(bam_file_out),
-            os.path.islink(bam_file_out),
-            os.path.getsize(bam_file_out)
-        )
 
         return True
 

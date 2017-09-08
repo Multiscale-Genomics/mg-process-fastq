@@ -228,18 +228,10 @@ class macs2(Tool):
             List of matching metadata dict objects
 
         """
-
-        bam_file = input_files[0]
-
-        bam_file_bgd = None
-        if len(input_files) == 2 and input_files[1] is not None:
-            bam_file_bgd = input_files[1]
-
-        root_name = bam_file.split("/")
+        root_name = input_files['input'].split("/")
         root_name[-1] = root_name[-1].replace('.bam', '')
 
         name = root_name[-1]
-        #name = '/'.join(root_name)
 
         output_files_tmp = {
             'narrow_peak': '/'.join(root_name) + '_peaks.narrowPeak',
@@ -257,24 +249,23 @@ class macs2(Tool):
                 'gapped_peak': {"bed_type": "bed12+3"}
             }
         }
-        output_metadata["bed_types"] = ["bed4+1", "bed6+4", "bed6+3", "bed12+3"]
 
         # handle error
-        if bam_file_bgd is None:
-            results = self.macs2_peak_calling_nobgd(
-                name, bam_file,
+        if 'background' in input_files:
+            results = self.macs2_peak_calling(
+                name, input_files['input'], input_files['background'],
                 output_files_tmp['narrow_peak'], output_files_tmp['summits'],
                 output_files_tmp['broad_peak'], output_files_tmp['gapped_peak'])
         else:
-            results = self.macs2_peak_calling(
-                name, bam_file, bam_file_bgd,
+            results = self.macs2_peak_calling_nobgd(
+                name, input_files['input'],
                 output_files_tmp['narrow_peak'], output_files_tmp['summits'],
                 output_files_tmp['broad_peak'], output_files_tmp['gapped_peak'])
         results = compss_wait_on(results)
 
         if results > 0:
             return (
-                [], []
+                {}, {}
             )
 
         print('Results:', results)

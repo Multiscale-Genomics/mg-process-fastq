@@ -79,6 +79,7 @@ class biobambam(Tool):
         """
 
         td_list = bam_file_in.split("/")
+        print("BIOBAMBAM: bam_file_in:", bam_file_in)
         tmp_dir = "/".join(td_list[0:-1])
 
         command_line = 'bamsormadup --tmpfile=' + tmp_dir
@@ -97,7 +98,7 @@ class biobambam(Tool):
 
         return True
 
-    def run(self, input_files, output_files, metadata=None):
+    def run(self, input_files, metadata, output_files):
         """
         The main function to run BioBAMBAMfilter to remove duplicates and
         spurious reads from the FASTQ files before analysis.
@@ -115,17 +116,18 @@ class biobambam(Tool):
         output_metadata : list
             List of matching metadata dict objects
         """
-        in_bam = input_files[0]
-        out_filtered_bam = in_bam.replace('.bam', '.filtered.bam')
-
         output_metadata = {"tool": "biobambam_filter"}
 
-        results = self.biobambam_filter_alignments(input_files['input'], output_files['output'])
+        print("BIOBAMBAM: input_files:", input_files)
 
+        results = self.biobambam_filter_alignments(input_files['input'], output_files['output'])
         results = compss_wait_on(results)
 
-        print("BIOBAMBAM FILTER:", os.path.isfile(out_filtered_bam))
+        print("BIOBAMBAM FILTER:", os.path.isfile(output_files['output']))
 
-        return ({"output": {"bam": out_filtered_bam}}, {"output": {"bam": output_metadata}})
+        return (
+            {"output": {"bam": output_files['output']}},
+            {"output": {"bam": output_metadata}}
+        )
 
 # ------------------------------------------------------------------------------

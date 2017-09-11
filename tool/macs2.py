@@ -207,7 +207,7 @@ class macs2(Tool):
             return process.returncode
         return 0
 
-    def run(self, input_files, output_files, metadata=None):
+    def run(self, input_files, metadata, output_files):
         """
         The main function to run MACS 2 for peak calling over a given BAM file
         and matching background BAM file.

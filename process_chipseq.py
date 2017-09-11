@@ -92,12 +92,13 @@ class process_chipseq(Workflow):
         # "bam", "filtered", "output"
 
         bwa = bwaAlignerTool(self.configuration)
+
         bwa_files, bwa_meta = bwa.run(
             # ideally parameter "roles" don't change
             remap(input_files,
-                  "genome", "loc", "amb", "ann", "bwt", "pac"),
+                  "genome", "loc", "amb", "ann", "bwt", "pac", "sa"),
             remap(metadata,
-                  "genome", "loc", "amb", "ann", "bwt", "pac"),
+                  "genome", "loc", "amb", "ann", "bwt", "pac", "sa"),
             {"output": output_files["bam"]}
         )
 
@@ -105,11 +106,11 @@ class process_chipseq(Workflow):
             bwa_bg_files, bwa_bg_meta = bwa.run(
                 # XXX: small changes can be handled easily using "remap"
                 remap(input_files,
-                      "genome", "amb", "ann", "bwt", "pac", bg_loc="loc"),
+                      "genome", "amb", "ann", "bwt", "pac", "sa", bg_loc="loc"),
                 remap(metadata,
-                      "genome", "amb", "ann", "bwt", "pac", bg_loc="loc"),
+                      "genome", "amb", "ann", "bwt", "pac", "sa", bg_loc="loc"),
                 # XXX intermediate outputs should be created via tempfile?
-                {"output": "bg.bam"}
+                {"output": output_files["bam_bg"]}
             )
 
         # For multiple files there will need to be merging into a single bam file
@@ -121,7 +122,7 @@ class process_chipseq(Workflow):
             {"input": bwa_files["output"]['bam']},
             {"input": bwa_meta["output"]['bam']},
             # XXX intermediate outputs should be created via tempfile?
-            {"output": "filtered.bam"}
+            {"output": output_files["filtered"]}
         )
 
         if "bg_loc" in input_files:
@@ -129,7 +130,7 @@ class process_chipseq(Workflow):
                 {"input": bwa_bg_files["output"]['bam']},
                 {"input": bwa_bg_meta["output"]['bam']},
                 # XXX intermediate outputs should be created via tempfile?
-                {"output": "bg_filtered.bam"}
+                {"output": output_files["filtered_bg"]}
             )
 
         ## MACS2 to call peaks
@@ -233,17 +234,6 @@ def prepare_files(
         {'assembly' : assembly},
         fq1_file
     )
-    if file_bg_loc:
-        fq2_file = dm_handler.set_file(
-            "test", file_bg_loc, "fastq", "ChIP-seq", taxon_id, None, [],
-            meta_data={'assembly' : assembly})
-        metadata["bg_loc"] = Metadata(
-            "fastq", "ChIP-seq", None,
-            {'assembly' : assembly, 'background' : True},
-            fq2_file
-        )
-
-    print(dm_handler.get_files_by_user("test"))
 
     files = {
         "genome": genome_fa,
@@ -254,16 +244,52 @@ def prepare_files(
         "sa": genome_fa + ".sa",
         "loc": file_loc
     }
-    if file_bg_loc:
-        files["bg_loc"] = file_bg_loc
 
     files_out = {
-        "bam": genome_fa + "_out.bam",
-        "filtered": genome_fa + "_filtered.bam",
-        "output": genome_fa + ".tsv"
+        "bam": fq1_file.replace(".fastq", ".bam"),
+        "filtered": fq1_file.replace(".fastq", "_filtered.bam"),
+        "output": fq1_file.replace(".fastq", ".tsv")
     }
 
+    if file_bg_loc:
+        fq2_file = dm_handler.set_file(
+            "test", file_bg_loc, "fastq", "ChIP-seq", taxon_id, None, [],
+            meta_data={'assembly' : assembly})
+
+        metadata["bg_loc"] = Metadata(
+            "fastq", "ChIP-seq", None,
+            {'assembly' : assembly, 'background' : True},
+            fq2_file
+        )
+
+        files["bg_loc"] = file_bg_loc
+
+        files_out["bam_bg"] = fq2_file.replace(".fastq", ".bam"),
+        files_out["filtered_bg"] = fq2_file.replace(".fastq", "_filtered.bam"),
+
+
+    print(dm_handler.get_files_by_user("test"))
+
     return [files, files_out, metadata]
+
+# ------------------------------------------------------------------------------
+
+def remap(indict, *args, **kwargs):
+    """
+    Re-map keys of indict using information from arguments.
+
+    Non-keyword arguments are keys of input dictionary that are passed
+    unchanged to the output. Keyword arguments must be in the form
+
+    old="new"
+
+    and act as a translation table for new key names.
+    """
+    outdict = {role: indict[role] for role in args}
+    outdict.update(
+        {new: indict[old] for old, new in kwargs.items()}
+    )
+    return outdict
 
 # ------------------------------------------------------------------------------
 
@@ -303,22 +329,3 @@ if __name__ == "__main__":
 
     print(RESULTS)
     print(DM_HANDLER.get_files_by_user("test"))
-
-# ------------------------------------------------------------------------------
-
-def remap(indict, *args, **kwargs):
-    """
-    Re-map keys of indict using information from arguments.
-
-    Non-keyword arguments are keys of input dictionary that are passed
-    unchanged to the output. Keyword arguments must be in the form
-
-    old="new"
-
-    and act as a translation table for new key names.
-    """
-    outdict = {role: indict[role] for role in args}
-    outdict.update(
-        {new: indict[old] for old, new in kwargs.items()}
-    )
-    return outdict

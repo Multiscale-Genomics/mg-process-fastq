@@ -85,7 +85,7 @@ class bwaAlignerTool(Tool):
 
         return True
 
-    def run(self, input_files, output_files, metadata=None):
+    def run(self, input_files, metadata, output_files):
         """
         The main function to align bam files to a genome using BWA
 

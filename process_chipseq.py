@@ -93,6 +93,10 @@ class process_chipseq(Workflow):
 
         bwa = bwaAlignerTool(self.configuration)
 
+        print(
+            "PROCESS CHIPSEQ - FILES PASSED TO TOOLS:",
+            remap(input_files, "genome", "loc", "amb", "ann", "bwt", "pac", "sa")
+        )
         bwa_files, bwa_meta = bwa.run(
             # ideally parameter "roles" don't change
             remap(input_files,

@@ -33,6 +33,7 @@ except ImportError:
     from dummy_pycompss import compss_wait_on
 
 from basic_modules.tool import Tool
+from basic_modules.metadata import Metadata
 
 from tool.common import common
 
@@ -91,19 +92,20 @@ class bwaAlignerTool(Tool):
 
         Parameters
         ----------
-        input_files : list
+        input_files : dict
             File 0 is the genome file location, file 1 is the FASTQ file
+        metadata : dict
+        output_files : dict
 
         Returns
         -------
-        output : list
+        output_files : dict
             First element is a list of output_bam_files, second element is the
             matching meta data
+        output_metadata : dict
         """
 
-        output_metadata = {"tool": "bwa_aligner"}
-
-        print("BWA ALIGNER (before):", output_files["output"])
+        print("BWA ALIGNER (before):", type(output_files), output_files["output"])
 
         results = self.bwa_aligner(
             input_files["genome"], input_files["loc"], output_files["output"],
@@ -114,6 +116,19 @@ class bwaAlignerTool(Tool):
 
         print("BWA ALIGNER:", os.path.isfile(output_files["output"]))
 
-        return ({"output": {"bam": output_files["output"]}}, {"output": {"bam": output_metadata}})
+        # print("BWA ALIGNER - METADATA:", metadata)
+
+        bam_meta = Metadata(
+            "alignment", "bam", output_files["output"],
+            [metadata['genome'].id, metadata['loc'].id],
+            {
+                'assembly' : metadata['genome'].meta_data['assembly'],
+                "tool": "bwa_aligner"
+            }
+        )
+
+        # print("BWA ALIGNER - METADATA:", bam_meta)
+
+        return ({"output": {"bam": output_files["output"]}}, {"output": {"bam": bam_meta}})
 
 # ------------------------------------------------------------------------------

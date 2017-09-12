@@ -35,10 +35,8 @@ except ImportError:
     from dummy_pycompss import task
     from dummy_pycompss import compss_wait_on
 
-#from basic_modules.metadata import Metadata
+from basic_modules.metadata import Metadata
 from basic_modules.tool import Tool
-
-#from tool.common import common
 
 # ------------------------------------------------------------------------------
 
@@ -169,7 +167,8 @@ class macs2(Tool):
 
         command_line = 'macs2 callpeak -t ' + bam_file + ' -n ' + name + '_out --outdir ' + output_dir
 
-        if name == 'macs2.Human.DRR000150.22.filtered':
+        print("MACS2 - NAME:", name)
+        if name == 'macs2.Human.DRR000150.22_filtered':
             # This is for when running the test data
             command_line = command_line + ' --nomodel'
 
@@ -204,7 +203,9 @@ class macs2(Tool):
                             f_out.write(f_in.read())
 
         if process.returncode is not 0:
+            print("MACS2 ERROR", process.returncode)
             return process.returncode
+
         return 0
 
     def run(self, input_files, metadata, output_files):
@@ -233,34 +234,25 @@ class macs2(Tool):
 
         name = root_name[-1]
 
-        output_files_tmp = {
-            'narrow_peak': '/'.join(root_name) + '_peaks.narrowPeak',
-            'summits': '/'.join(root_name) + '_summits.bed',
-            'broad_peak': '/'.join(root_name) + '_peaks.broadPeak',
-            'gapped_peak': '/'.join(root_name) + '_peaks.gappedPeak'
-        }
-
-        # input and output share most metadata
-        output_metadata = {
-            "output": {
-                'narrow_peak': {"bed_type": "bed4+1"},
-                'summits': {"bed_type": "bed6+4"},
-                'broad_peak': {"bed_type": "bed6+3"},
-                'gapped_peak': {"bed_type": "bed12+3"}
-            }
+       # input and output share most metadata
+        output_bed_types = {
+            'narrow_peak': "bed4+1",
+            'summits': "bed6+4",
+            'broad_peak': "bed6+3",
+            'gapped_peak': "bed12+3"
         }
 
         # handle error
         if 'background' in input_files:
             results = self.macs2_peak_calling(
                 name, input_files['input'], input_files['background'],
-                output_files_tmp['narrow_peak'], output_files_tmp['summits'],
-                output_files_tmp['broad_peak'], output_files_tmp['gapped_peak'])
+                output_files['narrow_peak'], output_files['summits'],
+                output_files['broad_peak'], output_files['gapped_peak'])
         else:
             results = self.macs2_peak_calling_nobgd(
                 name, input_files['input'],
-                output_files_tmp['narrow_peak'], output_files_tmp['summits'],
-                output_files_tmp['broad_peak'], output_files_tmp['gapped_peak'])
+                output_files['narrow_peak'], output_files['summits'],
+                output_files['broad_peak'], output_files['gapped_peak'])
         results = compss_wait_on(results)
 
         if results > 0:
@@ -270,16 +262,27 @@ class macs2(Tool):
 
         print('Results:', results)
 
-        output_files = {}
-        for result_file in output_files_tmp:
+        output_files_created = {}
+        output_metadata = {}
+        for result_file in output_files:
             if (
-                    os.path.isfile(output_files_tmp[result_file]) is True
-                    and os.path.getsize(output_files_tmp[result_file]) > 0
+                    os.path.isfile(output_files[result_file]) is True
+                    and os.path.getsize(output_files[result_file]) > 0
                 ):
-                output_files[result_file] = output_files_tmp[result_file]
+                output_files_created[result_file] = output_files[result_file]
+
+                output_metadata[result_file] = Metadata(
+                    "alignment", "bed", output_files[result_file],
+                    [metadata['input'].id],
+                    {
+                        'assembly' : metadata['input'].meta_data['assembly'],
+                        "tool": "macs2",
+                        "bed_type": output_bed_types[result_file]
+                    }
+                )
 
         print('MACS2: GENERATED FILES:', output_files)
 
-        return ({"output": output_files}, output_metadata)
+        return (output_files_created, output_metadata)
 
 # ------------------------------------------------------------------------------

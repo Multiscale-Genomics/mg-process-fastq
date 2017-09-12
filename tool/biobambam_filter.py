@@ -36,7 +36,7 @@ except ImportError:
     from dummy_pycompss import task
     from dummy_pycompss import compss_wait_on
 
-#from basic_modules.metadata import Metadata
+from basic_modules.metadata import Metadata
 from basic_modules.tool import Tool
 
 # ------------------------------------------------------------------------------
@@ -105,9 +105,10 @@ class biobambam(Tool):
 
         Parameters
         ----------
-        input_files : list
+        input_files : dict
             List of input bam file locations where 0 is the bam data file
         metadata : dict
+        output_files : dict
 
         Returns
         -------
@@ -116,8 +117,6 @@ class biobambam(Tool):
         output_metadata : list
             List of matching metadata dict objects
         """
-        output_metadata = {"tool": "biobambam_filter"}
-
         print("BIOBAMBAM: input_files:", input_files)
 
         results = self.biobambam_filter_alignments(input_files['input'], output_files['output'])
@@ -125,9 +124,18 @@ class biobambam(Tool):
 
         print("BIOBAMBAM FILTER:", os.path.isfile(output_files['output']))
 
+        bam_meta = Metadata(
+            "alignment", "bam", output_files["output"],
+            [metadata['input'].id],
+            {
+                'assembly' : metadata['input'].meta_data['assembly'],
+                "tool": "biobambam_filter"
+            }
+        )
+
         return (
             {"output": {"bam": output_files['output']}},
-            {"output": {"bam": output_metadata}}
+            {"output": {"bam": bam_meta}}
         )
 
 # ------------------------------------------------------------------------------

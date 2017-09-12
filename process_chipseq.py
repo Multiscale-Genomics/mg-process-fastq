@@ -97,6 +97,7 @@ class process_chipseq(Workflow):
             "PROCESS CHIPSEQ - FILES PASSED TO TOOLS:",
             remap(input_files, "genome", "loc", "amb", "ann", "bwt", "pac", "sa")
         )
+        print("PROCESS CHIPSEQ - DEFINED OUTPUT:", output_files["bam"])
         bwa_files, bwa_meta = bwa.run(
             # ideally parameter "roles" don't change
             remap(input_files,
@@ -151,18 +152,32 @@ class process_chipseq(Workflow):
             macs_inputs, macs_metadt,
             # XXX outputs of the final step may match workflow outputs;
             # XXX extra entries in output_files will be disregarded.
-            output_files)
+            remap(output_files, 'narrow_peak', 'summits', 'broad_peak', 'gapped_peak'))
 
         # XXX outputs are collected with some name changes
-        m_results_files.update(
-            remap(bwa_files, output="bam")
-        ).update(
-            remap(b3f_files, output="filtered")
-        )
+        print("BWA RESULTS FILES:", bwa_files)
+        print("BIOBAMBAM RESULTS FILES:", b3f_files)
+        print("MAC2 RESULTS FILES:", m_results_files)
+        # m_results_files.update(
+        #     remap(bwa_files, output="bam")
+        # ).update(
+        #     remap(b3f_files, output="filtered")
+        # )
+        m_results_files["bam"] = bwa_files["output"]
+        m_results_files["filtered"] = b3f_files["output"]
 
         # XXX or equivalently
         m_results_meta["bam"] = bwa_meta["output"]
         m_results_meta["filtered"] = b3f_meta["output"]
+
+        if "bg_loc" in input_files:
+            m_results_files["bam_bg"] = bwa_bg_files["output"]
+            m_results_files["filtered_bg"] = b3f_bg_files["output"]
+
+            m_results_meta["bam_bg"] = bwa_bg_meta["output"]
+            m_results_meta["filtered_bg"] = b3f_bg_meta["output"]
+
+        print("CHIP-SEQ RESULTS:", m_results_meta)
 
         return m_results_files, m_results_meta
 
@@ -222,21 +237,20 @@ def prepare_files(
     # Maybe it is necessary to prepare a metadata parser from json file
     # when building the Metadata objects.
     metadata = {
-        "genome": Metadata("fasta", "Assembly", None, {'assembly' : assembly}, genome_file),
-        "amb": Metadata("index", "Assembly", [genome_file], {'assembly' : assembly}, amb_file),
-        "ann": Metadata("index", "Assembly", [genome_file], {'assembly' : assembly}, ann_file),
-        "bwt": Metadata("index", "Assembly", [genome_file], {'assembly' : assembly}, bwt_file),
-        "pac": Metadata("index", "Assembly", [genome_file], {'assembly' : assembly}, pac_file),
-        "sa": Metadata("index", "Assembly", [genome_file], {'assembly' : assembly}, sa_file),
+        "genome": Metadata("Assembly", "fasta", genome_fa, None, {'assembly' : assembly}, genome_file),
+        "amb": Metadata("Assembly", "index", genome_fa + ".amb", [genome_file], {'assembly' : assembly}, amb_file),
+        "ann": Metadata("Assembly", "index", genome_fa + ".ann", [genome_file], {'assembly' : assembly}, ann_file),
+        "bwt": Metadata("Assembly", "index", genome_fa + ".bwt", [genome_file], {'assembly' : assembly}, bwt_file),
+        "pac": Metadata("Assembly", "index", genome_fa + ".pac", [genome_file], {'assembly' : assembly}, pac_file),
+        "sa": Metadata("Assembly", "index", genome_fa + ".sa", [genome_file], {'assembly' : assembly}, sa_file),
     }
 
     fq1_file = dm_handler.set_file(
         "test", file_loc, "fastq", "ChIP-seq", taxon_id, None, [],
         meta_data={'assembly' : assembly})
     metadata["loc"] = Metadata(
-        "fastq", "ChIP-seq", None,
-        {'assembly' : assembly},
-        fq1_file
+        "ChIP-seq", "fastq", file_loc, None,
+        {'assembly' : assembly}, fq1_file
     )
 
     files = {
@@ -249,10 +263,17 @@ def prepare_files(
         "loc": file_loc
     }
 
+    root_name = file_loc.split("/")
+    root_name[-1] = root_name[-1].replace('.fastq', '')
+
     files_out = {
-        "bam": fq1_file.replace(".fastq", ".bam"),
-        "filtered": fq1_file.replace(".fastq", "_filtered.bam"),
-        "output": fq1_file.replace(".fastq", ".tsv")
+        "bam": file_loc.replace(".fastq", ".bam"),
+        "filtered": file_loc.replace(".fastq", "_filtered.bam"),
+        "output": file_loc.replace(".fastq", ".tsv"),
+        'narrow_peak': '/'.join(root_name) + '_filtered_peaks.narrowPeak',
+        'summits': '/'.join(root_name) + '_filtered_summits.bed',
+        'broad_peak': '/'.join(root_name) + '_filtered_peaks.broadPeak',
+        'gapped_peak': '/'.join(root_name) + '_filtered_peaks.gappedPeak'
     }
 
     if file_bg_loc:
@@ -261,15 +282,15 @@ def prepare_files(
             meta_data={'assembly' : assembly})
 
         metadata["bg_loc"] = Metadata(
-            "fastq", "ChIP-seq", None,
-            {'assembly' : assembly, 'background' : True},
+            "ChIP-seq", "fastq", file_bg_loc, None,
+            {'assembly': assembly, 'main_expt': fq1_file, 'background': True},
             fq2_file
         )
 
         files["bg_loc"] = file_bg_loc
 
-        files_out["bam_bg"] = fq2_file.replace(".fastq", ".bam"),
-        files_out["filtered_bg"] = fq2_file.replace(".fastq", "_filtered.bam"),
+        files_out["bam_bg"] = file_bg_loc.replace(".fastq", ".bam"),
+        files_out["filtered_bg"] = file_bg_loc.replace(".fastq", "_filtered.bam"),
 
 
     print(dm_handler.get_files_by_user("test"))

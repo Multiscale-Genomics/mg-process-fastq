@@ -125,7 +125,7 @@ class biobambam(Tool):
         print("BIOBAMBAM FILTER:", os.path.isfile(output_files['output']))
 
         bam_meta = Metadata(
-            "alignment", "bam", output_files["output"],
+            "data_chip_seq", "bam", output_files["output"],
             [metadata['input'].id],
             {
                 'assembly' : metadata['input'].meta_data['assembly'],

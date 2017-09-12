@@ -139,6 +139,7 @@ class process_chipseq(Workflow):
             broad_peak : Metadata
             gapped_peak : Metadata
         """
+        print("INPUT RUN METADATA:", metadata)
 
         bwa = bwaAlignerTool(self.configuration)
 
@@ -218,6 +219,7 @@ class process_chipseq(Workflow):
             m_results_meta["bam_bg"] = bwa_bg_meta["output"]["bam"]
             m_results_meta["filtered_bg"] = b3f_bg_meta["output"]["bam"]
 
+        print("CHIPSEQ RESULTS:", m_results_meta)
         return m_results_files, m_results_meta
 
 # ------------------------------------------------------------------------------
@@ -309,7 +311,7 @@ def prepare_files(
         "test", file_loc, "file", "fastq", 64000, parent_dir, "ChIP-seq",
         taxon_id, None, None, meta_data={'assembly' : assembly})
     metadata["loc"] = Metadata(
-        "ChIP-seq", "fastq", file_loc, None,
+        "data_chip_seq", "fastq", file_loc, None,
         {'assembly' : assembly}, fq1_file
     )
 
@@ -342,7 +344,7 @@ def prepare_files(
             meta_data={'assembly' : assembly})
 
         metadata["bg_loc"] = Metadata(
-            "ChIP-seq", "fastq", file_bg_loc, None,
+            "data_chip_seq", "fastq", file_bg_loc, None,
             {'assembly': assembly, 'main_expt': fq1_file, 'background': True},
             fq2_file
         )

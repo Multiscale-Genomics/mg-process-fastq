@@ -119,7 +119,7 @@ class bwaAlignerTool(Tool):
         # print("BWA ALIGNER - METADATA:", metadata)
 
         bam_meta = Metadata(
-            "alignment", "bam", output_files["output"],
+            "data_chip_seq", "bam", output_files["output"],
             [metadata['genome'].id, metadata['loc'].id],
             {
                 'assembly' : metadata['genome'].meta_data['assembly'],

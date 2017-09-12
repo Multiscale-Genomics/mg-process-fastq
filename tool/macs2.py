@@ -272,7 +272,7 @@ class macs2(Tool):
                 output_files_created[result_file] = output_files[result_file]
 
                 output_metadata[result_file] = Metadata(
-                    "alignment", "bed", output_files[result_file],
+                    "data_chip_seq", "bed", output_files[result_file],
                     [metadata['input'].id],
                     {
                         'assembly' : metadata['input'].meta_data['assembly'],

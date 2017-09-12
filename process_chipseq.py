@@ -254,24 +254,33 @@ def prepare_files(
     """
     print(dm_handler.get_files_by_user("test"))
 
+    root_name = file_loc.split("/")
+    parent_dir = '/'.join(root_name[0:-1])
+
     genome_file = dm_handler.set_file(
-        "test", genome_fa, "fasta", "Assembly", taxon_id, None, [],
-        meta_data={"assembly" : assembly})
+        "test", genome_fa, "file", "fasta", 64000, parent_dir,
+        "Assembly", taxon_id, None, None,
+        meta_data={"assembly" : assembly, 'tool': 'bwa_indexer'})
     amb_file = dm_handler.set_file(
-        "test", genome_fa + ".amb", "amb", "Assembly", taxon_id, None, [genome_file],
-        meta_data={'assembly' : assembly})
+        "test", genome_fa + ".amb", "file", "amb", 64000, parent_dir,
+        "Index", taxon_id, None, [genome_file],
+        meta_data={'assembly' : assembly, 'tool': 'bwa_indexer'})
     ann_file = dm_handler.set_file(
-        "test", genome_fa + ".ann", "ann", "Assembly", taxon_id, None, [genome_file],
-        meta_data={'assembly' : assembly})
+        "test", genome_fa + ".ann", "file", "ann", 64000, parent_dir,
+        "Index", taxon_id, None, [genome_file],
+        meta_data={'assembly' : assembly, 'tool': 'bwa_indexer'})
     bwt_file = dm_handler.set_file(
-        "test", genome_fa + ".bwt", "bwt", "Assembly", taxon_id, None, [genome_file],
-        meta_data={'assembly' : assembly})
+        "test", genome_fa + ".bwt", "file", "bwt", 64000, parent_dir,
+        "Index", taxon_id, None, [genome_file],
+        meta_data={'assembly' : assembly, 'tool': 'bwa_indexer'})
     pac_file = dm_handler.set_file(
-        "test", genome_fa + ".pac", "pac", "Assembly", taxon_id, None, [genome_file],
-        meta_data={'assembly' : assembly})
+        "test", genome_fa + ".pac", "file", "pac", 64000, parent_dir,
+        "Index", taxon_id, None, [genome_file],
+        meta_data={'assembly' : assembly, 'tool': 'bwa_indexer'})
     sa_file = dm_handler.set_file(
-        "test", genome_fa + ".sa", "sa", "Assembly", taxon_id, None, [genome_file],
-        meta_data={'assembly' : assembly})
+        "test", genome_fa + ".sa", "file", "sa", 64000, parent_dir,
+        "Index", taxon_id, None, [genome_file],
+        meta_data={'assembly' : assembly, 'tool': 'bwa_indexer'})
 
     # Maybe it is necessary to prepare a metadata parser from json file
     # when building the Metadata objects.
@@ -329,7 +338,7 @@ def prepare_files(
 
     if file_bg_loc:
         fq2_file = dm_handler.set_file(
-            "test", file_bg_loc, "fastq", "ChIP-seq", taxon_id, None, [],
+            "test", file_bg_loc, "fastq", "file", "ChIP-seq", taxon_id, None, [],
             meta_data={'assembly' : assembly})
 
         metadata["bg_loc"] = Metadata(

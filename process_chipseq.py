@@ -278,12 +278,24 @@ def prepare_files(
     # Maybe it is necessary to prepare a metadata parser from json file
     # when building the Metadata objects.
     metadata = {
-        "genome": Metadata("Assembly", "fasta", genome_fa, None, {'assembly' : assembly}, genome_file),
-        "amb": Metadata("Assembly", "index", genome_fa + ".amb", [genome_file], {'assembly' : assembly}, amb_file),
-        "ann": Metadata("Assembly", "index", genome_fa + ".ann", [genome_file], {'assembly' : assembly}, ann_file),
-        "bwt": Metadata("Assembly", "index", genome_fa + ".bwt", [genome_file], {'assembly' : assembly}, bwt_file),
-        "pac": Metadata("Assembly", "index", genome_fa + ".pac", [genome_file], {'assembly' : assembly}, pac_file),
-        "sa": Metadata("Assembly", "index", genome_fa + ".sa", [genome_file], {'assembly' : assembly}, sa_file),
+        "genome": Metadata(
+            "Assembly", "fasta", genome_fa, None,
+            {'assembly' : assembly}, genome_file),
+        "amb": Metadata(
+            "Index", "amb", genome_fa + ".amb", [genome_file],
+            {'assembly': assembly, "tool": "bwa_indexer"}, amb_file),
+        "ann": Metadata(
+            "Index", "ann", genome_fa + ".ann", [genome_file],
+            {'assembly': assembly, "tool": "bwa_indexer"}, ann_file),
+        "bwt": Metadata(
+            "Index", "bwt", genome_fa + ".bwt", [genome_file],
+            {'assembly': assembly, "tool": "bwa_indexer"}, bwt_file),
+        "pac": Metadata(
+            "Index", "pac", genome_fa + ".pac", [genome_file],
+            {'assembly': assembly, "tool": "bwa_indexer"}, pac_file),
+        "sa": Metadata(
+            "Index", "sa", genome_fa + ".sa", [genome_file],
+            {'assembly': assembly, "tool": "bwa_indexer"}, sa_file),
     }
 
     fq1_file = dm_handler.set_file(

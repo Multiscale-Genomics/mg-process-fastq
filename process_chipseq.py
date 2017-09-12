@@ -72,24 +72,73 @@ class process_chipseq(Workflow):
         Parameters
         ----------
         input_files : dict
-            Input file locations associated with their roles
+            Location of the initial input files required by the workflow
+            genome : str
+                Genome FASTA file
+            amb : str
+                BWA index file
+            ann : str
+                BWA index file
+            bwt : str
+                BWA index file
+            pac : str
+                BWA index file
+            sa : str
+                BWA index file
+            loc : str
+                Location of the FASTQ reads files
+            bg_loc : str
+                Location of the background FASTQ reads files [OPTIONAL]
         metadata : dict
             Input file meta data associated with their roles
+
+            genome : str
+            amb : str
+            ann : str
+            bwt : str
+            pac : str
+            sa : str
+            loc : str
+            bg_loc : str
+                [OPTIONAL]
         output_files : dict
-             Output file locations associated with their roles
+            Output file locations
+
+            bam [, "bam_bg"] : str
+            filtered [, "filtered_bg"] : str
+            narrow_peak : str
+            summits : str
+            broad_peak : str
+            gapped_peak : str
 
         Returns
         -------
         output_files : dict
-             Output file locations associated with their roles, for the output
-             bam, bed and tsv files
+            Output file locations associated with their roles, for the output
+
+            bam [, "bam_bg"] : str
+                Aligned FASTQ short read file [ and aligned background file]
+                locations
+            filtered [, "filtered_bg"] : str
+                Filtered versions of the respective bam files
+            narrow_peak : str
+                Results files in bed4+1 format
+            summits : str
+                Results files in bed6+4 format
+            broad_peak : str
+                Results files in bed6+3 format
+            gapped_peak : str
+                Results files in bed12+3 format
+        output_metadata : dict
+            Output metadata for the associated files in output_files
+
+            bam [, "bam_bg"] : Metadata
+            filtered [, "filtered_bg"] : Metadata
+            narrow_peak : Metadata
+            summits : Metadata
+            broad_peak : Metadata
+            gapped_peak : Metadata
         """
-
-        # XXX input_files.keys()  # also metadata.keys()
-        # "genome", "amb", "ann", "bwt", "pac", "sa", "loc" [, "bg_loc"]
-
-        # XXX output_files.keys()
-        # "bam", "filtered", "output"
 
         bwa = bwaAlignerTool(self.configuration)
 
@@ -109,12 +158,12 @@ class process_chipseq(Workflow):
 
         if "bg_loc" in input_files:
             bwa_bg_files, bwa_bg_meta = bwa.run(
-                # XXX: small changes can be handled easily using "remap"
+                # Small changes can be handled easily using "remap"
                 remap(input_files,
                       "genome", "amb", "ann", "bwt", "pac", "sa", bg_loc="loc"),
                 remap(metadata,
                       "genome", "amb", "ann", "bwt", "pac", "sa", bg_loc="loc"),
-                # XXX intermediate outputs should be created via tempfile?
+                # Intermediate outputs should be created via tempfile?
                 {"output": output_files["bam_bg"]}
             )
 
@@ -123,10 +172,10 @@ class process_chipseq(Workflow):
         # Filter the bams
         b3f = biobambam(self.configuration)
         b3f_files, b3f_meta = b3f.run(
-            # XXX alternatively, we can rebuild the dict
+            # Alternatively, we can rebuild the dict
             {"input": bwa_files["output"]['bam']},
             {"input": bwa_meta["output"]['bam']},
-            # XXX intermediate outputs should be created via tempfile?
+            # Intermediate outputs should be created via tempfile?
             {"output": output_files["filtered"]}
         )
 
@@ -134,7 +183,7 @@ class process_chipseq(Workflow):
             b3f_bg_files, b3f_bg_meta = b3f.run(
                 {"input": bwa_bg_files["output"]['bam']},
                 {"input": bwa_bg_meta["output"]['bam']},
-                # XXX intermediate outputs should be created via tempfile?
+                # Intermediate outputs should be created via tempfile?
                 {"output": output_files["filtered_bg"]}
             )
 
@@ -144,29 +193,21 @@ class process_chipseq(Workflow):
         macs_metadt = {"input": b3f_meta["output"]['bam']}
 
         if "bg_loc" in input_files:
-            # XXX the dicts can be built incrementally
+            # The dicts can be built incrementally
             macs_inputs["background"] = b3f_bg_files["output"]['bam']
             macs_metadt["background"] = b3f_bg_meta["output"]['bam']
 
         m_results_files, m_results_meta = macs_caller.run(
             macs_inputs, macs_metadt,
-            # XXX outputs of the final step may match workflow outputs;
-            # XXX extra entries in output_files will be disregarded.
+            # Outputs of the final step may match workflow outputs;
+            # Extra entries in output_files will be disregarded.
             remap(output_files, 'narrow_peak', 'summits', 'broad_peak', 'gapped_peak'))
 
-        # XXX outputs are collected with some name changes
-        print("BWA RESULTS FILES:", bwa_files)
-        print("BIOBAMBAM RESULTS FILES:", b3f_files)
-        print("MAC2 RESULTS FILES:", m_results_files)
-        # m_results_files.update(
-        #     remap(bwa_files, output="bam")
-        # ).update(
-        #     remap(b3f_files, output="filtered")
-        # )
+        # Outputs are collected with some name changes
         m_results_files["bam"] = bwa_files["output"]
         m_results_files["filtered"] = b3f_files["output"]
 
-        # XXX or equivalently
+        # Equivalent meta data is collected
         m_results_meta["bam"] = bwa_meta["output"]
         m_results_meta["filtered"] = b3f_meta["output"]
 

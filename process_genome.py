@@ -137,9 +137,12 @@ def prepare_files(
     """
     print(dm_handler.get_files_by_user("test"))
 
+    root_name = genome_fa.split("/")
+    parent_dir = '/'.join(root_name[0:-1])
+
     genome_file = dm_handler.set_file(
-        "test", genome_fa, "fasta", "Assembly", taxon_id, None, [],
-        meta_data={"assembly" : assembly})
+        "test", genome_fa, "file", "fasta", 64000, parent_dir, "Assembly",
+        taxon_id, None, None, meta_data={"assembly" : assembly})
 
     # Maybe it is necessary to prepare a metadata parser from json file
     # when building the Metadata objects.

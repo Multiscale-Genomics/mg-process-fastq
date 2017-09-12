@@ -204,21 +204,19 @@ class process_chipseq(Workflow):
             remap(output_files, 'narrow_peak', 'summits', 'broad_peak', 'gapped_peak'))
 
         # Outputs are collected with some name changes
-        m_results_files["bam"] = bwa_files["output"]
-        m_results_files["filtered"] = b3f_files["output"]
+        m_results_files["bam"] = bwa_files["output"]["bam"]
+        m_results_files["filtered"] = b3f_files["output"]["bam"]
 
         # Equivalent meta data is collected
-        m_results_meta["bam"] = bwa_meta["output"]
-        m_results_meta["filtered"] = b3f_meta["output"]
+        m_results_meta["bam"] = bwa_meta["output"]["bam"]
+        m_results_meta["filtered"] = b3f_meta["output"]["bam"]
 
         if "bg_loc" in input_files:
-            m_results_files["bam_bg"] = bwa_bg_files["output"]
-            m_results_files["filtered_bg"] = b3f_bg_files["output"]
+            m_results_files["bam_bg"] = bwa_bg_files["output"]["bam"]
+            m_results_files["filtered_bg"] = b3f_bg_files["output"]["bam"]
 
-            m_results_meta["bam_bg"] = bwa_bg_meta["output"]
-            m_results_meta["filtered_bg"] = b3f_bg_meta["output"]
-
-        print("CHIP-SEQ RESULTS:", m_results_meta)
+            m_results_meta["bam_bg"] = bwa_bg_meta["output"]["bam"]
+            m_results_meta["filtered_bg"] = b3f_bg_meta["output"]["bam"]
 
         return m_results_files, m_results_meta
 

@@ -306,8 +306,8 @@ def prepare_files(
     }
 
     fq1_file = dm_handler.set_file(
-        "test", file_loc, "fastq", "ChIP-seq", taxon_id, None, [],
-        meta_data={'assembly' : assembly})
+        "test", file_loc, "file", "fastq", 64000, parent_dir, "ChIP-seq",
+        taxon_id, None, None, meta_data={'assembly' : assembly})
     metadata["loc"] = Metadata(
         "ChIP-seq", "fastq", file_loc, None,
         {'assembly' : assembly}, fq1_file
@@ -338,7 +338,7 @@ def prepare_files(
 
     if file_bg_loc:
         fq2_file = dm_handler.set_file(
-            "test", file_bg_loc, "fastq", "file", "ChIP-seq", taxon_id, None, [],
+            "test", file_bg_loc, "fastq", "file", "ChIP-seq", taxon_id, None, None,
             meta_data={'assembly' : assembly})
 
         metadata["bg_loc"] = Metadata(

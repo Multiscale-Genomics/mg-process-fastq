@@ -197,21 +197,19 @@ def prepare_files(
 
     # Maybe it is necessary to prepare a metadata parser from json file
     # when building the Metadata objects.
-    metadata = [
-        Metadata("fasta", "Assembly", None, {'assembly' : assembly}, genome_file),
-        Metadata("fastq", "WGBS"),
-        Metadata("fastq", "WGBS"),
-        Metadata(
-            "fastq", "ChIP-seq", None,
+    metadata = {
+        "": Metadata("fasta", "Assembly", None, {'assembly' : assembly}, genome_file),
+        "fastq1": Metadata(
+            "fastq", "WGBS", None,
             {'assembly' : assembly, 'paired_end' : fastq2_id},
             fastq1_id
         ),
-        Metadata(
-            "fastq", "ChIP-seq", None,
+        "fastq2": Metadata(
+            "fastq", "WGBS", None,
             {'assembly' : assembly, 'paired_end' : fastq1_id},
             fastq2_id
         )
-    ]
+    }
 
     files_input = [
         genome_fa,

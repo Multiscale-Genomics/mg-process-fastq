@@ -1,0 +1,137 @@
+{
+    "output_files": [
+        {
+            "required": true,
+            "allow_multiple": false,
+            "name": "bam",
+            "file": {
+                "file_type": "bam",
+                "meta_data": {
+                    "visible": true,
+                    "tool": "bwa-aligner",
+                    "description": "Output"
+                },
+                "file_path": "tests/data/macs2.Human.DRR000150.22.bam",
+                "data_type": "data_chip_seq",
+                "compressed": "null"
+            }
+        }, {
+            "required": true,
+            "allow_multiple": false,
+            "name": "filtered",
+            "file": {
+                "file_type": "bam",
+                "meta_data": {
+                    "visible": true,
+                    "tool": "bwa-aligner",
+                    "description": "Output"
+                },
+                "file_path": "tests/data/macs2.Human.DRR000150.22_filtered.bam",
+                "data_type": "data_chip_seq",
+                "compressed": "null"
+            }
+        }, {
+            "required": true,
+            "allow_multiple": false,
+            "name": "narrow_peak",
+            "file": {
+                "file_type": "bed",
+                "meta_data": {
+                    "visible": true,
+                    "tool": "bwa-aligner",
+                    "description": "Output"
+                },
+                "file_path": "tests/data/macs2.Human.DRR000150.22_filtered_peaks.narrowPeak",
+                "data_type": "data_chip_seq",
+                "compressed": "null"
+            }
+        }, {
+            "required": true,
+            "allow_multiple": false,
+            "name": "summits",
+            "file": {
+                "file_type": "bed",
+                "meta_data": {
+                    "visible": true,
+                    "tool": "bwa-aligner",
+                    "description": "Output"
+                },
+                "file_path": "tests/data/macs2.Human.DRR000150.22_filtered_summits.bed",
+                "data_type": "data_chip_seq",
+                "compressed": "null"
+            }
+        }, {
+            "required": true,
+            "allow_multiple": false,
+            "name": "broad_peak",
+            "file": {
+                "file_type": "bed",
+                "meta_data": {
+                    "visible": true,
+                    "tool": "bwa-aligner",
+                    "description": "Output"
+                },
+                "file_path": "tests/data/macs2.Human.DRR000150.22_filtered_peaks.broadPeak",
+                "data_type": "data_chip_seq",
+                "compressed": "null"
+            }
+        }, {
+            "required": true,
+            "allow_multiple": false,
+            "name": "gapped_peak",
+            "file": {
+                "file_type": "bed",
+                "meta_data": {
+                    "visible": true,
+                    "tool": "bwa-aligner",
+                    "description": "Output"
+                },
+                "file_path": "tests/data/macs2.Human.DRR000150.22_filtered_peaks.gappedPeak",
+                "data_type": "data_chip_seq",
+                "compressed": "null"
+            }
+        }
+    ],
+    "arguments": [],
+    "input_files": [
+        {
+            "required": true,
+            "allow_multiple": false,
+            "name": "loc",
+            "value": "59b7e020d9422a5969b65378"
+        }, {
+            "required": true,
+            "allow_multiple": false,
+            "name": "genome",
+            "value": "59b7e020d9422a5969b65372"
+        }, {
+            "required": true,
+            "allow_multiple": false,
+            "name": "amb",
+            "value": "59b7e020d9422a5969b65373"
+        }, {
+            "required": true,
+            "allow_multiple": false,
+            "name": "ann",
+            "value": "59b7e020d9422a5969b65374"
+        }, {
+            "required": true,
+            "allow_multiple": false,
+            "name": "bwt",
+            "value": "59b7e020d9422a5969b65375"
+        }, {
+            "required": true,
+            "allow_multiple": false,
+            "name": "pac",
+            "value": "59b7e020d9422a5969b65376"
+        }, {
+            "required": true,
+            "allow_multiple": false,
+            "name": "sa",
+            "value": "59b7e020d9422a5969b65377"
+        }
+    ]
+}
+
+
+

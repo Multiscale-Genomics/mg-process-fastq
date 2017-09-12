@@ -1,0 +1,92 @@
+[
+    {
+        "compressed": 0,
+        "_id": "59b7e020d9422a5969b65378",
+        "data_type": "ChIP-seq",
+        "file_type": "fastq",
+        "file_path": "tests/data/macs2.Human.DRR000150.22.fastq",
+        "source_id": None,
+        "meta_data": {
+            "assembly": "GCA_000001405.22",
+            "visible": true,
+            "validated": 1,
+        },
+    },
+    {
+        "_id": "59b7e020d9422a5969b65372",
+        "data_type": "Assembly",
+        "file_type": "fasta",
+        "file_path": "tests/data/macs2.Human.GCA_000001405.22.fasta",
+        "source_id": None,
+        "meta_data": {
+            "visible": true,
+            "validated": 1,
+            "assembly": "GCA_000001405.22"
+        }
+    },
+    {
+        "_id": "59b7e020d9422a5969b65373",
+        "data_type": "Index",
+        "file_type": "amb",
+        "file_path": "tests/data/macs2.Human.GCA_000001405.22.fasta.amb",
+        "source_id": ["59b7e020d9422a5969b65372"],
+        "meta_data": {
+            "visible": true,
+            "validated": 1,
+            "tool": "bwa_indexer",
+            "assembly": "GCA_000001405.22"
+        }
+    },
+    {
+        "_id": "59b7e020d9422a5969b65374",
+        "data_type": "Index",
+        "file_type": "ann",
+        "file_path": "tests/data/macs2.Human.GCA_000001405.22.fasta.ann",
+        "source_id": ["59b7e020d9422a5969b65372"],
+        "meta_data": {
+            "visible": true,
+            "validated": 1,
+            "tool": "bwa_indexer",
+            "assembly": "GCA_000001405.22"
+        }
+    },
+    {
+        "_id": "59b7e020d9422a5969b65375",
+        "data_type": "Index",
+        "file_type": "bwt",
+        "file_path": "tests/data/macs2.Human.GCA_000001405.22.fasta.bwt",
+        "source_id": ["59b7e020d9422a5969b65372"],
+        "meta_data": {
+            "visible": true,
+            "validated": 1,
+            "tool": "bwa_indexer",
+            "assembly": "GCA_000001405.22"
+        }
+    },
+    {
+        "_id": "59b7e020d9422a5969b65376",
+        "data_type": "Index",
+        "file_type": "pac",
+        "file_path": "tests/data/macs2.Human.GCA_000001405.22.fasta.pac",
+        "source_id": ["59b7e020d9422a5969b65372"],
+        "meta_data": {
+            "visible": true,
+            "validated": 1,
+            "tool": "bwa_indexer",
+            "assembly": "GCA_000001405.22"
+        }
+    },
+    {
+        "_id": "59b7e020d9422a5969b65377",
+        "data_type": "Index",
+        "file_type": "sa",
+        "file_path": "tests/data/macs2.Human.GCA_000001405.22.fasta.sa",
+        "source_id": ["59b7e020d9422a5969b65372"],
+        "meta_data": {
+            "visible": true,
+            "validated": 1,
+            "tool": "bwa_indexer",
+            "assembly": "GCA_000001405.22"
+        }
+    }
+]

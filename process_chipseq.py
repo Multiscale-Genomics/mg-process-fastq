@@ -23,6 +23,7 @@ from __future__ import print_function
 from functools import wraps # pylint: disable=unused-import
 
 import argparse
+import os.path
 
 from basic_modules.workflow import Workflow
 from basic_modules.metadata import Metadata
@@ -244,7 +245,28 @@ def main(input_files, output_files, input_metadata):
     print("2. Execution finished")
     print(result)
 
+    return result
 
+def main_json():
+    """
+    Alternative main function
+    -------------
+
+    This function launches the app using configuration written in
+    two json files: config.json and input_metadata.json.
+    """
+    # 1. Instantiate and launch the App
+    print("1. Instantiate and launch the App")
+    from apps.jsonapp import JSONApp
+    app = JSONApp()
+    result = app.launch(process_chipseq,
+                        os.path.dirname(os.path.abspath(__file__)),
+                        "tests/json/config_chipseq.json",
+                        "tests/json/input_chipseq_metadata.json")
+
+    # 2. The App has finished
+    print("2. Execution finished; see /tmp/results.json")
+    print(result)
 
     return result
 
@@ -254,7 +276,7 @@ def prepare_files(
     Function to load the DM API with the required files and prepare the
     parameters passed from teh command line ready for use in the main function
     """
-    print(dm_handler.get_files_by_user("test"))
+    # print(dm_handler.get_files_by_user("test"))
 
     root_name = file_loc.split("/")
     parent_dir = '/'.join(root_name[0:-1])
@@ -355,7 +377,7 @@ def prepare_files(
         files_out["filtered_bg"] = file_bg_loc.replace(".fastq", "_filtered.bam"),
 
 
-    print(dm_handler.get_files_by_user("test"))
+    # print(dm_handler.get_files_by_user("test"))
 
     return [files, files_out, metadata]
 
@@ -412,7 +434,8 @@ if __name__ == "__main__":
     PARAMS = prepare_files(DM_HANDLER, TAXON_ID, GENOME_FA, ASSEMBLY, FILE_LOC, FILE_BG_LOC)
 
     # 3. Instantiate and launch the App
-    RESULTS = main(PARAMS[0], PARAMS[1], PARAMS[2])
+    #RESULTS = main(PARAMS[0], PARAMS[1], PARAMS[2])
+    RESULTS = main_json()
 
     print(RESULTS)
     print(DM_HANDLER.get_files_by_user("test"))

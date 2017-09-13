@@ -414,7 +414,10 @@ if __name__ == "__main__":
     PARSER.add_argument("--assembly", help="Genome assembly ID (GCA_000001405.25)")
     PARSER.add_argument("--file", help="Location of FASTQ input file")
     PARSER.add_argument("--bgd_file", help="Location of FASTQ background file", default=None)
-    PARSER.add_argument("--json", help="Use defined JSON config files", default=None)
+    PARSER.add_argument("--json",
+                        help="Use defined JSON config files",
+                        action='store_const', const=True, default=False)
+
 
     # Get the matching parameters from the command line
     ARGS = PARSER.parse_args()
@@ -426,7 +429,7 @@ if __name__ == "__main__":
     FILE_BG_LOC = ARGS.bgd_file
     JSON_CONFIG = ARGS.json
 
-    if JSON_CONFIG is not None:
+    if JSON_CONFIG is True:
         RESULTS = main_json()
     else:
         #

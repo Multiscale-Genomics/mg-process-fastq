@@ -259,13 +259,14 @@ def main_json():
     print("1. Instantiate and launch the App")
     from apps.jsonapp import JSONApp
     app = JSONApp()
+    root_path = os.path.dirname(os.path.abspath(__file__))
     result = app.launch(process_chipseq,
-                        os.path.dirname(os.path.abspath(__file__)),
+                        root_path,
                         "tests/json/config_chipseq.json",
                         "tests/json/input_chipseq_metadata.json")
 
     # 2. The App has finished
-    print("2. Execution finished; see /tmp/results.json")
+    print("2. Execution finished; see " + root_path + "/results.json")
     print(result)
 
     return result
@@ -413,6 +414,7 @@ if __name__ == "__main__":
     PARSER.add_argument("--assembly", help="Genome assembly ID (GCA_000001405.25)")
     PARSER.add_argument("--file", help="Location of FASTQ input file")
     PARSER.add_argument("--bgd_file", help="Location of FASTQ background file", default=None)
+    PARSER.add_argument("--json", help="Location of FASTQ background file", default=None)
 
     # Get the matching parameters from the command line
     ARGS = PARSER.parse_args()
@@ -422,20 +424,23 @@ if __name__ == "__main__":
     ASSEMBLY = ARGS.assembly
     FILE_LOC = ARGS.file
     FILE_BG_LOC = ARGS.bgd_file
+    JSON_CONFIG = ARGS.json
 
-    #
-    # MuG Tool Steps
-    # --------------
-    #
-    # 1. Create data files
-    DM_HANDLER = dmp(test=True)
+    if JSON_CONFIG is not None:
+        RESULTS = main_json()
+    else:
+        #
+        # MuG Tool Steps
+        # --------------
+        #
+        # 1. Create data files
+        DM_HANDLER = dmp(test=True)
 
-    #2. Register the data with the DMP
-    PARAMS = prepare_files(DM_HANDLER, TAXON_ID, GENOME_FA, ASSEMBLY, FILE_LOC, FILE_BG_LOC)
+        #2. Register the data with the DMP
+        PARAMS = prepare_files(DM_HANDLER, TAXON_ID, GENOME_FA, ASSEMBLY, FILE_LOC, FILE_BG_LOC)
 
-    # 3. Instantiate and launch the App
-    #RESULTS = main(PARAMS[0], PARAMS[1], PARAMS[2])
-    RESULTS = main_json()
+        # 3. Instantiate and launch the App
+        RESULTS = main(PARAMS[0], PARAMS[1], PARAMS[2])
+        print(DM_HANDLER.get_files_by_user("test"))
 
     print(RESULTS)
-    print(DM_HANDLER.get_files_by_user("test"))

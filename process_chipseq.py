@@ -414,7 +414,7 @@ if __name__ == "__main__":
     PARSER.add_argument("--assembly", help="Genome assembly ID (GCA_000001405.25)")
     PARSER.add_argument("--file", help="Location of FASTQ input file")
     PARSER.add_argument("--bgd_file", help="Location of FASTQ background file", default=None)
-    PARSER.add_argument("--json", help="Location of FASTQ background file", default=None)
+    PARSER.add_argument("--json", help="Use defined JSON config files", default=None)
 
     # Get the matching parameters from the command line
     ARGS = PARSER.parse_args()

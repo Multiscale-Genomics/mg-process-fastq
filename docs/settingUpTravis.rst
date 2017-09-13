@@ -71,7 +71,7 @@ Libmaus2 and Biobambam2 have had to be installed within a docker container, as t
 
 .. code-block:: none
 
-   exec docker run -it  multiscalegenomics/mgprocessfastq:biobambamimage /RehamCode/lib/biobambam2/bin/biobambam_module_name $@ 
+   exec docker run -it  multiscalegenomics/mgprocessfastq:biobambamimage ~/lib/biobambam2/bin/biobambam_module_name $@ 
    
    
       

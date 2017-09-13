@@ -5,9 +5,9 @@ Setting up and using a Docker Container
 Our reason for using a container
 --------------------------------
 
-While working with Travis, the installation of libmaus2 and biobambam2 took up more than 45 minutes (accumulative with the rest of the installations), which caused Travis to time out. We therefore resorted to putting both tools in a container and accessing the commands from there. This document summarizes the steps involved in making a docker image for the above two tools and running a container from that image. As well as uploading your image to docker hub to make it publically accessible.
+While working with Travis, the installation of libmaus2 and biobambam2 took up more than 45 minutes (accumulative with the rest of the installations), which caused Travis to time out. We therefore resorted to putting both tools in a container and accessing the commands from there. This document summarizes the steps involved in making a docker image for the above two tools and running a container from that image. As well as uploading your image to docker hub to make it publicly accessible.
 
-This document has been prepared keeping macOS Sierra in mind, although many of the commands are cross platform (\*nix) complient.
+This document has been prepared keeping macOS Sierra in mind, although many of the commands are cross platform (\*nix) compliant.
 
 
 Getting Started
@@ -21,7 +21,11 @@ b) An account on one of the docker repositories (Docker Hub or Quay). We have us
 a) Installing docker to your machine 
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-For this work I had installed a command line based docker, along with the Virtual machine boot2docker. There is however a GUI distribution available for MAC as well.
+For this work I had installed a command line based docker, along with the Virtual machine boot2docker. There is however a GUI distribution available for MAC as well. You may install boot2docker using : 
+
+.. code-block:: none  
+
+   $ brew install boot2docker
 
 b) Setting up account on Docker Hub
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

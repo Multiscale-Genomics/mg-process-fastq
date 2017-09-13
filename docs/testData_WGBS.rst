@@ -3,7 +3,7 @@ Test Data for WGBS pipeline
 
 The following document is for the preparation of data set required for testing the WGBS pipeline. The document has
 been written with macOS Sierra in mind, although many of the commands are cross
-platform (\*nix) complient.
+platform (\*nix) compliant.
 
 You would need to have the tools listed in "Prerequisites" installed on your system.
 For more details on installing the tools for this pipeline please refer to
@@ -11,9 +11,7 @@ For more details on installing the tools for this pipeline please refer to
 http://multiscale-genomics.readthedocs.io/projects/mg-process-fastq/en/latest/full_installation.html
 
 If you already have certain packages installed feel free to skip over certain
-steps. Likewise the bin, lib and code directories are relative to the home dir;
-if this is not the case for your system then make the required changes when
-running these commands.
+steps. 
 
 Prerequisites
 -------------
@@ -58,12 +56,13 @@ Index the fasta file using the Bs seeker indexer. You can either do this by runn
 .. code-block:: none
 
    resource_path = os.path.join(os.path.dirname(__file__), "data/") # change to your file path 
-   genomefa_file = resource_path + "bsSeeker.Mouse.GRCm38.fasta"" # change to name of the fasta file 
+   genomefa_file = resource_path + "bsSeeker.Mouse.GRCm38.fasta" # change to name of the fasta file 
    
    
 Then run 
 
 .. code-block:: none
+
    pytest test_bs_seeker_indexer.py
    
 
@@ -80,6 +79,7 @@ You would need to repeat this for the 2nd fastq file within test_bs_seeker_filte
 Then run 
 
 .. code-block:: none
+
    pytest test_bs_seeker_filter.py
    
 
@@ -94,6 +94,7 @@ Split the filtered fastq.s. Alter the following lines in test_fastq_splitter.py 
 Then run 
 
 .. code-block:: none
+
    pytest test_fastq_splitter.py
        
     
@@ -112,6 +113,7 @@ Align the fastq files to the indexed fasta. Change the following lines in test_b
 Then run 
 
 .. code-block:: none
+
    pytest test_bs_seeker_aligner.py
    
 
@@ -159,8 +161,14 @@ Re run the pipeline with this fasta file and original fastq files till the align
 
    samtools view -h -o /path/to/BS_seeker_tests/bsSeeker.Mouse.GRCm38.sam  /path/to/bsSeeker.Mouse.GRCm38.bam
    
-Use this sam file to extract the fastq entries from the larger fastq files. 
+Use this sam file to extract the fastq entries from the larger fastq files using the script at : 
 
+.. code-block:: none
+
+   https://github.com/Multiscale-Genomics/mg-misc-scripts/blob/master/WGBS_Scripts/regionsFromWig.py
+
+Run it using :
+   
 .. code-block:: none
 
    python makeFastQFiles.py --samfile /path/to/bsSeeker.Mouse.GRCm38.sam --fastQfile /path/to/SRR892982_1.fastq --pathToOutput /path/to/output/ --fastqOut bsSeeker.Mouse.GRCm38_1.fastq

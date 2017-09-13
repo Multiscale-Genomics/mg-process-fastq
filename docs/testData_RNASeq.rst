@@ -3,7 +3,7 @@ Test Data for RNA-seq pipeline
 
 The following document is for the preparation of data set required for testing the RNA-seq pipeline. The document has
 been written with macOS Sierra in mind, although many of the commands are cross
-platform (\*nix) complient.
+platform (\*nix) compliant.
 
 You would need to have the tools listed in "Prerequisites" installed on your system.
 For more details on installing the tools for this pipeline please refer to

@@ -23,7 +23,6 @@ from functools import wraps # pylint: disable=unused-import
 
 import argparse
 
-from basic_modules.tool import Tool
 from basic_modules.workflow import Workflow
 from basic_modules.metadata import Metadata
 
@@ -78,32 +77,24 @@ class process_genome(Workflow):
 
         genome_fa = input_files[0]
         output_metadata = {}
-        output_metadata['genome_idx'] = {}
+        output_metadata = {}
 
         # Bowtie2 Indexer
         bowtie2 = bowtieIndexerTool()
-        bti, btm = bowtie2.run([genome_fa], [], {})
-        output_metadata['genome_idx']['bowtie'] = btm
+        bti, btm = bowtie2.run(input_files, metadata, {'output': output_files['bwt_index']})
+        output_metadata['bwt_index'] = btm
 
         # BWA Indexer
         bwa = bwaIndexerTool()
-        bwai, bwam = bwa.run([genome_fa], [], {})
-        output_metadata['genome_idx']['bwa'] = bwam
+        bwai, bwam = bwa.run(input_files, metadata, {'output': output_files['bwa_index']})
+        output_metadata['bwa_index'] = bwam
 
         # GEM Indexer
         gem = gemIndexerTool()
-        gemi, gemm = gem.run([genome_fa], [], {})
-        output_metadata['genome_idx']['gem'] = gemm
+        gemi, gemm = gem.run(input_files, metadata, {'output': output_files['gem_index']})
+        output_metadata['gem_index'] = gemm
 
-        # Need to get the file_id for the FASTA file to use as source_id
-        # Also need to get the accession of the assembly from the parent
-        output_metadata['output_files'] = [
-            Metadata("index", "Assembly"),
-            Metadata("index", "Assembly"),
-            Metadata("index", "Assembly"),
-        ]
-
-        return (bti + bwai + gemi, output_metadata)
+        return (output_files, output_metadata)
 
 # ------------------------------------------------------------------------------
 
@@ -129,6 +120,30 @@ def main(input_files, output_files, input_metadata):
     print(result)
     return result
 
+def main_json():
+    """
+    Alternative main function
+    -------------
+
+    This function launches the app using configuration written in
+    two json files: config.json and input_metadata.json.
+    """
+    # 1. Instantiate and launch the App
+    print("1. Instantiate and launch the App")
+    from apps.jsonapp import JSONApp
+    app = JSONApp()
+    root_path = os.path.expanduser('~') + "/code/mg-process-fastq"
+    result = app.launch(process_genome,
+                        root_path,
+                        "tests/json/config_chipseq.json",
+                        "tests/json/input_chipseq_metadata.json")
+
+    # 2. The App has finished
+    print("2. Execution finished; see " + root_path + "/results.json")
+    print(result)
+
+    return result
+
 def prepare_files(
         dm_handler, taxon_id, genome_fa, assembly):
     """
@@ -147,16 +162,41 @@ def prepare_files(
     # Maybe it is necessary to prepare a metadata parser from json file
     # when building the Metadata objects.
     metadata = [
-        Metadata("fasta", "Assembly", None, {'assembly' : assembly}, genome_file),
+        Metadata("Assembly", "fasta", genome_da, None,
+            {'assembly' : assembly}, genome_file),
     ]
 
-    files = [
-        genome_fa,
-    ]
+    files = {
+        'genome': genome_fa,
+    }
 
-    files_out = []
+
+    files_out = {
+        'bwa_index': genome_fa + '.bwa.tar.gz'
+        'bwt_index': genome_fa + '.bwt.tar.gz'
+        'gem_index': genome_fa + '.gem.gz'
+    }
 
     return [files, files_out, metadata]
+
+# ------------------------------------------------------------------------------
+
+def remap(indict, *args, **kwargs):
+    """
+    Re-map keys of indict using information from arguments.
+
+    Non-keyword arguments are keys of input dictionary that are passed
+    unchanged to the output. Keyword arguments must be in the form
+
+    old="new"
+
+    and act as a translation table for new key names.
+    """
+    outdict = {role: indict[role] for role in args}
+    outdict.update(
+        {new: indict[old] for old, new in kwargs.items()}
+    )
+    return outdict
 
 # ------------------------------------------------------------------------------
 
@@ -169,6 +209,9 @@ if __name__ == "__main__":
     PARSER.add_argument("--taxon_id", help="Species (9606)")
     PARSER.add_argument("--genome", help="Genome FASTA file")
     PARSER.add_argument("--assembly", help="Assembly ID")
+    PARSER.add_argument("--json",
+                        help="Use defined JSON config files",
+                        action='store_const', const=True, default=False)
 
     # Get the matching parameters from the command line
     ARGS = PARSER.parse_args()
@@ -176,19 +219,25 @@ if __name__ == "__main__":
     GENOME_FA = ARGS.genome
     ASSEMBLY = ARGS.assembly
     TAXON_ID = ARGS.taxon_id
+    JSON_CONFIG = ARGS.json
 
-    #
-    # MuG Tool Steps
-    # --------------
-    #
-    # 1. Create data files
-    DM_HANDLER = dmp(test=True)
+    if JSON_CONFIG is True:
+        RESULTS = main_json()
+    else:
+        #
+        # MuG Tool Steps
+        # --------------
+        #
+        # 1. Create data files
+        DM_HANDLER = dmp(test=True)
 
-    # Get the assembly
+        # Get the assembly
 
-    #2. Register the data with the DMP
-    PARAMS = prepare_files(DM_HANDLER, TAXON_ID, GENOME_FA, ASSEMBLY)
+        #2. Register the data with the DMP
+        PARAMS = prepare_files(DM_HANDLER, TAXON_ID, GENOME_FA, ASSEMBLY)
 
-    RESULTS = main(PARAMS[0], PARAMS[1], PARAMS[2])
+        RESULTS = main(PARAMS[0], PARAMS[1], PARAMS[2])
 
-    print(DM_HANDLER.get_files_by_user("test"))
+        print(DM_HANDLER.get_files_by_user("test"))
+
+    print(RESULTS)

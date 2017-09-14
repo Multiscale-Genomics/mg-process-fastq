@@ -6,6 +6,8 @@ pytest  tests/test_biobambam.py
 pytest  tests/test_bs_seeker_indexer.py
 pytest  tests/test_bs_seeker_aligner.py
 pytest  tests/test_bs_seeker_filter.py
+samtools
+ls /home/travis/build/Multiscale-Genomics/mg-process-fastq/tests/data
 pytest  tests/test_bs_seeker_methylation_caller.py
 pytest -s tests/test_bowtie_indexer.py
 pytest -s tests/test_kallisto_indexer.py

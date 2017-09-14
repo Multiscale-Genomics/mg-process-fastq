@@ -129,6 +129,6 @@ class bwaAlignerTool(Tool):
 
         # print("BWA ALIGNER - METADATA:", bam_meta)
 
-        return ({"output": {"bam": output_files["output"]}}, {"output": {"bam": bam_meta}})
+        return ({"bam": output_files["output"]}, {"bam": bam_meta})
 
 # ------------------------------------------------------------------------------

@@ -175,29 +175,29 @@ class process_chipseq(Workflow):
         b3f = biobambam(self.configuration)
         b3f_files, b3f_meta = b3f.run(
             # Alternatively, we can rebuild the dict
-            {"input": bwa_files["output"]['bam']},
-            {"input": bwa_meta["output"]['bam']},
+            {"input": bwa_files['bam']},
+            {"input": bwa_meta['bam']},
             # Intermediate outputs should be created via tempfile?
             {"output": output_files["filtered"]}
         )
 
         if "bg_loc" in input_files:
             b3f_bg_files, b3f_bg_meta = b3f.run(
-                {"input": bwa_bg_files["output"]['bam']},
-                {"input": bwa_bg_meta["output"]['bam']},
+                {"input": bwa_bg_files['bam']},
+                {"input": bwa_bg_meta['bam']},
                 # Intermediate outputs should be created via tempfile?
                 {"output": output_files["filtered_bg"]}
             )
 
         ## MACS2 to call peaks
         macs_caller = macs2(self.configuration)
-        macs_inputs = {"input": b3f_files["output"]['bam']}
-        macs_metadt = {"input": b3f_meta["output"]['bam']}
+        macs_inputs = {"input": b3f_files['bam']}
+        macs_metadt = {"input": b3f_meta['bam']}
 
         if "bg_loc" in input_files:
             # The dicts can be built incrementally
-            macs_inputs["background"] = b3f_bg_files["output"]['bam']
-            macs_metadt["background"] = b3f_bg_meta["output"]['bam']
+            macs_inputs["background"] = b3f_bg_files['bam']
+            macs_metadt["background"] = b3f_bg_meta['bam']
 
         m_results_files, m_results_meta = macs_caller.run(
             macs_inputs, macs_metadt,
@@ -206,19 +206,19 @@ class process_chipseq(Workflow):
             remap(output_files, 'narrow_peak', 'summits', 'broad_peak', 'gapped_peak'))
 
         # Outputs are collected with some name changes
-        m_results_files["bam"] = bwa_files["output"]["bam"]
-        m_results_files["filtered"] = b3f_files["output"]["bam"]
+        m_results_files["bam"] = bwa_files["bam"]
+        m_results_files["filtered"] = b3f_files["bam"]
 
         # Equivalent meta data is collected
-        m_results_meta["bam"] = bwa_meta["output"]["bam"]
-        m_results_meta["filtered"] = b3f_meta["output"]["bam"]
+        m_results_meta["bam"] = bwa_meta["bam"]
+        m_results_meta["filtered"] = b3f_meta["bam"]
 
         if "bg_loc" in input_files:
-            m_results_files["bam_bg"] = bwa_bg_files["output"]["bam"]
-            m_results_files["filtered_bg"] = b3f_bg_files["output"]["bam"]
+            m_results_files["bam_bg"] = bwa_bg_files["bam"]
+            m_results_files["filtered_bg"] = b3f_bg_files["bam"]
 
-            m_results_meta["bam_bg"] = bwa_bg_meta["output"]["bam"]
-            m_results_meta["filtered_bg"] = b3f_bg_meta["output"]["bam"]
+            m_results_meta["bam_bg"] = bwa_bg_meta["bam"]
+            m_results_meta["filtered_bg"] = b3f_bg_meta["bam"]
 
         print("CHIPSEQ RESULTS:", m_results_meta)
         return m_results_files, m_results_meta

@@ -134,8 +134,8 @@ class biobambam(Tool):
         )
 
         return (
-            {"output": {"bam": output_files['output']}},
-            {"output": {"bam": bam_meta}}
+            {"bam": output_files['output']},
+            {"bam": bam_meta}
         )
 
 # ------------------------------------------------------------------------------

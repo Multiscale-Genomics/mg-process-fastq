@@ -20,7 +20,7 @@ from __future__ import print_function
 import os.path
 import pytest # pylint: disable=unused-import
 
-from process_rnaseq import process_rnaseq
+from process_wgbs import process_wgbs
 
 @pytest.mark.wgbs
 @pytest.mark.pipeline
@@ -55,7 +55,7 @@ def test_wgbs_pipeline():
     fastq1_file = resource_path + "bsSeeker.Mouse.GRCm38_1.fastq"
     fastq2_file = resource_path + "bsSeeker.Mouse.GRCm38_2.fastq"
 
-    rs_handle = process_rnaseq()
+    rs_handle = process_wgbs()
     rs_files, rs_meta = rs_handle.run(
         [
             genomefa_file,

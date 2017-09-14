@@ -150,7 +150,7 @@ if __name__ == '__main__':
         choices=['genome', 'chipseq', 'hic', 'mnaseseq', 'rnaseq', 'wgbs', 'all'],
         help=""
     )
-    PARSER.add_argument("--verbose", type=int, default=0)
+    PARSER.add_argument("--verbose", action='store_const', const=True, default=False)
 
     # Get the matching parameters from the command line
     ARGS = PARSER.parse_args()
@@ -163,9 +163,11 @@ if __name__ == '__main__':
         sys.exit(1)
 
     PIPELINES = PIPELINES.split(",")
-    print(PIPELINES)
+    print("PIPELINES:", PIPELINES)
 
-    VERBOSE = ARGS.verbose
+    VERBOSE = 0
+    if ARGS.verbose is True:
+        VERBOSE = 1
 
     if 'genome' in PIPELINES or 'all' in PIPELINES:
         print('GENOME')

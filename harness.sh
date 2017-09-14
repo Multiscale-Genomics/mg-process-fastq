@@ -13,8 +13,7 @@ pytest -s tests/test_bowtie_indexer.py
 pytest -s tests/test_kallisto_indexer.py
 pytest -s tests/test_kallisto_quant.py
 pytest -s tests/test_macs2.py
-pytest -s tests/test_paired_splitter.py
-pytest -s tests/test_single_splitter.py
+pytest -s tests/test_fastq_splitter.py
 
 python_version=$(python --version 2>&1)
 

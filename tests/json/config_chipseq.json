@@ -31,7 +31,7 @@
                 "compressed": "null"
             }
         }, {
-            "required": true,
+            "required": false,
             "allow_multiple": false,
             "name": "narrow_peak",
             "file": {
@@ -46,7 +46,7 @@
                 "compressed": "null"
             }
         }, {
-            "required": true,
+            "required": false,
             "allow_multiple": false,
             "name": "summits",
             "file": {
@@ -61,7 +61,7 @@
                 "compressed": "null"
             }
         }, {
-            "required": true,
+            "required": false,
             "allow_multiple": false,
             "name": "broad_peak",
             "file": {
@@ -76,7 +76,7 @@
                 "compressed": "null"
             }
         }, {
-            "required": true,
+            "required": false,
             "allow_multiple": false,
             "name": "gapped_peak",
             "file": {

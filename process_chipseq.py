@@ -331,7 +331,7 @@ def prepare_files(
     }
 
     fq1_file = dm_handler.set_file(
-        "test", file_loc, "file", "fastq", 64000, parent_dir, "ChIP-seq",
+        "test", file_loc, "file", "fastq", 64000, parent_dir, "data_chip_seq",
         taxon_id, None, None, meta_data={'assembly' : assembly})
     metadata["loc"] = Metadata(
         "data_chip_seq", "fastq", file_loc, None,

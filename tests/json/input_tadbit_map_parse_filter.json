@@ -1,0 +1,52 @@
+[
+    {
+        "compressed": 0,
+        "_id": "59b7e020d9422a5969b65378",
+        "data_type": "hic_reads",
+        "file_type": "fastq",
+        "file_path": "/scratch/genomes/tb.Human.SRR1658573_1.fastq.gz",
+        "source_id": null,
+        "meta_data": {
+            "visible": true,
+            "validated": 1,
+            "assembly": "GCA_000001405.22"
+        }
+    },
+    {
+        "compressed": 0,
+        "_id": "59b7e020d9422a5969b65372",
+        "data_type": "hic_reads",
+        "file_type": "fastq",
+        "file_path": "/scratch/genomes/tb.Human.SRR1658573_2.fastq.gz",
+        "source_id": null,
+        "meta_data": {
+            "visible": true,
+            "validated": 1,
+            "assembly": "GCA_000001405.22"
+        }
+    },
+    {
+        "_id": "59b7e020d9422a5969b65373",
+        "data_type": "sequence_genomic",
+        "file_type": "fasta",
+        "file_path": "/scratch/genomes/hg38.fa",
+        "source_id": null,
+        "meta_data": {
+            "visible": true,
+            "validated": 1,
+            "assembly": "GCA_000001405.22"
+        }
+    },
+    {
+        "_id": "59b7e020d9422a5969b65374",
+        "data_type": "sequence_mapping_index",
+        "file_type": "gem",
+        "file_path": "/scratch/genomes/hg38.gem",
+        "source_id": null,
+        "meta_data": {
+            "visible": true,
+            "validated": 1,
+            "assembly": "GCA_000001405.22"
+        }
+    }
+]

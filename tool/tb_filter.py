@@ -19,6 +19,8 @@ from __future__ import print_function
 import sys
 import os.path
 
+from pytadbit.parsers.hic_bam_parser import bed2D_to_BAMhic
+
 try:
     if hasattr(sys, '_run_from_cmdl') is True:
         raise ImportError
@@ -159,7 +161,7 @@ class tbFilterTool(Tool):
                         with open(output_ts, "wb") as f_out:
                             f_out.write(f_in.read())
 
-        return True
+        return masked
 
     def run(self, input_files, output_files, metadata=None):
         """
@@ -191,6 +193,7 @@ class tbFilterTool(Tool):
             conservative = metadata['conservative_filtering']
 
         root_name = reads.split("/")
+        
         filtered_reads_file = "/".join(root_name[0:-1]) + '/' + metadata['expt_name'] + '_filtered_map.tsv'
 
         output_de = filtered_reads_file + '_dangling-end.tsv'
@@ -214,6 +217,11 @@ class tbFilterTool(Tool):
             output_sc, output_tc, output_tl, output_ts)
         results = compss_wait_on(results)
 
+        if 'outbam' in metadata:
+            outbam = "/".join(root_name[0:-1]) + '/' + metadata['outbam']
+            bed2D_to_BAMhic(filtered_reads_file, True, 32, outbam, 'mid', results)
+            filtered_reads_file = outbam
+        
         return ([filtered_reads_file], output_metadata)
 
 # ------------------------------------------------------------------------------

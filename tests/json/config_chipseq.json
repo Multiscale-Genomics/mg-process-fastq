@@ -8,7 +8,7 @@
                 "file_type": "bam",
                 "meta_data": {
                     "visible": true,
-                    "tool": "bwa-aligner",
+                    "tool": "bwa_aligner",
                     "description": "Output"
                 },
                 "file_path": "tests/data/macs2.Human.DRR000150.22.bam",
@@ -23,7 +23,7 @@
                 "file_type": "bam",
                 "meta_data": {
                     "visible": true,
-                    "tool": "bwa-aligner",
+                    "tool": "biobambam",
                     "description": "Output"
                 },
                 "file_path": "tests/data/macs2.Human.DRR000150.22_filtered.bam",
@@ -38,7 +38,7 @@
                 "file_type": "bed",
                 "meta_data": {
                     "visible": true,
-                    "tool": "bwa-aligner",
+                    "tool": "macs2",
                     "description": "Output"
                 },
                 "file_path": "tests/data/macs2.Human.DRR000150.22_filtered_peaks.narrowPeak",
@@ -53,7 +53,7 @@
                 "file_type": "bed",
                 "meta_data": {
                     "visible": true,
-                    "tool": "bwa-aligner",
+                    "tool": "macs2",
                     "description": "Output"
                 },
                 "file_path": "tests/data/macs2.Human.DRR000150.22_filtered_summits.bed",
@@ -68,7 +68,7 @@
                 "file_type": "bed",
                 "meta_data": {
                     "visible": true,
-                    "tool": "bwa-aligner",
+                    "tool": "macs2",
                     "description": "Output"
                 },
                 "file_path": "tests/data/macs2.Human.DRR000150.22_filtered_peaks.broadPeak",
@@ -83,7 +83,7 @@
                 "file_type": "bed",
                 "meta_data": {
                     "visible": true,
-                    "tool": "bwa-aligner",
+                    "tool": "macs2",
                     "description": "Output"
                 },
                 "file_path": "tests/data/macs2.Human.DRR000150.22_filtered_peaks.gappedPeak",

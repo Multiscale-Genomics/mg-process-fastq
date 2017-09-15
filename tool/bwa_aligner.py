@@ -17,6 +17,7 @@
 from __future__ import print_function
 import os
 import sys
+import tarfile
 
 try:
     if hasattr(sys, '_run_from_cmdl') is True:
@@ -56,8 +57,7 @@ class bwaAlignerTool(Tool):
           bam_loc=FILE_OUT, amb_loc=FILE_IN, ann_loc=FILE_IN, bwt_loc=FILE_IN,
           pac_loc=FILE_IN, sa_loc=FILE_IN, isModifier=False)
     def bwa_aligner(  # pylint: disable=too-many-arguments
-            self, genome_file_loc, read_file_loc, bam_loc, amb_loc,  # pylint: disable=unused-argument,too-many-arguments
-            ann_loc, bwt_loc, pac_loc, sa_loc):  # pylint: disable=unused-argument
+            self, genome_file_loc, read_file_loc, bam_loc, genome_idx):  # pylint: disable=unused-argument
         """
         BWA Aligner
 
@@ -73,6 +73,12 @@ class bwaAlignerTool(Tool):
         bam_loc : str
             Location of the output file
         """
+        g_dir = genome_idx.split("/")
+        g_dir = "/".join(g_dir[:-1])
+
+        tar = tarfile.open(genome_idx)
+        tar.extractall(path=g_dir)
+        tar.close()
 
         od_list = read_file_loc.split("/")
 
@@ -109,8 +115,7 @@ class bwaAlignerTool(Tool):
 
         results = self.bwa_aligner(
             input_files["genome"], input_files["loc"], output_files["output"],
-            input_files["amb"], input_files["ann"], input_files["bwt"],
-            input_files["pac"], input_files["sa"])
+            input_files["index"])
 
         results = compss_wait_on(results)
 
@@ -119,7 +124,7 @@ class bwaAlignerTool(Tool):
         # print("BWA ALIGNER - METADATA:", metadata)
 
         bam_meta = Metadata(
-            "data_chip_seq", "bam", output_files["output"],
+            metadata['loc'].data_type, "bam", output_files["output"],
             [metadata['genome'].id, metadata['loc'].id],
             {
                 'assembly' : metadata['genome'].meta_data['assembly'],

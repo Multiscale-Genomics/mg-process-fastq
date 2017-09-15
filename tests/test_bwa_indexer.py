@@ -20,6 +20,8 @@ from __future__ import print_function
 import os.path
 import pytest # pylint: disable=unused-import
 
+from basic_modules.metadata import Metadata
+
 from tool.bwa_indexer import bwaIndexerTool
 
 @pytest.mark.chipseq
@@ -31,37 +33,27 @@ def test_bwa_indexer():
     resource_path = os.path.join(os.path.dirname(__file__), "data/")
     genome_fa = resource_path + "macs2.Human.GCA_000001405.22.fasta"
 
-    files = [
-        genome_fa,
-        genome_fa + ".amb",
-        genome_fa + ".ann",
-        genome_fa + ".bwt",
-        genome_fa + ".pac",
-        genome_fa + ".sa"
-    ]
+    input_files = {
+        "genome": genome_fa
+    }
 
-    bwa_amb = files[1]
-    bwa_ann = files[2]
-    bwa_bwt = files[3]
-    bwa_pac = files[4]
-    bwa_sa = files[5]
+    output_files = {
+        "index": genome_fa + ".bwa.tar.gz"
+    }
 
-    print(bwa_amb, bwa_ann, bwa_bwt, bwa_pac, bwa_sa)
+    metadata = {
+        "genome": Metadata(
+            "Assembly", "fasta", genome_fa, None,
+            {'assembly' : 'test'}),
+    }
+
+    print(input_files, output_files)
 
     bwa_it = bwaIndexerTool()
-    bwa_it.run([genome_fa], {'assembly' : 'test'})
+    bwa_it.run(input_files, metadata, output_files)
 
-    assert os.path.isfile(resource_path + "macs2.Human.GCA_000001405.22.fasta.amb") is True
-    assert os.path.getsize(resource_path + "macs2.Human.GCA_000001405.22.fasta.amb") > 0
-    assert os.path.isfile(resource_path + "macs2.Human.GCA_000001405.22.fasta.ann") is True
-    assert os.path.getsize(resource_path + "macs2.Human.GCA_000001405.22.fasta.ann") > 0
-    assert os.path.isfile(resource_path + "macs2.Human.GCA_000001405.22.fasta.bwt") is True
-    assert os.path.getsize(resource_path + "macs2.Human.GCA_000001405.22.fasta.bwt") > 0
-    assert os.path.isfile(resource_path + "macs2.Human.GCA_000001405.22.fasta.pac") is True
-    assert os.path.getsize(resource_path + "macs2.Human.GCA_000001405.22.fasta.pac") > 0
-    assert os.path.isfile(resource_path + "macs2.Human.GCA_000001405.22.fasta.sa") is True
-    assert os.path.getsize(resource_path + "macs2.Human.GCA_000001405.22.fasta.sa") > 0
-
+    assert os.path.isfile(resource_path + "macs2.Human.GCA_000001405.22.fasta.bwa.tar.gz") is True
+    assert os.path.getsize(resource_path + "macs2.Human.GCA_000001405.22.fasta.bwa.tar.gz") > 0
 
 @pytest.mark.mnaseseq
 @pytest.mark.genome
@@ -72,33 +64,24 @@ def test_bwa_indexer_02():
     resource_path = os.path.join(os.path.dirname(__file__), "data/")
     genome_fa = resource_path + "inps.Mouse.GRCm38.fasta"
 
-    files = [
-        genome_fa,
-        genome_fa + ".amb",
-        genome_fa + ".ann",
-        genome_fa + ".bwt",
-        genome_fa + ".pac",
-        genome_fa + ".sa"
-    ]
+    input_files = {
+        "genome": genome_fa
+    }
 
-    bwa_amb = files[1]
-    bwa_ann = files[2]
-    bwa_bwt = files[3]
-    bwa_pac = files[4]
-    bwa_sa = files[5]
+    output_files = {
+        "index": genome_fa + ".bwa.tar.gz"
+    }
 
-    print(bwa_amb, bwa_ann, bwa_bwt, bwa_pac, bwa_sa)
+    metadata = {
+        "genome": Metadata(
+            "Assembly", "fasta", genome_fa, None,
+            {'assembly' : 'test'}),
+    }
+
+    print(input_files, output_files)
 
     bwa_it = bwaIndexerTool()
-    bwa_it.run([genome_fa], {'assembly' : 'test'})
+    bwa_it.run(input_files, metadata, output_files)
 
-    assert os.path.isfile(resource_path + "inps.Mouse.GRCm38.fasta.amb") is True
-    assert os.path.getsize(resource_path + "inps.Mouse.GRCm38.fasta.amb") > 0
-    assert os.path.isfile(resource_path + "inps.Mouse.GRCm38.fasta.ann") is True
-    assert os.path.getsize(resource_path + "inps.Mouse.GRCm38.fasta.ann") > 0
-    assert os.path.isfile(resource_path + "inps.Mouse.GRCm38.fasta.bwt") is True
-    assert os.path.getsize(resource_path + "inps.Mouse.GRCm38.fasta.bwt") > 0
-    assert os.path.isfile(resource_path + "inps.Mouse.GRCm38.fasta.pac") is True
-    assert os.path.getsize(resource_path + "inps.Mouse.GRCm38.fasta.pac") > 0
-    assert os.path.isfile(resource_path + "inps.Mouse.GRCm38.fasta.sa") is True
-    assert os.path.getsize(resource_path + "inps.Mouse.GRCm38.fasta.sa") > 0
+    assert os.path.isfile(resource_path + "inps.Mouse.GRCm38.fasta.bwa.tar.gz") is True
+    assert os.path.getsize(resource_path + "inps.Mouse.GRCm38.fasta.bwa.tar.gz") > 0

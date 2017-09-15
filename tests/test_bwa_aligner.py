@@ -19,6 +19,8 @@ from __future__ import print_function
 import os.path
 import pytest # pylint: disable=unused-import
 
+from basic_modules.metadata import Metadata
+
 from tool.bwa_aligner import bwaAlignerTool
 
 @pytest.mark.chipseq
@@ -30,24 +32,35 @@ def test_bwa_aligner():
     genome_fa = resource_path + "macs2.Human.GCA_000001405.22.fasta"
     fastq_file = resource_path + "macs2.Human.DRR000150.22.fastq"
 
-    files = [
-        genome_fa,
-        genome_fa + ".amb",
-        genome_fa + ".ann",
-        genome_fa + ".bwt",
-        genome_fa + ".pac",
-        genome_fa + ".sa"
-    ]
+    input_files = {
+        "genome": genome_fa,
+        "index": genome_fa + ".bwa.tar.gz",
+        "loc": fastq_file
+    }
 
+    output_files = {
+        "output": fastq_file.replace(".fastq", ".bam")
+    }
 
-    bwa_amb = files[1]
-    bwa_ann = files[2]
-    bwa_bwt = files[3]
-    bwa_pac = files[4]
-    bwa_sa = files[5]
+    metadata = {
+        "genome": Metadata(
+            "Assembly", "fasta", genome_fa, None,
+            {"assembly": "test"}),
+        "index": Metadata(
+            "index_bwa", "", [genome_fa],
+            {
+                "assembly": "test",
+                "tool": "bwa_indexer"
+            }
+        ),
+        "loc": Metadata(
+            "data_chip_seq", "fastq", fastq_file, None,
+            {"assembly": "test"}
+        )
+    }
 
     bwa_t = bwaAlignerTool()
-    bwa_t.run([genome_fa, fastq_file, bwa_amb, bwa_ann, bwa_bwt, bwa_pac, bwa_sa], [])
+    bwa_t.run(input_files, metadata, output_files)
 
     print(__file__)
 
@@ -63,24 +76,35 @@ def test_bwa_aligner_02():
     genome_fa = resource_path + "inps.Mouse.GRCm38.fasta"
     fastq_file = resource_path + "inps.Mouse.DRR000386.fastq"
 
-    files = [
-        genome_fa,
-        genome_fa + ".amb",
-        genome_fa + ".ann",
-        genome_fa + ".bwt",
-        genome_fa + ".pac",
-        genome_fa + ".sa"
-    ]
+    input_files = {
+        "genome": genome_fa,
+        "index": genome_fa + ".bwa.tar.gz",
+        "loc": fastq_file
+    }
 
+    output_files = {
+        "output": fastq_file.replace(".fastq", ".bam")
+    }
 
-    bwa_amb = files[1]
-    bwa_ann = files[2]
-    bwa_bwt = files[3]
-    bwa_pac = files[4]
-    bwa_sa = files[5]
+    metadata = {
+        "genome": Metadata(
+            "Assembly", "fasta", genome_fa, None,
+            {"assembly": "test"}),
+        "index": Metadata(
+            "index_bwa", "", [genome_fa],
+            {
+                "assembly": "test",
+                "tool": "bwa_indexer"
+            }
+        ),
+        "loc": Metadata(
+            "data_chip_seq", "fastq", fastq_file, None,
+            {"assembly": "test"}
+        )
+    }
 
     bwa_t = bwaAlignerTool()
-    bwa_t.run([genome_fa, fastq_file, bwa_amb, bwa_ann, bwa_bwt, bwa_pac, bwa_sa], [])
+    bwa_t.run(input_files, metadata, output_files)
 
     print(__file__)
 

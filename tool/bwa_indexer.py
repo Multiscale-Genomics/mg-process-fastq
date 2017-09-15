@@ -139,6 +139,7 @@ class bwaIndexerTool(Tool):
             input_files["genome"],
             output_files["index"]
         )
+        results = compss_wait_on(results)
 
         output_metadata = {
             "index": Metadata(
@@ -149,8 +150,6 @@ class bwaIndexerTool(Tool):
                 }
             )
         }
-
-        results = compss_wait_on(results)
 
         return (output_files, output_metadata)
 

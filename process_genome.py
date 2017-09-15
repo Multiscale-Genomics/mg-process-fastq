@@ -81,18 +81,25 @@ class process_genome(Workflow):
 
         # Bowtie2 Indexer
         bowtie2 = bowtieIndexerTool()
-        bti, btm = bowtie2.run(input_files, metadata, {'output': output_files['bwt_index']})
-        output_metadata['bwt_index'] = btm
+        bti, btm = bowtie2.run(input_files, metadata, {'index': output_files['index']})
+        output_metadata['bwt_index'] = btm['index']
 
         # BWA Indexer
         bwa = bwaIndexerTool()
-        bwai, bwam = bwa.run(input_files, metadata, {'output': output_files['bwa_index']})
-        output_metadata['bwa_index'] = bwam
+        bwai, bwam = bwa.run(input_files, metadata, {'index': output_files['bwa_index']})
+        output_metadata['bwa_index'] = bwam['index']
 
         # GEM Indexer
         gem = gemIndexerTool()
-        gemi, gemm = gem.run(input_files, metadata, {'output': output_files['gem_index']})
-        output_metadata['gem_index'] = gemm
+        gemi, gemm = gem.run(
+            input_files, metadata,
+            {
+                'index': output_files['gem_index'],
+                'genome_gem': output_files['gem_index']
+            }
+        )
+        output_metadata['gem_index'] = gemm['index']
+        output_metadata['genome_gem'] = gemm['genome_gem']
 
         return (output_files, output_metadata)
 
@@ -135,8 +142,8 @@ def main_json():
     root_path = os.path.expanduser('~') + "/code/mg-process-fastq"
     result = app.launch(process_genome,
                         root_path,
-                        "tests/json/config_chipseq.json",
-                        "tests/json/input_chipseq_metadata.json")
+                        "tests/json/config_genome.json",
+                        "tests/json/input_genome_metadata.json")
 
     # 2. The App has finished
     print("2. Execution finished; see " + root_path + "/results.json")
@@ -161,10 +168,10 @@ def prepare_files(
 
     # Maybe it is necessary to prepare a metadata parser from json file
     # when building the Metadata objects.
-    metadata = [
-        Metadata("Assembly", "fasta", genome_da, None,
+    metadata = {
+        'genome': Metadata("Assembly", "fasta", genome_fa, None,
             {'assembly' : assembly}, genome_file),
-    ]
+    }
 
     files = {
         'genome': genome_fa,
@@ -172,9 +179,10 @@ def prepare_files(
 
 
     files_out = {
-        'bwa_index': genome_fa + '.bwa.tar.gz'
-        'bwt_index': genome_fa + '.bwt.tar.gz'
-        'gem_index': genome_fa + '.gem.gz'
+        'bwa_index': genome_fa + '.bwa.tar.gz',
+        'bwt_index': genome_fa + '.bwt.tar.gz',
+        'gem_index': genome_fa.replace('.fasta', '_gem.fasta') + '.gem.gz',
+        'genome_gem': genome_fa.replace('.fasta', '_gem.fasta')
     }
 
     return [files, files_out, metadata]

@@ -21,6 +21,8 @@ import os.path
 import gzip
 import pytest # pylint: disable=unused-import
 
+from basic_modules.metadata import Metadata
+
 from tool.gem_indexer import gemIndexerTool
 
 @pytest.mark.hic
@@ -38,12 +40,29 @@ def test_gem_indexer():
             f_out.write(fgz_in.read())
 
 
-    genome_gem = resource_path + "tb.Human.GCA_000001405.22_gem.fasta.gem"
+    genome_gem_idx = resource_path + "tb.Human.GCA_000001405.22_gem.fasta.gem.gz"
+
+    input_files = {
+        "genome": genome_fa
+    }
+
+    output_files = {
+        "index": genome_gem_idx,
+        "genome_gem": genome_gem_fa
+    }
+
+    metadata = {
+        "genome": Metadata(
+            "Assembly", "fasta", genome_fa, None,
+            {'assembly' : 'test'}),
+    }
+
+    print(input_files, output_files)
 
     gem_it = gemIndexerTool()
-    gem_it.run([genome_fa], {'assembly' : 'test'})
+    gem_it.run(input_files, metadata, output_files)
 
     assert os.path.isfile(genome_gem_fa) is True
     assert os.path.getsize(genome_gem_fa) > 0
-    assert os.path.isfile(genome_gem) is True
-    assert os.path.getsize(genome_gem) > 0
+    assert os.path.isfile(genome_gem_idx) is True
+    assert os.path.getsize(genome_gem_idx) > 0

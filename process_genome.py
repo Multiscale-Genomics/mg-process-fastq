@@ -22,6 +22,7 @@ from __future__ import print_function
 from functools import wraps # pylint: disable=unused-import
 
 import argparse
+import os
 
 from basic_modules.workflow import Workflow
 from basic_modules.metadata import Metadata
@@ -75,13 +76,13 @@ class process_genome(Workflow):
             List of locations for the output index files
         """
 
-        genome_fa = input_files[0]
+        genome_fa = input_files['genome']
         output_metadata = {}
         output_metadata = {}
 
         # Bowtie2 Indexer
         bowtie2 = bowtieIndexerTool()
-        bti, btm = bowtie2.run(input_files, metadata, {'index': output_files['index']})
+        bti, btm = bowtie2.run(input_files, metadata, {'index': output_files['bwt_index']})
         output_metadata['bwt_index'] = btm['index']
 
         # BWA Indexer
@@ -95,7 +96,7 @@ class process_genome(Workflow):
             input_files, metadata,
             {
                 'index': output_files['gem_index'],
-                'genome_gem': output_files['gem_index']
+                'genome_gem': output_files['genome_gem']
             }
         )
         output_metadata['gem_index'] = gemm['index']
@@ -142,8 +143,8 @@ def main_json():
     root_path = os.path.expanduser('~') + "/code/mg-process-fastq"
     result = app.launch(process_genome,
                         root_path,
-                        "tests/json/config_genome.json",
-                        "tests/json/input_genome_metadata.json")
+                        "tests/json/config_genome_indexer.json",
+                        "tests/json/input_genome_indexer_metadata.json")
 
     # 2. The App has finished
     print("2. Execution finished; see " + root_path + "/results.json")

@@ -16,7 +16,13 @@
 """
 
 from __future__ import print_function
+
+import os
+import shlex
+import shutil
+import subprocess
 import sys
+import tarfile
 
 try:
     if hasattr(sys, '_run_from_cmdl') is True:
@@ -33,6 +39,7 @@ except ImportError:
     from dummy_pycompss import compss_wait_on
 
 from basic_modules.tool import Tool
+from basic_modules.metadata import Metadata
 
 from tool.common import common
 
@@ -50,12 +57,9 @@ class bowtieIndexerTool(Tool):
         print("Bowtie2 Indexer")
         Tool.__init__(self)
 
-    @task(
-        file_loc=FILE_IN, bt_file1=FILE_OUT, bt_file2=FILE_OUT,
-        bt_file3=FILE_OUT, bt_file4=FILE_OUT, bt_filer1=FILE_OUT, bt_filer2=FILE_OUT)
+    @task(file_loc=FILE_IN, index_loc=FILE_OUT)
     def bowtie2_indexer(
-            self, file_loc,
-            bt_file1, bt_file2, bt_file3, bt_file4, bt_filer1, bt_filer2): # pylint: disable=unused-argument
+            self, file_loc, index_loc): # pylint: disable=unused-argument
         """
         Bowtie2 Indexer
 
@@ -73,35 +77,38 @@ class bowtieIndexerTool(Tool):
         file_name = "/".join(file_name)
 
         common_handle = common()
-        common_handle.bowtie_index_genome(file_loc, file_name + ".tmp")
+        common_handle.bowtie_index_genome(file_loc, file_name)
 
-        with open(bt_file1, "wb") as f_out:
-            with open(file_name + ".tmp.1.bt2", "rb") as f_in:
-                f_out.write(f_in.read())
+        # tar.gz the index
+        print("BT - index_loc", index_loc, index_loc.replace('.tar.gz', ''))
+        idx_out_pregz = index_loc.replace('.tar.gz', '.tar')
 
-        with open(bt_file2, "wb") as f_out:
-            with open(file_name + ".tmp.2.bt2", "rb") as f_in:
-                f_out.write(f_in.read())
+        index_dir = index_loc.replace('.tar.gz', '')
+        os.mkdir(index_dir)
 
-        with open(bt_file3, "wb") as f_out:
-            with open(file_name + ".tmp.3.bt2", "rb") as f_in:
-                f_out.write(f_in.read())
+        idx_split = index_dir.split("/")
 
-        with open(bt_file4, "wb") as f_out:
-            with open(file_name + ".tmp.4.bt2", "rb") as f_in:
-                f_out.write(f_in.read())
+        shutil.move(file_name + ".1.bt2", index_dir)
+        shutil.move(file_name + ".2.bt2", index_dir)
+        shutil.move(file_name + ".3.bt2", index_dir)
+        shutil.move(file_name + ".4.bt2", index_dir)
+        shutil.move(file_name + ".rev.1.bt2", index_dir)
+        shutil.move(file_name + ".rev.2.bt2", index_dir)
 
-        with open(bt_filer1, "wb") as f_out:
-            with open(file_name + ".tmp.rev.1.bt2", "rb") as f_in:
-                f_out.write(f_in.read())
+        index_folder = idx_split[-1]
 
-        with open(bt_filer2, "wb") as f_out:
-            with open(file_name + ".tmp.rev.2.bt2", "rb") as f_in:
-                f_out.write(f_in.read())
+        tar = tarfile.open(idx_out_pregz, "w")
+        tar.add(index_dir, arcname=index_folder)
+        tar.close()
+
+        command_line = 'pigz ' + idx_out_pregz
+        args = shlex.split(command_line)
+        process = subprocess.Popen(args)
+        process.wait()
 
         return True
 
-    def run(self, input_files, output_files, metadata=None):
+    def run(self, input_files, metadata, output_files):
         """
         Tool for generating assembly aligner index files for use with the
         Bowtie 2 aligner
@@ -120,36 +127,23 @@ class bowtieIndexerTool(Tool):
             list of the matching metadata
         """
 
-        file_name = input_files[0].split('/')
-        file_name[-1] = file_name[-1].replace('.fasta', '')
-        file_name[-1].replace('.fa', '')
-
-        # input and output share most metadata
-        output_metadata = {}
-
-        files_out = [
-            "/".join(file_name) + '.1.bt2',
-            "/".join(file_name) + '.2.bt2',
-            "/".join(file_name) + '.3.bt2',
-            "/".join(file_name) + '.4.bt2',
-            "/".join(file_name) + '.rev.1.bt2',
-            "/".join(file_name) + '.rev.2.bt2',
-        ]
-
-        print("BWA INDEXER - files_out:", files_out)
-
         results = self.bowtie2_indexer(
-            input_files[0],
-            files_out[0],
-            files_out[1],
-            files_out[2],
-            files_out[3],
-            files_out[4],
-            files_out[5]
+            input_files["genome"],
+            output_files["index"]
         )
+
+        output_metadata = {
+            "index": Metadata(
+                "index_bwt", "", [metadata["genome"].id],
+                {
+                    "assembly": metadata["genome"].meta_data["assembly"],
+                    "tool": "bowtie_indexer"
+                }
+            )
+        }
 
         results = compss_wait_on(results)
 
-        return (files_out, output_metadata)
+        return (output_files, output_metadata)
 
 # ------------------------------------------------------------------------------

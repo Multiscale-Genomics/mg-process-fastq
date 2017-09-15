@@ -1,0 +1,77 @@
+{
+    "output_files": [
+        {
+            "required": true,
+            "allow_multiple": false,
+            "name": "bwa_index",
+            "file": {
+                "file_type": "",
+                "meta_data": {
+                    "visible": true,
+                    "tool": "bwt_indexer",
+                    "description": "Output"
+                },
+                "file_path": "tests/data/tb.Human.GCA000001405.22.fasta.bwa.tar.gz",
+                "data_type": "index_bwt",
+                "compressed": "null"
+            }
+        }, {
+            "required": true,
+            "allow_multiple": false,
+            "name": "bwt_index",
+            "file": {
+                "file_type": "bam",
+                "meta_data": {
+                    "visible": true,
+                    "tool": "bwa_indexer",
+                    "description": "Output"
+                },
+                "file_path": "tests/data/tb.Human.GCA000001405.22.fasta.bt2.tar.gz",
+                "data_type": "index_bwa",
+                "compressed": "null"
+            }
+        }, {
+            "required": false,
+            "allow_multiple": false,
+            "name": "gem_index",
+            "file": {
+                "file_type": "bed",
+                "meta_data": {
+                    "visible": true,
+                    "tool": "gem_indexer",
+                    "description": "Compressed GEM file"
+                },
+                "file_path": "tests/data/tb.Human.GCA000001405.22_gem.fasta.gem.gz",
+                "data_type": "index_gem",
+                "compressed": "true"
+            }
+        }, {
+            "required": false,
+            "allow_multiple": false,
+            "name": "genome_gem",
+            "file": {
+                "file_type": "bed",
+                "meta_data": {
+                    "visible": true,
+                    "tool": "gem_indexer",
+                    "description": "Genome file modified for use with the GEM indexer and aligner"
+                },
+                "file_path": "tests/data/tb.Human.GCA000001405.22_gem.fasta",
+                "data_type": "genome_gem",
+                "compressed": "null"
+            }
+        }
+    ],
+    "arguments": [],
+    "input_files": [
+        {
+            "required": true,
+            "allow_multiple": false,
+            "name": "genome",
+            "value": "59b7e020d9422a5969b65372"
+        }
+    ]
+}
+
+
+

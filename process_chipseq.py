@@ -146,15 +146,16 @@ class process_chipseq(Workflow):
 
         print(
             "PROCESS CHIPSEQ - FILES PASSED TO TOOLS:",
-            remap(input_files, "genome", "loc", "amb", "ann", "bwt", "pac", "sa")
+            remap(input_files, "genome", "loc", "index")
         )
+
         print("PROCESS CHIPSEQ - DEFINED OUTPUT:", output_files["bam"])
         bwa_files, bwa_meta = bwa.run(
             # ideally parameter "roles" don't change
             remap(input_files,
-                  "genome", "loc", "amb", "ann", "bwt", "pac", "sa"),
+                  "genome", "loc", "index"),
             remap(metadata,
-                  "genome", "loc", "amb", "ann", "bwt", "pac", "sa"),
+                  "genome", "loc", "index"),
             {"output": output_files["bam"]}
         )
 
@@ -162,9 +163,9 @@ class process_chipseq(Workflow):
             bwa_bg_files, bwa_bg_meta = bwa.run(
                 # Small changes can be handled easily using "remap"
                 remap(input_files,
-                      "genome", "amb", "ann", "bwt", "pac", "sa", bg_loc="loc"),
+                      "genome", "bg_loc", "index"),
                 remap(metadata,
-                      "genome", "amb", "ann", "bwt", "pac", "sa", bg_loc="loc"),
+                      "genome", "bg_loc", "index"),
                 # Intermediate outputs should be created via tempfile?
                 {"output": output_files["bam_bg"]}
             )
@@ -286,24 +287,8 @@ def prepare_files(
         "test", genome_fa, "file", "fasta", 64000, parent_dir,
         "Assembly", taxon_id, None, None,
         meta_data={"assembly" : assembly, 'tool': 'bwa_indexer'})
-    amb_file = dm_handler.set_file(
-        "test", genome_fa + ".amb", "file", "amb", 64000, parent_dir,
-        "Index", taxon_id, None, [genome_file],
-        meta_data={'assembly' : assembly, 'tool': 'bwa_indexer'})
-    ann_file = dm_handler.set_file(
-        "test", genome_fa + ".ann", "file", "ann", 64000, parent_dir,
-        "Index", taxon_id, None, [genome_file],
-        meta_data={'assembly' : assembly, 'tool': 'bwa_indexer'})
-    bwt_file = dm_handler.set_file(
-        "test", genome_fa + ".bwt", "file", "bwt", 64000, parent_dir,
-        "Index", taxon_id, None, [genome_file],
-        meta_data={'assembly' : assembly, 'tool': 'bwa_indexer'})
-    pac_file = dm_handler.set_file(
-        "test", genome_fa + ".pac", "file", "pac", 64000, parent_dir,
-        "Index", taxon_id, None, [genome_file],
-        meta_data={'assembly' : assembly, 'tool': 'bwa_indexer'})
-    sa_file = dm_handler.set_file(
-        "test", genome_fa + ".sa", "file", "sa", 64000, parent_dir,
+    index_file = dm_handler.set_file(
+        "test", genome_fa + ".bwa.tar.gz", "file", "index_bwa", 64000, parent_dir,
         "Index", taxon_id, None, [genome_file],
         meta_data={'assembly' : assembly, 'tool': 'bwa_indexer'})
 
@@ -313,21 +298,9 @@ def prepare_files(
         "genome": Metadata(
             "Assembly", "fasta", genome_fa, None,
             {'assembly' : assembly}, genome_file),
-        "amb": Metadata(
-            "Index", "amb", genome_fa + ".amb", [genome_file],
-            {'assembly': assembly, "tool": "bwa_indexer"}, amb_file),
-        "ann": Metadata(
-            "Index", "ann", genome_fa + ".ann", [genome_file],
-            {'assembly': assembly, "tool": "bwa_indexer"}, ann_file),
-        "bwt": Metadata(
-            "Index", "bwt", genome_fa + ".bwt", [genome_file],
-            {'assembly': assembly, "tool": "bwa_indexer"}, bwt_file),
-        "pac": Metadata(
-            "Index", "pac", genome_fa + ".pac", [genome_file],
-            {'assembly': assembly, "tool": "bwa_indexer"}, pac_file),
-        "sa": Metadata(
-            "Index", "sa", genome_fa + ".sa", [genome_file],
-            {'assembly': assembly, "tool": "bwa_indexer"}, sa_file),
+        "index": Metadata(
+            "Index", "bwa_index", genome_fa + ".bwa.tar.gz", [genome_file],
+            {'assembly': assembly, "tool": "bwa_indexer"}, index_file),
     }
 
     fq1_file = dm_handler.set_file(
@@ -340,11 +313,7 @@ def prepare_files(
 
     files = {
         "genome": genome_fa,
-        "amb": genome_fa + ".amb",
-        "ann": genome_fa + ".ann",
-        "bwt": genome_fa + ".bwt",
-        "pac": genome_fa + ".pac",
-        "sa": genome_fa + ".sa",
+        "index": genome_fa + ".bwa.tar.gz",
         "loc": file_loc
     }
 

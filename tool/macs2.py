@@ -165,15 +165,17 @@ class macs2(Tool):
         od_list = bam_file.split("/")
         output_dir = "/".join(od_list[0:-1])
 
-        command_line = 'macs2 callpeak -t ' + bam_file + ' -n ' + name + '_out --outdir ' + output_dir
+        command_line = 'macs2 callpeak -t ' + bam_file
+        command_line = command_line + ' -n ' + name + '_out --outdir ' + output_dir
 
         print("MACS2 - NAME:", name)
         if name == 'macs2.Human.DRR000150.22_filtered':
             # This is for when running the test data
+            print("USING NOMODEL")
             command_line = command_line + ' --nomodel'
 
         print('Output Files:', narrowpeak, summits_bed, broadpeak, gappedpeak)
-        print(command_line)
+        print('MACS2 COMMAND LINE:', command_line)
 
         args = shlex.split(command_line)
         process = subprocess.Popen(args)

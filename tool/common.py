@@ -486,6 +486,8 @@ class common(object):
             'samtools view -b -o ' + output_bam_file + ' ' + intermediate_sam_file
         ]
 
+        print("BWA COMMAND LINES:", command_lines)
+
         for command_line in command_lines:
             args = shlex.split(command_line)
             process = subprocess.Popen(args)

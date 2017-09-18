@@ -313,12 +313,15 @@ class tbParseMappingTool(Tool):
         enzyme_name = metadata['enzyme_name']
         mapping_list = metadata['mapping']
         expt_name = metadata['expt_name']
-
+        filter_chrom = None
+        if 'chromosomes' in metadata:
+            filter_chrom = metadata['chromosomes']
+            
         root_name = input_files[1].split("/")
 
         reads = "/".join(root_name[0:-1]) + '/'
 
-        genome_seq = parse_fasta(genome_file)
+        genome_seq = parse_fasta(genome_file, chr_regexp=filter_chrom)
 
         chromosome_meta = []
         for k in genome_seq:

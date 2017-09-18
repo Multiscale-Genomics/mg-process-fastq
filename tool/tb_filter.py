@@ -55,13 +55,13 @@ class tbFilterTool(Tool):
         Tool.__init__(self)
 
     @task(
-        reads=FILE_IN, filter_reads_file=FILE_OUT, conservative=IN,
+        reads=FILE_IN, filter_reads_file=FILE_OUT, custom_filter=IN, conservative=IN,
         output_de=FILE_OUT, output_d=FILE_OUT, output_e=FILE_OUT,
         output_ed=FILE_OUT, output_or=FILE_OUT, output_rb=FILE_OUT,
         output_sc=FILE_OUT, output_tc=FILE_OUT, output_tl=FILE_OUT,
         output_ts=FILE_OUT, returns=int)
     def tb_filter(
-            self, reads, filter_reads_file, conservative, output_de, output_d,
+            self, reads, filter_reads_file, custom_filter, conservative, output_de, output_d,
             output_e, output_ed, output_or, output_rb, output_sc, output_tc,
             output_tl, output_ts):
         """
@@ -101,19 +101,25 @@ class tbFilterTool(Tool):
             re_proximity=4)
 
         filter_reads_file_tmp = filter_reads_file.replace(".tsv", '')
-
-        if conservative is True:
-            # Ignore filter 5 (based on docs) as not very helpful
-            apply_filter(reads_tmp + "_tmp.tsv", filter_reads_file_tmp + "_tmp.tsv", masked, filters=[1, 2, 3, 4, 6, 7, 8, 9, 10])
+        filters_suffixes = ['dangling-end', 'duplicated', 'error', 'extra_dangling-end', 'over-represented', 'random_breaks', 'self-circle', 'too_close_from_RES', 'too_large', 'too_short']                
+            
+        if custom_filter:
+            applied_filters = custom_filter
+            filters_suffixes = [filters_suffixes[i] for i in applied_filters]               
         else:
-            # Less conservative option
-            apply_filter(reads_tmp + "_tmp.tsv", filter_reads_file_tmp + "_tmp.tsv", masked, filters=[1, 2, 3, 9, 10])
+            if conservative is True:
+                applied_filters = [1, 2, 3, 4, 6, 7, 8, 9, 10]
+                # Ignore filter 5 (based on docs) as not very helpful
+            else:
+                # Less conservative option
+                applied_filters = [1, 2, 3, 9, 10]
 
+        apply_filter(reads_tmp + "_tmp.tsv", filter_reads_file_tmp + "_tmp.tsv", masked, filters=applied_filters)
+        
         with open(filter_reads_file, "wb") as f_out:
             with open(filter_reads_file_tmp + "_tmp.tsv", "rb") as f_in:
                 f_out.write(f_in.read())
 
-        filters_suffixes = ['dangling-end', 'duplicated', 'error', 'extra_dangling-end', 'over-represented', 'random_breaks', 'self-circle', 'too_close_from_RES', 'too_large', 'too_short']
         for i in filters_suffixes:
             report_file_loc = reads_tmp + '_tmp.tsv_' + i + '.tsv'
             print(report_file_loc)
@@ -188,9 +194,20 @@ class tbFilterTool(Tool):
         """
 
         reads = input_files[0]
+        filters_suffixes = ['dangling-end', 'duplicated', 'error', 'extra_dangling-end', 'over-represented', 'random_breaks', 'self-circle', 'too_close_from_RES', 'too_large', 'too_short']                
+        for fs in filters_suffixes:    
+            if fs in metadata:
+                metadata[fs] = (metadata[fs].lower() in ("yes", "true", "t", "1")) 
+                
         conservative = True
-        if 'conservative_filtering' in metadata:
-            conservative = metadata['conservative_filtering']
+        custom_filter = None
+        if 'custom_filter' in metadata:
+            custom_filter = []
+            for idx,fs in enumerate(filters_suffixes):
+                if fs in metadata and metadata[fs]:
+                    custom_filter.add(idx)
+        elif 'conservative' in metadata:
+            conservative = metadata['conservative']
 
         root_name = reads.split("/")
         
@@ -212,7 +229,7 @@ class tbFilterTool(Tool):
 
         # handle error
         results = self.tb_filter(
-            reads, filtered_reads_file, conservative,
+            reads, filtered_reads_file, custom_filter, conservative,
             output_de, output_d, output_e, output_ed, output_or, output_rb,
             output_sc, output_tc, output_tl, output_ts)
         results = compss_wait_on(results)

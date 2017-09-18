@@ -50,6 +50,131 @@
             "type": "string",
             "required": false,
             "value": "1:20 1:40"
+        },
+        {
+            "name": "chromosomes",
+            "description": "Filter chromosomes",
+            "help": "Only chromosome names to parse. Ex: chrX, 1, 2B, chrMito, Mito, chrXIV.",
+            "type": "string",
+            "required": false,
+            "value": "21"
+        },
+        {
+            "name": "self-circle",
+            "description": "self-circle",
+            "help": "reads are coming from a single RE fragment and point to the outside (—-<===—===>—).",
+            "type": "boolean",
+            "required": true,
+            "default": "true",
+            "value": "true"
+        },
+        {
+            "name": "dangling-end",
+            "description": "dangling-end",
+            "help": "reads are coming from a single RE fragment and point to the inside (—-===>—<===—)",
+            "type": "boolean",
+            "required": true,
+            "default": "true",
+            "value": "true"
+        },
+        {
+            "name": "error",
+            "description": "error",
+            "help": "reads are coming from a single RE fragment and point in the same direction",
+            "type": "boolean",
+            "required": true,
+            "default": "true",
+            "value": "true"
+        },
+        {
+            "name": "extra dangling-end",
+            "description": "extra dangling-end",
+            "help": "reads are coming from different RE fragment but are close enough (< Maximum molecule length) and point to the inside. Maximum molecule length parameter depends on the size of the sequenced fragments.",
+            "type": "boolean",
+            "required": true,
+            "default": "true",
+            "value": "true"
+        },
+        {
+            "name": "too close from REs",
+            "description": "too close from REs",
+            "help": "semi-dangling-end filter, start position of one of the read is too close (5 bp by default) from RE cutting site (with 4 base-pair-cutter enzyme it can be set to 4 nt). This filter is in general not taken into account in in-situ Hi-C experiments, and with 4bp cutters as the ligation may happen only one side of the DNA fragments.",
+            "type": "boolean",
+            "required": true,
+            "default": "false",
+            "value": "true"
+        },
+        {
+            "name": "too short",
+            "description": "too short",
+            "help": "remove reads coming from small restriction less than 100 bp (default) because they are comparable to the read length, and are thus probably artifacts.",
+            "type": "boolean",
+            "required": true,
+            "default": "false",
+            "value": "true"
+        },
+        {
+            "name": "too large",
+            "description": "too large",
+            "help": "remove reads coming from large restriction fragments (default: 100 Kb, P < 10-5 to occur in a randomized genome) as they likely represent poorly assembled or repeated regions",
+            "type": "boolean",
+            "required": true,
+            "default": "false",
+            "value": "true"
+        },
+        {
+            "name": "over-represented",
+            "description": "over-represented",
+            "help": "reads coming from the top 0.5% most frequently detected restriction fragments, they may be prone to PCR artifacts or represent fragile regions of the genome or genome assembly errors",
+            "type": "boolean",
+            "required": true,
+            "default": "false",
+            "value": "true"
+        },
+        {
+            "name": "duplicated",
+            "description": "duplicated",
+            "help": "the combination of the start positions (and direction) of the reads is repeated -> PCR artifact (only keep one copy)",
+            "type": "boolean",
+            "required": true,
+            "default": "true",
+            "value": "true"
+        },
+        {
+            "name": "random breaks",
+            "description": "random breaks",
+            "help": "start position of one of the read is too far (more than Minimum distance to RE site) from RE cutting site. Non-canonical enzyme activity or random physical breakage of the chromatin.",
+            "type": "boolean",
+            "required": true,
+            "default": "true",
+            "value": "true"
+        },
+        {
+            "name": "min_dist_RE",
+            "description": "Minimum distance to RE site",
+            "help": "Used to exclude reads starting too close from a RE site. Such reads are called pseudo-dangling-ends.",
+            "type": "integer",
+            "required": false,
+            "default": "5",
+            "value": "5"
+        },
+        {
+            "name": "min_fragment_size",
+            "description": "Minimum fragment size",
+            "help": "To exclude small genomic RE fragments (smaller than sequenced reads)",
+            "type": "integer",
+            "required": false,
+            "default": "50",
+            "value": "50"
+        },
+        {
+            "name": "max_fragment_size",
+            "description": "Maximum fragment size",
+            "help": "To exclude large genomic RE fragments (probably resulting from gaps in the reference genome)",
+            "type": "integer",
+            "required": false,
+            "default": "100000",
+            "value": "100000"
         }
     ],
     "output_files": [

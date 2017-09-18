@@ -82,6 +82,7 @@ class tadbit_map_parse_filter(Workflow):
         m_results_meta['map1'] = tfm1_meta
         m_results_meta['map1']['error'] = ''
         
+        input_metadata = remap(self.configuration, "chromosomes")
         tfm2 = tbFullMappingTool()
         tfm2_files, tfm2_meta = tfm2.run([genome_gem, fastq_file_2], [], input_metadata)
         
@@ -90,6 +91,8 @@ class tadbit_map_parse_filter(Workflow):
         
         tpm = tbParseMappingTool()
         files = [genome_fa] + tfm1_files + tfm2_files
+
+        input_metadata = remap(self.configuration, "chromosomes")                
         input_metadata['mapping'] = [tfm1_meta['func'], tfm2_meta['func']]
         input_metadata['expt_name'] = 'vre' 
          
@@ -101,9 +104,14 @@ class tadbit_map_parse_filter(Workflow):
         m_results_meta['parse']['error'] = ''
          
         print("TB PARSED FILES:", tpm_files)
- 
+        
+        input_metadata = remap(self.configuration, "chromosomes")                
+        input_metadata['expt_name'] = 'vre'
+        input_metadata['outbam'] = 'vre_filtered_reads'
+        input_metadata['custom_filter'] = True
+        
         tbf = tbFilterTool()
-        tf_files, tf_meta = tbf.run(tpm_files, [], {'conservative' : True, 'expt_name' : 'vre', 'outbam' : 'vre_filtered_reads'})
+        tf_files, tf_meta = tbf.run(tpm_files, [], input_metadata)
   
         m_results_meta['filter'] = tf_meta
         m_results_meta['filter']['error'] = ''

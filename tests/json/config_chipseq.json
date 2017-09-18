@@ -107,28 +107,8 @@
         }, {
             "required": true,
             "allow_multiple": false,
-            "name": "amb",
+            "name": "index",
             "value": "59b7e020d9422a5969b65373"
-        }, {
-            "required": true,
-            "allow_multiple": false,
-            "name": "ann",
-            "value": "59b7e020d9422a5969b65374"
-        }, {
-            "required": true,
-            "allow_multiple": false,
-            "name": "bwt",
-            "value": "59b7e020d9422a5969b65375"
-        }, {
-            "required": true,
-            "allow_multiple": false,
-            "name": "pac",
-            "value": "59b7e020d9422a5969b65376"
-        }, {
-            "required": true,
-            "allow_multiple": false,
-            "name": "sa",
-            "value": "59b7e020d9422a5969b65377"
         }
     ]
 }

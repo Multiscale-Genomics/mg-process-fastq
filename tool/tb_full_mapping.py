@@ -36,6 +36,7 @@ except ImportError:
 
 from basic_modules.tool import Tool
 
+from os import path
 from pytadbit.mapping.mapper import full_mapping
 
 # ------------------------------------------------------------------------------
@@ -137,8 +138,9 @@ class tbFullMappingTool(Tool):
 
         """
         print("tb_full_mapping_frag")
-        od_loc = fastq_file.split("/")
-        output_dir = "/".join(od_loc[0:-1])
+        #od_loc = fastq_file.split("/")
+        #output_dir = "/".join(od_loc[0:-1])
+        output_dir = workdir
 
         print("TB MAPPING - output_dir:", output_dir)
         print("TB MAPPING - full_file dir:", full_file)
@@ -146,10 +148,12 @@ class tbFullMappingTool(Tool):
         gzipped = ''
         if fastq_file.endswith('.fastq.gz') or fastq_file.endswith('.fq.gz'):
             gzipped = '.gz'
-            
-        fastq_file_tmp = fastq_file.replace(".fastq"+gzipped, '')
-        fastq_file_tmp = fastq_file_tmp.replace(".fq"+gzipped, '')
-
+        
+        file_name = path.basename(fastq_file)
+        file_name = file_name.replace('.fastq'+gzipped, '')
+        file_name = file_name.replace('.fq'+gzipped, '')
+        fastq_file_tmp = workdir+'/'+file_name    
+        
         with open(fastq_file_tmp + "_tmp.fastq"+gzipped, "wb") as f_out:
             with open(fastq_file, "rb") as f_in:
                 f_out.write(f_in.read())
@@ -209,23 +213,24 @@ class tbFullMappingTool(Tool):
             frag_base = (windows == None)
         if 'workdir' in metadata:
             root_path = metadata['workdir']
-        else:
-            root_path = ''
-
-        root_name = fastq_file.split("/")
-        root_name[-1] = root_name[-1].replace('.fastq', '')
-        root_name[-1] = root_name[-1].replace('.fq', '')
+        else:        
+            root_path = path.dirname(path.abspath(fastq_file))
+            
+        file_name = path.basename(fastq_file)
+        file_name = file_name.replace('.fastq', '')
+        file_name = file_name.replace('.fq', '')
+        file_name = root_path+'/'+file_name
 
         #name = root_name[-1]
 
         # input and output share most metadata
         output_metadata = {}
 
-        root_path = root_path+ '/'.join(root_name)
+        
 
         if frag_base:
-            full_file = root_path + "_full.map"
-            frag_file = root_path + "_frag.map"
+            full_file = file_name + "_full.map"
+            frag_file = file_name + "_frag.map"
 
             results = self.tb_full_mapping_frag(
                 gem_file, fastq_file, metadata['enzyme_name'], None,

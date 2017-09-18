@@ -74,7 +74,7 @@ class tadbit_map_parse_filter(Workflow):
         fastq_file_1 = convert_from_unicode(input_files['reads1'])
         fastq_file_2 = convert_from_unicode(input_files['reads2'])
         input_metadata = remap(self.configuration, "iterative_mapping", "windows",rest_enzyme="enzyme_name")
-        input_metadata['workdir'] = 'tests/data/tmp/'        
+        input_metadata['workdir'] = os.path.abspath('tests/data/tmp/')        
         m_results_meta = {}
         
         tfm1 = tbFullMappingTool()
@@ -92,7 +92,7 @@ class tadbit_map_parse_filter(Workflow):
         tpm = tbParseMappingTool()
         files = [genome_fa] + tfm1_files + tfm2_files
 
-        input_metadata = remap(self.configuration, "chromosomes")                        
+        input_metadata = remap(self.configuration, "chromosomes",rest_enzyme="enzyme_name")                        
         input_metadata['mapping'] = [tfm1_meta['func'], tfm2_meta['func']]
         input_metadata['expt_name'] = 'vre' 
          
@@ -105,7 +105,9 @@ class tadbit_map_parse_filter(Workflow):
          
         print("TB PARSED FILES:", tpm_files)
         
-        input_metadata = remap(self.configuration, "chromosomes")                
+        input_metadata = remap(self.configuration, "chromosomes",'self-circle','dangling-end', 'error', 
+                               'extra dangling-end','too close from REs', 'too short','too large', 
+                               'over-represented' ,'duplicated', 'random breaks','min_dist_RE','min_fragment_size','max_fragment_size')                
         input_metadata['expt_name'] = 'vre'
         input_metadata['outbam'] = 'vre_filtered_reads'
         input_metadata['custom_filter'] = True

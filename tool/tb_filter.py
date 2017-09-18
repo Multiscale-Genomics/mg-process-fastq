@@ -61,7 +61,8 @@ class tbFilterTool(Tool):
         output_sc=FILE_OUT, output_tc=FILE_OUT, output_tl=FILE_OUT,
         output_ts=FILE_OUT, returns=int)
     def tb_filter(
-            self, reads, filter_reads_file, custom_filter, conservative, output_de, output_d,
+            self, reads, filter_reads_file, custom_filter,min_dist_RE,min_fragment_size,
+            max_fragment_size, conservative, output_de, output_d,
             output_e, output_ed, output_or, output_rb, output_sc, output_tc,
             output_tl, output_ts):
         """
@@ -89,23 +90,22 @@ class tbFilterTool(Tool):
 
         with open(reads_tmp + "_tmp.tsv", "wb") as f_out:
             with open(reads, "rb") as f_in:
-                f_out.write(f_in.read())
-
+                f_out.write(f_in.read())            
         masked = filter_reads(
             reads_tmp + "_tmp.tsv",
             max_molecule_length=610,
-            min_dist_to_re=915,
+            min_dist_to_re=min_dist_RE,
             over_represented=0.005,
-            max_frag_size=100000,
-            min_frag_size=100,
+            max_frag_size=max_fragment_size,
+            min_frag_size=min_fragment_size,
             re_proximity=4)
 
         filter_reads_file_tmp = filter_reads_file.replace(".tsv", '')
-        filters_suffixes = ['dangling-end', 'duplicated', 'error', 'extra_dangling-end', 'over-represented', 'random_breaks', 'self-circle', 'too_close_from_RES', 'too_large', 'too_short']                
+        filters_suffixes = ['self-circle','dangling-end', 'error', 'extra dangling-end','too close from REs', 'too short','too large', 'over-represented' ,'duplicated', 'random breaks']                
             
         if custom_filter:
             applied_filters = custom_filter
-            filters_suffixes = [filters_suffixes[i] for i in applied_filters]               
+            filters_suffixes = [filters_suffixes[i-1] for i in applied_filters]               
         else:
             if conservative is True:
                 applied_filters = [1, 2, 3, 4, 6, 7, 8, 9, 10]
@@ -194,7 +194,7 @@ class tbFilterTool(Tool):
         """
 
         reads = input_files[0]
-        filters_suffixes = ['dangling-end', 'duplicated', 'error', 'extra_dangling-end', 'over-represented', 'random_breaks', 'self-circle', 'too_close_from_RES', 'too_large', 'too_short']                
+        filters_suffixes = ['self-circle','dangling-end', 'error', 'extra dangling-end','too close from REs', 'too short','too large', 'over-represented' ,'duplicated', 'random breaks']                
         for fs in filters_suffixes:    
             if fs in metadata:
                 metadata[fs] = (metadata[fs].lower() in ("yes", "true", "t", "1")) 
@@ -205,9 +205,19 @@ class tbFilterTool(Tool):
             custom_filter = []
             for idx,fs in enumerate(filters_suffixes):
                 if fs in metadata and metadata[fs]:
-                    custom_filter.add(idx)
+                    custom_filter.append(idx+1)
         elif 'conservative' in metadata:
             conservative = metadata['conservative']
+        
+        min_dist_RE=915
+        max_fragment_size=100000
+        min_fragment_size=100
+        if 'min_dist_RE' in metadata:
+            min_dist_RE=int(metadata['min_dist_RE'])
+        if 'min_fragment_size' in metadata:
+            min_fragment_size=int(metadata['min_fragment_size'])
+        if 'max_fragment_size' in metadata:
+            max_fragment_size=int(metadata['max_fragment_size'])
 
         root_name = reads.split("/")
         
@@ -229,7 +239,8 @@ class tbFilterTool(Tool):
 
         # handle error
         results = self.tb_filter(
-            reads, filtered_reads_file, custom_filter, conservative,
+            reads, filtered_reads_file, custom_filter, min_dist_RE,
+            min_fragment_size,max_fragment_size, conservative,
             output_de, output_d, output_e, output_ed, output_or, output_rb,
             output_sc, output_tc, output_tl, output_ts)
         results = compss_wait_on(results)

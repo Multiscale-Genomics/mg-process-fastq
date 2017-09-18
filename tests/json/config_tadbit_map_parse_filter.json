@@ -57,7 +57,7 @@
             "help": "Only chromosome names to parse. Ex: chrX, 1, 2B, chrMito, Mito, chrXIV.",
             "type": "string",
             "required": false,
-            "value": "21"
+            "value": ""
         },
         {
             "name": "self-circle",

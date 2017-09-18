@@ -29,7 +29,7 @@
         "_id": "59b7e020d9422a5969b65373",
         "data_type": "sequence_genomic",
         "file_type": "fasta",
-        "file_path": "tests/data/tb.Human.GCA_000001405.22.fa",
+        "file_path": "/scratch/genomes/hg38.fa",
         "source_id": null,
         "meta_data": {
             "visible": true,
@@ -41,7 +41,7 @@
         "_id": "59b7e020d9422a5969b65374",
         "data_type": "sequence_mapping_index",
         "file_type": "gem",
-        "file_path": "tests/data/tb.Human.GCA_000001405.22.gem",
+        "file_path": "/scratch/genomes/hg38.gem",
         "source_id": null,
         "meta_data": {
             "visible": true,

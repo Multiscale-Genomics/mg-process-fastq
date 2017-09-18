@@ -74,6 +74,7 @@ class tadbit_map_parse_filter(Workflow):
         fastq_file_1 = convert_from_unicode(input_files['reads1'])
         fastq_file_2 = convert_from_unicode(input_files['reads2'])
         input_metadata = remap(self.configuration, "iterative_mapping", "windows",rest_enzyme="enzyme_name")
+        input_metadata['workdir'] = 'tests/data/tmp/'        
         m_results_meta = {}
         
         tfm1 = tbFullMappingTool()
@@ -82,7 +83,6 @@ class tadbit_map_parse_filter(Workflow):
         m_results_meta['map1'] = tfm1_meta
         m_results_meta['map1']['error'] = ''
         
-        input_metadata = remap(self.configuration, "chromosomes")
         tfm2 = tbFullMappingTool()
         tfm2_files, tfm2_meta = tfm2.run([genome_gem, fastq_file_2], [], input_metadata)
         
@@ -92,7 +92,7 @@ class tadbit_map_parse_filter(Workflow):
         tpm = tbParseMappingTool()
         files = [genome_fa] + tfm1_files + tfm2_files
 
-        input_metadata = remap(self.configuration, "chromosomes")                
+        input_metadata = remap(self.configuration, "chromosomes")                        
         input_metadata['mapping'] = [tfm1_meta['func'], tfm2_meta['func']]
         input_metadata['expt_name'] = 'vre' 
          
@@ -191,8 +191,8 @@ def main_json():
     root_path = os.path.dirname(os.path.abspath(__file__))
     result = app.launch(tadbit_map_parse_filter,
                         root_path,
-                        "../test_config.json",
-                        "../test_input.json")
+                        "tests/json/config_tadbit_map_parse_filter.json",
+                        "tests/json/input_tadbit_map_parse_filter.json")
 
     # 2. The App has finished
     print("2. Execution finished; see " + root_path + "/results.json")

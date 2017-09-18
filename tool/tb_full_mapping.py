@@ -111,7 +111,7 @@ class tbFullMappingTool(Tool):
     # @constraint(ProcessorCoreCount=16)
     def tb_full_mapping_frag(
             self, gem_file, fastq_file, enzyme_name, windows,
-            full_file, frag_file,workdir='/scratch/genomes/'):
+            full_file, frag_file,workdir='/tmp/'):
         """
         Function to map the FASTQ files to the GEM file based on fragments
         derived from the restriction enzyme that was used.
@@ -229,7 +229,7 @@ class tbFullMappingTool(Tool):
 
             results = self.tb_full_mapping_frag(
                 gem_file, fastq_file, metadata['enzyme_name'], None,
-                full_file, frag_file
+                full_file, frag_file, workdir=root_path
             )
             results = compss_wait_on(results)
 
@@ -247,7 +247,7 @@ class tbFullMappingTool(Tool):
 
         results = self.tb_full_mapping_iter(
             gem_file, fastq_file, windows,
-            window1, window2, window3, window4
+            window1, window2, window3, window4,workdir=root_path
         )
         results = compss_wait_on(results)
 

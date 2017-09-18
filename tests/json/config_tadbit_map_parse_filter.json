@@ -186,7 +186,7 @@
                 "file_type": "BAM",
                 "data_type": "hic_sequences",
                 "compressed": "null",
-                "file_path": "/scratch/genomes/file1.bam",
+                "file_path": "tests/data/file1.bam",
                 "meta_data": {
                     "tool": "tadbit",
                     "description": "Paired end reads",
@@ -202,7 +202,7 @@
                 "file_type": "TAR",
                 "data_type": "tool_statistics",
                 "compressed": "gzip",
-                "file_path": "/scratch/genomes/stats.tar.gz",
+                "file_path": "tests/data/stats.tar.gz",
                 "meta_data": {
                     "description": "TADbit mapping, parsing and filtering statistics",
                     "tool": "tadbit",

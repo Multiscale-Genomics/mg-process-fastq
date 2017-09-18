@@ -116,8 +116,8 @@ class tadbit_map_parse_filter(Workflow):
                 
          # List of files to get saved
         print("TADBIT RESULTS:", m_results_files)
-        return m_results_files, m_results_meta
-
+        return {"output": m_results_files["paired_reads"]}, {"output": m_results_meta}
+        
 # ------------------------------------------------------------------------------
 
 def remap(indict, *args, **kwargs):
@@ -183,8 +183,8 @@ def main_json():
     root_path = os.path.dirname(os.path.abspath(__file__))
     result = app.launch(tadbit_map_parse_filter,
                         root_path,
-                        "../test_config.json",
-                        "../test_input.json")
+                        "tests/json/config_tadbit_map_parse_filter.json",
+                        "tests/json/input_tadbit_map_parse_filter.json")
 
     # 2. The App has finished
     print("2. Execution finished; see " + root_path + "/results.json")

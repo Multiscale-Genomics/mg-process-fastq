@@ -55,6 +55,9 @@ space.
    echo 'export PATH="$PYENV_ROOT/bin:$PATH"' >> ~/.bash_profile
    echo 'eval "$(pyenv init -)"' >> ~/.bash_profile
 
+   # Add the .bash_profile to your .bashrc file
+   echo 'source ~/.bash_profile"' >> ~/.bashrc
+
    git clone https://github.com/pyenv/pyenv-virtualenv.git ${PYENV_ROOT}/plugins/pyenv-virtualenv
 
    pyenv install 2.7.12

@@ -78,6 +78,8 @@ def hic_pipeline(verbose=False):
 
     params.append('tests/test_pipeline_tb.py')
 
+    return pytest.main(params)
+
 def mnaseseq_pipeline(verbose=False):
     """
     Runs the tests for the MNase-seq pipeline

@@ -26,61 +26,9 @@
     },
     {
         "_id": "59b7e020d9422a5969b65373",
-        "data_type": "Index",
-        "file_type": "amb",
-        "file_path": "tests/data/macs2.Human.GCA_000001405.22.fasta.amb",
-        "source_id": ["59b7e020d9422a5969b65372"],
-        "meta_data": {
-            "visible": true,
-            "validated": 1,
-            "tool": "bwa_indexer",
-            "assembly": "GCA_000001405.22"
-        }
-    },
-    {
-        "_id": "59b7e020d9422a5969b65374",
-        "data_type": "Index",
-        "file_type": "ann",
-        "file_path": "tests/data/macs2.Human.GCA_000001405.22.fasta.ann",
-        "source_id": ["59b7e020d9422a5969b65372"],
-        "meta_data": {
-            "visible": true,
-            "validated": 1,
-            "tool": "bwa_indexer",
-            "assembly": "GCA_000001405.22"
-        }
-    },
-    {
-        "_id": "59b7e020d9422a5969b65375",
-        "data_type": "Index",
-        "file_type": "bwt",
-        "file_path": "tests/data/macs2.Human.GCA_000001405.22.fasta.bwt",
-        "source_id": ["59b7e020d9422a5969b65372"],
-        "meta_data": {
-            "visible": true,
-            "validated": 1,
-            "tool": "bwa_indexer",
-            "assembly": "GCA_000001405.22"
-        }
-    },
-    {
-        "_id": "59b7e020d9422a5969b65376",
-        "data_type": "Index",
-        "file_type": "pac",
-        "file_path": "tests/data/macs2.Human.GCA_000001405.22.fasta.pac",
-        "source_id": ["59b7e020d9422a5969b65372"],
-        "meta_data": {
-            "visible": true,
-            "validated": 1,
-            "tool": "bwa_indexer",
-            "assembly": "GCA_000001405.22"
-        }
-    },
-    {
-        "_id": "59b7e020d9422a5969b65377",
-        "data_type": "Index",
-        "file_type": "sa",
-        "file_path": "tests/data/macs2.Human.GCA_000001405.22.fasta.sa",
+        "data_type": "index_bwa",
+        "file_type": "bwa_index",
+        "file_path": "tests/data/macs2.Human.GCA_000001405.22.fasta.bwa.tar.gz",
         "source_id": ["59b7e020d9422a5969b65372"],
         "meta_data": {
             "visible": true,

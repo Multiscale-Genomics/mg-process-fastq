@@ -54,8 +54,7 @@ class bwaAlignerTool(Tool):
         Tool.__init__(self)
 
     @task(returns=bool, genome_file_loc=FILE_IN, read_file_loc=FILE_IN,
-          bam_loc=FILE_OUT, amb_loc=FILE_IN, ann_loc=FILE_IN, bwt_loc=FILE_IN,
-          pac_loc=FILE_IN, sa_loc=FILE_IN, isModifier=False)
+          bam_loc=FILE_OUT, genome_idx=FILE_IN, isModifier=False)
     def bwa_aligner(  # pylint: disable=too-many-arguments
             self, genome_file_loc, read_file_loc, bam_loc, genome_idx):  # pylint: disable=unused-argument
         """
@@ -76,15 +75,18 @@ class bwaAlignerTool(Tool):
         g_dir = genome_idx.split("/")
         g_dir = "/".join(g_dir[:-1])
 
+        print("genome_idx:", genome_idx)
         tar = tarfile.open(genome_idx)
         tar.extractall(path=g_dir)
         tar.close()
 
-        od_list = read_file_loc.split("/")
+        gfl = genome_file_loc.split("/")
+        genome_fa_ln = genome_idx.replace('.tar.gz', '/') + gfl[-1]
+        os.symlink(genome_file_loc, genome_fa_ln)
 
         out_bam = read_file_loc + '.out.bam'
         common_handle = common()
-        common_handle.bwa_align_reads(genome_file_loc, read_file_loc, out_bam)
+        common_handle.bwa_align_reads(genome_fa_ln, read_file_loc, out_bam)
 
         with open(bam_loc, "wb") as f_out:
             with open(out_bam, "rb") as f_in:
@@ -114,8 +116,8 @@ class bwaAlignerTool(Tool):
         print("BWA ALIGNER (before):", type(output_files), output_files["output"])
 
         results = self.bwa_aligner(
-            input_files["genome"], input_files["loc"], output_files["output"],
-            input_files["index"])
+            str(input_files["genome"]), str(input_files["loc"]), str(output_files["output"]),
+            str(input_files["index"]))
 
         results = compss_wait_on(results)
 

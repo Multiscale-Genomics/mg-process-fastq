@@ -8,10 +8,10 @@
                 "file_type": "",
                 "meta_data": {
                     "visible": true,
-                    "tool": "bwt_indexer",
+                    "tool": "bwq_indexer",
                     "description": "Output"
                 },
-                "file_path": "tests/data/tb.Human.GCA000001405.22.fasta.bwa.tar.gz",
+                "file_path": "tests/data/tb.Human.GCA_000001405.22.fasta.bwa.tar.gz",
                 "data_type": "index_bwt",
                 "compressed": "null"
             }
@@ -26,8 +26,8 @@
                     "tool": "bwa_indexer",
                     "description": "Output"
                 },
-                "file_path": "tests/data/tb.Human.GCA000001405.22.fasta.bt2.tar.gz",
-                "data_type": "index_bwa",
+                "file_path": "tests/data/tb.Human.GCA_000001405.22.fasta.bt2.tar.gz",
+                "data_type": "index_bwt",
                 "compressed": "null"
             }
         }, {
@@ -41,7 +41,7 @@
                     "tool": "gem_indexer",
                     "description": "Compressed GEM file"
                 },
-                "file_path": "tests/data/tb.Human.GCA000001405.22_gem.fasta.gem.gz",
+                "file_path": "tests/data/tb.Human.GCA_000001405.22_gem.fasta.gem.gz",
                 "data_type": "index_gem",
                 "compressed": "true"
             }
@@ -56,7 +56,7 @@
                     "tool": "gem_indexer",
                     "description": "Genome file modified for use with the GEM indexer and aligner"
                 },
-                "file_path": "tests/data/tb.Human.GCA000001405.22_gem.fasta",
+                "file_path": "tests/data/tb.Human.GCA_000001405.22_gem.fasta",
                 "data_type": "genome_gem",
                 "compressed": "null"
             }

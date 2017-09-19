@@ -23,6 +23,7 @@ from functools import wraps # pylint: disable=unused-import
 
 import argparse
 import os
+import collections
 
 from basic_modules.workflow import Workflow
 from basic_modules.metadata import Metadata
@@ -52,8 +53,8 @@ class process_genome(Workflow):
         """
         if configuration is None:
             configuration = {}
-
-        self.configuration.update(configuration)
+        
+        self.configuration.update(convert_from_unicode(configuration))
 
     def run(self, input_files, metadata, output_files):
         """
@@ -82,7 +83,7 @@ class process_genome(Workflow):
 
         # Bowtie2 Indexer
         bowtie2 = bowtieIndexerTool()
-        bti, btm = bowtie2.run(input_files, metadata, {'index': output_files['bwt_index']})
+        bti, btm = bowtie2.run(convert_from_unicode(input_files), metadata, {'index': convert_from_unicode(output_files['bwt_index'])})
         output_metadata['bwt_index'] = btm['index']
 
         # BWA Indexer
@@ -140,7 +141,7 @@ def main_json():
     print("1. Instantiate and launch the App")
     from apps.jsonapp import JSONApp
     app = JSONApp()
-    root_path = os.path.expanduser('~') + "/code/mg-process-fastq"
+    root_path = os.path.dirname(os.path.abspath(__file__))
     result = app.launch(process_genome,
                         root_path,
                         "tests/json/config_genome_indexer.json",
@@ -209,6 +210,18 @@ def remap(indict, *args, **kwargs):
 
 # ------------------------------------------------------------------------------
 
+def convert_from_unicode(data):
+    if isinstance(data, basestring):
+        return str(data)
+    elif isinstance(data, collections.Mapping):
+        return dict(map(convert_from_unicode, data.iteritems()))
+    elif isinstance(data, collections.Iterable):
+        return type(data)(map(convert_from_unicode, data))
+    else:
+        return data
+
+# ------------------------------------------------------------------------------
+    
 if __name__ == "__main__":
     import sys
     sys._run_from_cmdl = True

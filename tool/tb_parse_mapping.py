@@ -321,7 +321,7 @@ class tbParseMappingTool(Tool):
 
         reads = "/".join(root_name[0:-1]) + '/'
 
-        genome_seq = parse_fasta(genome_file, chr_regexp=filter_chrom)
+        genome_seq = parse_fasta(genome_file, chr_filter=filter_chrom)
 
         chromosome_meta = []
         for k in genome_seq:

@@ -39,6 +39,7 @@ from basic_modules.tool import Tool
 
 from pytadbit.mapping.filter import apply_filter
 from pytadbit.mapping.filter import filter_reads
+from pytadbit.mapping.analyze import insert_sizes
 
 # ------------------------------------------------------------------------------
 
@@ -250,6 +251,39 @@ class tbFilterTool(Tool):
             bed2D_to_BAMhic(filtered_reads_file, True, 32, outbam, 'mid', results)
             filtered_reads_file = outbam
         
-        return ([filtered_reads_file], output_metadata)
+        hist_path = ''
+        if 'histogram' in metadata:
+            hist_path = "/".join(root_name[0:-1]) + '/histogram_fragment_sizes.png'
+            log_path = "/".join(root_name[0:-1]) + '/filter_log.txt'
+            
+            median, max_f, mad = insert_sizes(
+                reads, nreads=1000000, stats=('median', 'first_decay', 'MAD'),
+                savefig=hist_path)
+            
+            orig_stdout = sys.stdout
+            f = open(log_path, "w")
+            sys.stdout = f
+            
+            #insert size
+            print ('Insert size\n')
+            
+            print ('  - median insert size =', median)
+            print ('  - double median absolution of insert size =', mad)
+            print ('  - max insert size (when a gap in continuity of > 10 bp is found in fragment lengths) =', max_f)
+    
+            max_mole = max_f # pseudo DEs
+            min_dist = max_f + mad # random breaks
+            print ('   Using the maximum continuous fragment size'
+                   '('+str(max_mole)+' bp) to check '
+                   'for pseudo-dangling ends')
+            print ('   Using maximum continuous fragment size plus the MAD '
+                   '('+str(min_dist)+' bp) to check for random breaks')
+
+            sys.stdout = orig_stdout
+            f.close()
+
+            
+        
+        return ([filtered_reads_file, log_path, hist_path], output_metadata)
 
 # ------------------------------------------------------------------------------

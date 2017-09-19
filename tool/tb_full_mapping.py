@@ -38,6 +38,7 @@ from basic_modules.tool import Tool
 
 from os import path
 from pytadbit.mapping.mapper import full_mapping
+from pytadbit.utils.fastq_utils import quality_plot
 
 # ------------------------------------------------------------------------------
 
@@ -154,6 +155,8 @@ class tbFullMappingTool(Tool):
         file_name = file_name.replace('.fq'+gzipped, '')
         fastq_file_tmp = workdir+'/'+file_name    
         
+        
+        
         with open(fastq_file_tmp + "_tmp.fastq"+gzipped, "wb") as f_out:
             with open(fastq_file, "rb") as f_in:
                 f_out.write(f_in.read())
@@ -215,14 +218,42 @@ class tbFullMappingTool(Tool):
             root_path = metadata['workdir']
         else:        
             root_path = path.dirname(path.abspath(fastq_file))
-            
+        
+        gzipped = ''
+        if fastq_file.endswith('.fastq.gz') or fastq_file.endswith('.fq.gz'):
+            gzipped = '.gz'    
         file_name = path.basename(fastq_file)
-        file_name = file_name.replace('.fastq', '')
-        file_name = file_name.replace('.fq', '')
-        file_name = root_path+'/'+file_name
-
+        file_name = file_name.replace('.fastq'+gzipped, '')
+        file_name = file_name.replace('.fq'+gzipped, '')
+        quality_plot_file = ''
+        log_path = ''
         #name = root_name[-1]
-
+        
+        if 'quality_plot' in metadata:
+            quality_plot_file = 'quality_plot_'+file_name + '.png'
+            log_path = root_path+'/'+'mapping_log_'+file_name + '.txt'
+        
+            dangling_ends, ligated = quality_plot(fastq_file, r_enz=metadata['enzyme_name'],
+                  nreads=100000, paired=False,
+                  savefig=path.join(
+                      root_path,
+                      quality_plot_file))
+            
+            
+            orig_stdout = sys.stdout
+            f = open(log_path, "w")
+            sys.stdout = f
+            print ('Hi-C QC plot')
+            print (dangling_ends, ligated)
+            for renz in dangling_ends:
+                print('  - Dangling-ends (sensu-stricto): ', dangling_ends[renz])
+            for renz in ligated:
+                print('  - Ligation sites: ', ligated[renz])
+            
+            sys.stdout = orig_stdout
+            f.close()
+            
+        file_name = root_path+'/'+file_name
         # input and output share most metadata
         output_metadata = {}
 
@@ -239,7 +270,7 @@ class tbFullMappingTool(Tool):
             results = compss_wait_on(results)
 
             output_metadata['func'] = 'frag'
-            return ([full_file, frag_file], output_metadata)
+            return ([full_file, frag_file, log_path, root_path+'/'+quality_plot_file], output_metadata)
         
         window1 = window2 = window3 = window4 = None
         window1 = root_path + "_full_" + str(windows[0][0]) + "-" + str(windows[0][1]) + ".map"
@@ -257,6 +288,6 @@ class tbFullMappingTool(Tool):
         results = compss_wait_on(results)
 
         output_metadata['func'] = 'iter'
-        return ([window1, window2, window3, window4], output_metadata)
+        return ([window1, window2, window3, window4, log_path, root_path+'/'+quality_plot_file], output_metadata)
 
 # ------------------------------------------------------------------------------

@@ -7,6 +7,7 @@ from __future__ import print_function
 import os.path
 import argparse
 import sys
+import tarfile
 
 import collections
 # Required for ReadTheDocs
@@ -39,7 +40,7 @@ class tadbit_map_parse_filter(Workflow):
 
         self.configuration.update(convert_from_unicode(configuration))
         
-        
+        self.configuration['workdir'] = os.path.abspath('tests/data/tmp/') #Not clear where this will be passed
         if 'windows' in self.configuration:
             if self.configuration['windows']:
                 w1 = self.configuration['windows'].split(" ")
@@ -73,8 +74,8 @@ class tadbit_map_parse_filter(Workflow):
         genome_gem = convert_from_unicode(input_files['ref_genome_gem'])
         fastq_file_1 = convert_from_unicode(input_files['reads1'])
         fastq_file_2 = convert_from_unicode(input_files['reads2'])
-        input_metadata = remap(self.configuration, "iterative_mapping", "windows",rest_enzyme="enzyme_name")
-        input_metadata['workdir'] = os.path.abspath('tests/data/tmp/')        
+        input_metadata = remap(self.configuration, "iterative_mapping","workdir", "windows",rest_enzyme="enzyme_name")
+        input_metadata['quality_plot'] = True        
         m_results_meta = {}
         
         tfm1 = tbFullMappingTool()
@@ -90,43 +91,54 @@ class tadbit_map_parse_filter(Workflow):
         m_results_meta['map2']['error'] = ''
         
         tpm = tbParseMappingTool()
-        files = [genome_fa] + tfm1_files + tfm2_files
+        files = [genome_fa] + tfm1_files[:-2] + tfm2_files[:-2]
 
-        input_metadata = remap(self.configuration, "chromosomes",rest_enzyme="enzyme_name")                        
+        input_metadata = remap(self.configuration, "chromosomes","workdir",rest_enzyme="enzyme_name")                        
         input_metadata['mapping'] = [tfm1_meta['func'], tfm2_meta['func']]
         input_metadata['expt_name'] = 'vre' 
+        
          
         print("TB MAPPED FILES:", files)
         print("TB PARSE METADATA:", input_metadata)
         tpm_files, tpm_meta = tpm.run(files, [], input_metadata)
- 
+  
         m_results_meta['parse'] = tpm_meta
         m_results_meta['parse']['error'] = ''
-         
+          
         print("TB PARSED FILES:", tpm_files)
-        
-        input_metadata = remap(self.configuration, "chromosomes",'self-circle','dangling-end', 'error', 
+         
+        input_metadata = remap(self.configuration, "chromosomes","workdir",'self-circle','dangling-end', 'error', 
                                'extra dangling-end','too close from REs', 'too short','too large', 
                                'over-represented' ,'duplicated', 'random breaks','min_dist_RE','min_fragment_size','max_fragment_size')                
         input_metadata['expt_name'] = 'vre'
         input_metadata['outbam'] = 'vre_filtered_reads'
         input_metadata['custom_filter'] = True
-        
+        input_metadata['histogram'] = True
+         
         tbf = tbFilterTool()
         tf_files, tf_meta = tbf.run(tpm_files, [], input_metadata)
-  
+   
         m_results_meta['filter'] = tf_meta
         m_results_meta['filter']['error'] = ''
         #adjlist_loc = f2a.save_hic_data()
-        
-        print("TB FILTER FILES:", tf_files[0])
          
+        print("TB FILTER FILES:", tf_files[0])
+          
         m_results_files = {}
         m_results_files["paired_reads"] = tf_files[0]+'.bam'
-                
+        m_results_files["map_parse_filter_stats"] = input_metadata['workdir']+"/map_parse_filter_stats.tar.gz"
+         
+        with tarfile.open(m_results_files["map_parse_filter_stats"], "w:gz") as tar:
+            tar.add(tfm1_files[-1],arcname=os.path.basename(tfm1_files[-1]))
+            tar.add(tfm1_files[-2],arcname=os.path.basename(tfm1_files[-2]))
+            tar.add(tfm2_files[-1],arcname=os.path.basename(tfm2_files[-1]))
+            tar.add(tfm2_files[-2],arcname=os.path.basename(tfm2_files[-2]))
+            tar.add(tf_files[-1],arcname=os.path.basename(tf_files[-1]))
+            tar.add(tf_files[-2],arcname=os.path.basename(tf_files[-2]))
+        
          # List of files to get saved
         print("TADBIT RESULTS:", m_results_files)
-        return {"output": m_results_files["paired_reads"]}, {"output": m_results_meta}
+        return m_results_files, m_results_meta
         
 # ------------------------------------------------------------------------------
 
@@ -143,7 +155,7 @@ def remap(indict, *args, **kwargs):
         {new: indict[old] for old, new in kwargs.items()}
     )
     return outdict
-
+       
 # ------------------------------------------------------------------------------
 
 def convert_from_unicode(data):

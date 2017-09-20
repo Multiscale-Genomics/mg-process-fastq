@@ -163,9 +163,9 @@ class process_chipseq(Workflow):
             bwa_bg_files, bwa_bg_meta = bwa.run(
                 # Small changes can be handled easily using "remap"
                 remap(input_files,
-                      "genome", "bg_loc", "index"),
+                      "genome", "index", loc="bg_loc"),
                 remap(metadata,
-                      "genome", "bg_loc", "index"),
+                      "genome", "index", loc="bg_loc"),
                 # Intermediate outputs should be created via tempfile?
                 {"output": output_files["bam_bg"]}
             )
@@ -360,13 +360,13 @@ def remap(indict, *args, **kwargs):
     Non-keyword arguments are keys of input dictionary that are passed
     unchanged to the output. Keyword arguments must be in the form
 
-    old="new"
+    new="old"
 
     and act as a translation table for new key names.
     """
     outdict = {role: indict[role] for role in args}
     outdict.update(
-        {new: indict[old] for old, new in kwargs.items()}
+        {new: indict[old] for new, old in kwargs.items()}
     )
     return outdict
 

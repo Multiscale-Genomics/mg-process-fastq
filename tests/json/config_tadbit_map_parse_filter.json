@@ -13,7 +13,7 @@
         }, {
             "required": true,
             "allow_multiple": false,
-            "name": "ref_genome",
+            "name": "ref_genome_fasta",
             "value": "59b7e020d9422a5969b65373"
         }, {
             "required": true,
@@ -33,6 +33,32 @@
             },
             "required": false,
             "value": "MboI"
+        },
+        {
+            "name": "mapping:refGenome",
+            "description": "Local reference genome",
+            "help": "Local reference genome",
+            "type": "enum",
+            "enum_items":{
+              "name":["refGenomes/hg38/GEM/hg38.gem",
+              		"refGenomes/R64-1-1/GEM/R64-1-1.gem",
+              		"refGenomes/r5.01/GEM/r5.01.gem"]
+            },
+            "required": true,
+            "value": "refGenomes/hg38/GEM/hg38.gem"
+        },
+        {
+            "name": "parsing:refGenome",
+            "description": "Local reference genome fasta",
+            "help": "Local reference genome fasta",
+            "type": "enum",
+            "enum_items":{
+              "name":["refGenomes/hg38/hg38.fa",
+              		"refGenomes/R64-1-1/R64-1-1.fa",
+              		"refGenomes/r5.01/r5.01.fa"]
+            },
+            "required": true,
+            "value": "refGenomes/hg38/hg38.fa"
         },
         {
             "name": "iterative_mapping",
@@ -60,94 +86,13 @@
             "value": ""
         },
         {
-            "name": "self-circle",
-            "description": "self-circle",
-            "help": "reads are coming from a single RE fragment and point to the outside (—-<===—===>—).",
-            "type": "boolean",
+            "name": "filters",
+            "description": "List of filters to apply",
+            "help": "List of filters to apply",
+            "type": "string",
             "required": true,
-            "default": "true",
-            "value": "true"
-        },
-        {
-            "name": "dangling-end",
-            "description": "dangling-end",
-            "help": "reads are coming from a single RE fragment and point to the inside (—-===>—<===—)",
-            "type": "boolean",
-            "required": true,
-            "default": "true",
-            "value": "true"
-        },
-        {
-            "name": "error",
-            "description": "error",
-            "help": "reads are coming from a single RE fragment and point in the same direction",
-            "type": "boolean",
-            "required": true,
-            "default": "true",
-            "value": "true"
-        },
-        {
-            "name": "extra dangling-end",
-            "description": "extra dangling-end",
-            "help": "reads are coming from different RE fragment but are close enough (< Maximum molecule length) and point to the inside. Maximum molecule length parameter depends on the size of the sequenced fragments.",
-            "type": "boolean",
-            "required": true,
-            "default": "true",
-            "value": "true"
-        },
-        {
-            "name": "too close from REs",
-            "description": "too close from REs",
-            "help": "semi-dangling-end filter, start position of one of the read is too close (5 bp by default) from RE cutting site (with 4 base-pair-cutter enzyme it can be set to 4 nt). This filter is in general not taken into account in in-situ Hi-C experiments, and with 4bp cutters as the ligation may happen only one side of the DNA fragments.",
-            "type": "boolean",
-            "required": true,
-            "default": "false",
-            "value": "true"
-        },
-        {
-            "name": "too short",
-            "description": "too short",
-            "help": "remove reads coming from small restriction less than 100 bp (default) because they are comparable to the read length, and are thus probably artifacts.",
-            "type": "boolean",
-            "required": true,
-            "default": "false",
-            "value": "true"
-        },
-        {
-            "name": "too large",
-            "description": "too large",
-            "help": "remove reads coming from large restriction fragments (default: 100 Kb, P < 10-5 to occur in a randomized genome) as they likely represent poorly assembled or repeated regions",
-            "type": "boolean",
-            "required": true,
-            "default": "false",
-            "value": "true"
-        },
-        {
-            "name": "over-represented",
-            "description": "over-represented",
-            "help": "reads coming from the top 0.5% most frequently detected restriction fragments, they may be prone to PCR artifacts or represent fragile regions of the genome or genome assembly errors",
-            "type": "boolean",
-            "required": true,
-            "default": "false",
-            "value": "true"
-        },
-        {
-            "name": "duplicated",
-            "description": "duplicated",
-            "help": "the combination of the start positions (and direction) of the reads is repeated -> PCR artifact (only keep one copy)",
-            "type": "boolean",
-            "required": true,
-            "default": "true",
-            "value": "true"
-        },
-        {
-            "name": "random breaks",
-            "description": "random breaks",
-            "help": "start position of one of the read is too far (more than Minimum distance to RE site) from RE cutting site. Non-canonical enzyme activity or random physical breakage of the chromatin.",
-            "type": "boolean",
-            "required": true,
-            "default": "true",
-            "value": "true"
+            "default": "1,2,3,4",
+            "value": "1,2,3,4,5,6,7,8,9,10"
         },
         {
             "name": "min_dist_RE",
@@ -211,6 +156,7 @@
             }
         }
     ],
+    "working_dir": "tests/data/tmp/",
     "control_file": ".results.json"
 }
 

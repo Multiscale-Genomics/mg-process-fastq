@@ -17,6 +17,7 @@
 from __future__ import print_function
 
 import sys
+from subprocess import CalledProcessError, PIPE, Popen
 
 try:
     if hasattr(sys, '_run_from_cmdl') is True:
@@ -50,9 +51,9 @@ class tbNormalizeTool(Tool):
         print("TADbit - Normalize")
         Tool.__init__(self)
 
-    @task(bamin=FILE_IN, chrom=IN, resolution=IN, normalization=IN, tad_file=FILE_OUT)
+    @task(bamin=FILE_IN, resolution=IN, min_perc=IN, max_perc=IN, workdir=IN)
     # @constraint(ProcessorCoreCount=16)
-    def tb_generate_tads(self, expt_name, adj_list, chrom, resolution, normalized, tad_file):
+    def tb_normalize(self, bamin, resolution, min_perc, max_perc, workdir):
         """
         Function to the predict TAD sites for a given resolution from the Hi-C
         matrix
@@ -76,44 +77,29 @@ class tbNormalizeTool(Tool):
         """
         #chr_hic_data = read_matrix(matrix_file, resolution=int(resolution))
 
-        print("TB TAD GENERATOR:", expt_name, adj_list, chrom, resolution, normalized, tad_file)
+        print("TB NORMALIZATION:",bamin, resolution, min_perc, max_perc, workdir)
 
-        hic_data = load_hic_data_from_reads(adj_list, resolution=int(resolution))
-
-        if normalized is False:
-            hic_data.normalize_hic(iterations=9, max_dev=0.1)
-
-        save_matrix_file = adj_list + "_" + str(chrom) + "_tmp.txt"
-        hic_data.write_matrix(save_matrix_file, (chrom, chrom), normalized=True)
-
-        chr_hic_data = hic_data.get_matrix((chrom, chrom))
-        print("TB - chr_hic_data:", chr_hic_data)
-
-        my_chrom = Chromosome(name=chrom, centromere_search=True)
-        my_chrom.add_experiment(expt_name, hic_data=save_matrix_file, resolution=int(resolution))
-
-        # Run core TADbit function to find TADs on each expt.
-        my_chrom.find_tad(expt_name, n_cpus=15)
-
-        exp = my_chrom.experiments[expt_name]
-        exp.write_tad_borders(savedata=tad_file + ".tmp")
-
-        with open(tad_file, "wb") as f_out:
-            with open(tad_file + ".tmp", "rb") as f_in:
-                f_out.write(f_in.read())
-
-        return True
-
-    @task(input_file=FILE_IN, chrom=IN, resolution=IN, output_file=FILE_INOUT)
-    def tb_merge_tad_files(self, input_file, chrom, resolution, output_file):
-        """
-        """
-        with open(output_file, 'a') as f_out:
-            with open(input_file, 'r') as f_in:
-                for line in f_in:
-                    line = line.split("\t")
-                    line[-1] = line[-1].rstrip()
-                    f_out.write(str(chrom) + "\t" + line[1] + "\t" + line[2] + "\tTADs_" + str(resolution) + "\t" + line[3] + "\t.\n")
+        _cmd = [
+                'tadbit', 'normalize', 
+            '--bam', bamin,
+            '--workdir', workdir,
+            '--resolution', resolution,
+            '--cpus', '32'
+            ]
+    
+        if min_perc:
+            _cmd.append('--min_perc')
+            _cmd.append(min_perc)
+        if max_perc:
+            _cmd.append('--max_perc')
+            _cmd.append(max_perc)
+        
+        try:
+            out, err = Popen(_cmd, stdout=PIPE, stderr=PIPE).communicate()
+        except CalledProcessError as e:
+            print(out)
+            print(err)
+            raise Exception(e.output)
 
         return True
 
@@ -144,70 +130,29 @@ class tbNormalizeTool(Tool):
 
         """
 
-        adj_list = input_files[0]
+        bamin = input_files[0]
 
-        resolutions = [1000000]
-        if 'resolutions' in metadata:
-            resolutions = metadata['resolutions']
+        resolution = '1000000'
+        if 'resolution' in metadata:
+            resolution = metadata['resolution']
 
-        normalized = False
-        if 'normalized' in metadata:
-            normalized = metadata['normalized']
-
+        min_perc = max_perc = None 
+        
+        if 'min_perc' in metadata:
+            min_perc = metadata['min_perc']
+        if 'max_perc' in metadata:
+            max_perc = metadata['max_perc']
+            
+        root_name = bamin.split("/")
+        if 'workdir' in metadata:
+            root_name = metadata['workdir']
+        
         # input and output share most metadata
         output_metadata = {}
+        
+        hic_biases = 'hic_biases' 
+        self.tb_normalize(bamin, resolution, min_perc, max_perc, root_name)
 
-        root_name = adj_list.split("/")
-
-        tad_files = {}
-
-        results =[]
-        for resolution in resolutions:
-            print("TB LOADING Hi-C:", adj_list, resolution, normalized)
-            hic_data_chr = self.tb_hic_chr(adj_list, resolution)
-            hic_data_chr = compss_wait_on(hic_data_chr)
-            print("TB LOADED Hi-C!")
-
-            print("TB CHROMOSOMES", hic_data_chr)
-
-            tad_files[resolution] = {}
-
-            for chrom in hic_data_chr:
-                save_tad_file = "/".join(root_name[0:-1]) + '/' + metadata['expt_name'] + '_tad_' + chrom + '_' + str(resolution) + '.tsv'
-                tad_files[resolution][chrom] = save_tad_file
-
-                expt_name = metadata['expt_name'] + '_tad_' + chrom + '_' + str(resolution)
-
-                print("TB Generate TADS:", resolution, normalized)
-                results.append(
-                    self.tb_generate_tads(
-                        expt_name, adj_list, chrom, resolution, normalized,
-                        save_tad_file
-                    )
-                )
-
-        results = compss_wait_on(results)
-
-        # Step to merge all the TAD files into a single bed file
-        tad_bed_file = "/".join(root_name[0:-1]) + '/' + metadata['expt_name'] + '_tads.tsv'
-
-        print("TB tad_files:", tad_files)
-
-        # Step to merge all the TAD files into a single bed file
-        tad_bed_file = "/".join(root_name[0:-1]) + '/' + metadata['expt_name'] + '_tads.tsv'
-        f_prepare = open(tad_bed_file, 'w')
-        f_prepare.close()
-
-        for resolution in tad_files:
-            for chrom in tad_files[resolution]:
-                results = self.tb_merge_tad_files(
-                    tad_files[resolution][chrom],
-                    chrom,
-                    resolution,
-                    tad_bed_file
-                )
-                results = compss_wait_on(results)
-
-        return ([tad_bed_file], output_metadata)
+        return ([hic_biases], output_metadata)
 
 # ------------------------------------------------------------------------------

@@ -18,6 +18,7 @@
 from __future__ import print_function
 import sys
 import os.path
+import ast
 
 from pytadbit.parsers.hic_bam_parser import bed2D_to_BAMhic
 
@@ -195,18 +196,12 @@ class tbFilterTool(Tool):
         """
 
         reads = input_files[0]
-        filters_suffixes = ['self-circle','dangling-end', 'error', 'extra dangling-end','too close from REs', 'too short','too large', 'over-represented' ,'duplicated', 'random breaks']                
-        for fs in filters_suffixes:    
-            if fs in metadata:
-                metadata[fs] = (metadata[fs].lower() in ("yes", "true", "t", "1")) 
-                
+        
         conservative = True
         custom_filter = None
         if 'custom_filter' in metadata:
-            custom_filter = []
-            for idx,fs in enumerate(filters_suffixes):
-                if fs in metadata and metadata[fs]:
-                    custom_filter.append(idx+1)
+            custom_filter = ast.literal_eval('['+metadata['filters']+']')
+            
         elif 'conservative' in metadata:
             conservative = metadata['conservative']
         

@@ -287,6 +287,8 @@ class tbFullMappingTool(Tool):
         )
         results = compss_wait_on(results)
 
+        
+        
         output_metadata['func'] = 'iter'
         return ([window1, window2, window3, window4, log_path, root_path+'/'+quality_plot_file], output_metadata)
 

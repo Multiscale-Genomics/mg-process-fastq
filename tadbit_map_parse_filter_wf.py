@@ -8,17 +8,40 @@ import os.path
 import argparse
 import sys
 import tarfile
+import multiprocessing
+import json
+from random import random
+from string import ascii_letters as letters
 
 import collections
 # Required for ReadTheDocs
 from functools import wraps # pylint: disable=unused-import
 
 from basic_modules.workflow import Workflow
+from basic_modules.metadata import Metadata
 
 from tool.tb_full_mapping import tbFullMappingTool
 from tool.tb_parse_mapping import tbParseMappingTool
 from tool.tb_filter import tbFilterTool
 
+class CommandLineParser(object):
+    """Parses command line"""
+    @staticmethod
+    def valid_file(file_name):
+        if not os.path.exists(file_name):
+            raise argparse.ArgumentTypeError("The file does not exist")
+        return file_name
+    
+    @staticmethod
+    def valid_integer_number(ivalue):
+        try:
+            ivalue = int(ivalue)
+        except:
+            raise argparse.ArgumentTypeError("%s is an invalid value" % ivalue)
+        if ivalue <= 0:
+            raise argparse.ArgumentTypeError("%s is an invalid value" % ivalue)
+        return ivalue
+    
 # ------------------------------------------------------------------------------
 class tadbit_map_parse_filter(Workflow):
     
@@ -40,7 +63,7 @@ class tadbit_map_parse_filter(Workflow):
 
         self.configuration.update(convert_from_unicode(configuration))
         
-        self.configuration['workdir'] = os.path.abspath('tests/data/tmp/') #Not clear where this will be passed
+        
         if 'windows' in self.configuration:
             if self.configuration['windows']:
                 w1 = self.configuration['windows'].split(" ")
@@ -67,11 +90,21 @@ class tadbit_map_parse_filter(Workflow):
         
         print(
             "PROCESS MAP - FILES PASSED TO TOOLS:",
-            remap(input_files, "reads1", "reads2", "ref_genome")
+            remap(input_files, "reads1", "reads2", "ref_genome_gem", "ref_genome_fasta")
         )
         
-        genome_fa = convert_from_unicode(input_files['ref_genome'])
-        genome_gem = convert_from_unicode(input_files['ref_genome_gem'])
+        if 'ref_genome_fasta' in input_files:
+            genome_fa = convert_from_unicode(input_files['ref_genome_fasta'])
+        elif 'refGenome' in self.configuration:
+            genome_fa = self.configuration['public_dir']+convert_from_unicode(self.configuration['refGenome'])
+            
+        
+        if 'ref_genome_fasta' in input_files: 
+            genome_gem = convert_from_unicode(input_files['ref_genome_gem'])
+        elif 'map_refGenome' in self.configuration:
+            genome_gem = self.configuration['public_dir']+convert_from_unicode(self.configuration['map_refGenome'])
+        
+        
         fastq_file_1 = convert_from_unicode(input_files['reads1'])
         fastq_file_2 = convert_from_unicode(input_files['reads2'])
         input_metadata = remap(self.configuration, "iterative_mapping","workdir", "windows",rest_enzyme="enzyme_name")
@@ -107,9 +140,7 @@ class tadbit_map_parse_filter(Workflow):
           
         print("TB PARSED FILES:", tpm_files)
          
-        input_metadata = remap(self.configuration, "chromosomes","workdir",'self-circle','dangling-end', 'error', 
-                               'extra dangling-end','too close from REs', 'too short','too large', 
-                               'over-represented' ,'duplicated', 'random breaks','min_dist_RE','min_fragment_size','max_fragment_size')                
+        input_metadata = remap(self.configuration, "chromosomes","workdir",'filters','min_dist_RE','min_fragment_size','max_fragment_size')                
         input_metadata['expt_name'] = 'vre'
         input_metadata['outbam'] = 'vre_filtered_reads'
         input_metadata['custom_filter'] = True
@@ -169,114 +200,157 @@ def convert_from_unicode(data):
         return data
 # ------------------------------------------------------------------------------
 
-def main(input_files, output_files, input_metadata):
-    """
-    Main function
-    -------------
-
-    This function launches the app.
-    """
-
-    # import pprint  # Pretty print - module for dictionary fancy printing
-
+def main(args, num_cores):
+    
     # 1. Instantiate and launch the App
     print("1. Instantiate and launch the App")
     from apps.workflowapp import WorkflowApp
     app = WorkflowApp()
-    result = app.launch(tadbit_map_parse_filter, input_files, input_metadata, output_files,
-                        {})
+    root_dir = args.root_dir
+    
+    print ("0) Unpack information from JSON")
+    input_IDs, arguments, output_files = _read_config(
+        args.config)
 
+    output_files = make_absolute_path(output_files, root_dir)
+
+    input_metadata_IDs = _read_metadata(
+        args.metadata)
+
+    # arrange by role
+    input_metadata = {}
+    for role, ID in input_IDs.items():
+        input_metadata[role] = input_metadata_IDs[ID]
+
+    # get paths from IDs
+    input_files = {}
+    for role, metadata in input_metadata.items():
+        input_files[role] = metadata.file_path
+
+    input_files = make_absolute_path(input_files, root_dir)
+    
+    tmp_name = ''.join([letters[int(random()*52)]for _ in xrange(5)])
+    workdir = os.path.dirname(os.path.abspath(args.out_metadata))+'/_tmp_tadbit_'+tmp_name
+    if not os.path.exists(workdir):
+        os.makedirs(workdir)
+    arguments.update({"ncpus":num_cores, "root_dir": args.root_dir, "public_dir": args.public_dir, "workdir": workdir})
+    output_files, output_metadata = app.launch(tadbit_map_parse_filter, input_files, input_metadata, output_files, arguments, )
+
+    
+    print("4) Pack information to JSON")
+    return _write_json(
+        input_files, input_metadata,
+        output_files, output_metadata,
+        args.output_metadata)
+    
     # 2. The App has finished
     print("2. Execution finished")
-    print(result)
-    return result
+    
+    return True
+    
 
-def main_json():
+
+def make_absolute_path(files, root):
+    """Make paths absolute."""
+    for role, path in files.items():
+        files[role] = os.path.join(root, path)
+    return files
+
+def _read_config(json_path):
     """
-    Alternative main function
-    -------------
-    This function launches the app using configuration written in
-    two json files: config.json and input_metadata.json.
+    Read config.json to obtain:
+    input_IDs: dict containing IDs of tool input files
+    arguments: dict containing tool arguments
+    output_files: dict containing absolute paths of tool outputs
+
+    For more information see the schema for config.json.
     """
-    # 1. Instantiate and launch the App
-    print("1. Instantiate and launch the App")
-    from apps.jsonapp import JSONApp
-    app = JSONApp()
-    root_path = os.path.dirname(os.path.abspath(__file__))
-    result = app.launch(tadbit_map_parse_filter,
-                        root_path,
-                        "tests/json/config_tadbit_map_parse_filter.json",
-                        "tests/json/input_tadbit_map_parse_filter.json")
+    configuration = json.load(file(json_path))
+    input_IDs = {}
+    for input_ID in configuration["input_files"]:
+        input_IDs[input_ID["name"]] = input_ID["value"]
 
-    # 2. The App has finished
-    print("2. Execution finished; see " + root_path + "/results.json")
-    print(result)
+    output_files = {}
+    for output_file in configuration["output_files"]:
+        output_files[output_file["name"]] = output_file["file"]["file_path"]
 
-    return result
+    arguments = {}
+    for argument in configuration["arguments"]:
+        arguments[argument["name"]] = argument["value"]
 
+    return input_IDs, arguments, output_files
+
+def _read_metadata(json_path):
+    """
+    Read input_metadata.json to obtain input_metadata_IDs, a dict
+    containing metadata on each of the tool input files,
+    arranged by their ID.
+
+    For more information see the schema for input_metadata.json.
+    """
+    metadata = json.load(file(json_path))
+    input_metadata = {}
+    for input_file in metadata:
+        input_metadata[input_file["_id"]] = Metadata(
+            data_type=input_file["data_type"],
+            file_type=input_file["file_type"],
+            file_path=input_file["file_path"],
+            source_id=input_file["source_id"],
+            meta_data=input_file["meta_data"],
+            data_id=input_file["_id"])
+    return input_metadata
+
+def _write_json(
+                input_files, input_metadata,
+                output_files, output_metadata, json_path):
+    """
+    Write results.json using information from input_files and output_files:
+    input_files: dict containing absolute paths of input files
+    input_metadata: dict containing metadata on input files
+    output_files: dict containing absolute paths of output files
+    output_metadata: dict containing metadata on output files
+
+    For more information see the schema for results.json.
+    """
+    results = []
+    for role, path in output_files.items():
+        results.append({
+            "name": role,
+            "file_path": path,
+            "data_type": output_metadata[role].data_type,
+            "file_type": output_metadata[role].file_type,
+            "source_id": output_metadata[role].source_id,
+            "meta_data": output_metadata[role].meta_data
+        })
+    json.dump({"output_files": results}, file(json_path, 'w'))
+    return True
+    
 # ------------------------------------------------------------------------------
 
 if __name__ == "__main__":
     sys._run_from_cmdl = True
 
     # Set up the command line parameters
-    PARSER = argparse.ArgumentParser(description="TADbit map")
-    PARSER.add_argument("--genome_gem", help="Genome assembly GEM file")
-    PARSER.add_argument("--file1", help="Location of FASTQ file 1")
-    PARSER.add_argument("--file2", help="Location of FASTQ file 2")
-    PARSER.add_argument("--rest_enzyme", help="Enzyme used to digest the DNA")
-    PARSER.add_argument("--iterative_mapping", help="Iterative or fragment based mapping", default="false")
-    PARSER.add_argument(
-        "--windows",
-        help="FASTQ windowing - start locations",
-        default=None)
-    PARSER.add_argument("--workdir",help="Working directory",default='')
-    PARSER.add_argument("--json",
-                        help="Use defined JSON config files",
-                        action='store_const', const=True, default=False)
-    
+    parser = argparse.ArgumentParser(description="TADbit map")
+    # Config file
+    parser.add_argument("--config", help="Configuration JSON file", 
+                        type=CommandLineParser.valid_file, metavar="config", required=True)
+    # Root dir
+    parser.add_argument("--root_dir", help="Working directory",
+                        type=CommandLineParser.valid_file, metavar="root_dir", required=True)
+    # Public dir
+    parser.add_argument("--public_dir", help="Public directory to upload the results",
+                        metavar="public_dir", required=True)
+    # Metadata
+    parser.add_argument("--metadata", help="Project metadata", metavar="metadata", required=True)
+    # Output metadata
+    parser.add_argument("--out_metadata", help="Output metadata", metavar="output_metadata", required=True)
 
-    # Get the matching parameters from the command line
-    ARGS = PARSER.parse_args()
+    args = parser.parse_args()
 
-    
-    GENOME_GEM = ARGS.genome_gem
-    FASTQ_01_FILE = ARGS.file1
-    FASTQ_02_FILE = ARGS.file2
-    REST_ENZYME = ARGS.rest_enzyme
-    WINDOWS = ARGS.windows
-    ITERATIVE_MAPPING = ARGS.iterative_mapping
-    WORKDIR = ARGS.workdir
-    JSON_CONFIG = ARGS.json
-    
-    print("ENZYME_NAME:", REST_ENZYME)
+    # Number of cores available
+    num_cores = multiprocessing.cpu_count()
 
+    RESULTS = main(args, num_cores)
     
-    METADATA = {
-        'enzyme_name' : REST_ENZYME,
-        'windows' : None,
-        'iterative_mapping' : ITERATIVE_MAPPING,
-        'workdir': WORKDIR
-    }
-    
-    if WINDOWS is not None:
-        W1 = WINDOWS.split(" ")
-        WINDOWSARG = [tuple(map(int, x.split(':'))) for x in W1]
-        print("WINDOWS:", WINDOWSARG, WINDOWS)
-        METADATA['windows'] = WINDOWSARG
-    
-    FILES = [
-        GENOME_GEM,
-        FASTQ_01_FILE,
-        FASTQ_02_FILE
-    ]
-
-    
-
-    if JSON_CONFIG is True:
-        RESULTS = main_json()
-    else:
-        # 3. Instantiate and launch the App
-        RESULTS = main(FILES, [], METADATA)
-
     print(RESULTS)

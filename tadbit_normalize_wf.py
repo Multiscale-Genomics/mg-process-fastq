@@ -59,11 +59,11 @@ class tadbit_normalize(Workflow):
         
         print(
             "PROCESS MAP - FILES PASSED TO TOOLS:",
-            remap(input_files, "reads1", "reads2", "ref_genome")
+            remap(input_files, "bamin")
         )
         
         bamin = convert_from_unicode(input_files['bamin'])
-        input_metadata = remap(self.configuration, "min_perc","workdir", "max_perc")
+        input_metadata = remap(self.configuration, "resolution","min_perc","workdir", "max_perc")
         m_results_meta = {}
         
         tn = tbNormalizeTool()
@@ -163,6 +163,7 @@ if __name__ == "__main__":
     PARSER.add_argument("--bamin", help="path to a TADbit-generated BAM file with all reads")
     PARSER.add_argument("--min_perc", help="lower percentile from which consider bins as good.")
     PARSER.add_argument("--max_perc", help="upper percentile until which consider bins as good.")
+    PARSER.add_argument("--resolution", help="Resolution of the normalization.")
     PARSER.add_argument("--json",
                         help="Use defined JSON config files",
                         action='store_const', const=True, default=False)
@@ -174,9 +175,11 @@ if __name__ == "__main__":
     BAMIN = ARGS.bamin
     MIN_PERC = ARGS.min_perc
     MAX_PERC = ARGS.max_perc
+    RESOLUTION = ARGS.resolution
     JSON_CONFIG = ARGS.json
     
     METADATA = {
+        'resolution' : RESOLUTION,
         'min_perc' : MIN_PERC,
         'max_perc' : MAX_PERC
     }

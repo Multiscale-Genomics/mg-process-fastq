@@ -200,7 +200,7 @@ class tbFilterTool(Tool):
         conservative = True
         custom_filter = None
         if 'custom_filter' in metadata:
-            custom_filter = ast.literal_eval('['+metadata['filters']+']')
+            custom_filter = metadata['filters']
             
         elif 'conservative' in metadata:
             conservative = metadata['conservative']
@@ -242,7 +242,7 @@ class tbFilterTool(Tool):
         results = compss_wait_on(results)
 
         if 'outbam' in metadata:
-            outbam = "/".join(root_name[0:-1]) + '/' + metadata['outbam']
+            outbam = metadata['root_dir'] + '/' + metadata['outbam']
             bed2D_to_BAMhic(filtered_reads_file, True, 32, outbam, 'mid', results)
             filtered_reads_file = outbam
         

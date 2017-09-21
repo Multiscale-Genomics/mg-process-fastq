@@ -66,7 +66,7 @@ class tbParseMappingTool(Tool):
             self, genome_seq, enzyme_name,
             window1_1, window1_2, window1_3, window1_4,
             window2_1, window2_2, window2_3, window2_4,
-            reads):
+            reads, ncpus=1):
         """
         Function to map the aligned reads and return the matching pairs
 
@@ -109,24 +109,36 @@ class tbParseMappingTool(Tool):
         reads2 = reads + '_reads_2.tsv'
         reads_both = reads + '_reads_both.tsv'
 
+        wind1 = [window1_1]
+        wind2 = [window2_1]
+        if window1_2 and window2_2:
+            wind1 += [window1_2]
+            wind2 += [window2_2]
+        if window1_3 and window2_3:
+            wind1 += [window1_3]
+            wind2 += [window2_3]
+        if window1_4 and window2_4:
+            wind1 += [window1_4]
+            wind2 += [window2_4]
+            
         parse_map(
-            [window1_1, window1_2, window1_3, window1_4],
-            [window2_1, window2_2, window2_3, window2_4],
+            wind1,
+            wind2,
             out_file1=reads1,
             out_file2=reads2,
             genome_seq=genome_seq,
             re_name=enzyme_name,
             verbose=True,
-            #ncpus=32
+            ncpus=ncpus
         )
 
-        intersections = get_intersection(reads1, reads2, reads_both, verbose=True)
+        counts, multiples = get_intersection(reads1, reads2, reads_both, verbose=True)
 
         with open(reads, "wb") as f_out:
             with open(reads_both, "rb") as f_in:
                 f_out.write(f_in.read())
 
-        return True
+        return counts
 
     @task(
         genome_seq=IN, enzyme_name=IN,
@@ -137,7 +149,7 @@ class tbParseMappingTool(Tool):
     def tb_parse_mapping_frag(
             self, genome_seq, enzyme_name,
             window1_full, window1_frag, window2_full, window2_frag,
-            reads):
+            reads,ncpus=1):
         """
         Function to map the aligned reads and return the matching pairs
 
@@ -188,16 +200,17 @@ class tbParseMappingTool(Tool):
             out_file2=reads2,
             genome_seq=genome_seq,
             re_name=enzyme_name,
-            verbose=True
+            verbose=True,
+            ncpus=ncpus
         )
 
-        intersections = get_intersection(reads1, reads2, reads_both, verbose=True)
+        counts, multiples = get_intersection(reads1, reads2, reads_both, verbose=True)
 
         with open(reads, "wb") as f_out:
             with open(reads_both, "rb") as f_in:
                 f_out.write(f_in.read())
 
-        return True
+        return counts
 
     def run(self, input_files, output_files, metadata=None):
         """
@@ -321,12 +334,11 @@ class tbParseMappingTool(Tool):
 
         reads = "/".join(root_name[0:-1]) + '/'
 
-        genome_seq = parse_fasta(genome_file, chr_filter=filter_chrom)
+        genome_seq = parse_fasta(genome_file, chr_filter=[filter_chrom])
 
         chromosome_meta = []
         for k in genome_seq:
             chromosome_meta.append([k, len(genome_seq[k])])
-
         # input and output share most metadata
         output_metadata = {
             'chromosomes' : chromosome_meta
@@ -350,8 +362,13 @@ class tbParseMappingTool(Tool):
                     genome_seq, enzyme_name,
                     window1_1, window1_2, window1_3, window1_4,
                     window2_1, window2_2, window2_3, window2_4,
-                    read_iter)
+                    read_iter,ncpus=metadata['ncpus'])
                 results = compss_wait_on(results)
+                if results == 0:
+                    output_metadata = {
+                        'error' : 'No interactions found, please verify input data and chromosome filtering'
+                    }
+                    return ([], output_metadata)
                 return ([read_iter], output_metadata)
 
             elif mapping_list[0] == 'frag':
@@ -367,9 +384,14 @@ class tbParseMappingTool(Tool):
                     genome_seq, enzyme_name,
                     window1_full, window1_frag,
                     window2_full, window2_frag,
-                    read_frag)
+                    read_frag,ncpus=metadata['ncpus'])
 
                 results = compss_wait_on(results)
+                if results == 0:
+                    output_metadata = {
+                        'error' : 'No interactions found, please verify input data and chromosome filtering'
+                    }
+                    return ([], output_metadata)
                 return ([read_frag], output_metadata)
 
             reads = None

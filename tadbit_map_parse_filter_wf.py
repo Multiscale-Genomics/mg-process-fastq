@@ -10,6 +10,7 @@ import sys
 import tarfile
 import multiprocessing
 import json
+import shutil
 from random import random
 from string import ascii_letters as letters
 
@@ -24,6 +25,15 @@ from tool.tb_full_mapping import tbFullMappingTool
 from tool.tb_parse_mapping import tbParseMappingTool
 from tool.tb_filter import tbFilterTool
 
+class ResultObj(dict):
+    
+    error = False
+    metadata = {}
+    
+    def __init__(self,error,metadata):
+        self.error = error
+        self.metadata = metadata
+        
 class CommandLineParser(object):
     """Parses command line"""
     @staticmethod
@@ -63,7 +73,11 @@ class tadbit_map_parse_filter(Workflow):
 
         self.configuration.update(convert_from_unicode(configuration))
         
-        
+        self.configuration.update(
+            {(key.split(':'))[-1]: val for key, val in self.configuration.items()}
+        )
+        if 'filters' in self.configuration:
+            self.configuration['filters'] = [int(f) for f in self.configuration['filters']]
         if 'windows' in self.configuration:
             if self.configuration['windows']:
                 w1 = self.configuration['windows'].split(" ")
@@ -90,75 +104,85 @@ class tadbit_map_parse_filter(Workflow):
         
         print(
             "PROCESS MAP - FILES PASSED TO TOOLS:",
-            remap(input_files, "reads1", "reads2", "ref_genome_gem", "ref_genome_fasta")
+            remap(input_files, "read1", "read2")
         )
         
-        if 'ref_genome_fasta' in input_files:
-            genome_fa = convert_from_unicode(input_files['ref_genome_fasta'])
-        elif 'refGenome' in self.configuration:
-            genome_fa = self.configuration['public_dir']+convert_from_unicode(self.configuration['refGenome'])
+        m_results_meta = {}
+        m_results_files = {}
+        
+        if 'parsing:ref_genome_fasta' in input_files:
+            genome_fa = convert_from_unicode(input_files['parsing:ref_genome_fasta'])
+        elif 'parsing:refGenome' in self.configuration:
+            genome_fa = self.configuration['public_dir']+convert_from_unicode(self.configuration['parsing:refGenome'])
             
         
-        if 'ref_genome_fasta' in input_files: 
-            genome_gem = convert_from_unicode(input_files['ref_genome_gem'])
-        elif 'map_refGenome' in self.configuration:
-            genome_gem = self.configuration['public_dir']+convert_from_unicode(self.configuration['map_refGenome'])
+        if 'mapping:ref_genome_gem' in input_files: 
+            genome_gem = convert_from_unicode(input_files['mapping:ref_genome_gem'])
+        elif 'mapping:refGenome' in self.configuration:
+            genome_gem = self.configuration['public_dir']+convert_from_unicode(self.configuration['mapping:refGenome'])
         
-        
-        fastq_file_1 = convert_from_unicode(input_files['reads1'])
-        fastq_file_2 = convert_from_unicode(input_files['reads2'])
-        input_metadata = remap(self.configuration, "iterative_mapping","workdir", "windows",rest_enzyme="enzyme_name")
+        fastq_file_1 = convert_from_unicode(input_files['read1'])
+        fastq_file_2 = convert_from_unicode(input_files['read2'])
+        input_metadata = remap(self.configuration, "ncpus","iterative_mapping","workdir","windows",rest_enzyme="enzyme_name")
         input_metadata['quality_plot'] = True        
-        m_results_meta = {}
         
         tfm1 = tbFullMappingTool()
         tfm1_files, tfm1_meta = tfm1.run([genome_gem, fastq_file_1], [], input_metadata)
         
-        m_results_meta['map1'] = tfm1_meta
-        m_results_meta['map1']['error'] = ''
-        
         tfm2 = tbFullMappingTool()
         tfm2_files, tfm2_meta = tfm2.run([genome_gem, fastq_file_2], [], input_metadata)
-        
-        m_results_meta['map2'] = tfm2_meta
-        m_results_meta['map2']['error'] = ''
-        
+         
         tpm = tbParseMappingTool()
         files = [genome_fa] + tfm1_files[:-2] + tfm2_files[:-2]
-
-        input_metadata = remap(self.configuration, "chromosomes","workdir",rest_enzyme="enzyme_name")                        
+ 
+        input_metadata = remap(self.configuration, "ncpus","chromosomes","workdir",rest_enzyme="enzyme_name")                        
         input_metadata['mapping'] = [tfm1_meta['func'], tfm2_meta['func']]
         input_metadata['expt_name'] = 'vre' 
-        
          
+          
         print("TB MAPPED FILES:", files)
         print("TB PARSE METADATA:", input_metadata)
         tpm_files, tpm_meta = tpm.run(files, [], input_metadata)
-  
-        m_results_meta['parse'] = tpm_meta
-        m_results_meta['parse']['error'] = ''
-          
+        
+        if 'error' in tpm_meta:
+            m_results_meta["paired_reads"] = Metadata(
+                data_type="hic_sequences",
+                file_type="BAM",
+                file_path=None,
+                source_id=None,
+                meta_data={
+                    "tool": "tadbit",
+                    "description": "Paired end reads",
+                    "visible": True
+                },
+                data_id=None)
+            m_results_meta["paired_reads"].error = True
+            m_results_meta["paired_reads"].exception = tpm_meta['error']
+            #cleaning
+            try:
+                shutil.rmtree(input_metadata['workdir'])
+            except:
+                pass
+            return m_results_files, m_results_meta
+            
         print("TB PARSED FILES:", tpm_files)
-         
-        input_metadata = remap(self.configuration, "chromosomes","workdir",'filters','min_dist_RE','min_fragment_size','max_fragment_size')                
+          
+        input_metadata = remap(self.configuration,"root_dir", "ncpus", "chromosomes","workdir",'filters','min_dist_RE','min_fragment_size','max_fragment_size')                
         input_metadata['expt_name'] = 'vre'
-        input_metadata['outbam'] = 'vre_filtered_reads'
+        input_metadata['outbam'] = 'paired_reads'
         input_metadata['custom_filter'] = True
         input_metadata['histogram'] = True
-         
+          
         tbf = tbFilterTool()
         tf_files, tf_meta = tbf.run(tpm_files, [], input_metadata)
-   
-        m_results_meta['filter'] = tf_meta
-        m_results_meta['filter']['error'] = ''
-        #adjlist_loc = f2a.save_hic_data()
-         
-        print("TB FILTER FILES:", tf_files[0])
+    
           
-        m_results_files = {}
+        print("TB FILTER FILES:", tf_files[0])
+           
+        
         m_results_files["paired_reads"] = tf_files[0]+'.bam'
-        m_results_files["map_parse_filter_stats"] = input_metadata['workdir']+"/map_parse_filter_stats.tar.gz"
-         
+        m_results_files["map_parse_filter_stats"] = self.configuration['root_dir']+"/map_parse_filter_stats.tar.gz"
+          
         with tarfile.open(m_results_files["map_parse_filter_stats"], "w:gz") as tar:
             tar.add(tfm1_files[-1],arcname=os.path.basename(tfm1_files[-1]))
             tar.add(tfm1_files[-2],arcname=os.path.basename(tfm1_files[-2]))
@@ -166,9 +190,41 @@ class tadbit_map_parse_filter(Workflow):
             tar.add(tfm2_files[-2],arcname=os.path.basename(tfm2_files[-2]))
             tar.add(tf_files[-1],arcname=os.path.basename(tf_files[-1]))
             tar.add(tf_files[-2],arcname=os.path.basename(tf_files[-2]))
+         
         
+        #cleaning
+        try:
+            shutil.rmtree(input_metadata['workdir'])
+        except:
+            pass
+         
          # List of files to get saved
         print("TADBIT RESULTS:", m_results_files)
+        
+        
+        m_results_meta["paired_reads"] = Metadata(
+                data_type="hic_sequences",
+                file_type="BAM",
+                file_path=tf_files[0]+'.bam',
+                source_id=None,
+                meta_data={
+                    "tool": "tadbit",
+                    "description": "Paired end reads",
+                    "visible": True,
+                    "func" : tfm1_meta['func']
+                },
+                data_id=None)
+        m_results_meta["map_parse_filter_stats"] = Metadata(
+                data_type="tool_statistics",
+                file_type="TAR",
+                file_path=input_metadata['workdir']+"/map_parse_filter_stats.tar.gz",
+                source_id=None,
+                meta_data={
+                    "description": "TADbit mapping, parsing and filtering statistics",
+                    "tool": "tadbit",
+                    "visible": True
+                },
+                data_id=None)
         return m_results_files, m_results_meta
         
 # ------------------------------------------------------------------------------
@@ -199,7 +255,7 @@ def convert_from_unicode(data):
     else:
         return data
 # ------------------------------------------------------------------------------
-
+ 
 def main(args, num_cores):
     
     # 1. Instantiate and launch the App
@@ -211,8 +267,6 @@ def main(args, num_cores):
     print ("0) Unpack information from JSON")
     input_IDs, arguments, output_files = _read_config(
         args.config)
-
-    output_files = make_absolute_path(output_files, root_dir)
 
     input_metadata_IDs = _read_metadata(
         args.metadata)
@@ -241,7 +295,7 @@ def main(args, num_cores):
     return _write_json(
         input_files, input_metadata,
         output_files, output_metadata,
-        args.output_metadata)
+        args.out_metadata)
     
     # 2. The App has finished
     print("2. Execution finished")
@@ -272,7 +326,7 @@ def _read_config(json_path):
 
     output_files = {}
     for output_file in configuration["output_files"]:
-        output_files[output_file["name"]] = output_file["file"]["file_path"]
+        output_files[output_file["name"]] = output_file["file"]
 
     arguments = {}
     for argument in configuration["arguments"]:

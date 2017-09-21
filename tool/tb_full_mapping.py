@@ -35,6 +35,7 @@ except ImportError:
     from dummy_pycompss import compss_wait_on
 
 from basic_modules.tool import Tool
+from basic_modules.metadata import Metadata
 
 from os import path
 from pytadbit.mapping.mapper import full_mapping
@@ -60,7 +61,7 @@ class tbFullMappingTool(Tool):
     # @constraint(ProcessorCoreCount=32)
     def tb_full_mapping_iter(
             self, gem_file, fastq_file, windows,
-            window1, window2, window3, window4,workdir='/tmp/'):
+            window1, window2, window3, window4,ncpus=1,workdir='/tmp/'):
         """
         Function to map the FASTQ files to the GEM file over different window
         sizes ready for alignment
@@ -96,12 +97,11 @@ class tbFullMappingTool(Tool):
 
         """
         print("tb_full_mapping_iter")
-        od_loc = fastq_file.split("/")
-        output_dir = "/".join(od_loc[0:-1])
+        output_dir = workdir
 
         map_files = full_mapping(
             gem_file, fastq_file, output_dir,
-            windows=windows, frag_map=False, nthreads=32, clean=True,
+            windows=windows, frag_map=False, nthreads=ncpus, clean=True,
             temp_dir=workdir
         )
 
@@ -113,7 +113,7 @@ class tbFullMappingTool(Tool):
     # @constraint(ProcessorCoreCount=16)
     def tb_full_mapping_frag(
             self, gem_file, fastq_file, enzyme_name, windows,
-            full_file, frag_file,workdir='/tmp/'):
+            full_file, frag_file,ncpus=1,workdir='/tmp/'):
         """
         Function to map the FASTQ files to the GEM file based on fragments
         derived from the restriction enzyme that was used.
@@ -163,7 +163,7 @@ class tbFullMappingTool(Tool):
 
         map_files = full_mapping(
             gem_file, fastq_file_tmp + "_tmp.fastq"+gzipped, output_dir,
-            r_enz=enzyme_name, windows=windows, frag_map=True, nthreads=32,
+            r_enz=enzyme_name, windows=windows, frag_map=True, nthreads=ncpus,
             clean=True, temp_dir=workdir
         )
 
@@ -211,7 +211,10 @@ class tbFullMappingTool(Tool):
         if len(windows) == 0:
             windows = None
         if 'iterative_mapping' in metadata:
-            frag_base = not (metadata['iterative_mapping'].lower() in ("yes", "true", "t", "1")) 
+            if isinstance(metadata['iterative_mapping'], basestring):
+                frag_base = not (metadata['iterative_mapping'].lower() in ("yes", "true", "t", "1"))
+            else:
+                frag_base = not metadata['iterative_mapping'] 
         else:
             frag_base = (windows == None)
         if 'workdir' in metadata:
@@ -254,36 +257,34 @@ class tbFullMappingTool(Tool):
             f.close()
             
         file_name = root_path+'/'+file_name
-        # input and output share most metadata
         output_metadata = {}
-
+        # input and output share most metadata
         
-
         if frag_base:
             full_file = file_name + "_full.map"
             frag_file = file_name + "_frag.map"
 
             results = self.tb_full_mapping_frag(
                 gem_file, fastq_file, metadata['enzyme_name'], None,
-                full_file, frag_file, workdir=root_path
+                full_file, frag_file, ncpus=metadata['ncpus'],workdir=root_path
             )
             results = compss_wait_on(results)
-
+            
             output_metadata['func'] = 'frag'
             return ([full_file, frag_file, log_path, root_path+'/'+quality_plot_file], output_metadata)
         
         window1 = window2 = window3 = window4 = None
-        window1 = root_path + "_full_" + str(windows[0][0]) + "-" + str(windows[0][1]) + ".map"
+        window1 = file_name + "_full_" + str(windows[0][0]) + "-" + str(windows[0][1]) + ".map"
         if len(windows) > 1:
-            window2 = root_path + "_full_" + str(windows[1][0]) + "-" + str(windows[1][1]) + ".map"
+            window2 = file_name + "_full_" + str(windows[1][0]) + "-" + str(windows[1][1]) + ".map"
         if len(windows) > 2:
-            window3 = root_path + "_full_" + str(windows[2][0]) + "-" + str(windows[2][1]) + ".map"
+            window3 = file_name + "_full_" + str(windows[2][0]) + "-" + str(windows[2][1]) + ".map"
         if len(windows) > 3:
-            window4 = root_path + "_full_" + str(windows[3][0]) + "-" + str(windows[3][1]) + ".map"
+            window4 = file_name + "_full_" + str(windows[3][0]) + "-" + str(windows[3][1]) + ".map"
 
         results = self.tb_full_mapping_iter(
             gem_file, fastq_file, windows,
-            window1, window2, window3, window4,workdir=root_path
+            window1, window2, window3, window4,ncpus=metadata['ncpus'],workdir=root_path
         )
         results = compss_wait_on(results)
 

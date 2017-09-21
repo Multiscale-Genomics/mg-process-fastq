@@ -3,7 +3,7 @@
         "_id": "59b7e020d9422a5969b65372",
         "data_type": "Assembly",
         "file_type": "fasta",
-        "file_path": "tests/data/tb.Human.GCA_000001405.22.fasta",
+        "file_path": "tests/data/macs2.Human.GCA_000001405.22.fasta",
         "source_id": null,
         "meta_data": {
             "visible": true,

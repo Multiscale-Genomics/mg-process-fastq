@@ -38,6 +38,7 @@ Software
 - R 2.9.1+
 - SAMtools
 - MCL
+- pigz
 
 Python Modules
 ^^^^^^^^^^^^^^

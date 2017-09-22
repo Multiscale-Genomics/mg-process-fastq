@@ -6,6 +6,7 @@
         "file_type": "fastq",
         "file_path": "tb.Human.SRR1658573_1.fastq",
         "source_id": null,
+        "taxon_id": "9606",
         "meta_data": {
             "visible": true,
             "validated": 1,
@@ -19,6 +20,7 @@
         "file_type": "fastq",
         "file_path": "tb.Human.SRR1658573_2.fastq",
         "source_id": null,
+        "taxon_id": "9606",
         "meta_data": {
             "visible": true,
             "validated": 1,
@@ -31,6 +33,7 @@
         "file_type": "fasta",
         "file_path": "/scratch/genomes/hg38.fa",
         "source_id": null,
+        "taxon_id": "9606",
         "meta_data": {
             "visible": true,
             "validated": 1,
@@ -43,6 +46,7 @@
         "file_type": "gem",
         "file_path": "/scratch/genomes/hg38.gem",
         "source_id": null,
+        "taxon_id": "9606",
         "meta_data": {
             "visible": true,
             "validated": 1,

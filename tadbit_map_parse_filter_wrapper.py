@@ -122,7 +122,7 @@ class tadbit_map_parse_filter(Workflow):
         
         m_results_meta = {}
         m_results_files = {}
-        
+
         try:
             if 'parsing:ref_genome_fasta' in input_files:
                 genome_fa = convert_from_unicode(input_files['parsing:ref_genome_fasta'])
@@ -172,12 +172,7 @@ class tadbit_map_parse_filter(Workflow):
                     data_id=None)
                 m_results_meta["paired_reads"].error = True
                 m_results_meta["paired_reads"].exception = tpm_meta['error']
-                #cleaning
-                try:
-                    shutil.rmtree(input_metadata['workdir'])
-                except:
-                    pass
-                return m_results_files, m_results_meta
+
                 
             print("TB PARSED FILES:", tpm_files)
               
@@ -190,6 +185,7 @@ class tadbit_map_parse_filter(Workflow):
                 input_metadata['max_fragment_size'] = self.configuration['max_fragment_size']
             input_metadata['expt_name'] = 'vre'
             input_metadata['outbam'] = 'paired_reads'
+            input_metadata['root_dir'] = input_metadata['root_dir'] +'/' + self.configuration['project'] 
             input_metadata['custom_filter'] = True
             input_metadata['histogram'] = True
               
@@ -201,7 +197,7 @@ class tadbit_map_parse_filter(Workflow):
                
             
             m_results_files["paired_reads"] = tf_files[0]+'.bam'
-            m_results_files["map_parse_filter_stats"] = self.configuration['root_dir']+"/map_parse_filter_stats.tar.gz"
+            m_results_files["map_parse_filter_stats"] = self.configuration['root_dir']+'/' + self.configuration['project']+"/map_parse_filter_stats.tar.gz"
               
             with tarfile.open(m_results_files["map_parse_filter_stats"], "w:gz") as tar:
                 tar.add(tfm1_files[-1],arcname=os.path.basename(tfm1_files[-1]))
@@ -211,12 +207,6 @@ class tadbit_map_parse_filter(Workflow):
                 tar.add(tf_files[-1],arcname=os.path.basename(tf_files[-1]))
                 tar.add(tf_files[-2],arcname=os.path.basename(tf_files[-2]))
              
-            
-            #cleaning
-            try:
-                shutil.rmtree(input_metadata['workdir'])
-            except:
-                pass
              
              # List of files to get saved
             print("TADBIT RESULTS:", m_results_files)
@@ -225,23 +215,24 @@ class tadbit_map_parse_filter(Workflow):
             m_results_meta["paired_reads"] = Metadata(
                     data_type="hic_sequences",
                     file_type="BAM",
-                    file_path=tf_files[0]+'.bam',
-                    source_id=None,
+                    file_path=m_results_files["paired_reads"],
+                    source_id=[""],
                     meta_data={
-                        "tool": "tadbit",
                         "description": "Paired end reads",
                         "visible": True,
+                        "assembly": "",
                         "func" : tfm1_meta['func']
                     },
-                    data_id=None)
+                    data_id=None,
+                    taxon_id=self.configuration["taxon_id"])
+            
             m_results_meta["map_parse_filter_stats"] = Metadata(
                     data_type="tool_statistics",
                     file_type="TAR",
-                    file_path=input_metadata['workdir']+"/map_parse_filter_stats.tar.gz",
-                    source_id=None,
+                    file_path=m_results_files["map_parse_filter_stats"],
+                    source_id=[""],
                     meta_data={
                         "description": "TADbit mapping, parsing and filtering statistics",
-                        "tool": "tadbit",
                         "visible": True
                     },
                     data_id=None)
@@ -250,20 +241,15 @@ class tadbit_map_parse_filter(Workflow):
                     data_type="hic_sequences",
                     file_type="BAM",
                     file_path=None,
-                    source_id=None,
+                    source_id=[""],
                     meta_data={
-                        "tool": "tadbit",
                         "description": "Paired end reads",
                         "visible": True
                     },
                     data_id=None)
             m_results_meta["paired_reads"].error = True
             m_results_meta["paired_reads"].exception = str(e)
-            #cleaning
-            try:
-                shutil.rmtree(input_metadata['workdir'])
-            except:
-                pass
+
             
         return m_results_files, m_results_meta
         
@@ -308,7 +294,7 @@ def main(args, num_cores):
     input_IDs, arguments, output_files = _read_config(
         args.config)
 
-    input_metadata_IDs = _read_metadata(
+    input_metadata_IDs, taxon_id = _read_metadata(
         args.metadata)
 
     # arrange by role
@@ -327,22 +313,35 @@ def main(args, num_cores):
     workdir = os.path.dirname(os.path.abspath(args.out_metadata))+'/_tmp_tadbit_'+tmp_name
     if not os.path.exists(workdir):
         os.makedirs(workdir)
-    arguments.update({"ncpus":num_cores, "root_dir": args.root_dir, "public_dir": args.public_dir, "workdir": workdir})
+    arguments.update({"ncpus":num_cores, "root_dir": args.root_dir, "public_dir": args.public_dir, "workdir": workdir, "taxon_id":taxon_id})
     output_files, output_metadata = app.launch(tadbit_map_parse_filter, input_files, input_metadata, output_files, arguments, )
 
-    
     print("4) Pack information to JSON")
+    #cleaning
+    clean_temps(workdir)
+    
     return _write_json(
         input_files, input_metadata,
         output_files, output_metadata,
         args.out_metadata)
     
-    # 2. The App has finished
-    print("2. Execution finished")
     
-    return True
     
-
+def clean_temps(working_path):
+    """Cleans the workspace from temporal folder and scratch files"""
+    for the_file in os.listdir(working_path):
+        file_path = os.path.join(working_path, the_file)
+        try:
+            if os.path.isfile(file_path):
+                os.unlink(file_path)
+            #elif os.path.isdir(file_path): shutil.rmtree(file_path)
+        except:
+            pass
+    try:
+        os.rmdir(working_path)
+    except:
+        pass
+    print('[CLEANING] Finished')
 
 def make_absolute_path(files, root):
     """Make paths absolute."""
@@ -393,7 +392,8 @@ def _read_metadata(json_path):
             source_id=input_file["source_id"],
             meta_data=input_file["meta_data"],
             data_id=input_file["_id"])
-    return input_metadata
+    taxon_id =  metadata[0]["taxon_id"]
+    return input_metadata, taxon_id
 
 def _write_json(
                 input_files, input_metadata,
@@ -415,6 +415,7 @@ def _write_json(
             "data_type": output_metadata[role].data_type,
             "file_type": output_metadata[role].file_type,
             "source_id": output_metadata[role].source_id,
+            "taxon_id": output_metadata[role].taxon_id,
             "meta_data": output_metadata[role].meta_data
         })
     json.dump({"output_files": results}, file(json_path, 'w'))

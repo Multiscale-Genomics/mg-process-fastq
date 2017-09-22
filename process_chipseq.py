@@ -260,7 +260,7 @@ def main_json():
     print("1. Instantiate and launch the App")
     from apps.jsonapp import JSONApp
     app = JSONApp()
-    root_path = os.path.expanduser('~') + "/code/mg-process-fastq"
+    root_path = os.path.dirname(__file__)
     result = app.launch(process_chipseq,
                         root_path,
                         "tests/json/config_chipseq.json",

@@ -73,6 +73,21 @@
                     "visible": true
                 }
             }
+        },
+        {
+            "name": "normalize_stats",
+            "required": true,
+            "allow_multiple": false,
+            "file": {
+                "file_type": "TAR",
+                "data_type": "tool_statistics",
+                "compressed": "gzip",
+                "meta_data": {
+                    "description": "TADbit normalize statistics",
+                    "tool": "tadbit",
+                    "visible": true
+                }
+            }
         }
     ],
     "control_file": ".results.json"

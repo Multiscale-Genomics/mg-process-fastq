@@ -7,15 +7,39 @@ from __future__ import print_function
 import os.path
 import argparse
 import sys
+import json
+import multiprocessing
+from random import random
+from pysam                                import AlignmentFile
+from string import ascii_letters as letters
 
 import collections
+import tarfile
 # Required for ReadTheDocs
 from functools import wraps # pylint: disable=unused-import
 
 from basic_modules.workflow import Workflow
+from basic_modules.metadata import Metadata
 
 from tool.tb_normalize import tbNormalizeTool
 
+class CommandLineParser(object):
+    """Parses command line"""
+    @staticmethod
+    def valid_file(file_name):
+        if not os.path.exists(file_name):
+            raise argparse.ArgumentTypeError("The file does not exist")
+        return file_name
+    
+    @staticmethod
+    def valid_integer_number(ivalue):
+        try:
+            ivalue = int(ivalue)
+        except:
+            raise argparse.ArgumentTypeError("%s is an invalid value" % ivalue)
+        if ivalue <= 0:
+            raise argparse.ArgumentTypeError("%s is an invalid value" % ivalue)
+        return ivalue
 # ------------------------------------------------------------------------------
 class tadbit_normalize(Workflow):
     
@@ -36,9 +60,9 @@ class tadbit_normalize(Workflow):
             configuration = {}
 
         self.configuration.update(convert_from_unicode(configuration))
-        
-        self.configuration['workdir'] = os.path.abspath('tests/data/tmp/') #Not clear where this will be passed
-
+        self.configuration.update(
+            {(key.split(':'))[-1]: val for key, val in self.configuration.items()}
+        )
 
     def run(self, input_files,metadata, output_files):
         """
@@ -58,25 +82,77 @@ class tadbit_normalize(Workflow):
         """
         
         print(
-            "PROCESS MAP - FILES PASSED TO TOOLS:",
+            "PROCESS NORMALIZE - FILES PASSED TO TOOLS:",
             remap(input_files, "bamin")
         )
         
-        bamin = convert_from_unicode(input_files['bamin'])
-        input_metadata = remap(self.configuration, "resolution","min_perc","workdir", "max_perc")
-        m_results_meta = {}
-        
-        tn = tbNormalizeTool()
-        tn_files, tn_meta = tn.run([bamin], [], input_metadata)
-        
-        m_results_meta['normalize'] = tn_meta
-        m_results_meta['normalize']['error'] = ''
-        
-        m_results_files = {}
-        m_results_files["hic_biases"] = tn_files[0]+'.cpickle'
-        
-         # List of files to get saved
-        print("TADBIT RESULTS:", m_results_files)
+        try:
+            bamin = convert_from_unicode(input_files['bamin'])
+            input_metadata = remap(self.configuration, "resolution","min_perc","workdir", "max_perc", "ncpus")
+            
+            bamfile = AlignmentFile(bamin, 'rb')
+            if len(bamfile.references) == 1:
+                input_metadata["min_count"] = "250"
+                
+            m_results_meta = {}
+            
+            tn = tbNormalizeTool()
+            tn_files, tn_meta = tn.run([bamin], [], input_metadata)
+            
+            m_results_files = {}
+            try:
+                m_results_files["hic_biases"] = self.configuration['root_dir']+'/'+ self.configuration['project']+"/"+os.path.basename(tn_files[0])
+                os.rename(tn_files[0], m_results_files["hic_biases"])
+            except:
+                pass
+            
+            m_results_files["normalize_stats"] = self.configuration['root_dir']+'/' + self.configuration['project']+"/normalize_stats.tar.gz"
+              
+            with tarfile.open(m_results_files["normalize_stats"], "w:gz") as tar:
+                tar.add(tn_files[1],arcname=os.path.basename(tn_files[1]))
+                if len(tn_files) > 2:
+                    tar.add(tn_files[2],arcname=os.path.basename(tn_files[2]))
+                
+            # List of files to get saved
+            print("TADBIT RESULTS:", m_results_files)
+
+            m_results_meta["hic_biases"] = Metadata(
+                    data_type="hic_biases",
+                    file_type="PICKEL",
+                    file_path=m_results_files["hic_biases"],
+                    source_id=[""],
+                    meta_data={
+                        "description": "HiC biases for normalization",
+                        "visible": True,
+                        "assembly": ""
+                    },
+                    data_id=None,
+                    taxon_id=self.configuration["taxon_id"])
+            m_results_meta["normalize_stats"] = Metadata(
+                    data_type="tool_statistics",
+                    file_type="TAR",
+                    file_path=m_results_files["normalize_stats"],
+                    source_id=[""],
+                    meta_data={
+                        "description": "TADbit normalize statistics",
+                        "visible": True
+                    },
+                    data_id=None)
+            
+         
+        except Exception as e:
+            m_results_meta["hic_biases"] = Metadata(
+                    data_type="hic_biases",
+                    file_type="PICKEL",
+                    file_path=None,
+                    source_id=[""],
+                    meta_data={
+                        "description": "HiC biases for normalization",
+                        "visible": True
+                    },
+                    data_id=None)
+            m_results_meta["hic_biases"].error = True
+            m_results_meta["hic_biases"].exception = str(e)
         return m_results_files, m_results_meta
         
 # ------------------------------------------------------------------------------
@@ -95,6 +171,52 @@ def remap(indict, *args, **kwargs):
     )
     return outdict
        
+def _read_config(json_path):
+    """
+    Read config.json to obtain:
+    input_IDs: dict containing IDs of tool input files
+    arguments: dict containing tool arguments
+    output_files: dict containing absolute paths of tool outputs
+
+    For more information see the schema for config.json.
+    """
+    configuration = json.load(file(json_path))
+    input_IDs = {}
+    for input_ID in configuration["input_files"]:
+        input_IDs[input_ID["name"]] = input_ID["value"]
+
+    output_files = {}
+    if "output_files" in configuration:
+        for output_file in configuration["output_files"]:
+            output_files[output_file["name"]] = output_file["file"]
+
+    arguments = {}
+    for argument in configuration["arguments"]:
+        arguments[argument["name"]] = argument["value"]
+
+    return input_IDs, arguments, output_files
+
+def _read_metadata(json_path):
+    """
+    Read input_metadata.json to obtain input_metadata_IDs, a dict
+    containing metadata on each of the tool input files,
+    arranged by their ID.
+
+    For more information see the schema for input_metadata.json.
+    """
+    metadata = json.load(file(json_path))
+    input_metadata = {}
+    for input_file in metadata:
+        input_metadata[input_file["_id"]] = Metadata(
+            data_type=input_file["data_type"],
+            file_type=input_file["file_type"],
+            file_path=input_file["file_path"],
+            source_id=input_file["source_id"],
+            meta_data=input_file["meta_data"],
+            data_id=input_file["_id"])
+    taxon_id =  metadata[0]["taxon_id"]
+    return input_metadata, taxon_id
+
 # ------------------------------------------------------------------------------
 
 def convert_from_unicode(data):
@@ -107,51 +229,101 @@ def convert_from_unicode(data):
     else:
         return data
 # ------------------------------------------------------------------------------
+def make_absolute_path(files, root):
+    """Make paths absolute."""
+    for role, path in files.items():
+        files[role] = os.path.join(root, path)
+    return files
+# ------------------------------------------------------------------------------
 
-def main(input_files, output_files, input_metadata):
+def _write_json(
+                input_files, input_metadata,
+                output_files, output_metadata, json_path):
     """
-    Main function
-    -------------
+    Write results.json using information from input_files and output_files:
+    input_files: dict containing absolute paths of input files
+    input_metadata: dict containing metadata on input files
+    output_files: dict containing absolute paths of output files
+    output_metadata: dict containing metadata on output files
 
-    This function launches the app.
+    For more information see the schema for results.json.
     """
+    results = []
+    for role, path in output_files.items():
+        results.append({
+            "name": role,
+            "file_path": path,
+            "data_type": output_metadata[role].data_type,
+            "file_type": output_metadata[role].file_type,
+            "source_id": output_metadata[role].source_id,
+            "taxon_id": output_metadata[role].taxon_id,
+            "meta_data": output_metadata[role].meta_data
+        })
+    json.dump({"output_files": results}, file(json_path, 'w'))
+    return True
 
-    # import pprint  # Pretty print - module for dictionary fancy printing
-
+def main(args, num_cores):
+    
     # 1. Instantiate and launch the App
     print("1. Instantiate and launch the App")
     from apps.workflowapp import WorkflowApp
     app = WorkflowApp()
-    result = app.launch(tadbit_normalize, input_files, input_metadata, output_files,
-                        {})
+    root_dir = args.root_dir
+    
+    print ("0) Unpack information from JSON")
+    input_IDs, arguments, output_files = _read_config(
+        args.config)
 
-    # 2. The App has finished
-    print("2. Execution finished")
-    print(result)
-    return result
+    input_metadata_IDs, taxon_id = _read_metadata(
+        args.metadata)
 
-def main_json():
-    """
-    Alternative main function
-    -------------
-    This function launches the app using configuration written in
-    two json files: config.json and input_metadata.json.
-    """
-    # 1. Instantiate and launch the App
-    print("1. Instantiate and launch the App")
-    from apps.jsonapp import JSONApp
-    app = JSONApp()
-    root_path = os.path.dirname(os.path.abspath(__file__))
-    result = app.launch(tadbit_normalize,
-                        root_path,
-                        "tests/json/config_tadbit_normalize.json",
-                        "tests/json/input_tadbit_normalize.json")
+    # arrange by role
+    input_metadata = {}
+    for role, ID in input_IDs.items():
+        input_metadata[role] = input_metadata_IDs[ID]
 
-    # 2. The App has finished
-    print("2. Execution finished; see " + root_path + "/results.json")
-    print(result)
+    # get paths from IDs
+    input_files = {}
+    for role, metadata in input_metadata.items():
+        input_files[role] = metadata.file_path
 
-    return result
+    input_files = make_absolute_path(input_files, root_dir)
+    
+    tmp_name = ''.join([letters[int(random()*52)]for _ in xrange(5)])
+    workdir = os.path.dirname(os.path.abspath(args.out_metadata))+'/_tmp_tadbit_'+tmp_name
+    if not os.path.exists(workdir):
+        os.makedirs(workdir)
+    arguments.update({"ncpus":num_cores, "root_dir": args.root_dir, "public_dir": args.public_dir, "workdir": workdir, "taxon_id":taxon_id})
+    output_files, output_metadata = app.launch(tadbit_normalize, input_files, input_metadata, output_files, arguments, )
+
+    print("4) Pack information to JSON")
+    #cleaning
+    clean_temps(workdir+"/04_normalization")
+    clean_temps(workdir)
+    
+    return _write_json(
+        input_files, input_metadata,
+        output_files, output_metadata,
+        args.out_metadata)
+    
+    
+    
+def clean_temps(working_path):
+    """Cleans the workspace from temporal folder and scratch files"""
+    for the_file in os.listdir(working_path):
+        file_path = os.path.join(working_path, the_file)
+        try:
+            if os.path.isfile(file_path):
+                os.unlink(file_path)
+            #elif os.path.isdir(file_path): shutil.rmtree(file_path)
+        except:
+            pass
+    try:
+        os.rmdir(working_path)
+    except:
+        pass
+    print('[CLEANING] Finished')
+
 
 # ------------------------------------------------------------------------------
 
@@ -159,40 +331,27 @@ if __name__ == "__main__":
     sys._run_from_cmdl = True
 
     # Set up the command line parameters
-    PARSER = argparse.ArgumentParser(description="TADbit normalize")
-    PARSER.add_argument("--bamin", help="path to a TADbit-generated BAM file with all reads")
-    PARSER.add_argument("--min_perc", help="lower percentile from which consider bins as good.")
-    PARSER.add_argument("--max_perc", help="upper percentile until which consider bins as good.")
-    PARSER.add_argument("--resolution", help="Resolution of the normalization.")
-    PARSER.add_argument("--json",
-                        help="Use defined JSON config files",
-                        action='store_const', const=True, default=False)
-    
-    # Get the matching parameters from the command line
-    ARGS = PARSER.parse_args()
+    parser = argparse.ArgumentParser(description="TADbit normalize")
+    # Config file
+    parser.add_argument("--config", help="Configuration JSON file", 
+                        type=CommandLineParser.valid_file, metavar="config", required=True)
+    # Root dir
+    parser.add_argument("--root_dir", help="Working directory",
+                        type=CommandLineParser.valid_file, metavar="root_dir", required=True)
+    # Public dir
+    parser.add_argument("--public_dir", help="Public directory to upload the results",
+                        metavar="public_dir", required=True)
+    # Metadata
+    parser.add_argument("--metadata", help="Project metadata", metavar="metadata", required=True)
+    # Output metadata
+    parser.add_argument("--out_metadata", help="Output metadata", metavar="output_metadata", required=True)
 
-    
-    BAMIN = ARGS.bamin
-    MIN_PERC = ARGS.min_perc
-    MAX_PERC = ARGS.max_perc
-    RESOLUTION = ARGS.resolution
-    JSON_CONFIG = ARGS.json
-    
-    METADATA = {
-        'resolution' : RESOLUTION,
-        'min_perc' : MIN_PERC,
-        'max_perc' : MAX_PERC
-    }
-    FILES = [
-        BAMIN
-    ]
+    args = parser.parse_args()
 
+    # Number of cores available
+    num_cores = multiprocessing.cpu_count()
+
+    RESULTS = main(args, num_cores)
     
-
-    if JSON_CONFIG is True:
-        RESULTS = main_json()
-    else:
-        # 3. Instantiate and launch the App
-        RESULTS = main(FILES, [], METADATA)
-
     print(RESULTS)
+    

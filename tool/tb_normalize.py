@@ -17,6 +17,7 @@
 from __future__ import print_function
 
 import sys
+import glob, os
 from subprocess import CalledProcessError, PIPE, Popen
 
 try:
@@ -53,7 +54,7 @@ class tbNormalizeTool(Tool):
 
     @task(bamin=FILE_IN, resolution=IN, min_perc=IN, max_perc=IN, workdir=IN)
     # @constraint(ProcessorCoreCount=16)
-    def tb_normalize(self, bamin, resolution, min_perc, max_perc, workdir):
+    def tb_normalize(self, bamin, resolution, min_perc, max_perc, workdir, ncpus="1", min_count=None):
         """
         Function to the predict TAD sites for a given resolution from the Hi-C
         matrix
@@ -84,7 +85,7 @@ class tbNormalizeTool(Tool):
             '--bam', bamin,
             '--workdir', workdir,
             '--resolution', resolution,
-            '--cpus', '32'
+            '--cpus', str(ncpus)
             ]
     
         if min_perc:
@@ -93,15 +94,29 @@ class tbNormalizeTool(Tool):
         if max_perc:
             _cmd.append('--max_perc')
             _cmd.append(max_perc)
+        if min_count:
+            _cmd.append('--min_count')
+            _cmd.append(min_count)
+            
+        output_metadata = {}
+        output_files = []
         
-        try:
-            out, err = Popen(_cmd, stdout=PIPE, stderr=PIPE).communicate()
-        except CalledProcessError as e:
-            print(out)
-            print(err)
-            raise Exception(e.output)
+        out, err = Popen(_cmd, stdout=PIPE, stderr=PIPE).communicate()
+        print(out)
+        print(err)
 
-        return True
+        os.chdir(workdir+"/04_normalization")
+        for fl in glob.glob("biases_*.pickle"):
+            output_files.append(os.path.abspath(fl))
+            break 
+        for fl in glob.glob("interactions*.pdf"):
+            output_files.append(os.path.abspath(fl))
+            break
+        for fl in glob.glob("filtered_bins_*.png"):
+            output_files.append(os.path.abspath(fl))
+            break
+        
+        return (output_files, output_metadata)
 
     def run(self, input_files, output_files, metadata=None):
         """
@@ -136,23 +151,27 @@ class tbNormalizeTool(Tool):
         if 'resolution' in metadata:
             resolution = metadata['resolution']
 
-        min_perc = max_perc = None 
-        
+        min_perc = max_perc = min_count = None 
+        ncpus=1
+        if 'ncpus' in metadata:
+            ncpus = metadata['ncpus']
+            
         if 'min_perc' in metadata:
             min_perc = metadata['min_perc']
         if 'max_perc' in metadata:
             max_perc = metadata['max_perc']
+        if 'min_count' in metadata:
+            min_count = metadata['min_count']
             
         root_name = bamin.split("/")
         if 'workdir' in metadata:
             root_name = metadata['workdir']
         
         # input and output share most metadata
-        output_metadata = {}
         
-        hic_biases = 'hic_biases' 
-        self.tb_normalize(bamin, resolution, min_perc, max_perc, root_name)
+        
+        output_files, output_metadata = self.tb_normalize(bamin, resolution, min_perc, max_perc, root_name, ncpus, min_count)
 
-        return ([hic_biases], output_metadata)
+        return (output_files, output_metadata)
 
 # ------------------------------------------------------------------------------

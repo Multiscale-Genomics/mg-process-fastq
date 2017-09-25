@@ -56,24 +56,35 @@ class tbNormalizeTool(Tool):
     # @constraint(ProcessorCoreCount=16)
     def tb_normalize(self, bamin, resolution, min_perc, max_perc, workdir, ncpus="1", min_count=None):
         """
-        Function to the predict TAD sites for a given resolution from the Hi-C
+        Function to normalize to a given resolution the Hi-C
         matrix
 
         Parameters
         ----------
-        expt_name : str
-                Location of the adjacency list
-        matrix_file : str
-            Location of the HDF5 output matrix file
-        resolution : int
-            Resolution to read the Hi-C adjacency list at
-        tad_file : str
-            Location of the output TAD file
-
+        bamin : str
+            Location of the tadbit bam paired reads
+        resolution : str
+            Resolution of the Hi-C
+        min_perc : str
+            lower percentile from which consider bins as good.                                                                                                
+        max_perc : str
+            upper percentile until which consider bins as good. 
+        workdir : str
+            Location of working directory
+        ncpus : str
+            Number of cpus to use
+        min_count : str
+            minimum number of reads mapped to a bin (recommended value 
+            could be 2500). If set this option overrides the perc_zero
+                
         Returns
         -------
-        tad_file : str
-            Location of the output TAD file
+        hic_biases : str
+            Location of HiC biases pickle file
+        interactions : str
+            Location of interaction decay vs genomic distance pdf
+        filtered_bins : str
+            Location of filtered_bins png
 
         """
         #chr_hic_data = read_matrix(matrix_file, resolution=int(resolution))
@@ -126,13 +137,22 @@ class tbNormalizeTool(Tool):
         Parameters
         ----------
         input_files : list
-            adj_list : str
-                Location of the adjacency list
+            bamin : str
+                Location of the tadbit bam paired reads
         metadata : dict
-            resolutions : list
-                Levels of resolution for the adjacency list to be daved at
-            assembly : str
-                Assembly of the aligned sequences
+            resolution : str
+                Resolution of the Hi-C
+            min_perc : str
+                lower percentile from which consider bins as good.                                                                                                
+            max_perc : str
+                upper percentile until which consider bins as good. 
+            workdir : str
+                Location of working directory
+            ncpus : str
+                Number of cpus to use
+            min_count : str
+                minimum number of reads mapped to a bin (recommended value 
+                could be 2500). If set this option overrides the perc_zero
 
 
 

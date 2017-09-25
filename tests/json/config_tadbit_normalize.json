@@ -1,0 +1,64 @@
+{
+   "input_files": [
+        {
+            "required": true,
+            "allow_multiple": false,
+            "name": "bamin",
+            "value": "59b7e020d9422a5969b65378"
+        }
+    ],
+    "arguments": [
+    {
+            "name": "project",
+            "value": ""
+        },
+    	{
+            "name": "resolution",
+            "description": "Resolution of the normalization",
+            "help": "Resolution of the normalization.",
+            "type": "string",
+            "required": true,
+            "default": "100000",
+            "value" : "10000"
+        },
+        {
+            "name": "min_perc",
+            "description": "Minimum percentage",
+            "help": "lower percentile from which consider bins as good.",
+            "type": "string",
+            "required": false,
+            "default": "7",
+            "value": "2"
+        },
+        {
+            "name": "max_perc",
+            "description": "Maximum percentage",
+            "help": "upper percentile until which consider bins as good",
+            "type": "string",
+            "required": false,
+            "default": "99.8",
+            "value": "99.8"
+        }
+    ],
+    "output_files": [
+    	{
+            "name": "hic_biases",
+            "required": true,
+            "allow_multiple": false,
+            "file": {
+                "file_type": "PICKEL",
+                "data_type": "hic_biases",
+                "compressed": "null",
+                "file_path": "file1.pickel",
+                "meta_data": {
+                    "tool": "tadbit",
+                    "description": "HiC biases for normalization",
+                    "visible": true
+                }
+            }
+        }
+    ],
+    "control_file": ".results.json"
+}
+
+

@@ -1,0 +1,30 @@
+[
+    {
+        "compressed": 0,
+        "_id": "59b7e020d9422a5969b65378",
+        "data_type": "hic_sequences",
+        "file_type": "bam",
+        "file_path": "hic_chr10_paired_reads.bam",
+        "source_id": null,
+        "taxon_id": "9606",
+        "meta_data": {
+            "visible": true,
+            "validated": 1,
+            "assembly": "GCA_000001405.22"
+        }
+    },
+    {
+        "compressed": 0,
+        "_id": "59b7e020d9422a5969b65372",
+        "data_type": "hic_biases",
+        "file_type": "pickle",
+        "file_path": "hic_chr10_biases_10kb.pickle",
+        "source_id": null,
+        "taxon_id": "9606",
+        "meta_data": {
+            "visible": true,
+            "validated": 1,
+            "assembly": "GCA_000001405.22"
+        }
+    }
+]

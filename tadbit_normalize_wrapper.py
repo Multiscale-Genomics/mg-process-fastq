@@ -92,7 +92,8 @@ class tadbit_normalize(Workflow):
             
             bamfile = AlignmentFile(bamin, 'rb')
             if len(bamfile.references) == 1:
-                input_metadata["min_count"] = "250"
+                input_metadata["min_count"] = "10"
+            bamfile.close()
                 
             m_results_meta = {}
             

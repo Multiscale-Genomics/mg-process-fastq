@@ -9,6 +9,7 @@ import argparse
 import sys
 import json
 import multiprocessing
+
 from random import random
 from string import ascii_letters as letters
 
@@ -87,7 +88,9 @@ class tadbit_bin(Workflow):
         )
         m_results_files = {}
         m_results_meta = {}
-        
+        #hic_data = load_hic_data_from_reads('/home/dcastillo/workspace/vre/mg-process-fastq-tadbit/tests/data/raw_None:0-13381_10kb.abc', resolution=10000)
+        #exp = Experiment("vre", resolution=10000, hic_data=hic_data)
+            
         try:
             input_metadata = remap(self.configuration, "resolution","workdir","ncpus")
             if "coord1" in self.configuration:
@@ -99,20 +102,21 @@ class tadbit_bin(Workflow):
             if 'biases' in input_files:
                 in_files.append(convert_from_unicode(input_files['biases']))
                 input_metadata["norm"] = ['raw','norm']
-            
+            #hic_data = HiC_data((), len(bins_dict), sections, bins_dict, resolution=int(input_metadata['resolution']))
             tb = tbBinTool()
             tb_files, tb_meta = tb.run(in_files, [], input_metadata)
             
-            
-            try:
-                m_results_files["hic_contacts_matrix_raw"] = self.configuration['root_dir']+'/'+ self.configuration['project']+"/"+os.path.basename(tb_files[0])
-                os.rename(tb_files[0], m_results_files["hic_contacts_matrix_raw"])
-                if len(tb_files) > 1:
-                    m_results_files["hic_contacts_matrix_norm"] = self.configuration['root_dir']+'/'+ self.configuration['project']+"/"+os.path.basename(tb_files[1])
-                    os.rename(tb_files[1], m_results_files["hic_contacts_matrix_norm"])
-            except:
-                pass
-            
+            m_results_files["bin_stats"] = self.configuration['root_dir']+'/'+ self.configuration['project']+"/bin_stats.tar.gz"
+            m_results_files["hic_contacts_matrix_raw"] = self.configuration['root_dir']+'/'+ self.configuration['project']+"/"+os.path.basename(tb_files[0])
+            os.rename(tb_files[0], m_results_files["hic_contacts_matrix_raw"])
+            if len(tb_files) > 2:
+                m_results_files["hic_contacts_matrix_norm"] = self.configuration['root_dir']+'/'+ self.configuration['project']+"/"+os.path.basename(tb_files[2])
+                os.rename(tb_files[2], m_results_files["hic_contacts_matrix_norm"])
+                
+            with tarfile.open(m_results_files["bin_stats"], "w:gz") as tar:
+                tar.add(tb_files[1],arcname=os.path.basename(tb_files[1]))
+                if len(tb_files) > 2:
+                    tar.add(tb_files[3],arcname=os.path.basename(tb_files[3]))
                 
             # List of files to get saved
             print("TADBIT RESULTS:", m_results_files)
@@ -130,7 +134,17 @@ class tadbit_bin(Workflow):
                     },
                     data_id=None,
                     taxon_id=self.configuration["taxon_id"])
-            if len(tb_files) > 1:
+            m_results_meta["bin_stats"] = Metadata(
+                    data_type="tool_statistics",
+                    file_type="TAR",
+                    file_path=m_results_files["bin_stats"],
+                    source_id=[""],
+                    meta_data={
+                        "description": "TADbit HiC matrices in png format",
+                        "visible": True
+                    },
+                    data_id=None)
+            if len(tb_files) > 2:
                 m_results_meta["hic_contacts_matrix_norm"] = Metadata(
                     data_type="hic_contacts_matrix",
                     file_type="TXT",
@@ -148,7 +162,7 @@ class tadbit_bin(Workflow):
             
          
         except Exception as e:
-            m_results_meta["hic_contacts_matrix"] = Metadata(
+            m_results_meta["hic_contacts_matrix_raw"] = Metadata(
                     data_type="hic_contacts_matrix",
                     file_type="TXT",
                     file_path=None,
@@ -158,10 +172,41 @@ class tadbit_bin(Workflow):
                         "visible": True
                     },
                     data_id=None)
-            m_results_meta["hic_contacts_matrix"].error = True
-            m_results_meta["hic_contacts_matrix"].exception = str(e)
+            m_results_meta["hic_contacts_matrix_raw"].error = True
+            m_results_meta["hic_contacts_matrix_raw"].exception = str(e)
         return m_results_files, m_results_meta
-        
+
+# ------------------------------------------------------------------------------       
+
+#===============================================================================
+# def hic_data_parser(fnam,size):
+#     """
+#     :param fnam: tsv file with pos1 pos2 value
+#     """
+#     fhandler = open(fnam)
+#     line = fhandler.next()
+#     size = 0
+#     while line.startswith('#'):
+#         line = fhandler.next()
+#     imx = HiC_data((), size, genome_seq, dict_sec, resolution=resolution)
+#     try:
+#         while True:
+#             _, cr1, ps1, _, _, _, _, cr2, ps2, _ = line.split('\t', 9)
+#             try:
+#                 ps1 = dict_sec[(cr1, int(ps1) / resolution)]
+#                 ps2 = dict_sec[(cr2, int(ps2) / resolution)]
+#             except KeyError:
+#                 ps1 = int(ps1) / resolution
+#                 ps2 = int(ps2) / resolution
+#             imx[ps1, ps2] += 1
+#             imx[ps2, ps1] += 1
+#             line = fhandler.next()
+#     except StopIteration:
+#         pass
+#     imx.symmetricized = True
+#     return imx
+#===============================================================================
+
 # ------------------------------------------------------------------------------
 
 def remap(indict, *args, **kwargs):

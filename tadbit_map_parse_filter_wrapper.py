@@ -97,6 +97,10 @@ class tadbit_map_parse_filter(Workflow):
                 self.configuration['windows'] = ''
         else:
             self.configuration['windows'] = ''
+        if 'chromosomes' not in self.configuration:
+            self.configuration["chromosomes"] = ''
+        if 'rest_enzyme' not in self.configuration:
+            self.configuration["rest_enzyme"] = ''
 
     def run(self, input_files,metadata, output_files):
         """
@@ -122,7 +126,7 @@ class tadbit_map_parse_filter(Workflow):
         
         m_results_meta = {}
         m_results_files = {}
-
+        
         try:
             if 'parsing:ref_genome_fasta' in input_files:
                 genome_fa = convert_from_unicode(input_files['parsing:ref_genome_fasta'])
@@ -139,13 +143,23 @@ class tadbit_map_parse_filter(Workflow):
             fastq_file_2 = convert_from_unicode(input_files['read2'])
             input_metadata = remap(self.configuration, "ncpus","iterative_mapping","workdir","windows",rest_enzyme="enzyme_name")
             input_metadata['quality_plot'] = True        
+            summary_file = input_metadata["workdir"]+'/'+'summary.txt'
             
             tfm1 = tbFullMappingTool()
             tfm1_files, tfm1_meta = tfm1.run([genome_gem, fastq_file_1], [], input_metadata)
+            with open(summary_file, 'w') as outfile:
+                outfile.write("Mapping read 1\n--------------\n")
+                with open(tfm1_files[-2]) as infile:
+                    outfile.write(infile.read())
+            
             
             tfm2 = tbFullMappingTool()
             tfm2_files, tfm2_meta = tfm2.run([genome_gem, fastq_file_2], [], input_metadata)
-             
+            with open(summary_file, 'a') as outfile:
+                outfile.write("\n\nMapping read 2\n--------------\n")
+                with open(tfm2_files[-2]) as infile:
+                    outfile.write(infile.read())
+                    
             tpm = tbParseMappingTool()
             files = [genome_fa] + tfm1_files[:-2] + tfm2_files[:-2]
      
@@ -191,7 +205,10 @@ class tadbit_map_parse_filter(Workflow):
               
             tbf = tbFilterTool()
             tf_files, tf_meta = tbf.run(tpm_files, [], input_metadata)
-        
+            with open(summary_file, 'a') as outfile:
+                outfile.write("\n\nFiltering\n--------------\n")
+                with open(tf_files[-2]) as infile:
+                    outfile.write(infile.read())
               
             print("TB FILTER FILES:", tf_files[0])
                
@@ -200,13 +217,10 @@ class tadbit_map_parse_filter(Workflow):
             m_results_files["map_parse_filter_stats"] = self.configuration['root_dir']+'/' + self.configuration['project']+"/map_parse_filter_stats.tar.gz"
               
             with tarfile.open(m_results_files["map_parse_filter_stats"], "w:gz") as tar:
+                tar.add(summary_file,arcname=os.path.basename(summary_file))
                 tar.add(tfm1_files[-1],arcname=os.path.basename(tfm1_files[-1]))
-                tar.add(tfm1_files[-2],arcname=os.path.basename(tfm1_files[-2]))
                 tar.add(tfm2_files[-1],arcname=os.path.basename(tfm2_files[-1]))
-                tar.add(tfm2_files[-2],arcname=os.path.basename(tfm2_files[-2]))
                 tar.add(tf_files[-1],arcname=os.path.basename(tf_files[-1]))
-                tar.add(tf_files[-2],arcname=os.path.basename(tf_files[-2]))
-             
              
              # List of files to get saved
             print("TADBIT RESULTS:", m_results_files)

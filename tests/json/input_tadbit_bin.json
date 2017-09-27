@@ -18,7 +18,7 @@
         "_id": "59b7e020d9422a5969b65372",
         "data_type": "hic_biases",
         "file_type": "pickle",
-        "file_path": "hic_chr10_biases_10kb.pickle",
+        "file_path": "hic_chr10_biases_100kb.pickle",
         "source_id": null,
         "taxon_id": "9606",
         "meta_data": {

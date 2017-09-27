@@ -248,7 +248,7 @@ class tbFilterTool(Tool):
         
         hist_path = ''
         if 'histogram' in metadata:
-            hist_path = "/".join(root_name[0:-1]) + '/histogram_fragment_sizes.png'
+            hist_path = "/".join(root_name[0:-1]) + '/histogram_fragment_sizes_.png'
             log_path = "/".join(root_name[0:-1]) + '/filter_log.txt'
             
             median, max_f, mad = insert_sizes(

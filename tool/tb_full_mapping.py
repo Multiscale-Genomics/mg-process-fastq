@@ -233,7 +233,7 @@ class tbFullMappingTool(Tool):
         #name = root_name[-1]
         
         if 'quality_plot' in metadata:
-            quality_plot_file = 'quality_plot_'+file_name + '.png'
+            quality_plot_file = 'QC-plot_'+file_name + '.png'
             log_path = root_path+'/'+'mapping_log_'+file_name + '.txt'
         
             dangling_ends, ligated = quality_plot(fastq_file, r_enz=metadata['enzyme_name'],

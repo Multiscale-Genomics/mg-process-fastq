@@ -25,7 +25,6 @@ from pytadbit.parsers.hic_bam_parser import write_matrix
 from pytadbit import HiC_data, Experiment, Chromosome
 from pytadbit.parsers.hic_parser import load_hic_data_from_bam
 from pytadbit.mapping.analyze import hic_map
-from pysam                                import AlignmentFile
 
 try:
     if hasattr(sys, '_run_from_cmdl') is True:
@@ -164,10 +163,10 @@ class tbBinTool(Tool):
                          normalizations=norm,
                          region1=region1, start1=start1, end1=end1,
                          region2=region2, start2=start2, end2=end2,
-                         tmpdir='.', append_to_tar=None, ncpus=ncpus,
+                         tmpdir=workdir, append_to_tar=None, ncpus=ncpus,
                          verbose=True)
         output_files = [out_files['RAW']]
-        imx = load_hic_data_from_bam(bamin, resolution, biases=biases if biases else None, ncpus=ncpus)
+        imx = load_hic_data_from_bam(bamin, resolution, biases=biases if biases else None, ncpus=ncpus,tmpdir=workdir)
         hic_contacts_matrix_raw_fig = workdir+"/genomic_maps_raw.png"
         hic_map(imx, resolution, savefig=hic_contacts_matrix_raw_fig, normalized=False)
         output_files.append(hic_contacts_matrix_raw_fig)

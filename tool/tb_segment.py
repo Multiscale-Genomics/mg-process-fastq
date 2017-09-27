@@ -40,9 +40,9 @@ from basic_modules.tool import Tool
 
 # ------------------------------------------------------------------------------
 
-class tbNormalizeTool(Tool):
+class tbSegmentTool(Tool):
     """
-    Tool for normalizing an adjacency matrix
+    Tool for finding tads and compartments in an adjacency matrix
     """
 
     def __init__(self):
@@ -52,62 +52,49 @@ class tbNormalizeTool(Tool):
         print("TADbit - Normalize")
         Tool.__init__(self)
 
-    @task(bamin=FILE_IN, resolution=IN, min_perc=IN, max_perc=IN, workdir=IN)
+    @task(bamin=FILE_IN, biases=FILE_IN, resolution=IN, workdir=IN)
     # @constraint(ProcessorCoreCount=16)
-    def tb_normalize(self, bamin, resolution, min_perc, max_perc, workdir, ncpus="1", min_count=None):
+    def tb_segment(self, bamin, biases, resolution, workdir, ncpus="1"):
         """
-        Function to normalize to a given resolution the Hi-C
+        Function to find tads and compartments in the Hi-C
         matrix
 
         Parameters
         ----------
         bamin : str
             Location of the tadbit bam paired reads
-        resolution : str
+        biases : str
+            Location of the pickle hic biases
+        resolution : int
             Resolution of the Hi-C
-        min_perc : str
-            lower percentile from which consider bins as good.                                                                                                
-        max_perc : str
-            upper percentile until which consider bins as good. 
         workdir : str
             Location of working directory
-        ncpus : str
+        ncpus : int
             Number of cpus to use
-        min_count : str
-            minimum number of reads mapped to a bin (recommended value 
-            could be 2500). If set this option overrides the perc_zero
                 
         Returns
         -------
-        hic_biases : str
-            Location of HiC biases pickle file
-        interactions : str
-            Location of interaction decay vs genomic distance pdf
+        compartments : str
+            Location of tsv file with compartment definition
+        tads : str
+            Location of tsv file with tad definition
         filtered_bins : str
             Location of filtered_bins png
 
         """
-        #chr_hic_data = read_matrix(matrix_file, resolution=int(resolution))
-
-        print("TB NORMALIZATION:",bamin, resolution, min_perc, max_perc, workdir)
+        print("TB SEGMENT:",bamin, resolution, workdir)
 
         _cmd = [
-                'tadbit', 'normalize', 
-            '--bam', bamin,
+                'tadbit', 'segment', 
+            '--nosql', '--mreads', bamin,
             '--workdir', workdir,
             '--resolution', resolution,
-            '--cpus', str(ncpus)
+            '--cpu', str(ncpus)
             ]
     
-        if min_perc:
-            _cmd.append('--min_perc')
-            _cmd.append(min_perc)
-        if max_perc:
-            _cmd.append('--max_perc')
-            _cmd.append(max_perc)
-        if min_count:
-            _cmd.append('--min_count')
-            _cmd.append(min_count)
+        if biases:
+            _cmd.append('--biases')
+            _cmd.append(biases)
             
         output_metadata = {}
         output_files = []
@@ -116,42 +103,37 @@ class tbNormalizeTool(Tool):
         print(out)
         print(err)
 
-        os.chdir(workdir+"/04_normalization")
-        for fl in glob.glob("biases_*.pickle"):
+        tad_dir = os.path.join(workdir, '06_segmentation',
+                             'tads_%s' % (nice(int(resolution))))
+        cmprt_dir = os.path.join(workdir, '06_segmentation',
+                              'compartments_%s' % (nice(int(resolution))))
+        os.chdir(tad_dir)
+        for fl in glob.glob("*.tsv"):
             output_files.append(os.path.abspath(fl))
             break 
-        for fl in glob.glob("interactions*.png"):
-            output_files.append(os.path.abspath(fl))
-            break
-        for fl in glob.glob("filtered_bins_*.png"):
-            output_files.append(os.path.abspath(fl))
-            break
+        output_files.append(cmprt_dir)
         
         return (output_files, output_metadata)
 
     def run(self, input_files, output_files, metadata=None):
         """
-        The main function for the normalization of the Hi-C matrix to a given resolution
+        The main function to the predict TAD sites and compartments for a given resolution from
+        the Hi-C matrix
 
         Parameters
         ----------
         input_files : list
             bamin : str
                 Location of the tadbit bam paired reads
+            biases : str
+                Location of the pickle hic biases
         metadata : dict
-            resolution : str
+            resolution : int
                 Resolution of the Hi-C
-            min_perc : str
-                lower percentile from which consider bins as good.                                                                                                
-            max_perc : str
-                upper percentile until which consider bins as good. 
             workdir : str
                 Location of working directory
-            ncpus : str
+            ncpus : int
                 Number of cpus to use
-            min_count : str
-                minimum number of reads mapped to a bin (recommended value 
-                could be 2500). If set this option overrides the perc_zero
 
 
 
@@ -170,17 +152,12 @@ class tbNormalizeTool(Tool):
         if 'resolution' in metadata:
             resolution = metadata['resolution']
 
-        min_perc = max_perc = min_count = None 
         ncpus=1
         if 'ncpus' in metadata:
             ncpus = metadata['ncpus']
-            
-        if 'min_perc' in metadata:
-            min_perc = metadata['min_perc']
-        if 'max_perc' in metadata:
-            max_perc = metadata['max_perc']
-        if 'min_count' in metadata:
-            min_count = metadata['min_count']
+        biases = None
+        if 'biases' in metadata:
+            biases = metadata['biases']
             
         root_name = bamin.split("/")
         if 'workdir' in metadata:
@@ -189,8 +166,13 @@ class tbNormalizeTool(Tool):
         # input and output share most metadata
         
         
-        output_files, output_metadata = self.tb_normalize(bamin, resolution, min_perc, max_perc, root_name, ncpus, min_count)
+        output_files, output_metadata = self.tb_segment(bamin, biases, resolution, root_name, ncpus)
 
         return (output_files, output_metadata)
 
 # ------------------------------------------------------------------------------
+
+def nice(reso):
+    if reso >= 1000000:
+        return '%dMb' % (reso / 1000000)
+    return '%dkb' % (reso / 1000)

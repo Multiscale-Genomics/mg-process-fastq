@@ -1,0 +1,67 @@
+{
+   "input_files": [
+        {
+            "required": true,
+            "allow_multiple": false,
+            "name": "bamin",
+            "value": "59b7e020d9422a5969b65378"
+        },
+        {
+            "required": false,
+            "allow_multiple": false,
+            "name": "biases",
+            "value": "59b7e020d9422a5969b65372"
+        }
+    ],
+    "arguments": [
+    {
+            "name": "project",
+            "value": ""
+        },
+    	{
+            "name": "resolution",
+            "description": "Resolution of the normalization",
+            "help": "Resolution of the normalization.",
+            "type": "string",
+            "required": true,
+            "default": "100000",
+            "value" : "100000"
+        }
+    ],
+    "output_files": [
+        {
+            "name": "tads",
+            "required": true,
+            "allow_multiple": false,
+            "file": {
+                "file_type": "TSV",
+                "data_type": "hic_tads",
+                "compressed": "null",
+                "file_path": "hic_tads.txt",
+                "meta_data": {
+                    "tool": "tadbit",
+                    "description": "HiC tad definition",
+                    "visible": true
+                }
+            }
+        },
+        {
+            "name": "segment_stats",
+            "required": true,
+            "allow_multiple": false,
+            "file": {
+                "file_type": "TAR",
+                "data_type": "tool_statistics",
+                "compressed": "gzip",
+                "meta_data": {
+                    "description": "TADbit HiC segment stats",
+                    "tool": "tadbit",
+                    "visible": true
+                }
+            }
+        }
+    ],
+    "control_file": ".results.json"
+}
+
+

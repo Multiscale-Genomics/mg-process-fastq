@@ -21,7 +21,7 @@ from functools import wraps # pylint: disable=unused-import
 from basic_modules.workflow import Workflow
 from basic_modules.metadata import Metadata
 
-from tool.tb_bin import tbBinTool
+from tool.tb_segment import tbSegmentTool
 
 class CommandLineParser(object):
     """Parses command line"""
@@ -41,7 +41,7 @@ class CommandLineParser(object):
             raise argparse.ArgumentTypeError("%s is an invalid value" % ivalue)
         return ivalue
 # ------------------------------------------------------------------------------
-class tadbit_bin(Workflow):
+class tadbit_segment(Workflow):
     
     configuration = {}
 
@@ -90,90 +90,68 @@ class tadbit_bin(Workflow):
         m_results_meta = {}
         #hic_data = load_hic_data_from_reads('/home/dcastillo/workspace/vre/mg-process-fastq-tadbit/tests/data/raw_None:0-13381_10kb.abc', resolution=10000)
         #exp = Experiment("vre", resolution=10000, hic_data=hic_data)
-            
+         
         try:
             input_metadata = remap(self.configuration, "resolution","workdir","ncpus")
-            if "coord1" in self.configuration:
-                input_metadata["coord1"] = self.configuration["coord1"]
-            if "coord2" in self.configuration:
-                input_metadata["coord2"] = self.configuration["coord2"]
-            input_metadata["norm"] = ['raw']
             in_files = [convert_from_unicode(input_files['bamin'])]
             if 'biases' in input_files:
                 in_files.append(convert_from_unicode(input_files['biases']))
-                input_metadata["norm"] = ['raw','norm']
             #hic_data = HiC_data((), len(bins_dict), sections, bins_dict, resolution=int(input_metadata['resolution']))
-            tb = tbBinTool()
-            tb_files, tb_meta = tb.run(in_files, [], input_metadata)
+            ts = tbSegmentTool()
+            ts_files, ts_meta = ts.run(in_files, [], input_metadata)
             
-            m_results_files["bin_stats"] = self.configuration['root_dir']+'/'+ self.configuration['project']+"/bin_stats.tar.gz"
-            m_results_files["hic_contacts_matrix_raw"] = self.configuration['root_dir']+'/'+ self.configuration['project']+"/"+os.path.basename(tb_files[0])
-            os.rename(tb_files[0], m_results_files["hic_contacts_matrix_raw"])
-            if len(tb_files) > 2:
-                m_results_files["hic_contacts_matrix_norm"] = self.configuration['root_dir']+'/'+ self.configuration['project']+"/"+os.path.basename(tb_files[2])
-                os.rename(tb_files[2], m_results_files["hic_contacts_matrix_norm"])
-                
-            with tarfile.open(m_results_files["bin_stats"], "w:gz") as tar:
-                tar.add(tb_files[1],arcname=os.path.basename(tb_files[1]))
-                if len(tb_files) > 2:
-                    tar.add(tb_files[3],arcname=os.path.basename(tb_files[3]))
-                
+            m_results_files["segment_stats"] = self.configuration['root_dir']+'/'+ self.configuration['project']+"/segment_stats.tar.gz"
+            
+            m_results_files["tads"] = self.configuration['root_dir']+'/'+ self.configuration['project']+"/"+os.path.basename(ts_files[0])
+            os.rename(ts_files[0], m_results_files["tads"])
+            
+            tar = tarfile.open(m_results_files["segment_stats"], "w:gz")
+            tar.add(ts_files[1],arcname='compartments_stats')
+            tar.close()    
             # List of files to get saved
             print("TADBIT RESULTS:", m_results_files)
-
-            m_results_meta["hic_contacts_matrix_raw"] = Metadata(
-                    data_type="hic_contacts_matrix",
-                    file_type="TXT",
-                    file_path=m_results_files["hic_contacts_matrix_raw"],
+            
+            clean_temps(os.path.dirname(ts_files[0]))
+            clean_temps(ts_files[1])
+            clean_temps(os.path.join(self.configuration['workdir'],"06_segmentation"))
+            
+            m_results_meta["tads"] = Metadata(
+                    data_type="hic_tads",
+                    file_type="TSV",
+                    file_path=m_results_files["tads"],
                     source_id=[""],
                     meta_data={
-                        "description": "HiC contact matrix raw",
+                        "description": "HiC tad definition",
                         "visible": True,
-                        "assembly": "",
-                        "norm" : 'raw'
+                        "assembly": ""
                     },
                     data_id=None,
                     taxon_id=self.configuration["taxon_id"])
-            m_results_meta["bin_stats"] = Metadata(
+            m_results_meta["segment_stats"] = Metadata(
                     data_type="tool_statistics",
                     file_type="TAR",
-                    file_path=m_results_files["bin_stats"],
+                    file_path=m_results_files["segment_stats"],
                     source_id=[""],
                     meta_data={
-                        "description": "TADbit HiC matrices in png format",
+                        "description": "TADbit HiC segment statistics",
                         "visible": True
                     },
                     data_id=None)
-            if len(tb_files) > 2:
-                m_results_meta["hic_contacts_matrix_norm"] = Metadata(
-                    data_type="hic_contacts_matrix",
-                    file_type="TXT",
-                    file_path=m_results_files["hic_contacts_matrix_norm"],
-                    source_id=[""],
-                    meta_data={
-                        "description": "HiC contact matrix normalized",
-                        "visible": True,
-                        "assembly": "",
-                        "norm" : 'norm'
-                    },
-                    data_id=None,
-                    taxon_id=self.configuration["taxon_id"])
-           
             
          
         except Exception as e:
-            m_results_meta["hic_contacts_matrix_raw"] = Metadata(
-                    data_type="hic_contacts_matrix",
-                    file_type="TXT",
+            m_results_meta["tads"] = Metadata(
+                    data_type="hic_tads",
+                    file_type="TSV",
                     file_path=None,
                     source_id=[""],
                     meta_data={
-                        "description": "HiC contact matrix",
+                        "description": "HiC tad definition",
                         "visible": True
                     },
                     data_id=None)
-            m_results_meta["hic_contacts_matrix_raw"].error = True
-            m_results_meta["hic_contacts_matrix_raw"].exception = str(e)
+            m_results_meta["tads"].error = True
+            m_results_meta["tads"].exception = str(e)
         return m_results_files, m_results_meta
 
 
@@ -317,7 +295,7 @@ def main(args, num_cores):
     if not os.path.exists(workdir):
         os.makedirs(workdir)
     arguments.update({"ncpus":num_cores, "root_dir": args.root_dir, "public_dir": args.public_dir, "workdir": workdir, "taxon_id":taxon_id})
-    output_files, output_metadata = app.launch(tadbit_bin, input_files, input_metadata, output_files, arguments, )
+    output_files, output_metadata = app.launch(tadbit_segment, input_files, input_metadata, output_files, arguments, )
 
     print("4) Pack information to JSON")
     #cleaning

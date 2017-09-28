@@ -5,6 +5,7 @@
 from __future__ import print_function
 
 import os.path
+import shutil
 import argparse
 import sys
 import json
@@ -117,6 +118,11 @@ class tadbit_bin(Workflow):
                 tar.add(tb_files[1],arcname=os.path.basename(tb_files[1]))
                 if len(tb_files) > 2:
                     tar.add(tb_files[3],arcname=os.path.basename(tb_files[3]))
+            if os.path.isdir(tb_files[1]):
+                clean_temps(tb_files[1])
+            if len(tb_files) > 2:
+                if os.path.isdir(tb_files[3]):
+                    clean_temps(tb_files[3])
                 
             # List of files to get saved
             print("TADBIT RESULTS:", m_results_files)
@@ -337,7 +343,7 @@ def clean_temps(working_path):
         try:
             if os.path.isfile(file_path):
                 os.unlink(file_path)
-            #elif os.path.isdir(file_path): shutil.rmtree(file_path)
+            elif os.path.isdir(file_path): shutil.rmtree(file_path)
         except:
             pass
     try:

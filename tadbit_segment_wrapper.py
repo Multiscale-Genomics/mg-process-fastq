@@ -5,6 +5,7 @@
 from __future__ import print_function
 
 import os.path
+import shutil
 import argparse
 import sys
 import json
@@ -83,7 +84,7 @@ class tadbit_segment(Workflow):
         """
         
         print(
-            "PROCESS BIN - FILES PASSED TO TOOLS:",
+            "PROCESS SEGMENT - FILES PASSED TO TOOLS:",
             remap(input_files, "bamin")
         )
         m_results_files = {}
@@ -92,30 +93,24 @@ class tadbit_segment(Workflow):
         #exp = Experiment("vre", resolution=10000, hic_data=hic_data)
          
         try:
-            input_metadata = remap(self.configuration, "resolution","workdir","ncpus")
+            input_metadata = remap(self.configuration, "resolution","callers","workdir","ncpus")
+            if "chromosome_names" in self.configuration:
+                input_metadata["chromosomes"] = self.configuration["chromosome_names"]
+                  
             in_files = [convert_from_unicode(input_files['bamin'])]
             if 'biases' in input_files:
                 in_files.append(convert_from_unicode(input_files['biases']))
+                
             #hic_data = HiC_data((), len(bins_dict), sections, bins_dict, resolution=int(input_metadata['resolution']))
             ts = tbSegmentTool()
             ts_files, ts_meta = ts.run(in_files, [], input_metadata)
             
-            m_results_files["segment_stats"] = self.configuration['root_dir']+'/'+ self.configuration['project']+"/segment_stats.tar.gz"
             
-            m_results_files["tads"] = self.configuration['root_dir']+'/'+ self.configuration['project']+"/"+os.path.basename(ts_files[0])
-            os.rename(ts_files[0], m_results_files["tads"])
-            
-            tar = tarfile.open(m_results_files["segment_stats"], "w:gz")
-            tar.add(ts_files[1],arcname='compartments_stats')
-            tar.close()    
-            # List of files to get saved
-            print("TADBIT RESULTS:", m_results_files)
-            
-            clean_temps(os.path.dirname(ts_files[0]))
-            clean_temps(ts_files[1])
-            clean_temps(os.path.join(self.configuration['workdir'],"06_segmentation"))
-            
-            m_results_meta["tads"] = Metadata(
+            if self.configuration["callers"] == "1":
+                m_results_files["tads"] = self.configuration['root_dir']+'/'+ self.configuration['project']+"/"+os.path.basename(ts_files[0])
+                os.rename(ts_files[0], m_results_files["tads"])
+                
+                m_results_meta["tads"] = Metadata(
                     data_type="hic_tads",
                     file_type="TSV",
                     file_path=m_results_files["tads"],
@@ -127,18 +122,27 @@ class tadbit_segment(Workflow):
                     },
                     data_id=None,
                     taxon_id=self.configuration["taxon_id"])
-            m_results_meta["segment_stats"] = Metadata(
+            else:
+                m_results_files["compartments"] = self.configuration['root_dir']+'/'+ self.configuration['project']+"/compartments.tar.gz"
+            
+                tar = tarfile.open(m_results_files["compartments"], "w:gz")
+                tar.add(ts_files[0],arcname='compartments_stats')
+                tar.close()
+                
+                m_results_meta["compartments"] = Metadata(
                     data_type="tool_statistics",
                     file_type="TAR",
-                    file_path=m_results_files["segment_stats"],
+                    file_path=m_results_files["compartments"],
                     source_id=[""],
                     meta_data={
-                        "description": "TADbit HiC segment statistics",
+                        "description": "TADbit HiC compartments statistics",
                         "visible": True
                     },
-                    data_id=None)
+                    data_id=None)    
+            # List of files to get saved
+            print("TADBIT RESULTS:", m_results_files)
             
-         
+            
         except Exception as e:
             m_results_meta["tads"] = Metadata(
                     data_type="hic_tads",
@@ -152,6 +156,10 @@ class tadbit_segment(Workflow):
                     data_id=None)
             m_results_meta["tads"].error = True
             m_results_meta["tads"].exception = str(e)
+            
+        #clean_temps(os.path.dirname(ts_files[0]))
+        #clean_temps(os.path.join(self.configuration['workdir'],"06_segmentation"))
+        
         return m_results_files, m_results_meta
 
 
@@ -315,7 +323,7 @@ def clean_temps(working_path):
         try:
             if os.path.isfile(file_path):
                 os.unlink(file_path)
-            #elif os.path.isdir(file_path): shutil.rmtree(file_path)
+            elif os.path.isdir(file_path): shutil.rmtree(file_path)
         except:
             pass
     try:
@@ -331,7 +339,7 @@ if __name__ == "__main__":
     sys._run_from_cmdl = True
 
     # Set up the command line parameters
-    parser = argparse.ArgumentParser(description="TADbit normalize")
+    parser = argparse.ArgumentParser(description="TADbit segment")
     # Config file
     parser.add_argument("--config", help="Configuration JSON file", 
                         type=CommandLineParser.valid_file, metavar="config", required=True)

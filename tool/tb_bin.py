@@ -167,14 +167,14 @@ class tbBinTool(Tool):
                          verbose=True)
         output_files = [out_files['RAW']]
         imx = load_hic_data_from_bam(bamin, resolution, biases=biases if biases else None, ncpus=ncpus,tmpdir=workdir)
-        hic_contacts_matrix_raw_fig = workdir+"/genomic_maps_raw.png"
-        hic_map(imx, resolution, savefig=hic_contacts_matrix_raw_fig, normalized=False)
+        hic_contacts_matrix_raw_fig = workdir+"/genomic_maps_raw"
+        hic_map(imx, resolution, savefig=hic_contacts_matrix_raw_fig, normalized=False,by_chrom='all')
         output_files.append(hic_contacts_matrix_raw_fig)
         
         if len(norm) > 1:
             output_files.append(out_files['NRM'])
-            hic_contacts_matrix_norm_fig = workdir+"/genomic_maps_nrm.png"    
-            hic_map(imx, resolution, savefig=hic_contacts_matrix_norm_fig, normalized=True)
+            hic_contacts_matrix_norm_fig = workdir+"/genomic_maps_nrm"    
+            hic_map(imx, resolution, savefig=hic_contacts_matrix_norm_fig, normalized=True,by_chrom='all')
             output_files.append(hic_contacts_matrix_norm_fig)
         
         return (output_files, output_metadata)

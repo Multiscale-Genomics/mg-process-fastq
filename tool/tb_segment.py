@@ -54,7 +54,7 @@ class tbSegmentTool(Tool):
 
     @task(bamin=FILE_IN, biases=FILE_IN, resolution=IN, workdir=IN)
     # @constraint(ProcessorCoreCount=16)
-    def tb_segment(self, bamin, biases, resolution, workdir, ncpus="1"):
+    def tb_segment(self, bamin, biases, resolution, callers, chromosomes, workdir, ncpus="1"):
         """
         Function to find tads and compartments in the Hi-C
         matrix
@@ -67,6 +67,8 @@ class tbSegmentTool(Tool):
             Location of the pickle hic biases
         resolution : int
             Resolution of the Hi-C
+        callers: str
+            1 for ta calling, 2 for compartment calling
         workdir : str
             Location of working directory
         ncpus : int
@@ -92,6 +94,16 @@ class tbSegmentTool(Tool):
             '--cpu', str(ncpus)
             ]
     
+        if callers == "1":
+            _cmd.append('--only_tads')
+        else:
+            _cmd.append('--only_compartments')
+        
+        if chromosomes:
+            _cmd.append('--chromosomes')
+            _cmd.append(chromosomes)
+             
+        
         if biases:
             _cmd.append('--biases')
             _cmd.append(biases)
@@ -103,16 +115,18 @@ class tbSegmentTool(Tool):
         print(out)
         print(err)
 
-        tad_dir = os.path.join(workdir, '06_segmentation',
-                             'tads_%s' % (nice(int(resolution))))
-        cmprt_dir = os.path.join(workdir, '06_segmentation',
-                              'compartments_%s' % (nice(int(resolution))))
-        os.chdir(tad_dir)
-        for fl in glob.glob("*.tsv"):
-            output_files.append(os.path.abspath(fl))
-            break 
-        output_files.append(cmprt_dir)
-        
+        if callers == "1":
+            tad_dir = os.path.join(workdir, '06_segmentation',
+                                 'tads_%s' % (nice(int(resolution))))
+            os.chdir(tad_dir)
+            for fl in glob.glob("*.tsv"):
+                output_files.append(os.path.abspath(fl))
+                break 
+        else:
+            cmprt_dir = os.path.join(workdir, '06_segmentation',
+                                  'compartments_%s' % (nice(int(resolution))))
+            output_files.append(cmprt_dir)
+            
         return (output_files, output_metadata)
 
     def run(self, input_files, output_files, metadata=None):
@@ -151,13 +165,18 @@ class tbSegmentTool(Tool):
         resolution = '1000000'
         if 'resolution' in metadata:
             resolution = metadata['resolution']
-
+            
         ncpus=1
         if 'ncpus' in metadata:
             ncpus = metadata['ncpus']
-        biases = None
-        if 'biases' in metadata:
-            biases = metadata['biases']
+        biases = chromosomes = None
+        if len(input_files) > 1:
+            biases = input_files[1]
+        if "chromosomes" in metadata:
+            chromosomes = metadata['chromosomes']
+        callers = "1"
+        if "callers" in metadata:
+            callers = metadata['callers']
             
         root_name = bamin.split("/")
         if 'workdir' in metadata:
@@ -166,7 +185,7 @@ class tbSegmentTool(Tool):
         # input and output share most metadata
         
         
-        output_files, output_metadata = self.tb_segment(bamin, biases, resolution, root_name, ncpus)
+        output_files, output_metadata = self.tb_segment(bamin, biases, resolution, callers, chromosomes, root_name, ncpus)
 
         return (output_files, output_metadata)
 

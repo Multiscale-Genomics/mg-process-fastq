@@ -69,23 +69,7 @@
     ],
     "output_files": [
         {
-            "name": "tads",
-            "required": false,
-            "allow_multiple": false,
-            "file": {
-                "file_type": "TSV",
-                "data_type": "hic_tads",
-                "compressed": "null",
-                "file_path": "hic_tads.txt",
-                "meta_data": {
-                    "tool": "tadbit",
-                    "description": "HiC tad definition",
-                    "visible": true
-                }
-            }
-        },
-        {
-            "name": "compartments",
+            "name": "tads_compartments",
             "required": false,
             "allow_multiple": false,
             "file": {
@@ -93,7 +77,7 @@
                 "data_type": "tool_statistics",
                 "compressed": "gzip",
                 "meta_data": {
-                    "description": "TADbit HiC compartments stats",
+                    "description": "TADbit HiC tads and compartments stats",
                     "tool": "tadbit",
                     "visible": true
                 }

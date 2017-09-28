@@ -118,10 +118,7 @@ class tbSegmentTool(Tool):
         if callers == "1":
             tad_dir = os.path.join(workdir, '06_segmentation',
                                  'tads_%s' % (nice(int(resolution))))
-            os.chdir(tad_dir)
-            for fl in glob.glob("*.tsv"):
-                output_files.append(os.path.abspath(fl))
-                break 
+            output_files.append(tad_dir) 
         else:
             cmprt_dir = os.path.join(workdir, '06_segmentation',
                                   'compartments_%s' % (nice(int(resolution))))

@@ -106,56 +106,39 @@ class tadbit_segment(Workflow):
             ts_files, ts_meta = ts.run(in_files, [], input_metadata)
             
             
-            if self.configuration["callers"] == "1":
-                m_results_files["tads"] = self.configuration['root_dir']+'/'+ self.configuration['project']+"/"+os.path.basename(ts_files[0])
-                os.rename(ts_files[0], m_results_files["tads"])
-                
-                m_results_meta["tads"] = Metadata(
-                    data_type="hic_tads",
-                    file_type="TSV",
-                    file_path=m_results_files["tads"],
-                    source_id=[""],
-                    meta_data={
-                        "description": "HiC tad definition",
-                        "visible": True,
-                        "assembly": ""
-                    },
-                    data_id=None,
-                    taxon_id=self.configuration["taxon_id"])
-            else:
-                m_results_files["compartments"] = self.configuration['root_dir']+'/'+ self.configuration['project']+"/compartments.tar.gz"
+            m_results_files["tads_compartments"] = self.configuration['root_dir']+'/'+ self.configuration['project']+"/tads_compartments.tar.gz"
+        
+            tar = tarfile.open(m_results_files["tads_compartments"], "w:gz")
+            tar.add(ts_files[0],arcname='tads_compartments_stats')
+            tar.close()
             
-                tar = tarfile.open(m_results_files["compartments"], "w:gz")
-                tar.add(ts_files[0],arcname='compartments_stats')
-                tar.close()
-                
-                m_results_meta["compartments"] = Metadata(
-                    data_type="tool_statistics",
-                    file_type="TAR",
-                    file_path=m_results_files["compartments"],
-                    source_id=[""],
-                    meta_data={
-                        "description": "TADbit HiC compartments statistics",
-                        "visible": True
-                    },
-                    data_id=None)    
+            m_results_meta["tads_compartments"] = Metadata(
+                data_type="tool_statistics",
+                file_type="TAR",
+                file_path=m_results_files["tads_compartments"],
+                source_id=[""],
+                meta_data={
+                    "description": "TADbit HiC tads and compartments statistics",
+                    "visible": True
+                },
+                data_id=None)    
             # List of files to get saved
             print("TADBIT RESULTS:", m_results_files)
             
             
         except Exception as e:
-            m_results_meta["tads"] = Metadata(
-                    data_type="hic_tads",
-                    file_type="TSV",
-                    file_path=None,
-                    source_id=[""],
-                    meta_data={
-                        "description": "HiC tad definition",
-                        "visible": True
-                    },
-                    data_id=None)
-            m_results_meta["tads"].error = True
-            m_results_meta["tads"].exception = str(e)
+            m_results_meta["tads_compartments"] = Metadata(
+                data_type="tool_statistics",
+                file_type="TAR",
+                file_path="",
+                source_id=[""],
+                meta_data={
+                    "description": "TADbit HiC tads and compartments statistics",
+                    "visible": True
+                },
+                data_id=None)   
+            m_results_meta["tads_compartments"].error = True
+            m_results_meta["tads_compartments"].exception = str(e)
             
         #clean_temps(os.path.dirname(ts_files[0]))
         #clean_temps(os.path.join(self.configuration['workdir'],"06_segmentation"))

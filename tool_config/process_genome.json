@@ -1,0 +1,100 @@
+{
+    "_id": "process_genome",
+    "name": "Process Genome",
+    "title": "Genome Assembly Indexer",
+    "short_description": "Generates BWA, Bowtie2 and GEM indexes for a given genome",
+    "owner": {
+        "institution": "EMBL-EBI",
+        "author": "Mark McDowall",
+        "contact": "mcdowall@ebi.ac.uk",
+        "user": "",
+        "url": "https://github.com/Multiscale-Genomics/mg-process-fastq"
+    },
+    "external": true,
+    "keywords": [
+        "genome", "dna", "index", "assembly"
+    ],
+    "launcher": {
+        "type": "PMES",
+        "queue": "",
+        "executable": "/home/pmes/code/mg-process-fastq/process_genome.py",
+        "cpus": 4,
+        "memory": "12.0"
+    },
+    "input_files": [
+        {
+            "name": "genome",
+            "description": "Genome sequence file",
+            "help": "path to a assembly sequence file",
+            "file_type": ["FASTA"],
+            "data_type": ["Assembly"],
+            "required": true,
+            "allow_multiple": false
+        }
+    ],
+    "arguments": [],
+    "output_files": [
+        {
+            "required": true,
+            "allow_multiple": false,
+            "name": "bwa_index",
+            "file": {
+                "file_type": "",
+                "meta_data": {
+                    "visible": true,
+                    "tool": "bwq_indexer",
+                    "description": "Output"
+                },
+                "file_path": "bwa.tar.gz",
+                "data_type": "index_bwt",
+                "compressed": true
+            }
+        }, {
+            "required": true,
+            "allow_multiple": false,
+            "name": "bwt_index",
+            "file": {
+                "file_type": "bam",
+                "meta_data": {
+                    "visible": true,
+                    "tool": "bwa_indexer",
+                    "description": "Output"
+                },
+                "file_path": "bt2.tar.gz",
+                "data_type": "index_bwt",
+                "compressed": true
+            }
+        }, {
+            "required": false,
+            "allow_multiple": false,
+            "name": "gem_index",
+            "file": {
+                "file_type": "gem",
+                "meta_data": {
+                    "visible": true,
+                    "tool": "gem_indexer",
+                    "description": "Compressed GEM file"
+                },
+                "file_path": "gem.gz",
+                "data_type": "index_gem",
+                "compressed": true
+            }
+        }, {
+            "required": false,
+            "allow_multiple": false,
+            "name": "genome_gem",
+            "file": {
+                "file_type": "gem",
+                "meta_data": {
+                    "visible": true,
+                    "tool": "gem_indexer",
+                    "description": "Genome file modified for use with the GEM indexer and aligner"
+                },
+                "file_path": "gem.fasta",
+                "data_type": "assembly",
+                "compressed": "null"
+            }
+        }
+    ],
+    "control_file": ".results.json"
+}

@@ -90,12 +90,14 @@ class tbBinTool(Tool):
                 
         Returns
         -------
-        hic_biases : str
-            Location of HiC biases pickle file
-        interactions : str
-            Location of interaction decay vs genomic distance pdf
-        filtered_bins : str
-            Location of filtered_bins png
+        hic_contacts_matrix_raw : str
+            Location of HiC raw matrix in text format
+        hic_contacts_matrix_nrm : str
+            Location of HiC normalized matrix in text format
+        hic_contacts_matrix_raw_fig : str
+            Location of HiC raw matrix in png format
+        hic_contacts_matrix_norm_fig : str
+            Location of HiC normalized matrix in png format
 
         """
         print("TB BIN:",bamin, resolution, workdir)

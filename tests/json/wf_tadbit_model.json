@@ -1,0 +1,186 @@
+{
+    "_id": "tadbit_model",
+    "name": "TADbit model",
+    "title": "TADbit Hi-C 3D modeling",
+    "short_description": "TADbit 3D modeling.",
+    "owner": {
+        "institution": "CNAG",
+        "author": "Francois Serra",
+        "contact": "serra.francois@gmail.com",
+        "user":"",
+        "url": "http://sgt.cnag.cat/3dg/tadbit/"
+    },
+    "external": true,
+    "keywords": [
+        "3c",
+        "dna",
+        "chromatin",
+        "interactions"
+    ],
+    "launcher": {
+        "type": "SGE",
+        "queue": "tadbit.q",
+        "executable": "/home/pmes/code/mg-process-fastq/tadbit_model_wrapper.py",
+        "cpus": 12,
+        "memory": "4.0"
+    },
+    "input_files": [
+        {
+            "name": "bamin",
+            "description": "TADbit-generated BED file",
+            "help": "path to a TADbit-generated BED file with filtered reads",
+            "file_type": ["BAM"],
+            "data_type": ["hic_sequences"],
+            "required": true,
+            "allow_multiple": false
+        },
+        {
+            "name": "hic_biases",
+            "description": "TADbit-generated PICKLE file",
+            "help": "path to a TADbit-generated PICKLE file with HiC biases",
+            "file_type": ["PICKLE"],
+            "data_type": ["hic_biases"],
+            "required": false,
+            "allow_multiple": false
+        },
+        {
+            "name": "configuration_file",
+            "description": "TADbit configuration file with optimal modeling parameters",
+            "help": "path to a TADbit configuration file with optimal modeling parameters",
+            "file_type": ["TXT"],
+            "data_type": ["configuration_file"],
+            "required": false,
+            "allow_multiple": false
+        }
+    ],
+    "arguments": [
+    	{
+            "name": "optimization:resolution",
+            "description": "Resolution of the normalization",
+            "help": "Resolution of the normalization.",
+            "type": "string",
+            "required": true,
+            "default": "100000"
+        },
+        {
+            "name": "optimization:gen_pos_chrom_name",
+            "description": "Genomic position. Chromosome name.",
+            "help": "Coordinates of the genomic region to model.",
+            "type": "string",
+            "required": true,
+            "default": ""
+        },
+        {
+            "name": "optimization:gen_pos_begin",
+            "description": "Genomic position. Begin.",
+            "help": "Genomic coordinate from which to start modeling.",
+            "type": "int",
+            "required": true,
+            "default": ""
+        },
+        {
+            "name": "optimization:gen_pos_end",
+            "description": "Genomic position. End.",
+            "help": "Genomic coordinate where to end modeling.",
+            "type": "int",
+            "required": true,
+            "default": ""
+        },
+        {
+            "name": "optimization:num_mod_comp",
+            "description": "Number of models to compute.",
+            "help": "Number of models to compute for each optimization step.",
+            "type": "int",
+            "required": true,
+            "default": "50"
+        },
+        {
+            "name": "optimization:num_mod_keep",
+            "description": "Number of models to keep.",
+            "help": "Number of models to keep from the total of models computed, for the comparison with original Hi-C matrix.",
+            "type": "int",
+            "required": true,
+            "default": "20"
+        },
+        {
+            "name": "optimization:max_dist",
+            "description": "Maximum distance.",
+            "help": "Range of numbers for optimal maxdist parameter, i.e. 400:1000:100; or just a single number e.g. 800; or a list of numbers e.g. 400 600 800 1000.",
+            "type": "string",
+            "required": true,
+            "default": "400:1000:200"
+        },
+        {
+            "name": "optimization:upper_bound",
+            "description": "Upper bound for Z-scored frequencies of interaction.",
+            "help": "Range of numbers for optimal upfreq parameter, i.e. 0:1.2:0.3; or just a single number e.g. 0.8; or a list of numbers e.g. 0.1 0.3 0.5 0.9.",
+            "type": "string",
+            "required": true,
+            "default": "0:1.2:0.3"
+        },
+        {
+            "name": "optimization:lower_bound",
+            "description": "Lower bound for Z-scored frequencies of interaction.",
+            "help": "Range of numbers for optimal low parameter, i.e. -1.2:0:0.3; or just a single number e.g. -0.8; or a list of numbers e.g. -0.1 -0.3 -0.5 -0.9.",
+            "type": "string",
+            "required": true,
+            "default": "-1.2:0:0.3"
+        },
+        {
+            "name": "optimization:cutoff",
+            "description": "Cutoff distance to consider an interaction between 2 particles.",
+            "help": "Range of numbers for optimal cutoff distance. Cutoff is computed based on the resolution. This cutoff distance is calculated taking as reference the diameter of a modeled particle in the 3D model. i.e. 1.5:2.5:0.5; or just a single number e.g. 2; or a list of numbers e.g. 2 2.5.",
+            "type": "string",
+            "required": true,
+            "default": "2"
+        }
+    ],
+    "output_files": [
+    	{
+            "name": "configuration_file",
+            "required": false,
+            "allow_multiple": false,
+            "file": {
+                "file_type": "TXT",
+                "data_type": "configuration_file",
+                "compressed": "null",
+                "meta_data": {
+                    "tool": "tadbit",
+                    "description": "TADbit configuration file with optimal modeling parameters",
+                    "visible": true
+                }
+            }
+        },
+        {
+            "name": "tadkit_models",
+            "required": false,
+            "allow_multiple": false,
+            "file": {
+                "file_type": "JSON",
+                "data_type": "chromatin_3dmodel_ensemble",
+                "compressed": "null",
+                "meta_data": {
+                    "tool": "tadbit",
+                    "description": "Ensemble of chromatin 3D structures",
+                    "visible": true
+                }
+            }
+        },
+        {
+            "name": "modeling_stats",
+            "required": true,
+            "allow_multiple": false,
+            "file": {
+                "file_type": "TAR",
+                "data_type": "tool_statistics",
+                "compressed": "gzip",
+                "meta_data": {
+                    "description": "TADbit modeling statistics and result files",
+                    "tool": "tadbit",
+                    "visible": true
+                }
+            }
+        }
+    ],
+    "control_file": ".results.json"
+}

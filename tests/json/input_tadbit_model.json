@@ -18,24 +18,13 @@
         "_id": "59b7e020d9422a5969b65372",
         "data_type": "hic_biases",
         "file_type": "pickle",
-        "file_path": "biases_100kb_c5f11dfa70.pickle",
+        "file_path": "hic_chr10_biases_100kb.pickle",
         "source_id": null,
         "taxon_id": "9606",
         "meta_data": {
             "visible": true,
             "validated": 1,
             "assembly": "GCA_000001405.22"
-        }
-    },
-    {
-        "_id": "59b7e020d9422a5969b65373",
-        "data_type": "configuration_file",
-        "file_type": "txt",
-        "file_path": "tadbit_modeling.cfg",
-        "source_id": null,
-        "meta_data": {
-            "visible": true,
-            "validated": 1
         }
     }
 ]

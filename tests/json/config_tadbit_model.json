@@ -11,12 +11,6 @@
             "allow_multiple": false,
             "name": "biases",
             "value": "59b7e020d9422a5969b65372"
-        },
-        {
-            "required": false,
-            "allow_multiple": false,
-            "name": "configuration_file",
-            "value": "59b7e020d9422a5969b65372"
         }
     ],
     "arguments": [
@@ -101,6 +95,54 @@
             "description": "Cutoff distance to consider an interaction between 2 particles.",
             "help": "Range of numbers for optimal cutoff distance. Cutoff is computed based on the resolution. This cutoff distance is calculated taking as reference the diameter of a modeled particle in the 3D model. i.e. 1.5:2.5:0.5; or just a single number e.g. 2; or a list of numbers e.g. 2 2.5.",
             "type": "string",
+            "required": true,
+            "value": "2"
+        },
+        {
+            "name": "generation:max_dist",
+            "description": "Maximum distance.",
+            "help": "Range of numbers for optimal maxdist parameter, i.e. 400:1000:100; or just a single number e.g. 800; or a list of numbers e.g. 400 600 800 1000.",
+            "type": "string",
+            "required": true,
+            "value": "1000"
+        },
+        {
+            "name": "generation:upper_bound",
+            "description": "Upper bound for Z-scored frequencies of interaction.",
+            "help": "Range of numbers for optimal upfreq parameter, i.e. 0:1.2:0.3; or just a single number e.g. 0.8; or a list of numbers e.g. 0.1 0.3 0.5 0.9.",
+            "type": "string",
+            "required": true,
+            "value": "1.2"
+        },
+        {
+            "name": "generation:lower_bound",
+            "description": "Lower bound for Z-scored frequencies of interaction.",
+            "help": "Range of numbers for optimal low parameter, i.e. -1.2:0:0.3; or just a single number e.g. -0.8; or a list of numbers e.g. -0.1 -0.3 -0.5 -0.9.",
+            "type": "string",
+            "required": true,
+            "value": "0"
+        },
+        {
+            "name": "generation:cutoff",
+            "description": "Cutoff distance to consider an interaction between 2 particles.",
+            "help": "Range of numbers for optimal cutoff distance. Cutoff is computed based on the resolution. This cutoff distance is calculated taking as reference the diameter of a modeled particle in the 3D model. i.e. 1.5:2.5:0.5; or just a single number e.g. 2; or a list of numbers e.g. 2 2.5.",
+            "type": "string",
+            "required": true,
+            "value": "2"
+        },
+        {
+            "name": "generation:num_models_comp",
+            "description": "Number of models to compute.",
+            "help": "Number of models to compute for each optimization step.",
+            "type": "int",
+            "required": true,
+            "value": "5"
+        },
+        {
+            "name": "generation:num_models_keep",
+            "description": "Number of models to keep.",
+            "help": "Number of models to keep from the total of models computed, for the comparison with original Hi-C matrix.",
+            "type": "int",
             "required": true,
             "value": "2"
         }

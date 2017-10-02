@@ -75,6 +75,12 @@ class tadbit_model(Workflow):
 
         self.configuration.update(convert_from_unicode(configuration))
         
+        self.configuration["optimize_only"] = not ("generation:num_models_comp" in self.configuration)
+        if not self.configuration["optimize_only"]:
+            del self.configuration["optimization:max_dist"]
+            del self.configuration["optimization:upper_bound"]
+            del self.configuration["optimization:lower_bound"]
+            del self.configuration["optimization:cutoff"]
         self.configuration.update(
             {(key.split(':'))[-1]: val for key, val in self.configuration.items()}
         )
@@ -104,21 +110,34 @@ class tadbit_model(Workflow):
         m_results_meta = {}
         m_results_files = {}
         
-        try:
-            input_metadata = remap(self.configuration, "gen_pos_chrom_name","resolution","gen_pos_begin",
-                                   "gen_pos_end","num_mod_comp","num_mod_keep",
-                                   "max_dist","upper_bound","lower_bound","cutoff","workdir","ncpus")
+        if 1==1:        
+        #try:
+            input_metadata = remap(self.configuration,"optimize_only", "gen_pos_chrom_name","resolution","gen_pos_begin",
+                                   "gen_pos_end","max_dist","upper_bound","lower_bound","cutoff","workdir","ncpus")
             in_files = [convert_from_unicode(input_files['bamin'])]
+            input_metadata["species"] = "Unknown"
+            input_metadata["assembly"] = "Unknown"
+            if "taxon_id" in self.configuration:            
+                if self.configuration["taxon_id"] == "9606":
+                    input_metadata["species"] = "Homo Sapiens" #Figure out how to get species from taxon_id
+                
             if 'biases' in input_files:
                 in_files.append(convert_from_unicode(input_files['biases']))
-            if 'configuration_file' in input_files:
-                input_metadata['config_file'] = convert_from_unicode(input_files['configuration_file'])
-            #hic_data = HiC_data((), len(bins_dict), sections, bins_dict, resolution=int(input_metadata['resolution']))
+            #if 'configuration_file' in input_files:
+            #    input_metadata['config_file'] = convert_from_unicode(input_files['configuration_file'])
+            if self.configuration["optimize_only"]:
+                input_metadata["num_mod_comp"] = self.configuration["num_mod_comp"]
+                input_metadata["num_mod_keep"] = self.configuration["num_mod_keep"]
+            else:
+                input_metadata["num_models_comp"] = self.configuration["num_models_comp"]
+                input_metadata["num_models_keep"] = self.configuration["num_models_keep"]
+                
+            
             tm = tbModelTool()
             tm_files, tm_meta = tm.run(in_files, [], input_metadata)
             
             
-            if 'configuration_file' in input_files:
+            if not self.configuration["optimize_only"]:
                 m_results_files["tadkit_models"] = self.configuration['root_dir']+'/'+ self.configuration['project']+"/"+os.path.basename(tm_files[0])
                 os.rename(tm_files[0], m_results_files["tadkit_models"])
                 m_results_meta["tadkit_models"] = Metadata(
@@ -133,20 +152,6 @@ class tadbit_model(Workflow):
                     },
                     data_id=None,
                     taxon_id=self.configuration["taxon_id"])
-            else:
-                m_results_files["configuration_file"] = self.configuration['root_dir']+'/'+ self.configuration['project']+"/configuration_file.cfg"
-                os.rename(tm_files[0], m_results_files["tadkit_models"])
-                m_results_meta["configuration_file"] = Metadata(
-                    data_type="configuration_file",
-                    file_type="TXT",
-                    file_path=m_results_files["configuration_file"],
-                    source_id=[""],
-                    meta_data={
-                        "description": "TADbit configuration file with optimal modeling parameters",
-                        "visible": True,
-                        "assembly": ""
-                    },
-                    data_id=None)
                 
             
             m_results_files["model_stats"] = self.configuration['root_dir']+'/'+ self.configuration['project']+"/model_stats.tar.gz"
@@ -172,20 +177,22 @@ class tadbit_model(Workflow):
                     data_id=None)
             
             
-         
-        except Exception as e:
-            m_results_meta["tadkit_models"] = Metadata(
-                    data_type="chromatin_3dmodel_ensemble",
-                    file_type="JSON",
-                    file_path=None,
-                    source_id=[""],
-                    meta_data={
-                        "description": "Ensemble of chromatin 3D structures",
-                        "visible": True
-                    },
-                    data_id=None)
-            m_results_meta["tadkit_models"].error = True
-            m_results_meta["tadkit_models"].exception = str(e)
+#==============================================================================
+#          
+#         except Exception as e:
+#             m_results_meta["tadkit_models"] = Metadata(
+#                     data_type="chromatin_3dmodel_ensemble",
+#                     file_type="JSON",
+#                     file_path=None,
+#                     source_id=[""],
+#                     meta_data={
+#                         "description": "Ensemble of chromatin 3D structures",
+#                         "visible": True
+#                     },
+#                     data_id=None)
+#             m_results_meta["tadkit_models"].error = True
+#             m_results_meta["tadkit_models"].exception = str(e)
+#==============================================================================
         return m_results_files, m_results_meta
         
 # ------------------------------------------------------------------------------

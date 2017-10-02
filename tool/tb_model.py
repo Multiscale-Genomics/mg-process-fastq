@@ -19,7 +19,10 @@ from __future__ import print_function
 import sys
 import glob, os
 from subprocess import CalledProcessError, PIPE, Popen
-from _hotshot import resolution
+from pytadbit                     import load_hic_data_from_bam
+from pytadbit                            import Chromosome, HiC_data
+
+from cPickle import load, dump
 
 try:
     if hasattr(sys, '_run_from_cmdl') is True:
@@ -58,16 +61,18 @@ class tbModelTool(Tool):
                                 gen_pos_end=IN, num_mod_comp=IN, num_mod_keep=IN,
                                 max_dist=IN, upper_bound=IN, lower_bound=IN, cutoff=IN, workdir=IN)
     # @constraint(ProcessorCoreCount=16)
-    def tb_model(self, bamin, biases, resolution, gen_pos_chrom_name , gen_pos_begin,
+    def tb_model(self, optimize_only, bamin, biases, resolution, gen_pos_chrom_name , gen_pos_begin,
                                 gen_pos_end, num_mod_comp, num_mod_keep,
-                                max_dist, upper_bound, lower_bound, cutoff, workdir,
-                                ncpus=1, config_file=None):
+                                max_dist, upper_bound, lower_bound, cutoff, workdir,metadata,
+                                ncpus=1):
         """
         Function to normalize to a given resolution the Hi-C
         matrix
 
         Parameters
         ----------
+        optimize_only: bool
+            True if only optimize, False for computing the models and stats
         bamin : str
             Location of the tadbit bam paired reads
         biases : str
@@ -110,39 +115,44 @@ class tbModelTool(Tool):
 
         print("TB MODELING:",bamin, biases, resolution, gen_pos_chrom_name , gen_pos_begin,
                                 gen_pos_end, num_mod_comp, num_mod_keep,
-                                max_dist, upper_bound, lower_bound, cutoff, workdir, config_file)
+                                max_dist, upper_bound, lower_bound, cutoff, workdir)
 
-        _cmd = [
-                'model_and_analyze.py', 
-            '--data', bamin,
-            '--res', resolution,
-            '--crm', gen_pos_chrom_name,
-            '--beg',gen_pos_begin,
-            '--end',gen_pos_end,
-            '--maxdist',max_dist,
-            '--upfreq', upper_bound,
-            '--lowfreq='+lower_bound,
-            '--dcutoff', cutoff,
-            '--outdir', workdir,
-            '--ncpus', str(ncpus)
-            ]
-    
-        if config_file:
-            _cmd.append('--cfg')
-            _cmd.append(config_file)
-            _cmd.append('--nmodels_mod')
-            _cmd.append(num_mod_comp)
-            _cmd.append('--nkeep_mod')
-            _cmd.append(num_mod_keep)
+        if optimize_only:
+            _cmd = [
+                    'model_and_analyze.py',
+                '--optimize_only',
+                '--nmodels_opt',num_mod_comp,
+                '--nkeep_opt',num_mod_keep,
+                '--data', bamin,
+                '--res', resolution,
+                '--crm', gen_pos_chrom_name,
+                '--beg',gen_pos_begin,
+                '--end',gen_pos_end,
+                '--maxdist',max_dist,
+                '--upfreq', upper_bound,
+                '--lowfreq='+lower_bound,
+                '--dcutoff', cutoff,
+                '--outdir', workdir,
+                '--ncpus', str(ncpus)
+                ]
+            if biases:
+                _cmd.append('--biases')
+                _cmd.append(biases)
+        
         else:
-            _cmd.append('--optimize_only')
-            _cmd.append('--nmodels_opt')
-            _cmd.append(num_mod_comp)
-            _cmd.append('--nkeep_opt')
-            _cmd.append(num_mod_keep)
-        if biases:
-            _cmd.append('--biases')
-            _cmd.append(biases)
+            crm = load_hic_data(bamin, int(resolution), gen_pos_chrom_name, int(gen_pos_begin), int(gen_pos_end), metadata["species"], xbias=biases, ncpus=ncpus)
+            exp = crm[0]    
+            STD_CONFIG = {
+              'kforce'    : 5,
+              'maxdist'   : max_dist, 
+              'upfreq'    : upper_bound, 
+              'lowfreq'   : lower_bound,
+              'scale'     : 0.01
+              }
+            models = exp.model_region(start=1, end=exp.size, n_models=num_mod_comp, n_keep=num_mod_keep,
+                     n_cpus=ncpus, verbose=0, keep_all=False, close_bins=1,
+                     outfile=workdir, config=STD_CONFIG)
+            
             
         output_metadata = {}
         
@@ -150,7 +160,7 @@ class tbModelTool(Tool):
 #         print(out)
 #         print(err)
 
-        workdir = '/home/dcastillo/workspace/vre/mg-process-fastq-tadbit/tests/data/_tmp_tadbit_hOaAy/'
+        workdir = 'tests/data/_tmp_tadbit_ZCHRG'
         
         output_files = []
         fl = None
@@ -159,13 +169,11 @@ class tbModelTool(Tool):
             if os.path.isdir(fl):
                 break 
     
-        if config_file:
-            pass
-        else:
+        if not optimize_only:
             os.chdir(fl)
-            for fl in glob.glob("*.tsv"):
-                
-                break 
+            for fl in glob.glob("*.tsv"):    
+                break
+            
         output_files.append(fl)
         
         return (output_files, output_metadata)
@@ -182,6 +190,8 @@ class tbModelTool(Tool):
             biases : str
                 Location of the pickle hic biases
         metadata : dict
+            optimize_only: bool
+                True if only optimize, False for computing the models and stats
             gen_pos_chrom_name : str
                 Coordinates of the genomic region to model.   
             resolution : str
@@ -218,6 +228,14 @@ class tbModelTool(Tool):
         """
 
         bamin = input_files[0]
+        
+        if not os.path.isfile(bamin+'.bai'):
+            print('Creating bam index')
+            _cmd = ['samtools', 'index', bamin]
+            out, err = Popen(_cmd, stdout=PIPE, stderr=PIPE).communicate()
+            print(out)
+            print(err)
+
  
         ncpus=1
         if 'ncpus' in metadata:
@@ -226,15 +244,17 @@ class tbModelTool(Tool):
         biases = config_file = None
         if len(input_files) > 1:
             biases = input_files[1]
-        if 'config_file' in metadata:
-            config_file = metadata['config_file']
-        
+        optimize_only = metadata["optimize_only"]
         gen_pos_chrom_name = metadata['gen_pos_chrom_name']
         resolution = metadata['resolution']
         gen_pos_begin = metadata['gen_pos_begin']
         gen_pos_end = metadata['gen_pos_end']
-        num_mod_comp = metadata['num_mod_comp']
-        num_mod_keep = metadata['num_mod_keep']
+        if metadata["optimize_only"]:
+            num_mod_comp = metadata['num_mod_comp']
+            num_mod_keep = metadata['num_mod_keep']
+        else:
+            num_mod_comp = metadata['num_models_comp']
+            num_mod_keep = metadata['num_models_keep']
         max_dist = metadata['max_dist']
         upper_bound = metadata['upper_bound']
         lower_bound = metadata['lower_bound']
@@ -243,43 +263,70 @@ class tbModelTool(Tool):
         root_name = bamin.split("/")
         if 'workdir' in metadata:
             root_name = metadata['workdir']
+
+        project_metadata = {}
+        project_metadata["species"] = metadata["species"]
         
         # input and output share most metadata
         
         
-        output_files, output_metadata = tb_model(bamin, biases, resolution, gen_pos_chrom_name , gen_pos_begin,
+        output_files, output_metadata = self.tb_model(optimize_only, bamin, biases, resolution, gen_pos_chrom_name , gen_pos_begin,
                                 gen_pos_end, num_mod_comp, num_mod_keep,
                                 max_dist, upper_bound, lower_bound, cutoff, root_name,
-                                ncpus, config_file=config_file)
+                                project_metadata, ncpus)
 
         return (output_files, output_metadata)
 
 # ------------------------------------------------------------------------------
-def write_cfg_file(f_name, outf):
+def load_hic_data(xpath, resolution, gen_pos_chrom_name, beg, end, species, xbias=None, ncpus=1):
+    """
+    Load Hi-C data
+    """
+    xnam = os.path.split(xpath)[-1]
+    hic_raw = load_hic_data_from_bam(xpath, resolution, biases=xbias if xbias else None, ncpus=int(ncpus))    
+    chrom_name = gen_pos_chrom_name.split(':')[0]   
+    # Start reading the data
+    crm = Chromosome(chrom_name, species=(
+        species.split('_')[0].capitalize() + species.split('_')[1]
+                          if '_' in species else species)) # Create chromosome object
+
+    crm.add_experiment(
+        xnam, exp_type='Hi-C', 
+        resolution=resolution,
+        hic_data=hic_raw)
+    if xbias:
+        bias_ = load(open(xbias))
+        bias = bias_['biases']
+        bads = bias_['badcol']
+        if bias_['resolution'] != resolution:
+            raise Exception('ERROR: resolution of biases do not match to the '
+                            'one wanted (%d vs %d)' % (
+                                bias_['resolution'], resolution))
+        
+        def transform_value_norm(a, b, c):
+            return c / bias[a] / bias[b]
+        size = crm.experiments[-1].size
+        xnorm = [HiC_data([(i + j * size, float(hic_raw[i, j]) /
+                                bias[i] /
+                                bias[j] * size)
+                               for i in bias for j in bias if i not in bads and j not in bads], size)]
+        crm.experiments[xnam]._normalization = 'visibility_factor:1'
+        factor = sum(xnorm[0].values()) / (size * size)
+        for n in xnorm[0]:
+            xnorm[0][n] = xnorm[0][n] / factor
+        crm.experiments[xnam].norm = xnorm
+    if beg > crm.experiments[-1].size:
+        raise Exception('ERROR: beg parameter is larger than chromosome size.')
+    if end > crm.experiments[-1].size:
+        raise Exception('ERROR: end parameter is larger than chromosome ' +
+                     'size. Setting end to %s.\n' % (crm.experiments[-1].size *
+                                                     resolution))
     
-    max_corr = 0
-    for line in open(f_name):
-        # Check same parameters
-        if line.startswith('##'):
-            n_models, _, n_keep, _, close_bins = line.split()[2:]
-            
-        if line.startswith('#'):
-            continue
-        scale, kbending, maxdist, lowfreq, upfreq, dcutoff, result = line.split()
-        if float(result) > max_corr:
-            scale, kbending, maxdist, lowfreq, upfreq, dcutoff = (
-                float(scale), float(kbending), int(maxdist), float(lowfreq), float(upfreq),
-                float(dcutoff))
-            scale    = my_round(scale, val=5)
-            kbending = my_round(kbending)
-            maxdist  = my_round(maxdist)
-            lowfreq  = my_round(upfreq)
-            upfreq   = my_round(lowfreq)
-            dcutoff  = my_round(dcutoff)
-            max_corr = float(result)
-            
-    with open(outf, 'w') as outfile:
-        outfile.write("Mapping read 1\n--------------\n")
+    return crm
+        
+#species		= Homo sapiens
+#cell		= gm_k562
+#assembly	= NCBI36
         
 
     

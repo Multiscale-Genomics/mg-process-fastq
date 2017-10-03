@@ -129,7 +129,7 @@ class bwaAlignerTool(Tool):
             metadata['loc'].data_type, "bam", output_files["output"],
             [metadata['genome'].id, metadata['loc'].id],
             {
-                'assembly' : metadata['genome'].meta_data['assembly'],
+                'assembly': metadata['genome'].meta_data['assembly'],
                 "tool": "bwa_aligner"
             }
         )

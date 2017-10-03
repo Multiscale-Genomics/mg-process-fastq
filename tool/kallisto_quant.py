@@ -37,6 +37,7 @@ except ImportError:
     from dummy_pycompss import compss_wait_on
 
 from basic_modules.tool import Tool
+from basic_modules.metadata import Metadata
 
 # ------------------------------------------------------------------------------
 
@@ -185,32 +186,56 @@ class kallistoQuantificationTool(Tool):
         # input and output share most metadata
         output_metadata = {}
 
-        file_loc = input_files[1].split("/")
-        output_dir = "/".join(file_loc[0:-1])
+        # file_loc = input_files[1].split("/")
+        # output_dir = "/".join(file_loc[0:-1])
 
-        abundance_h5_file = output_dir + "/abundance.h5"
-        abundance_tsv_file = output_dir + "/abundance.tsv"
-        run_info_file = output_dir + "/run_info.json"
+        # abundance_h5_file = output_dir + "/abundance.h5"
+        # abundance_tsv_file = output_dir + "/abundance.tsv"
+        # run_info_file = output_dir + "/run_info.json"
 
-        if len(input_files) == 2:
+        if "fastq2" not in input_files:
             fq_stats = self.seq_read_stats(input_files[1])
             results = self.kallisto_quant_single(
-                input_files[0], input_files[1], fq_stats, abundance_h5_file,
-                abundance_tsv_file, run_info_file)
+                input_files["index"], input_files["fastq1"], fq_stats,
+                output_files["abundance_h5_file"], output_files["abundance_tsv_file"],
+                output_files["run_info_file"]
+            )
             results = compss_wait_on(results)
-        elif len(input_files) == 3:
+        elif "fastq2" in input_files:
             # handle error
             results = self.kallisto_quant_paired(
-                input_files[0], input_files[1], input_files[2],
-                abundance_h5_file, abundance_tsv_file, run_info_file,)
+                input_files["index"], input_files["fastq1"], input_files["fastq2"],
+                output_files["abundance_h5_file"], output_files["abundance_tsv_file"],
+                output_files["run_info_file"]
+            )
             results = compss_wait_on(results)
         else:
-            abundance_h5_file = None
-            abundance_tsv_file = None
-            run_info_file = None
+            return ({}, {})
 
-        return (
-            [abundance_h5_file, abundance_tsv_file, run_info_file],
-            [output_metadata])
+        output_metadata = {
+            "abundance_h5_file": Metadata(
+                "hdf5", "", [input_files["cdna"], input_files["fastq1"]],
+                {
+                    "assembly": metadata["cdna"].meta_data["assembly"],
+                    "tool": "kallisto_quant"
+                }
+            ),
+            "abundance_tsv_file": Metadata(
+                "tsv", "", [input_files["cdna"], input_files["fastq1"]],
+                {
+                    "assembly": metadata["cdna"].meta_data["assembly"],
+                    "tool": "kallisto_quant"
+                }
+            ),
+            "run_info_file": Metadata(
+                "tsv", "", [input_files["cdna"], input_files["fastq1"]],
+                {
+                    "assembly": metadata["cdna"].meta_data["assembly"],
+                    "tool": "kallisto_quant"
+                }
+            )
+        }
+
+        return (output_files, output_metadata)
 
 # ------------------------------------------------------------------------------

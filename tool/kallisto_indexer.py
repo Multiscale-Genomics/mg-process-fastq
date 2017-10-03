@@ -36,6 +36,7 @@ except ImportError:
     from dummy_pycompss import compss_wait_on
 
 from basic_modules.tool import Tool
+from basic_modules.metadata import Metadata
 
 # ------------------------------------------------------------------------------
 
@@ -90,16 +91,29 @@ class kallistoIndexerTool(Tool):
             list of the matching metadata
         """
 
-        file_name = input_files[0]
-        genome_idx_loc = file_name.replace('.fasta', '.idx')
-        genome_idx_loc = genome_idx_loc.replace('.fa', '.idx')
+        # file_name = input_files[0]
+        # genome_idx_loc = file_name.replace('.fasta', '.idx')
+        # genome_idx_loc = genome_idx_loc.replace('.fa', '.idx')
 
         # input and output share most metadata
         output_metadata = {}
 
-        results = self.kallisto_indexer(input_files[0], genome_idx_loc)
+        results = self.kallisto_indexer(
+            input_files["cdna"],
+            output_files["index"]
+        )
         results = compss_wait_on(results)
 
-        return ([genome_idx_loc], [output_metadata])
+        output_metadata = {
+            "index": Metadata(
+                "index_kallisto", "", [metadata["cdna"].id],
+                {
+                    "assembly": metadata["cdna"].meta_data["assembly"],
+                    "tool": "kallisto_indexer"
+                }
+            )
+        }
+
+        return (output_files, output_metadata)
 
 # ------------------------------------------------------------------------------

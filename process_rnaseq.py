@@ -20,9 +20,11 @@
 from __future__ import print_function
 
 import argparse
+import os.path
 
 from basic_modules.workflow import Workflow
 from basic_modules.metadata import Metadata
+from utils import remap
 
 from dmp import dmp
 
@@ -54,7 +56,7 @@ class process_rnaseq(Workflow):
 
         self.configuration.update(configuration)
 
-    def run(self, file_ids, metadata, output_files):
+    def run(self, input_files, metadata, output_files):
         """
         Main run function for processing RNA-Seq FastQ data. Pipeline aligns
         the FASTQ files to the genome using Kallisto. Kallisto is then also
@@ -77,28 +79,43 @@ class process_rnaseq(Workflow):
             List of locations for the output bam, bed and tsv files
         """
 
-        genome_fa = file_ids[0]
+        # genome_fa = file_ids[0]
 
         # Index the cDNA
         # This could get moved to the general tools section
         k_index = kallistoIndexerTool()
-        genome_idx_loc = genome_fa.replace('.fasta', '.idx')
-        genome_idx_loc = genome_idx_loc.replace('.fa', '.idx')
-        gi_out = k_index.run([genome_fa], [genome_idx_loc], metadata)
+        # genome_idx_loc = genome_fa.replace('.fasta', '.idx')
+        # genome_idx_loc = genome_idx_loc.replace('.fa', '.idx')
+        k_out, k_meta = k_index.run(
+            remap(input_files, "cdna"),
+            remap(metadata, "cdna"),
+            remap(output_files, "index"),
+        )
 
         # Quantification
         k_quant = kallistoQuantificationTool()
 
-        if len(file_ids) == 2:
-            results = k_quant.run([genome_idx_loc, file_ids[1]], metadata)
-        elif len(file_ids) == 3:
-            results = k_quant.run([genome_idx_loc, file_ids[1], file_ids[2]], [], metadata)
+        if "fastq2" not in input_files:
+            kq_files, kq_meta = k_quant.run(
+                remap(input_files, "cdna", "index", "fastq1"),
+                remap(metadata, "cdna", "index", "fastq1"),
+                remap(output_files, "index")
+            )
+        elif "fastq2" in input_files:
+            kq_files, kq_meta = k_quant.run(
+                remap(input_files, "cdna", "index", "fastq1", "fastq2"),
+                remap(metadata, "cdna", "index", "fastq1", "fastq2"),
+                remap(output_files, "index")
+            )
 
-        return results
+        kq_files["index"] = k_out["index"]
+        kq_meta["index"] = k_meta["index"]
+
+        return kq_files, kq_meta
 
 # -----------------------------------------------------------------------------
 
-def main(input_files, input_metadata, output_files):
+def main(input_files, output_files, input_metadata):
     """
     Main function
     -------------
@@ -117,6 +134,30 @@ def main(input_files, input_metadata, output_files):
 
     # 2. The App has finished
     print("2. Execution finished")
+    return result
+
+def main_json():
+    """
+    Alternative main function
+    -------------
+
+    This function launches the app using configuration written in
+    two json files: config.json and input_metadata.json.
+    """
+    # 1. Instantiate and launch the App
+    print("1. Instantiate and launch the App")
+    from apps.jsonapp import JSONApp
+    app = JSONApp()
+    root_path = os.path.dirname(__file__)
+    result = app.launch(process_rnaseq,
+                        root_path,
+                        "tests/json/config_rnaseq.json",
+                        "tests/json/input_rnaseq_metadata.json")
+
+    # 2. The App has finished
+    print("2. Execution finished; see " + root_path + "/results.json")
+    print(result)
+
     return result
 
 def prepare_files(

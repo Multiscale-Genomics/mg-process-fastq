@@ -23,6 +23,7 @@ from pytadbit                     import load_hic_data_from_bam
 from pytadbit                            import Chromosome, HiC_data
 
 from cPickle import load, dump
+from _pytest.tmpdir import tmpdir
 
 try:
     if hasattr(sys, '_run_from_cmdl') is True:
@@ -117,64 +118,87 @@ class tbModelTool(Tool):
                                 gen_pos_end, num_mod_comp, num_mod_keep,
                                 max_dist, upper_bound, lower_bound, cutoff, workdir)
 
+        try:
+            beg = int(float(gen_pos_begin) / int(resolution))
+            end = int(float(gen_pos_end) / int(resolution))
+            if end - beg <= 2:
+                raise Exception('"beg" and "end" parameter should be given in ' +
+                                'genomic coordinates, not bin')
+        except TypeError:
+            pass
+        
+        name = '{0}_{1}_{2}'.format(gen_pos_chrom_name, beg, end)
+        if not os.path.exists(os.path.join(workdir, name)):
+            os.makedirs(os.path.join(workdir, name))
+        
+        _cmd = [
+                'model_and_analyze.py',
+            '--nmodels_opt',num_mod_comp,
+            '--nkeep_opt',num_mod_keep,
+            '--data', bamin,
+            '--res', resolution,
+            '--crm', gen_pos_chrom_name,
+            '--beg',gen_pos_begin,
+            '--end',gen_pos_end,
+            '--maxdist',max_dist,
+            '--upfreq', upper_bound,
+            '--lowfreq='+lower_bound,
+            '--dcutoff', cutoff,
+            '--ncpus', str(ncpus)
+            ]
         if optimize_only:
-            _cmd = [
-                    'model_and_analyze.py',
-                '--optimize_only',
-                '--nmodels_opt',num_mod_comp,
-                '--nkeep_opt',num_mod_keep,
-                '--data', bamin,
-                '--res', resolution,
-                '--crm', gen_pos_chrom_name,
-                '--beg',gen_pos_begin,
-                '--end',gen_pos_end,
-                '--maxdist',max_dist,
-                '--upfreq', upper_bound,
-                '--lowfreq='+lower_bound,
-                '--dcutoff', cutoff,
-                '--outdir', workdir,
-                '--ncpus', str(ncpus)
-                ]
+            _cmd.append('--optimize_only')
+            _cmd.append('--outdir')
+            _cmd.append(workdir)
             if biases:
                 _cmd.append('--biases')
                 _cmd.append(biases)
         
         else:
-            crm = load_hic_data(bamin, int(resolution), gen_pos_chrom_name, int(gen_pos_begin), int(gen_pos_end), metadata["species"], xbias=biases, ncpus=ncpus)
-            exp = crm[0]    
+
+            crm = load_hic_data(bamin, int(resolution), gen_pos_chrom_name, metadata["species"], workdir, xbias=biases, ncpus=ncpus)
+            exp = crm.experiments[-1]
+            if beg > crm.experiments[-1].size*int(resolution):
+                raise Exception('ERROR: beg parameter is larger than chromosome size.')
+            if end > crm.experiments[-1].size*int(resolution):
+                raise Exception('WARNING: end parameter is larger than chromosome ' +
+                             'size. Setting end to %s.\n' % (crm.experiments[-1].size *
+                                                             int(resolution)))
+                end = crm.experiments[-1].size
             STD_CONFIG = {
               'kforce'    : 5,
-              'maxdist'   : max_dist, 
-              'upfreq'    : upper_bound, 
-              'lowfreq'   : lower_bound,
+              'maxdist'   : float(max_dist), 
+              'upfreq'    : float(upper_bound), 
+              'lowfreq'   : float(lower_bound),
+              'dcutoff'   : float(cutoff),
               'scale'     : 0.01
               }
-            models = exp.model_region(start=1, end=exp.size, n_models=num_mod_comp, n_keep=num_mod_keep,
-                     n_cpus=ncpus, verbose=0, keep_all=False, close_bins=1,
-                     outfile=workdir, config=STD_CONFIG)
             
+            outfile = os.path.join(workdir, name, name + '.models')
+            models = exp.model_region(start=1, end=(end-beg), n_models=int(num_mod_comp), n_keep=int(num_mod_keep),
+                     n_cpus=ncpus, verbose=1, keep_all=False, close_bins=1,
+                     config=STD_CONFIG)
+            #models._config['dcutoff']
+            models.save_models(outfile)
+            _cmd.append('--analyze_only')
+            _cmd.append('--outdir')
+            _cmd.append(workdir)
             
         output_metadata = {}
         
-#         out, err = Popen(_cmd, stdout=PIPE, stderr=PIPE).communicate()
-#         print(out)
-#         print(err)
+        out, err = Popen(_cmd, stdout=PIPE, stderr=PIPE).communicate()
+        print(out)
+        print(err)
 
-        workdir = 'tests/data/_tmp_tadbit_ZCHRG'
+        output_files = [os.path.join(workdir, name)]
         
-        output_files = []
-        fl = None
-        for f in os.listdir(workdir):
-            fl = os.path.join(workdir, f)
-            if os.path.isdir(fl):
-                break 
-    
         if not optimize_only:
-            os.chdir(fl)
-            for fl in glob.glob("*.tsv"):    
+            os.chdir(os.path.join(workdir, name))
+            for fl in glob.glob("*.json"):
+                output_files.append(fl)
                 break
             
-        output_files.append(fl)
+        
         
         return (output_files, output_metadata)
 
@@ -229,7 +253,7 @@ class tbModelTool(Tool):
 
         bamin = input_files[0]
         
-        if not os.path.isfile(bamin+'.bai'):
+        if not os.path.isfile(bamin.replace('bam','.bai')) and not os.path.isfile(bamin.replace('BAM','.BAI')):
             print('Creating bam index')
             _cmd = ['samtools', 'index', bamin]
             out, err = Popen(_cmd, stdout=PIPE, stderr=PIPE).communicate()
@@ -278,12 +302,12 @@ class tbModelTool(Tool):
         return (output_files, output_metadata)
 
 # ------------------------------------------------------------------------------
-def load_hic_data(xpath, resolution, gen_pos_chrom_name, beg, end, species, xbias=None, ncpus=1):
+def load_hic_data(xpath, resolution, gen_pos_chrom_name, species, workdir, xbias=None, ncpus=1):
     """
     Load Hi-C data
     """
     xnam = os.path.split(xpath)[-1]
-    hic_raw = load_hic_data_from_bam(xpath, resolution, biases=xbias if xbias else None, ncpus=int(ncpus))    
+    hic_raw = load_hic_data_from_bam(xpath, resolution, biases=xbias if xbias else None, tmpdir=workdir, ncpus=int(ncpus))    
     chrom_name = gen_pos_chrom_name.split(':')[0]   
     # Start reading the data
     crm = Chromosome(chrom_name, species=(
@@ -315,12 +339,6 @@ def load_hic_data(xpath, resolution, gen_pos_chrom_name, beg, end, species, xbia
         for n in xnorm[0]:
             xnorm[0][n] = xnorm[0][n] / factor
         crm.experiments[xnam].norm = xnorm
-    if beg > crm.experiments[-1].size:
-        raise Exception('ERROR: beg parameter is larger than chromosome size.')
-    if end > crm.experiments[-1].size:
-        raise Exception('ERROR: end parameter is larger than chromosome ' +
-                     'size. Setting end to %s.\n' % (crm.experiments[-1].size *
-                                                     resolution))
     
     return crm
         

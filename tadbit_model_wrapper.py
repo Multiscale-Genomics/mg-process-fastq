@@ -110,8 +110,7 @@ class tadbit_model(Workflow):
         m_results_meta = {}
         m_results_files = {}
         
-        if 1==1:        
-        #try:
+        try:
             input_metadata = remap(self.configuration,"optimize_only", "gen_pos_chrom_name","resolution","gen_pos_begin",
                                    "gen_pos_end","max_dist","upper_bound","lower_bound","cutoff","workdir","ncpus")
             in_files = [convert_from_unicode(input_files['bamin'])]
@@ -136,10 +135,15 @@ class tadbit_model(Workflow):
             tm = tbModelTool()
             tm_files, tm_meta = tm.run(in_files, [], input_metadata)
             
+            m_results_files["model_stats"] = self.configuration['root_dir']+'/'+ self.configuration['project']+"/model_stats.tar.gz"
+            
+            tar = tarfile.open(m_results_files["model_stats"], "w:gz")
+            tar.add(tm_files[0],arcname='modeling_files_and_stats')
+            tar.close()
             
             if not self.configuration["optimize_only"]:
-                m_results_files["tadkit_models"] = self.configuration['root_dir']+'/'+ self.configuration['project']+"/"+os.path.basename(tm_files[0])
-                os.rename(tm_files[0], m_results_files["tadkit_models"])
+                m_results_files["tadkit_models"] = self.configuration['root_dir']+'/'+ self.configuration['project']+"/"+os.path.basename(tm_files[1])
+                os.rename(tm_files[1], m_results_files["tadkit_models"])
                 m_results_meta["tadkit_models"] = Metadata(
                     data_type="chromatin_3dmodel_ensemble",
                     file_type="JSON",
@@ -152,14 +156,7 @@ class tadbit_model(Workflow):
                     },
                     data_id=None,
                     taxon_id=self.configuration["taxon_id"])
-                
-            
-            m_results_files["model_stats"] = self.configuration['root_dir']+'/'+ self.configuration['project']+"/model_stats.tar.gz"
-            
-            tar = tarfile.open(m_results_files["model_stats"], "w:gz")
-            tar.add(tm_files[1],arcname='modeling_files_and_stats')
-            tar.close()
-            
+             
                 
             # List of files to get saved
             print("TADBIT RESULTS:", m_results_files)
@@ -177,22 +174,20 @@ class tadbit_model(Workflow):
                     data_id=None)
             
             
-#==============================================================================
-#          
-#         except Exception as e:
-#             m_results_meta["tadkit_models"] = Metadata(
-#                     data_type="chromatin_3dmodel_ensemble",
-#                     file_type="JSON",
-#                     file_path=None,
-#                     source_id=[""],
-#                     meta_data={
-#                         "description": "Ensemble of chromatin 3D structures",
-#                         "visible": True
-#                     },
-#                     data_id=None)
-#             m_results_meta["tadkit_models"].error = True
-#             m_results_meta["tadkit_models"].exception = str(e)
-#==============================================================================
+          
+        except Exception as e:
+            m_results_meta["tadkit_models"] = Metadata(
+                    data_type="chromatin_3dmodel_ensemble",
+                    file_type="JSON",
+                    file_path=None,
+                    source_id=[""],
+                    meta_data={
+                        "description": "Ensemble of chromatin 3D structures",
+                        "visible": True
+                    },
+                    data_id=None)
+            m_results_meta["tadkit_models"].error = True
+            m_results_meta["tadkit_models"].exception = str(e)
         return m_results_files, m_results_meta
         
 # ------------------------------------------------------------------------------
@@ -276,7 +271,7 @@ def clean_temps(working_path):
         try:
             if os.path.isfile(file_path):
                 os.unlink(file_path)
-            #elif os.path.isdir(file_path): shutil.rmtree(file_path)
+            elif os.path.isdir(file_path): shutil.rmtree(file_path)
         except:
             pass
     try:

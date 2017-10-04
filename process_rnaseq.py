@@ -169,26 +169,29 @@ def prepare_files(
     """
     print(dm_handler.get_files_by_user("test"))
 
-    input_files = [genome_fa]
+    input_files = {
+        "cdna": genome_fa,
+        "fastq1": file_loc,
+    }
+
     genome_file = dm_handler.set_file(
         "test", genome_fa, "fasta", "Assembly", taxon_id, None, [],
         meta_data={"assembly" : assembly})
 
-    input_files.append(file_loc)
     fastq1_id = dm_handler.set_file(
         "test", file_loc, "fasta", "RNA-seq", taxon_id, None, [],
         meta_data={'assembly' : assembly})
 
     metadata = [
-        Metadata("fasta", "Assembly", None, {'assembly' : assembly}, genome_file),
-        Metadata("fastq", "RNA-seq", None, {'assembly' : assembly}, fastq1_id)
+        Metadata("fasta", "Assembly", genome_fa, None, {'assembly' : assembly}),
+        Metadata("fastq", "RNA-seq", file_loc, None, {'assembly' : assembly})
     ]
 
     if file_2_loc is not None:
-        input_files.append(file_2_loc)
+        input_files["fastq2"] = file_2_loc
         metadata.append(Metadata("fastq", "RNA-seq"))
         fastq2_id = dm_handler.set_file(
-            "test", file_loc, "fasta", "RNA-seq", taxon_id, None, [],
+            "test", file_2_loc, "fasta", "RNA-seq", taxon_id, None, [],
             meta_data={
                 'assembly' : assembly,
                 'paired_end' : fastq1_id
@@ -199,27 +202,35 @@ def prepare_files(
 
         metadata.append(
             Metadata(
-                "fastq", "RNA-seq", None,
-                {'assembly' : assembly, 'paired_end' : fastq2_id},
-                fastq1_id
+                "fastq", "RNA-seq", file_loc, None,
+                {'assembly' : assembly, 'paired_end' : fastq2_id}
             )
         )
         metadata.append(
             Metadata(
-                "fastq", "RNA-seq", None,
-                {'assembly' : assembly, 'paired_end' : fastq1_id},
-                fastq2_id
+                "fastq", "RNA-seq", file_2_loc, None,
+                {'assembly' : assembly, 'paired_end' : fastq1_id}
             )
         )
     else:
         metadata.append(
-            Metadata("fastq", "RNA-seq", None, {'assembly' : assembly}, fastq1_id)
+            Metadata("fastq", "RNA-seq", file_loc, None, {'assembly' : assembly})
         )
+
+    root_name = file_loc.split("/")
+    root_name[-1] = root_name[-1].replace('.fastq', '')
+
+    files_out = {
+        "index": file_loc.replace(".fasta", ".idx"),
+        "abundance_h5_file": "abundance.h5",
+        "abundance_tsv_file": "abundance.tsv",
+        "run_info_file": "run_info.json",
+    }
 
     return (
         input_files,
-        metadata,
-        []
+        files_out,
+        metadata
     )
 
 # ------------------------------------------------------------------------------

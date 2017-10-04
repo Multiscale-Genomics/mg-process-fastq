@@ -298,10 +298,10 @@ def prepare_files(
     metadata = {
         "genome": Metadata(
             "Assembly", "fasta", genome_fa, None,
-            {'assembly' : assembly}, genome_file),
+            {'assembly' : assembly}),
         "index": Metadata(
             "Index", "bwa_index", genome_fa + ".bwa.tar.gz", [genome_file],
-            {'assembly': assembly, "tool": "bwa_indexer"}, index_file),
+            {'assembly': assembly, "tool": "bwa_indexer"}),
     }
 
     fq1_file = dm_handler.set_file(
@@ -309,7 +309,7 @@ def prepare_files(
         taxon_id, None, None, meta_data={'assembly' : assembly})
     metadata["loc"] = Metadata(
         "data_chip_seq", "fastq", file_loc, None,
-        {'assembly' : assembly}, fq1_file
+        {'assembly' : assembly}
     )
 
     files = {
@@ -338,8 +338,7 @@ def prepare_files(
 
         metadata["bg_loc"] = Metadata(
             "data_chip_seq", "fastq", file_bg_loc, None,
-            {'assembly': assembly, 'main_expt': fq1_file, 'background': True},
-            fq2_file
+            {'assembly': assembly, 'main_expt': fq1_file, 'background': True}
         )
 
         files["bg_loc"] = file_bg_loc

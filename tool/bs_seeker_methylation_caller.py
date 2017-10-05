@@ -39,6 +39,7 @@ except ImportError:
     from dummy_pycompss import compss_wait_on
 
 from basic_modules.tool import Tool
+from basic_modules.metadata import Metadata
 
 # ------------------------------------------------------------------------------
 
@@ -131,7 +132,7 @@ class bssMethylationCallerTool(Tool):
 
         return output
 
-    def run(self, input_files, output_files, metadata=None):
+    def run(self, input_files, metadata, output_files):
         """
         Tool for methylation calling using BS-Seeker2.
 
@@ -147,32 +148,49 @@ class bssMethylationCallerTool(Tool):
             Location of the output wig file
         """
 
-
-        file_name = input_files[0]
-        genome_idx = input_files[1]
-
+        # TODO: These should be moved to the getting the data from the configuration obj
         bss_path = metadata['bss_path']
-        wig_file = file_name.replace('.bam', '.wig')
-        cgmap_file = file_name.replace('.bam', '.cgmap.tsv')
-        atcgmap_file = file_name.replace('.bam', '.atcgmap.tsv')
 
-        # input and output share most metadata
-        output_metadata = {}
-
-        results = self.check_header(file_name)
+        results = self.check_header(input_files["bam"])
         results = compss_wait_on(results)
         if results is False:
-            output_metadata['error'] = "bss_methylation_caller: Could not process files {}, {}.".format(*input_files)
-            wig_file = None
-            cgmap_file = None
-            atcgmap_file = None
-
-            return ([wig_file, cgmap_file, atcgmap_file], [output_metadata])
+            # output_metadata['error'] = "bss_methylation_caller: Could not process files {}, {}.".format(*input_files)
+            return (None, None)
 
         results = self.bss_methylation_caller(
-            bss_path, file_name, genome_idx, wig_file, cgmap_file, atcgmap_file)
+            bss_path,
+            input_files["bam"],
+            input_files["genome_idx"],
+            output_files["wig_file"],
+            output_files["cgmap_file"],
+            output_files["atcgmap_file"]
+        )
         results = compss_wait_on(results)
 
-        return ([wig_file, cgmap_file, atcgmap_file], [output_metadata])
+        output_metadata = {
+            "wig_file": Metadata(
+                "wgbs", "wig", [metadata["genome"].id],
+                {
+                    "assembly": metadata["genome"].meta_data["assembly"],
+                    "tool": "bs_seeker_methylation_caller"
+                }
+            ),
+            "cgmap_file": Metadata(
+                "wgbs", "tsv", [metadata["genome"].id],
+                {
+                    "assembly": metadata["genome"].meta_data["assembly"],
+                    "tool": "bs_seeker_methylation_caller"
+                }
+            ),
+            "atcgmap_file": Metadata(
+                "wgbs", "tsv", [metadata["genome"].id],
+                {
+                    "assembly": metadata["genome"].meta_data["assembly"],
+                    "tool": "bs_seeker_methylation_caller"
+                }
+            )
+        }
+
+        return (output_files, output_metadata)
 
 # ------------------------------------------------------------------------------

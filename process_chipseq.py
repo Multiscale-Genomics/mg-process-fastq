@@ -249,7 +249,7 @@ def main(input_files, output_files, input_metadata):
 
     return result
 
-def main_json():
+def main_json(root_path, config, in_metadata):
     """
     Alternative main function
     -------------
@@ -261,11 +261,11 @@ def main_json():
     print("1. Instantiate and launch the App")
     from apps.jsonapp import JSONApp
     app = JSONApp()
-    root_path = os.path.dirname(__file__)
+    #root_path = os.path.dirname(__file__)
     result = app.launch(process_chipseq,
                         root_path,
-                        "tests/json/config_chipseq.json",
-                        "tests/json/input_chipseq_metadata.json")
+                        config,
+                        in_metadata)
 
     # 2. The App has finished
     print("2. Execution finished; see " + root_path + "/results.json")
@@ -359,41 +359,52 @@ if __name__ == "__main__":
 
     # Set up the command line parameters
     PARSER = argparse.ArgumentParser(description="ChIP-seq peak calling")
-    PARSER.add_argument("--taxon_id", help="Taxon_ID (9606)")
-    PARSER.add_argument("--genome", help="Genome FASTA file")
-    PARSER.add_argument("--assembly", help="Genome assembly ID (GCA_000001405.25)")
-    PARSER.add_argument("--file", help="Location of FASTQ input file")
-    PARSER.add_argument("--bgd_file", help="Location of FASTQ background file", default=None)
-    PARSER.add_argument("--json",
-                        help="Use defined JSON config files",
-                        action='store_const', const=True, default=False)
+    PARSER.add_argument("--config", help="Configuration file")
+    PARSER.add_argument("--root_dir", help="Root data dir")
+    PARSER.add_argument("--public_dir", help="Location of data dir")
+    PARSER.add_argument("--in_metadata", help="Location of input metadata file")
+    PARSER.add_argument("--out_metadata", help="Location of output metadata file")
+    # PARSER.add_argument("--taxon_id", help="Taxon_ID (9606)")
+    # PARSER.add_argument("--genome", help="Genome FASTA file")
+    # PARSER.add_argument("--assembly", help="Genome assembly ID (GCA_000001405.25)")
+    # PARSER.add_argument("--file", help="Location of FASTQ input file")
+    # PARSER.add_argument("--bgd_file", help="Location of FASTQ background file", default=None)
+    # PARSER.add_argument("--json",
+    #                     help="Use defined JSON config files",
+    #                     action='store_const', const=True, default=False)
 
 
     # Get the matching parameters from the command line
     ARGS = PARSER.parse_args()
 
-    TAXON_ID = ARGS.taxon_id
-    GENOME_FA = ARGS.genome
-    ASSEMBLY = ARGS.assembly
-    FILE_LOC = ARGS.file
-    FILE_BG_LOC = ARGS.bgd_file
-    JSON_CONFIG = ARGS.json
+    CONFIG = ARGS.config
+    ROOT_DIR = ARGS.root_dir
+    PUBLIC_DIR = ARGS.public_dir
+    IN_METADATA = ARGS.in_metadata
+    OUT_METADATA = ARGS.out_metadata
 
-    if JSON_CONFIG is True:
-        RESULTS = main_json()
-    else:
-        #
-        # MuG Tool Steps
-        # --------------
-        #
-        # 1. Create data files
-        DM_HANDLER = dmp(test=True)
+    # TAXON_ID = ARGS.taxon_id
+    # GENOME_FA = ARGS.genome
+    # ASSEMBLY = ARGS.assembly
+    # FILE_LOC = ARGS.file
+    # FILE_BG_LOC = ARGS.bgd_file
+    # JSON_CONFIG = ARGS.json
 
-        #2. Register the data with the DMP
-        PARAMS = prepare_files(DM_HANDLER, TAXON_ID, GENOME_FA, ASSEMBLY, FILE_LOC, FILE_BG_LOC)
+    # if JSON_CONFIG is True:
+    RESULTS = main_json(ROOT_DIR, CONFIG, IN_METADATA)
+    # else:
+    #     #
+    #     # MuG Tool Steps
+    #     # --------------
+    #     #
+    #     # 1. Create data files
+    #     DM_HANDLER = dmp(test=True)
 
-        # 3. Instantiate and launch the App
-        RESULTS = main(PARAMS[0], PARAMS[1], PARAMS[2])
-        print(DM_HANDLER.get_files_by_user("test"))
+    #     #2. Register the data with the DMP
+    #     PARAMS = prepare_files(DM_HANDLER, TAXON_ID, GENOME_FA, ASSEMBLY, FILE_LOC, FILE_BG_LOC)
+
+    #     # 3. Instantiate and launch the App
+    #     RESULTS = main(PARAMS[0], PARAMS[1], PARAMS[2])
+    #     print(DM_HANDLER.get_files_by_user("test"))
 
     print(RESULTS)

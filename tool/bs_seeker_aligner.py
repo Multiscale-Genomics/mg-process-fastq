@@ -39,6 +39,7 @@ except ImportError:
     from dummy_pycompss import compss_wait_on
 
 from basic_modules.tool import Tool
+from basic_modules.metadata import Metadata
 
 # ------------------------------------------------------------------------------
 
@@ -193,7 +194,7 @@ class bssAlignerTool(Tool):
 
         return True
 
-    def run(self, input_files, output_files, metadata=None):
+    def run(self, input_files, metadata, output_files):
         """
         Tool for indexing the genome assembly using BS-Seeker2. In this case it
         is using Bowtie2
@@ -212,22 +213,22 @@ class bssAlignerTool(Tool):
             Location of the filtered FASTQ file
         """
 
-        genome_fasta = input_files[0]
-        genome_idx = input_files[1]
-        fastq_file_gz = input_files[2]
+        genome_fasta = input_files["genome"]
+        genome_idx = input_files["genome_idx"]
+        fastq_file_gz = input_files["fastq_list"]
 
+        # TODO: These should be moved to the getting the data from the configuration obj
         aligner = metadata['aligner']
         aligner_path = metadata['aligner_path']
         bss_path = metadata['bss_path']
         fastq_file_list = metadata['fastq_list']
-        expt_name = metadata['expt_name']
 
         # input and output share most metadata
         output_metadata = {}
 
         ffgz_split = fastq_file_gz.split("/")
-        output_bam_file = "/".join(ffgz_split[:-1]) + "/" + expt_name + ".bam"
-        output_bai_file = "/".join(ffgz_split[:-1]) + "/" + expt_name + ".bai"
+        output_bam_file = output_files["bam"]
+        output_bai_file = output_files["bai"]
 
         output_bam_list = []
         for fastq_file_pair in fastq_file_list:
@@ -260,9 +261,23 @@ class bssAlignerTool(Tool):
         results = self.bam_index(output_bam_file, output_bai_file)
         results = compss_wait_on(results)
 
-        if results is False:
-            pass
+        output_metadata = {
+            "bam": Metadata(
+                "wgbs", "bam", [metadata["genome"].id],
+                {
+                    "assembly": metadata["genome"].meta_data["assembly"],
+                    "tool": "bs_seeker_aligner"
+                }
+            ),
+            "bai": Metadata(
+                "wgbs", "bai", [metadata["genome"].id],
+                {
+                    "assembly": metadata["genome"].meta_data["assembly"],
+                    "tool": "bs_seeker_aligner"
+                }
+            )
+        }
 
-        return ([output_bam_file, output_bai_file], output_metadata)
+        return (output_files, output_metadata)
 
 # ------------------------------------------------------------------------------

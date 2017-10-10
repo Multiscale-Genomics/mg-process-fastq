@@ -249,7 +249,7 @@ def main(input_files, output_files, input_metadata):
 
     return result
 
-def main_json(root_path, config, in_metadata):
+def main_json(config, in_metadata, out_metadata):
     """
     Alternative main function
     -------------
@@ -261,14 +261,13 @@ def main_json(root_path, config, in_metadata):
     print("1. Instantiate and launch the App")
     from apps.jsonapp import JSONApp
     app = JSONApp()
-    #root_path = os.path.dirname(__file__)
     result = app.launch(process_chipseq,
-                        root_path,
                         config,
-                        in_metadata)
+                        in_metadata,
+                        out_metadata)
 
     # 2. The App has finished
-    print("2. Execution finished; see " + root_path + "/results.json")
+    print("2. Execution finished; see " + out_metadata)
     print(result)
 
     return result
@@ -360,8 +359,8 @@ if __name__ == "__main__":
     # Set up the command line parameters
     PARSER = argparse.ArgumentParser(description="ChIP-seq peak calling")
     PARSER.add_argument("--config", help="Configuration file")
-    PARSER.add_argument("--root_dir", help="Root data dir")
-    PARSER.add_argument("--public_dir", help="Location of data dir")
+    # PARSER.add_argument("--root_dir", help="Root data dir")
+    # PARSER.add_argument("--public_dir", help="Location of data dir")
     PARSER.add_argument("--in_metadata", help="Location of input metadata file")
     PARSER.add_argument("--out_metadata", help="Location of output metadata file")
     # PARSER.add_argument("--taxon_id", help="Taxon_ID (9606)")
@@ -378,8 +377,8 @@ if __name__ == "__main__":
     ARGS = PARSER.parse_args()
 
     CONFIG = ARGS.config
-    ROOT_DIR = ARGS.root_dir
-    PUBLIC_DIR = ARGS.public_dir
+    # ROOT_DIR = ARGS.root_dir
+    # PUBLIC_DIR = ARGS.public_dir
     IN_METADATA = ARGS.in_metadata
     OUT_METADATA = ARGS.out_metadata
 
@@ -391,7 +390,7 @@ if __name__ == "__main__":
     # JSON_CONFIG = ARGS.json
 
     # if JSON_CONFIG is True:
-    RESULTS = main_json(ROOT_DIR, CONFIG, IN_METADATA)
+    RESULTS = main_json(CONFIG, IN_METADATA, OUT_METADATA)
     # else:
     #     #
     #     # MuG Tool Steps

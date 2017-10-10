@@ -107,28 +107,6 @@ class process_genome(Workflow):
 
 # ------------------------------------------------------------------------------
 
-def main(input_files, output_files, input_metadata):
-    """
-    Main function
-    -------------
-
-    This function launches the app.
-    """
-
-    # import pprint  # Pretty print - module for dictionary fancy printing
-
-    # 1. Instantiate and launch the App
-    print("1. Instantiate and launch the App")
-    from apps.workflowapp import WorkflowApp
-    app = WorkflowApp()
-    result = app.launch(process_genome, input_files, input_metadata,
-                        output_files, {})
-
-    # 2. The App has finished
-    print("2. Execution finished")
-    print(result)
-    return result
-
 def main_json(config, in_metadata, out_metadata):
     """
     Alternative main function
@@ -152,42 +130,6 @@ def main_json(config, in_metadata, out_metadata):
 
     return result
 
-def prepare_files(
-        dm_handler, taxon_id, genome_fa, assembly):
-    """
-    Function to load the DM API with the required files and prepare the
-    parameters passed from teh command line ready for use in the main function
-    """
-    print(dm_handler.get_files_by_user("test"))
-
-    root_name = genome_fa.split("/")
-    parent_dir = '/'.join(root_name[0:-1])
-
-    genome_file = dm_handler.set_file(
-        "test", genome_fa, "file", "fasta", 64000, parent_dir, "Assembly",
-        taxon_id, None, None, meta_data={"assembly" : assembly})
-
-    # Maybe it is necessary to prepare a metadata parser from json file
-    # when building the Metadata objects.
-    metadata = {
-        'genome': Metadata(
-            "Assembly", "fasta", genome_fa, None, {'assembly' : assembly})
-    }
-
-    files = {
-        'genome': genome_fa,
-    }
-
-
-    files_out = {
-        'bwa_index': genome_fa + '.bwa.tar.gz',
-        'bwt_index': genome_fa + '.bwt.tar.gz',
-        'gem_index': genome_fa.replace('.fasta', '_gem.fasta') + '.gem.gz',
-        'genome_gem': genome_fa.replace('.fasta', '_gem.fasta')
-    }
-
-    return [files, files_out, metadata]
-
 # ------------------------------------------------------------------------------
 
 if __name__ == "__main__":
@@ -199,41 +141,13 @@ if __name__ == "__main__":
     PARSER.add_argument("--config", help="Configuration file")
     PARSER.add_argument("--in_metadata", help="Location of input metadata file")
     PARSER.add_argument("--out_metadata", help="Location of output metadata file")
-    # PARSER.add_argument("--taxon_id", help="Species (9606)")
-    # PARSER.add_argument("--genome", help="Genome FASTA file")
-    # PARSER.add_argument("--assembly", help="Assembly ID")
-    # PARSER.add_argument("--json",
-    #                     help="Use defined JSON config files",
-    #                     action='store_const', const=True, default=False)
 
     # Get the matching parameters from the command line
     ARGS = PARSER.parse_args()
 
-    # GENOME_FA = ARGS.genome
-    # ASSEMBLY = ARGS.assembly
-    # TAXON_ID = ARGS.taxon_id
-    # JSON_CONFIG = ARGS.json
     CONFIG = ARGS.config
     IN_METADATA = ARGS.in_metadata
     OUT_METADATA = ARGS.out_metadata
 
-    # if JSON_CONFIG is True:
     RESULTS = main_json(CONFIG, IN_METADATA, OUT_METADATA)
-    # else:
-    #     #
-    #     # MuG Tool Steps
-    #     # --------------
-    #     #
-    #     # 1. Create data files
-    #     DM_HANDLER = dmp(test=True)
-
-    #     # Get the assembly
-
-    #     #2. Register the data with the DMP
-    #     PARAMS = prepare_files(DM_HANDLER, TAXON_ID, GENOME_FA, ASSEMBLY)
-
-    #     RESULTS = main(PARAMS[0], PARAMS[1], PARAMS[2])
-
-    #     print(DM_HANDLER.get_files_by_user("test"))
-
     print(RESULTS)

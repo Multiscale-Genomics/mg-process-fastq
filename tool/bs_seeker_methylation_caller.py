@@ -102,7 +102,7 @@ class bssMethylationCallerTool(Tool):
             "python " + bss_path + "/bs_seeker2-call_methylation.py "
             "--sorted --input " + str(bam_file) + " --wig " + str(wig_file) + " "
             "--CGmap " + str(cgmap_file) + " --ATCGmap " + str(atcgmap_file) + " "
-            "--db " + genome_idx.replace('.tar.gz', '')).format()
+            "--db " + genome_idx.replace(".tar.gz", "")).format()
         print ("command for methyl caller :", command_line)
         args = shlex.split(command_line)
         process = subprocess.Popen(args)
@@ -125,8 +125,8 @@ class bssMethylationCallerTool(Tool):
         output = True
 
         bam_file_handle = pysam.AlignmentFile(bam_file, "rb")
-        if ('SO' not in bam_file_handle.header['HD'] or
-                bam_file_handle.header['HD']['SO'] == 'unsorted'):
+        if ("SO" not in bam_file_handle.header["HD"] or
+                bam_file_handle.header["HD"]["SO"] == "unsorted"):
             output = False
         bam_file_handle.close()
 
@@ -149,7 +149,7 @@ class bssMethylationCallerTool(Tool):
         """
 
         # TODO: These should be moved to the getting the data from the configuration obj
-        bss_path = metadata['bss_path']
+        bss_path = metadata["bss_path"]
 
         results = self.check_header(input_files["bam"])
         results = compss_wait_on(results)

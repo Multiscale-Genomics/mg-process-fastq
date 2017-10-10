@@ -156,7 +156,7 @@ class tbModelTool(Tool):
         
         else:
 
-            crm = load_hic_data(bamin, int(resolution), gen_pos_chrom_name, metadata["species"], workdir, xbias=biases, ncpus=ncpus)
+            crm = load_hic_data(bamin, int(resolution), gen_pos_chrom_name, metadata["species"], metadata["assembly"], workdir, xbias=biases, ncpus=ncpus)
             exp = crm.experiments[-1]
             if beg > crm.experiments[-1].size*int(resolution):
                 raise Exception('ERROR: beg parameter is larger than chromosome size.')
@@ -290,6 +290,7 @@ class tbModelTool(Tool):
 
         project_metadata = {}
         project_metadata["species"] = metadata["species"]
+        project_metadata["assembly"] = metadata["assembly"]
         
         # input and output share most metadata
         
@@ -302,7 +303,7 @@ class tbModelTool(Tool):
         return (output_files, output_metadata)
 
 # ------------------------------------------------------------------------------
-def load_hic_data(xpath, resolution, gen_pos_chrom_name, species, workdir, xbias=None, ncpus=1):
+def load_hic_data(xpath, resolution, gen_pos_chrom_name, species, assembly, workdir, xbias=None, ncpus=1):
     """
     Load Hi-C data
     """
@@ -312,7 +313,7 @@ def load_hic_data(xpath, resolution, gen_pos_chrom_name, species, workdir, xbias
     # Start reading the data
     crm = Chromosome(chrom_name, species=(
         species.split('_')[0].capitalize() + species.split('_')[1]
-                          if '_' in species else species)) # Create chromosome object
+                          if '_' in species else species), assembly = assembly) # Create chromosome object
 
     crm.add_experiment(
         xnam, exp_type='Hi-C', 
@@ -341,10 +342,6 @@ def load_hic_data(xpath, resolution, gen_pos_chrom_name, species, workdir, xbias
         crm.experiments[xnam].norm = xnorm
     
     return crm
-        
-#species		= Homo sapiens
-#cell		= gm_k562
-#assembly	= NCBI36
         
 
     

@@ -14,6 +14,7 @@ if '/opt/COMPSs/Bindings/python' in sys.path:
 import tarfile
 import multiprocessing
 import json
+import urllib2
 import shutil
 from random import random
 from string import ascii_letters as letters
@@ -116,9 +117,11 @@ class tadbit_model(Workflow):
             in_files = [convert_from_unicode(input_files['bamin'])]
             input_metadata["species"] = "Unknown"
             input_metadata["assembly"] = "Unknown"
-            if "taxon_id" in self.configuration:            
-                if self.configuration["taxon_id"] == "9606":
-                    input_metadata["species"] = "Homo Sapiens" #Figure out how to get species from taxon_id
+            if "assembly" in metadata['bamin'].meta_data:
+                input_metadata["assembly"] = metadata['bamin'].meta_data["assembly"]
+            if "taxon_id" in self.configuration:
+                dt = json.load(urllib2.urlopen("http://www.ebi.ac.uk/ena/data/taxonomy/v1/taxon/tax-id/"+self.configuration["taxon_id"]))            
+                input_metadata["species"] = dt['scientificName']
                 
             if 'biases' in input_files:
                 in_files.append(convert_from_unicode(input_files['biases']))

@@ -143,7 +143,7 @@ class bwaIndexerTool(Tool):
 
         output_metadata = {
             "index": Metadata(
-                "index_bwa", "", [metadata["genome"].id],
+                "index_bwa", "", output_files["index"], [metadata["genome"].file_path],
                 {
                     "assembly": metadata["genome"].meta_data["assembly"],
                     "tool": "bwa_indexer"

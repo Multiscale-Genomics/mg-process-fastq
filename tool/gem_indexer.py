@@ -110,14 +110,14 @@ class gemIndexerTool(Tool):
 
         output_metadata = {
             "genome_gem": Metadata(
-                "assembly", "fasta", [metadata["genome"].id],
+                "assembly", "fasta", output_files['genome_gem'], [metadata["genome"].file_path],
                 {
                     "assembly": metadata["genome"].meta_data["assembly"],
                     "tool": "gem_indexer"
                 }
             ),
             "index": Metadata(
-                "index_gem", "gem", [output_files['genome_gem']],
+                "index_gem", "gem", output_files['index'], [output_files['genome_gem']],
                 {
                     "assembly": metadata["genome"].meta_data["assembly"],
                     "tool": "gem_indexer"

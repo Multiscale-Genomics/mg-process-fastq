@@ -1,4 +1,37 @@
 {
+    "input_files": [
+        {
+            "required": true,
+            "allow_multiple": false,
+            "name": "loc",
+            "value": "59b7e020d9422a5969b65378"
+        }, {
+            "required": false,
+            "allow_multiple": false,
+            "name": "bg_loc",
+            "value": "59b7e020d9422a5969b65379"
+        }, {
+            "required": true,
+            "allow_multiple": false,
+            "name": "genome",
+            "value": "59b7e020d9422a5969b65372"
+        }, {
+            "required": true,
+            "allow_multiple": false,
+            "name": "index",
+            "value": "59b7e020d9422a5969b65373"
+        }
+    ],
+    "arguments": [
+        {
+            "name": "project",
+            "value": "run001"
+        },
+        {
+            "name": "description",
+            "value": null
+        }
+    ],
     "output_files": [
         {
             "required": true,
@@ -27,6 +60,36 @@
                     "description": "Output"
                 },
                 "file_path": "tests/data/macs2.Human.DRR000150.22_filtered.bam",
+                "data_type": "data_chip_seq",
+                "compressed": "null"
+            }
+        }, {
+            "required": false,
+            "allow_multiple": false,
+            "name": "bam_bg",
+            "file": {
+                "file_type": "bam",
+                "meta_data": {
+                    "visible": true,
+                    "tool": "bwa_aligner",
+                    "description": "Output"
+                },
+                "file_path": "tests/data/macs2.Human.DRR000150.22_bg.bam",
+                "data_type": "data_chip_seq",
+                "compressed": "null"
+            }
+        }, {
+            "required": false,
+            "allow_multiple": false,
+            "name": "filtered_bg",
+            "file": {
+                "file_type": "bam",
+                "meta_data": {
+                    "visible": true,
+                    "tool": "biobambam",
+                    "description": "Output"
+                },
+                "file_path": "tests/data/macs2.Human.DRR000150.22_bg_filtered.bam",
                 "data_type": "data_chip_seq",
                 "compressed": "null"
             }
@@ -90,25 +153,6 @@
                 "data_type": "data_chip_seq",
                 "compressed": "null"
             }
-        }
-    ],
-    "arguments": [],
-    "input_files": [
-        {
-            "required": true,
-            "allow_multiple": false,
-            "name": "loc",
-            "value": "59b7e020d9422a5969b65378"
-        }, {
-            "required": true,
-            "allow_multiple": false,
-            "name": "genome",
-            "value": "59b7e020d9422a5969b65372"
-        }, {
-            "required": true,
-            "allow_multiple": false,
-            "name": "index",
-            "value": "59b7e020d9422a5969b65373"
         }
     ]
 }

@@ -43,8 +43,6 @@ class process_chipseq(Workflow):
     filtered and analysed for peak calling
     """
 
-    #configuration = {}
-
     def __init__(self, configuration=None):
         """
         Initialise the tool with its configuration.
@@ -227,28 +225,6 @@ class process_chipseq(Workflow):
 
 # ------------------------------------------------------------------------------
 
-# def main(input_files, output_files, input_metadata):
-#     """
-#     Main function
-#     -------------
-
-#     This function launches the app.
-#     """
-
-#     # import pprint  # Pretty print - module for dictionary fancy printing
-
-#     # 1. Instantiate and launch the App
-#     print("1. Instantiate and launch the App")
-#     from apps.workflowapp import WorkflowApp
-#     app = WorkflowApp()
-#     result = app.launch(process_chipseq, input_files, input_metadata, output_files, {})
-
-#     # 2. The App has finished
-#     print("2. Execution finished")
-#     print(result)
-
-#     return result
-
 def main_json(config, in_metadata, out_metadata):
     """
     Alternative main function
@@ -272,84 +248,6 @@ def main_json(config, in_metadata, out_metadata):
 
     return result
 
-# def prepare_files(
-#         dm_handler, taxon_id, genome_fa, assembly, file_loc, file_bg_loc=None):
-#     """
-#     Function to load the DM API with the required files and prepare the
-#     parameters passed from teh command line ready for use in the main function
-#     """
-#     # print(dm_handler.get_files_by_user("test"))
-
-#     root_name = file_loc.split("/")
-#     parent_dir = '/'.join(root_name[0:-1])
-
-#     genome_file = dm_handler.set_file(
-#         "test", genome_fa, "file", "fasta", 64000, parent_dir,
-#         "Assembly", taxon_id, None, None,
-#         meta_data={"assembly" : assembly, 'tool': 'bwa_indexer'})
-#     index_file = dm_handler.set_file(
-#         "test", genome_fa + ".bwa.tar.gz", "file", "index_bwa", 64000, parent_dir,
-#         "Index", taxon_id, None, [genome_file],
-#         meta_data={'assembly' : assembly, 'tool': 'bwa_indexer'})
-
-#     # Maybe it is necessary to prepare a metadata parser from json file
-#     # when building the Metadata objects.
-#     metadata = {
-#         "genome": Metadata(
-#             "Assembly", "fasta", genome_fa, None,
-#             {'assembly' : assembly}),
-#         "index": Metadata(
-#             "Index", "bwa_index", genome_fa + ".bwa.tar.gz", [genome_file],
-#             {'assembly': assembly, "tool": "bwa_indexer"}),
-#     }
-
-#     fq1_file = dm_handler.set_file(
-#         "test", file_loc, "file", "fastq", 64000, parent_dir, "data_chip_seq",
-#         taxon_id, None, None, meta_data={'assembly' : assembly})
-#     metadata["loc"] = Metadata(
-#         "data_chip_seq", "fastq", file_loc, None,
-#         {'assembly' : assembly}
-#     )
-
-#     files = {
-#         "genome": genome_fa,
-#         "index": genome_fa + ".bwa.tar.gz",
-#         "loc": file_loc
-#     }
-
-#     root_name = file_loc.split("/")
-#     root_name[-1] = root_name[-1].replace('.fastq', '')
-
-#     files_out = {
-#         "bam": file_loc.replace(".fastq", ".bam"),
-#         "filtered": file_loc.replace(".fastq", "_filtered.bam"),
-#         "output": file_loc.replace(".fastq", ".tsv"),
-#         'narrow_peak': '/'.join(root_name) + '_filtered_peaks.narrowPeak',
-#         'summits': '/'.join(root_name) + '_filtered_summits.bed',
-#         'broad_peak': '/'.join(root_name) + '_filtered_peaks.broadPeak',
-#         'gapped_peak': '/'.join(root_name) + '_filtered_peaks.gappedPeak'
-#     }
-
-#     if file_bg_loc:
-#         fq2_file = dm_handler.set_file(
-#             "test", file_bg_loc, "fastq", "file", "ChIP-seq", taxon_id, None, None,
-#             meta_data={'assembly' : assembly})
-
-#         metadata["bg_loc"] = Metadata(
-#             "data_chip_seq", "fastq", file_bg_loc, None,
-#             {'assembly': assembly, 'main_expt': fq1_file, 'background': True}
-#         )
-
-#         files["bg_loc"] = file_bg_loc
-
-#         files_out["bam_bg"] = file_bg_loc.replace(".fastq", ".bam"),
-#         files_out["filtered_bg"] = file_bg_loc.replace(".fastq", "_filtered.bam"),
-
-
-#     # print(dm_handler.get_files_by_user("test"))
-
-#     return [files, files_out, metadata]
-
 # ------------------------------------------------------------------------------
 
 if __name__ == "__main__":
@@ -359,51 +257,16 @@ if __name__ == "__main__":
     # Set up the command line parameters
     PARSER = argparse.ArgumentParser(description="ChIP-seq peak calling")
     PARSER.add_argument("--config", help="Configuration file")
-    # PARSER.add_argument("--root_dir", help="Root data dir")
-    # PARSER.add_argument("--public_dir", help="Location of data dir")
     PARSER.add_argument("--in_metadata", help="Location of input metadata file")
     PARSER.add_argument("--out_metadata", help="Location of output metadata file")
-    # PARSER.add_argument("--taxon_id", help="Taxon_ID (9606)")
-    # PARSER.add_argument("--genome", help="Genome FASTA file")
-    # PARSER.add_argument("--assembly", help="Genome assembly ID (GCA_000001405.25)")
-    # PARSER.add_argument("--file", help="Location of FASTQ input file")
-    # PARSER.add_argument("--bgd_file", help="Location of FASTQ background file", default=None)
-    # PARSER.add_argument("--json",
-    #                     help="Use defined JSON config files",
-    #                     action='store_const', const=True, default=False)
-
 
     # Get the matching parameters from the command line
     ARGS = PARSER.parse_args()
 
     CONFIG = ARGS.config
-    # ROOT_DIR = ARGS.root_dir
-    # PUBLIC_DIR = ARGS.public_dir
     IN_METADATA = ARGS.in_metadata
     OUT_METADATA = ARGS.out_metadata
 
-    # TAXON_ID = ARGS.taxon_id
-    # GENOME_FA = ARGS.genome
-    # ASSEMBLY = ARGS.assembly
-    # FILE_LOC = ARGS.file
-    # FILE_BG_LOC = ARGS.bgd_file
-    # JSON_CONFIG = ARGS.json
-
-    # if JSON_CONFIG is True:
     RESULTS = main_json(CONFIG, IN_METADATA, OUT_METADATA)
-    # else:
-    #     #
-    #     # MuG Tool Steps
-    #     # --------------
-    #     #
-    #     # 1. Create data files
-    #     DM_HANDLER = dmp(test=True)
-
-    #     #2. Register the data with the DMP
-    #     PARAMS = prepare_files(DM_HANDLER, TAXON_ID, GENOME_FA, ASSEMBLY, FILE_LOC, FILE_BG_LOC)
-
-    #     # 3. Instantiate and launch the App
-    #     RESULTS = main(PARAMS[0], PARAMS[1], PARAMS[2])
-    #     print(DM_HANDLER.get_files_by_user("test"))
 
     print(RESULTS)

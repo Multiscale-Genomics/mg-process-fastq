@@ -47,7 +47,7 @@ class kallistoQuantificationTool(Tool):
     genes within a genome.
     """
 
-    def __init__(self):
+    def __init__(self, configuration=None):
         """
         Init function
         """

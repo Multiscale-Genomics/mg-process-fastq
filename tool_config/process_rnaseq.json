@@ -43,7 +43,7 @@
             "required": true,
             "allow_multiple": false
         }, {
-            "name": "fastq2",
+            "name": "fastq1",
             "description": "Sequence read file",
             "help": "path to a FASTQ sequence read file",
             "file_type": ["FASTQ"],

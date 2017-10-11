@@ -126,7 +126,7 @@ class biobambam(Tool):
 
         bam_meta = Metadata(
             "data_chip_seq", "bam", output_files["output"],
-            [metadata['input'].id],
+            [metadata['input'].file_path],
             {
                 'assembly' : metadata['input'].meta_data['assembly'],
                 "tool": "biobambam_filter"

@@ -227,27 +227,27 @@ class process_chipseq(Workflow):
 
 # ------------------------------------------------------------------------------
 
-def main(input_files, output_files, input_metadata):
-    """
-    Main function
-    -------------
+# def main(input_files, output_files, input_metadata):
+#     """
+#     Main function
+#     -------------
 
-    This function launches the app.
-    """
+#     This function launches the app.
+#     """
 
-    # import pprint  # Pretty print - module for dictionary fancy printing
+#     # import pprint  # Pretty print - module for dictionary fancy printing
 
-    # 1. Instantiate and launch the App
-    print("1. Instantiate and launch the App")
-    from apps.workflowapp import WorkflowApp
-    app = WorkflowApp()
-    result = app.launch(process_chipseq, input_files, input_metadata, output_files, {})
+#     # 1. Instantiate and launch the App
+#     print("1. Instantiate and launch the App")
+#     from apps.workflowapp import WorkflowApp
+#     app = WorkflowApp()
+#     result = app.launch(process_chipseq, input_files, input_metadata, output_files, {})
 
-    # 2. The App has finished
-    print("2. Execution finished")
-    print(result)
+#     # 2. The App has finished
+#     print("2. Execution finished")
+#     print(result)
 
-    return result
+#     return result
 
 def main_json(config, in_metadata, out_metadata):
     """
@@ -272,83 +272,83 @@ def main_json(config, in_metadata, out_metadata):
 
     return result
 
-def prepare_files(
-        dm_handler, taxon_id, genome_fa, assembly, file_loc, file_bg_loc=None):
-    """
-    Function to load the DM API with the required files and prepare the
-    parameters passed from teh command line ready for use in the main function
-    """
-    # print(dm_handler.get_files_by_user("test"))
+# def prepare_files(
+#         dm_handler, taxon_id, genome_fa, assembly, file_loc, file_bg_loc=None):
+#     """
+#     Function to load the DM API with the required files and prepare the
+#     parameters passed from teh command line ready for use in the main function
+#     """
+#     # print(dm_handler.get_files_by_user("test"))
 
-    root_name = file_loc.split("/")
-    parent_dir = '/'.join(root_name[0:-1])
+#     root_name = file_loc.split("/")
+#     parent_dir = '/'.join(root_name[0:-1])
 
-    genome_file = dm_handler.set_file(
-        "test", genome_fa, "file", "fasta", 64000, parent_dir,
-        "Assembly", taxon_id, None, None,
-        meta_data={"assembly" : assembly, 'tool': 'bwa_indexer'})
-    index_file = dm_handler.set_file(
-        "test", genome_fa + ".bwa.tar.gz", "file", "index_bwa", 64000, parent_dir,
-        "Index", taxon_id, None, [genome_file],
-        meta_data={'assembly' : assembly, 'tool': 'bwa_indexer'})
+#     genome_file = dm_handler.set_file(
+#         "test", genome_fa, "file", "fasta", 64000, parent_dir,
+#         "Assembly", taxon_id, None, None,
+#         meta_data={"assembly" : assembly, 'tool': 'bwa_indexer'})
+#     index_file = dm_handler.set_file(
+#         "test", genome_fa + ".bwa.tar.gz", "file", "index_bwa", 64000, parent_dir,
+#         "Index", taxon_id, None, [genome_file],
+#         meta_data={'assembly' : assembly, 'tool': 'bwa_indexer'})
 
-    # Maybe it is necessary to prepare a metadata parser from json file
-    # when building the Metadata objects.
-    metadata = {
-        "genome": Metadata(
-            "Assembly", "fasta", genome_fa, None,
-            {'assembly' : assembly}),
-        "index": Metadata(
-            "Index", "bwa_index", genome_fa + ".bwa.tar.gz", [genome_file],
-            {'assembly': assembly, "tool": "bwa_indexer"}),
-    }
+#     # Maybe it is necessary to prepare a metadata parser from json file
+#     # when building the Metadata objects.
+#     metadata = {
+#         "genome": Metadata(
+#             "Assembly", "fasta", genome_fa, None,
+#             {'assembly' : assembly}),
+#         "index": Metadata(
+#             "Index", "bwa_index", genome_fa + ".bwa.tar.gz", [genome_file],
+#             {'assembly': assembly, "tool": "bwa_indexer"}),
+#     }
 
-    fq1_file = dm_handler.set_file(
-        "test", file_loc, "file", "fastq", 64000, parent_dir, "data_chip_seq",
-        taxon_id, None, None, meta_data={'assembly' : assembly})
-    metadata["loc"] = Metadata(
-        "data_chip_seq", "fastq", file_loc, None,
-        {'assembly' : assembly}
-    )
+#     fq1_file = dm_handler.set_file(
+#         "test", file_loc, "file", "fastq", 64000, parent_dir, "data_chip_seq",
+#         taxon_id, None, None, meta_data={'assembly' : assembly})
+#     metadata["loc"] = Metadata(
+#         "data_chip_seq", "fastq", file_loc, None,
+#         {'assembly' : assembly}
+#     )
 
-    files = {
-        "genome": genome_fa,
-        "index": genome_fa + ".bwa.tar.gz",
-        "loc": file_loc
-    }
+#     files = {
+#         "genome": genome_fa,
+#         "index": genome_fa + ".bwa.tar.gz",
+#         "loc": file_loc
+#     }
 
-    root_name = file_loc.split("/")
-    root_name[-1] = root_name[-1].replace('.fastq', '')
+#     root_name = file_loc.split("/")
+#     root_name[-1] = root_name[-1].replace('.fastq', '')
 
-    files_out = {
-        "bam": file_loc.replace(".fastq", ".bam"),
-        "filtered": file_loc.replace(".fastq", "_filtered.bam"),
-        "output": file_loc.replace(".fastq", ".tsv"),
-        'narrow_peak': '/'.join(root_name) + '_filtered_peaks.narrowPeak',
-        'summits': '/'.join(root_name) + '_filtered_summits.bed',
-        'broad_peak': '/'.join(root_name) + '_filtered_peaks.broadPeak',
-        'gapped_peak': '/'.join(root_name) + '_filtered_peaks.gappedPeak'
-    }
+#     files_out = {
+#         "bam": file_loc.replace(".fastq", ".bam"),
+#         "filtered": file_loc.replace(".fastq", "_filtered.bam"),
+#         "output": file_loc.replace(".fastq", ".tsv"),
+#         'narrow_peak': '/'.join(root_name) + '_filtered_peaks.narrowPeak',
+#         'summits': '/'.join(root_name) + '_filtered_summits.bed',
+#         'broad_peak': '/'.join(root_name) + '_filtered_peaks.broadPeak',
+#         'gapped_peak': '/'.join(root_name) + '_filtered_peaks.gappedPeak'
+#     }
 
-    if file_bg_loc:
-        fq2_file = dm_handler.set_file(
-            "test", file_bg_loc, "fastq", "file", "ChIP-seq", taxon_id, None, None,
-            meta_data={'assembly' : assembly})
+#     if file_bg_loc:
+#         fq2_file = dm_handler.set_file(
+#             "test", file_bg_loc, "fastq", "file", "ChIP-seq", taxon_id, None, None,
+#             meta_data={'assembly' : assembly})
 
-        metadata["bg_loc"] = Metadata(
-            "data_chip_seq", "fastq", file_bg_loc, None,
-            {'assembly': assembly, 'main_expt': fq1_file, 'background': True}
-        )
+#         metadata["bg_loc"] = Metadata(
+#             "data_chip_seq", "fastq", file_bg_loc, None,
+#             {'assembly': assembly, 'main_expt': fq1_file, 'background': True}
+#         )
 
-        files["bg_loc"] = file_bg_loc
+#         files["bg_loc"] = file_bg_loc
 
-        files_out["bam_bg"] = file_bg_loc.replace(".fastq", ".bam"),
-        files_out["filtered_bg"] = file_bg_loc.replace(".fastq", "_filtered.bam"),
+#         files_out["bam_bg"] = file_bg_loc.replace(".fastq", ".bam"),
+#         files_out["filtered_bg"] = file_bg_loc.replace(".fastq", "_filtered.bam"),
 
 
-    # print(dm_handler.get_files_by_user("test"))
+#     # print(dm_handler.get_files_by_user("test"))
 
-    return [files, files_out, metadata]
+#     return [files, files_out, metadata]
 
 # ------------------------------------------------------------------------------
 

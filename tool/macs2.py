@@ -53,12 +53,12 @@ class macs2(Tool):
         Tool.__init__(self)
 
     @task(
-        returns=int,
+        returns=bool,
         name=IN,
         bam_file=FILE_IN,
         bam_file_bgd=FILE_IN,
         narrowpeak=FILE_OUT,
-        summit_bed=FILE_OUT,
+        summits_bed=FILE_OUT,
         broadpeak=FILE_OUT,
         gappedpeak=FILE_OUT,
         isModifier=False)
@@ -99,9 +99,7 @@ class macs2(Tool):
         od_list = bam_file.split("/")
         output_dir = "/".join(od_list[0:-1])
 
-        bgd_command = ''
-        if bam_file_bgd is not None:
-            bgd_command = '-c ' + bam_file_bgd
+        bgd_command = '-c ' + bam_file_bgd
 
         nomodel = ''
         if name == 'macs2.Human.DRR000150.22.filtered':
@@ -121,17 +119,50 @@ class macs2(Tool):
         print('Process Results 1:', process)
         print('LIST DIR 1:', os.listdir(output_dir))
 
-        return 0
+        out_suffix = ['peaks.narrowPeak', 'peaks.broadPeak', 'peaks.gappedPeak', 'summits.bed']
+        for f_suf in out_suffix:
+            output_tmp = output_dir + '/' + name + '_out_' + f_suf
+            print(output_tmp, os.path.isfile(output_tmp))
+            if os.path.isfile(output_tmp) is True and os.path.getsize(output_tmp) > 0:
+                if f_suf == 'peaks.narrowPeak':
+                    with open(narrowpeak, "wb") as f_out:
+                        with open(output_tmp, "rb") as f_in:
+                            f_out.write(f_in.read())
+                elif f_suf == 'summits.bed':
+                    with open(summits_bed, "wb") as f_out:
+                        with open(output_tmp, "rb") as f_in:
+                            f_out.write(f_in.read())
+                elif f_suf == 'peaks.broadPeak':
+                    with open(broadpeak, "wb") as f_out:
+                        with open(output_tmp, "rb") as f_in:
+                            f_out.write(f_in.read())
+                elif f_suf == 'peaks.gappedPeak':
+                    with open(gappedpeak, "wb") as f_out:
+                        with open(output_tmp, "rb") as f_in:
+                            f_out.write(f_in.read())
+            else:
+                if f_suf == 'peaks.narrowPeak':
+                    with open(narrowpeak, "w") as f_out:
+                        f_out.write("")
+                elif f_suf == 'summits.bed':
+                    with open(summits_bed, "w") as f_out:
+                        f_out.write("")
+                elif f_suf == 'peaks.broadPeak':
+                    with open(broadpeak, "w") as f_out:
+                        f_out.write("")
+                elif f_suf == 'peaks.gappedPeak':
+                    with open(gappedpeak, "w") as f_out:
+                        f_out.write("")
 
-    @task(
-        returns=int,
-        name=IN,
-        bam_file=FILE_IN,
-        narrowPeak=FILE_OUT,
-        summit_bed=FILE_OUT,
-        broadPeak=FILE_OUT,
-        gappedPeak=FILE_OUT,
-        isModifier=False)
+        if process.returncode is not 0:
+            print("MACS2 ERROR", process.returncode)
+            return process.returncode
+
+        return True
+
+    @task(returns=bool, name=IN, bam_file=FILE_IN,
+          narrowpeak=FILE_OUT, summits_bed=FILE_OUT, broadpeak=FILE_OUT,
+          gappedpeak=FILE_OUT, isModifier=False)
     def macs2_peak_calling_nobgd( # pylint: disable=too-many-arguments
             self, name, bam_file,
             narrowpeak, summits_bed, broadpeak, gappedpeak): # pylint: disable=unused-argument
@@ -184,7 +215,6 @@ class macs2(Tool):
         out_suffix = ['peaks.narrowPeak', 'peaks.broadPeak', 'peaks.gappedPeak', 'summits.bed']
         for f_suf in out_suffix:
             output_tmp = output_dir + '/' + name + '_out_' + f_suf
-            output_file = output_dir + '/' + name + f_suf
             print(output_tmp, os.path.isfile(output_tmp))
             if os.path.isfile(output_tmp) is True and os.path.getsize(output_tmp) > 0:
                 if f_suf == 'peaks.narrowPeak':
@@ -203,12 +233,25 @@ class macs2(Tool):
                     with open(gappedpeak, "wb") as f_out:
                         with open(output_tmp, "rb") as f_in:
                             f_out.write(f_in.read())
+            else:
+                if f_suf == 'peaks.narrowPeak':
+                    with open(narrowpeak, "w") as f_out:
+                        f_out.write("")
+                elif f_suf == 'summits.bed':
+                    with open(summits_bed, "w") as f_out:
+                        f_out.write("")
+                elif f_suf == 'peaks.broadPeak':
+                    with open(broadpeak, "w") as f_out:
+                        f_out.write("")
+                elif f_suf == 'peaks.gappedPeak':
+                    with open(gappedpeak, "w") as f_out:
+                        f_out.write("")
 
         if process.returncode is not 0:
             print("MACS2 ERROR", process.returncode)
             return process.returncode
 
-        return 0
+        return True
 
     def run(self, input_files, metadata, output_files):
         """
@@ -233,7 +276,6 @@ class macs2(Tool):
         """
         root_name = input_files['input'].split("/")
         root_name[-1] = root_name[-1].replace('.bam', '')
-
         name = root_name[-1]
 
        # input and output share most metadata
@@ -247,14 +289,14 @@ class macs2(Tool):
         # handle error
         if 'background' in input_files:
             results = self.macs2_peak_calling(
-                name, input_files['input'], input_files['background'],
-                output_files['narrow_peak'], output_files['summits'],
-                output_files['broad_peak'], output_files['gapped_peak'])
+                name, str(input_files['input']), str(input_files['background']),
+                str(output_files['narrow_peak']), str(output_files['summits']),
+                str(output_files['broad_peak']), str(output_files['gapped_peak']))
         else:
             results = self.macs2_peak_calling_nobgd(
-                name, input_files['input'],
-                output_files['narrow_peak'], output_files['summits'],
-                output_files['broad_peak'], output_files['gapped_peak'])
+                name, str(input_files['input']),
+                str(output_files['narrow_peak']), str(output_files['summits']),
+                str(output_files['broad_peak']), str(output_files['gapped_peak']))
         results = compss_wait_on(results)
 
         if results > 0:
@@ -275,7 +317,7 @@ class macs2(Tool):
 
                 output_metadata[result_file] = Metadata(
                     "data_chip_seq", "bed", output_files[result_file],
-                    [metadata['input'].id],
+                    [metadata['input'].file_path],
                     {
                         'assembly' : metadata['input'].meta_data['assembly'],
                         "tool": "macs2",

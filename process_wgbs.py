@@ -156,6 +156,10 @@ class process_wgbs(Workflow):
             remap(output_files, "bam", "bai")
         )
 
+        # TODO: Merge the bam files
+        # merge_bam in common needs splitting into a separate tool or modified
+        # to handle the passing or 2 files at a time.
+
         output_results_files["bam"] = bam["bam"]
         output_results_files["bai"] = bam["bai"]
         output_metadata["bam"] = bam_meta["bam"]

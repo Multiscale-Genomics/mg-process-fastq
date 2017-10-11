@@ -28,8 +28,6 @@ from basic_modules.workflow import Workflow
 from basic_modules.metadata import Metadata
 from utils import remap
 
-from dmp import dmp
-
 from tool.bowtie_indexer import bowtieIndexerTool
 from tool.bwa_indexer import bwaIndexerTool
 from tool.gem_indexer import gemIndexerTool
@@ -58,9 +56,9 @@ class process_genome(Workflow):
 
     def run(self, input_files, metadata, output_files):
         """
-        The downloading can be done using the current common.py functions. These
-        should be prevented from running the indexing step as this will be done
-        as part of this workflow.
+        Main run function for the indexing of genome assembly FASTA files. The
+        pipeline uses Bowtie2, BWA and GEM ready for use in pipelines that
+        rely on alignment.
 
         Parameters
         ----------

@@ -29,8 +29,6 @@ from basic_modules.workflow import Workflow
 from basic_modules.metadata import Metadata
 from utils import remap
 
-from dmp import dmp
-
 from tool.bwa_aligner import bwaAlignerTool
 from tool.biobambam_filter import biobambam
 from tool.macs2 import macs2

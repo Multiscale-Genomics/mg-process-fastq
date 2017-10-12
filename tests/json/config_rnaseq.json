@@ -1,0 +1,91 @@
+{
+    "input_files": [
+        {
+            "required": true,
+            "allow_multiple": false,
+            "name": "fastq1",
+            "value": "59b7e020d9422a5969b65378"
+        }, {
+            "required": false,
+            "allow_multiple": false,
+            "name": "genome",
+            "value": "59b7e020d9422a5969b65379"
+        }
+    ],
+    "arguments": [
+        {
+            "name": "project",
+            "value": "run001"
+        },
+        {
+            "name": "description",
+            "value": null
+        }
+    ],
+    "output_files": [
+        {
+            "required": true,
+            "allow_multiple": false,
+            "name": "index",
+            "file": {
+                "file_type": "index",
+                "meta_data": {
+                    "visible": true,
+                    "tool": "process_rnaseq",
+                    "description": "Output"
+                },
+                "file_path": "tests/data/kallisto.idx",
+                "data_type": "index_kallisto",
+                "compressed": "null"
+            }
+        }, {
+            "required": true,
+            "allow_multiple": false,
+            "name": "abundance_h5_file",
+            "file": {
+                "file_type": "hdf5",
+                "meta_data": {
+                    "visible": true,
+                    "tool": "process_rnaseq",
+                    "description": "Output"
+                },
+                "file_path": "tests/data/kallisto.abundance.h5",
+                "data_type": "data_rna_seq",
+                "compressed": "null"
+            }
+        }, {
+            "required": true,
+            "allow_multiple": false,
+            "name": "abundance_tsv_file",
+            "file": {
+                "file_type": "tsv",
+                "meta_data": {
+                    "visible": true,
+                    "tool": "process_rnaseq",
+                    "description": "Output"
+                },
+                "file_path": "tests/data/kallisto.abundance.tsv",
+                "data_type": "data_rna_seq",
+                "compressed": "null"
+            }
+        }, {
+            "required": true,
+            "allow_multiple": false,
+            "name": "run_info_file",
+            "file": {
+                "file_type": "txt",
+                "meta_data": {
+                    "visible": true,
+                    "tool": "process_rnaseq",
+                    "description": "Output"
+                },
+                "file_path": "tests/data/kallisto.run.info",
+                "data_type": "data_rna_seq",
+                "compressed": "null"
+            }
+        }
+    ]
+}
+
+
+

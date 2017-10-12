@@ -1,6 +1,7 @@
 [
     {
-        "_id": "59b7e020d9422a5969b65372",
+        "compressed": 0,
+        "_id": "59b7e020d9422a5969b65378",
         "data_type": "sequence_dna",
         "file_type": "FASTA",
         "file_path": "tests/data/kallisto.Human.GRCh38.fasta",
@@ -13,7 +14,7 @@
     },
     {
         "compressed": 0,
-        "_id": "59b7e020d9422a5969b65378",
+        "_id": "59b7e020d9422a5969b65379",
         "data_type": "data_rna_seq",
         "file_type": "fastq",
         "file_path": "tests/data/kallisto.Human.ERR030872_1.fastq",
@@ -25,7 +26,7 @@
     },
     {
         "compressed": 0,
-        "_id": "59b7e020d9422a5969b65378",
+        "_id": "59b7e020d9422a5969b65380",
         "data_type": "data_rna_seq",
         "file_type": "fastq",
         "file_path": "tests/data/kallisto.Human.ERR030872_2.fastq",

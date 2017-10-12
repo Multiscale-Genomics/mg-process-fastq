@@ -4,12 +4,12 @@
             "required": true,
             "allow_multiple": false,
             "name": "fastq1",
-            "value": "59b7e020d9422a5969b65378"
+            "value": "59b7e020d9422a5969b65379"
         }, {
             "required": false,
             "allow_multiple": false,
-            "name": "genome",
-            "value": "59b7e020d9422a5969b65379"
+            "name": "cdna",
+            "value": "59b7e020d9422a5969b65378"
         }
     ],
     "arguments": [

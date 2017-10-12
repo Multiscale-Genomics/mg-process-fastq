@@ -92,22 +92,46 @@ class process_rnaseq(Workflow):
         k_quant = kallistoQuantificationTool()
 
         if "fastq2" not in input_files:
+            kq_input_files = {
+                "cdna": input_files["cdna"],
+                "fastq1": input_files["fastq1"],
+                "index": k_out["index"]
+            }
+            kq_input_meta = {
+                "cdna": metadata["cdna"],
+                "fastq1": metadata["fastq1"],
+                "index": k_meta["index"]
+            }
+
             kq_files, kq_meta = k_quant.run(
-                remap(input_files, "cdna", "index", "fastq1"),
-                remap(metadata, "cdna", "index", "fastq1"),
-                remap(output_files, "index")
+                kq_input_files,
+                kq_input_meta,
+                remap(output_files, "abundance_h5_file", "abundance_tsv_file", "run_info_file")
             )
         elif "fastq2" in input_files:
+            kq_input_files = {
+                "cdna": input_files["cdna"],
+                "fastq1": input_files["fastq1"],
+                "fastq2": input_files["fastq2"],
+                "index": k_out["index"]
+            }
+            kq_input_meta = {
+                "cdna": metadata["cdna"],
+                "fastq1": metadata["fastq1"],
+                "fastq2": metadata["fastq2"],
+                "index": k_meta["index"]
+            }
+
             kq_files, kq_meta = k_quant.run(
-                remap(input_files, "cdna", "index", "fastq1", "fastq2"),
-                remap(metadata, "cdna", "index", "fastq1", "fastq2"),
-                remap(output_files, "index")
+                kq_input_files,
+                kq_input_meta,
+                remap(output_files, "abundance_h5_file", "abundance_tsv_file", "run_info_file")
             )
 
         kq_files["index"] = k_out["index"]
         kq_meta["index"] = k_meta["index"]
 
-        return (output_files, output_metadata)
+        return (kq_files, kq_meta)
 
 # -----------------------------------------------------------------------------
 

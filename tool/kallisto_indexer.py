@@ -74,7 +74,7 @@ class kallistoIndexerTool(Tool):
 
         return True
 
-    def run(self, input_files, output_files, metadata=None):
+    def run(self, input_files, metadata, output_files):
         """
         Tool for generating assembly aligner index files for use with Kallisto
 
@@ -106,7 +106,7 @@ class kallistoIndexerTool(Tool):
 
         output_metadata = {
             "index": Metadata(
-                "index_kallisto", "", [metadata["cdna"].id],
+                "index_kallisto", "", [metadata["cdna"].file_path],
                 {
                     "assembly": metadata["cdna"].meta_data["assembly"],
                     "tool": "kallisto_indexer"

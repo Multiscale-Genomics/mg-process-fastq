@@ -84,10 +84,14 @@ class kallistoQuantificationTool(Tool):
 
         output_dir = fastq_file_loc.split('/')
 
+        std = fq_stats["std"]
+        if std == 0.0:
+            std = 1/fq_stats['mean']
+
         command_line = "kallisto quant -i " + cdna_idx_file + " "
         command_line += " -o " + "/".join(output_dir[0:-1]) + "/"
         command_line += " --single -l " + str(fq_stats['mean']) + " "
-        command_line += "-s " + str(fq_stats["std"]) + " " + fastq_file_loc
+        command_line += "-s " + str(std) + " " + fastq_file_loc
 
         print("KALLISTO_QUANT COMMAND", command_line)
 

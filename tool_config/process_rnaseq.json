@@ -112,13 +112,13 @@
             "allow_multiple": false,
             "name": "run_info_file",
             "file": {
-                "file_type": "txt",
+                "file_type": "json",
                 "meta_data": {
                     "visible": true,
                     "tool": "process_rnaseq",
                     "description": "Kallisto run information file"
                 },
-                "file_path": "run.info",
+                "file_path": "run_info.json",
                 "data_type": "data_rna_seq",
                 "compressed": "null"
             }

@@ -6,6 +6,11 @@
             "name": "fastq1",
             "value": "59b7e020d9422a5969b65379"
         }, {
+            "required": true,
+            "allow_multiple": false,
+            "name": "fastq2",
+            "value": "59b7e020d9422a5969b65380"
+        }, {
             "required": false,
             "allow_multiple": false,
             "name": "cdna",
@@ -73,13 +78,13 @@
             "allow_multiple": false,
             "name": "run_info_file",
             "file": {
-                "file_type": "txt",
+                "file_type": "json",
                 "meta_data": {
                     "visible": true,
                     "tool": "process_rnaseq",
                     "description": "Output"
                 },
-                "file_path": "tests/data/kallisto.run.info",
+                "file_path": "tests/data/kallisto.run_info.json",
                 "data_type": "data_rna_seq",
                 "compressed": "null"
             }

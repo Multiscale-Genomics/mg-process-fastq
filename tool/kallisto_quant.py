@@ -21,6 +21,7 @@ import shlex
 import subprocess
 import itertools
 import sys
+import os
 
 try:
     if hasattr(sys, '_run_from_cmdl') is True:
@@ -57,12 +58,11 @@ class kallistoQuantificationTool(Tool):
     @task(
         cdna_idx_file=FILE_IN,
         fastq_file_loc=FILE_IN,
-        fq_stats=IN,
         abundance_h5_file=FILE_OUT,
         abundance_tsv_file=FILE_OUT,
         run_info_file=FILE_OUT)
     def kallisto_quant_single(
-            self, cdna_idx_file, fastq_file_loc, fq_stats,
+            self, cdna_idx_file, fastq_file_loc,
             abundance_h5_file, abundance_tsv_file, run_info_file):
         """
         Kallisto quantifier for single end RNA-seq data
@@ -80,16 +80,44 @@ class kallistoQuantificationTool(Tool):
             Location of the wig file containing the levels of expression
         """
 
+        fq_stats = self.seq_read_stats(fastq_file_loc)
+
         output_dir = fastq_file_loc.split('/')
 
-        command_line = 'kallisto quant -i ' + cdna_idx_file + ' '
-        command_line += ' -o ' + '/'.join(output_dir[0:-1]) + "/"
-        command_line += ' --single -l ' + str(fq_stats['mean']) + ' '
-        command_line += '-s ' + str(fq_stats['std']) + ' ' + fastq_file_loc
+        command_line = "kallisto quant -i " + cdna_idx_file + " "
+        command_line += " -o " + "/".join(output_dir[0:-1]) + "/"
+        command_line += " --single -l " + str(fq_stats['mean']) + " "
+        command_line += "-s " + str(fq_stats["std"]) + " " + fastq_file_loc
+
+        print("KALLISTO_QUANT COMMAND", command_line)
 
         args = shlex.split(command_line)
-        p = subprocess.Popen(args)
-        p.wait()
+        process = subprocess.Popen(args)
+        process.wait()
+
+        output_files = [
+            {
+                "in": '/'.join(output_dir[0:-1]) + "/abundance.h5",
+                "out": abundance_h5_file
+            },
+            {
+                "in": '/'.join(output_dir[0:-1]) + "/abundance.tsv",
+                "out": abundance_tsv_file
+            },
+            {
+                "in": '/'.join(output_dir[0:-1]) + "/run_info.json",
+                "out": run_info_file
+            }
+        ]
+
+        for i in output_files:
+            if os.path.isfile(i["in"]) is True and os.path.getsize(i["in"]) > 0:
+                with open(i["out"], "wb") as f_out:
+                    with open(i["in"], "rb") as f_in:
+                        f_out.write(f_in.read())
+            else:
+                with open(i["out"], "w") as f_out:
+                    f_out.write("")
 
         return True
 
@@ -131,6 +159,30 @@ class kallistoQuantificationTool(Tool):
         process = subprocess.Popen(args)
         process.wait()
 
+        output_files = [
+            {
+                "in": '/'.join(output_dir[0:-1]) + "/abundance.h5",
+                "out": abundance_h5_file
+            },
+            {
+                "in": '/'.join(output_dir[0:-1]) + "/abundance.tsv",
+                "out": abundance_tsv_file
+            },
+            {
+                "in": '/'.join(output_dir[0:-1]) + "/run_info.json",
+                "out": run_info_file
+            }
+        ]
+
+        for i in output_files:
+            if os.path.isfile(i["in"]) is True and os.path.getsize(i["in"]) > 0:
+                with open(i["out"], "wb") as f_out:
+                    with open(i["in"], "rb") as f_in:
+                        f_out.write(f_in.read())
+            else:
+                with open(i["out"], "w") as f_out:
+                    f_out.write("")
+
         return True
 
     def seq_read_stats(self, file_in):
@@ -165,7 +217,7 @@ class kallistoQuantificationTool(Tool):
 
         return {'mean' : length_mean, 'std' : length_sd}
 
-    def run(self, input_files, output_files, metadata=None):
+    def run(self, input_files, metadata, output_files):
         """
         Tool for calculating the level of expression
 
@@ -194,9 +246,8 @@ class kallistoQuantificationTool(Tool):
         # run_info_file = output_dir + "/run_info.json"
 
         if "fastq2" not in input_files:
-            fq_stats = self.seq_read_stats(input_files[1])
             results = self.kallisto_quant_single(
-                input_files["index"], input_files["fastq1"], fq_stats,
+                input_files["index"], input_files["fastq1"],
                 output_files["abundance_h5_file"], output_files["abundance_tsv_file"],
                 output_files["run_info_file"]
             )

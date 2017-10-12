@@ -77,8 +77,6 @@ class process_rnaseq(Workflow):
             List of locations for the output bam, bed and tsv files
         """
 
-        output_metadata = {}
-
         # Index the cDNA
         # This could get moved to the general tools section
         k_index = kallistoIndexerTool()

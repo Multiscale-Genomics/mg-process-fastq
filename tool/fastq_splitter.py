@@ -37,7 +37,6 @@ except ImportError:
     from dummy_pycompss import task
     from dummy_pycompss import compss_wait_on
 
-#from basic_modules.metadata import Metadata
 from basic_modules.tool import Tool
 
 from fastqreader import fastqreader
@@ -244,7 +243,7 @@ class fastq_splitter(Tool):
 
         return files_out
 
-    def run(self, input_files, output_files, metadata=None):
+    def run(self, input_files, metadata, output_files):
         """
         The main function to run the splitting of FASTQ files (single or paired)
         so that they can aligned in a distributed manner
@@ -268,13 +267,13 @@ class fastq_splitter(Tool):
 
         if len(input_files) == 2:
             results = output_files = self.paired_splitter(
-                input_files[0], input_files[1],
-                input_files[0] + ".tar.gz"
+                input_files["fastq1_filtered"], input_files["fastq2_filtered"],
+                input_files["fastq1_filtered"] + ".tar.gz"
             )
         else:
             results = output_files = self.single_splitter(
-                input_files[0],
-                input_files[0] + ".tar.gz",
+                input_files["fastq1_filtered"],
+                input_files["fastq1_filtered"] + ".tar.gz",
             )
 
         results = compss_wait_on(results)
@@ -282,6 +281,6 @@ class fastq_splitter(Tool):
         print("WGBS - FASTQ SPLITTER:", results)
 
         return (
-            input_files[0] + ".tar.gz",
+            input_files["fastq1_filtered"] + ".tar.gz",
             results
         )

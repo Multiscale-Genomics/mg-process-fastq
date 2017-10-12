@@ -143,7 +143,7 @@ class bssIndexerTool(Tool):
 
         output_metadata = {
             "index": Metadata(
-                "index_bwt", "", [metadata["genome"].id],
+                "index_bwt", "", [metadata["genome"].file_path],
                 {
                     "assembly": metadata["genome"].meta_data["assembly"],
                     "tool": "bs_seeker_indexer"

@@ -25,8 +25,6 @@ from basic_modules.workflow import Workflow
 from basic_modules.metadata import Metadata
 from utils import remap
 
-from dmp import dmp
-
 from tool.fastq_splitter import fastq_splitter
 from tool.bs_seeker_aligner import bssAlignerTool
 from tool.bs_seeker_filter import filterReadsTool
@@ -97,6 +95,13 @@ class process_wgbs(Workflow):
 
         print("PIPELINE - metadata:", metadata)
 
+        if "bss_path" in self.configuration:
+            metadata["bss_path"] = self.configuration["bss_path"]
+        if "aligner_path" in self.configuration:
+            metadata["aligner_path"] = self.configuration["aligner_path"]
+        if "aligner" in self.configuration:
+            metadata["aligner"] = self.configuration["aligner"]
+
         # Filter the FASTQ reads to remove duplicates
         frt = filterReadsTool()
         fastq1f, filter1_meta = frt.run(
@@ -131,34 +136,33 @@ class process_wgbs(Workflow):
 
             tmp_fastq_gz, tmp_fastq_list = fqs.run(
                 remap(output_files, "fastq1_filtered", "fastq2_filtered"),
-                remap(output_metadata, "fastq1_filtered", "fastq2_filtered"),
-                {}
+                {},
+                remap(output_metadata, "fastq1_filtered", "fastq2_filtered")
             )
         else:
             tmp_fastq_gz, tmp_fastq_list = fqs.run(
-                [fastq1f[0]],
-                'tmp'
+                remap(output_files, "fastq1_filtered"),
+                {},
+                remap(output_metadata, "fastq1_filtered")
             )
 
         print("WGBS genome_idx:", genome_idx)
         print("WGBS tmp_fastq_gz:", tmp_fastq_gz)
         print("WGBS tmp_fastq_list:", tmp_fastq_list)
 
+        # Handles the alignment of all of the split packets then merges them
+        # back together.
         bss_aligner = bssAlignerTool()
         aligner_input_files = remap(input_files, "genome", "genome_idx")
-        aligner_input_files["fastq_list"] = tmp_fastq_list
+        aligner_input_files["fastq_list"] = tmp_fastq_gz
 
-        aligner_meta = remap(output_metadata, "genome_idx", "fastq1_filtered", "fastq2_filtered")
-        aligner_meta["genome"] = metadata["genome"]
+        aligner_meta = remap(output_metadata, "genome", "genome_idx")
+        aligner_meta["fastq_list"] = tmp_fastq_list
         bam, bam_meta = bss_aligner.run(
             aligner_input_files,
             aligner_meta,
             remap(output_files, "bam", "bai")
         )
-
-        # TODO: Merge the bam files
-        # merge_bam in common needs splitting into a separate tool or modified
-        # to handle the passing or 2 files at a time.
 
         output_results_files["bam"] = bam["bam"]
         output_results_files["bai"] = bam["bai"]
@@ -186,93 +190,28 @@ class process_wgbs(Workflow):
 
 # ------------------------------------------------------------------------------
 
-def main(input_files, output_files, input_metadata):
+def main_json(config, in_metadata, out_metadata):
     """
-    Main function
+    Alternative main function
     -------------
 
-    This function launches the app.
+    This function launches the app using configuration written in
+    two json files: config.json and input_metadata.json.
     """
-
-    # import pprint  # Pretty print - module for dictionary fancy printing
-
     # 1. Instantiate and launch the App
     print("1. Instantiate and launch the App")
-    from apps.workflowapp import WorkflowApp
-    app = WorkflowApp()
-    result = app.launch(process_wgbs, input_files, input_metadata,
-                        output_files, {})
+    from apps.jsonapp import JSONApp
+    app = JSONApp()
+    result = app.launch(process_wgbs,
+                        config,
+                        in_metadata,
+                        out_metadata)
 
     # 2. The App has finished
-    print("2. Execution finished")
+    print("2. Execution finished; see " + out_metadata)
     print(result)
+
     return result
-
-def prepare_files(
-        dm_handler, taxon_id, genome_fa, assembly, file_1_loc, file_2_loc, aligner):
-    """outes and prepare the
-    parameters passed from teh command line ready for use in the main function
-    """
-    print(dm_handler.get_files_by_user("test"))
-
-    genome_file = dm_handler.set_file(
-        "test", genome_fa, "fasta", "Assembly", taxon_id, None, [],
-        meta_data={"assembly" : assembly})
-
-    fastq1_id = dm_handler.set_file(
-        "test", file_1_loc, "fasta", "WGBS", taxon_id, None, [],
-        meta_data={'assembly' : assembly})
-
-
-    # Maybe it is necessary to prepare a metadata parser from json file
-    # when building the Metadata objects.
-    metadata = {
-        "genome": Metadata("fasta", "Assembly", None, {'assembly' : assembly}, genome_file),
-        "fastq1": Metadata(
-            "fastq", "WGBS", None,
-            {'assembly' : assembly}
-        ),
-    }
-
-    files_input = {
-        "genome": genome_fa,
-        "fastq1": file_1_loc
-    }
-
-    files_output = {
-        "fastq1_filtered": file_1_loc.replace(".fastq", "_filtered.fastq"),
-        "genome_idx": genome_fa.replace(".fasta", "") + '_' + aligner + '.tar.gz',
-        "bam": file_1_loc.replace(".fastq", ".bam"),
-        "bai": file_1_loc.replace(".fastq", ".bai"),
-        "wig_file": file_1_loc.replace(".fastq", ".wig"),
-        "cgmap_file": file_1_loc.replace(".fastq", ".cgmap.tsv"),
-        "atcgmap_file": file_1_loc.replace(".fastq", ".atcgmap.tsv")
-    }
-
-    if file_2_loc is not None:
-        fastq2_id = dm_handler.set_file(
-            "test", file_2_loc, "fasta", "WGBS", taxon_id, None, [],
-            meta_data={
-                'assembly' : assembly,
-                'paired_end' : fastq1_id
-            })
-
-        dm_handler.add_file_metadata(fastq1_id, 'paired_end', fastq2_id)
-
-        metadata["fastq2"] = Metadata(
-            "fastq", "WGBS", None,
-            {'assembly' : assembly, 'paired_end' : fastq1_id}
-        )
-
-        files_input["fastq2"] = file_2_loc
-
-        files_output["fastq2_filtered"] = file_2_loc.replace(".fastq", "_filtered.fastq")
-
-    return (
-        files_input,
-        metadata,
-        files_output
-    )
 
 # ------------------------------------------------------------------------------
 
@@ -281,49 +220,18 @@ if __name__ == "__main__":
     sys._run_from_cmdl = True
 
     # Set up the command line parameters
-    PARSER = argparse.ArgumentParser(description="Parse WGBS data")
-    PARSER.add_argument("--fastq1", help="Location of first paired end FASTQ")
-    PARSER.add_argument("--fastq2", help="Location of second paired end FASTQ", default=None)
-    PARSER.add_argument("--taxon_id", help="Taxon_ID (10090)")
-    PARSER.add_argument("--assembly", help="Assembly (GRCm38)")
-    PARSER.add_argument("--genome", help="Genome assembly FASTA file")
-    PARSER.add_argument("--aligner", help="Aligner to use (eg bowtie2)")
-    PARSER.add_argument("--aligner_path", help="Directory for the aligner program")
-    PARSER.add_argument("--bss_path", help="Directory for the BS-Seeker2 program")
+    PARSER = argparse.ArgumentParser(description="WGBS peak calling")
+    PARSER.add_argument("--config", help="Configuration file")
+    PARSER.add_argument("--in_metadata", help="Location of input metadata file")
+    PARSER.add_argument("--out_metadata", help="Location of output metadata file")
 
     # Get the matching parameters from the command line
     ARGS = PARSER.parse_args()
 
-    TAXON_ID = ARGS.taxon_id
-    GENOME_FA = ARGS.genome
-    ASSEMBLY = ARGS.assembly
-    FASTQ1 = ARGS.fastq1
-    FASTQ2 = ARGS.fastq2
-    ALIGNER = ARGS.aligner
-    ALIGNER_PATH = ARGS.aligner_path
-    BSS_PATH = ARGS.bss_path
+    CONFIG = ARGS.config
+    IN_METADATA = ARGS.in_metadata
+    OUT_METADATA = ARGS.out_metadata
 
-    #
-    # MuG Tool Steps
-    # --------------
-    #
-    # 1. Create data files
-    DM_HANDLER = dmp(test=True)
-
-    #2. Register the data with the DMP
-    PARAMS = prepare_files(DM_HANDLER, TAXON_ID, GENOME_FA, ASSEMBLY, FASTQ1, FASTQ2, ALIGNER)
-
-    METADATA = PARAMS[2]
-    METADATA['user_id'] = 'test'
-    METADATA['assembly'] = ASSEMBLY
-    METADATA['aligner'] = ALIGNER
-    METADATA['aligner_path'] = ALIGNER_PATH
-    METADATA['bss_path'] = BSS_PATH
-
-    print("WGBC - METADATA:", METADATA)
-
-    # 3. Instantiate and launch the App
-    RESULTS = main(PARAMS[0], PARAMS[1], PARAMS[2])
+    RESULTS = main_json(CONFIG, IN_METADATA, OUT_METADATA)
 
     print(RESULTS)
-    print(DM_HANDLER.get_files_by_user("test"))

@@ -217,7 +217,6 @@ class bssAlignerTool(Tool):
         genome_idx = input_files["genome_idx"]
         fastq_file_gz = input_files["fastq_list"]
 
-        # TODO: These should be moved to the getting the data from the configuration obj
         aligner = metadata['aligner']
         aligner_path = metadata['aligner_path']
         bss_path = metadata['bss_path']
@@ -263,14 +262,14 @@ class bssAlignerTool(Tool):
 
         output_metadata = {
             "bam": Metadata(
-                "wgbs", "bam", [metadata["genome"].id],
+                "wgbs", "bam", [metadata["genome"].file_path],
                 {
                     "assembly": metadata["genome"].meta_data["assembly"],
                     "tool": "bs_seeker_aligner"
                 }
             ),
             "bai": Metadata(
-                "wgbs", "bai", [metadata["genome"].id],
+                "wgbs", "bai", [metadata["genome"].file_path],
                 {
                     "assembly": metadata["genome"].meta_data["assembly"],
                     "tool": "bs_seeker_aligner"

@@ -169,21 +169,21 @@ class bssMethylationCallerTool(Tool):
 
         output_metadata = {
             "wig_file": Metadata(
-                "wgbs", "wig", [metadata["genome"].id],
+                "wgbs", "wig", [metadata["genome"].file_path],
                 {
                     "assembly": metadata["genome"].meta_data["assembly"],
                     "tool": "bs_seeker_methylation_caller"
                 }
             ),
             "cgmap_file": Metadata(
-                "wgbs", "tsv", [metadata["genome"].id],
+                "wgbs", "tsv", [metadata["genome"].file_path],
                 {
                     "assembly": metadata["genome"].meta_data["assembly"],
                     "tool": "bs_seeker_methylation_caller"
                 }
             ),
             "atcgmap_file": Metadata(
-                "wgbs", "tsv", [metadata["genome"].id],
+                "wgbs", "tsv", [metadata["genome"].file_path],
                 {
                     "assembly": metadata["genome"].meta_data["assembly"],
                     "tool": "bs_seeker_methylation_caller"

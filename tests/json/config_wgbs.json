@@ -1,0 +1,168 @@
+{
+    "input_files": [
+        {
+            "required": true,
+            "allow_multiple": false,
+            "name": "fastq1",
+            "value": "59b7e020d9422a5969b65378"
+        }, {
+            "required": false,
+            "allow_multiple": false,
+            "name": "fastq2",
+            "value": "59b7e020d9422a5969b65379"
+        }, {
+            "required": true,
+            "allow_multiple": false,
+            "name": "genome",
+            "value": "59b7e020d9422a5969b65372"
+        }
+    ],
+    "arguments": [
+        {
+            "name": "project",
+            "value": "run001"
+        },
+        {
+            "name": "description",
+            "value": null
+        },
+        {
+            "name": "aligner",
+            "description": "Name of the aligner",
+            "help": "Name of the aligner",
+            "type": "string",
+            "required": true,
+            "default": "bowtie2",
+            "value": "bowtie2"
+        },
+        {
+            "name": "aligner_path",
+            "description": "Location of the aligner libraries",
+            "help": "Location of the aligner libraries",
+            "type": "string",
+            "required": true,
+            "default": "${HOME}/lib/bowtie2-2.3.2",
+            "value": "${HOME}/lib/bowtie2-2.3.2"
+        },
+        {
+            "name": "bss_path",
+            "description": "Location of the BS Seeker2 code libraries",
+            "help": "Location of the BS Seeker2 code libraries",
+            "type": "string",
+            "required": true,
+            "default": "${HOME}/lib/BSseeker2",
+            "value": "${HOME}/lib/BSseeker2"
+        }
+    ],
+    "output_files": [
+        {
+            "required": true,
+            "allow_multiple": false,
+            "name": "fastq1_filtered",
+            "file": {
+                "file_type": "fastq1_filtered",
+                "meta_data": {
+                    "visible": true,
+                    "tool": "process_wgbs",
+                    "description": "Filtered reads"
+                },
+                "file_path": "tests/data/wgbs.Mouse.GRCm38_1.filtered.fastq",
+                "data_type": "data_wgbs",
+                "compressed": "null"
+            }
+        }, {
+            "required": true,
+            "allow_multiple": false,
+            "name": "fastq2_filtered",
+            "file": {
+                "file_type": "fastq2_filtered",
+                "meta_data": {
+                    "visible": true,
+                    "tool": "process_wgbs",
+                    "description": "Filtered reads"
+                },
+                "file_path": "tests/data/wgbs.Mouse.GRCm38_2.filtered.fastq",
+                "data_type": "data_wgbs",
+                "compressed": "null"
+            }
+        }, {
+            "required": false,
+            "allow_multiple": false,
+            "name": "bam",
+            "file": {
+                "file_type": "bam",
+                "meta_data": {
+                    "visible": true,
+                    "tool": "process_wgbs",
+                    "description": "Aligned sequences"
+                },
+                "file_path": "tests/data/wgbs.Mouse.GRCm38.bam",
+                "data_type": "data_wgbs",
+                "compressed": "null"
+            }
+        }, {
+            "required": false,
+            "allow_multiple": false,
+            "name": "bai",
+            "file": {
+                "file_type": "bai",
+                "meta_data": {
+                    "visible": true,
+                    "tool": "process_wgbs",
+                    "description": "Aligned sequences index"
+                },
+                "file_path": "tests/data/wgbs.Mouse.GRCm38.bai",
+                "data_type": "data_wgbs",
+                "compressed": "null"
+            }
+        }, {
+            "required": false,
+            "allow_multiple": false,
+            "name": "wig_file",
+            "file": {
+                "file_type": "wig",
+                "meta_data": {
+                    "visible": true,
+                    "tool": "process_wgbs",
+                    "description": "WGBS peaks"
+                },
+                "file_path": "tests/data/wgbs.Mouse.GRCm38.wig",
+                "data_type": "data_wgbs",
+                "compressed": "null"
+            }
+        }, {
+            "required": false,
+            "allow_multiple": false,
+            "name": "cgmap_file",
+            "file": {
+                "file_type": "tsv",
+                "meta_data": {
+                    "visible": true,
+                    "tool": "process_wgbs",
+                    "description": "CGmap file"
+                },
+                "file_path": "tests/data/wgbs.Mouse.GRCm38.cgmap.tsv",
+                "data_type": "data_wgbs",
+                "compressed": "null"
+            }
+        }, {
+            "required": false,
+            "allow_multiple": false,
+            "name": "atcgmap_file",
+            "file": {
+                "file_type": "tsv",
+                "meta_data": {
+                    "visible": true,
+                    "tool": "process_wgbs",
+                    "description": "ATCGmap file"
+                },
+                "file_path": "tests/data/wgbs.Mouse.GRCm38.atcgmap.tsv",
+                "data_type": "data_wgbs",
+                "compressed": "null"
+            }
+        }
+    ]
+}
+
+
+

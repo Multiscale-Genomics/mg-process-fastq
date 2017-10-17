@@ -22,11 +22,11 @@ from functools import wraps
 def compss_wait_on(a):
     return a
 
-def compss_open(a):
+def compss_open(a, *args, **kwargs):
     return a
 
-def barrier(barrier):
-    return barrier
+def barrier():
+    return
 
 def local(a):
     return a

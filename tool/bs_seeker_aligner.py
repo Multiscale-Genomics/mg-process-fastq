@@ -236,9 +236,12 @@ class bssAlignerTool(Tool):
 
         fastq_file_list = compss_wait_on(fastq_file_list)
 
-        with compss_open(fastq_file_gz, "rb") as f_in:
-            with open(fastq_file_gz, "wb") as f_out:
-                f_out.write(f_in.read())
+        if hasattr(sys, '_run_from_cmdl') is True:
+            pass
+        else:
+            with compss_open(fastq_file_gz, "rb") as f_in:
+                with open(fastq_file_gz, "wb") as f_out:
+                    f_out.write(f_in.read())
 
         gz_data_path = fastq_file_gz.split("/")
         gz_data_path = "/".join(gz_data_path[:-1])

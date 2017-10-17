@@ -49,8 +49,8 @@ def test_bowtie_indexer():
     bti = bowtie_indexer.bowtieIndexerTool()
     bti.run(input_files, metadata, output_files)
 
-    assert os.path.isfile(resource_path + "macs2.Human.GCA_000001405.22.fasta.bt2.tar.gz") is True
-    assert os.path.getsize(resource_path + "macs2.Human.GCA_000001405.22.fasta.bt2.tar.gz") > 0
+    assert os.path.isfile(output_files["index"]) is True
+    assert os.path.getsize(output_files["index"]) > 0
 
 @pytest.mark.mnaseseq
 @pytest.mark.genome
@@ -79,5 +79,5 @@ def test_bowtie_indexer_02():
     bti = bowtie_indexer.bowtieIndexerTool()
     bti.run(input_files, metadata, output_files)
 
-    assert os.path.isfile(resource_path + "inps.Mouse.GRCm38.fasta.bt2.tar.gz") is True
-    assert os.path.getsize(resource_path + "inps.Mouse.GRCm38.fasta.bt2.tar.gz") > 0
+    assert os.path.isfile(output_files["index"]) is True
+    assert os.path.getsize(output_files["index"]) > 0

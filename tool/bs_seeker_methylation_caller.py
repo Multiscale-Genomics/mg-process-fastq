@@ -95,6 +95,10 @@ class bssMethylationCallerTool(Tool):
         g_dir = "/".join(g_dir[:-1])
 
         tar = tarfile.open(genome_idx)
+        for member in tar.getmembers():
+            if member.isdir():
+                g_dir = g_dir + "/" + member.name
+                break
         tar.extractall(path=g_dir)
         tar.close()
 
@@ -102,7 +106,7 @@ class bssMethylationCallerTool(Tool):
             "python " + bss_path + "/bs_seeker2-call_methylation.py "
             "--sorted --input " + str(bam_file) + " --wig " + str(wig_file) + " "
             "--CGmap " + str(cgmap_file) + " --ATCGmap " + str(atcgmap_file) + " "
-            "--db " + genome_idx.replace(".tar.gz", "")).format()
+            "--db " + g_dir).format()
         print ("command for methyl caller :", command_line)
         args = shlex.split(command_line)
         process = subprocess.Popen(args)

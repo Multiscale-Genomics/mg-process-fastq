@@ -168,7 +168,6 @@ def wgbs_toolchain(verbose=0):
 
     params.append('tests/test_bs_seeker_filter.py')
     params.append('tests/test_bs_seeker_indexer.py')
-    params.append('tests/test_fastq_splitter.py')
     params.append('tests/test_bs_seeker_aligner.py')
     params.append('tests/test_bs_seeker_methylation_caller.py')
 

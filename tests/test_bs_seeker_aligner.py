@@ -16,8 +16,9 @@
 """
 
 import os
-import tarfile
 import pytest # pylint: disable=unused-import
+
+from basic_modules.metadata import Metadata
 
 from tool import bs_seeker_aligner
 
@@ -26,40 +27,43 @@ def test_bs_seeker_aligner():
     """
     Test to ensure bs-Seeker aligner works
     """
-
-    home = os.path.expanduser('~')
     resource_path = os.path.join(os.path.dirname(__file__), "data/")
-    genomefa_file = resource_path + "bsSeeker.Mouse.GRCm38.fasta"
-    genomeidx_file = resource_path + "bsSeeker.Mouse.GRCm38.fasta_bowtie2.tar.gz"
-    fastq_gz = resource_path + "bsSeeker.Mouse.GRCm38_1.fastq.filtered.fastq.tar.gz"
-    fastq1_file = "bsSeeker.Mouse.GRCm38_1.fastq.filtered.fastq"
-    fastq2_file = "bsSeeker.Mouse.GRCm38_2.fastq.filtered.fastq"
+    home = os.path.expanduser('~')
 
-    tar = tarfile.open(fastq_gz, "w:gz")
-    tar.add(resource_path + fastq1_file, arcname='tmp/' + fastq1_file)
-    tar.add(resource_path + fastq2_file, arcname='tmp/' + fastq2_file)
-    tar.close()
+    input_files = {
+        "genome": resource_path + "bsSeeker.Mouse.GRCm38.fasta",
+        "index": resource_path + "bsSeeker.Mouse.GRCm38.fasta.bt2.tar.gz",
+        "fastq1": resource_path + "bsSeeker.Mouse.GRCm38_1_filtered.fastq",
+        "fastq2": resource_path + "bsSeeker.Mouse.GRCm38_2_filtered.fastq",
+    }
+
+    output_files = {
+        "bam": resource_path + "bsSeeker.Mouse.GRCm38_1_filtered.bam",
+        "bai": resource_path + "bsSeeker.Mouse.GRCm38_1_filtered.bai"
+    }
+
+    metadata = {
+        "genome": Metadata(
+            "Assembly", "fasta", input_files["genome"], None,
+            {'assembly' : 'test'}),
+        "index": Metadata(
+            "index_bowtie", "index", input_files["genome"], None,
+            {'assembly' : 'test'}),
+        "fastq1": Metadata(
+            "data_wgbs", "fastq", input_files["fastq1"], None,
+            {'assembly' : 'test'}),
+        "fastq2": Metadata(
+            "data_wgbs", "fastq", input_files["fastq2"], None,
+            {'assembly' : 'test'}),
+        "aligner" : "bowtie2",
+        "aligner_path" : home + "/lib/bowtie2-2.3.2",
+        "bss_path" : home + "/lib/BSseeker2"
+    }
 
     bsa = bs_seeker_aligner.bssAlignerTool()
-    bs_files, bs_meta = bsa.run(
-        [
-            genomefa_file,
-            genomeidx_file,
-            fastq_gz
-        ],
-        [],
-        {
-            "aligner" : "bowtie2",
-            "aligner_path" : home + "/lib/bowtie2-2.3.2",
-            "bss_path" : home + "/lib/BSseeker2",
-            "expt_name" : "bsSeeker.Mouse.GRCm38",
-            "fastq_list" : [[fastq1_file, fastq2_file]]
-        }
-    )
+    bsa.run(input_files, metadata, output_files)
 
-    assert os.path.isfile(fastq_gz) is True
-    assert os.path.getsize(fastq_gz) > 0
-    assert os.path.isfile(bs_files[0]) is True
-    assert os.path.getsize(bs_files[0]) > 0
-    assert os.path.isfile(bs_files[1]) is True
-    assert os.path.getsize(bs_files[1]) > 0
+    assert os.path.isfile(output_files["bam"]) is True
+    assert os.path.getsize(output_files["bam"]) > 0
+    assert os.path.isfile(output_files["bai"]) is True
+    assert os.path.getsize(output_files["bai"]) > 0

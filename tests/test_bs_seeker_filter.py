@@ -18,6 +18,8 @@
 import os
 import pytest # pylint: disable=unused-import
 
+from basic_modules.metadata import Metadata
+
 from tool import bs_seeker_filter
 
 @pytest.mark.wgbs
@@ -26,22 +28,30 @@ def test_bs_seeker_filter_01():
     Test that it is possible to call the BSseeker filter
     """
     resource_path = os.path.join(os.path.dirname(__file__), "data/")
-    genomefa_file = resource_path + "bsSeeker.Mouse.GRCm38_1.fastq"
     home = os.path.expanduser('~')
 
-    bsi = bs_seeker_filter.filterReadsTool()
-    bs_files, bs_meta = bsi.run(
-        [genomefa_file],
-        [],
-        {
-            "aligner" : "bowtie",
-            "aligner_path" : home + "/bin",
-            "bss_path" : home + "/lib/BSseeker2"
-        }
-    )
+    input_files = {
+        "fastq": resource_path + "bsSeeker.Mouse.GRCm38_1.fastq"
+    }
 
-    assert os.path.isfile(bs_files[0]) is True
-    assert os.path.getsize(bs_files[0]) > 0
+    output_files = {
+        "fastq_filtered": resource_path + "bsSeeker.Mouse.GRCm38_1_filtered.fastq"
+    }
+
+    metadata = {
+        "fastq": Metadata(
+            "data_wgbs", "fastq", input_files["fastq"], None,
+            {'assembly' : 'test'}),
+        "aligner" : "bowtie2",
+        "aligner_path" : home + "/lib/bowtie2-2.3.2",
+        "bss_path" : home + "/lib/BSseeker2"
+    }
+
+    bsi = bs_seeker_filter.filterReadsTool()
+    bsi.run(input_files, metadata, output_files)
+
+    assert os.path.isfile(output_files["fastq_filtered"]) is True
+    assert os.path.getsize(output_files["fastq_filtered"]) > 0
 
 @pytest.mark.wgbs
 def test_bs_seeker_filter_02():
@@ -49,19 +59,27 @@ def test_bs_seeker_filter_02():
     Test that it is possible to call the BSseeker filter
     """
     resource_path = os.path.join(os.path.dirname(__file__), "data/")
-    genomefa_file = resource_path + "bsSeeker.Mouse.GRCm38_2.fastq"
     home = os.path.expanduser('~')
 
-    bsi = bs_seeker_filter.filterReadsTool()
-    bs_files, bs_meta = bsi.run(
-        [genomefa_file],
-        [],
-        {
-            "aligner" : "bowtie",
-            "aligner_path" : home + "/bin",
-            "bss_path" : home + "/lib/BSseeker2"
-        }
-    )
+    input_files = {
+        "fastq": resource_path + "bsSeeker.Mouse.GRCm38_2.fastq"
+    }
 
-    assert os.path.isfile(bs_files[0]) is True
-    assert os.path.getsize(bs_files[0]) > 0
+    output_files = {
+        "fastq_filtered": resource_path + "bsSeeker.Mouse.GRCm38_2_filtered.fastq"
+    }
+
+    metadata = {
+        "fastq": Metadata(
+            "data_wgbs", "fastq", input_files["fastq"], None,
+            {'assembly' : 'test'}),
+        "aligner" : "bowtie2",
+        "aligner_path" : home + "/lib/bowtie2-2.3.2",
+        "bss_path" : home + "/lib/BSseeker2"
+    }
+
+    bsi = bs_seeker_filter.filterReadsTool()
+    bsi.run(input_files, metadata, output_files)
+
+    assert os.path.isfile(output_files["fastq_filtered"]) is True
+    assert os.path.getsize(output_files["fastq_filtered"]) > 0

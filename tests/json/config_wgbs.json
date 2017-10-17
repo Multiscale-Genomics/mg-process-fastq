@@ -42,7 +42,7 @@
             "type": "string",
             "required": true,
             "default": "${HOME}/lib/bowtie2-2.3.2",
-            "value": "${HOME}/lib/bowtie2-2.3.2"
+            "value": "/home/compss/lib/bowtie2-2.3.2"
         },
         {
             "name": "bss_path",
@@ -51,11 +51,26 @@
             "type": "string",
             "required": true,
             "default": "${HOME}/lib/BSseeker2",
-            "value": "${HOME}/lib/BSseeker2"
+            "value": "/home/compss/lib/BSseeker2"
         }
     ],
     "output_files": [
         {
+            "required": true,
+            "allow_multiple": false,
+            "name": "index",
+            "file": {
+                "file_type": "TAR",
+                "meta_data": {
+                    "visible": true,
+                    "tool": "process_wgbs",
+                    "description": "Output"
+                },
+                "file_path": "tests/data/wgbs.Mouse.GRCm38.fasta.bt2.tar.gz",
+                "data_type": "sequence_mapping_index_bowtie",
+                "compressed": "gzip"
+            }
+        }, {
             "required": true,
             "allow_multiple": false,
             "name": "fastq1_filtered",

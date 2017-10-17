@@ -90,6 +90,21 @@
     ],
     "output_files": [
         {
+            "name": "index",
+            "required": true,
+            "allow_multiple": false,
+            "file": {
+                "file_type": "TAR",
+                "meta_data": {
+                    "visible": true,
+                    "tool": "process_wgbs",
+                    "description": "Output"
+                },
+                "file_path": "bt2.tar.gz",
+                "data_type": "sequence_mapping_index_bowtie",
+                "compressed": "gzip"
+            }
+        }, {
             "required": true,
             "allow_multiple": false,
             "name": "fastq1_filtered",

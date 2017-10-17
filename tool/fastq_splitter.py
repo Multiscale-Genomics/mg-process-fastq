@@ -266,12 +266,12 @@ class fastq_splitter(Tool):
         """
 
         if len(input_files) == 2:
-            results = output_files = self.paired_splitter(
+            results = self.paired_splitter(
                 input_files["fastq1_filtered"], input_files["fastq2_filtered"],
                 input_files["fastq1_filtered"] + ".tar.gz"
             )
         else:
-            results = output_files = self.single_splitter(
+            results = self.single_splitter(
                 input_files["fastq1_filtered"],
                 input_files["fastq1_filtered"] + ".tar.gz",
             )

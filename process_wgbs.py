@@ -102,11 +102,16 @@ class process_wgbs(Workflow):
         if "aligner" in self.configuration:
             metadata["aligner"] = self.configuration["aligner"]
 
+        print("PIPELINE+ - metadata:", metadata)
+
         # Filter the FASTQ reads to remove duplicates
         frt = filterReadsTool()
         fastq1f, filter1_meta = frt.run(
             {"fastq": input_files["fastq1"]},
-            {"fastq": metadata["fastq1"]},
+            {
+                "fastq": metadata["fastq1"],
+                "bss_path": metadata["bss_path"]
+            },
             {"fastq_filtered": output_files["fastq1_filtered"]}
         )
 
@@ -117,47 +122,53 @@ class process_wgbs(Workflow):
         builder = bssIndexerTool()
         genome_idx, gidx_meta = builder.run(
             remap(input_files, "genome"),
-            remap(metadata, "genome"),
-            remap(output_files, "genome_idx")
+            remap(metadata, "genome", "aligner", "aligner_path", "bss_path"),
+            remap(output_files, "index")
         )
-        output_results_files['genome_idx'] = genome_idx["genome_idx"]
-        output_metadata['genome_idx'] = gidx_meta["genome_idx"]
+        output_results_files['index'] = genome_idx["index"]
+        output_metadata['index'] = gidx_meta["index"]
 
         # Split the FASTQ files into smaller, easier to align packets
-        fqs = fastq_splitter()
+        # fqs = fastq_splitter()
         if "fastq2" in input_files:
             fastq2f, filter2_meta = frt.run(
                 {"fastq": input_files["fastq2"]},
-                {"fastq": metadata["fastq2"]},
+                {
+                    "fastq": metadata["fastq2"],
+                    "bss_path": metadata["bss_path"]
+                },
                 {"fastq_filtered": output_files["fastq2_filtered"]}
             )
             output_results_files["fastq2_filtered"] = fastq2f["fastq_filtered"]
             output_metadata['fastq2_filtered'] = filter2_meta["fastq_filtered"]
 
-            tmp_fastq_gz, tmp_fastq_list = fqs.run(
-                remap(output_files, "fastq1_filtered", "fastq2_filtered"),
-                {},
-                remap(output_metadata, "fastq1_filtered", "fastq2_filtered")
-            )
-        else:
-            tmp_fastq_gz, tmp_fastq_list = fqs.run(
-                remap(output_files, "fastq1_filtered"),
-                {},
-                remap(output_metadata, "fastq1_filtered")
-            )
+        #     tmp_fastq_gz, tmp_fastq_list = fqs.run(
+        #         remap(output_files, "fastq1_filtered", "fastq2_filtered"),
+        #         {},
+        #         remap(output_metadata, "fastq1_filtered", "fastq2_filtered")
+        #     )
+        # else:
+        #     tmp_fastq_gz, tmp_fastq_list = fqs.run(
+        #         remap(output_files, "fastq1_filtered"),
+        #         {},
+        #         remap(output_metadata, "fastq1_filtered")
+        #     )
 
-        print("WGBS genome_idx:", genome_idx)
-        print("WGBS tmp_fastq_gz:", tmp_fastq_gz)
-        print("WGBS tmp_fastq_list:", tmp_fastq_list)
+        print("WGBS genome_idx:", genome_idx["index"])
+        #print("WGBS tmp_fastq_gz:", tmp_fastq_gz)
+        #print("WGBS tmp_fastq_list:", tmp_fastq_list)
 
         # Handles the alignment of all of the split packets then merges them
         # back together.
         bss_aligner = bssAlignerTool()
-        aligner_input_files = remap(input_files, "genome", "genome_idx")
-        aligner_input_files["fastq_list"] = tmp_fastq_gz
+        aligner_input_files = remap(input_files, "genome", "fastq1", "fastq2")
+        aligner_input_files["index"] = genome_idx["index"]
+        #aligner_input_files["fastq_list"] = tmp_fastq_gz
 
-        aligner_meta = remap(output_metadata, "genome", "genome_idx")
-        aligner_meta["fastq_list"] = tmp_fastq_list
+        aligner_meta = remap(
+            metadata, "genome", "fastq1", "fastq2", "aligner", "aligner_path", "bss_path")
+        aligner_meta["index"] = output_metadata['index']
+        #aligner_meta["fastq_list"] = tmp_fastq_list
         bam, bam_meta = bss_aligner.run(
             aligner_input_files,
             aligner_meta,
@@ -171,10 +182,15 @@ class process_wgbs(Workflow):
 
         # Methylation peak caller
         peak_caller_handle = bssMethylationCallerTool()
-
+        mct_meta = remap(
+            metadata, "genome", "fastq1", "fastq2",
+            "aligner", "aligner_path", "bss_path")
+        mct_meta["bam"] = output_metadata["bam"]
+        mct_meta["bai"] = output_metadata["bai"]
+        mct_meta["index"] = output_metadata["index"]
         peak_files, peak_meta = peak_caller_handle.run(
-            remap(output_files, "bam", "bai", "genome_idx"),
-            remap(output_metadata, "bam", "bai", "genome_idx"),
+            remap(output_files, "bam", "bai", "index"),
+            mct_meta,
             remap(output_files, "wig_file", "cgmap_file", "atcgmap_file")
         )
         # output_metadata['peak_calling'] = peak_meta

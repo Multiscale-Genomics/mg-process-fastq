@@ -13,7 +13,7 @@
     },
     {
         "compressed": 0,
-        "_id": "59b7e020d9422a5969b65378",
+        "_id": "59b7e020d9422a5969b65379",
         "data_type": "data_wgbs",
         "file_type": "fastq2",
         "file_path": "tests/data/bsSeeker.Mouse.GRCm38_2.fastq",

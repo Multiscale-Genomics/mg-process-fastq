@@ -160,7 +160,7 @@ class bssMethylationCallerTool(Tool):
         results = self.bss_methylation_caller(
             bss_path,
             input_files["bam"],
-            input_files["genome_idx"],
+            input_files["index"],
             output_files["wig_file"],
             output_files["cgmap_file"],
             output_files["atcgmap_file"]
@@ -169,21 +169,33 @@ class bssMethylationCallerTool(Tool):
 
         output_metadata = {
             "wig_file": Metadata(
-                "wgbs", "wig", [metadata["genome"].file_path],
+                "wgbs", "wig", [
+                    metadata["genome"].file_path,
+                    metadata["fastq1"].file_path,
+                    metadata["fastq2"].file_path
+                ],
                 {
                     "assembly": metadata["genome"].meta_data["assembly"],
                     "tool": "bs_seeker_methylation_caller"
                 }
             ),
             "cgmap_file": Metadata(
-                "wgbs", "tsv", [metadata["genome"].file_path],
+                "wgbs", "tsv", [
+                    metadata["genome"].file_path,
+                    metadata["fastq1"].file_path,
+                    metadata["fastq2"].file_path
+                ],
                 {
                     "assembly": metadata["genome"].meta_data["assembly"],
                     "tool": "bs_seeker_methylation_caller"
                 }
             ),
             "atcgmap_file": Metadata(
-                "wgbs", "tsv", [metadata["genome"].file_path],
+                "wgbs", "tsv", [
+                    metadata["genome"].file_path,
+                    metadata["fastq1"].file_path,
+                    metadata["fastq2"].file_path
+                ],
                 {
                     "assembly": metadata["genome"].meta_data["assembly"],
                     "tool": "bs_seeker_methylation_caller"

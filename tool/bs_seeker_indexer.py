@@ -138,7 +138,7 @@ class bssIndexerTool(Tool):
         results = self.bss_build_index(
             input_files["genome"],
             aligner, aligner_path, bss_path,
-            output_files["genome_idx"])
+            output_files["index"])
         results = compss_wait_on(results)
 
         output_metadata = {
@@ -151,6 +151,6 @@ class bssIndexerTool(Tool):
             )
         }
 
-        return (output_files, output_metadata)
+        return output_files, output_metadata
 
 # ------------------------------------------------------------------------------

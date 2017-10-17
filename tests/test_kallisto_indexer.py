@@ -19,6 +19,8 @@ from __future__ import print_function
 import os.path
 import pytest # pylint: disable=unused-import
 
+from basic_modules.metadata import Metadata
+
 from tool.kallisto_indexer import kallistoIndexerTool
 
 @pytest.mark.rnaseq
@@ -27,10 +29,23 @@ def test_kallisto_indexer():
     Function to test Kallisto indexer
     """
     resource_path = os.path.join(os.path.dirname(__file__), "data/")
-    ki_handle = kallistoIndexerTool()
 
-    fasta_file = resource_path + "kallisto.Human.GRCh38.fasta"
-    ki_handle.run([fasta_file], [], [resource_path + "kallisto.Human.GRCh38.fasta.idx"])
+    input_files = {
+        "cdna": resource_path + "kallisto.Human.GRCh38.fasta"
+    }
+
+    output_files = {
+        "index": resource_path + "kallisto.Human.GRCh38.idx"
+    }
+
+    metadata = {
+        "cdna": Metadata(
+            "data_cdna", "fasta", [], None,
+            {'assembly' : 'test'}),
+    }
+
+    ki_handle = kallistoIndexerTool()
+    ki_handle.run(input_files, metadata, output_files)
 
     print(__file__)
 

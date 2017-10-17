@@ -269,21 +269,21 @@ class kallistoQuantificationTool(Tool):
 
         output_metadata = {
             "abundance_h5_file": Metadata(
-                "hdf5", "", [input_files["cdna"], input_files["fastq1"]],
+                "hdf5", "", [metadata["cdna"].file_path, metadata["fastq1"].file_path],
                 {
                     "assembly": metadata["cdna"].meta_data["assembly"],
                     "tool": "kallisto_quant"
                 }
             ),
             "abundance_tsv_file": Metadata(
-                "tsv", "", [input_files["cdna"], input_files["fastq1"]],
+                "tsv", "", [metadata["cdna"].file_path, metadata["fastq1"].file_path],
                 {
                     "assembly": metadata["cdna"].meta_data["assembly"],
                     "tool": "kallisto_quant"
                 }
             ),
             "run_info_file": Metadata(
-                "tsv", "", [input_files["cdna"], input_files["fastq1"]],
+                "tsv", "", [metadata["cdna"].file_path, metadata["fastq1"].file_path],
                 {
                     "assembly": metadata["cdna"].meta_data["assembly"],
                     "tool": "kallisto_quant"

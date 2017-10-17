@@ -30,14 +30,14 @@ try:
         raise ImportError
     from pycompss.api.parameter import FILE_IN, FILE_INOUT, FILE_OUT, IN
     from pycompss.api.task import task
-    from pycompss.api.api import compss_wait_on, compss_open
+    from pycompss.api.api import compss_wait_on, compss_open, barrier
 except ImportError:
     print("[Warning] Cannot import \"pycompss\" API packages.")
     print("          Using mock decorators.")
 
     from dummy_pycompss import FILE_IN, FILE_INOUT, FILE_OUT, IN
     from dummy_pycompss import task
-    from dummy_pycompss import compss_wait_on, compss_open
+    from dummy_pycompss import compss_wait_on, compss_open, barrier
 
 from basic_modules.tool import Tool
 from basic_modules.metadata import Metadata
@@ -84,7 +84,12 @@ class bssAlignerTool(Tool):
         bam_file_2 : str
             Location of the bam file that is to get merged into bam_file_1
         """
-        pysam.merge(bam_file_1, bam_file_2)
+        pysam.merge(bam_file_1 + "_merge.bam", bam_file_1, bam_file_2)
+
+        with open(bam_file_1 + "_merge.bam", "rb") as f_in:
+            with open(bam_file_1, "wb") as f_out:
+                f_out.write(f_in.read())
+
         return True
 
     @task(bam_in=FILE_IN, bam_out=FILE_OUT)
@@ -185,6 +190,8 @@ class bssAlignerTool(Tool):
         process = subprocess.Popen(args)
         process.wait()
 
+        pysam.sort("-o", bam_out + "_tmp.bam", "-T", bam_out + "_tmp.bam" + "_sort", bam_out + "_tmp.bam")
+
         with open(bam_out + "_tmp.bam", "rb") as f_in:
             with open(bam_out, "wb") as f_out:
                 f_out.write(f_in.read())
@@ -275,10 +282,8 @@ class bssAlignerTool(Tool):
                 genome_fasta, genome_idx,
                 output_bam_file_tmp
             )
-            results = compss_wait_on(results)
 
-            results = self.bam_sort(output_bam_file_tmp)
-            results = compss_wait_on(results)
+        barrier()
 
         results = self.bam_copy(output_bam_list.pop(0), output_bam_file)
         results = compss_wait_on(results)

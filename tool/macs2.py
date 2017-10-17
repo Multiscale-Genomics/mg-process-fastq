@@ -200,7 +200,7 @@ class macs2(Tool):
         command_line = command_line + ' -n ' + name + '_out --outdir ' + output_dir
 
         print("MACS2 - NAME:", name)
-        if name == 'macs2.Human.DRR000150.22_filtered':
+        if name == 'macs2.Human.DRR000150.22.filtered':
             # This is for when running the test data
             print("USING NOMODEL")
             command_line = command_line + ' --nomodel'
@@ -277,6 +277,7 @@ class macs2(Tool):
         root_name = input_files['input'].split("/")
         root_name[-1] = root_name[-1].replace('.bam', '')
         name = root_name[-1]
+        print("NAME", name)
 
        # input and output share most metadata
         output_bed_types = {

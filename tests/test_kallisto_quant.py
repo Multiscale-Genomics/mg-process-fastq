@@ -33,15 +33,7 @@ def test_kallisto_quant():
     kqft = kallistoQuantificationTool()
     fastq1 = resource_path + "kallisto.Human.ERR030872_1.fastq"
     fastq2 = resource_path + "kallisto.Human.ERR030872_2.fastq"
-    
-    with gzip.open(fastq1 + '.gz', 'rb') as fgz_in:
-        with open(fastq1, 'w') as f_out:
-            f_out.write(fgz_in.read())
-    
-    with gzip.open(fastq2 + '.gz', 'rb') as fgz_in:
-        with open(fastq2, 'w') as f_out:
-            f_out.write(fgz_in.read())
-    
+
     kqft.run(
         [resource_path + "kallisto.Human.GRCh38.idx", fastq1, fastq2], {}, )
 

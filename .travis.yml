@@ -228,7 +228,7 @@ before_script :
     - docker ps -a
     - cd ${HOME}/build/Multiscale-Genomics/mg-process-fastq
     - chmod +x harness.sh
-    - gunzip tests/data/*.gz
+    - ls tests/data/
 
 script :
     "./harness.sh"

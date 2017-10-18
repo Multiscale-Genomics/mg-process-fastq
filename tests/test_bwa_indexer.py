@@ -1,5 +1,6 @@
 """
-.. Copyright 2017 EMBL-European Bioinformatics Institute
+.. See the NOTICE file distributed with this work for additional information
+   regarding copyright ownership.
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -21,6 +22,8 @@ import pytest # pylint: disable=unused-import
 
 from tool.bwa_indexer import bwaIndexerTool
 
+@pytest.mark.chipseq
+@pytest.mark.genome
 def test_bwa_indexer():
     """
     Test case to ensure that the BWA indexer works.
@@ -60,6 +63,8 @@ def test_bwa_indexer():
     assert os.path.getsize(resource_path + "macs2.Human.GCA_000001405.22.fasta.sa") > 0
 
 
+@pytest.mark.mnaseseq
+@pytest.mark.genome
 def test_bwa_indexer_02():
     """
     Test case to ensure that the BWA indexer works

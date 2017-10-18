@@ -1,5 +1,6 @@
 """
-.. Copyright 2017 EMBL-European Bioinformatics Institute
+.. See the NOTICE file distributed with this work for additional information
+   regarding copyright ownership.
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -15,10 +16,12 @@
 """
 
 import os
+import tarfile
 import pytest # pylint: disable=unused-import
 
 from tool import bs_seeker_aligner
 
+@pytest.mark.wgbs
 def test_bs_seeker_aligner():
     """
     Test to ensure bs-Seeker aligner works
@@ -27,32 +30,36 @@ def test_bs_seeker_aligner():
     home = os.path.expanduser('~')
     resource_path = os.path.join(os.path.dirname(__file__), "data/")
     genomefa_file = resource_path + "bsSeeker.Mouse.GRCm38.fasta"
-    fastq1_file = resource_path + "bsSeeker.Mouse.GRCm38_1.fastq"
-    fastq2_file = resource_path + "bsSeeker.Mouse.GRCm38_2.fastq"
-    bt2_1file = resource_path + "bsSeeker.Mouse.GRCm38_2.fasta_bowtie2/C_C2T.1.bt2"
-    bt2_2file = resource_path + "bsSeeker.Mouse.GRCm38_2.fasta_bowtie2/C_C2T.2.bt2"
-    bt2_3file = resource_path + "bsSeeker.Mouse.GRCm38_2.fasta_bowtie2/C_C2T.3.bt2"
-    bt2_4file = resource_path + "bsSeeker.Mouse.GRCm38_2.fasta_bowtie2/C_C2T.4.bt2"
-    bt2_rev_1file = resource_path + "bsSeeker.Mouse.GRCm38_2.fasta_bowtie2/C_C2T.rev.1.bt2"
-    bt2_rev_2file = resource_path + "bsSeeker.Mouse.GRCm38_2.fasta_bowtie2/C_C2T.rev.2.bt2"
-    out_file = resource_path + "bsSeeker.Mouse.GRCm38.bam"
+    genomeidx_file = resource_path + "bsSeeker.Mouse.GRCm38.fasta_bowtie2.tar.gz"
+    fastq_gz = resource_path + "bsSeeker.Mouse.GRCm38_1.fastq.filtered.fastq.tar.gz"
+    fastq1_file = "bsSeeker.Mouse.GRCm38_1.fastq.filtered.fastq"
+    fastq2_file = "bsSeeker.Mouse.GRCm38_2.fastq.filtered.fastq"
+
+    tar = tarfile.open(fastq_gz, "w:gz")
+    tar.add(resource_path + fastq1_file, arcname='tmp/' + fastq1_file)
+    tar.add(resource_path + fastq2_file, arcname='tmp/' + fastq2_file)
+    tar.close()
 
     bsa = bs_seeker_aligner.bssAlignerTool()
-    bsa.run(
-        [genomefa_file,
-         fastq1_file,
-         fastq2_file,
-         bt2_1file,
-         bt2_2file,
-         bt2_3file,
-         bt2_4file,
-         bt2_rev_1file,
-         bt2_rev_2file
+    bs_files, bs_meta = bsa.run(
+        [
+            genomefa_file,
+            genomeidx_file,
+            fastq_gz
         ],
-        [out_file],
+        [],
         {
             "aligner" : "bowtie2",
             "aligner_path" : home + "/lib/bowtie2-2.3.2",
-            "bss_path" : home + "/lib/BSseeker2"
+            "bss_path" : home + "/lib/BSseeker2",
+            "expt_name" : "bsSeeker.Mouse.GRCm38",
+            "fastq_list" : [[fastq1_file, fastq2_file]]
         }
     )
+
+    assert os.path.isfile(fastq_gz) is True
+    assert os.path.getsize(fastq_gz) > 0
+    assert os.path.isfile(bs_files[0]) is True
+    assert os.path.getsize(bs_files[0]) > 0
+    assert os.path.isfile(bs_files[1]) is True
+    assert os.path.getsize(bs_files[1]) > 0

@@ -1,28 +1,30 @@
 #!/usr/bin/env python
 
 """
-Copyright 2017 EMBL-European Bioinformatics Institute
+.. See the NOTICE file distributed with this work for additional information
+   regarding copyright ownership.
 
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
 
-    http://www.apache.org/licenses/LICENSE-2.0
+       http://www.apache.org/licenses/LICENSE-2.0
 
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
 """
 
 import os
+import re
 
 class fastqreader:
     """
     Module for reading single end and paired end FASTQ files
     """
-    
+
     def __init__(self):
         """
         Initialise the module
@@ -31,20 +33,20 @@ class fastqreader:
 
         self.fastq1 = ''
         self.fastq2 = ''
-        
+
         self.f1_file = None
         self.f2_file = None
-        
+
         self.f1_eof = False
         self.f2_eof = False
-        
+
         self.f1_output_file = None
         self.f2_output_file = None
-        
+
         self.output_tag = ''
         self.output_file_count = 0
-    
-    def openFastQ(self, file1, file2 = None):
+
+    def openFastQ(self, file1, file2=None):
         """
         Create file handles for reading the FastQ files
 
@@ -58,13 +60,13 @@ class fastqreader:
         self.fastq1 = file1
         self.f1_file = open(self.fastq1, "r")
         self.f1_eof = False
-        
+
         if file2 is not None:
             self.fastq2 = file2
             self.f2_file = open(self.fastq2, "r")
             self.f2_eof = False
             self.paired = True
-    
+
     def closeFastQ(self):
         """
         Close file handles for the FastQ files.
@@ -73,8 +75,8 @@ class fastqreader:
 
         if self.paired == True:
             self.f2_file.close()
-    
-    def eof(self, side = 1):
+
+    def eof(self, side=1):
         """
         Indicate if the end of the file has been reached
 
@@ -87,10 +89,10 @@ class fastqreader:
             return self.f1_eof
         elif side == 2:
             return self.f2_eof
-        else:
-            return "ERROR"
-    
-    def next(self, side = 1):
+
+        return "ERROR"
+
+    def next(self, side=1):
         """
         Get the next read element for the specific FastQ file pair
 
@@ -115,7 +117,7 @@ class fastqreader:
         read_seq = ''
         read_addition = ''
         read_score = ''
-        
+
         if side == 1:
             read_id = self.f1_file.readline()
             read_seq = self.f1_file.readline()
@@ -128,7 +130,7 @@ class fastqreader:
             read_score = self.f2_file.readline()
         else:
             return 'ERROR'
-        
+
         if read_id == '':
             if side == 1:
                 self.f1_eof = True
@@ -136,9 +138,14 @@ class fastqreader:
             if side == 2:
                 self.f2_eof = True
                 return False
-        return {'id': read_id.rstrip(), 'seq': read_seq.rstrip(), 'add': read_addition.rstrip(), 'score': read_score.rstrip()}
-    
-    def createOutputFiles(self, tag = ''):
+        return {
+            'id': read_id.rstrip(),
+            'seq': read_seq.rstrip(),
+            'add': read_addition.rstrip(),
+            'score': read_score.rstrip()
+        }
+
+    def createOutputFiles(self, tag=''):
         """
         Create and open the file handles for the output files
 
@@ -151,20 +158,22 @@ class fastqreader:
             self.output_tag = tag
 
         f1 = self.fastq1.split("/")
-        f1[-1] = f1[-1].replace(".fastq", "." + str(self.output_tag) + "_" + str(self.output_file_count) + ".fastq")
+        new_suffix = "." + str(self.output_tag) + "_" + str(self.output_file_count) + ".fastq"
+        f1[-1] = re.sub('.fastq$', new_suffix, f1[-1])
         f1.insert(-1, "tmp")
-        
-        if os.path.isdir("/".join(f1[0:-1])) == False:
+
+        if os.path.isdir("/".join(f1[0:-1])) is False:
             os.mkdir("/".join(f1[0:-1]))
 
         self.f1_output_file = open("/".join(f1), "w")
-        
-        if self.paired == True:
+
+        if self.paired is True:
             f2 = self.fastq2.split("/")
-            f2[-1] = f2[-1].replace(".fastq", "." + str(self.output_tag) + "_" + str(self.output_file_count) + ".fastq")
+            new_suffix = "." + str(self.output_tag) + "_" + str(self.output_file_count) + ".fastq"
+            f2[-1] = re.sub('.fastq$', new_suffix, f2[-1])
             f2.insert(-1, "tmp")
             self.f2_output_file = open("/".join(f2), "w")
-    
+
     def writeOutput(self, read, side = 1):
         """
         Writer to print the extracted lines
@@ -175,7 +184,7 @@ class fastqreader:
             Read is the dictionary object returned from self.next()
         side : int
             The side that the read has coe from (DEFAULT: 1)
-        
+
         Returns
         -------
         bool
@@ -189,23 +198,23 @@ class fastqreader:
         else:
             return False
         return True
-    
+
     def closeOutputFiles(self):
         """
         Close the output file handles
         """
         self.f1_output_file.close()
 
-        if self.paired == True:
+        if self.paired is True:
             self.f2_output_file.close()
-    
+
     def incrementOutputFiles(self):
         """
         Increment the counter and create new files for splitting the original
         FastQ paired end files.
         """
         self.closeOutputFiles()
-        
-        self.output_file_count+=1
-        
+
+        self.output_file_count += 1
+
         self.createOutputFiles(self.output_tag)

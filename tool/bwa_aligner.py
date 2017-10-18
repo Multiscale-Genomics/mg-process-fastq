@@ -1,5 +1,6 @@
 """
-.. Copyright 2017 EMBL-European Bioinformatics Institute
+.. See the NOTICE file distributed with this work for additional information
+   regarding copyright ownership.
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -31,7 +32,6 @@ except ImportError:
     from dummy_pycompss import task
     from dummy_pycompss import compss_wait_on
 
-#from basic_modules.metadata import Metadata
 from basic_modules.tool import Tool
 
 from tool.common import common
@@ -50,11 +50,12 @@ class bwaAlignerTool(Tool):
         print("BWA Aligner")
         Tool.__init__(self)
 
-    @task(returns=int, genome_file_loc=FILE_IN, read_file_loc=FILE_IN,
+    @task(returns=bool, genome_file_loc=FILE_IN, read_file_loc=FILE_IN,
           bam_loc=FILE_OUT, amb_loc=FILE_IN, ann_loc=FILE_IN, bwt_loc=FILE_IN,
           pac_loc=FILE_IN, sa_loc=FILE_IN, isModifier=False)
-    def bwa_aligner(self, genome_file_loc, read_file_loc, bam_loc, amb_loc, # pylint: disable=unused-argument,too-many-arguments
-                    ann_loc, bwt_loc, pac_loc, sa_loc): # pylint: disable=unused-argument
+    def bwa_aligner( # pylint: disable=too-many-arguments
+            self, genome_file_loc, read_file_loc, bam_loc, amb_loc, # pylint: disable=unused-argument,too-many-arguments
+            ann_loc, bwt_loc, pac_loc, sa_loc): # pylint: disable=unused-argument
         """
         BWA Aligner
 
@@ -71,20 +72,30 @@ class bwaAlignerTool(Tool):
             Location of the output file
         """
 
-        # Rename all files for the genome and indexes so that they are in the
-        # expected format by BWA - Might not be an issue with PyCOMPSs v2.1
-        # Care needs to be taken when running this locally and the renaming
-        # should not happen
-        os.rename(amb_loc, genome_file_loc + ".amb")
-        os.rename(ann_loc, genome_file_loc + ".ann")
-        os.rename(bwt_loc, genome_file_loc + ".bwt")
-        os.rename(pac_loc, genome_file_loc + ".pac")
-        os.rename(sa_loc, genome_file_loc + ".sa")
+        od_list = read_file_loc.split("/")
+        output_dir = "/".join(od_list[0:-1])
 
+        print("BWA INPUT FILES:", os.listdir(output_dir))
+        #out_bam = bam_loc.replace(".bam", '.out.bam')
+        out_bam = read_file_loc + '.out.bam'
         common_handle = common()
-        bam_loc = common_handle.bwa_align_reads(genome_file_loc, read_file_loc, bam_loc)
+        bam_loc1 = common_handle.bwa_align_reads(genome_file_loc, read_file_loc, out_bam)
 
-        return 0
+        print("BWA FINAL OUTPUT FILE:", bam_loc)
+        print("BWA ALIGNER TASK (start):", os.path.isfile(bam_loc), os.path.islink(bam_loc))
+
+        with open(bam_loc, "wb") as f_out:
+            with open(out_bam, "rb") as f_in:
+                f_out.write(f_in.read())
+
+        print("BWA MIDDLE OUTPUT FILE:", out_bam)
+        print("BWA ALIGNER TASK (mid):", os.path.isfile(out_bam), os.path.getsize(out_bam))
+        print("BWA FINAL OUTPUT FILE:", bam_loc)
+        print("BWA ALIGNER TASK (final):", os.path.isfile(bam_loc), os.path.getsize(bam_loc))
+
+        print("BWA OUTPUT FILES:", os.listdir(output_dir))
+
+        return True
 
     def run(self, input_files, output_files, metadata=None):
         """
@@ -105,11 +116,15 @@ class bwaAlignerTool(Tool):
         output_metadata = {}
         out_bam = input_files[1].replace(".fastq", '.bam')
 
+        print("BWA ALIGNER (before):", out_bam)
+
         results = self.bwa_aligner(
             input_files[0], input_files[1], out_bam, input_files[2],
             input_files[3], input_files[4], input_files[5], input_files[6])
 
         results = compss_wait_on(results)
+
+        print("BWA ALIGNER:", os.path.isfile(out_bam))
 
         return ([out_bam], [output_metadata])
 

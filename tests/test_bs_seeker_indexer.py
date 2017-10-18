@@ -1,5 +1,6 @@
 """
-.. Copyright 2017 EMBL-European Bioinformatics Institute
+.. See the NOTICE file distributed with this work for additional information
+   regarding copyright ownership.
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -19,6 +20,7 @@ import pytest # pylint: disable=unused-import
 
 from tool import bs_seeker_indexer
 
+@pytest.mark.wgbs
 def test_bs_seeker_indexer():
     """
     Test to ensure BS-Seeker indexer is working
@@ -29,7 +31,7 @@ def test_bs_seeker_indexer():
     home = os.path.expanduser('~')
 
     bsi = bs_seeker_indexer.bssIndexerTool()
-    bsi.run(
+    bs_files, bs_meta = bsi.run(
         [genomefa_file],
         [],
         {
@@ -37,4 +39,7 @@ def test_bs_seeker_indexer():
             "aligner_path" : home + "/lib/bowtie2-2.3.2",
             "bss_path" : home + "/lib/BSseeker2"
         }
-        )
+    )
+
+    assert os.path.isfile(bs_files[0]) is True
+    assert os.path.getsize(bs_files[0]) > 0

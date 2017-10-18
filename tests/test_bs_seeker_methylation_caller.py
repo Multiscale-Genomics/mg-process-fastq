@@ -1,5 +1,6 @@
 """
-.. Copyright 2017 EMBL-European Bioinformatics Institute
+.. See the NOTICE file distributed with this work for additional information
+   regarding copyright ownership.
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -15,28 +16,36 @@
 """
 
 import os
-import pysam
 import pytest # pylint: disable=unused-import
 
 from tool import bs_seeker_methylation_caller
 
+@pytest.mark.wgbs
 def test_bs_seeker_methylation_caller():
     """
     Test that it is possible to call the methylation called by BS seeker
     """
     resource_path = os.path.join(os.path.dirname(__file__), "data/")
-    genome_fa_file = resource_path + "bsSeeker.Mouse.GRCm38.fasta_bowtie2"
+    genome_fa_file = resource_path + "bsSeeker.Mouse.GRCm38.fasta_bowtie2.tar.gz"
     bam_file = resource_path + "bsSeeker.Mouse.GRCm38.bam"
     home = os.path.expanduser('~')
 
-    pysam.sort("-o", str(bam_file+".sorted"), str(bam_file))
-
     bsmc = bs_seeker_methylation_caller.bssMethylationCallerTool()
-    bsmc.run(
-        [bam_file+".sorted"],
+    bs_files, bs_meta = bsmc.run(
+        [
+            bam_file,
+            genome_fa_file
+        ],
         [],
         {
-            'bss_path': home + "/lib/BSseeker2",
-            'index_path' : genome_fa_file
+            'bss_path': home + "/lib/BSseeker2"
         }
     )
+
+    assert os.path.isfile(bs_files[0]) is True
+    assert os.path.getsize(bs_files[0]) > 0
+    assert os.path.isfile(bs_files[1]) is True
+    # Blank file for this small dataset
+    #assert os.path.getsize(bs_files[1]) > 0
+    assert os.path.isfile(bs_files[2]) is True
+    assert os.path.getsize(bs_files[2]) > 0

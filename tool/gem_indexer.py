@@ -1,5 +1,6 @@
 """
-.. Copyright 2017 EMBL-European Bioinformatics Institute
+.. See the NOTICE file distributed with this work for additional information
+   regarding copyright ownership.
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -23,12 +24,14 @@ try:
         raise ImportError
     from pycompss.api.parameter import FILE_IN, FILE_OUT
     from pycompss.api.task import task
+    from pycompss.api.api import compss_wait_on
 except ImportError:
-    print ("[Warning] Cannot import \"pycompss\" API packages.")
-    print ("          Using mock decorators.")
+    print("[Warning] Cannot import \"pycompss\" API packages.")
+    print("          Using mock decorators.")
 
     from dummy_pycompss import FILE_IN, FILE_OUT
     from dummy_pycompss import task
+    from dummy_pycompss import compss_wait_on
 
 #from basic_modules.metadata import Metadata
 from basic_modules.tool import Tool
@@ -49,22 +52,25 @@ class gemIndexerTool(Tool):
         print ("GEM Indexer")
         Tool.__init__(self)
 
-    @task(file_loc=FILE_IN, idx_loc=FILE_OUT)
-    def gem_indexer(self, file_loc, idx_loc): # pylint: disable=unused-argument
+    @task(genome_file=FILE_IN, new_genome_file=FILE_OUT, idx_loc=FILE_OUT)
+    def gem_indexer(self, genome_file, new_genome_file, idx_loc): # pylint: disable=unused-argument
         """
         GEM Indexer
 
         Parameters
         ----------
-        file_loc : str
+        genome_file : str
             Location of the genome assembly FASTA file
+        new_genome_file : str
+            Location of the genome assembly formated for GEM indexing
         idx_loc : str
             Location of the output index file
         """
         common_handle = common()
-        idx_loc = common_handle.gem_index_genome(file_loc)
-        return True
+        common_handle.replaceENAHeader(genome_file, new_genome_file)
 
+        idx_loc = common_handle.gem_index_genome(new_genome_file, new_genome_file)
+        return True
 
     def run(self, input_files, output_files, metadata=None):
         """
@@ -85,16 +91,17 @@ class gemIndexerTool(Tool):
             list of the matching metadata
         """
 
-        file_out = input_files[0] + ".gem"
+        fa_file_out = input_files[0].replace(".fasta", "")
+        fa_file_out = fa_file_out.replace(".fa", "")
+        fa_file_out += "_gem.fasta"
+        idx_file_out = fa_file_out + ".gem"
 
         # input and output share most metadata
-        output_metadata = dict(
-            data_type=metadata["data_type"],
-            file_type=metadata["file_type"],
-            meta_data=metadata["metadata"])
+        output_metadata = {}
 
-        result = self.gem_indexer(input_files[0], file_out)
+        results = self.gem_indexer(input_files[0], fa_file_out, idx_file_out)
+        results = compss_wait_on(results)
 
-        return ([file_out], [output_metadata])
+        return ([fa_file_out, idx_file_out], [output_metadata])
 
 # ------------------------------------------------------------------------------

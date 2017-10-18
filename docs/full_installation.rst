@@ -1,3 +1,17 @@
+.. Copyright 2017 EMBL-European Bioinformatics Institute
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+
 Full Installation
 =================
 
@@ -17,10 +31,10 @@ Setup the System Environment
 .. code-block:: none
    :linenos:
 
-   sudo apt-get install -y make build-essential libssl-dev zlib1g-dev       //
-   libbz2-dev libreadline-dev libsqlite3-dev wget curl llvm libncurses5-dev //
-   libncursesw5-dev xz-utils tk-dev unzip mcl libgtk2.0-dev r-base-core     //
-   libcurl4-gnutls-dev python-rpy2 git
+   sudo apt-get install -y make build-essential libssl-dev zlib1g-dev       \\
+   libbz2-dev libreadline-dev libsqlite3-dev wget curl llvm libncurses5-dev \\
+   libncursesw5-dev xz-utils tk-dev unzip mcl libgtk2.0-dev r-base-core     \\
+   libcurl4-gnutls-dev python-rpy2 git libtbb2 pigz
 
    cd ${HOME}
    mkdir bin lib code
@@ -41,10 +55,17 @@ space.
    echo 'export PATH="$PYENV_ROOT/bin:$PATH"' >> ~/.bash_profile
    echo 'eval "$(pyenv init -)"' >> ~/.bash_profile
 
+   # Add the .bash_profile to your .bashrc file
+   echo 'source ~/.bash_profile"' >> ~/.bashrc
+
    git clone https://github.com/pyenv/pyenv-virtualenv.git ${PYENV_ROOT}/plugins/pyenv-virtualenv
 
    pyenv install 2.7.12
    pyenv virtualenv 2.7.12 mg-process-fastq
+
+   # Python 3 environment required by iNPS
+   pyenv install 3.5.3
+   ln -s ${HOME}/.pyenv/versions/3.5.3/bin/python ${HOME}/bin/py3
 
 Installation Process
 --------------------
@@ -323,14 +344,15 @@ Checkout the code for the DM API and the mg-process-fastq pipelines:
 
    git clone https://github.com/Multiscale-Genomics/mg-process-fastq.git
    cd mg-process-fastq
-   pip install --editable .
+   pip install -e .
+   pip install -r requirements.txt
 
 
 Install MACS2
 ^^^^^^^^^^^^^
 
 This should get installed as part of the installation in the mg-process-fastq
-package, if not then it will need to be installed separately:
+package, if not then it will need to be installed separately.
 
 .. code-block:: none
    :linenos:
@@ -338,6 +360,15 @@ package, if not then it will need to be installed separately:
    cd ${HOME}/code
    pyenv activate mg-process-fastq
    pip install MACS2
+
+Whether this package is installed as part of the mg-process-fastq package or
+manually the following symlink should also be created if it is to be run within
+the COMPSs environment.
+
+.. code-block:: none
+   :linenos:
+
+   ln -s ${HOME}/.pyenv/versions/mg-process-fastq/bin/macs2 ${HOME}/bin/macs2
 
 
 Install TADbit
@@ -350,8 +381,10 @@ Install TADbit
    wget https://github.com/3DGenomes/tadbit/archive/master.zip -O tadbit.zip
    unzip tadbit.zip
    cd TADbit-master
-   # Need to edit the setup.py to remove the dependency for IMP line ~64
-   pip install .
+
+   # If the pyenv env is not called mg-process-fastq then change this to match,
+   # the sme is true for teh version of python
+   python setup.py install --install-lib=${HOME}/.pyenv/versions/mg-process-fastq/lib/python2.7/site-packages/ --install-scripts=${HOME}/bin
 
 Install BSseeker
 ^^^^^^^^^^^^^^^^
@@ -366,9 +399,6 @@ Install BSseeker
    ln -s ${HOME}/lib/BSseeker2/bs_align bs_align
    ln -s ${HOME}/lib/BSseeker2/bs_index bs_index
    ln -s ${HOME}/lib/BSseeker2/bs_utils bs_utils
-
-   cd ${HOME}/code/mg-process-fastq/tool
-   ln -s ${HOME}/lib/BSseeker2/FilterReads.py FilterReads.py
 
 Post Installation Tidyup
 ------------------------

@@ -1,5 +1,6 @@
 """
-.. Copyright 2017 EMBL-European Bioinformatics Institute
+.. See the NOTICE file distributed with this work for additional information
+   regarding copyright ownership.
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -25,12 +26,14 @@ try:
         raise ImportError
     from pycompss.api.parameter import FILE_IN, FILE_OUT
     from pycompss.api.task import task
+    from pycompss.api.api import compss_wait_on
 except ImportError:
     print ("[Warning] Cannot import \"pycompss\" API packages.")
     print ("          Using mock decorators.")
 
     from dummy_pycompss import FILE_IN, FILE_OUT
     from dummy_pycompss import task
+    from dummy_pycompss import compss_wait_on
 
 from basic_modules.tool import Tool
 
@@ -70,7 +73,6 @@ class kallistoIndexerTool(Tool):
 
         return True
 
-
     def run(self, input_files, output_files, metadata=None):
         """
         Tool for generating assembly aligner index files for use with Kallisto
@@ -95,7 +97,8 @@ class kallistoIndexerTool(Tool):
         # input and output share most metadata
         output_metadata = {}
 
-        self.kallisto_indexer(input_files[0], genome_idx_loc)
+        results = self.kallisto_indexer(input_files[0], genome_idx_loc)
+        results = compss_wait_on(results)
 
         return ([genome_idx_loc], [output_metadata])
 

@@ -1,5 +1,6 @@
 """
-.. Copyright 2017 EMBL-European Bioinformatics Institute
+.. See the NOTICE file distributed with this work for additional information
+   regarding copyright ownership.
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -22,7 +23,8 @@ try:
         raise ImportError
     from pycompss.api.parameter import FILE_IN, FILE_OUT, IN
     from pycompss.api.task import task
-    from pycompss.api.constraint import constraint
+    # from pycompss.api.constraint import constraint
+    from pycompss.api.api import compss_wait_on
 except ImportError:
     print("[Warning] Cannot import \"pycompss\" API packages.")
     print("          Using mock decorators.")
@@ -30,10 +32,10 @@ except ImportError:
     from dummy_pycompss import FILE_IN, FILE_OUT, IN
     from dummy_pycompss import task
     from dummy_pycompss import constraint
+    from dummy_pycompss import compss_wait_on
 
 from basic_modules.tool import Tool
 
-import pytadbit
 from pytadbit.mapping.mapper import full_mapping
 
 # ------------------------------------------------------------------------------
@@ -53,9 +55,10 @@ class tbFullMappingTool(Tool):
     @task(
         gem_file=FILE_IN, fastq_file=FILE_IN, windows=IN, window1=FILE_OUT,
         window2=FILE_OUT, window3=FILE_OUT, window4=FILE_OUT)
-    @constraint(ProcessorCoreCount=32)
+    # @constraint(ProcessorCoreCount=32)
     def tb_full_mapping_iter(
-            self, gem_file, fastq_file, windows, window1, window2, window3, window4):
+            self, gem_file, fastq_file, windows,
+            window1, window2, window3, window4):
         """
         Function to map the FASTQ files to the GEM file over different window
         sizes ready for alignment
@@ -90,18 +93,22 @@ class tbFullMappingTool(Tool):
             Location of the fourth window index file
 
         """
-        od = fastq_file.split("/")
-        output_dir = "/".join(od[0:-1])
+        print("tb_full_mapping_iter")
+        od_loc = fastq_file.split("/")
+        output_dir = "/".join(od_loc[0:-1])
 
-        map_files = full_mapping(gem_file, fastq_file, output_dir, windows=windows, frag_map=False, nthreads=32, clean=True, temp_dir='/tmp/')
+        map_files = full_mapping(
+            gem_file, fastq_file, output_dir,
+            windows=windows, frag_map=False, nthreads=32, clean=True,
+            temp_dir='/tmp/'
+        )
 
         return True
-
 
     @task(
         gem_file=FILE_IN, fastq_file=FILE_IN, enzyme_name=IN, windows=IN,
         full_file=FILE_OUT, frag_file=FILE_OUT)
-    @constraint(ProcessorCoreCount=16)
+    # @constraint(ProcessorCoreCount=16)
     def tb_full_mapping_frag(
             self, gem_file, fastq_file, enzyme_name, windows,
             full_file, frag_file):
@@ -129,15 +136,38 @@ class tbFullMappingTool(Tool):
             Location of the window index file
 
         """
-        od = fastq_file.split("/")
-        output_dir = "/".join(od[0:-1])
+        print("tb_full_mapping_frag")
+        od_loc = fastq_file.split("/")
+        output_dir = "/".join(od_loc[0:-1])
 
-        map_files = full_mapping(gem_file, fastq_file, output_dir, r_enz=enzyme_name, windows=windows, frag_map=True, nthreads=32, clean=True, temp_dir='/tmp/')
+        print("TB MAPPING - output_dir:", output_dir)
+        print("TB MAPPING - full_file dir:", full_file)
+        print("TB MAPPING - frag_file dir:", frag_file)
+
+        fastq_file_tmp = fastq_file.replace(".fastq", '')
+        fastq_file_tmp = fastq_file_tmp.replace(".fq", '')
+
+        with open(fastq_file_tmp + "_tmp.fastq", "wb") as f_out:
+            with open(fastq_file, "rb") as f_in:
+                f_out.write(f_in.read())
+
+        map_files = full_mapping(
+            gem_file, fastq_file_tmp + "_tmp.fastq", output_dir,
+            r_enz=enzyme_name, windows=windows, frag_map=True, nthreads=32,
+            clean=True, temp_dir='/tmp/'
+        )
+
+        with open(full_file, "wb") as f_out:
+            with open(fastq_file_tmp + "_tmp_full_1-end.map", "rb") as f_in:
+                f_out.write(f_in.read())
+
+        with open(frag_file, "wb") as f_out:
+            with open(fastq_file_tmp + "_tmp_frag_1-end.map", "rb") as f_in:
+                f_out.write(f_in.read())
 
         return True
 
-
-    def run(self, input_files, metadata):
+    def run(self, input_files, output_files, metadata=None):
         """
         The main function to map the FASTQ files to the GEM file over different
         window sizes ready for alignment
@@ -170,42 +200,41 @@ class tbFullMappingTool(Tool):
         windows = metadata['windows']
 
         root_name = fastq_file.split("/")
-        root_name[-1] = root_name[-1].replace('.fa', '')
+        root_name[-1] = root_name[-1].replace('.fastq', '')
+        root_name[-1] = root_name[-1].replace('.fq', '')
 
-        name = root_name[-1]
+        #name = root_name[-1]
 
         # input and output share most metadata
         output_metadata = {}
 
-        if 'enzyme_name' in metadata:
-            full_file = '/'.join(root_name) + "_full_" + windows[0][0] + "-" + windows[0][1] + ".map"
-            frag_file = '/'.join(root_name) + "_frag_" + windows[0][0] + "-" + windows[0][1] + ".map"
+        root_path = '/'.join(root_name)
 
-            # handle error
-            if not self.tb_full_mapping_frag(gem_file, fastq_file, metadata['enzyme_name'], windows, full_file, frag_file):
-                output_metadata.set_exception(
-                    Exception(
-                        "tb_full_mapping_frag: Could not process files {}, {}.".format(*input_files)))
-                full_file = None
-                frag_file = None
+        if windows is None:
+            full_file = root_path + "_full.map"
+            frag_file = root_path + "_frag.map"
+
+            results = self.tb_full_mapping_frag(
+                gem_file, fastq_file, metadata['enzyme_name'], windows,
+                full_file, frag_file
+            )
+            results = compss_wait_on(results)
+
             output_metadata['func'] = 'frag'
             return ([full_file, frag_file], output_metadata)
-        else:
-            window1 = '/'.join(root_name) + "_full_" + windows[0][0] + "-" + windows[0][1] + ".map"
-            window2 = '/'.join(root_name) + "_full_" + windows[1][0] + "-" + windows[1][1] + ".map"
-            window3 = '/'.join(root_name) + "_full_" + windows[2][0] + "-" + windows[2][1] + ".map"
-            window4 = '/'.join(root_name) + "_full_" + windows[3][0] + "-" + windows[3][1] + ".map"
 
-            # handle error
-            if not self.tb_full_mapping_iter(gem_file, fastq_file, windows, window1, window2, window3, window4):
-                output_metadata.set_exception(
-                    Exception(
-                        "tb_full_mapping_iter: Could not process files {}, {}.".format(*input_files)))
-                window1 = None
-                window2 = None
-                window3 = None
-                window4 = None
-            output_metadata['func'] = 'iter'
-            return ([window1, window2, window3, window4], output_metadata)
+        window1 = root_path + "_full_" + str(windows[0][0]) + "-" + str(windows[0][1]) + ".map"
+        window2 = root_path + "_full_" + str(windows[1][0]) + "-" + str(windows[1][1]) + ".map"
+        window3 = root_path + "_full_" + str(windows[2][0]) + "-" + str(windows[2][1]) + ".map"
+        window4 = root_path + "_full_" + str(windows[3][0]) + "-" + str(windows[3][1]) + ".map"
+
+        results = self.tb_full_mapping_iter(
+            gem_file, fastq_file, windows,
+            window1, window2, window3, window4
+        )
+        results = compss_wait_on(results)
+
+        output_metadata['func'] = 'iter'
+        return ([window1, window2, window3, window4], output_metadata)
 
 # ------------------------------------------------------------------------------

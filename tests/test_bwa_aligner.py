@@ -1,5 +1,6 @@
 """
-.. Copyright 2017 EMBL-European Bioinformatics Institute
+.. See the NOTICE file distributed with this work for additional information
+   regarding copyright ownership.
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -20,6 +21,7 @@ import pytest # pylint: disable=unused-import
 
 from tool.bwa_aligner import bwaAlignerTool
 
+@pytest.mark.chipseq
 def test_bwa_aligner():
     """
     Function to test BWA Aligner
@@ -52,7 +54,7 @@ def test_bwa_aligner():
     assert os.path.isfile(resource_path + "macs2.Human.DRR000150.22.bam") is True
     assert os.path.getsize(resource_path + "macs2.Human.DRR000150.22.bam") > 0
 
-
+@pytest.mark.mnaseseq
 def test_bwa_aligner_02():
     """
     Function to test BWA Aligner for MNase seq data

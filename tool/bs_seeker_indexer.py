@@ -1,5 +1,6 @@
 """
-.. Copyright 2017 EMBL-European Bioinformatics Institute
+.. See the NOTICE file distributed with this work for additional information
+   regarding copyright ownership.
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -19,18 +20,21 @@ from __future__ import print_function
 import shlex
 import subprocess
 import sys
+import tarfile
 
 try:
     if hasattr(sys, '_run_from_cmdl') is True:
         raise ImportError
     from pycompss.api.parameter import FILE_IN, FILE_OUT, IN
     from pycompss.api.task import task
+    from pycompss.api.api import compss_wait_on
 except ImportError:
     print("[Warning] Cannot import \"pycompss\" API packages.")
     print("          Using mock decorators.")
 
     from dummy_pycompss import FILE_IN, FILE_OUT, IN
     from dummy_pycompss import task
+    from dummy_pycompss import compss_wait_on
 
 from basic_modules.tool import Tool
 
@@ -50,9 +54,9 @@ class bssIndexerTool(Tool):
         Tool.__init__(self)
 
     @task(
-        fasta_file=FILE_IN, aligner=IN, aligner_path=IN, bss_path=IN, ref_path=IN,
-        bam_out=FILE_OUT)
-    def bss_build_index(self, fasta_file, aligner, aligner_path, bss_path, ref_path, bam_out):
+        fasta_file=FILE_IN, aligner=IN, aligner_path=IN, bss_path=IN,
+        idx_out=FILE_OUT)
+    def bss_build_index(self, fasta_file, aligner, aligner_path, bss_path, idx_out):
         """
         Function to submit the FASTA file for the reference sequence and build
         the required index file used by the aligner.
@@ -66,28 +70,45 @@ class bssIndexerTool(Tool):
             this build
         aligner_path : str
             Location of the aligners binary file
-        ref_path : str
-            Location of the indexes for the FASTA file
-        bam_out : str
-            Location of the output bam alignment file
+        bss_path
+            Location of the BS-Seeker2 libraries
+        idx_out : str
+            Location of the output compressed index file
 
         Returns
         -------
         bam_out : str
             Location of the output bam alignment file
         """
+
+        ff_split = fasta_file.split("/")
+
         command_line = (
             "python " + bss_path + "/bs_seeker2-build.py"
             " -f " + fasta_file + ""
             " --aligner " + aligner + " --path " + aligner_path + ""
-            " --db " + ref_path
+            " --db " + "/".join(ff_split[:-1])
         ).format()
+
+        print("BS - INDEX CMD:", command_line)
+        args = shlex.split(command_line)
+        process = subprocess.Popen(args)
+        process.wait()
+
+        # tar.gz the index
+        print("BS - idx_out", idx_out, idx_out.replace('.tar.gz', ''))
+        idx_out_pregz = idx_out.replace('.tar.gz', '.tar')
+
+        tar = tarfile.open(idx_out_pregz, "w")
+        tar.add(fasta_file + "_" + aligner, arcname=ff_split[-1] + "_" + aligner)
+        tar.close()
+
+        command_line = 'pigz ' + idx_out_pregz
         args = shlex.split(command_line)
         process = subprocess.Popen(args)
         process.wait()
 
         return True
-
 
     def run(self, input_files, output_files, metadata=None):
         """
@@ -106,7 +127,6 @@ class bssIndexerTool(Tool):
             Location of the filtered FASTQ file
         """
 
-
         file_name = input_files[0]
         genome_dir_split = file_name.split("/")
         genome_dir = '/'.join(genome_dir_split[:-1])
@@ -116,14 +136,15 @@ class bssIndexerTool(Tool):
         bss_path = metadata['bss_path']
 
 
-        output_file = file_name + '.filtered.bam'
+        output_file = file_name + '_' + aligner + '.tar.gz'
 
         # input and output share most metadata
         output_metadata = {}
 
         # handle error
         results = self.bss_build_index(
-            file_name, aligner, aligner_path, bss_path, genome_dir, output_file)
+            file_name, aligner, aligner_path, bss_path, output_file)
+        results = compss_wait_on(results)
 
         if results is True:
             pass

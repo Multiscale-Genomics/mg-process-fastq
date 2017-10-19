@@ -1,11 +1,11 @@
 #!/bin/bash
 
-# python tests/test_toolchains.py --pipeline genome
+python tests/test_toolchains.py --pipeline genome
 # tc1=$?
 ./tidy_data.sh
 
 python tests/test_toolchains.py --pipeline chipseq
-tc2=$?
+# tc2=$?
 ./tidy_data.sh
 
 # python tests/test_toolchains.py --pipeline rnaseq

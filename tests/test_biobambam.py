@@ -16,6 +16,7 @@
 """
 
 import os.path
+import time
 import pytest # pylint: disable=unused-import
 
 from basic_modules.metadata import Metadata

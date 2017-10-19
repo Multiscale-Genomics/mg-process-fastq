@@ -1,0 +1,235 @@
+language: "python"
+
+python:
+  - "2.7.12"
+  - "3.5.2"
+
+#sudo: false
+
+addons:
+  apt:
+    packages:
+    #system environment
+    - make
+    - python-dev
+    - build-essential
+    - libssl-dev
+    - zlib1g-dev
+    - libbz2-dev
+    - libreadline-dev
+    - libsqlite3-dev
+    - libtiff5-dev
+    - libjpeg8-dev
+    - libfreetype6-dev
+    - liblcms2-dev
+    - libwebp-dev
+    - tcl8.6-dev
+    - tk8.6-dev
+    - python-tk
+    - wget
+    - curl
+    - llvm
+    - libncurses5-dev
+    - libncursesw5-dev
+    - xz-utils
+    - tk-dev
+    - mcl
+    - libgtk2.0-dev
+    - r-base-core
+    - python-rpy2
+    - libcurl4-gnutls-dev
+    - unzip
+    - liblzma-dev
+    - libtool
+    - pigz
+    #- libtbb2
+
+#env:
+#  - COVERALLS=false
+
+
+before_install:
+    - pwd
+    - ls /usr/lib/
+    - mkdir -p ${HOME}/bin
+    - mkdir -p ${HOME}/lib
+    - mkdir -p ${HOME}/code
+    - lsb_release -a
+
+
+services:
+    - docker
+
+install:
+    # libtbb-dev did not seem to be installing correctly without using sudo
+    - sudo apt-get install libtbb-dev
+    - pip install git+https://github.com/Multiscale-Genomics/mg-tool-api.git
+    - pip install git+https://github.com/Multiscale-Genomics/mg-dm-api.git
+    - pip install --editable .
+    - pip install -r requirements.txt
+
+     #hts lib
+    - cd ${HOME}/lib
+    - git clone https://github.com/samtools/htslib.git
+    - cd htslib
+    - autoheader
+    - autoconf
+    - ./configure --prefix=${HOME}/lib/htslib
+    - make
+    - make install
+
+    #SAMtools
+    - cd ${HOME}/lib
+    - git clone https://github.com/samtools/samtools.git
+    - cd samtools
+    #- autoconf -Wno-syntax
+    #- rm -rf autom4te.cache
+    #- rm config.mk configure
+    - autoheader
+    - autoconf -Wno-syntax
+    - ./configure --prefix=${HOME}/lib/samtools
+    - make
+    - make install
+
+
+    #UCSC Tools
+    - cd ${HOME}/lib
+    - wget http://hgdownload.cse.ucsc.edu/admin/exe/linux.x86_64/bedToBigBed
+    - wget http://hgdownload.cse.ucsc.edu/admin/exe/linux.x86_64/wigToBigWig
+
+
+
+    #Bowtie2 Aligner
+    - cd ${HOME}/lib
+    - wget --max-redirect 1 https://downloads.sourceforge.net/project/bowtie-bio/bowtie2/2.3.2/bowtie2-2.3.2-linux-x86_64.zip
+    - unzip bowtie2-2.3.2-linux-x86_64.zip
+
+
+    #BWA Sequence Aligner
+    - cd ${HOME}/lib
+    - git clone https://github.com/lh3/bwa.git
+    - cd bwa
+    - make
+
+    - cd ${HOME}/build/Multiscale-Genomics/mg-process-fastq
+    - ls
+
+
+    #iNPS Peak Caller
+    #- cd ${HOME}/lib
+    #- mkdir iNPS
+    #- cd iNPS
+    #- wget http://www.picb.ac.cn/hanlab/files/iNPS_V1.2.2.zip
+    #- unzip iNPS_V1.2.2.zip
+
+
+    #Kallisto
+    - cd ${HOME}/lib
+    - wget https://github.com/pachterlab/kallisto/releases/download/v0.43.1/kallisto_linux-v0.43.1.tar.gz
+    - tar -xzf kallisto_linux-v0.43.1.tar.gz
+
+
+     #bedTools
+    - wget https://github.com/arq5x/bedtools2/releases/download/v2.26.0/bedtools-2.26.0.tar.gz
+    - tar -zxvf bedtools-2.26.0.tar.gz
+    - cd bedtools2
+    - make
+    - cd ${HOME}/build/Multiscale-Genomics/mg-process-fastq
+
+
+
+     #Install APIs and Pipelines
+    - cd ${HOME}/code
+    - pip install git+https://github.com/Multiscale-Genomics/mg-dm-api.git
+    - pip install git+https://github.com/Multiscale-Genomics/mg-tool-api.git
+
+    - git clone https://github.com/Multiscale-Genomics/mg-process-fastq.git
+    - cd mg-process-fastq
+    - pip install --editable .
+
+
+     #Install MACS2
+    - cd ${HOME}/build/Multiscale-Genomics/mg-process-fastq
+    - chmod +x includeMAC2.sh
+    - ./includeMAC2.sh
+
+
+     #Install BSseeker
+    - cd ${HOME}/lib
+    - git clone https://github.com/BSSeeker/BSseeker2.git
+
+    - cd ${HOME}/code/mg-process-fastq
+    - ln -s ${HOME}/lib/BSseeker2/bs_align bs_align
+    - ln -s ${HOME}/lib/BSseeker2/bs_index bs_index
+    - ln -s ${HOME}/lib/BSseeker2/bs_utils bs_utils
+
+    - cd ${HOME}/code/mg-process-fastq/tool
+    - ln -s ${HOME}/lib/BSseeker2/FilterReads.py FilterReads.py
+
+     #Post Installation Tidyup
+    - cd ${HOME}/lib
+    - rm *.zip *.tar.gz
+
+
+
+before_script :
+    - cd ${HOME}/bin
+
+    - ln -s ${HOME}/lib/bedtools2/bin/bedtools bedtools
+
+    - ln -s ${HOME}/lib/bedToBigBed bedToBigBed
+    - ln -s ${HOME}/lib/wigToBigWig wigToBigWig
+    #- ln -s ${HOME}/lib/iNPS_V1.2.2.py iNPS_V1.2.2.py
+    - ln -s ${HOME}/lib/kallisto_linux-v0.43.1/kallisto kallisto
+
+    - ln -s ${HOME}/lib/bwa/bwa bwa
+
+    - ln -s ${HOME}/lib/bowtie2-2.3.2/bowtie2 bowtie2
+    - ln -s ${HOME}/lib/bowtie2-2.3.2/bowtie2-align-s bowtie2-align-s
+    - ln -s ${HOME}/lib/bowtie2-2.3.2/bowtie2-align-l bowtie2-align-l
+    - ln -s ${HOME}/lib/bowtie2-2.3.2/bowtie2-build bowtie2-build
+    - ln -s ${HOME}/lib/bowtie2-2.3.2/bowtie2-build-s bowtie2-build-s
+    - ln -s ${HOME}/lib/bowtie2-2.3.2/bowtie2-build-l bowtie2-build-l
+    - ln -s ${HOME}/lib/bowtie2-2.3.2/bowtie2-inspect bowtie2-inspect
+    - ln -s ${HOME}/lib/bowtie2-2.3.2/bowtie2-inspect-s bowtie2-inspect-s
+    - ln -s ${HOME}/lib/bowtie2-2.3.2/bowtie2-inspect-l bowtie2-inspect-l
+
+    - ln -s ${HOME}/lib/htslib/bin/bgzip bgzip
+    - ln -s ${HOME}/lib/htslib/bin/htsfile htsfile
+    - ln -s ${HOME}/lib/htslib/bin/tabix tabix
+
+    - ln -s ${HOME}/lib/samtools/bin/ace2sam ace2sam
+    - ln -s ${HOME}/lib/samtools/bin/blast2sam.pl blast2sam.pl
+    - ln -s ${HOME}/lib/samtools/bin/bowtie2sam.pl bowtie2sam.pl
+    - ln -s ${HOME}/lib/samtools/bin/export2sam.pl export2sam.pl
+    - ln -s ${HOME}/lib/samtools/bin/interpolate_sam.pl interpolate_sam.pl
+    - ln -s ${HOME}/lib/samtools/bin/maq2sam-long maq2sam-long
+    - ln -s ${HOME}/lib/samtools/bin/maq2sam-short maq2sam-short
+    - ln -s ${HOME}/lib/samtools/bin/md5fa md5fa
+    - ln -s ${HOME}/lib/samtools/bin/md5sum-lite md5sum-lite
+    - ln -s ${HOME}/lib/samtools/bin/novo2sam.pl novo2sam.pl
+    - ln -s ${HOME}/lib/samtools/bin/plot-bamstats plot-bamstats
+    - ln -s ${HOME}/lib/samtools/bin/psl2sam.pl psl2sam.pl
+    - ln -s ${HOME}/lib/samtools/bin/sam2vcf.pl sam2vcf.pl
+    - ln -s ${HOME}/lib/samtools/bin/samtools samtools
+    - ln -s ${HOME}/lib/samtools/bin/samtools.pl samtools.pl
+    - ln -s ${HOME}/lib/samtools/bin/seq_cache_populate.pl seq_cache_populate.pl
+    - ln -s ${HOME}/lib/samtools/bin/soap2sam.pl soap2sam.pl
+    - ln -s ${HOME}/lib/samtools/bin/varfilter.py varfilter.py
+    - ln -s ${HOME}/lib/samtools/bin/wgsim wgsim
+    - ln -s ${HOME}/lib/samtools/bin/wgsim_eval.pl wgsim_eval.pl
+    - ln -s ${HOME}/lib/samtools/bin/zoom2sam.pl zoom2sam.pl
+    - cd ${HOME}/build/Multiscale-Genomics/mg-process-fastq
+    - docker run -p 80:80 --name biobambamcontainer multiscalegenomics/mgprocessfastq:biobambamimage
+    - pwd
+    - cd ${HOME}/build/Multiscale-Genomics/mg-process-fastq
+    - chmod +x shims/*
+    - export PATH="$PWD/shims:$PATH"
+    - docker ps -a
+    - cd ${HOME}/build/Multiscale-Genomics/mg-process-fastq
+    - chmod +x harness.sh
+    - ls tests/data/
+
+script :
+    "./harness.sh"
+

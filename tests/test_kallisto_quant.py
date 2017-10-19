@@ -18,6 +18,7 @@
 from __future__ import print_function
 
 import os.path
+import gzip
 import pytest # pylint: disable=unused-import
 
 from basic_modules.metadata import Metadata

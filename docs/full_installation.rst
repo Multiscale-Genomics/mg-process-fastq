@@ -34,7 +34,7 @@ Setup the System Environment
    sudo apt-get install -y make build-essential libssl-dev zlib1g-dev       \\
    libbz2-dev libreadline-dev libsqlite3-dev wget curl llvm libncurses5-dev \\
    libncursesw5-dev xz-utils tk-dev unzip mcl libgtk2.0-dev r-base-core     \\
-   libcurl4-gnutls-dev python-rpy2 git libtbb2 pigz liblzma-dev
+   libcurl4-gnutls-dev python-rpy2 git libtbb2 pigz liblzma-dev libhdf5-dev
 
    cd ${HOME}
    mkdir bin lib code

@@ -35,7 +35,7 @@ def test_biobambam():
     }
 
     output_files = {
-        "output": resource_path + "macs2.Human.DRR000150.22.filtered.bam"
+        "output": resource_path + "macs2.Human.DRR000150.22_filtered.bam"
     }
 
     metadata = {
@@ -47,5 +47,5 @@ def test_biobambam():
     bbb = biobambam_filter.biobambam()
     bbb.run(input_files, metadata, output_files)
 
-    assert os.path.isfile(resource_path + "macs2.Human.DRR000150.22.filtered.bam") is True
-    assert os.path.getsize(resource_path + "macs2.Human.DRR000150.22.filtered.bam") > 0
+    assert os.path.isfile(resource_path + "macs2.Human.DRR000150.22_filtered.bam") is True
+    assert os.path.getsize(resource_path + "macs2.Human.DRR000150.22_filtered.bam") > 0

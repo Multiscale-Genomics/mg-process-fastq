@@ -34,7 +34,7 @@ def test_macs2():
     # bam_file = bam_file_stub + '.bam'
 
     input_files = {
-        "input": resource_path + "macs2.Human.DRR000150.22.filtered.bam"
+        "input": resource_path + "macs2.Human.DRR000150.22_filtered.bam"
     }
 
     output_files = {

@@ -38,6 +38,7 @@ except ImportError:
     from dummy_pycompss import compss_wait_on
 
 from basic_modules.tool import Tool
+from basic_modules.metadata import Metadata
 
 from fastqreader import fastqreader
 
@@ -250,11 +251,10 @@ class fastq_splitter(Tool):
 
         Parameters
         ----------
-        input_files : list
+        input_files : dict
             List of input fastq file locations
-        output_files : list
         metadata : dict
-
+        output_files : dict
 
         Returns
         -------
@@ -265,22 +265,32 @@ class fastq_splitter(Tool):
 
         """
 
-        if len(input_files) == 2:
+        if "fastq2" in input_files:
             results = self.paired_splitter(
-                input_files["fastq1_filtered"], input_files["fastq2_filtered"],
-                input_files["fastq1_filtered"] + ".tar.gz"
+                input_files["fastq1"], input_files["fastq2"],
+                input_files["fastq1"] + ".tar.gz"
             )
         else:
             results = self.single_splitter(
-                input_files["fastq1_filtered"],
-                input_files["fastq1_filtered"] + ".tar.gz",
+                input_files["fastq1"],
+                input_files["fastq1"] + ".tar.gz",
             )
 
         results = compss_wait_on(results)
 
-        print("WGBS - FASTQ SPLITTER:", results)
+        print("FASTQ SPLITTER:", results)
+
+        fastq_tar_meta = Metadata(
+            metadata["fastq1"].data_type, "TAR", output_files["output"],
+            [metadata['fastq1'].file_path, metadata['fastq2'].file_path],
+            {
+                "tool": "fastq_splitter"
+            }
+        )
 
         return (
-            input_files["fastq1_filtered"] + ".tar.gz",
-            results
+            {"output": input_files["fastq1"] + ".tar.gz"},
+            {"output": fastq_tar_meta}
         )
+
+# ------------------------------------------------------------------------------

@@ -22,7 +22,6 @@ from __future__ import print_function
 import argparse
 
 from basic_modules.workflow import Workflow
-from basic_modules.metadata import Metadata
 from utils import remap
 
 from tool.fastq_splitter import fastq_splitter

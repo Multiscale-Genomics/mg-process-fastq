@@ -63,8 +63,6 @@ services:
 install:
     # libtbb-dev did not seem to be installing correctly without using sudo
     - sudo apt-get install libtbb-dev
-    - pip install --editable .
-    - pip install -r requirements.txt
 
      #htslib
     - cd ${HOME}/lib
@@ -124,7 +122,7 @@ install:
     - tar -xzf kallisto_linux-v0.43.1.tar.gz
 
 
-     #bedTools
+    #bedTools
     - wget https://github.com/arq5x/bedtools2/releases/download/v2.26.0/bedtools-2.26.0.tar.gz
     - tar -zxvf bedtools-2.26.0.tar.gz
     - cd bedtools2
@@ -133,14 +131,18 @@ install:
 
 
 
-     #Install APIs and Pipelines
-    - cd ${HOME}/code
-    - pip install git+https://github.com/Multiscale-Genomics/mg-dm-api.git
-    - pip install git+https://github.com/Multiscale-Genomics/mg-tool-api.git
-
-    - git clone https://github.com/Multiscale-Genomics/mg-process-fastq.git
-    - cd mg-process-fastq
+    # Install APIs and Pipelines
+    # Install Pipelines
+    - cd ${HOME}/build/Multiscale-Genomics/mg-process-fastq
     - pip install --editable .
+    - pip install -r requirements.txt
+    # - cd ${HOME}/code
+    # - pip install git+https://github.com/Multiscale-Genomics/mg-dm-api.git
+    # - pip install git+https://github.com/Multiscale-Genomics/mg-tool-api.git
+
+    # - git clone https://github.com/Multiscale-Genomics/mg-process-fastq.git
+    # - cd mg-process-fastq
+    # - pip install --editable .
 
 
      #Install MACS2
@@ -224,6 +226,7 @@ before_script :
     - cd ${HOME}/build/Multiscale-Genomics/mg-process-fastq
     - chmod +x harness.sh
     - ls tests/data/
+    - git status
 
 script :
     "./harness.sh"

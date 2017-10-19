@@ -1,8 +1,8 @@
 #!/bin/bash
 
-python tests/test_toolchains.py --pipeline genome --verbose 1
-tc1=$?
-./tidy_data.sh
+# python tests/test_toolchains.py --pipeline genome --verbose 1
+# tc1=$?
+# ./tidy_data.sh
 
 python tests/test_toolchains.py --pipeline chipseq --verbose 1
 tc2=$?

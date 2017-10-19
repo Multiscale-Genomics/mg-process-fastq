@@ -103,8 +103,8 @@ install:
     - cd bwa
     - make
 
-    - cd ${HOME}/build/Multiscale-Genomics/mg-process-fastq
-    - ls
+    # - cd ${HOME}/build/Multiscale-Genomics/mg-process-fastq
+    # - ls
 
     #iNPS Peak Caller
     #- cd ${HOME}/lib
@@ -123,7 +123,7 @@ install:
     - tar -zxvf bedtools-2.26.0.tar.gz
     - cd bedtools2
     - make
-    - cd ${HOME}/build/Multiscale-Genomics/mg-process-fastq
+    # - cd ${HOME}/build/Multiscale-Genomics/mg-process-fastq
 
     # Install APIs and Pipelines
     # Install Pipelines
@@ -149,7 +149,8 @@ install:
     - ln -s ${HOME}/lib/BSseeker2/bs_index bs_index
     - ln -s ${HOME}/lib/BSseeker2/bs_utils bs_utils
 
-    - cd ${HOME}/code/mg-process-fastq/tool
+    # - cd ${HOME}/code/mg-process-fastq/tool
+    - cd ${HOME}/build/Multiscale-Genomics/mg-process-fastq
     - ln -s ${HOME}/lib/BSseeker2/FilterReads.py FilterReads.py
 
      #Post Installation Tidyup
@@ -203,13 +204,16 @@ before_script :
     - ln -s ${HOME}/lib/samtools/bin/wgsim wgsim
     - ln -s ${HOME}/lib/samtools/bin/wgsim_eval.pl wgsim_eval.pl
     - ln -s ${HOME}/lib/samtools/bin/zoom2sam.pl zoom2sam.pl
+
     - cd ${HOME}/build/Multiscale-Genomics/mg-process-fastq
     - docker run -p 80:80 --name biobambamcontainer multiscalegenomics/mgprocessfastq:biobambamimage
     - pwd
+
     - cd ${HOME}/build/Multiscale-Genomics/mg-process-fastq
     - chmod +x shims/*
     - export PATH="$PWD/shims:$PATH"
     - docker ps -a
+
     - cd ${HOME}/build/Multiscale-Genomics/mg-process-fastq
     - chmod +x harness.sh
     - ls tests/data/

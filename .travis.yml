@@ -47,7 +47,6 @@ addons:
 #env:
 #  - COVERALLS=false
 
-
 before_install:
     - pwd
     - ls /usr/lib/
@@ -56,13 +55,17 @@ before_install:
     - mkdir -p ${HOME}/code
     - lsb_release -a
 
-
 services:
     - docker
 
 install:
     # libtbb-dev did not seem to be installing correctly without using sudo
     - sudo apt-get install libtbb-dev
+
+    # Install APIs and Pipelines
+    - cd ${HOME}/build/Multiscale-Genomics/mg-process-fastq
+    - pip install -e .
+    - pip install -r requirements.txt
 
      #htslib
     - cd ${HOME}/lib
@@ -84,19 +87,15 @@ install:
     - make
     - make install
 
-
     #UCSC Tools
     - cd ${HOME}/lib
     - wget http://hgdownload.cse.ucsc.edu/admin/exe/linux.x86_64/bedToBigBed
     - wget http://hgdownload.cse.ucsc.edu/admin/exe/linux.x86_64/wigToBigWig
 
-
-
     #Bowtie2 Aligner
     - cd ${HOME}/lib
     - wget --max-redirect 1 https://downloads.sourceforge.net/project/bowtie-bio/bowtie2/2.3.2/bowtie2-2.3.2-linux-x86_64.zip
     - unzip bowtie2-2.3.2-linux-x86_64.zip
-
 
     #BWA Sequence Aligner
     - cd ${HOME}/lib
@@ -107,7 +106,6 @@ install:
     - cd ${HOME}/build/Multiscale-Genomics/mg-process-fastq
     - ls
 
-
     #iNPS Peak Caller
     #- cd ${HOME}/lib
     #- mkdir iNPS
@@ -115,12 +113,10 @@ install:
     #- wget http://www.picb.ac.cn/hanlab/files/iNPS_V1.2.2.zip
     #- unzip iNPS_V1.2.2.zip
 
-
     #Kallisto
     - cd ${HOME}/lib
     - wget https://github.com/pachterlab/kallisto/releases/download/v0.43.1/kallisto_linux-v0.43.1.tar.gz
     - tar -xzf kallisto_linux-v0.43.1.tar.gz
-
 
     #bedTools
     - wget https://github.com/arq5x/bedtools2/releases/download/v2.26.0/bedtools-2.26.0.tar.gz
@@ -129,27 +125,20 @@ install:
     - make
     - cd ${HOME}/build/Multiscale-Genomics/mg-process-fastq
 
-
-
     # Install APIs and Pipelines
     # Install Pipelines
-    - cd ${HOME}/build/Multiscale-Genomics/mg-process-fastq
-    - pip install --editable .
-    - pip install -r requirements.txt
     # - cd ${HOME}/code
     # - pip install git+https://github.com/Multiscale-Genomics/mg-dm-api.git
     # - pip install git+https://github.com/Multiscale-Genomics/mg-tool-api.git
-
     # - git clone https://github.com/Multiscale-Genomics/mg-process-fastq.git
     # - cd mg-process-fastq
-    # - pip install --editable .
-
+    # - pip install -e .
+    # - pip install -r requirements.txt
 
      #Install MACS2
     - cd ${HOME}/build/Multiscale-Genomics/mg-process-fastq
     - chmod +x includeMAC2.sh
     - ./includeMAC2.sh
-
 
      #Install BSseeker
     - cd ${HOME}/lib
@@ -166,8 +155,6 @@ install:
      #Post Installation Tidyup
     - cd ${HOME}/lib
     - rm *.zip *.tar.gz
-
-
 
 before_script :
     - cd ${HOME}/bin

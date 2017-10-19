@@ -1,24 +1,24 @@
 #!/bin/bash
 
-# python tests/test_toolchains.py --pipeline genome --verbose 1
-# tc1=$?
-# ./tidy_data.sh
+python tests/test_toolchains.py --pipeline genome --verbose 1
+tc1=$?
+./tidy_data.sh
 
 python tests/test_toolchains.py --pipeline chipseq --verbose 1
 tc2=$?
 ./tidy_data.sh
 
-# python tests/test_toolchains.py --pipeline rnaseq
-# tc3=$?
-# ./tidy_data.sh
+python tests/test_toolchains.py --pipeline rnaseq
+tc3=$?
+./tidy_data.sh
 
-# python tests/test_toolchains.py --pipeline wgbs
-# tc4=$?
-# ./tidy_data.sh
+python tests/test_toolchains.py --pipeline wgbs
+tc4=$?
+./tidy_data.sh
 
-# rc=$(($tc1+$tc2+$tc3+$tc4))
+rc=$(($tc1+$tc2+$tc3+$tc4))
 
-# if [[ $rc != 0 ]]; then exit $rc; fi
+if [[ $rc != 0 ]]; then exit $rc; fi
 
 # pytest  tests/test_bwa_indexer.py
 # pytest  tests/test_bwa_aligner.py

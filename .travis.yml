@@ -64,6 +64,7 @@ install:
 
     # Install APIs and Pipelines
     - cd ${HOME}/build/Multiscale-Genomics/mg-process-fastq
+    - git status
     - pip install -e .
     - pip install -r requirements.txt
 
@@ -149,7 +150,6 @@ install:
     - ln -s ${HOME}/lib/BSseeker2/bs_index bs_index
     - ln -s ${HOME}/lib/BSseeker2/bs_utils bs_utils
 
-    # - cd ${HOME}/code/mg-process-fastq/tool
     - cd ${HOME}/build/Multiscale-Genomics/mg-process-fastq
     - ln -s ${HOME}/lib/BSseeker2/FilterReads.py FilterReads.py
 

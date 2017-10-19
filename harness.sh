@@ -2,19 +2,27 @@
 
 python tests/test_toolchains.py --pipeline genome --verbose 1
 tc1=$?
+ls tests/data/
 ./tidy_data.sh
+ls tests/data/
 
 python tests/test_toolchains.py --pipeline chipseq --verbose 1
 tc2=$?
+ls tests/data/
 ./tidy_data.sh
+ls tests/data/
 
 python tests/test_toolchains.py --pipeline rnaseq
 tc3=$?
+ls tests/data/
 ./tidy_data.sh
+ls tests/data/
 
 python tests/test_toolchains.py --pipeline wgbs
 tc4=$?
+ls tests/data/
 ./tidy_data.sh
+ls tests/data/
 
 rc=$(($tc1+$tc2+$tc3+$tc4))
 

@@ -63,12 +63,10 @@ services:
 install:
     # libtbb-dev did not seem to be installing correctly without using sudo
     - sudo apt-get install libtbb-dev
-    # - pip install git+https://github.com/Multiscale-Genomics/mg-tool-api.git
-    # - pip install git+https://github.com/Multiscale-Genomics/mg-dm-api.git
     - pip install --editable .
     - pip install -r requirements.txt
 
-     #hts lib
+     #htslib
     - cd ${HOME}/lib
     - git clone https://github.com/samtools/htslib.git
     - cd htslib
@@ -82,9 +80,6 @@ install:
     - cd ${HOME}/lib
     - git clone https://github.com/samtools/samtools.git
     - cd samtools
-    #- autoconf -Wno-syntax
-    #- rm -rf autom4te.cache
-    #- rm config.mk configure
     - autoheader
     - autoconf -Wno-syntax
     - ./configure --prefix=${HOME}/lib/samtools

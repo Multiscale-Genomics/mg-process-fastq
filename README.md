@@ -1,6 +1,6 @@
 # mg-process-fastq
 
-[![Documentation Status](https://readthedocs.org/projects/mg-process-fastq/badge/?version=latest)](http://mg-process-fastq.readthedocs.org/en/latest/) [![Code Health](https://landscape.io/github/Multiscale-Genomics/mg-process-fastq/master/landscape.svg?style=flat)](https://landscape.io/github/Multiscale-Genomics/mg-process-fastq/master)
+[![Documentation Status](https://readthedocs.org/projects/mg-process-fastq/badge/?version=latest)](http://mg-process-fastq.readthedocs.org/en/latest/) [![Build Status](https://travis-ci.org/Multiscale-Genomics/mg-process-fastq.svg?branch=master)](https://travis-ci.org/Multiscale-Genomics/mg-process-fastq) [![Code Health](https://landscape.io/github/Multiscale-Genomics/mg-process-fastq/master/landscape.svg?style=flat)](https://landscape.io/github/Multiscale-Genomics/mg-process-fastq/master)
 
 Scripts required for the processing of FASTQ files (eg generating adjacency lists for Hi-C data)
 

@@ -111,6 +111,11 @@ install:
     - cd bwa
     - make
 
+    # GEM Indexer
+    - cd ${HOME}/lib
+    - wget http://barnaserver.com/gemtools/releases/GEMTools-static-core2-1.7.1.tar.gz
+    - tar -xzf GEMTools-static-core2-1.7.1.tar.gz
+
     - cd ${HOME}/build/Multiscale-Genomics/mg-process-fastq
     - ls
 
@@ -193,6 +198,18 @@ before_script :
     - ln -s ${HOME}/lib/bowtie2-2.3.2/bowtie2-inspect bowtie2-inspect
     - ln -s ${HOME}/lib/bowtie2-2.3.2/bowtie2-inspect-s bowtie2-inspect-s
     - ln -s ${HOME}/lib/bowtie2-2.3.2/bowtie2-inspect-l bowtie2-inspect-l
+
+    - ln -s ${HOME}/lib/gemtools-1.7.1-core2/bin/gem-2-bed gem-2-bed
+    - ln -s ${HOME}/lib/gemtools-1.7.1-core2/bin/gem-2-gem gem-2-gem
+    - ln -s ${HOME}/lib/gemtools-1.7.1-core2/bin/gem-2-sam gem-2-sam
+    - ln -s ${HOME}/lib/gemtools-1.7.1-core2/bin/gem-2-wig gem-2-wig
+    - ln -s ${HOME}/lib/gemtools-1.7.1-core2/bin/gem-indexer gem-indexer
+    - ln -s ${HOME}/lib/gemtools-1.7.1-core2/bin/gem-indexer_bwt-dna gem-indexer_bwt-dna
+    - ln -s ${HOME}/lib/gemtools-1.7.1-core2/bin/gem-indexer_fasta2meta+cont gem-indexer_fasta2meta+cont
+    - ln -s ${HOME}/lib/gemtools-1.7.1-core2/bin/gem-indexer_generate gem-indexer_generate
+    - ln -s ${HOME}/lib/gemtools-1.7.1-core2/bin/gem-info gem-info
+    - ln -s ${HOME}/lib/gemtools-1.7.1-core2/bin/gem-mapper gem-mapper
+    - ln -s ${HOME}/lib/gemtools-1.7.1-core2/bin/gemtools gemtools
 
     - ln -s ${HOME}/lib/htslib/bin/bgzip bgzip
     - ln -s ${HOME}/lib/htslib/bin/htsfile htsfile

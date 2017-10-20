@@ -32,25 +32,27 @@ rm tests/data/macs2.Human.GCA_000001405.22.fasta.bwa.tar.gz
 rm tests/data/tb.Human.GCA_000001405.22.fasta
 rm tests/data/tb.Human.GCA_000001405.22_gem*
 
-python tests/test_toolchains.py --pipeline chipseq
-tc=$?
-rc=$(($rc + $tc))
-# ls tests/data/
-rm tests/data/macs2.Human.DRR000150.22.bam
-rm tests/data/macs2.Human.DRR000150.22.bam.filtered.tmp.bam
-rm tests/data/macs2.Human.DRR000150.22.fastq.out.bam
-rm tests/data/macs2.Human.DRR000150.22.fastq.sai
-rm tests/data/macs2.Human.DRR000150.22.fastq.sam
-rm tests/data/macs2.Human.DRR000150.22_filtered.bam
-rm tests/data/macs2.Human.DRR000150.22_filtered_out_peaks.narrowPeak
-rm tests/data/macs2.Human.DRR000150.22_filtered_out_peaks.xls
-rm tests/data/macs2.Human.DRR000150.22_filtered_out_summits.bed
-rm tests/data/macs2.Human.DRR000150.22_peaks.broadPeak
-rm tests/data/macs2.Human.DRR000150.22_peaks.gappedPeak
-rm tests/data/macs2.Human.DRR000150.22_peaks.narrowPeak
-rm tests/data/macs2.Human.DRR000150.22_peaks.summits.bed
-rm tests/data/macs2.Human.GCA_000001405.22.fasta.bwa.tar.gz
-rm -r tests/data/macs2.Human.GCA_000001405.22.fasta.bwa
+if [[ $python_version != *"3."* ]]; then
+    python tests/test_toolchains.py --pipeline chipseq
+    tc=$?
+    rc=$(($rc + $tc))
+    # ls tests/data/
+    rm tests/data/macs2.Human.DRR000150.22.bam
+    rm tests/data/macs2.Human.DRR000150.22.bam.filtered.tmp.bam
+    rm tests/data/macs2.Human.DRR000150.22.fastq.out.bam
+    rm tests/data/macs2.Human.DRR000150.22.fastq.sai
+    rm tests/data/macs2.Human.DRR000150.22.fastq.sam
+    rm tests/data/macs2.Human.DRR000150.22_filtered.bam
+    rm tests/data/macs2.Human.DRR000150.22_filtered_out_peaks.narrowPeak
+    rm tests/data/macs2.Human.DRR000150.22_filtered_out_peaks.xls
+    rm tests/data/macs2.Human.DRR000150.22_filtered_out_summits.bed
+    rm tests/data/macs2.Human.DRR000150.22_peaks.broadPeak
+    rm tests/data/macs2.Human.DRR000150.22_peaks.gappedPeak
+    rm tests/data/macs2.Human.DRR000150.22_peaks.narrowPeak
+    rm tests/data/macs2.Human.DRR000150.22_peaks.summits.bed
+    rm tests/data/macs2.Human.GCA_000001405.22.fasta.bwa.tar.gz
+    rm -r tests/data/macs2.Human.GCA_000001405.22.fasta.bwa
+fi
 
 python tests/test_toolchains.py --pipeline rnaseq
 tc=$?

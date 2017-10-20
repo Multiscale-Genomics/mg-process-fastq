@@ -44,24 +44,26 @@ rm tests/data/kallisto.Human.ERR030872.abundance.tsv
 rm tests/data/kallisto.Human.ERR030872.run_info.json
 rm tests/data/kallisto.Human.GRCh38.idx
 
-python tests/test_toolchains.py --pipeline wgbs
-tc4=$?
-ls tests/data/
-rm tests/data/bsSeeker.Mouse.GRCm38.fasta.bt2.tar.gz
-rm -r tests/data/bsSeeker.Mouse.GRCm38.fasta_bowtie2/
-rm tests/data/bsSeeker.Mouse.GRCm38_1.atcgmap
-rm tests/data/bsSeeker.Mouse.GRCm38_1.cgmap
-rm tests/data/bsSeeker.Mouse.GRCm38_1.wig
-rm tests/data/bsSeeker.Mouse.GRCm38_1_filtered.bai
-rm tests/data/bsSeeker.Mouse.GRCm38_1_filtered.bam
-rm tests/data/bsSeeker.Mouse.GRCm38_1_filtered.bam.bai
-rm tests/data/bsSeeker.Mouse.GRCm38_1_filtered.bam.call_methylation_log
-rm tests/data/bsSeeker.Mouse.GRCm38_1_filtered.bam_tmp.bai
-rm tests/data/bsSeeker.Mouse.GRCm38_1_filtered.fastq
-rm tests/data/bsSeeker.Mouse.GRCm38_1_filtered.fastq.tar.gz
-rm tests/data/bsSeeker.Mouse.GRCm38_1_filtered.fastq.tmp
-rm tests/data/bsSeeker.Mouse.GRCm38_2_filtered.fastq
-rm tests/data/bsSeeker.Mouse.GRCm38_2_filtered.fastq.tmp
+if [[ $python_version != *"3."* ]]; then
+    python tests/test_toolchains.py --pipeline wgbs
+    tc4=$?
+    ls tests/data/
+    rm tests/data/bsSeeker.Mouse.GRCm38.fasta.bt2.tar.gz
+    rm -r tests/data/bsSeeker.Mouse.GRCm38.fasta_bowtie2/
+    rm tests/data/bsSeeker.Mouse.GRCm38_1.atcgmap
+    rm tests/data/bsSeeker.Mouse.GRCm38_1.cgmap
+    rm tests/data/bsSeeker.Mouse.GRCm38_1.wig
+    rm tests/data/bsSeeker.Mouse.GRCm38_1_filtered.bai
+    rm tests/data/bsSeeker.Mouse.GRCm38_1_filtered.bam
+    rm tests/data/bsSeeker.Mouse.GRCm38_1_filtered.bam.bai
+    rm tests/data/bsSeeker.Mouse.GRCm38_1_filtered.bam.call_methylation_log
+    rm tests/data/bsSeeker.Mouse.GRCm38_1_filtered.bam_tmp.bai
+    rm tests/data/bsSeeker.Mouse.GRCm38_1_filtered.fastq
+    rm tests/data/bsSeeker.Mouse.GRCm38_1_filtered.fastq.tar.gz
+    rm tests/data/bsSeeker.Mouse.GRCm38_1_filtered.fastq.tmp
+    rm tests/data/bsSeeker.Mouse.GRCm38_2_filtered.fastq
+    rm tests/data/bsSeeker.Mouse.GRCm38_2_filtered.fastq.tmp
+fi
 
 rc=$(($tc1+$tc2+$tc3+$tc4))
 

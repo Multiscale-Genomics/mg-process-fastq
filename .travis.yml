@@ -237,10 +237,10 @@ before_script :
     - docker ps -a
 
     - cd ${HOME}/build/Multiscale-Genomics/mg-process-fastq
-    - chmod +x harness.sh
+    - chmod +x scripts/travis/harness.sh
     - ls tests/data/
     - git status
 
 script :
-    "./harness.sh"
+    "./scripts/travis/harness.sh"
 

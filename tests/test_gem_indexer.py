@@ -34,7 +34,7 @@ def test_gem_indexer():
     genome_gem_fa = resource_path + "tb.Human.GCA_000001405.22_gem.fasta"
 
     with gzip.open(genome_fa + '.gz', 'rb') as fgz_in:
-        with open(genome_fa, 'w') as f_out:
+        with open(genome_fa, 'wb') as f_out:
             f_out.write(fgz_in.read())
 
 

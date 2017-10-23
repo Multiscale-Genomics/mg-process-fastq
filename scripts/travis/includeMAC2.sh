@@ -18,12 +18,11 @@
 python_version=$(python --version 2>&1)
 echo $python_version
 cd ${HOME}/lib
-git clone https://github.com/taoliu/MACS.git
-cd MACS
 if [[ $python_version != *"3.6."* ]]; then
-    pip install .
+    pip install MACS2
 else
-    cd ${HOME}/lib
+    cd MACS
+    git clone https://github.com/taoliu/MACS.git
     git checkout MACS2p3
     pip install .
     alias macs2="macs2p3"

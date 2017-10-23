@@ -134,8 +134,11 @@ class bowtieIndexerTool(Tool):
 
         output_metadata = {
             "index": Metadata(
-                "index_bwt", "", output_files["index"], [metadata["genome"].file_path],
-                {
+                data_type="sequence_mapping_index_bowtie",
+                file_type="TAR",
+                file_path=output_files["index"],
+                sources=[metadata["genome"].file_path],
+                meta_data={
                     "assembly": metadata["genome"].meta_data["assembly"],
                     "tool": "bowtie_indexer"
                 }

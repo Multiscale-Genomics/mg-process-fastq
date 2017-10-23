@@ -15,10 +15,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-python_version=$(python --version 2>&1)
-echo $python_version
+pv=$(python -c 'import platform; print(platform.python_version())')
+echo $pv
 cd ${HOME}/lib
-if [[ $python_version != *"3.6."* ]]; then
+if [[ $pv == "2.7.12" ]]; then
     pip install MACS2
 else
     git clone https://github.com/taoliu/MACS.git

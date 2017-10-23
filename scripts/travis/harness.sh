@@ -16,8 +16,9 @@
 # limitations under the License.
 
 rc=0
+pv=$(python -c 'import platform; print(platform.python_version())')
 
-python tests/test_toolchains.py --pipeline genome --verbose 1
+python tests/test_toolchains.py --pipeline genome
 tc=$?
 rc=$(($rc + $tc))
 # ls tests/data/
@@ -32,7 +33,7 @@ rm tests/data/macs2.Human.GCA_000001405.22.fasta.bwa.tar.gz
 rm tests/data/tb.Human.GCA_000001405.22.fasta
 rm tests/data/tb.Human.GCA_000001405.22_gem*
 
-if [[ $python_version != *"3."* ]]; then
+if [[ $pv == "2.7.12" ]]; then
     python tests/test_toolchains.py --pipeline chipseq
     tc=$?
     rc=$(($rc + $tc))
@@ -66,7 +67,7 @@ rm tests/data/kallisto.Human.ERR030872.abundance.tsv
 rm tests/data/kallisto.Human.ERR030872.run_info.json
 rm tests/data/kallisto.Human.GRCh38.idx
 
-if [[ $python_version != *"3."* ]]; then
+if [[ $pv == "2.7.12" ]]; then
     python tests/test_toolchains.py --pipeline wgbs
     tc=$?
     rc=$(($rc + $tc))

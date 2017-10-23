@@ -30,6 +30,7 @@ MuG - FASTQ Pipelines's documentation!
    tools
    common
    fastqfunctions
+   testing
    settingUpTravis
    docker
    testData_ChIPSeq

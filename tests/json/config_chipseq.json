@@ -6,11 +6,6 @@
             "name": "loc",
             "value": "59b7e020d9422a5969b65378"
         }, {
-            "required": false,
-            "allow_multiple": false,
-            "name": "bg_loc",
-            "value": "59b7e020d9422a5969b65379"
-        }, {
             "required": true,
             "allow_multiple": false,
             "name": "genome",
@@ -30,6 +25,10 @@
         {
             "name": "description",
             "value": null
+        },
+        {
+            "name": "macs_qvalue_param",
+            "value": "0.05"
         }
     ],
     "output_files": [

@@ -2,7 +2,7 @@
     "_id": "process_chipseq",
     "name": "Process ChIP-seq",
     "title": "ChIP-seq Analysis",
-    "short_description": "Align ChIP-seq data, filtering with BioBamBam and Peak Calling using MACS2",
+    "short_description": "Align ChIP-seq data, filtering with BioBamBam and Peak Calling using MACS2. For full details about all parameters please consult the MACS2 documentation at https://github.com/taoliu/MACS",
     "owner": {
         "institution": "EMBL-EBI",
         "author": "Mark McDowall",
@@ -71,7 +71,149 @@
             "allow_multiple": false
         }
     ],
-    "arguments": [],
+    "arguments": [
+        {
+            "name": "macs_gsize_param",
+            "description": "Mappable genome size",
+            "help": "",
+            "type": "string",
+            "required": false,
+            "default": "null"
+        }, {
+            "name": "macs_tsize_param",
+            "description": "Size of sequencing tags",
+            "help": "",
+            "type": "string",
+            "required": false,
+            "default": "null"
+        }, {
+            "name": "macs_bw_param",
+            "description": "Band width for scanning the genome when model building",
+            "help": "",
+            "type": "string",
+            "required": false,
+            "default": "null"
+        }, {
+            "name": "macs_qvalue_param",
+            "description": "Minimum FDR cutoff for calling significant regions",
+            "help": "",
+            "type": "string",
+            "required": false,
+            "default": "null"
+        }, {
+            "name": "macs_pvalue_param",
+            "description": "p-value cutoff",
+            "help": "",
+            "type": "string",
+            "required": false,
+            "default": "null"
+        }, {
+            "name": "macs_mfold_param",
+            "description": "Region to selection within an m-fold range of high-confidence enrichment ratio against the background for model building",
+            "help": "",
+            "type": "string",
+            "required": false,
+            "default": "null"
+        }, {
+            "name": "macs_nolambda_param",
+            "description": "Use background lambda instead of local",
+            "help": "",
+            "type": "string",
+            "required": false,
+            "default": "null"
+        }, {
+            "name": "macs_slocal_param",
+            "description": "Small local regions",
+            "help": "",
+            "type": "string",
+            "required": false,
+            "default": "null"
+        }, {
+            "name": "macs_llocal_param",
+            "description": "Large local regions",
+            "help": "",
+            "type": "string",
+            "required": false,
+            "default": "null"
+        }, {
+            "name": "macs_fix-bimodal_param",
+            "description": "Turn on aut paired model process",
+            "help": "",
+            "type": "string",
+            "required": false,
+            "default": "null"
+        }, {
+            "name": "macs_nomodel_param",
+            "description": "Negate building shifting models",
+            "help": "",
+            "type": "string",
+            "required": false,
+            "default": "null"
+        }, {
+            "name": "macs_extsize_param",
+            "description": "Used with momodel to expand read size to fixed-size fragments",
+            "help": "",
+            "type": "string",
+            "required": false,
+            "default": "null"
+        }, {
+            "name": "macs_shift_param",
+            "description": "",
+            "help": "",
+            "type": "string",
+            "required": false,
+            "default": "null"
+        }, {
+            "name": "macs_keep-dups_param",
+            "description": "Controls for counting of duplicate tags",
+            "help": "",
+            "type": "string",
+            "required": false,
+            "default": "null"
+        }, {
+            "name": "macs_broad_param",
+            "description": "Control the placing highly eriched regions into a broad region with loose cutoffs",
+            "help": "",
+            "type": "string",
+            "required": false,
+            "default": "null"
+        }, {
+            "name": "macs_broad-cutoff_param",
+            "description": "Cutoff for broad region",
+            "help": "",
+            "type": "string",
+            "required": false,
+            "default": "null"
+        }, {
+            "name": "macs_to-large_param",
+            "description": "Scale up small datasets",
+            "help": "",
+            "type": "string",
+            "required": false,
+            "default": "null"
+        }, {
+            "name": "macs_down-sample_param",
+            "description": "Random sampling to to downsize the dataset",
+            "help": "",
+            "type": "string",
+            "required": false,
+            "default": "null"
+        }, {
+            "name": "macs_bdg_param",
+            "description": "Store the fragment pileup and scores in bedGraph files",
+            "help": "",
+            "type": "string",
+            "required": false,
+            "default": "null"
+        }, {
+            "name": "macs_call-summits_param",
+            "description": "Reanalyse the shape of the profile to deconvolve subpeaks",
+            "help": "",
+            "type": "string",
+            "required": false,
+            "default": "null"
+        }
+    ],
     "output_files": [
         {
             "required": true,

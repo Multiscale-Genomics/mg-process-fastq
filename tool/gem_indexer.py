@@ -110,15 +110,21 @@ class gemIndexerTool(Tool):
 
         output_metadata = {
             "genome_gem": Metadata(
-                "assembly", "fasta", output_files['genome_gem'], [metadata["genome"].file_path],
-                {
+                data_type="sequence_dna",
+                file_type="FASTA",
+                file_path=output_files['genome_gem'],
+                sources=[metadata["genome"].file_path],
+                meta_data={
                     "assembly": metadata["genome"].meta_data["assembly"],
                     "tool": "gem_indexer"
                 }
             ),
             "index": Metadata(
-                "index_gem", "gem", output_files['index'], [output_files['genome_gem']],
-                {
+                data_type="sequence_mapping_index_gem",
+                file_type="GEM",
+                file_path=output_files['index'],
+                sources=[output_files['genome_gem']],
+                meta_data={
                     "assembly": metadata["genome"].meta_data["assembly"],
                     "tool": "gem_indexer"
                 }

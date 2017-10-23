@@ -21,8 +21,8 @@ cd ${HOME}/lib
 if [[ $python_version != *"3.6."* ]]; then
     pip install MACS2
 else
-    cd MACS
     git clone https://github.com/taoliu/MACS.git
+    cd MACS
     git checkout MACS2p3
     pip install .
     alias macs2="macs2p3"

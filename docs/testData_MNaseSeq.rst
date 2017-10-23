@@ -1,9 +1,9 @@
 Test Data for MNase-seq pipeline
-===============================
+================================
 
-The following document is for the preparation of data set required for testing the MNase-seq pipeline. The document has
-been written with macOS Sierra in mind, although many of the commands are cross
-platform (\*nix) compliant.
+The following document is for the preparation of data set required for testing
+the MNase-seq pipeline. The document has been written with macOS Sierra in mind,
+although many of the commands are cross platform (\*nix) compliant.
 
 You would need to have the tools listed in "Prerequisites" installed on your system.
 For more details on installing the tools for this pipeline please refer to
@@ -18,13 +18,10 @@ running these commands.
 Prerequisites
 -------------
 
-.. code-block:: none
-   :linenos:
+   - BWA
+   - Samtools
+   - iNPS
 
-   BWA   
-   Samtools
-   iNPS
-   
 
 .. note:: iNPS will only run within a Python 3 or above environment
 
@@ -45,7 +42,7 @@ Download the fastq file from
 .. code-block:: none
 
    wget ftp://ftp.sra.ebi.ac.uk/vol1/fastq/DRR000/DRR000386/DRR000386.fastq.gz
-   
+
 Unzip this file.
 
 .. code-block:: none
@@ -90,7 +87,11 @@ Find the depths of coverage from the sorted file
    samtools depth Mouse.CM001012.2.sorted.sam >Mouse.CM001012.2.dp
 
 
-From the depth file, find regions with >= 70 depth, spanning over >=55 base pairs. You may get the script for this from https://github.com/Multiscale-Genomics/mg-misc-scripts/blob/master/MNaseSeq_Scripts/traverseForCoverageRegion_MNase.py. Run it using:
+From the depth file, find regions with >= 70 depth, spanning over >=55 base pairs.
+You may get the script for this from:
+https://github.com/Multiscale-Genomics/mg-misc-scripts/blob/master/MNaseSeq_Scripts/traverseForCoverageRegion_MNase.py
+
+Run it using:
 
 .. code-block:: none
 
@@ -145,7 +146,7 @@ and running it via command line:
 
 Shorten this file by running the script at https://github.com/Multiscale-Genomics/mg-misc-scripts/blob/master/MNASeq_Scripts/randomSeqSelector.py
 
-using 
+using
 
 .. code-block:: none
 

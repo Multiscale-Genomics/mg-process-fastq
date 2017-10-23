@@ -9,14 +9,19 @@ MuG - FASTQ Pipelines's documentation!
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
-   
+
    install
    full_installation
    pipelines
    tools
    common
    fastqreader
-   testData
+   settingUpTravis
+   docker
+   testData_ChIPSeq
+   testData_MNaseSeq
+   testData_RNASeq
+   testData_WGBS
    license
 
 

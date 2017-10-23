@@ -1,9 +1,9 @@
 Test Data for ChIP-seq pipeline
 ===============================
 
-The following document is for the preparation of data set required for testing the ChIP-seq pipeline. The document has
-been written with macOS Sierra in mind, although many of the commands are cross
-platform (\*nix) compliant.
+The following document is for the preparation of data set required for testing
+the ChIP-seq pipeline. The document has been written with macOS Sierra in mind,
+although many of the commands are cross platform (\*nix) compliant.
 
 You would need to have the tools listed in "Prerequisites" installed on your system.
 For more details on installing the tools for this pipeline please refer to
@@ -18,13 +18,10 @@ running these commands.
 Prerequisites
 -------------
 
-.. code-block:: none
-   :linenos:
-
-   BWA
-   MACS 2
-   Biobambam
-   Samtools
+   - BWA
+   - MACS 2
+   - Biobambam
+   - Samtools
 
 
 Data set for genome file
@@ -51,7 +48,7 @@ Download the fastq file from
 .. code-block:: none
 
    wget ftp://ftp.sra.ebi.ac.uk/vol1/fastq/DRR000/DRR000150/DRR000150.fastq.gz
-   
+
 Unzip this file.
 
 .. code-block:: none

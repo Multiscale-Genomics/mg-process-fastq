@@ -1,5 +1,6 @@
 """
-.. Copyright 2017 EMBL-European Bioinformatics Institute
+.. See the NOTICE file distributed with this work for additional information
+   regarding copyright ownership.
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -15,10 +16,12 @@
 """
 
 import os.path
+import time
 import pytest # pylint: disable=unused-import
 
 from tool import biobambam_filter
 
+@pytest.mark.chipseq
 def test_biobambam():
     """
     Test case to ensure that BioBamBam works
@@ -29,6 +32,7 @@ def test_biobambam():
         [resource_path + "macs2.Human.DRR000150.22.bam"],
         []
     )
+    time.sleep (10)
 
     assert os.path.isfile(resource_path + "macs2.Human.DRR000150.22.filtered.bam") is True
     assert os.path.getsize(resource_path + "macs2.Human.DRR000150.22.filtered.bam") > 0

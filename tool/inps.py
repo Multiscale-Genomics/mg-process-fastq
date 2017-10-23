@@ -1,5 +1,6 @@
 """
-.. Copyright 2017 EMBL-European Bioinformatics Institute
+.. See the NOTICE file distributed with this work for additional information
+   regarding copyright ownership.
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -37,8 +38,6 @@ except ImportError:
 #from basic_modules.metadata import Metadata
 from basic_modules.tool import Tool
 
-from tool.common import cd
-
 # ------------------------------------------------------------------------------
 
 class inps(Tool):
@@ -72,22 +71,30 @@ class inps(Tool):
             Location of the collated bed file of nucleosome peak calls
         """
         bed_file = bam_file + ".bed"
-        with cd(os.path.join(os.path.expanduser("~"), "bin/")):
-            command_line_1 = 'bedtools bamtobed -i ' + bam_file
-            pyenv3 = os.path.join(os.path.expanduser("~"), ".pyenv/versions/3.5.2/bin/python")
-            command_line_2 = pyenv3 + ' iNPS_V1.2.2.py -i ' + bed_file + ' -o ' + peak_bed
+        pyenv3 = os.path.join(os.path.expanduser("~"), "bin/py3")
+        inps_cmd = os.path.join(os.path.expanduser("~"), "bin/iNPS_V1.2.2.py")
 
-            args = shlex.split(command_line_1)
-            with open(bed_file, "w") as f_out:
-                sub_proc = subprocess.Popen(args, stdout=f_out)
-                sub_proc.wait()
+        command_line_1 = 'bedtools bamtobed -i ' + bam_file
+        pyenv3 = os.path.join(os.path.expanduser("~"), "bin/py3")
+        command_line_2 = pyenv3 + ' ' + inps_cmd + ' -i ' + bed_file + ' -o ' + peak_bed + "_tmp"
 
-            args = shlex.split(command_line_2)
-            sub_proc = subprocess.Popen(args)
+        print("iNPS - cmd1:", command_line_1)
+        print("iNPS - cmd2:", command_line_2)
+
+        args = shlex.split(command_line_1)
+        with open(bed_file, "w") as f_out:
+            sub_proc = subprocess.Popen(args, stdout=f_out)
             sub_proc.wait()
 
-        return peak_bed
+        args = shlex.split(command_line_2)
+        sub_proc = subprocess.Popen(args)
+        sub_proc.wait()
 
+        with open(peak_bed + "_tmp_Gathering.like_bed", "rb") as f_in:
+            with open(peak_bed, "wb") as f_out:
+                f_out.write(f_in.read())
+
+        return True
 
     def run(self, input_files, output_files, metadata=None):
         """
@@ -119,6 +126,6 @@ class inps(Tool):
         results = self.inps_peak_calling(bam_file, peak_bed)
         results = compss_wait_on(results)
 
-        return (results[0], output_metadata)
+        return ([peak_bed], output_metadata)
 
 # ------------------------------------------------------------------------------

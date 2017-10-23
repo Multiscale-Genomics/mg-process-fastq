@@ -1,5 +1,6 @@
 """
-.. Copyright 2017 EMBL-European Bioinformatics Institute
+.. See the NOTICE file distributed with this work for additional information
+   regarding copyright ownership.
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -123,12 +124,6 @@ class bwaIndexerTool(Tool):
 
         results = compss_wait_on(results)
 
-        # handle error
-        #if not self.bwa_indexer(genome_file, amb_loc, ann_loc, bwt_loc, pac_loc, sa_loc):
-        #    output_metadata.set_exception(
-        #        Exception(
-        #            "bwa_indexer: Could not process files {}, {}.".format(*input_files)))
-        #output_file = None
         return (output_files, [output_metadata])
 
 # ------------------------------------------------------------------------------

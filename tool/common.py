@@ -1,5 +1,6 @@
 """
-.. Copyright 2017 EMBL-European Bioinformatics Institute
+.. See the NOTICE file distributed with this work for additional information
+   regarding copyright ownership.
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -31,16 +32,6 @@ except ImportError:
 from socket import error as SocketError
 import errno
 
-
-#try:
-#    from pycompss.api.parameter import FILE_IN, FILE_OUT
-#    from pycompss.api.task import task
-#except ImportError :
-#    print("[Warning] Cannot import \"pycompss\" API packages.")
-#    print("          Using mock decorators.")
-
-#    from dummy_pycompss import *
-
 try:
     import pysam
 except ImportError:
@@ -64,18 +55,17 @@ class cd(object):
 
 class common(object):
     """
-    Functions for downloading and processing \*-seq FastQ files. Functions
+    Functions for downloading and processing *-seq FastQ files. Functions
     provided allow for the downloading andindexing of the genome assemblies.
     """
 
-    def __init__ (self):
+    def __init__(self):
         """
         Initialise the module
         """
         print("Common functions")
 
-
-    def getGenomeFile(self, file_loc, species, assembly, index=True):
+    def getGenomeFile(self, file_loc, species, assembly):
         """
         Function for downloading and extracting the DNA files from the ensembl
         FTP
@@ -112,16 +102,7 @@ class common(object):
             with gzip.open(file_loc, 'rb') as f_in, open(file_loc_unzipped, 'wb') as f_out:
                 shutil.copyfileobj(f_in, f_out)
 
-#        indexes = {}
-        if index is True:
-            indexes = self.run_indexers(file_loc_unzipped)
-            #bowtie_index = indexes['bowtie']
-            #bwa_index = indexes['bwa']
-            #gem_index = indexes['gem']
-
-        #return {'zipped': file_loc, 'unzipped': file_loc_unzipped, 'index' : indexes}
         return True
-
 
     def getGenomeFromENA(self, data_dir, species, assembly, index = True):
         """
@@ -147,56 +128,45 @@ class common(object):
             self.download_file(file_name, ftp_url)
 
         indexes = {}
-        if index == True:
-            self.replaceENAHeader(file_name)
+        if index is True:
+            self.replaceENAHeader(file_name, file_name + ".miniHeader.fastq")
             indexes = self.run_indexers(file_name)
 
         return {'unzipped': file_name, 'index' : indexes}
 
-
-    def replaceENAHeader(self, file_path):
+    def replaceENAHeader(self, file_path, file_out):
         """
         The ENA header has pipes in the header as part of teh stable_id. This
         function removes the ENA stable_id and replaces it with the final
         section after splitting the stable ID on the pipe.
         """
-        from tempfile import mkstemp
-        from shutil import move
-        from os import remove, close
-
-        #Create temp file
-        file_handle, abs_path = mkstemp()
-        with open(abs_path, 'w') as new_file:
+        with open(file_out, 'w') as new_file:
             with open(file_path) as old_file:
                 for line in old_file:
                     if line[0] == '>':
                         space_line = line.split(" ")
-                        new_file.write(">" + space_line[0].split("|")[-1].replace(">", "") + " " + " ".join(space_line[1:]))
+                        new_file.write(">" + space_line[0].split("|")[-1].replace(">", "") + "\n")
                     else:
                         new_file.write(line)
-        close(file_handle)
-        #Remove original file
-        remove(file_path)
-        #Move new file
-        move(abs_path, file_path)
 
         return True
-
 
     def getcDNAFiles(self, data_dir, species, assembly, e_release):
         """
         Function for downloading and extracting the CDNA files from the ensembl FTP
         """
 
-        file_name = data_dir + species + '_' + assembly + '/' + species + '.' + assembly + '.cdna.all.fa.gz'
+        file_name = data_dir + species + '_' + assembly + '/'
+        file_name += species + '.' + assembly + '.cdna.all.fa.gz'
 
         if os.path.isfile(file_name) is False:
-            ftp_url = 'ftp://ftp.ensembl.org/pub/release-' + e_release + '/' + species.lower() + '/cdna/' + species[0].upper() + species[1:] + '.' + assembly + '.cdna.all.fa.gz'
+            ftp_url = 'ftp://ftp.ensembl.org/pub/release-' + e_release + '/'
+            ftp_url += species.lower() + '/cdna/' + species[0].upper() + species[1:]
+            ftp_url += '.' + assembly + '.cdna.all.fa.gz'
 
             self.download_file(file_name, ftp_url)
 
         return file_name
-
 
     def getFastqFiles(self, ena_err_id, data_dir, ena_srr_id = None):
         """
@@ -262,12 +232,12 @@ class common(object):
                 )
 
         for gzf in gzfiles:
-            with gzip.open(gzf, 'rb') as f_in, open(gzf.replace('.fastq.gz', '.fastq'), 'wb') as f_out:
-                shutil.copyfileobj(f_in, f_out)
+            with gzip.open(gzf, 'rb') as f_in:
+                with open(gzf.replace('.fastq.gz', '.fastq'), 'wb') as f_out:
+                    shutil.copyfileobj(f_in, f_out)
             os.remove(gzf)
 
         return files
-
 
     def download_file(self, file_location, url):
         """
@@ -283,7 +253,12 @@ class common(object):
             info = meta.info()
             if restart_counter > 0:
                 byte_start = int(os.stat(file_location).st_size) + 1
-                request = Request(url, headers={"Range" : "bytes=" + str(byte_start) + "-" + str(info["content-length"])})
+                request = Request(
+                    url,
+                    headers={
+                        "Range" : "bytes=" + str(byte_start) + "-" + str(info["content-length"])
+                    }
+                )
             else:
                 request = Request(url)
 
@@ -319,7 +294,6 @@ class common(object):
             break
 
         return True
-
 
     def run_indexers(self, file_name):
         """
@@ -384,7 +358,7 @@ class common(object):
 
         if os.path.isfile(file_name_nofa + '.gem') is False:
             print("Indexing - GEM")
-            self.gem_index_genome(file_name_unzipped)
+            self.gem_index_genome(file_name_unzipped, file_name_nofa + '.gem')
 
         return {
             'bowtie' : file_name_unzipped + '.1.bt2',
@@ -392,8 +366,7 @@ class common(object):
             'gem' : file_name_unzipped + '.gem'
         }
 
-
-    def gem_index_genome(self, genome_file):
+    def gem_index_genome(self, genome_file, gem_file):
         """
         Create an index of the genome FASTA file with GEM. These are saved
         alongside the assembly file.
@@ -404,16 +377,13 @@ class common(object):
             Location of the assembly file in the file system
 
         """
-        file_name = genome_file.split("/")
-
-        command_line = 'gem-indexer -i ' + genome_file + ' -o ' + file_name[-1].replace('.fa', '')
+        command_line = 'gem-indexer -i ' + genome_file + ' -o ' + gem_file
 
         args = shlex.split(command_line)
         process = subprocess.Popen(args)
         process.wait()
 
         return True
-
 
     def bowtie_index_genome(self, genome_file, index_name=None):
         """
@@ -438,7 +408,6 @@ class common(object):
             process.wait()
 
         return True
-
 
     def bwa_index_genome(self, genome_file):
         """
@@ -492,7 +461,6 @@ class common(object):
 
         return (amb_name, ann_name, bwt_name, pac_name, sa_name)
 
-
     def bwa_align_reads(self, genome_file, reads_file, bam_loc):
         """
         Map the reads to the genome using BWA.
@@ -523,8 +491,9 @@ class common(object):
             process = subprocess.Popen(args)
             process.wait()
 
+        return output_bam_file
 
-    def merge_bam(self, data_dir, project_id, final_id, run_ids=[]):
+    def merge_bam(self, data_dir, project_id, final_id, run_ids=None):
         """
         Merge together all the bams in a directory and sort to create the final
         bam ready to be filtered
@@ -534,7 +503,7 @@ class common(object):
         """
         out_bam_file = data_dir + project_id + '/' + final_id + '.bam'
 
-        if len(run_ids) == 0:
+        if len(run_ids) is None:
             bam_files = [f for f in os.path.listdir(data_dir + project_id) if f.endswith(("sai"))]
         else:
             bam_files = [f + ".bam" for f in run_ids]

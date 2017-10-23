@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 
 """
-.. Copyright 2017 EMBL-European Bioinformatics Institute
+.. See the NOTICE file distributed with this work for additional information
+   regarding copyright ownership.
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -25,7 +26,6 @@ from basic_modules.metadata import Metadata
 
 from dmp import dmp
 
-
 from tool.kallisto_indexer import kallistoIndexerTool
 from tool.kallisto_quant import kallistoQuantificationTool
 
@@ -38,7 +38,7 @@ class process_rnaseq(Workflow):
     to quantify the amount of cDNA
     """
 
-    def __init__(self, configuration={}):
+    def __init__(self, configuration=None):
         """
         Initialise the tool with its configuration.
 
@@ -49,8 +49,10 @@ class process_rnaseq(Workflow):
             a dictionary containing parameters that define how the operation
             should be carried out, which are specific to each Tool.
         """
-        self.configuration.update(configuration)
+        if configuration is None:
+            configuration = {}
 
+        self.configuration.update(configuration)
 
     def run(self, file_ids, metadata, output_files):
         """
@@ -82,7 +84,7 @@ class process_rnaseq(Workflow):
         k_index = kallistoIndexerTool()
         genome_idx_loc = genome_fa.replace('.fasta', '.idx')
         genome_idx_loc = genome_idx_loc.replace('.fa', '.idx')
-        gi_out = k_index.run([genome_fa, genome_idx_loc], metadata)
+        gi_out = k_index.run([genome_fa], [genome_idx_loc], metadata)
 
         # Quantification
         k_quant = kallistoQuantificationTool()
@@ -90,10 +92,9 @@ class process_rnaseq(Workflow):
         if len(file_ids) == 2:
             results = k_quant.run([genome_idx_loc, file_ids[1]], metadata)
         elif len(file_ids) == 3:
-            results = k_quant.run([genome_idx_loc, file_ids[1], file_ids[2]], metadata)
+            results = k_quant.run([genome_idx_loc, file_ids[1], file_ids[2]], [], metadata)
 
         return results
-
 
 # -----------------------------------------------------------------------------
 
@@ -118,7 +119,6 @@ def main(input_files, input_metadata, output_files):
     print("2. Execution finished")
     return result
 
-
 def prepare_files(
         dm_handler, taxon_id, genome_fa, assembly, file_loc,
         file_2_loc=None):
@@ -129,7 +129,7 @@ def prepare_files(
     print(dm_handler.get_files_by_user("test"))
 
     input_files = [genome_fa]
-    dm_handler.set_file(
+    genome_file = dm_handler.set_file(
         "test", genome_fa, "fasta", "Assembly", taxon_id, None, [],
         meta_data={"assembly" : assembly})
 
@@ -139,8 +139,8 @@ def prepare_files(
         meta_data={'assembly' : assembly})
 
     metadata = [
-        Metadata("fasta", "Assembly"),
-        Metadata("fastq", "RNA-seq")
+        Metadata("fasta", "Assembly", None, {'assembly' : assembly}, genome_file),
+        Metadata("fastq", "RNA-seq", None, {'assembly' : assembly}, fastq1_id)
     ]
 
     if file_2_loc is not None:
@@ -156,6 +156,25 @@ def prepare_files(
 
         dm_handler.add_file_metadata(fastq1_id, 'paired_end', fastq2_id)
 
+        metadata.append(
+            Metadata(
+                "fastq", "RNA-seq", None,
+                {'assembly' : assembly, 'paired_end' : fastq2_id},
+                fastq1_id
+            )
+        )
+        metadata.append(
+            Metadata(
+                "fastq", "RNA-seq", None,
+                {'assembly' : assembly, 'paired_end' : fastq1_id},
+                fastq2_id
+            )
+        )
+    else:
+        metadata.append(
+            Metadata("fastq", "RNA-seq", None, {'assembly' : assembly}, fastq1_id)
+        )
+
     return (
         input_files,
         metadata,
@@ -163,7 +182,6 @@ def prepare_files(
     )
 
 # ------------------------------------------------------------------------------
-
 
 if __name__ == "__main__":
     import sys

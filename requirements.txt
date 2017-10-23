@@ -1,7 +1,6 @@
 scipy
 matplotlib
 pysam
-MACS2
 mock
 git+https://github.com/Multiscale-Genomics/mg-tool-api.git
 git+https://github.com/Multiscale-Genomics/mg-dm-api.git

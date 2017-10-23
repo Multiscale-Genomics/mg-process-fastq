@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 
 """
-.. Copyright 2017 EMBL-European Bioinformatics Institute
+.. See the NOTICE file distributed with this work for additional information
+   regarding copyright ownership.
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -40,9 +41,9 @@ class process_chipseq(Workflow):
     filtered and analysed for peak calling
     """
 
-    configuration = {}
+    #configuration = {}
 
-    def __init__(self, configuration):
+    def __init__(self, configuration=None):
         """
         Initialise the tool with its configuration.
 
@@ -53,10 +54,12 @@ class process_chipseq(Workflow):
             a dictionary containing parameters that define how the operation
             should be carried out, which are specific to each Tool.
         """
+        if configuration is None:
+            configuration = {}
+
         self.configuration.update(configuration)
 
-
-    def run(self, file_ids, output_files, metadata):
+    def run(self, input_files, metadata, output_files):
         """
         Main run function for processing ChIP-seq FastQ data. Pipeline aligns
         the FASTQ files to the genome using BWA. MACS 2 is then used for peak
@@ -81,45 +84,43 @@ class process_chipseq(Workflow):
             List of locations for the output bam, bed and tsv files
         """
 
-        run_genome_fa = file_ids[0]
-        bwa_amb = file_ids[1]
-        bwa_ann = file_ids[2]
-        bwa_bwt = file_ids[3]
-        bwa_pac = file_ids[4]
-        bwa_sa = file_ids[5]
-        file_loc = file_ids[6]
-        file_bgd_loc = file_ids[7]
+        run_genome_fa = input_files[0]
+        bwa_amb = input_files[1]
+        bwa_ann = input_files[2]
+        bwa_bwt = input_files[3]
+        bwa_pac = input_files[4]
+        bwa_sa = input_files[5]
+        file_loc = input_files[6]
+        file_bgd_loc = input_files[7]
+
+        output_json = {'output_files': []}
 
         out_bam = file_loc.replace(".fastq", '.bam')
 
         bwa = bwaAlignerTool(self.configuration)
-        #out_bam = file_loc.replace(".fastq", '.bam')
-        bwa_results = bwa.run(
+        bwa_files, bwa_meta = bwa.run(
             [run_genome_fa, file_loc, bwa_amb, bwa_ann, bwa_bwt, bwa_pac, bwa_sa],
             []
         )
-        #bwa_results = compss_wait_on(bwa_results)
-        out_bam = bwa_results[0][0]
+        out_bam = bwa_files[0]
 
         out_bgd_bam = None
         if file_bgd_loc != None:
-            bwa_results_bgd = bwa.run(
+            bwa_bgd_files, bwa_bgd_meta = bwa.run(
                 [run_genome_fa, file_bgd_loc, bwa_amb, bwa_ann, bwa_bwt, bwa_pac, bwa_sa],
                 []
             )
-            #bwa_results_bgd = compss_wait_on(bwa_results_bgd)
-            out_bgd_bam = bwa_results_bgd[0][0]
+            out_bgd_bam = bwa_bgd_files[0]
 
         # For multiple files there will need to be merging into a single bam file
 
         # Filter the bams
         b3f = biobambam(self.configuration)
-        b3f_results = b3f.run(
+        b3f_files, b3f_meta = b3f.run(
             [out_bam],
             []
         )
-        #b3f_results = compss_wait_on(b3f_results)
-        out_filtered_bam = b3f_results[0][0]
+        out_filtered_bam = b3f_files[0]
 
         out_filtered_bgd_bam = None
         if file_bgd_loc != None:
@@ -127,24 +128,21 @@ class process_chipseq(Workflow):
                 [out_bgd_bam],
                 []
             )
-            #b3f_results_bgd = compss_wait_on(b3f_results_bgd)
             out_filtered_bgd_bam = b3f_results_bgd[0][0]
 
-        # MACS2 to call peaks
+        ## MACS2 to call peaks
         macs_caller = macs2(self.configuration)
 
         if file_bgd_loc != None:
-            m_results = macs_caller.run([out_filtered_bam, out_filtered_bgd_bam], [])
+            m_results_files, m_results_meta = macs_caller.run(
+                [out_filtered_bam, out_filtered_bgd_bam], [])
         else:
-            m_results = macs_caller.run([out_filtered_bam], [])
-        #m_results = compss_wait_on(m_results)
+            m_results_files, m_results_meta = macs_caller.run([out_filtered_bam], [])
 
         return (
-            [out_bam, out_filtered_bam] + m_results[0],
-            metadata,
-            [b3f_results[1], m_results[1]]
+            [out_bam, out_filtered_bam] + m_results_files,
+            [{}, m_results_meta]
         )
-
 
 # ------------------------------------------------------------------------------
 
@@ -162,12 +160,14 @@ def main(input_files, output_files, input_metadata):
     print("1. Instantiate and launch the App")
     from apps.workflowapp import WorkflowApp
     app = WorkflowApp()
-    result = app.launch(process_chipseq, input_files, output_files, input_metadata,
-                        {})
+    result = app.launch(process_chipseq, input_files, input_metadata, output_files, {})
 
     # 2. The App has finished
     print("2. Execution finished")
     print(result)
+
+
+
     return result
 
 def prepare_files(
@@ -178,45 +178,66 @@ def prepare_files(
     """
     print(dm_handler.get_files_by_user("test"))
 
+    root_name = file_loc.split("/")
+    parent_dir = '/'.join(root_name[0:-1])
+
     genome_file = dm_handler.set_file(
-        "test", genome_fa, "fasta", "Assembly", taxon_id, None, [],
-        meta_data={"assembly" : assembly})
-    dm_handler.set_file(
-        "test", genome_fa + ".amb", "amb", "Assembly", taxon_id, None, [genome_file],
-        meta_data={'assembly' : assembly})
-    dm_handler.set_file(
-        "test", genome_fa + ".ann", "ann", "Assembly", taxon_id, None, [genome_file],
-        meta_data={'assembly' : assembly})
-    dm_handler.set_file(
-        "test", genome_fa + ".bwt", "bwt", "Assembly", taxon_id, None, [genome_file],
-        meta_data={'assembly' : assembly})
-    dm_handler.set_file(
-        "test", genome_fa + ".pac", "pac", "Assembly", taxon_id, None, [genome_file],
-        meta_data={'assembly' : assembly})
-    dm_handler.set_file(
-        "test", genome_fa + ".sa", "sa", "Assembly", taxon_id, None, [genome_file],
-        meta_data={'assembly' : assembly})
+        "test", genome_fa, "file", "fasta", 64000, parent_dir,
+        "Assembly", taxon_id, None, None,
+        meta_data={"assembly" : assembly, 'tool': 'bwa_indexer'})
+    amb_file = dm_handler.set_file(
+        "test", genome_fa + ".amb", "file", "amb", 64000, parent_dir,
+        "Index", taxon_id, None, [genome_file],
+        meta_data={'assembly' : assembly, 'tool': 'bwa_indexer'})
+    ann_file = dm_handler.set_file(
+        "test", genome_fa + ".ann", "file", "ann", 64000, parent_dir,
+        "Index", taxon_id, None, [genome_file],
+        meta_data={'assembly' : assembly, 'tool': 'bwa_indexer'})
+    bwt_file = dm_handler.set_file(
+        "test", genome_fa + ".bwt", "file", "bwt", 64000, parent_dir,
+        "Index", taxon_id, None, [genome_file],
+        meta_data={'assembly' : assembly, 'tool': 'bwa_indexer'})
+    pac_file = dm_handler.set_file(
+        "test", genome_fa + ".pac", "file", "pac", 64000, parent_dir,
+        "Index", taxon_id, None, [genome_file],
+        meta_data={'assembly' : assembly, 'tool': 'bwa_indexer'})
+    sa_file = dm_handler.set_file(
+        "test", genome_fa + ".sa", "file", "sa", 64000, parent_dir,
+        "Index", taxon_id, None, [genome_file],
+        meta_data={'assembly' : assembly, 'tool': 'bwa_indexer'})
 
     # Maybe it is necessary to prepare a metadata parser from json file
     # when building the Metadata objects.
     metadata = [
-        Metadata("fasta", "Assembly"),
-        Metadata("index", "Assembly"),
-        Metadata("index", "Assembly"),
-        Metadata("index", "Assembly"),
-        Metadata("index", "Assembly"),
-        Metadata("index", "Assembly"),
-        Metadata("fasta", "ChIP-seq")
+        Metadata("fasta", "fasta", None, {'assembly' : assembly}, genome_file),
+        Metadata("index", "ann", [genome_file], {'assembly' : assembly, 'tool': 'bwa_indexer'}, amb_file),
+        Metadata("index", "amb", [genome_file], {'assembly' : assembly, 'tool': 'bwa_indexer'}, ann_file),
+        Metadata("index", "bwt", [genome_file], {'assembly' : assembly, 'tool': 'bwa_indexer'}, bwt_file),
+        Metadata("index", "pac", [genome_file], {'assembly' : assembly, 'tool': 'bwa_indexer'}, pac_file),
+        Metadata("index", "sa", [genome_file], {'assembly' : assembly, 'tool': 'bwa_indexer'}, sa_file),
     ]
 
-    dm_handler.set_file(
-        "test", file_loc, "fasta", "ChIP-seq", taxon_id, None, [],
+    fq1_file = dm_handler.set_file(
+        "test", file_loc, "fastq", "ChIP-seq", taxon_id, None, [],
         meta_data={'assembly' : assembly})
+    metadata.append(
+        Metadata(
+            "fastq", "ChIP-seq", "file", None,
+            {'assembly' : assembly},
+            fq1_file
+        )
+    )
     if file_bg_loc:
-        dm_handler.set_file(
-            "test", file_bg_loc, "fasta", "ChIP-seq", taxon_id, None, [],
+        fq2_file = dm_handler.set_file(
+            "test", file_bg_loc, "fastq", "file", "ChIP-seq", taxon_id, None, [],
             meta_data={'assembly' : assembly})
-        metadata.append(Metadata("fasta", "ChIP-seq"))
+        metadata.append(
+            Metadata(
+                "fastq", "ChIP-seq", None,
+                {'assembly' : assembly, 'background' : True},
+                fq2_file
+            )
+        )
 
     print(dm_handler.get_files_by_user("test"))
 
@@ -231,23 +252,9 @@ def prepare_files(
         file_bg_loc
     ]
 
-    out_bam = file_loc.replace(".fastq", '.filtered.bam')
-    out_peaks_narrow = file_loc.replace(".fastq", '_peaks.narrowPeak')
-    out_peaks_xls = file_loc.replace(".fastq", '_peaks.xls')
-    out_peaks_broad = file_loc.replace(".fastq", '_summits.bed')
-    out_peaks_gapped = file_loc.replace(".fastq", '_summits.bed')
-    out_summits = file_loc.replace(".fastq", '_summits.bed')
+    files_out = []
 
-
-    files_out = [
-        out_bam,
-        out_peaks_narrow,
-        out_peaks_xls,
-        out_peaks_broad,
-        out_peaks_gapped,
-        out_summits
-    ]
-    return [files, metadata, files_out]
+    return [files, files_out, metadata]
 
 # ------------------------------------------------------------------------------
 

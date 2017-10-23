@@ -1,5 +1,6 @@
 """
-.. Copyright 2017 EMBL-European Bioinformatics Institute
+.. See the NOTICE file distributed with this work for additional information
+   regarding copyright ownership.
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -16,6 +17,7 @@
 
 from __future__ import print_function
 
+import os
 import shlex
 import subprocess
 import sys
@@ -51,7 +53,7 @@ class biobambam(Tool):
         print("BioBamBam2 Filter")
         Tool.__init__(self)
 
-    @task(returns=int, bam_file_in=FILE_IN, bam_file_out=FILE_OUT,
+    @task(returns=bool, bam_file_in=FILE_IN, bam_file_out=FILE_OUT,
           isModifier=False)
     def biobambam_filter_alignments(self, bam_file_in, bam_file_out):
         """
@@ -82,13 +84,50 @@ class biobambam(Tool):
         command_line = 'bamsormadup --tmpfile=' + tmp_dir
         print(command_line)
         args = shlex.split(command_line)
+
+        bam_tmp_out = tmp_dir + '/' + td_list[-1] + '.filtered.tmp.bam'
+
+        print("BIOBAMBAM INPUT FILE:", bam_file_in)
+        print(
+            "BIOBAMBAM INPUT FILE (start):",
+            os.path.isfile(bam_file_in),
+            os.path.islink(bam_file_in),
+            os.path.getsize(bam_file_in)
+        )
+
+        print("BIOBAMBAM OUTPUT FILE:", bam_file_out)
+        print(
+            "BIOBAMBAM OUTPUT FILE (start):",
+            os.path.isfile(bam_file_out),
+            os.path.islink(bam_file_out)
+        )
+
         with open(bam_file_in, "r") as f_in:
-            with open(bam_file_out, "w") as f_out:
+            with open(bam_tmp_out, "w") as f_out:
                 process = subprocess.Popen(args, stdin=f_in, stdout=f_out)
                 process.wait()
 
-        return 0
+        print("BIOBAMBAM TMP FILE:", bam_tmp_out)
+        print(
+            "BIOBAMBAM TMP FILE (end):",
+            os.path.isfile(bam_tmp_out),
+            os.path.islink(bam_tmp_out),
+            os.path.getsize(bam_tmp_out)
+        )
 
+        with open(bam_file_out, "wb") as f_out:
+            with open(bam_tmp_out, "rb") as f_in:
+                f_out.write(f_in.read())
+
+        print("BIOBAMBAM OUTPUT FILE:", bam_file_out)
+        print(
+            "BIOBAMBAM OUTPUT FILE (end):",
+            os.path.isfile(bam_file_out),
+            os.path.islink(bam_file_out),
+            os.path.getsize(bam_file_out)
+        )
+
+        return True
 
     def run(self, input_files, output_files, metadata=None):
         """
@@ -109,14 +148,15 @@ class biobambam(Tool):
             List of matching metadata dict objects
         """
         in_bam = input_files[0]
-        out_filtered_bam = input_files[0].replace('.bam', '.filtered.bam')
+        out_filtered_bam = in_bam.replace('.bam', '.filtered.bam')
 
         output_metadata = {}
 
         results = self.biobambam_filter_alignments(in_bam, out_filtered_bam)
+
         results = compss_wait_on(results)
 
-        print(results)
+        print("BIOBAMBAM FILTER:", os.path.isfile(out_filtered_bam))
 
         return ([out_filtered_bam], output_metadata)
 

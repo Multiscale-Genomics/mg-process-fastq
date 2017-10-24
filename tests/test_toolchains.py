@@ -35,7 +35,7 @@ def genome_toolchain(verbose=False):
 
     params = ['-m genome']
 
-    if verbose == 1:
+    if verbose is True:
         params.append('-s')
 
     params.append('tests/test_bowtie_indexer.py')
@@ -60,7 +60,7 @@ def chipseq_toolchain(verbose=False):
 
     params = ['-m chipseq']
 
-    if verbose == 1:
+    if verbose is True:
         params.append('-s')
 
     params.append('tests/test_bwa_indexer.py')
@@ -88,7 +88,7 @@ def hic_toolchain(verbose=False):
 
     params = ['-m hic']
 
-    if verbose == 1:
+    if verbose is True:
         params.append('-s')
 
     params.append('tests/test_gem_indexer.py')
@@ -115,7 +115,7 @@ def mnaseseq_toolchain(verbose=False):
 
     params = ['-m mnaseseq']
 
-    if verbose == 1:
+    if verbose is True:
         params.append('-s')
 
     params.append('tests/test_bwa_indexer.py')
@@ -138,7 +138,7 @@ def rnaseq_toolchain(verbose=False):
 
     params = ['-m rnaseq']
 
-    if verbose == 1:
+    if verbose is True:
         params.append('-s')
 
     params.append('tests/test_kallisto_indexer.py')
@@ -163,7 +163,7 @@ def wgbs_toolchain(verbose=0):
 
     params = ['-m wgbs']
 
-    if verbose == 1:
+    if verbose is True:
         params.append('-s')
 
     params.append('tests/test_bs_seeker_filter.py')
@@ -185,7 +185,7 @@ if __name__ == '__main__':
         choices=['genome', 'chipseq', 'hic', 'mnaseseq', 'rnaseq', 'wgbs', 'all'],
         help=""
     )
-    PARSER.add_argument("--verbose", type=int, default=0)
+    PARSER.add_argument("--verbose", action="store_true")
 
     # Get the matching parameters from the command line
     ARGS = PARSER.parse_args()

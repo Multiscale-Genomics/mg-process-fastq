@@ -185,7 +185,7 @@ if __name__ == '__main__':
         choices=['genome', 'chipseq', 'hic', 'mnaseseq', 'rnaseq', 'wgbs', 'all'],
         help=""
     )
-    PARSER.add_argument("--verbose", action="store_true")
+    PARSER.add_argument("--verbose", action="store_true", const=True, default=False)
 
     # Get the matching parameters from the command line
     ARGS = PARSER.parse_args()

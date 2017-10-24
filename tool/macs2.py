@@ -108,7 +108,7 @@ class macs2(Tool):
         bgd_command = '-c ' + bam_file_bgd
 
         command_param = [
-            'macs2 callpeak', macs_params, '-t', bam_file, 'n', name, bgd_command,
+            'macs2 callpeak', " ".join(macs_params), '-t', bam_file, 'n', name, bgd_command,
             ' --outdir ', output_dir
         ]
         command_line = ' '.join(command_param)
@@ -197,7 +197,7 @@ class macs2(Tool):
         od_list = bam_file.split("/")
         output_dir = "/".join(od_list[0:-1])
 
-        command_line = "macs2 callpeak " + macs_params + " -t " + bam_file
+        command_line = "macs2 callpeak " + " ".join(macs_params) + " -t " + bam_file
         command_line = command_line + ' -n ' + name + '_out --outdir ' + output_dir
 
         print("MACS2 - NAME:", name)
@@ -283,67 +283,68 @@ class macs2(Tool):
             'gapped_peak': "bed12+3"
         }
 
-        command_params = ""
+        command_params = []
 
         if "macs_gsize_param" in self.configuration:
-            command_params = command_params + " --gsize " + str(
-                self.configuration["macs_gsize_param"])
+            command_params = command_params + [
+                "--gsize", str(self.configuration["macs_gsize_param"])]
         if "macs_tsize_param" in self.configuration:
-            command_params = command_params + " --tsize " + str(
-                self.configuration["macs_tsize_param"])
+            command_params = command_params + [
+                "--tsize", str(self.configuration["macs_tsize_param"])]
         if "macs_bw_param" in self.configuration:
-            command_params = command_params + " --bw " + str(
-                self.configuration["macs_bw_param"])
+            command_params = command_params + [
+                "--bw", str(self.configuration["macs_bw_param"])]
         if "macs_qvalue_param" in self.configuration:
-            command_params = command_params + " --qvalue " + str(
-                self.configuration["macs_qvalue_param"])
+            command_params = command_params + [
+                "--qvalue", str(self.configuration["macs_qvalue_param"])]
         if "macs_pvalue_param" in self.configuration:
-            command_params = command_params + " --pvalue " + str(
-                self.configuration["macs_pvalue_param"])
+            command_params = command_params + [
+                "--pvalue", str(self.configuration["macs_pvalue_param"])]
         if "macs_mfold_param" in self.configuration:
-            command_params = command_params + " --mfold " + str(
-                self.configuration["macs_mfold_param"])
+            command_params = command_params + [
+                "--mfold", str(self.configuration["macs_mfold_param"])]
         if "macs_nolambda_param" in self.configuration:
-            command_params = command_params + " --nolambda " + str(
-                self.configuration["macs_nolambda_param"])
+            command_params = command_params + [
+                "--nolambda", str(self.configuration["macs_nolambda_param"])]
         if "macs_slocal_param" in self.configuration:
-            command_params = command_params + " --sloca l" + str(
-                self.configuration["macs_slocal_param"])
+            command_params = command_params + [
+                "--slocal", str(self.configuration["macs_slocal_param"])]
         if "macs_llocal_param" in self.configuration:
-            command_params = command_params + " --llocal " + str(
-                self.configuration["macs_llocal_param"])
+            command_params = command_params + [
+                "--llocal", str(self.configuration["macs_llocal_param"])]
         if "macs_fix-bimodal_param" in self.configuration:
-            command_params = command_params + " --fix-bimodal " + str(
-                self.configuration["macs_fix-bimodal_param"])
+            command_params = command_params + [
+                "--fix-bimodal", str(self.configuration["macs_fix-bimodal_param"])]
         if "macs_nomodel_param" in self.configuration:
-            command_params = command_params + " --nomodel"
+            command_params = command_params + [
+                "--nomodel"]
         if "macs_extsize_param" in self.configuration:
-            command_params = command_params + " --extsize " + str(
-                self.configuration["macs_extsize_param"])
+            command_params = command_params + [
+                "--extsize", str(self.configuration["macs_extsize_param"])]
         if "macs_shift_param" in self.configuration:
-            command_params = command_params + " --shift " + str(
-                self.configuration["macs_shift_param"])
+            command_params = command_params + [
+                "--shift", str(self.configuration["macs_shift_param"])]
         if "macs_keep-dup_param" in self.configuration:
-            command_params = command_params + " --keep-dup " + str(
-                self.configuration["macs_keep-dup_param"])
+            command_params = command_params + [
+                "--keep-dup", str(self.configuration["macs_keep-dup_param"])]
         if "macs_broad_param" in self.configuration:
-            command_params = command_params + " --broad " + str(
-                self.configuration["macs_broad_param"])
+            command_params = command_params + [
+                "--broad", str(self.configuration["macs_broad_param"])]
         if "macs_broad-cutoff_param" in self.configuration:
-            command_params = command_params + " --broad-cutoff " + str(
-                self.configuration["macs_broad-cutoff_param"])
+            command_params = command_params + [
+                "--broad-cutoff", str(self.configuration["macs_broad-cutoff_param"])]
         if "macs_to-large_param" in self.configuration:
-            command_params = command_params + " --to-large " + str(
-                self.configuration["macs_to-large_param"])
+            command_params = command_params + [
+                "--to-large", str(self.configuration["macs_to-large_param"])]
         if "macs_down-sample_param" in self.configuration:
-            command_params = command_params + " --down-sample " + str(
-                self.configuration["macs_down-sample_param"])
+            command_params = command_params + [
+                "--down-sample", str(self.configuration["macs_down-sample_param"])]
         if "macs_bdg_param" in self.configuration:
-            command_params = command_params + " --bdg " + str(
-                self.configuration["macs_bdg_param"])
+            command_params = command_params + [
+                "--bdg", str(self.configuration["macs_bdg_param"])]
         if "macs_call-summits_param" in self.configuration:
-            command_params = command_params + " --call-summits " + str(
-                self.configuration["macs_call-summits_param"])
+            command_params = command_params + [
+                "--call-summits", str(self.configuration["macs_call-summits_param"])]
 
         print("MACS2 COMMAND PARAMS:", command_params)
 

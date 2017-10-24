@@ -316,8 +316,7 @@ class macs2(Tool):
             command_params = command_params + [
                 "--fix-bimodal", str(self.configuration["macs_fix-bimodal_param"])]
         if "macs_nomodel_param" in self.configuration:
-            command_params = command_params + [
-                "--nomodel"]
+            command_params = command_params + ["--nomodel"]
         if "macs_extsize_param" in self.configuration:
             command_params = command_params + [
                 "--extsize", str(self.configuration["macs_extsize_param"])]

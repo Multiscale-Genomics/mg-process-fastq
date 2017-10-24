@@ -5,7 +5,7 @@
         "data_type": "data_wgbs",
         "file_type": "fastq1",
         "file_path": "tests/data/bsSeeker.Mouse.GRCm38_1.fastq",
-        "source_id": [],
+        "sources": [],
         "meta_data": {
             "visible": true,
             "validated": 1
@@ -17,7 +17,7 @@
         "data_type": "data_wgbs",
         "file_type": "fastq2",
         "file_path": "tests/data/bsSeeker.Mouse.GRCm38_2.fastq",
-        "source_id": [],
+        "sources": [],
         "meta_data": {
             "visible": true,
             "validated": 1
@@ -28,7 +28,7 @@
         "data_type": "sequence_dna",
         "file_type": "FASTA",
         "file_path": "tests/data/bsSeeker.Mouse.GRCm38.fasta",
-        "source_id": [],
+        "sources": [],
         "meta_data": {
             "visible": true,
             "validated": 1,

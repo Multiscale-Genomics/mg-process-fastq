@@ -5,7 +5,7 @@
         "data_type": "sequence_dna",
         "file_type": "FASTA",
         "file_path": "tests/data/kallisto.Human.GRCh38.fasta",
-        "source_id": [],
+        "sources": [],
         "meta_data": {
             "visible": true,
             "validated": 1,
@@ -18,7 +18,7 @@
         "data_type": "data_rna_seq",
         "file_type": "fastq",
         "file_path": "tests/data/kallisto.Human.ERR030872_1.fastq",
-        "source_id": [],
+        "sources": [],
         "meta_data": {
             "visible": true,
             "validated": 1
@@ -30,7 +30,7 @@
         "data_type": "data_rna_seq",
         "file_type": "fastq",
         "file_path": "tests/data/kallisto.Human.ERR030872_2.fastq",
-        "source_id": [],
+        "sources": [],
         "meta_data": {
             "visible": true,
             "validated": 1

@@ -6,7 +6,7 @@
         "file_path": "tests/data/macs2.Human.GCA_000001405.22.fasta",
         "source_id": null,
         "compressed": 0,
-        "source_id": [],
+        "sources": [],
         "creation_time": {
             "sec": 1503567524,
             "usec": 0

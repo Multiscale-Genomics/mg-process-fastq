@@ -285,11 +285,6 @@ class macs2(Tool):
 
         command_params = ""
 
-        if name == 'macs2.Human.DRR000150.22_filtered':
-            # This is for when running the test data
-            print("USING NOMODEL")
-            command_params = command_params + ' --nomodel'
-
         if "macs_gsize_param" in self.configuration:
             command_params = command_params + " --gsize " + str(
                 self.configuration["macs_gsize_param"])
@@ -321,8 +316,7 @@ class macs2(Tool):
             command_params = command_params + " --fix-bimodal " + str(
                 self.configuration["macs_fix-bimodal_param"])
         if "macs_nomodel_param" in self.configuration:
-            command_params = command_params + " --nomodel " + str(
-                self.configuration["macs_nomodel_param"])
+            command_params = command_params + " --nomodel"
         if "macs_extsize_param" in self.configuration:
             command_params = command_params + " --extsize " + str(
                 self.configuration["macs_extsize_param"])

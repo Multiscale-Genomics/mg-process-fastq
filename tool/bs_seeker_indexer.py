@@ -143,8 +143,12 @@ class bssIndexerTool(Tool):
 
         output_metadata = {
             "index": Metadata(
-                "index_bwt", "", [metadata["genome"].file_path],
-                {
+                data_type="sequence_mapping_index_bowtie",
+                file_type="TAR",
+                file_path=output_files["index"],
+                sources=[metadata["genome"].file_path],
+                taxon_id=metadata["genome"].taxon_id,
+                meta_data={
                     "assembly": metadata["genome"].meta_data["assembly"],
                     "tool": "bs_seeker_indexer"
                 }

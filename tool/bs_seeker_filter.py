@@ -125,8 +125,12 @@ class filterReadsTool(Tool):
 
         output_metadata = {
             "fastq_filtered": Metadata(
-                "wgbs", "fastq", [metadata["fastq"].file_path],
-                {
+                data_type="data_wgbs",
+                file_type="fastq",
+                file_path=output_files["fastq_filtered"],
+                sources=[metadata["fastq"].file_path],
+                taxon_id=metadata["fastq"].taxon_id,
+                meta_data={
                     "tool": "bs_seeker_filter"
                 }
             )

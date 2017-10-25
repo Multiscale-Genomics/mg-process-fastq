@@ -173,34 +173,46 @@ class bssMethylationCallerTool(Tool):
 
         output_metadata = {
             "wig_file": Metadata(
-                "wgbs", "wig", [
+                data_type="data_wgbs",
+                file_type="wig",
+                file_path=output_files["wig_file"],
+                sources=[
                     metadata["genome"].file_path,
                     metadata["fastq1"].file_path,
                     metadata["fastq2"].file_path
                 ],
-                {
+                taxon_id=metadata["genome"].taxon_id,
+                meta_data={
                     "assembly": metadata["genome"].meta_data["assembly"],
                     "tool": "bs_seeker_methylation_caller"
                 }
             ),
             "cgmap_file": Metadata(
-                "wgbs", "tsv", [
+                data_type="data_wgbs",
+                file_type="tsv",
+                file_path=output_files["cgmap_file"],
+                sources=[
                     metadata["genome"].file_path,
                     metadata["fastq1"].file_path,
                     metadata["fastq2"].file_path
                 ],
-                {
+                taxon_id=metadata["genome"].taxon_id,
+                meta_data={
                     "assembly": metadata["genome"].meta_data["assembly"],
                     "tool": "bs_seeker_methylation_caller"
                 }
             ),
             "atcgmap_file": Metadata(
-                "wgbs", "tsv", [
+                data_type="data_wgbs",
+                file_type="tsv",
+                file_path=output_files["atcgmap_file"],
+                sources=[
                     metadata["genome"].file_path,
                     metadata["fastq1"].file_path,
                     metadata["fastq2"].file_path
                 ],
-                {
+                taxon_id=metadata["genome"].taxon_id,
+                meta_data={
                     "assembly": metadata["genome"].meta_data["assembly"],
                     "tool": "bs_seeker_methylation_caller"
                 }

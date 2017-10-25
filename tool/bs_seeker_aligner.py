@@ -220,12 +220,17 @@ class bssAlignerTool(Tool):
         genome_fasta = input_files["genome"]
         genome_idx = input_files["index"]
 
+        sources = [input_files["genome"]]
+
         fqs = fastq_splitter()
 
         fastq1 = input_files["fastq1"]
+        sources.append(input_files["fastq1"])
+
         fastq_file_gz = fastq1 + ".tar.gz"
         if "fastq2" in input_files:
             fastq2 = input_files["fastq2"]
+            sources.append(input_files["fastq2"])
             fastq_file_list = fqs.paired_splitter(
                 fastq1, fastq2, fastq1 + ".tar.gz"
             )
@@ -316,6 +321,31 @@ class bssAlignerTool(Tool):
                 {
                     "assembly": metadata["genome"].meta_data["assembly"],
                     "tool": "bs_seeker_aligner"
+                }
+            )
+        }
+
+        output_metadata = {
+            "bam": Metadata(
+                data_type="data_wgbs",
+                file_type="BAM",
+                file_path=output_bam_file,
+                sources=sources,
+                taxon_id=metadata["genome"].taxon_id,
+                meta_data={
+                    "assembly": metadata["input"].meta_data["assembly"],
+                    "tool": "bwa_indexer"
+                }
+            ),
+            "bai": Metadata(
+                data_type="data_wgbs",
+                file_type="BAI",
+                file_path=output_bai_file,
+                sources=[metadata["genome"].file_path],
+                taxon_id=metadata["genome"].taxon_id,
+                meta_data={
+                    "assembly": metadata["input"].meta_data["assembly"],
+                    "tool": "bwa_indexer"
                 }
             )
         }

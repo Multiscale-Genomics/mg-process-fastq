@@ -203,9 +203,23 @@ class process_chipseq(Workflow):
             # Extra entries in output_files will be disregarded.
             remap(output_files, 'narrow_peak', 'summits', 'broad_peak', 'gapped_peak'))
 
+        m_results_meta['narrow_peak'].meta_data['tool_description'] = m_results_meta['narrow_peak'].meta_data['tool']
+        m_results_meta['narrow_peak'].meta_data['tool'] = "process_chipseq"
+        m_results_meta['summits'].meta_data['tool_description'] = m_results_meta['summits'].meta_data['tool']
+        m_results_meta['summits'].meta_data['tool'] = "process_chipseq"
+        m_results_meta['broad_peak'].meta_data['tool_description'] = m_results_meta['broad_peak'].meta_data['tool']
+        m_results_meta['broad_peak'].meta_data['tool'] = "process_chipseq"
+        m_results_meta['gapped_peak'].meta_data['tool_description'] = m_results_meta['gapped_peak'].meta_data['tool']
+        m_results_meta['gapped_peak'].meta_data['tool'] = "process_chipseq"
+
         # Outputs are collected with some name changes
         m_results_files["bam"] = bwa_files["bam"]
         m_results_files["filtered"] = b3f_files["bam"]
+
+        m_results_meta['bam'].meta_data['tool_description'] = m_results_meta['bam'].meta_data['tool']
+        m_results_meta['bam'].meta_data['tool'] = "process_chipseq"
+        m_results_meta['filtered'].meta_data['tool_description'] = m_results_meta['filtered'].meta_data['tool']
+        m_results_meta['filtered'].meta_data['tool'] = "process_chipseq"
 
         # Equivalent meta data is collected
         m_results_meta["bam"] = bwa_meta["bam"]
@@ -218,8 +232,16 @@ class process_chipseq(Workflow):
             m_results_meta["bam_bg"] = bwa_bg_meta["bam"]
             m_results_meta["filtered_bg"] = b3f_bg_meta["bam"]
 
+            m_results_meta['bam_bg'].meta_data['tool_description'] = m_results_meta['bam_bg'].meta_data['tool']
+            m_results_meta['bam_bg'].meta_data['tool'] = "process_chipseq"
+            m_results_meta['filtered_bg'].meta_data['tool_description'] = m_results_meta['filtered_bg'].meta_data['tool']
+            m_results_meta['filtered_bg'].meta_data['tool'] = "process_chipseq"
+
         print("CHIPSEQ RESULTS:", m_results_meta)
         return m_results_files, m_results_meta
+
+    def _modify_tool_metadata(self, tool, metadata):
+
 
 # ------------------------------------------------------------------------------
 

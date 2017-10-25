@@ -82,12 +82,16 @@ class process_genome(Workflow):
         bti, btm = bowtie2.run(input_files, metadata, {'index': output_files['bwt_index']})
         output_metadata['bwt_index'] = btm['index']
 
+        output_metadata['bwt_index'].meta_data['tool_description'] = output_metadata['bwt_index'].meta_data['tool']
+        output_metadata['bwt_index'].meta_data['tool'] = "process_genome"
+
         # BWA Indexer
         bwa = bwaIndexerTool()
         bwai, bwam = bwa.run(input_files, metadata, {'index': output_files['bwa_index']})
         output_metadata['bwa_index'] = bwam['index']
-        output_metadata['bwa_index']['metadata']['tool_description'] = output_metadata['bwa_index']['metadata']['tool']
-        output_metadata['bwa_index']['metadata']['tool'] = "process_genome"
+
+        output_metadata['bwa_index'].meta_data['tool_description'] = output_metadata['bwa_index'].meta_data['tool']
+        output_metadata['bwa_index'].meta_data['tool'] = "process_genome"
 
         # GEM Indexer
         gem = gemIndexerTool()
@@ -101,11 +105,11 @@ class process_genome(Workflow):
         output_metadata['gem_index'] = gemm['index']
         output_metadata['genome_gem'] = gemm['genome_gem']
 
-        output_metadata['gem_index']['metadata']['tool_description'] = output_metadata['gem_index']['metadata']['tool']
-        output_metadata['gem_index']['metadata']['tool'] = "process_genome"
+        output_metadata['gem_index'].meta_data['tool_description'] = output_metadata['gem_index'].meta_data['tool']
+        output_metadata['gem_index'].meta_data['tool'] = "process_genome"
 
-        output_metadata['genome_gem']['metadata']['tool_description'] = output_metadata['genome_gem']['metadata']['tool']
-        output_metadata['genome_gem']['metadata']['tool'] = "process_genome"
+        output_metadata['genome_gem'].meta_data['tool_description'] = output_metadata['genome_gem'].meta_data['tool']
+        output_metadata['genome_gem'].meta_data['tool'] = "process_genome"
 
         return (output_files, output_metadata)
 

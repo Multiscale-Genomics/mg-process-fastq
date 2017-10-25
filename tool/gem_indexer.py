@@ -114,6 +114,7 @@ class gemIndexerTool(Tool):
                 file_type="FASTA",
                 file_path=output_files['genome_gem'],
                 sources=[metadata["genome"].file_path],
+                taxon_id=metadata["genome"].taxon_id,
                 meta_data={
                     "assembly": metadata["genome"].meta_data["assembly"],
                     "tool": "gem_indexer"
@@ -124,6 +125,7 @@ class gemIndexerTool(Tool):
                 file_type="GEM",
                 file_path=output_files['index'],
                 sources=[output_files['genome_gem']],
+                taxon_id=metadata["genome"].taxon_id,
                 meta_data={
                     "assembly": metadata["genome"].meta_data["assembly"],
                     "tool": "gem_indexer"

@@ -66,16 +66,12 @@ class bwaIndexerTool(Tool):
         ----------
         file_loc : str
             Location of the genome assebly FASTA file
-        amb_loc : str
-            Location of the output file
-        ann_loc : str
-            Location of the output file
-        bwt_loc : str
-            Location of the output file
-        pac_loc : str
-            Location of the output file
-        sa_loc : str
-            Location of the output file
+        idx_out : str
+            Location of the output index file
+
+        Returns
+        -------
+        bool
         """
         common_handler = common()
         amb_loc, ann_loc, bwt_loc, pac_loc, sa_loc = common_handler.bwa_index_genome(file_loc)
@@ -123,17 +119,12 @@ class bwaIndexerTool(Tool):
 
         Returns
         -------
-        list
-            amb_loc : str
-                Location of the output file
-            ann_loc : str
-                Location of the output file
-            bwt_loc : str
-                Location of the output file
-            pac_loc : str
-                Location of the output file
-            sa_loc : str
-                Location of the output file
+        output_files : dict
+            index : str
+                Location of the index file defined in the input parameters
+        output_metadata : dict
+            index : Metadata
+                Metadata relating to the index file
         """
         results = self.bwa_indexer(
             input_files["genome"],
@@ -147,6 +138,7 @@ class bwaIndexerTool(Tool):
                 file_type="TAR",
                 file_path=output_files["index"],
                 sources=[metadata["genome"].file_path],
+                taxon_id=metadata["genome"].taxon_id,
                 meta_data={
                     "assembly": metadata["genome"].meta_data["assembly"],
                     "tool": "bwa_indexer"

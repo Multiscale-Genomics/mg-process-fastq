@@ -138,6 +138,7 @@ class bowtieIndexerTool(Tool):
                 file_type="TAR",
                 file_path=output_files["index"],
                 sources=[metadata["genome"].file_path],
+                taxon_id=metadata["genome"].taxon_id,
                 meta_data={
                     "assembly": metadata["genome"].meta_data["assembly"],
                     "tool": "bowtie_indexer"

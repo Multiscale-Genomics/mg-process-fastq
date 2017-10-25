@@ -124,18 +124,23 @@ class biobambam(Tool):
 
         print("BIOBAMBAM FILTER:", os.path.isfile(output_files['output']))
 
-        bam_meta = Metadata(
-            "data_chip_seq", "bam", output_files["output"],
-            [metadata['input'].file_path],
-            {
-                'assembly' : metadata['input'].meta_data['assembly'],
-                "tool": "biobambam_filter"
-            }
-        )
+        output_metadata = {
+            "bam": Metadata(
+                data_type="data_chip_seq",
+                file_type="BAM",
+                file_path=output_files["output"],
+                sources=[metadata["input"].file_path],
+                taxon_id=metadata["input"].taxon_id,
+                meta_data={
+                    "assembly": metadata["input"].meta_data["assembly"],
+                    "tool": "biobambam_filter"
+                }
+            )
+        }
 
         return (
             {"bam": output_files['output']},
-            {"bam": bam_meta}
+            output_metadata
         )
 
 # ------------------------------------------------------------------------------

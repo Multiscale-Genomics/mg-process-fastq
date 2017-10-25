@@ -125,17 +125,22 @@ class bwaAlignerTool(Tool):
 
         # print("BWA ALIGNER - METADATA:", metadata)
 
-        bam_meta = Metadata(
-            metadata['loc'].data_type, "bam", output_files["output"],
-            [metadata['genome'].file_path, metadata['loc'].file_path],
-            {
-                'assembly': metadata['genome'].meta_data['assembly'],
-                "tool": "bwa_aligner"
-            }
-        )
+        output_metadata = {
+            "bam": Metadata(
+                data_type=metadata['loc'].data_type,
+                file_type="BAM",
+                file_path=output_files["output"],
+                sources=[metadata["genome"].file_path, metadata['loc'].file_path],
+                taxon_id=metadata["genome"].taxon_id,
+                meta_data={
+                    "assembly": metadata["genome"].meta_data["assembly"],
+                    "tool": "bwa_aligner"
+                }
+            )
+        }
 
         # print("BWA ALIGNER - METADATA:", bam_meta)
 
-        return ({"bam": output_files["output"]}, {"bam": bam_meta})
+        return ({"bam": output_files["output"]}, output_metadata)
 
 # ------------------------------------------------------------------------------

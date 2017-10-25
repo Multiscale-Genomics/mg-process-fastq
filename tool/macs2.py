@@ -378,10 +378,13 @@ class macs2(Tool):
                 output_files_created[result_file] = output_files[result_file]
 
                 output_metadata[result_file] = Metadata(
-                    "data_chip_seq", "bed", output_files[result_file],
-                    [metadata['input'].file_path],
-                    {
-                        'assembly' : metadata['input'].meta_data['assembly'],
+                    data_type="data_chip_seq",
+                    file_type="BED",
+                    file_path=output_files[result_file],
+                    sources=[metadata['input'].file_path],
+                    taxon_id=metadata["input"].taxon_id,
+                    meta_data={
+                        "assembly": metadata["input"].meta_data["assembly"],
                         "tool": "macs2",
                         "bed_type": output_bed_types[result_file]
                     }

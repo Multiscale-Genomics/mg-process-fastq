@@ -6,6 +6,7 @@
         "file_type": "fastq",
         "file_path": "tests/data/macs2.Human.DRR000150.22.fastq",
         "sources": [],
+        "taxon_id": 9606,
         "meta_data": {
             "visible": true,
             "validated": 1,
@@ -18,6 +19,7 @@
         "file_type": "FASTA",
         "file_path": "tests/data/macs2.Human.GCA_000001405.22.fasta",
         "sources": [],
+        "taxon_id": 9606,
         "meta_data": {
             "visible": true,
             "validated": 1,
@@ -30,6 +32,7 @@
         "file_type": "TAR",
         "file_path": "tests/data/macs2.Human.GCA_000001405.22.fasta.bwa.tar.gz",
         "sources": ["tests/data/macs2.Human.GCA_000001405.22.fasta"],
+        "taxon_id": 9606,
         "meta_data": {
             "visible": true,
             "validated": 1,

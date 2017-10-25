@@ -87,7 +87,7 @@
           "tool": "process_genome",
           "description": "Compressed GEM file"
         },
-        "file_path": "gem.gz",
+        "file_path": "gem.fasta.gem.gz",
         "data_type": "sequence_mapping_index_gem",
         "compressed": "gzip"
       }

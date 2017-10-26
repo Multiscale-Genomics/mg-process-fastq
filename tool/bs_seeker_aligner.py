@@ -333,7 +333,7 @@ class bssAlignerTool(Tool):
                 sources=sources,
                 taxon_id=metadata["genome"].taxon_id,
                 meta_data={
-                    "assembly": metadata["input"].meta_data["assembly"],
+                    "assembly": metadata["genome"].meta_data["assembly"],
                     "tool": "bwa_indexer"
                 }
             ),
@@ -344,7 +344,7 @@ class bssAlignerTool(Tool):
                 sources=[metadata["genome"].file_path],
                 taxon_id=metadata["genome"].taxon_id,
                 meta_data={
-                    "assembly": metadata["input"].meta_data["assembly"],
+                    "assembly": metadata["genome"].meta_data["assembly"],
                     "tool": "bwa_indexer"
                 }
             )

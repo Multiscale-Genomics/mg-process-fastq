@@ -203,14 +203,18 @@ class process_chipseq(Workflow):
             # Extra entries in output_files will be disregarded.
             remap(output_files, 'narrow_peak', 'summits', 'broad_peak', 'gapped_peak'))
 
-        m_results_meta['narrow_peak'].meta_data['tool_description'] = m_results_meta['narrow_peak'].meta_data['tool']
-        m_results_meta['narrow_peak'].meta_data['tool'] = "process_chipseq"
-        m_results_meta['summits'].meta_data['tool_description'] = m_results_meta['summits'].meta_data['tool']
-        m_results_meta['summits'].meta_data['tool'] = "process_chipseq"
-        m_results_meta['broad_peak'].meta_data['tool_description'] = m_results_meta['broad_peak'].meta_data['tool']
-        m_results_meta['broad_peak'].meta_data['tool'] = "process_chipseq"
-        m_results_meta['gapped_peak'].meta_data['tool_description'] = m_results_meta['gapped_peak'].meta_data['tool']
-        m_results_meta['gapped_peak'].meta_data['tool'] = "process_chipseq"
+        if 'narrow_peak' in m_results_meta:
+            m_results_meta['narrow_peak'].meta_data['tool_description'] = m_results_meta['narrow_peak'].meta_data['tool']
+            m_results_meta['narrow_peak'].meta_data['tool'] = "process_chipseq"
+        if 'summits' in m_results_meta:
+            m_results_meta['summits'].meta_data['tool_description'] = m_results_meta['summits'].meta_data['tool']
+            m_results_meta['summits'].meta_data['tool'] = "process_chipseq"
+        if 'broad_peak' in m_results_meta:
+            m_results_meta['broad_peak'].meta_data['tool_description'] = m_results_meta['broad_peak'].meta_data['tool']
+            m_results_meta['broad_peak'].meta_data['tool'] = "process_chipseq"
+        if 'gapped_peak' in m_results_meta:
+            m_results_meta['gapped_peak'].meta_data['tool_description'] = m_results_meta['gapped_peak'].meta_data['tool']
+            m_results_meta['gapped_peak'].meta_data['tool'] = "process_chipseq"
 
         # Outputs are collected with some name changes
         m_results_files["bam"] = bwa_files["bam"]

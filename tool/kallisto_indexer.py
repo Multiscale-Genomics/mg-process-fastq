@@ -106,8 +106,12 @@ class kallistoIndexerTool(Tool):
 
         output_metadata = {
             "index": Metadata(
-                "index_kallisto", "", [metadata["cdna"].file_path],
-                {
+                data_type="index_kallisto",
+                file_type="",
+                file_path=output_files["index"],
+                sources=[metadata["cdna"].file_path],
+                taxon_id=metadata["cdna"].taxon_id,
+                meta_data={
                     "assembly": metadata["cdna"].meta_data["assembly"],
                     "tool": "kallisto_indexer"
                 }

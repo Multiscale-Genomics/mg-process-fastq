@@ -269,22 +269,34 @@ class kallistoQuantificationTool(Tool):
 
         output_metadata = {
             "abundance_h5_file": Metadata(
-                "hdf5", "", [metadata["cdna"].file_path, metadata["fastq1"].file_path],
-                {
+                data_type="data_ranseq",
+                file_type="hdf5",
+                file_path=output_files["abundance_h5_file"],
+                sources=[metadata["cdna"].file_path, metadata["fastq1"].file_path],
+                taxon_id=metadata["cdna"].taxon_id,
+                meta_data={
                     "assembly": metadata["cdna"].meta_data["assembly"],
                     "tool": "kallisto_quant"
                 }
             ),
             "abundance_tsv_file": Metadata(
-                "tsv", "", [metadata["cdna"].file_path, metadata["fastq1"].file_path],
-                {
+                data_type="data_ranseq",
+                file_type="tsv",
+                file_path=output_files["abundance_tsv_file"],
+                sources=[metadata["cdna"].file_path, metadata["fastq1"].file_path],
+                taxon_id=metadata["cdna"].taxon_id,
+                meta_data={
                     "assembly": metadata["cdna"].meta_data["assembly"],
                     "tool": "kallisto_quant"
                 }
             ),
             "run_info_file": Metadata(
-                "tsv", "", [metadata["cdna"].file_path, metadata["fastq1"].file_path],
-                {
+                data_type="data_ranseq",
+                file_type="tsv",
+                file_path=output_files["run_info_file"],
+                sources=[metadata["cdna"].file_path, metadata["fastq1"].file_path],
+                taxon_id=metadata["cdna"].taxon_id,
+                meta_data={
                     "assembly": metadata["cdna"].meta_data["assembly"],
                     "tool": "kallisto_quant"
                 }

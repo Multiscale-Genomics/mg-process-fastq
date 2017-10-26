@@ -129,6 +129,15 @@ class process_rnaseq(Workflow):
         kq_files["index"] = k_out["index"]
         kq_meta["index"] = k_meta["index"]
 
+        kq_meta['index'].meta_data['tool_description'] = kq_meta['index'].meta_data['tool']
+        kq_meta['index'].meta_data['tool'] = "process_rnaseq"
+        kq_meta['abundance_h5_file'].meta_data['tool_description'] = kq_meta['abundance_h5_file'].meta_data['tool']
+        kq_meta['abundance_h5_file'].meta_data['tool'] = "process_rnaseq"
+        kq_meta['abundance_tsv_file'].meta_data['tool_description'] = kq_meta['abundance_tsv_file'].meta_data['tool']
+        kq_meta['abundance_tsv_file'].meta_data['tool'] = "process_rnaseq"
+        kq_meta['run_info_file'].meta_data['tool_description'] = kq_meta['run_info_file'].meta_data['tool']
+        kq_meta['run_info_file'].meta_data['tool'] = "process_rnaseq"
+
         return (kq_files, kq_meta)
 
 # -----------------------------------------------------------------------------

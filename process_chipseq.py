@@ -240,8 +240,6 @@ class process_chipseq(Workflow):
         print("CHIPSEQ RESULTS:", m_results_meta)
         return m_results_files, m_results_meta
 
-    def _modify_tool_metadata(self, tool, metadata):
-
 
 # ------------------------------------------------------------------------------
 

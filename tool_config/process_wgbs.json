@@ -1,0 +1,215 @@
+{
+    "_id": "process_wgbs",
+    "name": "Process WGBS",
+    "title": "WGBS Analysis",
+    "short_description": "Align WGBS data, uses BS Seeker2 and Bowtie2",
+    "owner": {
+        "institution": "EMBL-EBI",
+        "author": "Mark McDowall",
+        "contact": "mcdowall@ebi.ac.uk",
+        "user": "",
+        "url": "https://github.com/Multiscale-Genomics/mg-process-fastq"
+    },
+    "external": true,
+    "keywords": [
+        "dna","chromatin"
+    ],
+    "infrastructure": {
+        "memory": 12.0,
+        "cpus": 4,
+        "executable": "/home/pmes/code/mg-process-fastq/process_wgbs.py",
+        "clouds": {
+            "mug-bsc": {
+                "launcher": "PMES",
+                "workflowType": "COMPSs",
+                "default_cloud": true
+            }
+        }
+      },
+    "launcher": {
+        "type": "PMES",
+        "queue": "",
+        "executable": "/home/pmes/code/mg-process-fastq/process_wgbs.py",
+        "cpus": 4,
+        "memory": "12.0"
+    },
+    "input_files": [
+        {
+            "name": "fastq1",
+            "description": "Sequence read file",
+            "help": "path to a FASTQ sequence read file",
+            "file_type": ["FASTQ"],
+            "data_type": ["data_wgbs"],
+            "required": true,
+            "allow_multiple": false
+        },
+        {
+            "name": "fastq2",
+            "description": "Sequence read file",
+            "help": "path to a FASTQ sequence read file",
+            "file_type": ["FASTQ"],
+            "data_type": ["data_wgbs"],
+            "required": true,
+            "allow_multiple": false
+        },
+        {
+            "name": "genome",
+            "description": "Genome sequence file",
+            "help": "path to a assembly sequence file",
+            "file_type": ["FASTA"],
+            "data_type": ["sequence_genomic", "sequence_dna"],
+            "required": true,
+            "allow_multiple": false
+        }
+    ],
+    "arguments": [
+        {
+            "name": "aligner",
+            "description": "Name of the aligner",
+            "help": "Name of the aligner",
+            "type": "string",
+            "required": true,
+            "default": "bowtie2"
+        },
+        {
+            "name": "aligner_path",
+            "description": "Location of the aligner libraries",
+            "help": "Location of the aligner libraries",
+            "type": "string",
+            "required": true,
+            "default": "${HOME}/lib/bowtie2-2.3.2"
+        },
+        {
+            "name": "bss_path",
+            "description": "Location of the BS Seeker2 code libraries",
+            "help": "Location of the BS Seeker2 code libraries",
+            "type": "string",
+            "required": true,
+            "default": "${HOME}/lib/BSseeker2"
+        }
+    ],
+    "output_files": [
+        {
+            "name": "index",
+            "required": true,
+            "allow_multiple": false,
+            "file": {
+                "file_type": "TAR",
+                "meta_data": {
+                    "visible": true,
+                    "tool": "process_wgbs",
+                    "description": "Output"
+                },
+                "file_path": "bt2.tar.gz",
+                "data_type": "sequence_mapping_index_bowtie",
+                "compressed": "gzip"
+            }
+        }, {
+            "required": true,
+            "allow_multiple": false,
+            "name": "fastq1_filtered",
+            "file": {
+                "file_type": "fastq",
+                "meta_data": {
+                    "visible": true,
+                    "tool": "process_wgbs",
+                    "description": "Filtered reads"
+                },
+                "file_path": "fastq1_filtered.fastq",
+                "data_type": "data_wgbs",
+                "compressed": "null"
+            }
+        }, {
+            "required": true,
+            "allow_multiple": false,
+            "name": "fastq2_filtered",
+            "file": {
+                "file_type": "fastq",
+                "meta_data": {
+                    "visible": true,
+                    "tool": "process_wgbs",
+                    "description": "Filtered reads"
+                },
+                "file_path": "fastq2_filtered.fastq",
+                "data_type": "data_wgbs",
+                "compressed": "null"
+            }
+        }, {
+            "required": true,
+            "allow_multiple": false,
+            "name": "bam",
+            "file": {
+                "file_type": "bam",
+                "meta_data": {
+                    "visible": true,
+                    "tool": "process_wgbs",
+                    "description": "Aligned sequences"
+                },
+                "file_path": "wgbs.bam",
+                "data_type": "data_wgbs",
+                "compressed": "null"
+            }
+        }, {
+            "required": false,
+            "allow_multiple": false,
+            "name": "bai",
+            "file": {
+                "file_type": "bai",
+                "meta_data": {
+                    "visible": true,
+                    "tool": "process_wgbs",
+                    "description": "Bam index file"
+                },
+                "file_path": "wgbs.bai",
+                "data_type": "data_wgbs",
+                "compressed": "null"
+            }
+        }, {
+            "required": false,
+            "allow_multiple": false,
+            "name": "wig_file",
+            "file": {
+                "file_type": "wig",
+                "meta_data": {
+                    "visible": true,
+                    "tool": "process_wgbs",
+                    "description": "WGBS peaks"
+                },
+                "file_path": "wgbs.wig",
+                "data_type": "data_wgbs",
+                "compressed": "null"
+            }
+        }, {
+            "required": false,
+            "allow_multiple": false,
+            "name": "cgmap_file",
+            "file": {
+                "file_type": "tsv",
+                "meta_data": {
+                    "visible": true,
+                    "tool": "process_wgbs",
+                    "description": "CGmap file"
+                },
+                "file_path": "cgmap.tsv",
+                "data_type": "data_wgbs",
+                "compressed": "null"
+            }
+        }, {
+            "required": false,
+            "allow_multiple": false,
+            "name": "atcgmap_file",
+            "file": {
+                "file_type": "tsv",
+                "meta_data": {
+                    "visible": true,
+                    "tool": "process_wgbs",
+                    "description": "ATCGmap file"
+                },
+                "file_path": "atcgmap.tsv",
+                "data_type": "data_wgbs",
+                "compressed": "null"
+            }
+        }
+    ],
+    "control_file": ".results.json"
+}

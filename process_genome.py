@@ -22,12 +22,11 @@ from __future__ import print_function
 from functools import wraps # pylint: disable=unused-import
 
 import argparse
+import os
 
-from basic_modules.tool import Tool
 from basic_modules.workflow import Workflow
 from basic_modules.metadata import Metadata
-
-from dmp import dmp
+from utils import remap
 
 from tool.bowtie_indexer import bowtieIndexerTool
 from tool.bwa_indexer import bwaIndexerTool
@@ -57,9 +56,9 @@ class process_genome(Workflow):
 
     def run(self, input_files, metadata, output_files):
         """
-        The downloading can be done using the current common.py functions. These
-        should be prevented from running the indexing step as this will be done
-        as part of this workflow.
+        Main run function for the indexing of genome assembly FASTA files. The
+        pipeline uses Bowtie2, BWA and GEM ready for use in pipelines that
+        rely on alignment.
 
         Parameters
         ----------
@@ -76,119 +75,87 @@ class process_genome(Workflow):
             List of locations for the output index files
         """
 
-        genome_fa = input_files[0]
         output_metadata = {}
-        output_metadata['genome_idx'] = {}
 
         # Bowtie2 Indexer
         bowtie2 = bowtieIndexerTool()
-        bti, btm = bowtie2.run([genome_fa], [], {})
-        output_metadata['genome_idx']['bowtie'] = btm
+        bti, btm = bowtie2.run(input_files, metadata, {'index': output_files['bwt_index']})
+        output_metadata['bwt_index'] = btm['index']
+
+        output_metadata['bwt_index'].meta_data['tool_description'] = output_metadata['bwt_index'].meta_data['tool']
+        output_metadata['bwt_index'].meta_data['tool'] = "process_genome"
 
         # BWA Indexer
         bwa = bwaIndexerTool()
-        bwai, bwam = bwa.run([genome_fa], [], {})
-        output_metadata['genome_idx']['bwa'] = bwam
+        bwai, bwam = bwa.run(input_files, metadata, {'index': output_files['bwa_index']})
+        output_metadata['bwa_index'] = bwam['index']
+
+        output_metadata['bwa_index'].meta_data['tool_description'] = output_metadata['bwa_index'].meta_data['tool']
+        output_metadata['bwa_index'].meta_data['tool'] = "process_genome"
 
         # GEM Indexer
         gem = gemIndexerTool()
-        gemi, gemm = gem.run([genome_fa], [], {})
-        output_metadata['genome_idx']['gem'] = gemm
+        gemi, gemm = gem.run(
+            input_files, metadata,
+            {
+                'index': output_files['gem_index'],
+                'genome_gem': output_files['genome_gem']
+            }
+        )
+        output_metadata['gem_index'] = gemm['index']
+        output_metadata['genome_gem'] = gemm['genome_gem']
 
-        # Need to get the file_id for the FASTA file to use as source_id
-        # Also need to get the accession of the assembly from the parent
-        output_metadata['output_files'] = [
-            Metadata("index", "Assembly"),
-            Metadata("index", "Assembly"),
-            Metadata("index", "Assembly"),
-        ]
+        output_metadata['gem_index'].meta_data['tool_description'] = output_metadata['gem_index'].meta_data['tool']
+        output_metadata['gem_index'].meta_data['tool'] = "process_genome"
 
-        return (bti + bwai + gemi, output_metadata)
+        output_metadata['genome_gem'].meta_data['tool_description'] = output_metadata['genome_gem'].meta_data['tool']
+        output_metadata['genome_gem'].meta_data['tool'] = "process_genome"
+
+        return (output_files, output_metadata)
 
 # ------------------------------------------------------------------------------
 
-def main(input_files, output_files, input_metadata):
+def main_json(config, in_metadata, out_metadata):
     """
-    Main function
+    Alternative main function
     -------------
 
-    This function launches the app.
+    This function launches the app using configuration written in
+    two json files: config.json and input_metadata.json.
     """
-
-    # import pprint  # Pretty print - module for dictionary fancy printing
-
     # 1. Instantiate and launch the App
     print("1. Instantiate and launch the App")
-    from apps.workflowapp import WorkflowApp
-    app = WorkflowApp()
-    result = app.launch(process_genome, input_files, input_metadata,
-                        output_files, {})
+    from apps.jsonapp import JSONApp
+    app = JSONApp()
+    result = app.launch(process_genome,
+                        config,
+                        in_metadata,
+                        out_metadata)
 
     # 2. The App has finished
-    print("2. Execution finished")
+    print("2. Execution finished; see " + out_metadata)
     print(result)
+
     return result
-
-def prepare_files(
-        dm_handler, taxon_id, genome_fa, assembly):
-    """
-    Function to load the DM API with the required files and prepare the
-    parameters passed from teh command line ready for use in the main function
-    """
-    print(dm_handler.get_files_by_user("test"))
-
-    root_name = genome_fa.split("/")
-    parent_dir = '/'.join(root_name[0:-1])
-
-    genome_file = dm_handler.set_file(
-        "test", genome_fa, "file", "fasta", 64000, parent_dir, "Assembly",
-        taxon_id, None, None, meta_data={"assembly" : assembly})
-
-    # Maybe it is necessary to prepare a metadata parser from json file
-    # when building the Metadata objects.
-    metadata = [
-        Metadata("fasta", "Assembly", None, {'assembly' : assembly}, genome_file),
-    ]
-
-    files = [
-        genome_fa,
-    ]
-
-    files_out = []
-
-    return [files, files_out, metadata]
 
 # ------------------------------------------------------------------------------
 
 if __name__ == "__main__":
     import sys
-    sys._run_from_cmdl = True
+    sys._run_from_cmdl = True  # pylint: disable=protected-access
 
     # Set up the command line parameters
     PARSER = argparse.ArgumentParser(description="Index the genome file")
-    PARSER.add_argument("--taxon_id", help="Species (9606)")
-    PARSER.add_argument("--genome", help="Genome FASTA file")
-    PARSER.add_argument("--assembly", help="Assembly ID")
+    PARSER.add_argument("--config", help="Configuration file")
+    PARSER.add_argument("--in_metadata", help="Location of input metadata file")
+    PARSER.add_argument("--out_metadata", help="Location of output metadata file")
 
     # Get the matching parameters from the command line
     ARGS = PARSER.parse_args()
 
-    GENOME_FA = ARGS.genome
-    ASSEMBLY = ARGS.assembly
-    TAXON_ID = ARGS.taxon_id
+    CONFIG = ARGS.config
+    IN_METADATA = ARGS.in_metadata
+    OUT_METADATA = ARGS.out_metadata
 
-    #
-    # MuG Tool Steps
-    # --------------
-    #
-    # 1. Create data files
-    DM_HANDLER = dmp(test=True)
-
-    # Get the assembly
-
-    #2. Register the data with the DMP
-    PARAMS = prepare_files(DM_HANDLER, TAXON_ID, GENOME_FA, ASSEMBLY)
-
-    RESULTS = main(PARAMS[0], PARAMS[1], PARAMS[2])
-
-    print(DM_HANDLER.get_files_by_user("test"))
+    RESULTS = main_json(CONFIG, IN_METADATA, OUT_METADATA)
+    print(RESULTS)

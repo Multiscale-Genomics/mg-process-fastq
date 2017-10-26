@@ -37,8 +37,8 @@ except ImportError:
     from dummy_pycompss import task
     from dummy_pycompss import compss_wait_on
 
-#from basic_modules.metadata import Metadata
 from basic_modules.tool import Tool
+from basic_modules.metadata import Metadata
 
 from fastqreader import fastqreader
 
@@ -244,18 +244,17 @@ class fastq_splitter(Tool):
 
         return files_out
 
-    def run(self, input_files, output_files, metadata=None):
+    def run(self, input_files, metadata, output_files):
         """
         The main function to run the splitting of FASTQ files (single or paired)
         so that they can aligned in a distributed manner
 
         Parameters
         ----------
-        input_files : list
+        input_files : dict
             List of input fastq file locations
-        output_files : list
         metadata : dict
-
+        output_files : dict
 
         Returns
         -------
@@ -266,22 +265,38 @@ class fastq_splitter(Tool):
 
         """
 
-        if len(input_files) == 2:
-            results = output_files = self.paired_splitter(
-                input_files[0], input_files[1],
-                input_files[0] + ".tar.gz"
+        sources = [input_files["fastq1"].file_path]
+
+        if "fastq2" in input_files:
+            sources.append(input_files["fastq2"].file_path)
+            results = self.paired_splitter(
+                input_files["fastq1"], input_files["fastq2"],
+                input_files["fastq1"] + ".tar.gz"
             )
         else:
-            results = output_files = self.single_splitter(
-                input_files[0],
-                input_files[0] + ".tar.gz",
+            results = self.single_splitter(
+                input_files["fastq1"],
+                input_files["fastq1"] + ".tar.gz",
             )
 
         results = compss_wait_on(results)
 
-        print("WGBS - FASTQ SPLITTER:", results)
+        print("FASTQ SPLITTER:", results)
+
+        fastq_tar_meta = Metadata(
+            data_type=metadata["fastq1"].data_type,
+            file_type="TAR",
+            file_path=output_files["output"],
+            sources=sources,
+            taxon_id=metadata["fastq1"].taxon_id,
+            meta_data={
+                "tool": "fastq_splitter"
+            }
+        )
 
         return (
-            input_files[0] + ".tar.gz",
-            results
+            {"output": input_files["fastq1"] + ".tar.gz"},
+            {"output": fastq_tar_meta}
         )
+
+# ------------------------------------------------------------------------------

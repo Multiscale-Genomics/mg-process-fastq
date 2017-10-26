@@ -18,6 +18,8 @@
 import os.path
 import pytest # pylint: disable=unused-import
 
+from basic_modules.metadata import Metadata
+
 from tool import bowtie_indexer
 
 @pytest.mark.chipseq
@@ -26,33 +28,29 @@ def test_bowtie_indexer():
     """
     Test to ensure Bowtie indexer is working for macs data set
     """
-    bti = bowtie_indexer.bowtieIndexerTool()
     resource_path = os.path.join(os.path.dirname(__file__), "data/")
 
-    genome_file = resource_path + "macs2.Human.GCA_000001405.22.fasta"
+    genome_fa = resource_path + "macs2.Human.GCA_000001405.22.fasta"
 
-    output_files = [
-        genome_file + '.1.bt2',
-        genome_file + '.2.bt2',
-        genome_file + '.3.bt2',
-        genome_file + '.4.bt2',
-        genome_file + '.rev.1.bt2',
-        genome_file + '.rev.2.bt2',
-    ]
+    input_files = {
+        "genome": genome_fa
+    }
 
-    bti.run([genome_file], {}, output_files)
+    output_files = {
+        "index": genome_fa + ".bt2.tar.gz"
+    }
 
-    assert os.path.isfile(resource_path + "macs2.Human.GCA_000001405.22.1.bt2") is True
-    assert os.path.getsize(resource_path + "macs2.Human.GCA_000001405.22.1.bt2") > 0
-    assert os.path.isfile(resource_path + "macs2.Human.GCA_000001405.22.2.bt2") is True
-    assert os.path.getsize(resource_path + "macs2.Human.GCA_000001405.22.2.bt2") > 0
-    assert os.path.isfile(resource_path + "macs2.Human.GCA_000001405.22.3.bt2") is True
-    assert os.path.getsize(resource_path + "macs2.Human.GCA_000001405.22.3.bt2") > 0
-    assert os.path.isfile(resource_path + "macs2.Human.GCA_000001405.22.4.bt2") is True
-    assert os.path.getsize(resource_path + "macs2.Human.GCA_000001405.22.4.bt2") > 0
-    assert os.path.isfile(resource_path + "macs2.Human.GCA_000001405.22.rev.1.bt2") is True
-    assert os.path.getsize(resource_path + "macs2.Human.GCA_000001405.22.rev.2.bt2") > 0
+    metadata = {
+        "genome": Metadata(
+            "Assembly", "fasta", genome_fa, None,
+            {'assembly' : 'test'}),
+    }
 
+    bti = bowtie_indexer.bowtieIndexerTool()
+    bti.run(input_files, metadata, output_files)
+
+    assert os.path.isfile(output_files["index"]) is True
+    assert os.path.getsize(output_files["index"]) > 0
 
 @pytest.mark.mnaseseq
 @pytest.mark.genome
@@ -60,29 +58,26 @@ def test_bowtie_indexer_02():
     """
     Test to ensure Bowtie indexer is working for macs data set
     """
-    bti = bowtie_indexer.bowtieIndexerTool()
     resource_path = os.path.join(os.path.dirname(__file__), "data/")
 
-    genome_file = resource_path + "inps.Mouse.GRCm38.fasta"
+    genome_fa = resource_path + "inps.Mouse.GRCm38.fasta"
 
-    output_files = [
-        genome_file + '.1.bt2',
-        genome_file + '.2.bt2',
-        genome_file + '.3.bt2',
-        genome_file + '.4.bt2',
-        genome_file + '.rev.1.bt2',
-        genome_file + '.rev.2.bt2',
-    ]
+    input_files = {
+        "genome": genome_fa
+    }
 
-    bti.run([genome_file], {}, output_files)
+    output_files = {
+        "index": genome_fa + ".bt2.tar.gz"
+    }
 
-    assert os.path.isfile(resource_path + "inps.Mouse.GRCm38.1.bt2") is True
-    assert os.path.getsize(resource_path + "inps.Mouse.GRCm38.1.bt2") > 0
-    assert os.path.isfile(resource_path + "inps.Mouse.GRCm38.2.bt2") is True
-    assert os.path.getsize(resource_path + "inps.Mouse.GRCm38.2.bt2") > 0
-    assert os.path.isfile(resource_path + "inps.Mouse.GRCm38.3.bt2") is True
-    assert os.path.getsize(resource_path + "inps.Mouse.GRCm38.3.bt2") > 0
-    assert os.path.isfile(resource_path + "inps.Mouse.GRCm38.4.bt2") is True
-    assert os.path.getsize(resource_path + "inps.Mouse.GRCm38.4.bt2") > 0
-    assert os.path.isfile(resource_path + "inps.Mouse.GRCm38.rev.1.bt2") is True
-    assert os.path.getsize(resource_path + "inps.Mouse.GRCm38.rev.2.bt2") > 0
+    metadata = {
+        "genome": Metadata(
+            "Assembly", "fasta", genome_fa, None,
+            {'assembly' : 'test'}),
+    }
+
+    bti = bowtie_indexer.bowtieIndexerTool()
+    bti.run(input_files, metadata, output_files)
+
+    assert os.path.isfile(output_files["index"]) is True
+    assert os.path.getsize(output_files["index"]) > 0

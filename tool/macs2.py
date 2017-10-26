@@ -35,10 +35,8 @@ except ImportError:
     from dummy_pycompss import task
     from dummy_pycompss import compss_wait_on
 
-#from basic_modules.metadata import Metadata
+from basic_modules.metadata import Metadata
 from basic_modules.tool import Tool
-
-#from tool.common import common
 
 # ------------------------------------------------------------------------------
 
@@ -54,18 +52,24 @@ class macs2(Tool):
         print("MACS2 Peak Caller")
         Tool.__init__(self)
 
+        if configuration is None:
+            configuration = {}
+
+        self.configuration.update(configuration)
+
     @task(
-        returns=int,
+        returns=bool,
         name=IN,
+        macs_params=IN,
         bam_file=FILE_IN,
         bam_file_bgd=FILE_IN,
         narrowpeak=FILE_OUT,
-        summit_bed=FILE_OUT,
+        summits_bed=FILE_OUT,
         broadpeak=FILE_OUT,
         gappedpeak=FILE_OUT,
         isModifier=False)
     def macs2_peak_calling(
-            self, name, bam_file, bam_file_bgd,
+            self, name, bam_file, bam_file_bgd, macs_params,
             narrowpeak, summits_bed, broadpeak, gappedpeak): # pylint: disable=unused-argument
         """
         Function to run MACS2 for peak calling on aligned sequence files and
@@ -101,18 +105,11 @@ class macs2(Tool):
         od_list = bam_file.split("/")
         output_dir = "/".join(od_list[0:-1])
 
-        bgd_command = ''
-        if bam_file_bgd is not None:
-            bgd_command = '-c ' + bam_file_bgd
-
-        nomodel = ''
-        if name == 'macs2.Human.DRR000150.22.filtered':
-            # This is for when running the test data
-            nomodel = '--nomodel'
+        bgd_command = '-c ' + bam_file_bgd
 
         command_param = [
-            'macs2 callpeak', '-t', bam_file, 'n', name, bgd_command,
-            ' --outdir ', output_dir, nomodel
+            'macs2 callpeak', " ".join(macs_params), '-t', bam_file, 'n', name, bgd_command,
+            ' --outdir ', output_dir
         ]
         command_line = ' '.join(command_param)
 
@@ -123,19 +120,52 @@ class macs2(Tool):
         print('Process Results 1:', process)
         print('LIST DIR 1:', os.listdir(output_dir))
 
-        return 0
+        out_suffix = ['peaks.narrowPeak', 'peaks.broadPeak', 'peaks.gappedPeak', 'summits.bed']
+        for f_suf in out_suffix:
+            output_tmp = output_dir + '/' + name + '_out_' + f_suf
+            print(output_tmp, os.path.isfile(output_tmp))
+            if os.path.isfile(output_tmp) is True and os.path.getsize(output_tmp) > 0:
+                if f_suf == 'peaks.narrowPeak':
+                    with open(narrowpeak, "wb") as f_out:
+                        with open(output_tmp, "rb") as f_in:
+                            f_out.write(f_in.read())
+                elif f_suf == 'summits.bed':
+                    with open(summits_bed, "wb") as f_out:
+                        with open(output_tmp, "rb") as f_in:
+                            f_out.write(f_in.read())
+                elif f_suf == 'peaks.broadPeak':
+                    with open(broadpeak, "wb") as f_out:
+                        with open(output_tmp, "rb") as f_in:
+                            f_out.write(f_in.read())
+                elif f_suf == 'peaks.gappedPeak':
+                    with open(gappedpeak, "wb") as f_out:
+                        with open(output_tmp, "rb") as f_in:
+                            f_out.write(f_in.read())
+            else:
+                if f_suf == 'peaks.narrowPeak':
+                    with open(narrowpeak, "w") as f_out:
+                        f_out.write("")
+                elif f_suf == 'summits.bed':
+                    with open(summits_bed, "w") as f_out:
+                        f_out.write("")
+                elif f_suf == 'peaks.broadPeak':
+                    with open(broadpeak, "w") as f_out:
+                        f_out.write("")
+                elif f_suf == 'peaks.gappedPeak':
+                    with open(gappedpeak, "w") as f_out:
+                        f_out.write("")
 
-    @task(
-        returns=int,
-        name=IN,
-        bam_file=FILE_IN,
-        narrowPeak=FILE_OUT,
-        summit_bed=FILE_OUT,
-        broadPeak=FILE_OUT,
-        gappedPeak=FILE_OUT,
-        isModifier=False)
+        if process.returncode is not 0:
+            print("MACS2 ERROR", process.returncode)
+            return process.returncode
+
+        return True
+
+    @task(returns=bool, name=IN, macs_params=IN, bam_file=FILE_IN,
+          narrowpeak=FILE_OUT, summits_bed=FILE_OUT, broadpeak=FILE_OUT,
+          gappedpeak=FILE_OUT, isModifier=False)
     def macs2_peak_calling_nobgd( # pylint: disable=too-many-arguments
-            self, name, bam_file,
+            self, name, bam_file, macs_params,
             narrowpeak, summits_bed, broadpeak, gappedpeak): # pylint: disable=unused-argument
         """
         Function to run MACS2 for peak calling on aligned sequence files without
@@ -167,14 +197,12 @@ class macs2(Tool):
         od_list = bam_file.split("/")
         output_dir = "/".join(od_list[0:-1])
 
-        command_line = 'macs2 callpeak -t ' + bam_file + ' -n ' + name + '_out --outdir ' + output_dir
+        command_line = "macs2 callpeak " + " ".join(macs_params) + " -t " + bam_file
+        command_line = command_line + ' -n ' + name + '_out --outdir ' + output_dir
 
-        if name == 'macs2.Human.DRR000150.22.filtered':
-            # This is for when running the test data
-            command_line = command_line + ' --nomodel'
-
+        print("MACS2 - NAME:", name)
         print('Output Files:', narrowpeak, summits_bed, broadpeak, gappedpeak)
-        print(command_line)
+        print('MACS2 COMMAND LINE:', command_line)
 
         args = shlex.split(command_line)
         process = subprocess.Popen(args)
@@ -183,7 +211,6 @@ class macs2(Tool):
         out_suffix = ['peaks.narrowPeak', 'peaks.broadPeak', 'peaks.gappedPeak', 'summits.bed']
         for f_suf in out_suffix:
             output_tmp = output_dir + '/' + name + '_out_' + f_suf
-            output_file = output_dir + '/' + name + f_suf
             print(output_tmp, os.path.isfile(output_tmp))
             if os.path.isfile(output_tmp) is True and os.path.getsize(output_tmp) > 0:
                 if f_suf == 'peaks.narrowPeak':
@@ -202,12 +229,27 @@ class macs2(Tool):
                     with open(gappedpeak, "wb") as f_out:
                         with open(output_tmp, "rb") as f_in:
                             f_out.write(f_in.read())
+            else:
+                if f_suf == 'peaks.narrowPeak':
+                    with open(narrowpeak, "w") as f_out:
+                        f_out.write("")
+                elif f_suf == 'summits.bed':
+                    with open(summits_bed, "w") as f_out:
+                        f_out.write("")
+                elif f_suf == 'peaks.broadPeak':
+                    with open(broadpeak, "w") as f_out:
+                        f_out.write("")
+                elif f_suf == 'peaks.gappedPeak':
+                    with open(gappedpeak, "w") as f_out:
+                        f_out.write("")
 
         if process.returncode is not 0:
+            print("MACS2 ERROR", process.returncode)
             return process.returncode
-        return 0
 
-    def run(self, input_files, output_files, metadata=None):
+        return True
+
+    def run(self, input_files, metadata, output_files):
         """
         The main function to run MACS 2 for peak calling over a given BAM file
         and matching background BAM file.
@@ -228,58 +270,128 @@ class macs2(Tool):
             List of matching metadata dict objects
 
         """
-
-        bam_file = input_files[0]
-
-        bam_file_bgd = None
-        if len(input_files) == 2 and input_files[1] is not None:
-            bam_file_bgd = input_files[1]
-
-        root_name = bam_file.split("/")
+        root_name = input_files['input'].split("/")
         root_name[-1] = root_name[-1].replace('.bam', '')
-
         name = root_name[-1]
-        #name = '/'.join(root_name)
+        print("NAME", name)
 
-        out_peaks_narrow = '/'.join(root_name) + '_peaks.narrowPeak'
-        out_peaks_broad = '/'.join(root_name) + '_peaks.broadPeak'
-        out_peaks_gapped = '/'.join(root_name) + '_peaks.gappedPeak'
-        out_summits = '/'.join(root_name) + '_summits.bed'
+       # input and output share most metadata
+        output_bed_types = {
+            'narrow_peak': "bed4+1",
+            'summits': "bed6+4",
+            'broad_peak': "bed6+3",
+            'gapped_peak': "bed12+3"
+        }
 
-        output_files_tmp = [out_peaks_narrow, out_summits, out_peaks_broad, out_peaks_gapped]
+        command_params = []
 
-        # input and output share most metadata
-        output_metadata = {}
-        output_metadata["bed_types"] = ["bed4+1", "bed6+4", "bed6+3", "bed12+3"]
+        if "macs_gsize_param" in self.configuration:
+            command_params = command_params + [
+                "--gsize", str(self.configuration["macs_gsize_param"])]
+        if "macs_tsize_param" in self.configuration:
+            command_params = command_params + [
+                "--tsize", str(self.configuration["macs_tsize_param"])]
+        if "macs_bw_param" in self.configuration:
+            command_params = command_params + [
+                "--bw", str(self.configuration["macs_bw_param"])]
+        if "macs_qvalue_param" in self.configuration:
+            command_params = command_params + [
+                "--qvalue", str(self.configuration["macs_qvalue_param"])]
+        if "macs_pvalue_param" in self.configuration:
+            command_params = command_params + [
+                "--pvalue", str(self.configuration["macs_pvalue_param"])]
+        if "macs_mfold_param" in self.configuration:
+            command_params = command_params + [
+                "--mfold", str(self.configuration["macs_mfold_param"])]
+        if "macs_nolambda_param" in self.configuration:
+            command_params = command_params + [
+                "--nolambda", str(self.configuration["macs_nolambda_param"])]
+        if "macs_slocal_param" in self.configuration:
+            command_params = command_params + [
+                "--slocal", str(self.configuration["macs_slocal_param"])]
+        if "macs_llocal_param" in self.configuration:
+            command_params = command_params + [
+                "--llocal", str(self.configuration["macs_llocal_param"])]
+        if "macs_fix-bimodal_param" in self.configuration:
+            command_params = command_params + [
+                "--fix-bimodal", str(self.configuration["macs_fix-bimodal_param"])]
+        if "macs_nomodel_param" in self.configuration:
+            command_params = command_params + ["--nomodel"]
+        if "macs_extsize_param" in self.configuration:
+            command_params = command_params + [
+                "--extsize", str(self.configuration["macs_extsize_param"])]
+        if "macs_shift_param" in self.configuration:
+            command_params = command_params + [
+                "--shift", str(self.configuration["macs_shift_param"])]
+        if "macs_keep-dup_param" in self.configuration:
+            command_params = command_params + [
+                "--keep-dup", str(self.configuration["macs_keep-dup_param"])]
+        if "macs_broad_param" in self.configuration:
+            command_params = command_params + [
+                "--broad", str(self.configuration["macs_broad_param"])]
+        if "macs_broad-cutoff_param" in self.configuration:
+            command_params = command_params + [
+                "--broad-cutoff", str(self.configuration["macs_broad-cutoff_param"])]
+        if "macs_to-large_param" in self.configuration:
+            command_params = command_params + [
+                "--to-large", str(self.configuration["macs_to-large_param"])]
+        if "macs_down-sample_param" in self.configuration:
+            command_params = command_params + [
+                "--down-sample", str(self.configuration["macs_down-sample_param"])]
+        if "macs_bdg_param" in self.configuration:
+            command_params = command_params + [
+                "--bdg", str(self.configuration["macs_bdg_param"])]
+        if "macs_call-summits_param" in self.configuration:
+            command_params = command_params + [
+                "--call-summits", str(self.configuration["macs_call-summits_param"])]
+
+        print("MACS2 COMMAND PARAMS:", command_params)
 
         # handle error
-        if bam_file_bgd is None:
-            results = self.macs2_peak_calling_nobgd(
-                name, bam_file,
-                out_peaks_narrow, out_summits, out_peaks_broad, out_peaks_gapped)
-        else:
+        if 'background' in input_files:
             results = self.macs2_peak_calling(
-                name, bam_file, bam_file_bgd,
-                out_peaks_narrow, out_summits, out_peaks_broad, out_peaks_gapped)
+                name, str(input_files['input']), str(input_files['background']),
+                command_params,
+                str(output_files['narrow_peak']), str(output_files['summits']),
+                str(output_files['broad_peak']), str(output_files['gapped_peak']))
+        else:
+            results = self.macs2_peak_calling_nobgd(
+                name, str(input_files['input']), command_params,
+                str(output_files['narrow_peak']), str(output_files['summits']),
+                str(output_files['broad_peak']), str(output_files['gapped_peak']))
         results = compss_wait_on(results)
 
         if results > 0:
             return (
-                [], []
+                {}, {}
             )
 
         print('Results:', results)
 
-        output_files = []
-        for result_file in output_files_tmp:
-            if os.path.isfile(result_file) is True and os.path.getsize(result_file) > 0:
-                output_files.append(result_file)
+        output_files_created = {}
+        output_metadata = {}
+        for result_file in output_files:
+            if (
+                    os.path.isfile(output_files[result_file]) is True
+                    and os.path.getsize(output_files[result_file]) > 0
+                ):
+                output_files_created[result_file] = output_files[result_file]
+
+                output_metadata[result_file] = Metadata(
+                    data_type="data_chip_seq",
+                    file_type="BED",
+                    file_path=output_files[result_file],
+                    sources=[metadata['input'].file_path],
+                    taxon_id=metadata["input"].taxon_id,
+                    meta_data={
+                        "assembly": metadata["input"].meta_data["assembly"],
+                        "tool": "macs2",
+                        "bed_type": output_bed_types[result_file]
+                    }
+                )
 
         print('MACS2: GENERATED FILES:', output_files)
 
-        return (
-            output_files,
-            output_metadata
-        )
+        return (output_files_created, output_metadata)
 
 # ------------------------------------------------------------------------------

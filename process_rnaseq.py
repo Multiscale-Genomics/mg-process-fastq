@@ -20,11 +20,11 @@
 from __future__ import print_function
 
 import argparse
+import os.path
 
 from basic_modules.workflow import Workflow
 from basic_modules.metadata import Metadata
-
-from dmp import dmp
+from utils import remap
 
 from tool.kallisto_indexer import kallistoIndexerTool
 from tool.kallisto_quant import kallistoQuantificationTool
@@ -54,7 +54,7 @@ class process_rnaseq(Workflow):
 
         self.configuration.update(configuration)
 
-    def run(self, file_ids, metadata, output_files):
+    def run(self, input_files, metadata, output_files):
         """
         Main run function for processing RNA-Seq FastQ data. Pipeline aligns
         the FASTQ files to the genome using Kallisto. Kallisto is then also
@@ -77,148 +77,113 @@ class process_rnaseq(Workflow):
             List of locations for the output bam, bed and tsv files
         """
 
-        genome_fa = file_ids[0]
-
         # Index the cDNA
         # This could get moved to the general tools section
         k_index = kallistoIndexerTool()
-        genome_idx_loc = genome_fa.replace('.fasta', '.idx')
-        genome_idx_loc = genome_idx_loc.replace('.fa', '.idx')
-        gi_out = k_index.run([genome_fa], [genome_idx_loc], metadata)
+        k_out, k_meta = k_index.run(
+            remap(input_files, "cdna"),
+            remap(metadata, "cdna"),
+            remap(output_files, "index"),
+        )
 
         # Quantification
         k_quant = kallistoQuantificationTool()
 
-        if len(file_ids) == 2:
-            results = k_quant.run([genome_idx_loc, file_ids[1]], metadata)
-        elif len(file_ids) == 3:
-            results = k_quant.run([genome_idx_loc, file_ids[1], file_ids[2]], [], metadata)
+        if "fastq2" not in input_files:
+            kq_input_files = {
+                "cdna": input_files["cdna"],
+                "fastq1": input_files["fastq1"],
+                "index": k_out["index"]
+            }
+            kq_input_meta = {
+                "cdna": metadata["cdna"],
+                "fastq1": metadata["fastq1"],
+                "index": k_meta["index"]
+            }
 
-        return results
+            kq_files, kq_meta = k_quant.run(
+                kq_input_files,
+                kq_input_meta,
+                remap(output_files, "abundance_h5_file", "abundance_tsv_file", "run_info_file")
+            )
+        elif "fastq2" in input_files:
+            kq_input_files = {
+                "cdna": input_files["cdna"],
+                "fastq1": input_files["fastq1"],
+                "fastq2": input_files["fastq2"],
+                "index": k_out["index"]
+            }
+            kq_input_meta = {
+                "cdna": metadata["cdna"],
+                "fastq1": metadata["fastq1"],
+                "fastq2": metadata["fastq2"],
+                "index": k_meta["index"]
+            }
+
+            kq_files, kq_meta = k_quant.run(
+                kq_input_files,
+                kq_input_meta,
+                remap(output_files, "abundance_h5_file", "abundance_tsv_file", "run_info_file")
+            )
+
+        kq_files["index"] = k_out["index"]
+        kq_meta["index"] = k_meta["index"]
+
+        kq_meta['index'].meta_data['tool_description'] = kq_meta['index'].meta_data['tool']
+        kq_meta['index'].meta_data['tool'] = "process_rnaseq"
+        kq_meta['abundance_h5_file'].meta_data['tool_description'] = kq_meta['abundance_h5_file'].meta_data['tool']
+        kq_meta['abundance_h5_file'].meta_data['tool'] = "process_rnaseq"
+        kq_meta['abundance_tsv_file'].meta_data['tool_description'] = kq_meta['abundance_tsv_file'].meta_data['tool']
+        kq_meta['abundance_tsv_file'].meta_data['tool'] = "process_rnaseq"
+        kq_meta['run_info_file'].meta_data['tool_description'] = kq_meta['run_info_file'].meta_data['tool']
+        kq_meta['run_info_file'].meta_data['tool'] = "process_rnaseq"
+
+        return (kq_files, kq_meta)
 
 # -----------------------------------------------------------------------------
 
-def main(input_files, input_metadata, output_files):
+def main_json(config, in_metadata, out_metadata):
     """
-    Main function
+    Alternative main function
     -------------
 
-    This function launches the app.
+    This function launches the app using configuration written in
+    two json files: config.json and input_metadata.json.
     """
-
-    # import pprint  # Pretty print - module for dictionary fancy printing
-
     # 1. Instantiate and launch the App
     print("1. Instantiate and launch the App")
-    from apps.workflowapp import WorkflowApp
-    app = WorkflowApp()
-    result = app.launch(process_rnaseq, input_files, input_metadata,
-                        output_files, {})
+    from apps.jsonapp import JSONApp
+    app = JSONApp()
+    result = app.launch(process_rnaseq,
+                        config,
+                        in_metadata,
+                        out_metadata)
 
     # 2. The App has finished
-    print("2. Execution finished")
+    print("2. Execution finished; see " + out_metadata)
+    print(result)
+
     return result
-
-def prepare_files(
-        dm_handler, taxon_id, genome_fa, assembly, file_loc,
-        file_2_loc=None):
-    """
-    Function to load the DM API with the required files and prepare the
-    parameters passed from teh command line ready for use in the main function
-    """
-    print(dm_handler.get_files_by_user("test"))
-
-    input_files = [genome_fa]
-    genome_file = dm_handler.set_file(
-        "test", genome_fa, "fasta", "Assembly", taxon_id, None, [],
-        meta_data={"assembly" : assembly})
-
-    input_files.append(file_loc)
-    fastq1_id = dm_handler.set_file(
-        "test", file_loc, "fasta", "RNA-seq", taxon_id, None, [],
-        meta_data={'assembly' : assembly})
-
-    metadata = [
-        Metadata("fasta", "Assembly", None, {'assembly' : assembly}, genome_file),
-        Metadata("fastq", "RNA-seq", None, {'assembly' : assembly}, fastq1_id)
-    ]
-
-    if file_2_loc is not None:
-        input_files.append(file_2_loc)
-        metadata.append(Metadata("fastq", "RNA-seq"))
-        fastq2_id = dm_handler.set_file(
-            "test", file_loc, "fasta", "RNA-seq", taxon_id, None, [],
-            meta_data={
-                'assembly' : assembly,
-                'paired_end' : fastq1_id
-            }
-        )
-
-        dm_handler.add_file_metadata(fastq1_id, 'paired_end', fastq2_id)
-
-        metadata.append(
-            Metadata(
-                "fastq", "RNA-seq", None,
-                {'assembly' : assembly, 'paired_end' : fastq2_id},
-                fastq1_id
-            )
-        )
-        metadata.append(
-            Metadata(
-                "fastq", "RNA-seq", None,
-                {'assembly' : assembly, 'paired_end' : fastq1_id},
-                fastq2_id
-            )
-        )
-    else:
-        metadata.append(
-            Metadata("fastq", "RNA-seq", None, {'assembly' : assembly}, fastq1_id)
-        )
-
-    return (
-        input_files,
-        metadata,
-        []
-    )
 
 # ------------------------------------------------------------------------------
 
 if __name__ == "__main__":
     import sys
-    sys._run_from_cmdl = True
+    sys._run_from_cmdl = True  # pylint: disable=protected-access
 
     # Set up the command line parameters
     PARSER = argparse.ArgumentParser(description="Parse RNA-seq for expression analysis")
-    PARSER.add_argument("--assembly", help="Genome assembly ID (GCA_000001405.25)")
-    PARSER.add_argument("--taxon_id", help="Taxon_ID (9606)")
-    PARSER.add_argument("--genome", help="Location of the genome cDNA FASTA file")
-    PARSER.add_argument("--file", help="Location of the FASTQ file")
-    PARSER.add_argument(
-        "--file2",
-        help="[OPTIONAL] Location of the paired end FASTQ file",
-        default=None)
+    PARSER.add_argument("--config", help="Configuration file")
+    PARSER.add_argument("--in_metadata", help="Location of input metadata file")
+    PARSER.add_argument("--out_metadata", help="Location of output metadata file")
 
     # Get the matching parameters from the command line
     ARGS = PARSER.parse_args()
 
-    TAXON_ID = ARGS.taxon_id
-    GENOME_FA = ARGS.genome
-    ASSEMBLY = ARGS.assembly
-    FILE_LOC = ARGS.file
-    PAIRED_FILE = ARGS.file2
+    CONFIG = ARGS.config
+    IN_METADATA = ARGS.in_metadata
+    OUT_METADATA = ARGS.out_metadata
 
-    #
-    # MuG Tool Steps
-    # --------------
-    #
-    # 1. Create data files
-    DM_HANDLER = dmp(test=True)
-
-    #2. Register the data with the DMP
-    PARAMS = prepare_files(DM_HANDLER, TAXON_ID, GENOME_FA, ASSEMBLY, FILE_LOC, PAIRED_FILE)
-
-    # 3. Instantiate and launch the App
-    RESULTS = main(PARAMS[0], PARAMS[1], PARAMS[2])
+    RESULTS = main_json(CONFIG, IN_METADATA, OUT_METADATA)
 
     print(RESULTS)
-    print(DM_HANDLER.get_files_by_user("test"))

@@ -36,6 +36,7 @@ except ImportError:
     from dummy_pycompss import compss_wait_on
 
 from basic_modules.tool import Tool
+from basic_modules.metadata import Metadata
 
 # ------------------------------------------------------------------------------
 
@@ -90,7 +91,7 @@ class filterReadsTool(Tool):
 
         return True
 
-    def run(self, input_files, output_files, metadata=None):
+    def run(self, input_files, metadata, output_files):
         """
         Tool for filtering duplicate entries from FASTQ files using BS-Seeker2
 
@@ -106,19 +107,35 @@ class filterReadsTool(Tool):
             Location of the filtered FASTQ file
         """
 
-        file_name = input_files[0]
-        output_file = file_name + '.filtered.fastq'
-
         output_metadata = {}
 
-        print("BS FILTER PARAMS:", file_name, output_file, metadata["bss_path"])
-        results = self.bss_seeker_filter(file_name, output_file, metadata["bss_path"])
+        print(
+            "BS FILTER PARAMS:",
+            input_files["fastq"],
+            output_files["fastq_filtered"],
+            metadata["bss_path"])
+
+        results = self.bss_seeker_filter(
+            input_files["fastq"],
+            output_files["fastq_filtered"],
+            metadata["bss_path"]
+        )
 
         results = compss_wait_on(results)
 
-        if results is False:
-            pass
+        output_metadata = {
+            "fastq_filtered": Metadata(
+                data_type="data_wgbs",
+                file_type="fastq",
+                file_path=output_files["fastq_filtered"],
+                sources=[metadata["fastq"].file_path],
+                taxon_id=metadata["fastq"].taxon_id,
+                meta_data={
+                    "tool": "bs_seeker_filter"
+                }
+            )
+        }
 
-        return ([output_file], output_metadata)
+        return (output_files, output_metadata)
 
 # ------------------------------------------------------------------------------

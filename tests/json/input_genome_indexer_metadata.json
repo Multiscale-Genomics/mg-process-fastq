@@ -1,0 +1,21 @@
+[
+    {
+        "_id": "59b7e020d9422a5969b65372",
+        "data_type": "sequence_dna",
+        "file_type": "FASTA",
+        "file_path": "tests/data/macs2.Human.GCA_000001405.22.fasta",
+        "compressed": 0,
+        "sources": [],
+        "taxon_id": 9606,
+        "creation_time": {
+            "sec": 1503567524,
+            "usec": 0
+        },
+        "taxon_id": "0",
+        "meta_data": {
+            "visible": true,
+            "validated": 1,
+            "assembly": "GCA_000001405.22"
+        }
+    }
+]

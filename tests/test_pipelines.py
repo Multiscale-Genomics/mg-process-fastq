@@ -33,7 +33,7 @@ def genome_pipeline(verbose=False):
 
     params = ['-m genome']
 
-    if verbose == 1:
+    if verbose is True:
         params.append('-s')
 
     params.append('tests/test_pipeline_genome.py')
@@ -53,7 +53,7 @@ def chipseq_pipeline(verbose=False):
 
     params = ['-m chipseq']
 
-    if verbose == 1:
+    if verbose is True:
         params.append('-s')
 
     params.append('tests/test_pipeline_chipseq.py')
@@ -73,7 +73,7 @@ def hic_pipeline(verbose=False):
 
     params = ['-m hic']
 
-    if verbose == 1:
+    if verbose is True:
         params.append('-s')
 
     params.append('tests/test_pipeline_tb.py')
@@ -93,7 +93,7 @@ def mnaseseq_pipeline(verbose=False):
 
     params = ['-m mnaseseq']
 
-    if verbose == 1:
+    if verbose is True:
         params.append('-s')
 
     params.append('tests/test_pipeline_mnaseseq.py')
@@ -113,14 +113,14 @@ def rnaseq_pipeline(verbose=False):
 
     params = ['-m rnaseq']
 
-    if verbose == 1:
+    if verbose is True:
         params.append('-s')
 
     params.append('tests/test_pipeline_rnaseq.py')
 
     return pytest.main(params)
 
-def wgbs_pipeline(verbose=0):
+def wgbs_pipeline(verbose=False):
     """
     Runs the tests for the WGBS pipeline
 
@@ -133,7 +133,7 @@ def wgbs_pipeline(verbose=0):
 
     params = ['-m wgbs']
 
-    if verbose == 1:
+    if verbose is True:
         params.append('-s')
 
     params.append('tests/test_pipeline_wgbs.py')

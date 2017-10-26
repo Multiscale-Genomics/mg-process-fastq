@@ -19,6 +19,8 @@ import os.path
 import time
 import pytest # pylint: disable=unused-import
 
+from basic_modules.metadata import Metadata
+
 from tool import biobambam_filter
 
 @pytest.mark.chipseq
@@ -26,13 +28,25 @@ def test_biobambam():
     """
     Test case to ensure that BioBamBam works
     """
-    bbb = biobambam_filter.biobambam()
-    resource_path = os.path.join(os.path.dirname(__file__), "data/")
-    bbb.run(
-        [resource_path + "macs2.Human.DRR000150.22.bam"],
-        []
-    )
-    time.sleep (10)
 
-    assert os.path.isfile(resource_path + "macs2.Human.DRR000150.22.filtered.bam") is True
-    assert os.path.getsize(resource_path + "macs2.Human.DRR000150.22.filtered.bam") > 0
+    resource_path = os.path.join(os.path.dirname(__file__), "data/")
+
+    input_files = {
+        "input": resource_path + "macs2.Human.DRR000150.22.bam"
+    }
+
+    output_files = {
+        "output": resource_path + "macs2.Human.DRR000150.22_filtered.bam"
+    }
+
+    metadata = {
+        "input": Metadata(
+            "data_chipseq", "fastq", [], None,
+            {'assembly' : 'test'}),
+    }
+
+    bbb = biobambam_filter.biobambam()
+    bbb.run(input_files, metadata, output_files)
+
+    assert os.path.isfile(resource_path + "macs2.Human.DRR000150.22_filtered.bam") is True
+    assert os.path.getsize(resource_path + "macs2.Human.DRR000150.22_filtered.bam") > 0

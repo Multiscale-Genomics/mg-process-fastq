@@ -37,6 +37,7 @@ except ImportError:
     from dummy_pycompss import compss_wait_on
 
 from basic_modules.tool import Tool
+from basic_modules.metadata import Metadata
 
 # ------------------------------------------------------------------------------
 
@@ -110,7 +111,7 @@ class bssIndexerTool(Tool):
 
         return True
 
-    def run(self, input_files, output_files, metadata=None):
+    def run(self, input_files, metadata, output_files):
         """
         Tool for indexing the genome assembly using BS-Seeker2. In this case it
         is using Bowtie2
@@ -127,28 +128,33 @@ class bssIndexerTool(Tool):
             Location of the filtered FASTQ file
         """
 
-        file_name = input_files[0]
-        genome_dir_split = file_name.split("/")
-        genome_dir = '/'.join(genome_dir_split[:-1])
-
+        # TODO: These should be moved to the getting the data from the configuration obj
         aligner = metadata['aligner']
         aligner_path = metadata['aligner_path']
         bss_path = metadata['bss_path']
 
 
-        output_file = file_name + '_' + aligner + '.tar.gz'
-
-        # input and output share most metadata
-        output_metadata = {}
-
         # handle error
         results = self.bss_build_index(
-            file_name, aligner, aligner_path, bss_path, output_file)
+            input_files["genome"],
+            aligner, aligner_path, bss_path,
+            output_files["index"])
         results = compss_wait_on(results)
 
-        if results is True:
-            pass
+        output_metadata = {
+            "index": Metadata(
+                data_type="sequence_mapping_index_bowtie",
+                file_type="TAR",
+                file_path=output_files["index"],
+                sources=[metadata["genome"].file_path],
+                taxon_id=metadata["genome"].taxon_id,
+                meta_data={
+                    "assembly": metadata["genome"].meta_data["assembly"],
+                    "tool": "bs_seeker_indexer"
+                }
+            )
+        }
 
-        return ([output_file], [output_metadata])
+        return output_files, output_metadata
 
 # ------------------------------------------------------------------------------

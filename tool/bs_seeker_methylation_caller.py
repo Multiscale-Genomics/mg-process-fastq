@@ -39,6 +39,7 @@ except ImportError:
     from dummy_pycompss import compss_wait_on
 
 from basic_modules.tool import Tool
+from basic_modules.metadata import Metadata
 
 # ------------------------------------------------------------------------------
 
@@ -94,6 +95,10 @@ class bssMethylationCallerTool(Tool):
         g_dir = "/".join(g_dir[:-1])
 
         tar = tarfile.open(genome_idx)
+        for member in tar.getmembers():
+            if member.isdir():
+                g_dir = g_dir + "/" + member.name
+                break
         tar.extractall(path=g_dir)
         tar.close()
 
@@ -101,7 +106,7 @@ class bssMethylationCallerTool(Tool):
             "python " + bss_path + "/bs_seeker2-call_methylation.py "
             "--sorted --input " + str(bam_file) + " --wig " + str(wig_file) + " "
             "--CGmap " + str(cgmap_file) + " --ATCGmap " + str(atcgmap_file) + " "
-            "--db " + genome_idx.replace('.tar.gz', '')).format()
+            "--db " + g_dir).format()
         print ("command for methyl caller :", command_line)
         args = shlex.split(command_line)
         process = subprocess.Popen(args)
@@ -124,14 +129,14 @@ class bssMethylationCallerTool(Tool):
         output = True
 
         bam_file_handle = pysam.AlignmentFile(bam_file, "rb")
-        if ('SO' not in bam_file_handle.header['HD'] or
-                bam_file_handle.header['HD']['SO'] == 'unsorted'):
+        if ("SO" not in bam_file_handle.header["HD"] or
+                bam_file_handle.header["HD"]["SO"] == "unsorted"):
             output = False
         bam_file_handle.close()
 
         return output
 
-    def run(self, input_files, output_files, metadata=None):
+    def run(self, input_files, metadata, output_files):
         """
         Tool for methylation calling using BS-Seeker2.
 
@@ -147,32 +152,73 @@ class bssMethylationCallerTool(Tool):
             Location of the output wig file
         """
 
+        # TODO: These should be moved to the getting the data from the configuration obj
+        bss_path = metadata["bss_path"]
 
-        file_name = input_files[0]
-        genome_idx = input_files[1]
-
-        bss_path = metadata['bss_path']
-        wig_file = file_name.replace('.bam', '.wig')
-        cgmap_file = file_name.replace('.bam', '.cgmap.tsv')
-        atcgmap_file = file_name.replace('.bam', '.atcgmap.tsv')
-
-        # input and output share most metadata
-        output_metadata = {}
-
-        results = self.check_header(file_name)
+        results = self.check_header(input_files["bam"])
         results = compss_wait_on(results)
         if results is False:
-            output_metadata['error'] = "bss_methylation_caller: Could not process files {}, {}.".format(*input_files)
-            wig_file = None
-            cgmap_file = None
-            atcgmap_file = None
-
-            return ([wig_file, cgmap_file, atcgmap_file], [output_metadata])
+            # output_metadata['error'] = "bss_methylation_caller: Could not process files {}, {}.".format(*input_files)
+            return (None, None)
 
         results = self.bss_methylation_caller(
-            bss_path, file_name, genome_idx, wig_file, cgmap_file, atcgmap_file)
+            bss_path,
+            input_files["bam"],
+            input_files["index"],
+            output_files["wig_file"],
+            output_files["cgmap_file"],
+            output_files["atcgmap_file"]
+        )
         results = compss_wait_on(results)
 
-        return ([wig_file, cgmap_file, atcgmap_file], [output_metadata])
+        output_metadata = {
+            "wig_file": Metadata(
+                data_type="data_wgbs",
+                file_type="wig",
+                file_path=output_files["wig_file"],
+                sources=[
+                    metadata["genome"].file_path,
+                    metadata["fastq1"].file_path,
+                    metadata["fastq2"].file_path
+                ],
+                taxon_id=metadata["genome"].taxon_id,
+                meta_data={
+                    "assembly": metadata["genome"].meta_data["assembly"],
+                    "tool": "bs_seeker_methylation_caller"
+                }
+            ),
+            "cgmap_file": Metadata(
+                data_type="data_wgbs",
+                file_type="tsv",
+                file_path=output_files["cgmap_file"],
+                sources=[
+                    metadata["genome"].file_path,
+                    metadata["fastq1"].file_path,
+                    metadata["fastq2"].file_path
+                ],
+                taxon_id=metadata["genome"].taxon_id,
+                meta_data={
+                    "assembly": metadata["genome"].meta_data["assembly"],
+                    "tool": "bs_seeker_methylation_caller"
+                }
+            ),
+            "atcgmap_file": Metadata(
+                data_type="data_wgbs",
+                file_type="tsv",
+                file_path=output_files["atcgmap_file"],
+                sources=[
+                    metadata["genome"].file_path,
+                    metadata["fastq1"].file_path,
+                    metadata["fastq2"].file_path
+                ],
+                taxon_id=metadata["genome"].taxon_id,
+                meta_data={
+                    "assembly": metadata["genome"].meta_data["assembly"],
+                    "tool": "bs_seeker_methylation_caller"
+                }
+            )
+        }
+
+        return (output_files, output_metadata)
 
 # ------------------------------------------------------------------------------

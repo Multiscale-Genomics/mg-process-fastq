@@ -17,6 +17,8 @@
 
 from __future__ import print_function
 
+import shlex
+import subprocess
 import sys
 
 try:
@@ -33,7 +35,7 @@ except ImportError:
     from dummy_pycompss import task
     from dummy_pycompss import compss_wait_on
 
-#from basic_modules.metadata import Metadata
+from basic_modules.metadata import Metadata
 from basic_modules.tool import Tool
 
 from tool.common import common
@@ -52,8 +54,8 @@ class gemIndexerTool(Tool):
         print ("GEM Indexer")
         Tool.__init__(self)
 
-    @task(genome_file=FILE_IN, new_genome_file=FILE_OUT, idx_loc=FILE_OUT)
-    def gem_indexer(self, genome_file, new_genome_file, idx_loc): # pylint: disable=unused-argument
+    @task(genome_file=FILE_IN, new_genome_file=FILE_OUT, index_loc=FILE_OUT)
+    def gem_indexer(self, genome_file, new_genome_file, index_loc): # pylint: disable=unused-argument
         """
         GEM Indexer
 
@@ -69,10 +71,17 @@ class gemIndexerTool(Tool):
         common_handle = common()
         common_handle.replaceENAHeader(genome_file, new_genome_file)
 
-        idx_loc = common_handle.gem_index_genome(new_genome_file, new_genome_file)
+        idx_result = common_handle.gem_index_genome(new_genome_file, new_genome_file)
+
+        idx_out_pregz = index_loc.replace('.gem.gz', '.gem')
+        command_line = 'pigz ' + idx_out_pregz
+        args = shlex.split(command_line)
+        process = subprocess.Popen(args)
+        process.wait()
+
         return True
 
-    def run(self, input_files, output_files, metadata=None):
+    def run(self, input_files, metadata, output_files):
         """
         Tool for generating assembly aligner index files for use with the GEM
         indexer
@@ -91,17 +100,39 @@ class gemIndexerTool(Tool):
             list of the matching metadata
         """
 
-        fa_file_out = input_files[0].replace(".fasta", "")
-        fa_file_out = fa_file_out.replace(".fa", "")
-        fa_file_out += "_gem.fasta"
-        idx_file_out = fa_file_out + ".gem"
-
         # input and output share most metadata
-        output_metadata = {}
-
-        results = self.gem_indexer(input_files[0], fa_file_out, idx_file_out)
+        results = self.gem_indexer(
+            input_files['genome'],
+            output_files['genome_gem'],
+            output_files['index']
+        )
         results = compss_wait_on(results)
 
-        return ([fa_file_out, idx_file_out], [output_metadata])
+        output_metadata = {
+            "genome_gem": Metadata(
+                data_type="sequence_dna",
+                file_type="FASTA",
+                file_path=output_files['genome_gem'],
+                sources=[metadata["genome"].file_path],
+                taxon_id=metadata["genome"].taxon_id,
+                meta_data={
+                    "assembly": metadata["genome"].meta_data["assembly"],
+                    "tool": "gem_indexer"
+                }
+            ),
+            "index": Metadata(
+                data_type="sequence_mapping_index_gem",
+                file_type="GEM",
+                file_path=output_files['index'],
+                sources=[output_files['genome_gem']],
+                taxon_id=metadata["genome"].taxon_id,
+                meta_data={
+                    "assembly": metadata["genome"].meta_data["assembly"],
+                    "tool": "gem_indexer"
+                }
+            )
+        }
+
+        return (output_files, output_metadata)
 
 # ------------------------------------------------------------------------------

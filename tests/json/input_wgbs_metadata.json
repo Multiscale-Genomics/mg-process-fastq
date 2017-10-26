@@ -1,0 +1,41 @@
+[
+    {
+        "compressed": 0,
+        "_id": "59b7e020d9422a5969b65378",
+        "data_type": "data_wgbs",
+        "file_type": "fastq1",
+        "file_path": "tests/data/bsSeeker.Mouse.GRCm38_1.fastq",
+        "sources": [],
+        "taxon_id": 10090,
+        "meta_data": {
+            "visible": true,
+            "validated": 1
+        }
+    },
+    {
+        "compressed": 0,
+        "_id": "59b7e020d9422a5969b65379",
+        "data_type": "data_wgbs",
+        "file_type": "fastq2",
+        "file_path": "tests/data/bsSeeker.Mouse.GRCm38_2.fastq",
+        "sources": [],
+        "taxon_id": 10090,
+        "meta_data": {
+            "visible": true,
+            "validated": 1
+        }
+    },
+    {
+        "_id": "59b7e020d9422a5969b65372",
+        "data_type": "sequence_dna",
+        "file_type": "FASTA",
+        "file_path": "tests/data/bsSeeker.Mouse.GRCm38.fasta",
+        "sources": [],
+        "taxon_id": 10090,
+        "meta_data": {
+            "visible": true,
+            "validated": 1,
+            "assembly": "GRCm38"
+        }
+    }
+]

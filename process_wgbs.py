@@ -110,6 +110,9 @@ class process_wgbs(Workflow):
         output_results_files["fastq1_filtered"] = fastq1f["fastq_filtered"]
         output_metadata["fastq1_filtered"] = filter1_meta["fastq_filtered"]
 
+        output_metadata['fastq1_filtered'].meta_data['tool_description'] = output_metadata['fastq1_filtered'].meta_data['tool']
+        output_metadata['fastq1_filtered'].meta_data['tool'] = "process_wgbs"
+
         # Build the matching WGBS genome index
         builder = bssIndexerTool()
         genome_idx, gidx_meta = builder.run(
@@ -133,6 +136,9 @@ class process_wgbs(Workflow):
             output_results_files["fastq2_filtered"] = fastq2f["fastq_filtered"]
             output_metadata['fastq2_filtered'] = filter2_meta["fastq_filtered"]
 
+            output_metadata['fastq2_filtered'].meta_data['tool_description'] = output_metadata['fastq2_filtered'].meta_data['tool']
+            output_metadata['fastq2_filtered'].meta_data['tool'] = "process_wgbs"
+
         print("WGBS genome_idx:", genome_idx["index"])
 
         # Handles the alignment of all of the split packets then merges them
@@ -155,6 +161,11 @@ class process_wgbs(Workflow):
         output_metadata["bam"] = bam_meta["bam"]
         output_metadata["bai"] = bam_meta["bai"]
 
+        output_metadata['bam'].meta_data['tool_description'] = output_metadata['bam'].meta_data['tool']
+        output_metadata['bam'].meta_data['tool'] = "process_wgbs"
+        output_metadata['bai'].meta_data['tool_description'] = output_metadata['bai'].meta_data['tool']
+        output_metadata['bai'].meta_data['tool'] = "process_wgbs"
+
         # Methylation peak caller
         peak_caller_handle = bssMethylationCallerTool()
         mct_meta = remap(
@@ -176,6 +187,13 @@ class process_wgbs(Workflow):
         output_metadata["wig_file"] = peak_meta["wig_file"]
         output_metadata["cgmap_file"] = peak_meta["cgmap_file"]
         output_metadata["atcgmap_file"] = peak_meta["atcgmap_file"]
+
+        output_metadata['wig_file'].meta_data['tool_description'] = output_metadata['wig_file'].meta_data['tool']
+        output_metadata['wig_file'].meta_data['tool'] = "process_wgbs"
+        output_metadata['cgmap_file'].meta_data['tool_description'] = output_metadata['cgmap_file'].meta_data['tool']
+        output_metadata['cgmap_file'].meta_data['tool'] = "process_wgbs"
+        output_metadata['atcgmap_file'].meta_data['tool_description'] = output_metadata['atcgmap_file'].meta_data['tool']
+        output_metadata['atcgmap_file'].meta_data['tool'] = "process_wgbs"
 
         return (output_results_files, output_metadata)
 

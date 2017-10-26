@@ -265,7 +265,10 @@ class fastq_splitter(Tool):
 
         """
 
+        sources = [input_files["fastq1"].file_path]
+
         if "fastq2" in input_files:
+            sources.append(input_files["fastq2"].file_path)
             results = self.paired_splitter(
                 input_files["fastq1"], input_files["fastq2"],
                 input_files["fastq1"] + ".tar.gz"
@@ -281,9 +284,12 @@ class fastq_splitter(Tool):
         print("FASTQ SPLITTER:", results)
 
         fastq_tar_meta = Metadata(
-            metadata["fastq1"].data_type, "TAR", output_files["output"],
-            [metadata['fastq1'].file_path, metadata['fastq2'].file_path],
-            {
+            data_type=metadata["fastq1"].data_type,
+            file_type="TAR",
+            file_path=output_files["output"],
+            sources=sources,
+            taxon_id=metadata["fastq1"].taxon_id,
+            meta_data={
                 "tool": "fastq_splitter"
             }
         )

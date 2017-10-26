@@ -220,14 +220,14 @@ class process_chipseq(Workflow):
         m_results_files["bam"] = bwa_files["bam"]
         m_results_files["filtered"] = b3f_files["bam"]
 
+        # Equivalent meta data is collected
+        m_results_meta["bam"] = bwa_meta["bam"]
+        m_results_meta["filtered"] = b3f_meta["bam"]
+
         m_results_meta['bam'].meta_data['tool_description'] = m_results_meta['bam'].meta_data['tool']
         m_results_meta['bam'].meta_data['tool'] = "process_chipseq"
         m_results_meta['filtered'].meta_data['tool_description'] = m_results_meta['filtered'].meta_data['tool']
         m_results_meta['filtered'].meta_data['tool'] = "process_chipseq"
-
-        # Equivalent meta data is collected
-        m_results_meta["bam"] = bwa_meta["bam"]
-        m_results_meta["filtered"] = b3f_meta["bam"]
 
         if "bg_loc" in input_files:
             m_results_files["bam_bg"] = bwa_bg_files["bam"]

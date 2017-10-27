@@ -38,6 +38,7 @@ except ImportError:
 
 from basic_modules.metadata import Metadata
 from basic_modules.tool import Tool
+from utils import logger
 
 # ------------------------------------------------------------------------------
 
@@ -87,14 +88,20 @@ class biobambam(Tool):
 
         bam_tmp_out = tmp_dir + '/' + td_list[-1] + '.filtered.tmp.bam'
 
-        with open(bam_file_in, "r") as f_in:
-            with open(bam_tmp_out, "w") as f_out:
-                process = subprocess.Popen(args, stdin=f_in, stdout=f_out)
-                process.wait()
+        try:
+            with open(bam_file_in, "r") as f_in:
+                with open(bam_tmp_out, "w") as f_out:
+                    process = subprocess.Popen(args, stdin=f_in, stdout=f_out)
+                    process.wait()
+        except IOError:
+            return False
 
-        with open(bam_file_out, "wb") as f_out:
-            with open(bam_tmp_out, "rb") as f_in:
-                f_out.write(f_in.read())
+        try:
+            with open(bam_file_out, "wb") as f_out:
+                with open(bam_tmp_out, "rb") as f_in:
+                    f_out.write(f_in.read())
+        except IOError:
+            return False
 
         return True
 
@@ -117,12 +124,16 @@ class biobambam(Tool):
         output_metadata : list
             List of matching metadata dict objects
         """
-        print("BIOBAMBAM: input_files:", input_files)
+        logger.info("BIOBAMBAM FILTER: Ready to run")
 
         results = self.biobambam_filter_alignments(input_files['input'], output_files['output'])
         results = compss_wait_on(results)
 
-        print("BIOBAMBAM FILTER:", os.path.isfile(output_files['output']))
+        if results is False:
+            logger.fatal("BIOBAMBAM: run failed")
+            return {}, {}
+
+        logger.info("BIOBAMBAM FILTER: completed")
 
         output_metadata = {
             "bam": Metadata(

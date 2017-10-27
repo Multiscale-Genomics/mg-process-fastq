@@ -35,6 +35,7 @@ except ImportError:
 
 from basic_modules.tool import Tool
 from basic_modules.metadata import Metadata
+from utils import logger
 
 from tool.common import common
 
@@ -50,7 +51,7 @@ class bwaAlignerTool(Tool):
         """
         Init function
         """
-        print("BWA Aligner")
+        logger.info("BWA Aligner")
         Tool.__init__(self)
 
     @task(returns=bool, genome_file_loc=FILE_IN, read_file_loc=FILE_IN,
@@ -75,10 +76,12 @@ class bwaAlignerTool(Tool):
         g_dir = genome_idx.split("/")
         g_dir = "/".join(g_dir[:-1])
 
-        print("genome_idx:", genome_idx)
-        tar = tarfile.open(genome_idx)
-        tar.extractall(path=g_dir)
-        tar.close()
+        try:
+            tar = tarfile.open(genome_idx)
+            tar.extractall(path=g_dir)
+            tar.close()
+        except IOError:
+            return False
 
         gfl = genome_file_loc.split("/")
         genome_fa_ln = genome_idx.replace('.tar.gz', '/') + gfl[-1]
@@ -88,9 +91,12 @@ class bwaAlignerTool(Tool):
         common_handle = common()
         common_handle.bwa_align_reads(genome_fa_ln, read_file_loc, out_bam)
 
-        with open(bam_loc, "wb") as f_out:
-            with open(out_bam, "rb") as f_in:
-                f_out.write(f_in.read())
+        try:
+            with open(bam_loc, "wb") as f_out:
+                with open(out_bam, "rb") as f_in:
+                    f_out.write(f_in.read())
+        except IOError:
+            return False
 
         return True
 
@@ -113,7 +119,7 @@ class bwaAlignerTool(Tool):
         output_metadata : dict
         """
 
-        print("BWA ALIGNER (before):", type(output_files), output_files["output"])
+        logger.info("BWA ALIGNER: Aligning sequence reads to the genome")
 
         results = self.bwa_aligner(
             str(input_files["genome"]), str(input_files["loc"]), str(output_files["output"]),
@@ -121,7 +127,11 @@ class bwaAlignerTool(Tool):
 
         results = compss_wait_on(results)
 
-        print("BWA ALIGNER:", os.path.isfile(output_files["output"]))
+        if results is False:
+            logger.fatal("BWA aligner failed")
+            return ({}, {})
+
+        logger.info("BWA ALIGNER: Alignments complete")
 
         # print("BWA ALIGNER - METADATA:", metadata)
 

@@ -37,6 +37,7 @@ except ImportError:
 
 from basic_modules.metadata import Metadata
 from basic_modules.tool import Tool
+from utils import logger
 
 # ------------------------------------------------------------------------------
 
@@ -49,7 +50,7 @@ class macs2(Tool):
         """
         Init function
         """
-        print("MACS2 Peak Caller")
+        logger.info("MACS2 Peak Caller")
         Tool.__init__(self)
 
         if configuration is None:
@@ -58,7 +59,7 @@ class macs2(Tool):
         self.configuration.update(configuration)
 
     @task(
-        returns=bool,
+        returns=int,
         name=IN,
         macs_params=IN,
         bam_file=FILE_IN,
@@ -117,6 +118,10 @@ class macs2(Tool):
         process = subprocess.Popen(args)
         process.wait()
 
+        if process.returncode is not 0:
+            logger.fatal("MACS2 ERROR", process.returncode)
+            return process.returncode
+
         print('Process Results 1:', process)
         print('LIST DIR 1:', os.listdir(output_dir))
 
@@ -155,13 +160,9 @@ class macs2(Tool):
                     with open(gappedpeak, "w") as f_out:
                         f_out.write("")
 
-        if process.returncode is not 0:
-            print("MACS2 ERROR", process.returncode)
-            return process.returncode
+        return 0
 
-        return True
-
-    @task(returns=bool, name=IN, macs_params=IN, bam_file=FILE_IN,
+    @task(returns=int, name=IN, macs_params=IN, bam_file=FILE_IN,
           narrowpeak=FILE_OUT, summits_bed=FILE_OUT, broadpeak=FILE_OUT,
           gappedpeak=FILE_OUT, isModifier=False)
     def macs2_peak_calling_nobgd( # pylint: disable=too-many-arguments
@@ -208,6 +209,10 @@ class macs2(Tool):
         process = subprocess.Popen(args)
         process.wait()
 
+        if process.returncode is not 0:
+            logger.fatal("MACS2 ERROR", process.returncode)
+            return process.returncode
+
         out_suffix = ['peaks.narrowPeak', 'peaks.broadPeak', 'peaks.gappedPeak', 'summits.bed']
         for f_suf in out_suffix:
             output_tmp = output_dir + '/' + name + '_out_' + f_suf
@@ -243,11 +248,7 @@ class macs2(Tool):
                     with open(gappedpeak, "w") as f_out:
                         f_out.write("")
 
-        if process.returncode is not 0:
-            print("MACS2 ERROR", process.returncode)
-            return process.returncode
-
-        return True
+        return 0
 
     def run(self, input_files, metadata, output_files):
         """
@@ -273,7 +274,6 @@ class macs2(Tool):
         root_name = input_files['input'].split("/")
         root_name[-1] = root_name[-1].replace('.bam', '')
         name = root_name[-1]
-        print("NAME", name)
 
        # input and output share most metadata
         output_bed_types = {
@@ -345,7 +345,7 @@ class macs2(Tool):
             command_params = command_params + [
                 "--call-summits", str(self.configuration["macs_call-summits_param"])]
 
-        print("MACS2 COMMAND PARAMS:", command_params)
+        logger.info("MACS2 COMMAND PARAMS:", command_params)
 
         # handle error
         if 'background' in input_files:
@@ -362,11 +362,10 @@ class macs2(Tool):
         results = compss_wait_on(results)
 
         if results > 0:
+            logger.fatal("MACS2 failed with error: {}", results)
             return (
                 {}, {}
             )
-
-        print('Results:', results)
 
         output_files_created = {}
         output_metadata = {}
@@ -390,7 +389,7 @@ class macs2(Tool):
                     }
                 )
 
-        print('MACS2: GENERATED FILES:', output_files)
+        logger.info('MACS2: GENERATED FILES:', output_files)
 
         return (output_files_created, output_metadata)
 

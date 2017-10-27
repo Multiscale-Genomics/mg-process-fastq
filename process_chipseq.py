@@ -27,6 +27,7 @@ import os.path
 
 from basic_modules.workflow import Workflow
 from basic_modules.metadata import Metadata
+from utils import logger
 from utils import remap
 
 from tool.bwa_aligner import bwaAlignerTool
@@ -137,16 +138,12 @@ class process_chipseq(Workflow):
             broad_peak : Metadata
             gapped_peak : Metadata
         """
-        print("INPUT RUN METADATA:", metadata)
+        output_files_generated = {}
+        output_metadata = {}
+
+        logger.info("PROCESS CHIPSEQ - DEFINED OUTPUT:", output_files["bam"])
 
         bwa = bwaAlignerTool(self.configuration)
-
-        print(
-            "PROCESS CHIPSEQ - FILES PASSED TO TOOLS:",
-            remap(input_files, "genome", "loc", "index")
-        )
-
-        print("PROCESS CHIPSEQ - DEFINED OUTPUT:", output_files["bam"])
         bwa_files, bwa_meta = bwa.run(
             # ideally parameter "roles" don't change
             remap(input_files,
@@ -155,6 +152,15 @@ class process_chipseq(Workflow):
                   "genome", "loc", "index"),
             {"output": output_files["bam"]}
         )
+        try:
+            output_files_generated["bam"] = bwa_files["bam"]
+            output_metadata["bam"] = bwa_meta["bam"]
+
+            tool_name = output_metadata['bam'].meta_data['tool']
+            output_metadata['bam'].meta_data['tool_description'] = tool_name
+            output_metadata['bam'].meta_data['tool'] = "process_chipseq"
+        except KeyError:
+            logger.fatal("BWA aligner failed")
 
         if "bg_loc" in input_files:
             bwa_bg_files, bwa_bg_meta = bwa.run(
@@ -166,6 +172,16 @@ class process_chipseq(Workflow):
                 # Intermediate outputs should be created via tempfile?
                 {"output": output_files["bam_bg"]}
             )
+
+            try:
+                output_files_generated["bam_bg"] = bwa_bg_files["bam_bg"]
+                output_metadata["bam_bg"] = bwa_bg_meta["bam_bg"]
+
+                tool_name = output_metadata['bam_bg'].meta_data['tool']
+                output_metadata['bam_bg'].meta_data['tool_description'] = tool_name
+                output_metadata['bam_bg'].meta_data['tool'] = "process_chipseq"
+            except KeyError:
+                logger.fatal("Background BWA aligner failed")
 
         # For multiple files there will need to be merging into a single bam file
 
@@ -179,6 +195,16 @@ class process_chipseq(Workflow):
             {"output": output_files["filtered"]}
         )
 
+        try:
+            output_files_generated["filtered"] = bwa_files["filtered"]
+            output_metadata["filtered"] = bwa_meta["filtered"]
+
+            tool_name = output_metadata['filtered'].meta_data['tool']
+            output_metadata['filtered'].meta_data['tool_description'] = tool_name
+            output_metadata['filtered'].meta_data['tool'] = "process_chipseq"
+        except KeyError:
+            logger.fatal("BioBamBam filtering failed")
+
         if "bg_loc" in input_files:
             b3f_bg_files, b3f_bg_meta = b3f.run(
                 {"input": bwa_bg_files['bam']},
@@ -186,6 +212,16 @@ class process_chipseq(Workflow):
                 # Intermediate outputs should be created via tempfile?
                 {"output": output_files["filtered_bg"]}
             )
+
+            try:
+                output_files_generated["filtered_bg"] = bwa_files["filtered_bg"]
+                output_metadata["filtered_bg"] = bwa_meta["filtered_bg"]
+
+                tool_name = output_metadata['filtered_bg'].meta_data['tool']
+                output_metadata['filtered_bg'].meta_data['tool_description'] = tool_name
+                output_metadata['filtered_bg'].meta_data['tool'] = "process_chipseq"
+            except KeyError:
+                logger.fatal("Background BioBamBam filtering failed")
 
         ## MACS2 to call peaks
         macs_caller = macs2(self.configuration)
@@ -203,46 +239,36 @@ class process_chipseq(Workflow):
             # Extra entries in output_files will be disregarded.
             remap(output_files, 'narrow_peak', 'summits', 'broad_peak', 'gapped_peak'))
 
+        if len(m_results_meta) == 0:
+            logger.fatal("MACS2 peak calling failed")
+
         if 'narrow_peak' in m_results_meta:
-            m_results_meta['narrow_peak'].meta_data['tool_description'] = m_results_meta['narrow_peak'].meta_data['tool']
-            m_results_meta['narrow_peak'].meta_data['tool'] = "process_chipseq"
+            output_files_generated['narrow_peak'] = m_results_files['narrow_peak']
+
+            tool_name = output_metadata['narrow_peak'].meta_data['tool']
+            output_metadata['narrow_peak'].meta_data['tool_description'] = tool_name
+            output_metadata['narrow_peak'].meta_data['tool'] = "process_chipseq"
         if 'summits' in m_results_meta:
-            m_results_meta['summits'].meta_data['tool_description'] = m_results_meta['summits'].meta_data['tool']
-            m_results_meta['summits'].meta_data['tool'] = "process_chipseq"
+            output_files_generated['summits'] = m_results_files['summits']
+
+            tool_name = output_metadata['summits'].meta_data['tool']
+            output_metadata['summits'].meta_data['tool_description'] = tool_name
+            output_metadata['summits'].meta_data['tool'] = "process_chipseq"
         if 'broad_peak' in m_results_meta:
-            m_results_meta['broad_peak'].meta_data['tool_description'] = m_results_meta['broad_peak'].meta_data['tool']
-            m_results_meta['broad_peak'].meta_data['tool'] = "process_chipseq"
+            output_files_generated['broad_peak'] = m_results_files['broad_peak']
+
+            tool_name = output_metadata['broad_peak'].meta_data['tool']
+            output_metadata['broad_peak'].meta_data['tool_description'] = tool_name
+            output_metadata['broad_peak'].meta_data['tool'] = "process_chipseq"
         if 'gapped_peak' in m_results_meta:
-            m_results_meta['gapped_peak'].meta_data['tool_description'] = m_results_meta['gapped_peak'].meta_data['tool']
-            m_results_meta['gapped_peak'].meta_data['tool'] = "process_chipseq"
+            output_files_generated['gapped_peak'] = m_results_files['gapped_peak']
 
-        # Outputs are collected with some name changes
-        m_results_files["bam"] = bwa_files["bam"]
-        m_results_files["filtered"] = b3f_files["bam"]
+            tool_name = output_metadata['gapped_peak'].meta_data['tool']
+            output_metadata['gapped_peak'].meta_data['tool_description'] = tool_name
+            output_metadata['gapped_peak'].meta_data['tool'] = "process_chipseq"
 
-        # Equivalent meta data is collected
-        m_results_meta["bam"] = bwa_meta["bam"]
-        m_results_meta["filtered"] = b3f_meta["bam"]
-
-        m_results_meta['bam'].meta_data['tool_description'] = m_results_meta['bam'].meta_data['tool']
-        m_results_meta['bam'].meta_data['tool'] = "process_chipseq"
-        m_results_meta['filtered'].meta_data['tool_description'] = m_results_meta['filtered'].meta_data['tool']
-        m_results_meta['filtered'].meta_data['tool'] = "process_chipseq"
-
-        if "bg_loc" in input_files:
-            m_results_files["bam_bg"] = bwa_bg_files["bam"]
-            m_results_files["filtered_bg"] = b3f_bg_files["bam"]
-
-            m_results_meta["bam_bg"] = bwa_bg_meta["bam"]
-            m_results_meta["filtered_bg"] = b3f_bg_meta["bam"]
-
-            m_results_meta['bam_bg'].meta_data['tool_description'] = m_results_meta['bam_bg'].meta_data['tool']
-            m_results_meta['bam_bg'].meta_data['tool'] = "process_chipseq"
-            m_results_meta['filtered_bg'].meta_data['tool_description'] = m_results_meta['filtered_bg'].meta_data['tool']
-            m_results_meta['filtered_bg'].meta_data['tool'] = "process_chipseq"
-
-        print("CHIPSEQ RESULTS:", m_results_meta)
-        return m_results_files, m_results_meta
+        print("CHIPSEQ RESULTS:", output_metadata)
+        return output_files_generated, output_metadata
 
 
 # ------------------------------------------------------------------------------

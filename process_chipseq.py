@@ -23,10 +23,8 @@ from __future__ import print_function
 from functools import wraps # pylint: disable=unused-import
 
 import argparse
-import os.path
 
 from basic_modules.workflow import Workflow
-from basic_modules.metadata import Metadata
 from utils import logger
 from utils import remap
 
@@ -53,6 +51,7 @@ class process_chipseq(Workflow):
             a dictionary containing parameters that define how the operation
             should be carried out, which are specific to each Tool.
         """
+        logger.info("Processing ChIP-Seq")
         if configuration is None:
             configuration = {}
 

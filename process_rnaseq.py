@@ -20,10 +20,9 @@
 from __future__ import print_function
 
 import argparse
-import os.path
 
 from basic_modules.workflow import Workflow
-from basic_modules.metadata import Metadata
+from utils import logger
 from utils import remap
 
 from tool.kallisto_indexer import kallistoIndexerTool
@@ -49,6 +48,7 @@ class process_rnaseq(Workflow):
             a dictionary containing parameters that define how the operation
             should be carried out, which are specific to each Tool.
         """
+        logger.info("Processing RNA-Seq")
         if configuration is None:
             configuration = {}
 
@@ -85,6 +85,10 @@ class process_rnaseq(Workflow):
             remap(metadata, "cdna"),
             remap(output_files, "index"),
         )
+
+        if "index" not in k_out:
+            logger.fatal("Kallisto: Index has not been generated")
+            return {}, {}
 
         # Quantification
         k_quant = kallistoQuantificationTool()
@@ -126,17 +130,27 @@ class process_rnaseq(Workflow):
                 remap(output_files, "abundance_h5_file", "abundance_tsv_file", "run_info_file")
             )
 
-        kq_files["index"] = k_out["index"]
-        kq_meta["index"] = k_meta["index"]
+        try:
+            kq_files["index"] = k_out["index"]
+            kq_meta["index"] = k_meta["index"]
 
-        kq_meta['index'].meta_data['tool_description'] = kq_meta['index'].meta_data['tool']
-        kq_meta['index'].meta_data['tool'] = "process_rnaseq"
-        kq_meta['abundance_h5_file'].meta_data['tool_description'] = kq_meta['abundance_h5_file'].meta_data['tool']
-        kq_meta['abundance_h5_file'].meta_data['tool'] = "process_rnaseq"
-        kq_meta['abundance_tsv_file'].meta_data['tool_description'] = kq_meta['abundance_tsv_file'].meta_data['tool']
-        kq_meta['abundance_tsv_file'].meta_data['tool'] = "process_rnaseq"
-        kq_meta['run_info_file'].meta_data['tool_description'] = kq_meta['run_info_file'].meta_data['tool']
-        kq_meta['run_info_file'].meta_data['tool'] = "process_rnaseq"
+            tool_name = kq_meta['index'].meta_data['tool']
+            kq_meta['index'].meta_data['tool_description'] = tool_name
+            kq_meta['index'].meta_data['tool'] = "process_rnaseq"
+
+            tool_name = kq_meta['abundance_h5_file'].meta_data['tool']
+            kq_meta['abundance_h5_file'].meta_data['tool_description'] = tool_name
+            kq_meta['abundance_h5_file'].meta_data['tool'] = "process_rnaseq"
+
+            tool_name = kq_meta['abundance_tsv_file'].meta_data['tool']
+            kq_meta['abundance_tsv_file'].meta_data['tool_description'] = tool_name
+            kq_meta['abundance_tsv_file'].meta_data['tool'] = "process_rnaseq"
+
+            tool_name = kq_meta['run_info_file'].meta_data['tool']
+            kq_meta['run_info_file'].meta_data['tool_description'] = tool_name
+            kq_meta['run_info_file'].meta_data['tool'] = "process_rnaseq"
+        except KeyError:
+            logger.fatal("Kallisto failed")
 
         return (kq_files, kq_meta)
 

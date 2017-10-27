@@ -37,6 +37,7 @@ except ImportError:
 
 from basic_modules.tool import Tool
 from basic_modules.metadata import Metadata
+from utils import logger
 
 # ------------------------------------------------------------------------------
 
@@ -68,9 +69,12 @@ class kallistoIndexerTool(Tool):
         command_line = 'kallisto index -i ' + cdna_idx_file + ' ' + cdna_file_loc
         print ("command : "+command_line)
 
-        args = shlex.split(command_line)
-        process = subprocess.Popen(args)
-        process.wait()
+        try:
+            args = shlex.split(command_line)
+            process = subprocess.Popen(args)
+            process.wait()
+        except Exception:
+            return False
 
         return True
 
@@ -103,6 +107,10 @@ class kallistoIndexerTool(Tool):
             output_files["index"]
         )
         results = compss_wait_on(results)
+
+        if results is False:
+            logger.fatal("Kallisto Indexer: run failed")
+            return {}, {}
 
         output_metadata = {
             "index": Metadata(

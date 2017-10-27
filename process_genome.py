@@ -22,12 +22,9 @@ from __future__ import print_function
 from functools import wraps # pylint: disable=unused-import
 
 import argparse
-import os
 
 from basic_modules.workflow import Workflow
-from basic_modules.metadata import Metadata
 from utils import logger
-from utils import remap
 
 from tool.bowtie_indexer import bowtieIndexerTool
 from tool.bwa_indexer import bwaIndexerTool

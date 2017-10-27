@@ -40,6 +40,7 @@ except ImportError:
 
 from basic_modules.tool import Tool
 from basic_modules.metadata import Metadata
+from utils import logger
 
 from tool.common import common
 
@@ -54,7 +55,7 @@ class bwaIndexerTool(Tool):
         """
         Init function
         """
-        print("BWA Indexer")
+        logger.info("BWA Indexer")
         Tool.__init__(self)
 
     @task(file_loc=FILE_IN, idx_out=FILE_OUT)

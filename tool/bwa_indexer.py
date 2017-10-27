@@ -73,36 +73,39 @@ class bwaIndexerTool(Tool):
         -------
         bool
         """
-        common_handler = common()
-        amb_loc, ann_loc, bwt_loc, pac_loc, sa_loc = common_handler.bwa_index_genome(file_loc)
+        try:
+            common_handler = common()
+            amb_loc, ann_loc, bwt_loc, pac_loc, sa_loc = common_handler.bwa_index_genome(file_loc)
 
-        # tar.gz the index
-        print("BS - idx_out", idx_out, idx_out.replace('.tar.gz', ''))
-        idx_out_pregz = idx_out.replace('.tar.gz', '.tar')
+            # tar.gz the index
+            print("BS - idx_out", idx_out, idx_out.replace('.tar.gz', ''))
+            idx_out_pregz = idx_out.replace('.tar.gz', '.tar')
 
-        index_dir = idx_out.replace('.tar.gz', '')
-        os.mkdir(index_dir)
+            index_dir = idx_out.replace('.tar.gz', '')
+            os.mkdir(index_dir)
 
-        idx_split = index_dir.split("/")
+            idx_split = index_dir.split("/")
 
-        shutil.move(amb_loc, index_dir)
-        shutil.move(ann_loc, index_dir)
-        shutil.move(bwt_loc, index_dir)
-        shutil.move(pac_loc, index_dir)
-        shutil.move(sa_loc, index_dir)
+            shutil.move(amb_loc, index_dir)
+            shutil.move(ann_loc, index_dir)
+            shutil.move(bwt_loc, index_dir)
+            shutil.move(pac_loc, index_dir)
+            shutil.move(sa_loc, index_dir)
 
-        index_folder = idx_split[-1]
+            index_folder = idx_split[-1]
 
-        tar = tarfile.open(idx_out_pregz, "w")
-        tar.add(index_dir, arcname=index_folder)
-        tar.close()
+            tar = tarfile.open(idx_out_pregz, "w")
+            tar.add(index_dir, arcname=index_folder)
+            tar.close()
 
-        command_line = 'pigz ' + idx_out_pregz
-        args = shlex.split(command_line)
-        process = subprocess.Popen(args)
-        process.wait()
+            command_line = 'pigz ' + idx_out_pregz
+            args = shlex.split(command_line)
+            process = subprocess.Popen(args)
+            process.wait()
 
-        return True
+            return True
+        except Exception:
+            return False
 
     def run(self, input_files, metadata, output_files):
         """
@@ -131,6 +134,10 @@ class bwaIndexerTool(Tool):
             output_files["index"]
         )
         results = compss_wait_on(results)
+
+        if results is False:
+            logger.fatal("BWA Indexer: run failed")
+            return {}, {}
 
         output_metadata = {
             "index": Metadata(

@@ -26,6 +26,7 @@ import os
 
 from basic_modules.workflow import Workflow
 from basic_modules.metadata import Metadata
+from utils import logger
 from utils import remap
 
 from tool.bowtie_indexer import bowtieIndexerTool
@@ -49,6 +50,7 @@ class process_genome(Workflow):
             a dictionary containing parameters that define how the operation
             should be carried out, which are specific to each Tool.
         """
+        logger.info("Processing Genomes")
         if configuration is None:
             configuration = {}
 
@@ -75,25 +77,37 @@ class process_genome(Workflow):
             List of locations for the output index files
         """
 
+        output_files_generated = {}
         output_metadata = {}
 
         # Bowtie2 Indexer
+        logger.info("Generating indexes for Bowtie2")
         bowtie2 = bowtieIndexerTool()
         bti, btm = bowtie2.run(input_files, metadata, {'index': output_files['bwt_index']})
-        output_metadata['bwt_index'] = btm['index']
 
-        output_metadata['bwt_index'].meta_data['tool_description'] = output_metadata['bwt_index'].meta_data['tool']
-        output_metadata['bwt_index'].meta_data['tool'] = "process_genome"
+        try:
+            output_files_generated['bwt_index'] = bti["index"]
+            output_metadata['bwt_index'] = btm['index']
+            output_metadata['bwt_index'].meta_data['tool_description'] = output_metadata['bwt_index'].meta_data['tool']
+            output_metadata['bwt_index'].meta_data['tool'] = "process_genome"
+        except KeyError:
+            logger.fatal("BWA indexer failed")
 
         # BWA Indexer
+        logger.info("Generating indexes for BWA")
         bwa = bwaIndexerTool()
         bwai, bwam = bwa.run(input_files, metadata, {'index': output_files['bwa_index']})
-        output_metadata['bwa_index'] = bwam['index']
 
-        output_metadata['bwa_index'].meta_data['tool_description'] = output_metadata['bwa_index'].meta_data['tool']
-        output_metadata['bwa_index'].meta_data['tool'] = "process_genome"
+        try:
+            output_files_generated['bwa_index'] = bwai['index']
+            output_metadata['bwa_index'] = bwam['index']
+            output_metadata['bwa_index'].meta_data['tool_description'] = output_metadata['bwa_index'].meta_data['tool']
+            output_metadata['bwa_index'].meta_data['tool'] = "process_genome"
+        except KeyError:
+            logger.fatal("BWA indexer failed")
 
         # GEM Indexer
+        logger.info("Generating indexes for GEM")
         gem = gemIndexerTool()
         gemi, gemm = gem.run(
             input_files, metadata,
@@ -102,14 +116,19 @@ class process_genome(Workflow):
                 'genome_gem': output_files['genome_gem']
             }
         )
-        output_metadata['gem_index'] = gemm['index']
-        output_metadata['genome_gem'] = gemm['genome_gem']
 
-        output_metadata['gem_index'].meta_data['tool_description'] = output_metadata['gem_index'].meta_data['tool']
-        output_metadata['gem_index'].meta_data['tool'] = "process_genome"
+        try:
+            output_files_generated['gem_index'] = gemi['index']
+            output_files_generated['genome_gem'] = gemi['index']
 
-        output_metadata['genome_gem'].meta_data['tool_description'] = output_metadata['genome_gem'].meta_data['tool']
-        output_metadata['genome_gem'].meta_data['tool'] = "process_genome"
+            output_metadata['gem_index'] = gemm['index']
+            output_metadata['genome_gem'] = gemm['genome_gem']
+            output_metadata['gem_index'].meta_data['tool_description'] = output_metadata['gem_index'].meta_data['tool']
+            output_metadata['gem_index'].meta_data['tool'] = "process_genome"
+            output_metadata['genome_gem'].meta_data['tool_description'] = output_metadata['genome_gem'].meta_data['tool']
+            output_metadata['genome_gem'].meta_data['tool'] = "process_genome"
+        except KeyError:
+            logger.fatal("BWA indexer failed")
 
         return (output_files, output_metadata)
 
@@ -124,7 +143,7 @@ def main_json(config, in_metadata, out_metadata):
     two json files: config.json and input_metadata.json.
     """
     # 1. Instantiate and launch the App
-    print("1. Instantiate and launch the App")
+    logger.info("1. Instantiate and launch the App")
     from apps.jsonapp import JSONApp
     app = JSONApp()
     result = app.launch(process_genome,
@@ -133,8 +152,7 @@ def main_json(config, in_metadata, out_metadata):
                         out_metadata)
 
     # 2. The App has finished
-    print("2. Execution finished; see " + out_metadata)
-    print(result)
+    logger.info("2. Execution finished; see " + out_metadata)
 
     return result
 

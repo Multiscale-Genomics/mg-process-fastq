@@ -40,6 +40,7 @@ except ImportError:
 
 from basic_modules.tool import Tool
 from basic_modules.metadata import Metadata
+from utils import logger
 
 from tool.common import common
 
@@ -70,43 +71,45 @@ class bowtieIndexerTool(Tool):
         idx_loc : str
             Location of the output index file
         """
+        try:
+            file_name = file_loc.split('/')
+            file_name[-1] = file_name[-1].replace('.fasta', '')
+            file_name[-1].replace('.fa', '')
+            file_name = "/".join(file_name)
 
-        file_name = file_loc.split('/')
-        file_name[-1] = file_name[-1].replace('.fasta', '')
-        file_name[-1].replace('.fa', '')
-        file_name = "/".join(file_name)
+            common_handle = common()
+            common_handle.bowtie_index_genome(file_loc, file_name)
 
-        common_handle = common()
-        common_handle.bowtie_index_genome(file_loc, file_name)
+            # tar.gz the index
+            print("BT - index_loc", index_loc, index_loc.replace('.tar.gz', ''))
+            idx_out_pregz = index_loc.replace('.tar.gz', '.tar')
 
-        # tar.gz the index
-        print("BT - index_loc", index_loc, index_loc.replace('.tar.gz', ''))
-        idx_out_pregz = index_loc.replace('.tar.gz', '.tar')
+            index_dir = index_loc.replace('.tar.gz', '')
+            os.mkdir(index_dir)
 
-        index_dir = index_loc.replace('.tar.gz', '')
-        os.mkdir(index_dir)
+            idx_split = index_dir.split("/")
 
-        idx_split = index_dir.split("/")
+            shutil.move(file_name + ".1.bt2", index_dir)
+            shutil.move(file_name + ".2.bt2", index_dir)
+            shutil.move(file_name + ".3.bt2", index_dir)
+            shutil.move(file_name + ".4.bt2", index_dir)
+            shutil.move(file_name + ".rev.1.bt2", index_dir)
+            shutil.move(file_name + ".rev.2.bt2", index_dir)
 
-        shutil.move(file_name + ".1.bt2", index_dir)
-        shutil.move(file_name + ".2.bt2", index_dir)
-        shutil.move(file_name + ".3.bt2", index_dir)
-        shutil.move(file_name + ".4.bt2", index_dir)
-        shutil.move(file_name + ".rev.1.bt2", index_dir)
-        shutil.move(file_name + ".rev.2.bt2", index_dir)
+            index_folder = idx_split[-1]
 
-        index_folder = idx_split[-1]
+            tar = tarfile.open(idx_out_pregz, "w")
+            tar.add(index_dir, arcname=index_folder)
+            tar.close()
 
-        tar = tarfile.open(idx_out_pregz, "w")
-        tar.add(index_dir, arcname=index_folder)
-        tar.close()
+            command_line = 'pigz ' + idx_out_pregz
+            args = shlex.split(command_line)
+            process = subprocess.Popen(args)
+            process.wait()
 
-        command_line = 'pigz ' + idx_out_pregz
-        args = shlex.split(command_line)
-        process = subprocess.Popen(args)
-        process.wait()
-
-        return True
+            return True
+        except Exception:
+            return False
 
     def run(self, input_files, metadata, output_files):
         """
@@ -131,6 +134,11 @@ class bowtieIndexerTool(Tool):
             input_files["genome"],
             output_files["index"]
         )
+        results = compss_wait_on(results)
+
+        if results is False:
+            logger.fatal("Bowtie2 Indexer: run failed")
+            return {}, {}
 
         output_metadata = {
             "index": Metadata(
@@ -145,8 +153,6 @@ class bowtieIndexerTool(Tool):
                 }
             )
         }
-
-        results = compss_wait_on(results)
 
         return (output_files, output_metadata)
 

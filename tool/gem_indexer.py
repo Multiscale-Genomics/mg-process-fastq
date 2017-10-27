@@ -37,6 +37,7 @@ except ImportError:
 
 from basic_modules.metadata import Metadata
 from basic_modules.tool import Tool
+from utils import logger
 
 from tool.common import common
 
@@ -51,7 +52,7 @@ class gemIndexerTool(Tool):
         """
         Init function
         """
-        print ("GEM Indexer")
+        logger.info("GEM Indexer")
         Tool.__init__(self)
 
     @task(genome_file=FILE_IN, new_genome_file=FILE_OUT, index_loc=FILE_OUT)
@@ -68,18 +69,21 @@ class gemIndexerTool(Tool):
         idx_loc : str
             Location of the output index file
         """
-        common_handle = common()
-        common_handle.replaceENAHeader(genome_file, new_genome_file)
+        try:
+            common_handle = common()
+            common_handle.replaceENAHeader(genome_file, new_genome_file)
 
-        idx_result = common_handle.gem_index_genome(new_genome_file, new_genome_file)
+            idx_result = common_handle.gem_index_genome(new_genome_file, new_genome_file)
 
-        idx_out_pregz = index_loc.replace('.gem.gz', '.gem')
-        command_line = 'pigz ' + idx_out_pregz
-        args = shlex.split(command_line)
-        process = subprocess.Popen(args)
-        process.wait()
+            idx_out_pregz = index_loc.replace('.gem.gz', '.gem')
+            command_line = 'pigz ' + idx_out_pregz
+            args = shlex.split(command_line)
+            process = subprocess.Popen(args)
+            process.wait()
 
-        return True
+            return True
+        except Exception:
+            return False
 
     def run(self, input_files, metadata, output_files):
         """
@@ -107,6 +111,10 @@ class gemIndexerTool(Tool):
             output_files['index']
         )
         results = compss_wait_on(results)
+
+        if results is False:
+            logger.fatal("GEM Indexer: run failed")
+            return {}, {}
 
         output_metadata = {
             "genome_gem": Metadata(

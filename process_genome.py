@@ -130,7 +130,7 @@ class process_genome(Workflow):
         except KeyError:
             logger.fatal("BWA indexer failed")
 
-        return (output_files, output_metadata)
+        return (output_files_generated, output_metadata)
 
 # ------------------------------------------------------------------------------
 

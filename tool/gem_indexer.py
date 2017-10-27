@@ -85,7 +85,7 @@ class gemIndexerTool(Tool):
         except Exception:
             return False
 
-    def run(self, input_files, metadata, output_files):
+    def run(self, input_files, input_metadata, output_files):
         """
         Tool for generating assembly aligner index files for use with the GEM
         indexer
@@ -95,7 +95,7 @@ class gemIndexerTool(Tool):
         input_files : list
             List with a single str element with the location of the genome
             assembly FASTA file
-        metadata : list
+        input_metadata : list
 
         Returns
         -------
@@ -121,10 +121,10 @@ class gemIndexerTool(Tool):
                 data_type="sequence_dna",
                 file_type="FASTA",
                 file_path=output_files['genome_gem'],
-                sources=[metadata["genome"].file_path],
-                taxon_id=metadata["genome"].taxon_id,
+                sources=[input_metadata["genome"].file_path],
+                taxon_id=input_metadata["genome"].taxon_id,
                 meta_data={
-                    "assembly": metadata["genome"].meta_data["assembly"],
+                    "assembly": input_metadata["genome"].meta_data["assembly"],
                     "tool": "gem_indexer"
                 }
             ),
@@ -133,9 +133,9 @@ class gemIndexerTool(Tool):
                 file_type="GEM",
                 file_path=output_files['index'],
                 sources=[output_files['genome_gem']],
-                taxon_id=metadata["genome"].taxon_id,
+                taxon_id=input_metadata["genome"].taxon_id,
                 meta_data={
-                    "assembly": metadata["genome"].meta_data["assembly"],
+                    "assembly": input_metadata["genome"].meta_data["assembly"],
                     "tool": "gem_indexer"
                 }
             )

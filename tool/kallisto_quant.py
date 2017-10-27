@@ -221,7 +221,7 @@ class kallistoQuantificationTool(Tool):
 
         return {'mean' : length_mean, 'std' : length_sd}
 
-    def run(self, input_files, metadata, output_files):
+    def run(self, input_files, input_metadata, output_files):
         """
         Tool for calculating the level of expression
 
@@ -230,7 +230,7 @@ class kallistoQuantificationTool(Tool):
         input_files : list
             Kallisto index file for the
             FASTQ file for the experiemtnal alignments
-        metadata : list
+        input_metadata : list
 
         Returns
         -------
@@ -272,10 +272,10 @@ class kallistoQuantificationTool(Tool):
                 data_type="data_ranseq",
                 file_type="hdf5",
                 file_path=output_files["abundance_h5_file"],
-                sources=[metadata["cdna"].file_path, metadata["fastq1"].file_path],
-                taxon_id=metadata["cdna"].taxon_id,
+                sources=[input_metadata["cdna"].file_path, input_metadata["fastq1"].file_path],
+                taxon_id=input_metadata["cdna"].taxon_id,
                 meta_data={
-                    "assembly": metadata["cdna"].meta_data["assembly"],
+                    "assembly": input_metadata["cdna"].meta_data["assembly"],
                     "tool": "kallisto_quant"
                 }
             ),
@@ -283,10 +283,10 @@ class kallistoQuantificationTool(Tool):
                 data_type="data_ranseq",
                 file_type="tsv",
                 file_path=output_files["abundance_tsv_file"],
-                sources=[metadata["cdna"].file_path, metadata["fastq1"].file_path],
-                taxon_id=metadata["cdna"].taxon_id,
+                sources=[input_metadata["cdna"].file_path, input_metadata["fastq1"].file_path],
+                taxon_id=input_metadata["cdna"].taxon_id,
                 meta_data={
-                    "assembly": metadata["cdna"].meta_data["assembly"],
+                    "assembly": input_metadata["cdna"].meta_data["assembly"],
                     "tool": "kallisto_quant"
                 }
             ),
@@ -294,10 +294,10 @@ class kallistoQuantificationTool(Tool):
                 data_type="data_ranseq",
                 file_type="tsv",
                 file_path=output_files["run_info_file"],
-                sources=[metadata["cdna"].file_path, metadata["fastq1"].file_path],
-                taxon_id=metadata["cdna"].taxon_id,
+                sources=[input_metadata["cdna"].file_path, input_metadata["fastq1"].file_path],
+                taxon_id=input_metadata["cdna"].taxon_id,
                 meta_data={
-                    "assembly": metadata["cdna"].meta_data["assembly"],
+                    "assembly": input_metadata["cdna"].meta_data["assembly"],
                     "tool": "kallisto_quant"
                 }
             )

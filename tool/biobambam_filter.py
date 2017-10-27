@@ -105,7 +105,7 @@ class biobambam(Tool):
 
         return True
 
-    def run(self, input_files, metadata, output_files):
+    def run(self, input_files, input_metadata, output_files):
         """
         The main function to run BioBAMBAMfilter to remove duplicates and
         spurious reads from the FASTQ files before analysis.
@@ -140,10 +140,10 @@ class biobambam(Tool):
                 data_type="data_chip_seq",
                 file_type="BAM",
                 file_path=output_files["output"],
-                sources=[metadata["input"].file_path],
-                taxon_id=metadata["input"].taxon_id,
+                sources=[input_metadata["input"].file_path],
+                taxon_id=input_metadata["input"].taxon_id,
                 meta_data={
-                    "assembly": metadata["input"].meta_data["assembly"],
+                    "assembly": input_metadata["input"].meta_data["assembly"],
                     "tool": "biobambam_filter"
                 }
             )

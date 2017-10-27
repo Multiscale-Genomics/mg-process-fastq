@@ -111,7 +111,7 @@ class bowtieIndexerTool(Tool):
         except Exception:
             return False
 
-    def run(self, input_files, metadata, output_files):
+    def run(self, input_files, input_metadata, output_files):
         """
         Tool for generating assembly aligner index files for use with the
         Bowtie 2 aligner
@@ -145,10 +145,10 @@ class bowtieIndexerTool(Tool):
                 data_type="sequence_mapping_index_bowtie",
                 file_type="TAR",
                 file_path=output_files["index"],
-                sources=[metadata["genome"].file_path],
-                taxon_id=metadata["genome"].taxon_id,
+                sources=[input_metadata["genome"].file_path],
+                taxon_id=input_metadata["genome"].taxon_id,
                 meta_data={
-                    "assembly": metadata["genome"].meta_data["assembly"],
+                    "assembly": input_metadata["genome"].meta_data["assembly"],
                     "tool": "bowtie_indexer"
                 }
             )

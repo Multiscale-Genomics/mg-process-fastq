@@ -108,7 +108,7 @@ class bwaIndexerTool(Tool):
         except Exception:
             return False
 
-    def run(self, input_files, metadata, output_files):
+    def run(self, input_files, input_metadata, output_files):
         """
         Function to run the BWA over a genome assembly FASTA file to generate
         the matching index for use with the aligner
@@ -145,10 +145,10 @@ class bwaIndexerTool(Tool):
                 data_type="sequence_mapping_index_bwa",
                 file_type="TAR",
                 file_path=output_files["index"],
-                sources=[metadata["genome"].file_path],
-                taxon_id=metadata["genome"].taxon_id,
+                sources=[input_metadata["genome"].file_path],
+                taxon_id=input_metadata["genome"].taxon_id,
                 meta_data={
-                    "assembly": metadata["genome"].meta_data["assembly"],
+                    "assembly": input_metadata["genome"].meta_data["assembly"],
                     "tool": "bwa_indexer"
                 }
             )

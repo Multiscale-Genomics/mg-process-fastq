@@ -78,7 +78,7 @@ class kallistoIndexerTool(Tool):
 
         return True
 
-    def run(self, input_files, metadata, output_files):
+    def run(self, input_files, input_metadata, output_files):
         """
         Tool for generating assembly aligner index files for use with Kallisto
 
@@ -86,7 +86,7 @@ class kallistoIndexerTool(Tool):
         ----------
         input_files : list
             FASTA file location will all the cDNA sequences for a given genome
-        metadata : list
+        input_metadata : list
 
         Returns
         --------
@@ -117,10 +117,10 @@ class kallistoIndexerTool(Tool):
                 data_type="index_kallisto",
                 file_type="",
                 file_path=output_files["index"],
-                sources=[metadata["cdna"].file_path],
-                taxon_id=metadata["cdna"].taxon_id,
+                sources=[input_metadata["cdna"].file_path],
+                taxon_id=input_metadata["cdna"].taxon_id,
                 meta_data={
-                    "assembly": metadata["cdna"].meta_data["assembly"],
+                    "assembly": input_metadata["cdna"].meta_data["assembly"],
                     "tool": "kallisto_indexer"
                 }
             )

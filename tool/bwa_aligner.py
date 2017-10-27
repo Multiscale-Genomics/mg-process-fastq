@@ -100,7 +100,7 @@ class bwaAlignerTool(Tool):
 
         return True
 
-    def run(self, input_files, metadata, output_files):
+    def run(self, input_files, input_metadata, output_files):
         """
         The main function to align bam files to a genome using BWA
 
@@ -137,13 +137,13 @@ class bwaAlignerTool(Tool):
 
         output_metadata = {
             "bam": Metadata(
-                data_type=metadata['loc'].data_type,
+                data_type=input_metadata['loc'].data_type,
                 file_type="BAM",
                 file_path=output_files["output"],
-                sources=[metadata["genome"].file_path, metadata['loc'].file_path],
-                taxon_id=metadata["genome"].taxon_id,
+                sources=[input_metadata["genome"].file_path, input_metadata['loc'].file_path],
+                taxon_id=input_metadata["genome"].taxon_id,
                 meta_data={
-                    "assembly": metadata["genome"].meta_data["assembly"],
+                    "assembly": input_metadata["genome"].meta_data["assembly"],
                     "tool": "bwa_aligner"
                 }
             )

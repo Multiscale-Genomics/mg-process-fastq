@@ -244,7 +244,7 @@ class fastq_splitter(Tool):
 
         return files_out
 
-    def run(self, input_files, metadata, output_files):
+    def run(self, input_files, input_metadata, output_files):
         """
         The main function to run the splitting of FASTQ files (single or paired)
         so that they can aligned in a distributed manner
@@ -284,11 +284,11 @@ class fastq_splitter(Tool):
         print("FASTQ SPLITTER:", results)
 
         fastq_tar_meta = Metadata(
-            data_type=metadata["fastq1"].data_type,
+            data_type=input_metadata["fastq1"].data_type,
             file_type="TAR",
             file_path=output_files["output"],
             sources=sources,
-            taxon_id=metadata["fastq1"].taxon_id,
+            taxon_id=input_metadata["fastq1"].taxon_id,
             meta_data={
                 "tool": "fastq_splitter"
             }

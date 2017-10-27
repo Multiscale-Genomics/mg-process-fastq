@@ -41,6 +41,7 @@ except ImportError:
 
 from basic_modules.tool import Tool
 from basic_modules.metadata import Metadata
+from utils import logger
 
 from tool.fastq_splitter import fastq_splitter
 
@@ -69,7 +70,10 @@ class bssAlignerTool(Tool):
         bam_file : str
             Location of the bam file to sort
         """
-        pysam.sort("-o", bam_file, "-T", bam_file + "_sort", bam_file)
+        try:
+            pysam.sort("-o", bam_file, "-T", bam_file + "_sort", bam_file)
+        except Exception:
+            return False
         return True
 
     @task(bam_file_1=FILE_INOUT, bam_file_2=FILE_IN)
@@ -86,9 +90,12 @@ class bssAlignerTool(Tool):
         """
         pysam.merge(bam_file_1 + "_merge.bam", bam_file_1, bam_file_2)
 
-        with open(bam_file_1 + "_merge.bam", "rb") as f_in:
-            with open(bam_file_1, "wb") as f_out:
-                f_out.write(f_in.read())
+        try:
+            with open(bam_file_1 + "_merge.bam", "rb") as f_in:
+                with open(bam_file_1, "wb") as f_out:
+                    f_out.write(f_in.read())
+        except IOError:
+            return False
 
         return True
 
@@ -104,9 +111,12 @@ class bssAlignerTool(Tool):
         bam_out : str
             Location of the output bam file
         """
-        with open(bam_in, "rb") as f_in:
-            with open(bam_out, "wb") as f_out:
-                f_out.write(f_in.read())
+        try:
+            with open(bam_in, "rb") as f_in:
+                with open(bam_out, "wb") as f_out:
+                    f_out.write(f_in.read())
+        except IOError:
+            return False
 
         return True
 
@@ -124,9 +134,12 @@ class bssAlignerTool(Tool):
         """
         pysam.index(bam_file, bam_file + "_tmp.bai")
 
-        with open(bam_file + "_tmp.bai", "rb") as f_in:
-            with open(bam_idx_file, "wb") as f_out:
-                f_out.write(f_in.read())
+        try:
+            with open(bam_file + "_tmp.bai", "rb") as f_in:
+                with open(bam_idx_file, "wb") as f_out:
+                    f_out.write(f_in.read())
+        except IOError:
+            return False
 
         return True
 
@@ -173,9 +186,12 @@ class bssAlignerTool(Tool):
         g_dir = genome_idx.split("/")
         g_dir = "/".join(g_dir[:-1])
 
-        tar = tarfile.open(genome_idx)
-        tar.extractall(path=g_dir)
-        tar.close()
+        try:
+            tar = tarfile.open(genome_idx)
+            tar.extractall(path=g_dir)
+            tar.close()
+        except IOError:
+            return False
 
         command_line = (
             "python " + bss_path + "/bs_seeker2-align.py"
@@ -192,13 +208,16 @@ class bssAlignerTool(Tool):
 
         pysam.sort("-o", bam_out + "_tmp.bam", "-T", bam_out + "_tmp.bam" + "_sort", bam_out + "_tmp.bam")
 
-        with open(bam_out + "_tmp.bam", "rb") as f_in:
-            with open(bam_out, "wb") as f_out:
-                f_out.write(f_in.read())
+        try:
+            with open(bam_out + "_tmp.bam", "rb") as f_in:
+                with open(bam_out, "wb") as f_out:
+                    f_out.write(f_in.read())
+        except IOError:
+            return False
 
         return True
 
-    def run(self, input_files, metadata, output_files):
+    def run(self, input_files, input_metadata, output_files):
         """
         Tool for indexing the genome assembly using BS-Seeker2. In this case it
         is using Bowtie2
@@ -216,6 +235,13 @@ class bssAlignerTool(Tool):
         array : list
             Location of the filtered FASTQ file
         """
+
+        try:
+            aligner = input_metadata['aligner']
+            aligner_path = input_metadata['aligner_path']
+            bss_path = input_metadata['bss_path']
+        except KeyError:
+            logger.fatal("WGBS - BS SEEKER2: Unassigned configuration variables")
 
         genome_fasta = input_files["genome"]
         genome_idx = input_files["index"]
@@ -240,6 +266,9 @@ class bssAlignerTool(Tool):
             )
 
         fastq_file_list = compss_wait_on(fastq_file_list)
+        if fastq_file_list:
+            logger.fatal("FASTQ SPLITTER: run failed")
+            return {}, {}
 
         if hasattr(sys, '_run_from_cmdl') is True:
             pass
@@ -251,13 +280,13 @@ class bssAlignerTool(Tool):
         gz_data_path = fastq_file_gz.split("/")
         gz_data_path = "/".join(gz_data_path[:-1])
 
-        tar = tarfile.open(fastq_file_gz)
-        tar.extractall(path=gz_data_path)
-        tar.close()
-
-        aligner = metadata['aligner']
-        aligner_path = metadata['aligner_path']
-        bss_path = metadata['bss_path']
+        try:
+            tar = tarfile.open(fastq_file_gz)
+            tar.extractall(path=gz_data_path)
+            tar.close()
+        except tarfile.TarError:
+            logger.fatal("Split FASTQ files: Malformed tar file")
+            return {}, {}
 
         # input and output share most metadata
         output_metadata = {}
@@ -296,34 +325,33 @@ class bssAlignerTool(Tool):
         results = self.bam_copy(output_bam_list.pop(0), output_bam_file)
         results = compss_wait_on(results)
 
+        if results is False:
+            logger.fatal("BS SEEKER2 Aligner: Bam copy failed")
+            return {}, {}
+
         while True:
             if len(output_bam_list) == 0:
                 break
             results = self.bam_merge(output_bam_file, output_bam_list.pop(0))
             results = compss_wait_on(results)
 
+            if results is False:
+                logger.fatal("BS SEEKER2 Aligner: Bam merging failed")
+                return {}, {}
+
         results = self.bam_sort(output_bam_file)
         results = compss_wait_on(results)
+
+        if results is False:
+            logger.fatal("BS SEEKER2 Aligner: Bam sorting failed")
+            return {}, {}
 
         results = self.bam_index(output_bam_file, output_bai_file)
         results = compss_wait_on(results)
 
-        output_metadata = {
-            "bam": Metadata(
-                "wgbs", "bam", [metadata["genome"].file_path],
-                {
-                    "assembly": metadata["genome"].meta_data["assembly"],
-                    "tool": "bs_seeker_aligner"
-                }
-            ),
-            "bai": Metadata(
-                "wgbs", "bai", [metadata["genome"].file_path],
-                {
-                    "assembly": metadata["genome"].meta_data["assembly"],
-                    "tool": "bs_seeker_aligner"
-                }
-            )
-        }
+        if results is False:
+            logger.fatal("BS SEEKER2 Aligner: Bam indexing failed")
+            return {}, {}
 
         output_metadata = {
             "bam": Metadata(
@@ -331,9 +359,9 @@ class bssAlignerTool(Tool):
                 file_type="BAM",
                 file_path=output_bam_file,
                 sources=sources,
-                taxon_id=metadata["genome"].taxon_id,
+                taxon_id=input_metadata["genome"].taxon_id,
                 meta_data={
-                    "assembly": metadata["genome"].meta_data["assembly"],
+                    "assembly": input_metadata["genome"].meta_data["assembly"],
                     "tool": "bwa_indexer"
                 }
             ),
@@ -341,10 +369,10 @@ class bssAlignerTool(Tool):
                 data_type="data_wgbs",
                 file_type="BAI",
                 file_path=output_bai_file,
-                sources=[metadata["genome"].file_path],
-                taxon_id=metadata["genome"].taxon_id,
+                sources=[input_metadata["genome"].file_path],
+                taxon_id=input_metadata["genome"].taxon_id,
                 meta_data={
-                    "assembly": metadata["genome"].meta_data["assembly"],
+                    "assembly": input_metadata["genome"].meta_data["assembly"],
                     "tool": "bwa_indexer"
                 }
             )

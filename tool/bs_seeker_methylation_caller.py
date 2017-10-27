@@ -40,6 +40,7 @@ except ImportError:
 
 from basic_modules.tool import Tool
 from basic_modules.metadata import Metadata
+from utils import logger
 
 # ------------------------------------------------------------------------------
 
@@ -136,7 +137,7 @@ class bssMethylationCallerTool(Tool):
 
         return output
 
-    def run(self, input_files, metadata, output_files):
+    def run(self, input_files, input_metadata, output_files):
         """
         Tool for methylation calling using BS-Seeker2.
 
@@ -152,13 +153,17 @@ class bssMethylationCallerTool(Tool):
             Location of the output wig file
         """
 
-        # TODO: These should be moved to the getting the data from the configuration obj
-        bss_path = metadata["bss_path"]
+        try:
+            bss_path = input_metadata['bss_path']
+        except KeyError:
+            logger.fatal("WGBS - BS SEEKER2: Unassigned configuration variables")
 
         results = self.check_header(input_files["bam"])
         results = compss_wait_on(results)
         if results is False:
-            # output_metadata['error'] = "bss_methylation_caller: Could not process files {}, {}.".format(*input_files)
+            logger.fatal(
+                "bss_methylation_caller: Could not process files {}, {}.".format(*input_files)
+            )
             return (None, None)
 
         results = self.bss_methylation_caller(
@@ -171,19 +176,22 @@ class bssMethylationCallerTool(Tool):
         )
         results = compss_wait_on(results)
 
+        if results is False:
+            logger.fatal("WGBS - BS SEEKER2: Methylation caller failed")
+
         output_metadata = {
             "wig_file": Metadata(
                 data_type="data_wgbs",
                 file_type="wig",
                 file_path=output_files["wig_file"],
                 sources=[
-                    metadata["genome"].file_path,
-                    metadata["fastq1"].file_path,
-                    metadata["fastq2"].file_path
+                    input_metadata["genome"].file_path,
+                    input_metadata["fastq1"].file_path,
+                    input_metadata["fastq2"].file_path
                 ],
-                taxon_id=metadata["genome"].taxon_id,
+                taxon_id=input_metadata["genome"].taxon_id,
                 meta_data={
-                    "assembly": metadata["genome"].meta_data["assembly"],
+                    "assembly": input_metadata["genome"].meta_data["assembly"],
                     "tool": "bs_seeker_methylation_caller"
                 }
             ),
@@ -192,13 +200,13 @@ class bssMethylationCallerTool(Tool):
                 file_type="tsv",
                 file_path=output_files["cgmap_file"],
                 sources=[
-                    metadata["genome"].file_path,
-                    metadata["fastq1"].file_path,
-                    metadata["fastq2"].file_path
+                    input_metadata["genome"].file_path,
+                    input_metadata["fastq1"].file_path,
+                    input_metadata["fastq2"].file_path
                 ],
-                taxon_id=metadata["genome"].taxon_id,
+                taxon_id=input_metadata["genome"].taxon_id,
                 meta_data={
-                    "assembly": metadata["genome"].meta_data["assembly"],
+                    "assembly": input_metadata["genome"].meta_data["assembly"],
                     "tool": "bs_seeker_methylation_caller"
                 }
             ),
@@ -207,13 +215,13 @@ class bssMethylationCallerTool(Tool):
                 file_type="tsv",
                 file_path=output_files["atcgmap_file"],
                 sources=[
-                    metadata["genome"].file_path,
-                    metadata["fastq1"].file_path,
-                    metadata["fastq2"].file_path
+                    input_metadata["genome"].file_path,
+                    input_metadata["fastq1"].file_path,
+                    input_metadata["fastq2"].file_path
                 ],
-                taxon_id=metadata["genome"].taxon_id,
+                taxon_id=input_metadata["genome"].taxon_id,
                 meta_data={
-                    "assembly": metadata["genome"].meta_data["assembly"],
+                    "assembly": input_metadata["genome"].meta_data["assembly"],
                     "tool": "bs_seeker_methylation_caller"
                 }
             )

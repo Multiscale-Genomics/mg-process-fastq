@@ -22,6 +22,7 @@ from __future__ import print_function
 import argparse
 
 from basic_modules.workflow import Workflow
+from utils import logger
 from utils import remap
 
 from tool.fastq_splitter import fastq_splitter
@@ -52,6 +53,7 @@ class process_wgbs(Workflow):
             a dictionary containing parameters that define how the operation
             should be carried out, which are specific to each Tool.
         """
+        logger.info("Processing WGBS")
         if configuration is None:
             configuration = {}
         self.configuration.update(configuration)
@@ -85,18 +87,21 @@ class process_wgbs(Workflow):
         output_results_files = {}
         output_metadata = {}
 
-        print("PIPELINE - metadata:", metadata)
+        logger.info("PIPELINE - metadata:", metadata)
 
-        if "bss_path" in self.configuration:
-            metadata["bss_path"] = self.configuration["bss_path"]
-        if "aligner_path" in self.configuration:
-            metadata["aligner_path"] = self.configuration["aligner_path"]
-        if "aligner" in self.configuration:
-            metadata["aligner"] = self.configuration["aligner"]
-
-        print("PIPELINE+ - metadata:", metadata)
+        try:
+            if "bss_path" in self.configuration:
+                metadata["bss_path"] = self.configuration["bss_path"]
+            if "aligner_path" in self.configuration:
+                metadata["aligner_path"] = self.configuration["aligner_path"]
+            if "aligner" in self.configuration:
+                metadata["aligner"] = self.configuration["aligner"]
+        except KeyError:
+            logger.fatal("WGBS: Keys not defined")
+            return {}, {}
 
         # Filter the FASTQ reads to remove duplicates
+        logger.info("WGBS - Filter")
         frt = filterReadsTool()
         fastq1f, filter1_meta = frt.run(
             {"fastq": input_files["fastq1"]},
@@ -107,12 +112,17 @@ class process_wgbs(Workflow):
             {"fastq_filtered": output_files["fastq1_filtered"]}
         )
 
-        output_results_files["fastq1_filtered"] = fastq1f["fastq_filtered"]
-        output_metadata["fastq1_filtered"] = filter1_meta["fastq_filtered"]
+        try:
+            output_results_files["fastq1_filtered"] = fastq1f["fastq_filtered"]
+            output_metadata["fastq1_filtered"] = filter1_meta["fastq_filtered"]
+            tool_name = output_metadata['fastq1_filtered'].meta_data['tool']
+            output_metadata['fastq1_filtered'].meta_data['tool_description'] = tool_name
+            output_metadata['fastq1_filtered'].meta_data['tool'] = "process_wgbs"
+        except KeyError:
+            logger.fatal("WGBS - FILTER: Error while filtering")
+            return {}, {}
 
-        output_metadata['fastq1_filtered'].meta_data['tool_description'] = output_metadata['fastq1_filtered'].meta_data['tool']
-        output_metadata['fastq1_filtered'].meta_data['tool'] = "process_wgbs"
-
+        logger.info("WGBS - BS-Seeker2 Index")
         # Build the matching WGBS genome index
         builder = bssIndexerTool()
         genome_idx, gidx_meta = builder.run(
@@ -123,8 +133,8 @@ class process_wgbs(Workflow):
         output_results_files['index'] = genome_idx["index"]
         output_metadata['index'] = gidx_meta["index"]
 
-        # Split the FASTQ files into smaller, easier to align packets
         if "fastq2" in input_files:
+            logger.info("WGBS - Filter background")
             fastq2f, filter2_meta = frt.run(
                 {"fastq": input_files["fastq2"]},
                 {
@@ -133,14 +143,20 @@ class process_wgbs(Workflow):
                 },
                 {"fastq_filtered": output_files["fastq2_filtered"]}
             )
-            output_results_files["fastq2_filtered"] = fastq2f["fastq_filtered"]
-            output_metadata['fastq2_filtered'] = filter2_meta["fastq_filtered"]
 
-            output_metadata['fastq2_filtered'].meta_data['tool_description'] = output_metadata['fastq2_filtered'].meta_data['tool']
-            output_metadata['fastq2_filtered'].meta_data['tool'] = "process_wgbs"
+            try:
+                output_results_files["fastq2_filtered"] = fastq2f["fastq_filtered"]
+                output_metadata['fastq2_filtered'] = filter2_meta["fastq_filtered"]
 
-        print("WGBS genome_idx:", genome_idx["index"])
+                tool_name = output_metadata['fastq2_filtered'].meta_data['tool']
+                output_metadata['fastq2_filtered'].meta_data['tool_description'] = tool_name
+                output_metadata['fastq2_filtered'].meta_data['tool'] = "process_wgbs"
+            except KeyError:
+                logger.fatal("WGBS - FILTER (background): Error while filtering")
+                return {}, {}
 
+
+        logger.info("WGBS - BS-Seeker2 Aligner")
         # Handles the alignment of all of the split packets then merges them
         # back together.
         bss_aligner = bssAlignerTool()
@@ -156,15 +172,22 @@ class process_wgbs(Workflow):
             remap(output_files, "bam", "bai")
         )
 
-        output_results_files["bam"] = bam["bam"]
-        output_results_files["bai"] = bam["bai"]
-        output_metadata["bam"] = bam_meta["bam"]
-        output_metadata["bai"] = bam_meta["bai"]
+        try:
+            output_results_files["bam"] = bam["bam"]
+            output_results_files["bai"] = bam["bai"]
+            output_metadata["bam"] = bam_meta["bam"]
+            output_metadata["bai"] = bam_meta["bai"]
 
-        output_metadata['bam'].meta_data['tool_description'] = output_metadata['bam'].meta_data['tool']
-        output_metadata['bam'].meta_data['tool'] = "process_wgbs"
-        output_metadata['bai'].meta_data['tool_description'] = output_metadata['bai'].meta_data['tool']
-        output_metadata['bai'].meta_data['tool'] = "process_wgbs"
+            tool_name = output_metadata['bam'].meta_data['tool']
+            output_metadata['bam'].meta_data['tool_description'] = tool_name
+            output_metadata['bam'].meta_data['tool'] = "process_wgbs"
+
+            tool_name = output_metadata['bai'].meta_data['tool']
+            output_metadata['bai'].meta_data['tool_description'] = tool_name
+            output_metadata['bai'].meta_data['tool'] = "process_wgbs"
+        except KeyError:
+            logger.fatal("WGBS - Aligner failed")
+            return {}, {}
 
         # Methylation peak caller
         peak_caller_handle = bssMethylationCallerTool()
@@ -181,19 +204,23 @@ class process_wgbs(Workflow):
         )
         # output_metadata['peak_calling'] = peak_meta
 
-        output_results_files["wig_file"] = peak_files["wig_file"]
-        output_results_files["cgmap_file"] = peak_files["cgmap_file"]
-        output_results_files["atcgmap_file"] = peak_files["atcgmap_file"]
-        output_metadata["wig_file"] = peak_meta["wig_file"]
-        output_metadata["cgmap_file"] = peak_meta["cgmap_file"]
-        output_metadata["atcgmap_file"] = peak_meta["atcgmap_file"]
+        try:
+            output_results_files["wig_file"] = peak_files["wig_file"]
+            output_results_files["cgmap_file"] = peak_files["cgmap_file"]
+            output_results_files["atcgmap_file"] = peak_files["atcgmap_file"]
+            output_metadata["wig_file"] = peak_meta["wig_file"]
+            output_metadata["cgmap_file"] = peak_meta["cgmap_file"]
+            output_metadata["atcgmap_file"] = peak_meta["atcgmap_file"]
 
-        output_metadata['wig_file'].meta_data['tool_description'] = output_metadata['wig_file'].meta_data['tool']
-        output_metadata['wig_file'].meta_data['tool'] = "process_wgbs"
-        output_metadata['cgmap_file'].meta_data['tool_description'] = output_metadata['cgmap_file'].meta_data['tool']
-        output_metadata['cgmap_file'].meta_data['tool'] = "process_wgbs"
-        output_metadata['atcgmap_file'].meta_data['tool_description'] = output_metadata['atcgmap_file'].meta_data['tool']
-        output_metadata['atcgmap_file'].meta_data['tool'] = "process_wgbs"
+            output_metadata['wig_file'].meta_data['tool_description'] = output_metadata['wig_file'].meta_data['tool']
+            output_metadata['wig_file'].meta_data['tool'] = "process_wgbs"
+            output_metadata['cgmap_file'].meta_data['tool_description'] = output_metadata['cgmap_file'].meta_data['tool']
+            output_metadata['cgmap_file'].meta_data['tool'] = "process_wgbs"
+            output_metadata['atcgmap_file'].meta_data['tool_description'] = output_metadata['atcgmap_file'].meta_data['tool']
+            output_metadata['atcgmap_file'].meta_data['tool'] = "process_wgbs"
+        except KeyError:
+            logger.fatal("WGBS - Peak caller failed")
+            return {}, {}
 
         return (output_results_files, output_metadata)
 

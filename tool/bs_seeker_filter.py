@@ -37,6 +37,7 @@ except ImportError:
 
 from basic_modules.tool import Tool
 from basic_modules.metadata import Metadata
+from utils import logger
 
 # ------------------------------------------------------------------------------
 
@@ -85,13 +86,16 @@ class filterReadsTool(Tool):
         process = subprocess.Popen(args)
         process.wait()
 
-        with open(outfile, 'wb') as f_out:
-            with open(outfile + '.tmp', 'rb') as f_in:
-                f_out.write(f_in.read())
+        try:
+            with open(outfile, 'wb') as f_out:
+                with open(outfile + '.tmp', 'rb') as f_in:
+                    f_out.write(f_in.read())
+        except ImportError:
+            return False
 
         return True
 
-    def run(self, input_files, metadata, output_files):
+    def run(self, input_files, input_metadata, output_files):
         """
         Tool for filtering duplicate entries from FASTQ files using BS-Seeker2
 
@@ -99,7 +103,7 @@ class filterReadsTool(Tool):
         ----------
         input_files : list
             FASTQ file
-        metadata : list
+        input_metadata : list
 
         Returns
         -------
@@ -113,23 +117,26 @@ class filterReadsTool(Tool):
             "BS FILTER PARAMS:",
             input_files["fastq"],
             output_files["fastq_filtered"],
-            metadata["bss_path"])
+            input_metadata["bss_path"])
 
         results = self.bss_seeker_filter(
             input_files["fastq"],
             output_files["fastq_filtered"],
-            metadata["bss_path"]
+            input_metadata["bss_path"]
         )
-
         results = compss_wait_on(results)
+
+        if results is False:
+            logger.fatal("BS SEEKER2 Filter: run failed")
+            return {}, {}
 
         output_metadata = {
             "fastq_filtered": Metadata(
                 data_type="data_wgbs",
                 file_type="fastq",
                 file_path=output_files["fastq_filtered"],
-                sources=[metadata["fastq"].file_path],
-                taxon_id=metadata["fastq"].taxon_id,
+                sources=[input_metadata["fastq"].file_path],
+                taxon_id=input_metadata["fastq"].taxon_id,
                 meta_data={
                     "tool": "bs_seeker_filter"
                 }

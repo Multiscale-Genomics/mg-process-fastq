@@ -38,6 +38,7 @@ except ImportError:
 
 from basic_modules.tool import Tool
 from basic_modules.metadata import Metadata
+from utils import logger
 
 # ------------------------------------------------------------------------------
 
@@ -91,27 +92,30 @@ class bssIndexerTool(Tool):
             " --db " + "/".join(ff_split[:-1])
         ).format()
 
-        print("BS - INDEX CMD:", command_line)
-        args = shlex.split(command_line)
-        process = subprocess.Popen(args)
-        process.wait()
+        try:
+            print("BS - INDEX CMD:", command_line)
+            args = shlex.split(command_line)
+            process = subprocess.Popen(args)
+            process.wait()
 
-        # tar.gz the index
-        print("BS - idx_out", idx_out, idx_out.replace('.tar.gz', ''))
-        idx_out_pregz = idx_out.replace('.tar.gz', '.tar')
+            # tar.gz the index
+            print("BS - idx_out", idx_out, idx_out.replace('.tar.gz', ''))
+            idx_out_pregz = idx_out.replace('.tar.gz', '.tar')
 
-        tar = tarfile.open(idx_out_pregz, "w")
-        tar.add(fasta_file + "_" + aligner, arcname=ff_split[-1] + "_" + aligner)
-        tar.close()
+            tar = tarfile.open(idx_out_pregz, "w")
+            tar.add(fasta_file + "_" + aligner, arcname=ff_split[-1] + "_" + aligner)
+            tar.close()
 
-        command_line = 'pigz ' + idx_out_pregz
-        args = shlex.split(command_line)
-        process = subprocess.Popen(args)
-        process.wait()
+            command_line = 'pigz ' + idx_out_pregz
+            args = shlex.split(command_line)
+            process = subprocess.Popen(args)
+            process.wait()
+        except Exception:
+            return False
 
         return True
 
-    def run(self, input_files, metadata, output_files):
+    def run(self, input_files, input_metadata, output_files):
         """
         Tool for indexing the genome assembly using BS-Seeker2. In this case it
         is using Bowtie2
@@ -128,10 +132,12 @@ class bssIndexerTool(Tool):
             Location of the filtered FASTQ file
         """
 
-        # TODO: These should be moved to the getting the data from the configuration obj
-        aligner = metadata['aligner']
-        aligner_path = metadata['aligner_path']
-        bss_path = metadata['bss_path']
+        try:
+            aligner = input_metadata['aligner']
+            aligner_path = input_metadata['aligner_path']
+            bss_path = input_metadata['bss_path']
+        except KeyError:
+            logger.fatal("WGBS - BS SEEKER2: Unassigned configuration variables")
 
 
         # handle error
@@ -141,15 +147,19 @@ class bssIndexerTool(Tool):
             output_files["index"])
         results = compss_wait_on(results)
 
+        if results is False:
+            logger.fatal("BS SEEKER2 Indexer: run failed")
+            return {}, {}
+
         output_metadata = {
             "index": Metadata(
                 data_type="sequence_mapping_index_bowtie",
                 file_type="TAR",
                 file_path=output_files["index"],
-                sources=[metadata["genome"].file_path],
-                taxon_id=metadata["genome"].taxon_id,
+                sources=[input_metadata["genome"].file_path],
+                taxon_id=input_metadata["genome"].taxon_id,
                 meta_data={
-                    "assembly": metadata["genome"].meta_data["assembly"],
+                    "assembly": input_metadata["genome"].meta_data["assembly"],
                     "tool": "bs_seeker_indexer"
                 }
             )

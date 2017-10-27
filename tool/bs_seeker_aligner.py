@@ -266,7 +266,7 @@ class bssAlignerTool(Tool):
             )
 
         fastq_file_list = compss_wait_on(fastq_file_list)
-        if fastq_file_list:
+        if not fastq_file_list:
             logger.fatal("FASTQ SPLITTER: run failed")
             return {}, {}
 

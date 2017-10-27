@@ -88,7 +88,9 @@ class process_genome(Workflow):
         try:
             output_files_generated['bwt_index'] = bti["index"]
             output_metadata['bwt_index'] = btm['index']
-            output_metadata['bwt_index'].meta_data['tool_description'] = output_metadata['bwt_index'].meta_data['tool']
+
+            tool_name = output_metadata['bwt_index'].meta_data['tool']
+            output_metadata['bwt_index'].meta_data['tool_description'] = tool_name
             output_metadata['bwt_index'].meta_data['tool'] = "process_genome"
         except KeyError:
             logger.fatal("BWA indexer failed")
@@ -101,7 +103,9 @@ class process_genome(Workflow):
         try:
             output_files_generated['bwa_index'] = bwai['index']
             output_metadata['bwa_index'] = bwam['index']
-            output_metadata['bwa_index'].meta_data['tool_description'] = output_metadata['bwa_index'].meta_data['tool']
+
+            tool_name = output_metadata['bwa_index'].meta_data['tool']
+            output_metadata['bwa_index'].meta_data['tool_description'] = tool_name
             output_metadata['bwa_index'].meta_data['tool'] = "process_genome"
         except KeyError:
             logger.fatal("BWA indexer failed")
@@ -123,9 +127,13 @@ class process_genome(Workflow):
 
             output_metadata['gem_index'] = gemm['index']
             output_metadata['genome_gem'] = gemm['genome_gem']
-            output_metadata['gem_index'].meta_data['tool_description'] = output_metadata['gem_index'].meta_data['tool']
+
+            tool_name = output_metadata['gem_index'].meta_data['tool']
+            output_metadata['gem_index'].meta_data['tool_description'] = tool_name
             output_metadata['gem_index'].meta_data['tool'] = "process_genome"
-            output_metadata['genome_gem'].meta_data['tool_description'] = output_metadata['genome_gem'].meta_data['tool']
+
+            tool_name = output_metadata['genome_gem'].meta_data['tool']
+            output_metadata['genome_gem'].meta_data['tool_description'] = tool_name
             output_metadata['genome_gem'].meta_data['tool'] = "process_genome"
         except KeyError:
             logger.fatal("BWA indexer failed")

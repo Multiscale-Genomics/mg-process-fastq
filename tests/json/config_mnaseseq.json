@@ -1,0 +1,66 @@
+{
+    "input_files": [
+        {
+            "required": true,
+            "allow_multiple": false,
+            "name": "loc",
+            "value": "59b7e020d9422a5969b65378"
+        }, {
+            "required": true,
+            "allow_multiple": false,
+            "name": "genome",
+            "value": "59b7e020d9422a5969b65372"
+        }, {
+            "required": true,
+            "allow_multiple": false,
+            "name": "index",
+            "value": "59b7e020d9422a5969b65373"
+        }
+    ],
+    "arguments": [
+        {
+            "name": "project",
+            "value": "run001"
+        },
+        {
+            "name": "description",
+            "value": null
+        }
+    ],
+    "output_files": [
+        {
+            "required": true,
+            "allow_multiple": false,
+            "name": "bam",
+            "file": {
+                "file_type": "bam",
+                "meta_data": {
+                    "visible": true,
+                    "tool": "process_mnaseseq",
+                    "description": "Output"
+                },
+                "file_path": "tests/data/inps.Mouse.DRR000386.bam",
+                "data_type": "data_mnase_seq",
+                "compressed": "null"
+            }
+        }, {
+            "required": true,
+            "allow_multiple": false,
+            "name": "bed",
+            "file": {
+                "file_type": "bed",
+                "meta_data": {
+                    "visible": true,
+                    "tool": "process_mnaseseq",
+                    "description": "Output"
+                },
+                "file_path": "tests/data/inps.Mouse.DRR000386.bed",
+                "data_type": "data_mnase_seq",
+                "compressed": "null"
+            }
+        }
+    ]
+}
+
+
+

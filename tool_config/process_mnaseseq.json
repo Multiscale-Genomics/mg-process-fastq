@@ -1,0 +1,98 @@
+{
+    "_id": "process_mnaseseq",
+    "name": "Process MNase-seq",
+    "title": "MNase-seq Analysis",
+    "short_description": "Align MNase-seq data and Peak Calling using iNPS.",
+    "owner": {
+        "institution": "EMBL-EBI",
+        "author": "Mark McDowall",
+        "contact": "mcdowall@ebi.ac.uk",
+        "user": "",
+        "url": "https://github.com/Multiscale-Genomics/mg-process-fastq"
+    },
+    "external": true,
+    "keywords": [
+        "dna","chromatin"
+    ],
+    "infrastructure": {
+        "memory": 12.0,
+        "cpus": 4,
+        "executable": "/home/pmes/code/mg-process-fastq/process_mnaseseq.py",
+        "clouds": {
+            "mug-bsc": {
+                "launcher": "PMES",
+                "workflowType": "COMPSs",
+                "default_cloud": true
+            }
+        }
+      },
+    "launcher": {
+        "type": "PMES",
+        "queue": "",
+        "executable": "/home/pmes/code/mg-process-fastq/process_mnaseseq.py",
+        "cpus": 4,
+        "memory": "12.0"
+    },
+    "input_files": [
+        {
+            "name": "loc",
+            "description": "Sequence read file",
+            "help": "path to a FASTQ sequence read file",
+            "file_type": ["FASTQ"],
+            "data_type": ["data_mnase_seq"],
+            "required": true,
+            "allow_multiple": false
+        }, {
+            "name": "genome",
+            "description": "Genome sequence file",
+            "help": "path to a assembly sequence file",
+            "file_type": ["FASTA"],
+            "data_type": ["sequence_genomic", "sequence_dna"],
+            "required": true,
+            "allow_multiple": false
+        }, {
+            "name": "index",
+            "description": "BWA index for matching species",
+            "help": "path to matching BWA index file",
+            "file_type": ["TAR"],
+            "data_type": ["sequence_mapping_index_bwa"],
+            "required": true,
+            "allow_multiple": false
+        }
+    ],
+    "arguments": [],
+    "output_files": [
+        {
+            "required": true,
+            "allow_multiple": false,
+            "name": "bam",
+            "file": {
+                "file_type": "bam",
+                "meta_data": {
+                    "visible": true,
+                    "tool": "process_mnaseseq",
+                    "description": "Aligned sequences"
+                },
+                "file_path": "macs2.bam",
+                "data_type": "data_mnase_seq",
+                "compressed": "null"
+            }
+        }, {
+            "required": true,
+            "allow_multiple": false,
+            "name": "gapped_peak",
+            "file": {
+                "file_type": "bed",
+                "meta_data": {
+                    "visible": true,
+                    "tool": "process_mnaseseq",
+                    "description": "Output"
+                },
+                "file_path": "inps_peaks.bed",
+                "data_type": "data_mnase_seq",
+                "compressed": "null"
+            }
+        }
+    ],
+    "control_file": ".results.json"
+}

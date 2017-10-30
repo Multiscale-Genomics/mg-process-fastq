@@ -1,0 +1,43 @@
+[
+    {
+        "compressed": 0,
+        "_id": "59b7e020d9422a5969b65378",
+        "data_type": "ChIP-seq",
+        "file_type": "fastq",
+        "file_path": "tests/data/inps.Mouse.DRR000386.fastq.fastq",
+        "sources": [],
+        "taxon_id": 9606,
+        "meta_data": {
+            "visible": true,
+            "validated": 1,
+            "assembly": "GRCm38"
+        }
+    },
+    {
+        "_id": "59b7e020d9422a5969b65372",
+        "data_type": "sequence_dna",
+        "file_type": "FASTA",
+        "file_path": "tests/data/inps.Mouse.GRCm38.fasta",
+        "sources": [],
+        "taxon_id": 9606,
+        "meta_data": {
+            "visible": true,
+            "validated": 1,
+            "assembly": "GRCm38"
+        }
+    },
+    {
+        "_id": "59b7e020d9422a5969b65373",
+        "data_type": "sequence_mapping_index_bwa",
+        "file_type": "TAR",
+        "file_path": "tests/data/inps.Mouse.GRCm38.fasta.bwa.tar.gz",
+        "sources": ["tests/data/inps.Mouse.GRCm38.fasta"],
+        "taxon_id": 9606,
+        "meta_data": {
+            "visible": true,
+            "validated": 1,
+            "tool": "bwa_indexer",
+            "assembly": "GRCm38"
+        }
+    }
+]

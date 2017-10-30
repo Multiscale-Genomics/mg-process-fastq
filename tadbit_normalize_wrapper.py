@@ -60,6 +60,16 @@ class tadbit_normalize(Workflow):
             configuration = {}
 
         self.configuration.update(convert_from_unicode(configuration))
+        
+        # Number of cores available
+        num_cores = multiprocessing.cpu_count()
+        self.configuration["ncpus"] = num_cores
+        
+        tmp_name = ''.join([letters[int(random()*52)]for _ in xrange(5)])
+        self.configuration['workdir'] = self.configuration['project']+'/_tmp_tadbit_'+tmp_name
+        if not os.path.exists(self.configuration['workdir']):
+            os.makedirs(self.configuration['workdir'])
+            
         self.configuration.update(
             {(key.split(':'))[-1]: val for key, val in self.configuration.items()}
         )
@@ -102,12 +112,12 @@ class tadbit_normalize(Workflow):
             
             m_results_files = {}
             try:
-                m_results_files["hic_biases"] = self.configuration['root_dir']+'/'+ self.configuration['project']+"/"+os.path.basename(tn_files[0])
+                m_results_files["hic_biases"] = self.configuration['project']+"/"+os.path.basename(tn_files[0])
                 os.rename(tn_files[0], m_results_files["hic_biases"])
             except:
                 pass
             
-            m_results_files["normalize_stats"] = self.configuration['root_dir']+'/' + self.configuration['project']+"/normalize_stats.tar.gz"
+            m_results_files["normalize_stats"] = self.configuration['project']+"/normalize_stats.tar.gz"
               
             with tarfile.open(m_results_files["normalize_stats"], "w:gz") as tar:
                 tar.add(tn_files[1],arcname=os.path.basename(tn_files[1]))
@@ -121,24 +131,22 @@ class tadbit_normalize(Workflow):
                     data_type="hic_biases",
                     file_type="PICKEL",
                     file_path=m_results_files["hic_biases"],
-                    source_id=[""],
+                    sources=[""],
                     meta_data={
                         "description": "HiC biases for normalization",
                         "visible": True,
                         "assembly": ""
                     },
-                    data_id=None,
-                    taxon_id=self.configuration["taxon_id"])
+                    taxon_id=metadata['bamin'].taxon_id)
             m_results_meta["normalize_stats"] = Metadata(
                     data_type="tool_statistics",
                     file_type="TAR",
                     file_path=m_results_files["normalize_stats"],
-                    source_id=[""],
+                    sources=[""],
                     meta_data={
                         "description": "TADbit normalize statistics",
                         "visible": True
-                    },
-                    data_id=None)
+                    })
             
          
         except Exception as e:
@@ -146,14 +154,18 @@ class tadbit_normalize(Workflow):
                     data_type="hic_biases",
                     file_type="PICKEL",
                     file_path=None,
-                    source_id=[""],
+                    sources=[""],
                     meta_data={
                         "description": "HiC biases for normalization",
                         "visible": True
-                    },
-                    data_id=None)
+                    })
             m_results_meta["hic_biases"].error = True
             m_results_meta["hic_biases"].exception = str(e)
+        
+        #cleaning
+        clean_temps(self.configuration['workdir']+"/04_normalization")
+        clean_temps(self.configuration['workdir'])
+
         return m_results_files, m_results_meta
         
 # ------------------------------------------------------------------------------
@@ -263,49 +275,60 @@ def _write_json(
     json.dump({"output_files": results}, file(json_path, 'w'))
     return True
 
-def main(args, num_cores):
+def main(args):
     
-    # 1. Instantiate and launch the App
-    print("1. Instantiate and launch the App")
-    from apps.workflowapp import WorkflowApp
-    app = WorkflowApp()
-    root_dir = args.root_dir
+    from apps.jsonapp import JSONApp
+    app = JSONApp()
+    result = app.launch(tadbit_normalize,
+                        args.config,
+                        args.in_metadata,
+                        args.out_metadata)
     
-    print ("0) Unpack information from JSON")
-    input_IDs, arguments, output_files = _read_config(
-        args.config)
-
-    input_metadata_IDs, taxon_id = _read_metadata(
-        args.metadata)
-
-    # arrange by role
-    input_metadata = {}
-    for role, ID in input_IDs.items():
-        input_metadata[role] = input_metadata_IDs[ID]
-
-    # get paths from IDs
-    input_files = {}
-    for role, metadata in input_metadata.items():
-        input_files[role] = metadata.file_path
-
-    input_files = make_absolute_path(input_files, root_dir)
     
-    tmp_name = ''.join([letters[int(random()*52)]for _ in xrange(5)])
-    workdir = os.path.dirname(os.path.abspath(args.out_metadata))+'/_tmp_tadbit_'+tmp_name
-    if not os.path.exists(workdir):
-        os.makedirs(workdir)
-    arguments.update({"ncpus":num_cores, "root_dir": args.root_dir, "public_dir": args.public_dir, "workdir": workdir, "taxon_id":taxon_id})
-    output_files, output_metadata = app.launch(tadbit_normalize, input_files, input_metadata, output_files, arguments, )
-
-    print("4) Pack information to JSON")
-    #cleaning
-    clean_temps(workdir+"/04_normalization")
-    clean_temps(workdir)
-    
-    return _write_json(
-        input_files, input_metadata,
-        output_files, output_metadata,
-        args.out_metadata)
+    return result
+#===============================================================================
+#     # 1. Instantiate and launch the App
+#     print("1. Instantiate and launch the App")
+#     from apps.workflowapp import WorkflowApp
+#     app = WorkflowApp()
+#     root_dir = args.root_dir
+#     
+#     print ("0) Unpack information from JSON")
+#     input_IDs, arguments, output_files = _read_config(
+#         args.config)
+# 
+#     input_metadata_IDs, taxon_id = _read_metadata(
+#         args.metadata)
+# 
+#     # arrange by role
+#     input_metadata = {}
+#     for role, ID in input_IDs.items():
+#         input_metadata[role] = input_metadata_IDs[ID]
+# 
+#     # get paths from IDs
+#     input_files = {}
+#     for role, metadata in input_metadata.items():
+#         input_files[role] = metadata.file_path
+# 
+#     input_files = make_absolute_path(input_files, root_dir)
+#     
+#     tmp_name = ''.join([letters[int(random()*52)]for _ in xrange(5)])
+#     workdir = os.path.dirname(os.path.abspath(args.out_metadata))+'/_tmp_tadbit_'+tmp_name
+#     if not os.path.exists(workdir):
+#         os.makedirs(workdir)
+#     arguments.update({"ncpus":num_cores, "root_dir": args.root_dir, "public_dir": args.public_dir, "workdir": workdir, "taxon_id":taxon_id})
+#     output_files, output_metadata = app.launch(tadbit_normalize, input_files, input_metadata, output_files, arguments, )
+# 
+#     print("4) Pack information to JSON")
+#     #cleaning
+#     clean_temps(workdir+"/04_normalization")
+#     clean_temps(workdir)
+#     
+#     return _write_json(
+#         input_files, input_metadata,
+#         output_files, output_metadata,
+#         args.out_metadata)
+#===============================================================================
     
     
     
@@ -332,27 +355,21 @@ if __name__ == "__main__":
     sys._run_from_cmdl = True
 
     # Set up the command line parameters
-    parser = argparse.ArgumentParser(description="TADbit normalize")
+    parser = argparse.ArgumentParser(description="TADbit map")
     # Config file
     parser.add_argument("--config", help="Configuration JSON file", 
                         type=CommandLineParser.valid_file, metavar="config", required=True)
-    # Root dir
-    parser.add_argument("--root_dir", help="Working directory",
-                        type=CommandLineParser.valid_file, metavar="root_dir", required=True)
-    # Public dir
-    parser.add_argument("--public_dir", help="Public directory to upload the results",
-                        metavar="public_dir", required=True)
+
     # Metadata
-    parser.add_argument("--metadata", help="Project metadata", metavar="metadata", required=True)
+    parser.add_argument("--in_metadata", help="Project metadata", metavar="in_metadata", required=True)
     # Output metadata
     parser.add_argument("--out_metadata", help="Output metadata", metavar="output_metadata", required=True)
+    # Log file
+    parser.add_argument("--log_file", help="Log file", metavar="log_file", required=True)
 
     args = parser.parse_args()
 
-    # Number of cores available
-    num_cores = multiprocessing.cpu_count()
-
-    RESULTS = main(args, num_cores)
+    RESULTS = main(args)
     
     print(RESULTS)
     

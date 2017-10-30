@@ -16,7 +16,7 @@
     "arguments": [
     {
             "name": "project",
-            "value": ""
+            "value": "/home/dcastillo/workspace/vre/mg-process-fastq-tadbit/tests/data"
         },
     	{
             "name": "resolution",
@@ -48,28 +48,13 @@
     ],
     "output_files": [
         {
-            "name": "tads",
-            "required": false,
-            "allow_multiple": false,
-            "file": {
-                "file_type": "TSV",
-                "data_type": "hic_tads",
-                "compressed": "null",
-                "file_path": "hic_tads.txt",
-                "meta_data": {
-                    "tool": "tadbit",
-                    "description": "HiC tad definition",
-                    "visible": true
-                }
-            }
-        },
-        {
-            "name": "compartments",
+            "name": "tads_compartments",
             "required": false,
             "allow_multiple": false,
             "file": {
                 "file_type": "TAR",
                 "data_type": "tool_statistics",
+                "file_path": "tads_compartments.tar.gz",
                 "compressed": "gzip",
                 "meta_data": {
                     "description": "TADbit HiC compartments stats",

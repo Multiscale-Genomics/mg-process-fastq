@@ -10,7 +10,7 @@
     "arguments": [
     {
             "name": "project",
-            "value": ""
+            "value": "/home/dcastillo/workspace/vre/mg-process-fastq-tadbit/tests/data/"
         },
     	{
             "name": "resolution",
@@ -53,6 +53,22 @@
                 "meta_data": {
                     "tool": "tadbit",
                     "description": "HiC biases for normalization",
+                    "visible": true
+                }
+            }
+        },
+        {
+            "name": "normalize_stats",
+            "required": true,
+            "allow_multiple": false,
+            "file": {
+                "file_type": "TAR",
+                "data_type": "tool_statistics",
+                "file_path": "normalize_stats.tar.gz",
+                "compressed": "gzip",
+                "meta_data": {
+                    "description": "TADbit normalize statistics",
+                    "tool": "tadbit",
                     "visible": true
                 }
             }

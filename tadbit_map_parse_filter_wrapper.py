@@ -80,6 +80,11 @@ class tadbit_map_parse_filter(Workflow):
 
         self.configuration.update(convert_from_unicode(configuration))
         
+        #temporal
+        self.configuration['public_dir'] = '/orozco/services/MuG/MuG_public/'
+        self.configuration['public_dir'] = '/scratch/genomes/'
+        
+        
         # Number of cores available
         num_cores = multiprocessing.cpu_count()
         self.configuration["ncpus"] = num_cores
@@ -246,7 +251,7 @@ class tadbit_map_parse_filter(Workflow):
                         "assembly": "",
                         "func" : tfm1_meta['func']
                     },
-                    taxon_id=self.configuration["taxon_id"])
+                    taxon_id=metadata['read1'].taxon_id)
             
             m_results_meta["map_parse_filter_stats"] = Metadata(
                     data_type="tool_statistics",
@@ -305,8 +310,6 @@ def convert_from_unicode(data):
  
 def main(args):
     
-    # 1. Instantiate and launch the App
-    print("1. Instantiate and launch the App")
     from apps.jsonapp import JSONApp
     app = JSONApp()
     result = app.launch(tadbit_map_parse_filter,
@@ -468,6 +471,8 @@ if __name__ == "__main__":
     parser.add_argument("--in_metadata", help="Project metadata", metavar="in_metadata", required=True)
     # Output metadata
     parser.add_argument("--out_metadata", help="Output metadata", metavar="output_metadata", required=True)
+    # Log file
+    parser.add_argument("--log_file", help="Log file", metavar="log_file", required=True)
 
     args = parser.parse_args()
 

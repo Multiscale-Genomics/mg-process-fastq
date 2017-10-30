@@ -23,6 +23,8 @@ import argparse
 
 from basic_modules.workflow import Workflow
 from basic_modules.metadata import Metadata
+from utils import logger
+from utils import remap
 
 from dmp import dmp
 
@@ -48,12 +50,13 @@ class process_mnaseseq(Workflow):
             a dictionary containing parameters that define how the operation
             should be carried out, which are specific to each Tool.
         """
+        logger.info("Processing MNase-Seq")
         if configuration is None:
             configuration = {}
 
         self.configuration.update(configuration)
 
-    def run(self, file_ids, metadata, output_files):
+    def run(self, input_files, metadata, output_files):
         """
         Main run function for processing MNase-Seq FastQ data. Pipeline aligns
         the FASTQ files to the genome using BWA. iNPS is then used for peak
@@ -72,123 +75,79 @@ class process_mnaseseq(Workflow):
             List of locations for the output bam, bed and tsv files
         """
 
-        genome_file = file_ids[0]
-        bwa_amb = file_ids[1]
-        bwa_ann = file_ids[2]
-        bwa_bwt = file_ids[3]
-        bwa_pac = file_ids[4]
-        bwa_sa = file_ids[5]
-        file_loc = file_ids[6]
+        output_metadata = {}
 
         bwa = bwaAlignerTool()
-        out_file_bam, out_bam_meta = bwa.run(
-            [genome_file, file_loc, bwa_amb, bwa_ann, bwa_bwt, bwa_pac, bwa_sa],
-            []
+        bwa_files, bwa_meta = bwa.run(
+            remap(input_files, "genome", "loc", "index"),
+            remap(metadata, "genome", "loc", "index"),
+            {"output": output_files["bam"]}
         )
 
-        # Needs moving to its own tool
-        inps_tool = inps()
-        out_peak_bed, out_meta = inps_tool.run([out_file_bam[0]], [])
+        output_metadata["bam"] = bwa_meta["bam"]
+        tool_name = output_metadata['bed'].meta_data['tool']
+        output_metadata['bed'].meta_data['tool_description'] = tool_name
+        output_metadata['bed'].meta_data['tool'] = "process_mnaseseq"
 
-        return ([out_file_bam[0], out_peak_bed[0]], [out_bam_meta, out_meta])
+        inps_tool = inps()
+        out_peak_bed, out_peak_bed_meta = inps_tool.run(
+            remap(bwa_files, "bam"),
+            remap(bwa_meta, "bam"),
+            {"bed": output_files["bed"]}
+        )
+
+        output_metadata["bed"] = out_peak_bed_meta["bed"]
+        tool_name = output_metadata['bed'].meta_data['tool']
+        output_metadata['bed'].meta_data['tool_description'] = tool_name
+        output_metadata['bed'].meta_data['tool'] = "process_mnaseseq"
+
+        return (output_files, output_metadata)
 
 # ------------------------------------------------------------------------------
 
-def main(input_files, output_files, input_metadata):
+def main_json(config, in_metadata, out_metadata):
     """
-    Main function
+    Alternative main function
     -------------
 
-    This function launches the app.
+    This function launches the app using configuration written in
+    two json files: config.json and input_metadata.json.
     """
-
-    # import pprint  # Pretty print - module for dictionary fancy printing
-
     # 1. Instantiate and launch the App
     print("1. Instantiate and launch the App")
-    from apps.workflowapp import WorkflowApp
-    app = WorkflowApp()
-    result = app.launch(process_mnaseseq, input_files, input_metadata,
-                        output_files, {})
+    from apps.jsonapp import JSONApp
+    app = JSONApp()
+    result = app.launch(process_mnaseseq,
+                        config,
+                        in_metadata,
+                        out_metadata)
 
     # 2. The App has finished
-    print("2. Execution finished")
+    print("2. Execution finished; see " + out_metadata)
     print(result)
+
     return result
-
-def prepare_files( # pylint: disable=too-many-arguments
-        dm_handler, taxon_id, genome_fa, assembly, file_loc):
-    """
-    Function to load the DM API with the required files and prepare the
-    parameters passed from teh command line ready for use in the main function
-    """
-    print(dm_handler.get_files_by_user("test"))
-
-    genome_file = dm_handler.set_file(
-        "test", genome_fa, "fasta", "Assembly", taxon_id, None, [],
-        meta_data={"assembly" : assembly})
-    dm_handler.set_file(
-        "test", genome_fa + ".amb", "amb", "Assembly", taxon_id, None, [genome_file],
-        meta_data={'assembly' : assembly})
-    dm_handler.set_file(
-        "test", genome_fa + ".ann", "ann", "Assembly", taxon_id, None, [genome_file],
-        meta_data={'assembly' : assembly})
-    dm_handler.set_file(
-        "test", genome_fa + ".bwt", "bwt", "Assembly", taxon_id, None, [genome_file],
-        meta_data={'assembly' : assembly})
-    dm_handler.set_file(
-        "test", genome_fa + ".pac", "pac", "Assembly", taxon_id, None, [genome_file],
-        meta_data={'assembly' : assembly})
-    dm_handler.set_file(
-        "test", genome_fa + ".sa", "sa", "Assembly", taxon_id, None, [genome_file],
-        meta_data={'assembly' : assembly})
-
-    in_files = [
-        genome_fa,
-        genome_fa + ".amb",
-        genome_fa + ".ann",
-        genome_fa + ".bwt",
-        genome_fa + ".pac",
-        genome_fa + ".sa",
-        file_loc
-    ]
-
-    return [in_files, [], {}]
 
 
 # ------------------------------------------------------------------------------
 
 if __name__ == "__main__":
     import sys
-    sys._run_from_cmdl = True
+    sys._run_from_cmdl = True  # pylint: disable=protected-access
 
     # Set up the command line parameters
-    PARSER = argparse.ArgumentParser(description="Mnase-seq peak calling")
-    PARSER.add_argument("--assembly", help="Genome assembly ID (GCA_000001635.2)")
-    PARSER.add_argument("--taxon_id", help="Taxon ID (10090)")
-    PARSER.add_argument("--genome", help="Genome assembly FASTA file")
-    PARSER.add_argument("--file", help="Location of FASTQ file")
+    PARSER = argparse.ArgumentParser(description="MNase-seq peak calling")
+    PARSER.add_argument("--config", help="Configuration file")
+    PARSER.add_argument("--in_metadata", help="Location of input metadata file")
+    PARSER.add_argument("--out_metadata", help="Location of output metadata file")
 
     # Get the matching parameters from the command line
     ARGS = PARSER.parse_args()
 
-    GENOME_FA = ARGS.genome
-    TAXON_ID = ARGS.taxon_id
-    ASSEMBLY = ARGS.assembly
-    FILE_LOC = ARGS.file
+    CONFIG = ARGS.config
+    IN_METADATA = ARGS.in_metadata
+    OUT_METADATA = ARGS.out_metadata
 
-    #
-    # MuG Tool Steps
-    # --------------
-    #
-    # 1. Create data files
-    DM_HANDLER = dmp(test=True)
-
-    #2. Register the data with the DMP
-    PARAMS = prepare_files(DM_HANDLER, TAXON_ID, GENOME_FA, ASSEMBLY, FILE_LOC)
-
-    # 3. Instantiate and launch the App
-    RESULTS = main(PARAMS[0], [], [PARAMS[2]])
+    RESULTS = main_json(CONFIG, IN_METADATA, OUT_METADATA)
 
     print(RESULTS)
-    print(DM_HANDLER.get_files_by_user("test"))

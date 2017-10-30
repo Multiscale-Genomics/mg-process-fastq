@@ -35,8 +35,9 @@ except ImportError:
     from dummy_pycompss import task
     from dummy_pycompss import compss_wait_on
 
-#from basic_modules.metadata import Metadata
 from basic_modules.tool import Tool
+from basic_modules.metadata import Metadata
+from utils import logger
 
 # ------------------------------------------------------------------------------
 
@@ -96,7 +97,7 @@ class inps(Tool):
 
         return True
 
-    def run(self, input_files, output_files, metadata=None):
+    def run(self, input_files, input_metadata, output_files):
         """
         The main function to run iNPS for peak calling over a given BAM file
         and matching background BAM file.
@@ -117,15 +118,26 @@ class inps(Tool):
 
         """
 
-        bam_file = input_files[0]
-        peak_bed = bam_file.replace('.bam', '.bed')
-
-        # input and output share most metadata
-        output_metadata = {}
-
-        results = self.inps_peak_calling(bam_file, peak_bed)
+        results = self.inps_peak_calling(
+            input_files["bam"],
+            output_files["bed"]
+        )
         results = compss_wait_on(results)
 
-        return ([peak_bed], output_metadata)
+        output_metadata = {
+            "bed": Metadata(
+                data_type=input_metadata['bam'].data_type,
+                file_type="BED",
+                file_path=output_files["bed"],
+                sources=[input_metadata["bam"].file_path],
+                taxon_id=input_metadata["bam"].taxon_id,
+                meta_data={
+                    "assembly": input_metadata["bam"].meta_data["assembly"],
+                    "tool": "inps"
+                }
+            )
+        }
+
+        return (output_files, output_metadata)
 
 # ------------------------------------------------------------------------------

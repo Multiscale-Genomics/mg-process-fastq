@@ -22,11 +22,8 @@ from __future__ import print_function
 import argparse
 
 from basic_modules.workflow import Workflow
-from basic_modules.metadata import Metadata
 from utils import logger
 from utils import remap
-
-from dmp import dmp
 
 from tool.bwa_aligner import bwaAlignerTool
 from tool.inps import inps

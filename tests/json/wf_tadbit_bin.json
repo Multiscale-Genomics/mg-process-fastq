@@ -99,6 +99,7 @@
             "file": {
                 "file_type": "TAR",
                 "data_type": "tool_statistics",
+                "file_path": "bin_stats.tar.gz",
                 "compressed": "gzip",
                 "meta_data": {
                     "description": "TADbit HiC matrices in png format",

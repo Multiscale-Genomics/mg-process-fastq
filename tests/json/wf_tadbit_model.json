@@ -206,6 +206,7 @@
             "file": {
                 "file_type": "JSON",
                 "data_type": "chromatin_3dmodel_ensemble",
+                "file_path": "tadkit_models.json",
                 "compressed": "null",
                 "meta_data": {
                     "tool": "tadbit",
@@ -221,6 +222,7 @@
             "file": {
                 "file_type": "TAR",
                 "data_type": "tool_statistics",
+                "file_path": "model_stats.tar.gz",
                 "compressed": "gzip",
                 "meta_data": {
                     "description": "TADbit modeling statistics and result files",

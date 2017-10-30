@@ -75,6 +75,7 @@
             "file": {
                 "file_type": "TAR",
                 "data_type": "tool_statistics",
+                "file_path": "tads_compartments.tar.gz",
                 "compressed": "gzip",
                 "meta_data": {
                     "description": "TADbit HiC tads and compartments stats",

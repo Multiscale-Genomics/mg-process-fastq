@@ -66,6 +66,7 @@
             "file": {
                 "file_type": "PICKEL",
                 "data_type": "hic_biases",
+                "file_path": "file1.pickel",
                 "compressed": "null",
                 "meta_data": {
                     "tool": "tadbit",
@@ -81,6 +82,7 @@
             "file": {
                 "file_type": "TAR",
                 "data_type": "tool_statistics",
+                "file_path": "normalize_stats.tar.gz",
                 "compressed": "gzip",
                 "meta_data": {
                     "description": "TADbit normalize statistics",

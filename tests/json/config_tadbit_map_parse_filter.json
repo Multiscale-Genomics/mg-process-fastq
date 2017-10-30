@@ -25,7 +25,7 @@
     "arguments": [
         {
             "name": "project",
-            "value": ""
+            "value": "/home/dcastillo/workspace/vre/mg-process-fastq-tadbit/tests/data/"
         },
         {
             "name": "description",
@@ -86,6 +86,7 @@
             "file": {
                 "file_type": "BAM",
                 "data_type": "hic_sequences",
+                "file_path": "paired_reads.bam",
                 "compressed": "null",
                 "meta_data": {
                     "tool": "tadbit",
@@ -101,6 +102,7 @@
             "file": {
                 "file_type": "TAR",
                 "data_type": "tool_statistics",
+                "file_path": "map_parse_filter_stats.tar.gz",
                 "compressed": "gzip",
                 "meta_data": {
                     "description": "TADbit mapping, parsing and filtering statistics",

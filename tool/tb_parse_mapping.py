@@ -327,14 +327,14 @@ class tbParseMappingTool(Tool):
         mapping_list = metadata['mapping']
         expt_name = metadata['expt_name']
         filter_chrom = None
-        if 'chromosomes' in metadata:
-            filter_chrom = metadata['chromosomes']
+        if 'chromosomes' in metadata and metadata['chromosomes'] != '':
+            filter_chrom = [metadata['chromosomes']]
             
         root_name = input_files[1].split("/")
 
         reads = "/".join(root_name[0:-1]) + '/'
 
-        genome_seq = parse_fasta(genome_file, chr_filter=[filter_chrom])
+        genome_seq = parse_fasta(genome_file, chr_filter=filter_chrom)
 
         chromosome_meta = []
         for k in genome_seq:

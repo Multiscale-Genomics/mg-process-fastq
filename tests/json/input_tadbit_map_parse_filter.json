@@ -4,8 +4,8 @@
         "_id": "59b7e020d9422a5969b65378",
         "data_type": "hic_reads",
         "file_type": "fastq",
-        "file_path": "hic_chr10/OISD0_1.fastq.dsrc",
-        "source_id": null,
+        "file_path": "/home/dcastillo/workspace/vre/mg-process-fastq-tadbit/tests/data/hic_chr10/OISD0_1.fastq.dsrc",
+        "sources": null,
         "taxon_id": "9606",
         "meta_data": {
             "visible": true,
@@ -18,8 +18,8 @@
         "_id": "59b7e020d9422a5969b65372",
         "data_type": "hic_reads",
         "file_type": "fastq",
-        "file_path": "hic_chr10/OISD0_2.fastq.dsrc",
-        "source_id": null,
+        "file_path": "/home/dcastillo/workspace/vre/mg-process-fastq-tadbit/tests/data/hic_chr10/OISD0_2.fastq.dsrc",
+        "sources": null,
         "taxon_id": "9606",
         "meta_data": {
             "visible": true,
@@ -32,7 +32,7 @@
         "data_type": "sequence_genomic",
         "file_type": "fasta",
         "file_path": "/scratch/genomes/hsap_GRCh38.p10_chr10.fa",
-        "source_id": null,
+        "sources": null,
         "taxon_id": "9606",
         "meta_data": {
             "visible": true,
@@ -45,7 +45,7 @@
         "data_type": "sequence_mapping_index",
         "file_type": "gem",
         "file_path": "/scratch/genomes/hsap_GRCh38.p10_chr10.gem",
-        "source_id": null,
+        "sources": null,
         "taxon_id": "9606",
         "meta_data": {
             "visible": true,

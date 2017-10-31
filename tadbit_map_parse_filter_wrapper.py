@@ -63,7 +63,7 @@ class tadbit_map_parse_filter(Workflow):
             a dictionary containing parameters that define how the operation
             should be carried out, which are specific to each Tool.
         """
-        tool_extra_config = json.load(file((__file__).replace('.py','_config.json')))
+        tool_extra_config = json.load(file(os.path.dirname(os.path.abspath(__file__))+'/tadbit_wrappers_config.json'))
         os.environ["PATH"] += os.pathsep + convert_from_unicode(tool_extra_config["bin_path"])
         
         if configuration is None:

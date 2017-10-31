@@ -223,11 +223,11 @@ class tbFullMappingTool(Tool):
             root_path = path.dirname(path.abspath(fastq_file))
         
         gzipped = ''
-        if fastq_file.endswith('.fastq.gz') or fastq_file.endswith('.fq.gz'):
+        if fastq_file.lower().endswith('.fastq.gz') or fastq_file.lower().endswith('.fq.gz'):
             gzipped = '.gz'    
         file_name = path.basename(fastq_file)
-        file_name = file_name.replace('.fastq'+gzipped, '')
-        file_name = file_name.replace('.fq'+gzipped, '')
+        file_name = (file_name.replace('.fastq'+gzipped, '')).replace('.FASTQ'+gzipped, '')
+        file_name = (file_name.replace('.fq'+gzipped, '')).replace('.FQ'+gzipped, '')
         quality_plot_file = ''
         log_path = ''
         #name = root_name[-1]

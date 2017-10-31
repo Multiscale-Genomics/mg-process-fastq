@@ -118,7 +118,14 @@ class tadbit_segment(Workflow):
         m_results_files["tads_compartments"] = self.configuration['project']+"/tads_compartments.tar.gz"
     
         tar = tarfile.open(m_results_files["tads_compartments"], "w:gz")
-        tar.add(ts_files[0],arcname='tads_compartments_stats')
+        if '1' in self.configuration['callers'] and '2' in self.configuration['callers']:
+            tar.add(ts_files[0],arcname='tads')
+            tar.add(ts_files[1],arcname='compartments')
+        elif '1' in self.configuration['callers']:
+            tar.add(ts_files[0],arcname='tads')
+        elif '2' in self.configuration['callers']:
+            tar.add(ts_files[0],arcname='compartments')
+            
         tar.close()
         
         m_results_meta["tads_compartments"] = Metadata(

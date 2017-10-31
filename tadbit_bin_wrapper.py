@@ -110,8 +110,8 @@ class tadbit_bin(Workflow):
             input_metadata["coord2"] = self.configuration["coord2"]
         input_metadata["norm"] = ['raw']
         in_files = [convert_from_unicode(input_files['bamin'])]
-        if 'biases' in input_files:
-            in_files.append(convert_from_unicode(input_files['biases']))
+        if 'hic_biases' in input_files:
+            in_files.append(convert_from_unicode(input_files['hic_biases']))
             input_metadata["norm"] = ['raw','norm']
         #hic_data = HiC_data((), len(bins_dict), sections, bins_dict, resolution=int(input_metadata['resolution']))
         tb = tbBinTool()

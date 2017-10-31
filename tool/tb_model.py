@@ -133,13 +133,13 @@ class tbModelTool(Tool):
         
         _cmd = [
                 'model_and_analyze.py',
-            '--nmodels_opt',num_mod_comp,
-            '--nkeep_opt',num_mod_keep,
+            '--nmodels_opt',str(num_mod_comp),
+            '--nkeep_opt',str(num_mod_keep),
             '--data', bamin,
             '--res', resolution,
             '--crm', gen_pos_chrom_name,
-            '--beg',gen_pos_begin,
-            '--end',gen_pos_end,
+            '--beg',str(gen_pos_begin),
+            '--end',str(gen_pos_end),
             '--maxdist',max_dist,
             '--upfreq', upper_bound,
             '--lowfreq='+lower_bound,
@@ -253,7 +253,7 @@ class tbModelTool(Tool):
 
         bamin = input_files[0]
         
-        if not os.path.isfile(bamin.replace('bam','.bai')) and not os.path.isfile(bamin.replace('BAM','.BAI')):
+        if not os.path.isfile(bamin.replace('bam','.bai')):
             print('Creating bam index')
             _cmd = ['samtools', 'index', bamin]
             out, err = Popen(_cmd, stdout=PIPE, stderr=PIPE).communicate()

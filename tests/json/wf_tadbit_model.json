@@ -64,8 +64,8 @@
         },
         {
             "name": "optimization:gen_pos_chrom_name",
-            "description": "Genomic position. Chromosome name.",
-            "help": "Coordinates of the genomic region to model.",
+            "description": "Chromosome name.",
+            "help": "chromosome name.",
             "type": "string",
             "required": true,
             "default": ""
@@ -184,21 +184,6 @@
         }
     ],
     "output_files": [
-    	{
-            "name": "configuration_file",
-            "required": false,
-            "allow_multiple": false,
-            "file": {
-                "file_type": "TXT",
-                "data_type": "configuration_file",
-                "compressed": "null",
-                "meta_data": {
-                    "tool": "tadbit",
-                    "description": "TADbit configuration file with optimal modeling parameters",
-                    "visible": true
-                }
-            }
-        },
         {
             "name": "tadkit_models",
             "required": false,

@@ -94,9 +94,9 @@ class tbSegmentTool(Tool):
             '--cpu', str(ncpus)
             ]
     
-        if callers == "1":
+        if '2' not in callers:
             _cmd.append('--only_tads')
-        else:
+        if '1' not in callers:
             _cmd.append('--only_compartments')
         
         if chromosomes:
@@ -115,11 +115,11 @@ class tbSegmentTool(Tool):
         print(out)
         print(err)
 
-        if callers == "1":
+        if '1' in callers:
             tad_dir = os.path.join(workdir, '06_segmentation',
                                  'tads_%s' % (nice(int(resolution))))
             output_files.append(tad_dir) 
-        else:
+        if '2' in callers:
             cmprt_dir = os.path.join(workdir, '06_segmentation',
                                   'compartments_%s' % (nice(int(resolution))))
             output_files.append(cmprt_dir)
@@ -159,7 +159,7 @@ class tbSegmentTool(Tool):
 
         bamin = input_files[0]
         
-        if not os.path.isfile(bamin.replace('bam','.bai')) and not os.path.isfile(bamin.replace('BAM','.BAI')):
+        if not os.path.isfile(bamin.replace('bam','.bai')):
             print('Creating bam index')
             _cmd = ['samtools', 'index', bamin]
             out, err = Popen(_cmd, stdout=PIPE, stderr=PIPE).communicate()

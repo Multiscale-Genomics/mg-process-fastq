@@ -5,12 +5,6 @@
             "allow_multiple": false,
             "name": "bamin",
             "value": "59b7e020d9422a5969b65378"
-        },
-        {
-            "required": false,
-            "allow_multiple": false,
-            "name": "biases",
-            "value": "59b7e020d9422a5969b65372"
         }
     ],
     "arguments": [
@@ -32,7 +26,7 @@
             "help": "Coordinates of the genomic region to model.",
             "type": "string",
             "required": true,
-            "value": "chr10:1-10000000"
+            "value": "chr21"
         },
         {
             "name": "optimization:gen_pos_begin",
@@ -40,7 +34,7 @@
             "help": "Genomic coordinate from which to start modeling.",
             "type": "int",
             "required": true,
-            "value": "1"
+            "value": "15000000"
         },
         {
             "name": "optimization:gen_pos_end",
@@ -48,7 +42,7 @@
             "help": "Genomic coordinate where to end modeling.",
             "type": "int",
             "required": true,
-            "value": "10000000"
+            "value": "19900000"
         },
         {
             "name": "optimization:num_mod_comp",
@@ -72,7 +66,7 @@
             "help": "Range of numbers for optimal maxdist parameter, i.e. 400:1000:100; or just a single number e.g. 800; or a list of numbers e.g. 400 600 800 1000.",
             "type": "string",
             "required": true,
-            "value": "400:1000:200"
+            "value": "1000:1200:200"
         },
         {
             "name": "optimization:upper_bound",
@@ -131,7 +125,7 @@
             "value": "2"
         },
         {
-            "name": "generation:num_models_comp",
+            "name": "generation:num_models_compis",
             "description": "Number of models to compute.",
             "help": "Number of models to compute for each optimization step.",
             "type": "int",
@@ -165,17 +159,17 @@
             }
         },
         {
-            "name": "hic_contacts_matrix_norm",
-            "required": false,
+            "name": "modeling_stats",
+            "required": true,
             "allow_multiple": false,
             "file": {
-                "file_type": "TXT",
-                "data_type": "hic_contacts_matrix",
-                "compressed": "null",
-                "file_path": "hic_contacts_matrix_norm.txt",
+                "file_type": "TAR",
+                "data_type": "tool_statistics",
+                "file_path": "model_stats.tar.gz",
+                "compressed": "gzip",
                 "meta_data": {
+                    "description": "TADbit modeling statistics and result files",
                     "tool": "tadbit",
-                    "description": "HiC contact matrix normalized",
                     "visible": true
                 }
             }

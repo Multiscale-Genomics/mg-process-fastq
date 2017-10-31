@@ -130,7 +130,7 @@ class tadbit_normalize(Workflow):
 
         m_results_meta["hic_biases"] = Metadata(
                 data_type="hic_biases",
-                file_type="PICKEL",
+                file_type="PICKLE",
                 file_path=m_results_files["hic_biases"],
                 sources=[""],
                 meta_data={

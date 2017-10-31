@@ -16,7 +16,7 @@
     "arguments": [
     {
             "name": "project",
-            "value": ""
+            "value": "/home/dcastillo/workspace/vre/mg-process-fastq-tadbit/tests/data/"
         },
         {
             "name": "optimization:resolution",

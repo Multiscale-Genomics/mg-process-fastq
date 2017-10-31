@@ -102,91 +102,76 @@ class tadbit_bin(Workflow):
         #hic_data = load_hic_data_from_reads('/home/dcastillo/workspace/vre/mg-process-fastq-tadbit/tests/data/raw_None:0-13381_10kb.abc', resolution=10000)
         #exp = Experiment("vre", resolution=10000, hic_data=hic_data)
             
-        try:
-            input_metadata = remap(self.configuration, "resolution","workdir","ncpus")
-            if "coord1" in self.configuration:
-                input_metadata["coord1"] = self.configuration["coord1"]
-            if "coord2" in self.configuration:
-                input_metadata["coord2"] = self.configuration["coord2"]
-            input_metadata["norm"] = ['raw']
-            in_files = [convert_from_unicode(input_files['bamin'])]
-            if 'biases' in input_files:
-                in_files.append(convert_from_unicode(input_files['biases']))
-                input_metadata["norm"] = ['raw','norm']
-            #hic_data = HiC_data((), len(bins_dict), sections, bins_dict, resolution=int(input_metadata['resolution']))
-            tb = tbBinTool()
-            tb_files, tb_meta = tb.run(in_files, [], input_metadata)
+        
+        input_metadata = remap(self.configuration, "resolution","workdir","ncpus")
+        if "coord1" in self.configuration:
+            input_metadata["coord1"] = self.configuration["coord1"]
+        if "coord2" in self.configuration:
+            input_metadata["coord2"] = self.configuration["coord2"]
+        input_metadata["norm"] = ['raw']
+        in_files = [convert_from_unicode(input_files['bamin'])]
+        if 'biases' in input_files:
+            in_files.append(convert_from_unicode(input_files['biases']))
+            input_metadata["norm"] = ['raw','norm']
+        #hic_data = HiC_data((), len(bins_dict), sections, bins_dict, resolution=int(input_metadata['resolution']))
+        tb = tbBinTool()
+        tb_files, tb_meta = tb.run(in_files, [], input_metadata)
+        
+        m_results_files["bin_stats"] = self.configuration['project']+"/bin_stats.tar.gz"
+        m_results_files["hic_contacts_matrix_raw"] = self.configuration['project']+"/"+os.path.basename(tb_files[0])
+        os.rename(tb_files[0], m_results_files["hic_contacts_matrix_raw"])
+        if len(tb_files) > 2:
+            m_results_files["hic_contacts_matrix_norm"] = self.configuration['project']+"/"+os.path.basename(tb_files[2])
+            os.rename(tb_files[2], m_results_files["hic_contacts_matrix_norm"])
             
-            m_results_files["bin_stats"] = self.configuration['project']+"/bin_stats.tar.gz"
-            m_results_files["hic_contacts_matrix_raw"] = self.configuration['project']+"/"+os.path.basename(tb_files[0])
-            os.rename(tb_files[0], m_results_files["hic_contacts_matrix_raw"])
+        with tarfile.open(m_results_files["bin_stats"], "w:gz") as tar:
+            tar.add(tb_files[1],arcname=os.path.basename(tb_files[1]))
             if len(tb_files) > 2:
-                m_results_files["hic_contacts_matrix_norm"] = self.configuration['project']+"/"+os.path.basename(tb_files[2])
-                os.rename(tb_files[2], m_results_files["hic_contacts_matrix_norm"])
-                
-            with tarfile.open(m_results_files["bin_stats"], "w:gz") as tar:
-                tar.add(tb_files[1],arcname=os.path.basename(tb_files[1]))
-                if len(tb_files) > 2:
-                    tar.add(tb_files[3],arcname=os.path.basename(tb_files[3]))
-            if os.path.isdir(tb_files[1]):
-                clean_temps(tb_files[1])
-            if len(tb_files) > 2:
-                if os.path.isdir(tb_files[3]):
-                    clean_temps(tb_files[3])
-                
-            # List of files to get saved
-            print("TADBIT RESULTS:", m_results_files)
+                tar.add(tb_files[3],arcname=os.path.basename(tb_files[3]))
+        if os.path.isdir(tb_files[1]):
+            clean_temps(tb_files[1])
+        if len(tb_files) > 2:
+            if os.path.isdir(tb_files[3]):
+                clean_temps(tb_files[3])
+            
+        # List of files to get saved
+        print("TADBIT RESULTS:", m_results_files)
 
-            m_results_meta["hic_contacts_matrix_raw"] = Metadata(
-                    data_type="hic_contacts_matrix",
-                    file_type="TXT",
-                    file_path=m_results_files["hic_contacts_matrix_raw"],
-                    sources=[""],
-                    meta_data={
-                        "description": "HiC contact matrix raw",
-                        "visible": True,
-                        "assembly": "",
-                        "norm" : 'raw'
-                    },
-                    taxon_id=metadata['bamin'].taxon_id)
-            m_results_meta["bin_stats"] = Metadata(
-                    data_type="tool_statistics",
-                    file_type="TAR",
-                    file_path=m_results_files["bin_stats"],
-                    sources=[""],
-                    meta_data={
-                        "description": "TADbit HiC matrices in png format",
-                        "visible": True
-                    })
-            if len(tb_files) > 2:
-                m_results_meta["hic_contacts_matrix_norm"] = Metadata(
-                    data_type="hic_contacts_matrix",
-                    file_type="TXT",
-                    file_path=m_results_files["hic_contacts_matrix_norm"],
-                    sources=[""],
-                    meta_data={
-                        "description": "HiC contact matrix normalized",
-                        "visible": True,
-                        "assembly": "",
-                        "norm" : 'norm'
-                    },
-                    taxon_id=metadata['bamin'].taxon_id)
-           
-            
+        m_results_meta["hic_contacts_matrix_raw"] = Metadata(
+                data_type="hic_contacts_matrix",
+                file_type="TXT",
+                file_path=m_results_files["hic_contacts_matrix_raw"],
+                sources=[""],
+                meta_data={
+                    "description": "HiC contact matrix raw",
+                    "visible": True,
+                    "assembly": "",
+                    "norm" : 'raw'
+                },
+                taxon_id=metadata['bamin'].taxon_id)
+        m_results_meta["bin_stats"] = Metadata(
+                data_type="tool_statistics",
+                file_type="TAR",
+                file_path=m_results_files["bin_stats"],
+                sources=[""],
+                meta_data={
+                    "description": "TADbit HiC matrices in png format",
+                    "visible": True
+                })
+        if len(tb_files) > 2:
+            m_results_meta["hic_contacts_matrix_norm"] = Metadata(
+                data_type="hic_contacts_matrix",
+                file_type="TXT",
+                file_path=m_results_files["hic_contacts_matrix_norm"],
+                sources=[""],
+                meta_data={
+                    "description": "HiC contact matrix normalized",
+                    "visible": True,
+                    "assembly": "",
+                    "norm" : 'norm'
+                },
+                taxon_id=metadata['bamin'].taxon_id)
          
-        except Exception as e:
-            m_results_meta["hic_contacts_matrix_raw"] = Metadata(
-                    data_type="hic_contacts_matrix",
-                    file_type="TXT",
-                    file_path=None,
-                    sources=[""],
-                    meta_data={
-                        "description": "HiC contact matrix",
-                        "visible": True
-                    })
-            m_results_meta["hic_contacts_matrix_raw"].error = True
-            m_results_meta["hic_contacts_matrix_raw"].exception = str(e)
-            
         #cleaning
         clean_temps(self.configuration['workdir'])
     
@@ -208,53 +193,7 @@ def remap(indict, *args, **kwargs):
     outdict.update(
         {new: indict[old] for old, new in kwargs.items()}
     )
-    return outdict
-       
-def _read_config(json_path):
-    """
-    Read config.json to obtain:
-    input_IDs: dict containing IDs of tool input files
-    arguments: dict containing tool arguments
-    output_files: dict containing absolute paths of tool outputs
-
-    For more information see the schema for config.json.
-    """
-    configuration = json.load(file(json_path))
-    input_IDs = {}
-    for input_ID in configuration["input_files"]:
-        input_IDs[input_ID["name"]] = input_ID["value"]
-
-    output_files = {}
-    if "output_files" in configuration:
-        for output_file in configuration["output_files"]:
-            output_files[output_file["name"]] = output_file["file"]
-
-    arguments = {}
-    for argument in configuration["arguments"]:
-        arguments[argument["name"]] = argument["value"]
-
-    return input_IDs, arguments, output_files
-
-def _read_metadata(json_path):
-    """
-    Read input_metadata.json to obtain input_metadata_IDs, a dict
-    containing metadata on each of the tool input files,
-    arranged by their ID.
-
-    For more information see the schema for input_metadata.json.
-    """
-    metadata = json.load(file(json_path))
-    input_metadata = {}
-    for input_file in metadata:
-        input_metadata[input_file["_id"]] = Metadata(
-            data_type=input_file["data_type"],
-            file_type=input_file["file_type"],
-            file_path=input_file["file_path"],
-            source_id=input_file["source_id"],
-            meta_data=input_file["meta_data"],
-            data_id=input_file["_id"])
-    taxon_id =  metadata[0]["taxon_id"]
-    return input_metadata, taxon_id
+    return outdict       
 
 # ------------------------------------------------------------------------------
 
@@ -268,38 +207,6 @@ def convert_from_unicode(data):
     else:
         return data
 # ------------------------------------------------------------------------------
-def make_absolute_path(files, root):
-    """Make paths absolute."""
-    for role, path in files.items():
-        files[role] = os.path.join(root, path)
-    return files
-# ------------------------------------------------------------------------------
-
-def _write_json(
-                input_files, input_metadata,
-                output_files, output_metadata, json_path):
-    """
-    Write results.json using information from input_files and output_files:
-    input_files: dict containing absolute paths of input files
-    input_metadata: dict containing metadata on input files
-    output_files: dict containing absolute paths of output files
-    output_metadata: dict containing metadata on output files
-
-    For more information see the schema for results.json.
-    """
-    results = []
-    for role, path in output_files.items():
-        results.append({
-            "name": role,
-            "file_path": path,
-            "data_type": output_metadata[role].data_type,
-            "file_type": output_metadata[role].file_type,
-            "source_id": output_metadata[role].source_id,
-            "taxon_id": output_metadata[role].taxon_id,
-            "meta_data": output_metadata[role].meta_data
-        })
-    json.dump({"output_files": results}, file(json_path, 'w'))
-    return True
 
 def main(args):
     
@@ -312,51 +219,6 @@ def main(args):
     
     
     return result
-
-#===============================================================================
-#     # 1. Instantiate and launch the App
-#     print("1. Instantiate and launch the App")
-#     from apps.workflowapp import WorkflowApp
-#     app = WorkflowApp()
-#     root_dir = args.root_dir
-#     
-#     print ("0) Unpack information from JSON")
-#     input_IDs, arguments, output_files = _read_config(
-#         args.config)
-# 
-#     input_metadata_IDs, taxon_id = _read_metadata(
-#         args.metadata)
-# 
-#     # arrange by role
-#     input_metadata = {}
-#     for role, ID in input_IDs.items():
-#         input_metadata[role] = input_metadata_IDs[ID]
-# 
-#     # get paths from IDs
-#     input_files = {}
-#     for role, metadata in input_metadata.items():
-#         input_files[role] = metadata.file_path
-# 
-#     input_files = make_absolute_path(input_files, root_dir)
-#     
-#     tmp_name = ''.join([letters[int(random()*52)]for _ in xrange(5)])
-#     workdir = os.path.dirname(os.path.abspath(args.out_metadata))+'/_tmp_tadbit_'+tmp_name
-#     if not os.path.exists(workdir):
-#         os.makedirs(workdir)
-#     arguments.update({"ncpus":num_cores, "root_dir": args.root_dir, "public_dir": args.public_dir, "workdir": workdir, "taxon_id":taxon_id})
-#     output_files, output_metadata = app.launch(tadbit_bin, input_files, input_metadata, output_files, arguments, )
-# 
-#     print("4) Pack information to JSON")
-#     #cleaning
-#     clean_temps(workdir)
-#     
-#     return _write_json(
-#         input_files, input_metadata,
-#         output_files, output_metadata,
-#         args.out_metadata)
-#===============================================================================
-    
-    
     
 def clean_temps(working_path):
     """Cleans the workspace from temporal folder and scratch files"""

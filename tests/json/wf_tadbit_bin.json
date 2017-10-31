@@ -47,7 +47,7 @@
             "description": "Coordinate of the region to retrieve.",
             "help": "Coordinate of the region to retrieve. By default all genome, arguments can be either one chromosome name, or the coordinate in the form: chr3:110000000-120000000",
             "type": "string",
-            "required": true,
+            "required": false,
             "default": ""
         },
         {

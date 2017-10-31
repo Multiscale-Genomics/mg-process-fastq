@@ -165,7 +165,14 @@ class tbNormalizeTool(Tool):
         """
 
         bamin = input_files[0]
-
+        
+        if not os.path.isfile(bamin.replace('bam','.bai')) and not os.path.isfile(bamin.replace('BAM','.BAI')):
+            print('Creating bam index')
+            _cmd = ['samtools', 'index', bamin]
+            out, err = Popen(_cmd, stdout=PIPE, stderr=PIPE).communicate()
+            print(out)
+            print(err)
+            
         resolution = '1000000'
         if 'resolution' in metadata:
             resolution = metadata['resolution']

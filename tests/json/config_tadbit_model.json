@@ -3,7 +3,7 @@
         {
             "required": true,
             "allow_multiple": false,
-            "name": "bamin",
+            "name": "hic_contacts_matrix_norm",
             "value": "59b7e020d9422a5969b65378"
         }
     ],
@@ -125,20 +125,20 @@
             "value": "2"
         },
         {
-            "name": "generation:num_models_compis",
+            "name": "generation:num_mod_comp",
             "description": "Number of models to compute.",
             "help": "Number of models to compute for each optimization step.",
             "type": "int",
             "required": true,
-            "value": "5"
+            "value": "20"
         },
         {
-            "name": "generation:num_models_keep",
+            "name": "generation:num_mod_keep",
             "description": "Number of models to keep.",
             "help": "Number of models to keep from the total of models computed, for the comparison with original Hi-C matrix.",
             "type": "int",
             "required": true,
-            "value": "2"
+            "value": "20"
         }
     ],
     "output_files": [

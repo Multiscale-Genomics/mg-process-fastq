@@ -21,6 +21,7 @@ import glob, os
 from subprocess import CalledProcessError, PIPE, Popen
 from pytadbit                     import load_hic_data_from_bam
 from pytadbit                            import Chromosome, HiC_data
+import numpy as np
 
 from cPickle import load, dump
 from _pytest.tmpdir import tmpdir
@@ -58,11 +59,11 @@ class tbModelTool(Tool):
         print("TADbit - Modeling")
         Tool.__init__(self)
 
-    @task(bamin=FILE_IN, biases=FILE_IN, resolution=IN, gen_pos_chrom_name=IN , gen_pos_begin=IN,
+    @task(hic_contacts_matrix_norm=FILE_IN, resolution=IN, gen_pos_chrom_name=IN , gen_pos_begin=IN,
                                 gen_pos_end=IN, num_mod_comp=IN, num_mod_keep=IN,
                                 max_dist=IN, upper_bound=IN, lower_bound=IN, cutoff=IN, workdir=IN)
     # @constraint(ProcessorCoreCount=16)
-    def tb_model(self, optimize_only, bamin, biases, resolution, gen_pos_chrom_name , gen_pos_begin,
+    def tb_model(self, optimize_only, hic_contacts_matrix_norm, resolution, gen_pos_chrom_name , gen_pos_begin,
                                 gen_pos_end, num_mod_comp, num_mod_keep,
                                 max_dist, upper_bound, lower_bound, cutoff, workdir,metadata,
                                 ncpus=1):
@@ -74,10 +75,8 @@ class tbModelTool(Tool):
         ----------
         optimize_only: bool
             True if only optimize, False for computing the models and stats
-        bamin : str
-            Location of the tadbit bam paired reads
-        biases : str
-            Location of the pickle hic biases
+        hic_contacts_matrix_norm : str
+            Location of the tab-separated normalized matrix
         resolution : str
             Resolution of the Hi-C
         gen_pos_chrom_name : str
@@ -114,7 +113,7 @@ class tbModelTool(Tool):
         """
         #chr_hic_data = read_matrix(matrix_file, resolution=int(resolution))
 
-        print("TB MODELING:",bamin, biases, resolution, gen_pos_chrom_name , gen_pos_begin,
+        print("TB MODELING:",hic_contacts_matrix_norm, resolution, gen_pos_chrom_name , gen_pos_begin,
                                 gen_pos_end, num_mod_comp, num_mod_keep,
                                 max_dist, upper_bound, lower_bound, cutoff, workdir)
 
@@ -131,11 +130,15 @@ class tbModelTool(Tool):
         if not os.path.exists(os.path.join(workdir, name)):
             os.makedirs(os.path.join(workdir, name))
         
+        sqr_mat = convert_matrix(hic_contacts_matrix_norm)
+        hic_contacts_matrix_square = os.path.join(workdir, os.path.basename(hic_contacts_matrix_norm)+'.sqr')
+        np.savetxt(hic_contacts_matrix_square, sqr_mat)
+        
         _cmd = [
                 'model_and_analyze.py',
             '--nmodels_opt',str(num_mod_comp),
             '--nkeep_opt',str(num_mod_keep),
-            '--data', bamin,
+            '--norm', hic_contacts_matrix_square,
             '--res', resolution,
             '--crm', gen_pos_chrom_name,
             '--beg',str(gen_pos_begin),
@@ -144,19 +147,27 @@ class tbModelTool(Tool):
             '--upfreq', upper_bound,
             '--lowfreq='+lower_bound,
             '--dcutoff', cutoff,
-            '--ncpus', str(ncpus)
+            '--ncpus', str(ncpus),
+            '--assembly',metadata["assembly"],
+            '--species',metadata["species"]
             ]
         if optimize_only:
             _cmd.append('--optimize_only')
             _cmd.append('--outdir')
             _cmd.append(workdir)
-            if biases:
-                _cmd.append('--biases')
-                _cmd.append(biases)
-        
+            
         else:
 
-            crm = load_hic_data(bamin, int(resolution), gen_pos_chrom_name, metadata["species"], metadata["assembly"], workdir, xbias=biases, ncpus=ncpus)
+            #crm = load_hic_data(bamin, int(resolution), gen_pos_chrom_name, metadata["species"], metadata["assembly"], workdir, xbias=biases, ncpus=ncpus)
+            chrom_name = gen_pos_chrom_name.split(':')[0]   
+            # Start reading the data
+            crm = Chromosome(chrom_name, species=(
+                metadata["species"].split('_')[0].capitalize() + metadata["species"].split('_')[1]
+                                  if '_' in metadata["species"] else metadata["species"]), assembly = metadata["assembly"]) # Create chromosome object
+            crm.add_experiment(
+                os.path.split(hic_contacts_matrix_norm)[-1], exp_type='Hi-C', 
+                resolution=int(resolution),
+                norm_data=hic_contacts_matrix_square)
             exp = crm.experiments[-1]
             if beg > crm.experiments[-1].size*int(resolution):
                 raise Exception('ERROR: beg parameter is larger than chromosome size.')
@@ -173,9 +184,9 @@ class tbModelTool(Tool):
               'dcutoff'   : float(cutoff),
               'scale'     : 0.01
               }
-            
+             
             outfile = os.path.join(workdir, name, name + '.models')
-            models = exp.model_region(start=1, end=(end-beg), n_models=int(num_mod_comp), n_keep=int(num_mod_keep),
+            models = exp.model_region(start=beg, end=end, n_models=int(num_mod_comp), n_keep=int(num_mod_keep),
                      n_cpus=ncpus, verbose=1, keep_all=False, close_bins=1,
                      config=STD_CONFIG)
             #models._config['dcutoff']
@@ -209,10 +220,8 @@ class tbModelTool(Tool):
         Parameters
         ----------
         input_files : list
-            bamin : str
-                Location of the tadbit bam paired reads
-            biases : str
-                Location of the pickle hic biases
+            hic_contacts_matrix_norm : str
+                Location of the tab-separated normalized matrix
         metadata : dict
             optimize_only: bool
                 True if only optimize, False for computing the models and stats
@@ -251,40 +260,26 @@ class tbModelTool(Tool):
 
         """
 
-        bamin = input_files[0]
+        hic_contacts_matrix_norm = input_files[0]
         
-        if not os.path.isfile(bamin.replace('bam','.bai')):
-            print('Creating bam index')
-            _cmd = ['samtools', 'index', bamin]
-            out, err = Popen(_cmd, stdout=PIPE, stderr=PIPE).communicate()
-            print(out)
-            print(err)
-
- 
+        
         ncpus=1
         if 'ncpus' in metadata:
             ncpus = metadata['ncpus']
         
-        biases = config_file = None
-        if len(input_files) > 1:
-            biases = input_files[1]
         optimize_only = metadata["optimize_only"]
         gen_pos_chrom_name = metadata['gen_pos_chrom_name']
         resolution = metadata['resolution']
         gen_pos_begin = metadata['gen_pos_begin']
         gen_pos_end = metadata['gen_pos_end']
-        if metadata["optimize_only"]:
-            num_mod_comp = metadata['num_mod_comp']
-            num_mod_keep = metadata['num_mod_keep']
-        else:
-            num_mod_comp = metadata['num_models_comp']
-            num_mod_keep = metadata['num_models_keep']
+        num_mod_comp = metadata['num_mod_comp']
+        num_mod_keep = metadata['num_mod_keep']
         max_dist = metadata['max_dist']
         upper_bound = metadata['upper_bound']
         lower_bound = metadata['lower_bound']
         cutoff = metadata['cutoff']
             
-        root_name = bamin.split("/")
+        root_name = hic_contacts_matrix_norm.split("/")
         if 'workdir' in metadata:
             root_name = metadata['workdir']
 
@@ -295,7 +290,7 @@ class tbModelTool(Tool):
         # input and output share most metadata
         
         
-        output_files, output_metadata = self.tb_model(optimize_only, bamin, biases, resolution, gen_pos_chrom_name , gen_pos_begin,
+        output_files, output_metadata = self.tb_model(optimize_only, hic_contacts_matrix_norm, resolution, gen_pos_chrom_name , gen_pos_begin,
                                 gen_pos_end, num_mod_comp, num_mod_keep,
                                 max_dist, upper_bound, lower_bound, cutoff, root_name,
                                 project_metadata, ncpus)
@@ -303,6 +298,39 @@ class tbModelTool(Tool):
         return (output_files, output_metadata)
 
 # ------------------------------------------------------------------------------
+def convert_matrix(hic_matrix_path):
+    
+    fh = open(hic_matrix_path)
+    size = 0
+    for line in fh:
+        if not line.startswith('# CRM'):
+            break
+    offset_pos = line.split(' ')[1].split(':')[1].split('-')
+    start = int(offset_pos[0])
+    end = int(offset_pos[1])
+    size = end
+    
+    fh.seek(0)
+    
+    for line in fh:
+        if line.startswith('# BADS'):
+            if len(line.split()) > 2:
+                bads = set(map(int, line.split()[-1].split(',')))
+            else:
+                bads = {}
+            break
+        
+    matrix = np.zeros((size, size))
+    
+    for line in fh:
+        i, j, v = line.split()
+        if i in bads or j in bads:
+            continue
+        matrix[int(i)+start][int(j)+start] = float(v)
+    
+    return matrix
+    
+
 def load_hic_data(xpath, resolution, gen_pos_chrom_name, species, assembly, workdir, xbias=None, ncpus=1):
     """
     Load Hi-C data

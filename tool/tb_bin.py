@@ -170,14 +170,20 @@ class tbBinTool(Tool):
                          verbose=True)
         output_files = [out_files['RAW']]
         imx = load_hic_data_from_bam(bamin, resolution, biases=biases if biases else None, ncpus=ncpus,tmpdir=workdir)
-        hic_contacts_matrix_raw_fig = workdir+"/genomic_maps_raw"
-        hic_map(imx, resolution, savefig=hic_contacts_matrix_raw_fig, normalized=False,by_chrom='all')
+        hic_contacts_matrix_raw_fig = workdir+"/genomic_maps_raw.png"
+        focus=None
+        by_chrom=None
+        if start1:
+            focus=((start1/resolution),(end1/resolution))
+        else:
+            by_chrom='all'
+        hic_map(imx, resolution, savefig=hic_contacts_matrix_raw_fig, normalized=False,by_chrom=by_chrom,focus=focus)
         output_files.append(hic_contacts_matrix_raw_fig)
         
         if len(norm) > 1:
             output_files.append(out_files['NRM'])
-            hic_contacts_matrix_norm_fig = workdir+"/genomic_maps_nrm"    
-            hic_map(imx, resolution, savefig=hic_contacts_matrix_norm_fig, normalized=True,by_chrom='all')
+            hic_contacts_matrix_norm_fig = workdir+"/genomic_maps_nrm.png"    
+            hic_map(imx, resolution, savefig=hic_contacts_matrix_norm_fig, normalized=True,by_chrom=by_chrom,focus=focus)
             output_files.append(hic_contacts_matrix_norm_fig)
         
         return (output_files, output_metadata)
@@ -225,7 +231,7 @@ class tbBinTool(Tool):
 
         bamin = input_files[0]
         
-        if not os.path.isfile(bamin.replace('bam','.bai')):
+        if not os.path.isfile(bamin.replace('.bam','.bam.bai')):
             print('Creating bam index')
             _cmd = ['samtools', 'index', bamin]
             out, err = Popen(_cmd, stdout=PIPE, stderr=PIPE).communicate()

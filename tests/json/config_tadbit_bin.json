@@ -9,7 +9,7 @@
         {
             "required": false,
             "allow_multiple": false,
-            "name": "biases",
+            "name": "hic_biases",
             "value": "59b7e020d9422a5969b65372"
         }
     ],
@@ -25,7 +25,7 @@
             "type": "string",
             "required": true,
             "default": "",
-            "value" : ""
+            "value" : "chr21:15000000-19900000"
         },
     	{
             "name": "resolution",

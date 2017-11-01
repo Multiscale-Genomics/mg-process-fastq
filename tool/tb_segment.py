@@ -159,7 +159,7 @@ class tbSegmentTool(Tool):
 
         bamin = input_files[0]
         
-        if not os.path.isfile(bamin.replace('bam','.bai')):
+        if not os.path.isfile(bamin.replace('.bam','.bam.bai')):
             print('Creating bam index')
             _cmd = ['samtools', 'index', bamin]
             out, err = Popen(_cmd, stdout=PIPE, stderr=PIPE).communicate()

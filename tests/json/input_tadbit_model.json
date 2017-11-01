@@ -2,9 +2,9 @@
     {
         "compressed": 0,
         "_id": "59b7e020d9422a5969b65378",
-        "data_type": "hic_sequences",
-        "file_type": "bam",
-        "file_path": "/home/dcastillo/workspace/vre/mg-process-fastq-tadbit/tests/data/paired_reads.bam",
+        "data_type": "hic_contacts_matrix",
+        "file_type": "TXT",
+        "file_path": "/home/dcastillo/workspace/vre/mg-process-fastq-tadbit/tests/data/nrm_chr21-0-469_100kb.abc",
         "sources": null,
         "taxon_id": "9606",
         "meta_data": {
@@ -12,5 +12,5 @@
             "validated": 1,
             "assembly": "GCA_000001405.22"
         }
-    }
+    }    
 ]

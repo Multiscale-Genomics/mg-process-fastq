@@ -89,8 +89,8 @@ class tadbit_model(Workflow):
         if not os.path.exists(self.configuration['workdir']):
             os.makedirs(self.configuration['workdir'])
             
-        self.configuration["optimize_only"] = not ("generation:num_models_comp" in self.configuration)
-        if not self.configuration["optimize_only"]:
+        self.configuration["optimize_only"] = not ("generation:num_mod_comp" in self.configuration)
+        if "optimization:max_dist" in self.configuration and not self.configuration["optimize_only"]:
             del self.configuration["optimization:max_dist"]
             del self.configuration["optimization:upper_bound"]
             del self.configuration["optimization:lower_bound"]
@@ -118,7 +118,7 @@ class tadbit_model(Workflow):
         
         print(
             "PROCESS MODEL - FILES PASSED TO TOOLS:",
-            remap(input_files, "bamin")
+            remap(input_files, "hic_contacts_matrix_norm")
         )
         
         m_results_meta = {}
@@ -126,33 +126,25 @@ class tadbit_model(Workflow):
         
         input_metadata = remap(self.configuration,"optimize_only", "gen_pos_chrom_name","resolution","gen_pos_begin",
                                "gen_pos_end","max_dist","upper_bound","lower_bound","cutoff","workdir","ncpus")
-        in_files = [convert_from_unicode(input_files['bamin'])]
+        in_files = [convert_from_unicode(input_files['hic_contacts_matrix_norm'])]
         input_metadata["species"] = "Unknown"
         input_metadata["assembly"] = "Unknown"
-        if "assembly" in metadata['bamin'].meta_data:
-            input_metadata["assembly"] = metadata['bamin'].meta_data["assembly"]
-        if "taxon_id" in self.configuration:
-            dt = json.load(urllib2.urlopen("http://www.ebi.ac.uk/ena/data/taxonomy/v1/taxon/tax-id/"+metadata['bamin'].taxon_id))            
+        if "assembly" in metadata['hic_contacts_matrix_norm'].meta_data:
+            input_metadata["assembly"] = metadata['hic_contacts_matrix_norm'].meta_data["assembly"]
+        if metadata['hic_contacts_matrix_norm'].taxon_id:
+            dt = json.load(urllib2.urlopen("http://www.ebi.ac.uk/ena/data/taxonomy/v1/taxon/tax-id/"+metadata['hic_contacts_matrix_norm'].taxon_id))            
             input_metadata["species"] = dt['scientificName']
             
-        if 'biases' in input_files:
-            in_files.append(convert_from_unicode(input_files['biases']))
-        #if 'configuration_file' in input_files:
-        #    input_metadata['config_file'] = convert_from_unicode(input_files['configuration_file'])
-        if self.configuration["optimize_only"]:
-            input_metadata["num_mod_comp"] = self.configuration["num_mod_comp"]
-            input_metadata["num_mod_keep"] = self.configuration["num_mod_keep"]
-        else:
-            input_metadata["num_models_comp"] = self.configuration["num_models_comp"]
-            input_metadata["num_models_keep"] = self.configuration["num_models_keep"]
+        input_metadata["num_mod_comp"] = self.configuration["num_mod_comp"]
+        input_metadata["num_mod_keep"] = self.configuration["num_mod_keep"]
             
         
         tm = tbModelTool()
         tm_files, tm_meta = tm.run(in_files, [], input_metadata)
         
-        m_results_files["model_stats"] = self.configuration['project']+"/model_stats.tar.gz"
+        m_results_files["modeling_stats"] = self.configuration['project']+"/model_stats.tar.gz"
         
-        tar = tarfile.open(m_results_files["model_stats"], "w:gz")
+        tar = tarfile.open(m_results_files["modeling_stats"], "w:gz")
         tar.add(tm_files[0],arcname='modeling_files_and_stats')
         tar.close()
         
@@ -167,24 +159,26 @@ class tadbit_model(Workflow):
                 meta_data={
                     "description": "Ensemble of chromatin 3D structures",
                     "visible": True,
-                    "assembly": ""
+                    "assembly": input_metadata["assembly"]
                 },
-                taxon_id=metadata['bamin'].taxon_id)
+                taxon_id=metadata['hic_contacts_matrix_norm'].taxon_id)
          
             
         # List of files to get saved
         print("TADBIT RESULTS:", m_results_files)
 
         
-        m_results_meta["model_stats"] = Metadata(
+        m_results_meta["modeling_stats"] = Metadata(
                 data_type="tool_statistics",
                 file_type="TAR",
-                file_path=m_results_files["model_stats"],
+                file_path=m_results_files["modeling_stats"],
                 sources=[""],
                 meta_data={
                     "description": "TADbit modeling statistics and result files",
                     "visible": True
                 })    
+        
+        clean_temps(self.configuration['workdir'])
             
         return m_results_files, m_results_meta
         

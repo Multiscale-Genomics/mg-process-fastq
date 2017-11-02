@@ -137,7 +137,8 @@ class tbModelTool(Tool):
             '--dcutoff', cutoff,
             '--ncpus', str(ncpus),
             '--assembly',metadata["assembly"],
-            '--species',metadata["species"]
+            '--species',metadata["species"],
+            '--fig_format','png'
             ]
         if optimize_only:
             _cmd.append('--nmodels_opt')

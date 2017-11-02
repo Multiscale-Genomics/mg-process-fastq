@@ -163,7 +163,7 @@ class tbBinTool(Tool):
         out_files = write_matrix(bamin, resolution,
                          load(open(biases)) if biases else None,
                          workdir, filter_exclude=[],
-                         normalizations=norm,half_matrix=False,
+                         normalizations=norm,half_matrix=True,
                          region1=region1, start1=start1, end1=end1,
                          region2=region2, start2=start2, end2=end2,
                          tmpdir=workdir, append_to_tar=None, ncpus=ncpus,

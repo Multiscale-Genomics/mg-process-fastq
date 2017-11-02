@@ -19,12 +19,6 @@ from __future__ import print_function
 import sys
 import glob, os
 from subprocess import CalledProcessError, PIPE, Popen
-from pytadbit                     import load_hic_data_from_bam
-from pytadbit                            import Chromosome, HiC_data
-import numpy as np
-
-from cPickle import load, dump
-from _pytest.tmpdir import tmpdir
 
 try:
     if hasattr(sys, '_run_from_cmdl') is True:
@@ -130,15 +124,9 @@ class tbModelTool(Tool):
         if not os.path.exists(os.path.join(workdir, name)):
             os.makedirs(os.path.join(workdir, name))
         
-        sqr_mat = convert_matrix(hic_contacts_matrix_norm)
-        hic_contacts_matrix_square = os.path.join(workdir, os.path.basename(hic_contacts_matrix_norm)+'.sqr')
-        np.savetxt(hic_contacts_matrix_square, sqr_mat)
-        
         _cmd = [
                 'model_and_analyze.py',
-            '--nmodels_opt',str(num_mod_comp),
-            '--nkeep_opt',str(num_mod_keep),
-            '--norm', hic_contacts_matrix_square,
+            '--norm', hic_contacts_matrix_norm,
             '--res', resolution,
             '--crm', gen_pos_chrom_name,
             '--beg',str(gen_pos_begin),
@@ -152,46 +140,24 @@ class tbModelTool(Tool):
             '--species',metadata["species"]
             ]
         if optimize_only:
+            _cmd.append('--nmodels_opt')
+            _cmd.append(str(num_mod_comp))
+            _cmd.append('--nkeep_opt')
+            _cmd.append(str(num_mod_keep))
             _cmd.append('--optimize_only')
             _cmd.append('--outdir')
             _cmd.append(workdir)
             
         else:
 
-            #crm = load_hic_data(bamin, int(resolution), gen_pos_chrom_name, metadata["species"], metadata["assembly"], workdir, xbias=biases, ncpus=ncpus)
-            chrom_name = gen_pos_chrom_name.split(':')[0]   
-            # Start reading the data
-            crm = Chromosome(chrom_name, species=(
-                metadata["species"].split('_')[0].capitalize() + metadata["species"].split('_')[1]
-                                  if '_' in metadata["species"] else metadata["species"]), assembly = metadata["assembly"]) # Create chromosome object
-            crm.add_experiment(
-                os.path.split(hic_contacts_matrix_norm)[-1], exp_type='Hi-C', 
-                resolution=int(resolution),
-                norm_data=hic_contacts_matrix_square)
-            exp = crm.experiments[-1]
-            if beg > crm.experiments[-1].size*int(resolution):
-                raise Exception('ERROR: beg parameter is larger than chromosome size.')
-            if end > crm.experiments[-1].size*int(resolution):
-                raise Exception('WARNING: end parameter is larger than chromosome ' +
-                             'size. Setting end to %s.\n' % (crm.experiments[-1].size *
-                                                             int(resolution)))
-                end = crm.experiments[-1].size
-            STD_CONFIG = {
-              'kforce'    : 5,
-              'maxdist'   : float(max_dist), 
-              'upfreq'    : float(upper_bound), 
-              'lowfreq'   : float(lower_bound),
-              'dcutoff'   : float(cutoff),
-              'scale'     : 0.01
-              }
-             
-            outfile = os.path.join(workdir, name, name + '.models')
-            models = exp.model_region(start=beg, end=end, n_models=int(num_mod_comp), n_keep=int(num_mod_keep),
-                     n_cpus=ncpus, verbose=1, keep_all=False, close_bins=1,
-                     config=STD_CONFIG)
-            #models._config['dcutoff']
-            models.save_models(outfile)
-            _cmd.append('--analyze_only')
+            _cmd.append('--nmodels_opt')
+            _cmd.append('0')
+            _cmd.append('--nkeep_opt')
+            _cmd.append('0')
+            _cmd.append('--nmodels_mod')
+            _cmd.append(str(num_mod_comp))
+            _cmd.append('--nkeep_mod')
+            _cmd.append(str(num_mod_keep))
             _cmd.append('--outdir')
             _cmd.append(workdir)
             
@@ -297,82 +263,3 @@ class tbModelTool(Tool):
 
         return (output_files, output_metadata)
 
-# ------------------------------------------------------------------------------
-def convert_matrix(hic_matrix_path):
-    
-    fh = open(hic_matrix_path)
-    size = 0
-    for line in fh:
-        if not line.startswith('# CRM'):
-            break
-    offset_pos = line.split(' ')[1].split(':')[1].split('-')
-    start = int(offset_pos[0])
-    end = int(offset_pos[1])
-    size = end
-    
-    fh.seek(0)
-    
-    for line in fh:
-        if line.startswith('# BADS'):
-            if len(line.split()) > 2:
-                bads = set(map(int, line.split()[-1].split(',')))
-            else:
-                bads = {}
-            break
-        
-    matrix = np.zeros((size, size))
-    
-    for line in fh:
-        i, j, v = line.split()
-        if i in bads or j in bads:
-            continue
-        matrix[int(i)+start][int(j)+start] = float(v)
-    
-    return matrix
-    
-
-def load_hic_data(xpath, resolution, gen_pos_chrom_name, species, assembly, workdir, xbias=None, ncpus=1):
-    """
-    Load Hi-C data
-    """
-    xnam = os.path.split(xpath)[-1]
-    hic_raw = load_hic_data_from_bam(xpath, resolution, biases=xbias if xbias else None, tmpdir=workdir, ncpus=int(ncpus))    
-    chrom_name = gen_pos_chrom_name.split(':')[0]   
-    # Start reading the data
-    crm = Chromosome(chrom_name, species=(
-        species.split('_')[0].capitalize() + species.split('_')[1]
-                          if '_' in species else species), assembly = assembly) # Create chromosome object
-
-    crm.add_experiment(
-        xnam, exp_type='Hi-C', 
-        resolution=resolution,
-        hic_data=hic_raw)
-    if xbias:
-        bias_ = load(open(xbias))
-        bias = bias_['biases']
-        bads = bias_['badcol']
-        if bias_['resolution'] != resolution:
-            raise Exception('ERROR: resolution of biases do not match to the '
-                            'one wanted (%d vs %d)' % (
-                                bias_['resolution'], resolution))
-        
-        def transform_value_norm(a, b, c):
-            return c / bias[a] / bias[b]
-        size = crm.experiments[-1].size
-        xnorm = [HiC_data([(i + j * size, float(hic_raw[i, j]) /
-                                bias[i] /
-                                bias[j] * size)
-                               for i in bias for j in bias if i not in bads and j not in bads], size)]
-        crm.experiments[xnam]._normalization = 'visibility_factor:1'
-        factor = sum(xnorm[0].values()) / (size * size)
-        for n in xnorm[0]:
-            xnorm[0][n] = xnorm[0][n] / factor
-        crm.experiments[xnam].norm = xnorm
-    
-    return crm
-        
-
-    
-def my_round(num, val=4):
-    num = round(float(num), val)
-    return str(int(num) if num == int(num) else num)

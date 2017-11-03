@@ -34,7 +34,7 @@
             "type": "string",
             "required": false,
             "default": "",
-            "value" : "chr10"
+            "value" : "chr21"
         },
         {
             "name": "segmentation:callers",

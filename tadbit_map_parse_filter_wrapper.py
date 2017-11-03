@@ -132,6 +132,7 @@ class tadbit_map_parse_filter(Workflow):
         m_results_meta = {}
         m_results_files = {}
         
+        assembly = "UNK"
         if 'parsing:ref_genome_fasta' in input_files:
             genome_fa = convert_from_unicode(input_files['parsing:ref_genome_fasta'])
         elif 'parsing_refGenome' in self.configuration:
@@ -142,6 +143,7 @@ class tadbit_map_parse_filter(Workflow):
             genome_gem = convert_from_unicode(input_files['mapping:ref_genome_gem'])
         elif 'mapping_refGenome' in self.configuration:
             genome_gem = self.configuration['public_dir']+convert_from_unicode(self.configuration['mapping_refGenome'])
+            assembly = os.path.basename(genome_gem).split('.')[0]
         
         fastq_file_1 = convert_from_unicode(input_files['read1'])
         fastq_file_2 = convert_from_unicode(input_files['read2'])
@@ -181,7 +183,7 @@ class tadbit_map_parse_filter(Workflow):
                 data_type="hic_sequences",
                 file_type="BAM",
                 file_path=None,
-                sources=None,
+                sources=[metadata['read1'].file_path,metadata['read2'].file_path],
                 meta_data={
                     "tool": "tadbit",
                     "description": "Paired end reads",
@@ -233,12 +235,29 @@ class tadbit_map_parse_filter(Workflow):
                 data_type="hic_sequences",
                 file_type="BAM",
                 file_path=m_results_files["paired_reads"],
-                sources=[""],
+                sources=[metadata['read1'].file_path,metadata['read2'].file_path],
                 meta_data={
                     "description": "Paired end reads",
                     "visible": True,
-                    "assembly": "",
+                    "assembly": assembly,
+                    "paired" : "paired",
+                    "sorted": "sorted",
+                    "associated_files": [
+                        m_results_files["paired_reads"]+'.bai'
+                    ],
                     "func" : tfm1_meta['func']
+                },
+                taxon_id=metadata['read1'].taxon_id)
+        
+        m_results_meta["paired_reads_bai"] = Metadata(
+                data_type="hic_sequences",
+                file_type="BAI",
+                file_path=m_results_files["paired_reads"]+'.bai',
+                sources=[metadata['read1'].file_path,metadata['read2'].file_path],
+                meta_data={
+                    "description": "Paired end reads index",
+                    "visible": False,
+                    "assembly": assembly
                 },
                 taxon_id=metadata['read1'].taxon_id)
         
@@ -246,10 +265,10 @@ class tadbit_map_parse_filter(Workflow):
                 data_type="tool_statistics",
                 file_type="TAR",
                 file_path=m_results_files["map_parse_filter_stats"],
-                sources=[""],
+                sources=[metadata['read1'].file_path,metadata['read2'].file_path],
                 meta_data={
                     "description": "TADbit mapping, parsing and filtering statistics",
-                    "visible": True
+                    "visible": False
                 })
 
 

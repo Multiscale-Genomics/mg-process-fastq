@@ -135,21 +135,21 @@ class tadbit_normalize(Workflow):
                 data_type="hic_biases",
                 file_type="PICKLE",
                 file_path=m_results_files["hic_biases"],
-                sources=[""],
+                sources=[bamin],
                 meta_data={
                     "description": "HiC biases for normalization",
                     "visible": True,
-                    "assembly": ""
+                    "assembly": convert_from_unicode(metadata['bamin'].meta_data['assembly'])
                 },
                 taxon_id=metadata['bamin'].taxon_id)
         m_results_meta["normalize_stats"] = Metadata(
                 data_type="tool_statistics",
                 file_type="TAR",
                 file_path=m_results_files["normalize_stats"],
-                sources=[""],
+                sources=[bamin],
                 meta_data={
                     "description": "TADbit normalize statistics",
-                    "visible": True
+                    "visible": False
                 })
         
          

@@ -144,11 +144,11 @@ class tadbit_bin(Workflow):
                 data_type="hic_contacts_matrix",
                 file_type="TXT",
                 file_path=m_results_files["hic_contacts_matrix_raw"],
-                sources=[""],
+                sources=in_files,
                 meta_data={
                     "description": "HiC contact matrix raw",
                     "visible": True,
-                    "assembly": "",
+                    "assembly": convert_from_unicode(metadata['bamin'].meta_data['assembly']),
                     "norm" : 'raw'
                 },
                 taxon_id=metadata['bamin'].taxon_id)
@@ -156,21 +156,21 @@ class tadbit_bin(Workflow):
                 data_type="tool_statistics",
                 file_type="TAR",
                 file_path=m_results_files["bin_stats"],
-                sources=[""],
+                sources=in_files,
                 meta_data={
                     "description": "TADbit HiC matrices in png format",
-                    "visible": True
+                    "visible": False
                 })
         if len(tb_files) > 2:
             m_results_meta["hic_contacts_matrix_norm"] = Metadata(
                 data_type="hic_contacts_matrix",
                 file_type="TXT",
                 file_path=m_results_files["hic_contacts_matrix_norm"],
-                sources=[""],
+                sources=in_files,
                 meta_data={
                     "description": "HiC contact matrix normalized",
                     "visible": True,
-                    "assembly": "",
+                    "assembly": convert_from_unicode(metadata['bamin'].meta_data['assembly']),
                     "norm" : 'norm'
                 },
                 taxon_id=metadata['bamin'].taxon_id)

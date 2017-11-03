@@ -155,7 +155,7 @@ class tadbit_model(Workflow):
                 data_type="chromatin_3dmodel_ensemble",
                 file_type="JSON",
                 file_path=m_results_files["tadkit_models"],
-                sources=[""],
+                sources=in_files,
                 meta_data={
                     "description": "Ensemble of chromatin 3D structures",
                     "visible": True,
@@ -172,10 +172,10 @@ class tadbit_model(Workflow):
                 data_type="tool_statistics",
                 file_type="TAR",
                 file_path=m_results_files["modeling_stats"],
-                sources=[""],
+                sources=in_files,
                 meta_data={
                     "description": "TADbit modeling statistics and result files",
-                    "visible": True
+                    "visible": False
                 })    
         
         clean_temps(self.configuration['workdir'])

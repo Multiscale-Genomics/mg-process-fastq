@@ -175,7 +175,7 @@ class tadbit_model(Workflow):
                 sources=in_files,
                 meta_data={
                     "description": "TADbit modeling statistics and result files",
-                    "visible": False
+                    "visible": True
                 })    
         
         clean_temps(self.configuration['workdir'])

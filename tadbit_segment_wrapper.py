@@ -139,7 +139,7 @@ class tadbit_segment(Workflow):
             sources=in_files,
             meta_data={
                 "description": "TADbit HiC tads and compartments statistics",
-                "visible": False
+                "visible": True
             })    
         # List of files to get saved
         print("TADBIT RESULTS:", m_results_files)

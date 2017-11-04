@@ -149,20 +149,25 @@ class tbFullMappingTool(Tool):
         gzipped = ''
         if fastq_file.endswith('.fastq.gz') or fastq_file.endswith('.fq.gz'):
             gzipped = '.gz'
-        
+         
         file_name = path.basename(fastq_file)
         file_name = file_name.replace('.fastq'+gzipped, '')
         file_name = file_name.replace('.fq'+gzipped, '')
         fastq_file_tmp = workdir+'/'+file_name    
-        
-        
-        
-        with open(fastq_file_tmp + "_tmp.fastq"+gzipped, "wb") as f_out:
-            with open(fastq_file, "rb") as f_in:
-                f_out.write(f_in.read())
-
+#         
+#         
+#         
+#         with open(fastq_file_tmp + "_tmp.fastq"+gzipped, "wb") as f_out:
+#             with open(fastq_file, "rb") as f_in:
+#                 f_out.write(f_in.read())
+# 
+#         map_files = full_mapping(
+#             gem_file, fastq_file_tmp + "_tmp.fastq"+gzipped, output_dir,
+#             r_enz=enzyme_name, windows=windows, frag_map=True, nthreads=ncpus,
+#             clean=True, temp_dir=workdir
+#         )
         map_files = full_mapping(
-            gem_file, fastq_file_tmp + "_tmp.fastq"+gzipped, output_dir,
+            gem_file, fastq_file, output_dir,
             r_enz=enzyme_name, windows=windows, frag_map=True, nthreads=ncpus,
             clean=True, temp_dir=workdir
         )

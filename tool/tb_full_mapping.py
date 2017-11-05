@@ -149,44 +149,31 @@ class tbFullMappingTool(Tool):
         gzipped = ''
         if fastq_file.endswith('.fastq.gz') or fastq_file.endswith('.fq.gz'):
             gzipped = '.gz'
-         
-#         file_name = path.basename(fastq_file)
-#         file_name = file_name.replace('.fastq'+gzipped, '')
-#         file_name = file_name.replace('.fq'+gzipped, '')
-#         fastq_file_tmp = workdir+'/'+file_name    
-#         
-#         
-#         
-#         with open(fastq_file_tmp + "_tmp.fastq"+gzipped, "wb") as f_out:
-#             with open(fastq_file, "rb") as f_in:
-#                 f_out.write(f_in.read())
-# 
-#         map_files = full_mapping(
-#             gem_file, fastq_file_tmp + "_tmp.fastq"+gzipped, output_dir,
-#             r_enz=enzyme_name, windows=windows, frag_map=True, nthreads=ncpus,
-#             clean=True, temp_dir=workdir
-#         )
+        if fastq_file.endswith('.fastq.dsrc'):
+            gzipped = '.dsrc'
+        
+        file_name = path.basename(fastq_file)
+        file_name = file_name.replace('.fastq'+gzipped, '')
+        file_name = file_name.replace('.fq'+gzipped, '')
+        fastq_file_tmp = workdir+'/'+file_name    
+        
+        with open(fastq_file_tmp + "_tmp.fastq"+gzipped, "wb") as f_out:
+            with open(fastq_file, "rb") as f_in:
+                f_out.write(f_in.read())
+
         map_files = full_mapping(
-            gem_file, fastq_file, output_dir,
+            gem_file, fastq_file_tmp + "_tmp.fastq"+gzipped, output_dir,
             r_enz=enzyme_name, windows=windows, frag_map=True, nthreads=ncpus,
             clean=True, temp_dir=workdir
         )
-        
+
         with open(full_file, "wb") as f_out:
-            with open(fastq_file + "_tmp_full_1-end.map", "rb") as f_in:
+            with open(fastq_file_tmp + "_tmp_full_1-end.map", "rb") as f_in:
                 f_out.write(f_in.read())
 
         with open(frag_file, "wb") as f_out:
-            with open(fastq_file + "_tmp_frag_1-end.map", "rb") as f_in:
+            with open(fastq_file_tmp + "_tmp_frag_1-end.map", "rb") as f_in:
                 f_out.write(f_in.read())
-        
-#         with open(full_file, "wb") as f_out:
-#             with open(fastq_file_tmp + "_tmp_full_1-end.map", "rb") as f_in:
-#                 f_out.write(f_in.read())
-# 
-#         with open(frag_file, "wb") as f_out:
-#             with open(fastq_file_tmp + "_tmp_frag_1-end.map", "rb") as f_in:
-#                 f_out.write(f_in.read())
 
         return True
 

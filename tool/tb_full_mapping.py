@@ -169,11 +169,11 @@ class tbFullMappingTool(Tool):
         )
 
         with open(full_file, "wb") as f_out:
-            with open(fastq_file_tmp+dsrc + "_tmp_full_1-end.map", "rb") as f_in:
+            with open(fastq_file_tmp + "_tmp"+dsrc+"_full_1-end.map", "rb") as f_in:
                 f_out.write(f_in.read())
 
         with open(frag_file, "wb") as f_out:
-            with open(fastq_file_tmp+dsrc + "_tmp_frag_1-end.map", "rb") as f_in:
+            with open(fastq_file_tmp + "_tmp"+dsrc+"_frag_1-end.map", "rb") as f_in:
                 f_out.write(f_in.read())
 
         return True

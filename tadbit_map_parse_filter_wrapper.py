@@ -230,6 +230,17 @@ class tadbit_map_parse_filter(Workflow):
          # List of files to get saved
         print("TADBIT RESULTS:", m_results_files)
         
+        m_results_meta["paired_reads_bai"] = Metadata(
+                data_type="hic_sequences",
+                file_type="BAI",
+                file_path=m_results_files["paired_reads"]+'.bai',
+                sources=[metadata['read1'].file_path,metadata['read2'].file_path],
+                meta_data={
+                    "description": "Paired end reads index",
+                    "visible": False,
+                    "assembly": assembly
+                },
+                taxon_id=metadata['read1'].taxon_id)
         
         m_results_meta["paired_reads"] = Metadata(
                 data_type="hic_sequences",
@@ -249,17 +260,6 @@ class tadbit_map_parse_filter(Workflow):
                 },
                 taxon_id=metadata['read1'].taxon_id)
         
-        m_results_meta["paired_reads_bai"] = Metadata(
-                data_type="hic_sequences",
-                file_type="BAI",
-                file_path=m_results_files["paired_reads"]+'.bai',
-                sources=[metadata['read1'].file_path,metadata['read2'].file_path],
-                meta_data={
-                    "description": "Paired end reads index",
-                    "visible": False,
-                    "assembly": assembly
-                },
-                taxon_id=metadata['read1'].taxon_id)
         
         m_results_meta["map_parse_filter_stats"] = Metadata(
                 data_type="tool_statistics",

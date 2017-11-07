@@ -54,7 +54,7 @@ class tbSegmentTool(Tool):
 
     @task(bamin=FILE_IN, biases=FILE_IN, resolution=IN, workdir=IN)
     # @constraint(ProcessorCoreCount=16)
-    def tb_segment(self, bamin, biases, resolution, callers, chromosomes, workdir, ncpus="1"):
+    def tb_segment(self, bamin, biases, resolution, callers, chromosomes, workdir, fasta=None ,ncpus="1"):
         """
         Function to find tads and compartments in the Hi-C
         matrix
@@ -102,7 +102,9 @@ class tbSegmentTool(Tool):
         if chromosomes:
             _cmd.append('--chromosomes')
             _cmd.append(chromosomes)
-             
+        if fasta:
+            _cmd.append('--fasta')
+            _cmd.append(fasta)
         
         if biases:
             _cmd.append('--biases')
@@ -173,11 +175,13 @@ class tbSegmentTool(Tool):
         ncpus=1
         if 'ncpus' in metadata:
             ncpus = metadata['ncpus']
-        biases = chromosomes = None
+        biases = chromosomes = fasta = None
         if len(input_files) > 1:
             biases = input_files[1]
         if "chromosomes" in metadata:
             chromosomes = metadata['chromosomes']
+        if "fasta" in metadata:
+            fasta = metadata['fasta']
         callers = "1"
         if "callers" in metadata:
             callers = metadata['callers']
@@ -189,7 +193,7 @@ class tbSegmentTool(Tool):
         # input and output share most metadata
         
         
-        output_files, output_metadata = self.tb_segment(bamin, biases, resolution, callers, chromosomes, root_name, ncpus)
+        output_files, output_metadata = self.tb_segment(bamin, biases, resolution, callers, chromosomes, root_name, fasta, ncpus)
 
         return (output_files, output_metadata)
 

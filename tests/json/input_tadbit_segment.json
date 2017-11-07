@@ -5,7 +5,9 @@
         "data_type": "hic_sequences",
         "file_type": "bam",
         "file_path": "/home/dcastillo/workspace/vre/mg-process-fastq-tadbit/tests/data/paired_reads.bam",
-        "sources": null,
+        "sources": [
+        "/scratch/genomes/hg38.fa"
+        ],
         "taxon_id": "9606",
         "meta_data": {
             "visible": true,

@@ -183,7 +183,7 @@ class tadbit_map_parse_filter(Workflow):
                 data_type="hic_sequences",
                 file_type="BAM",
                 file_path=None,
-                sources=[metadata['read1'].file_path,metadata['read2'].file_path],
+                sources=[genome_fa,genome_gem,metadata['read1'].file_path,metadata['read2'].file_path],
                 meta_data={
                     "tool": "tadbit",
                     "description": "Paired end reads",
@@ -235,7 +235,7 @@ class tadbit_map_parse_filter(Workflow):
                 data_type="hic_sequences",
                 file_type="BAM",
                 file_path=m_results_files["paired_reads"],
-                sources=[metadata['read1'].file_path,metadata['read2'].file_path],
+                sources=[genome_fa,genome_gem,metadata['read1'].file_path,metadata['read2'].file_path],
                 meta_data={
                     "description": "Paired end reads",
                     "visible": True,
@@ -253,7 +253,7 @@ class tadbit_map_parse_filter(Workflow):
                 data_type="hic_sequences",
                 file_type="BAI",
                 file_path=m_results_files["paired_reads"]+'.bai',
-                sources=[metadata['read1'].file_path,metadata['read2'].file_path],
+                sources=[genome_fa,genome_gem,metadata['read1'].file_path,metadata['read2'].file_path],
                 meta_data={
                     "description": "Paired end reads index",
                     "visible": False,
@@ -266,7 +266,7 @@ class tadbit_map_parse_filter(Workflow):
                 data_type="tool_statistics",
                 file_type="TAR",
                 file_path=m_results_files["map_parse_filter_stats"],
-                sources=[metadata['read1'].file_path,metadata['read2'].file_path],
+                sources=[genome_fa,genome_gem,metadata['read1'].file_path,metadata['read2'].file_path],
                 meta_data={
                     "description": "TADbit mapping, parsing and filtering statistics",
                     "visible": False

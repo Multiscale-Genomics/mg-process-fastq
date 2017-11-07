@@ -107,6 +107,8 @@ class tadbit_segment(Workflow):
         #exp = Experiment("vre", resolution=10000, hic_data=hic_data)
          
         input_metadata = remap(self.configuration, "resolution","callers","workdir","ncpus")
+        if len(metadata['bamin'].sources)>0 and (metadata['bamin'].sources[0].split('.')[-1] == 'fa' or metadata['bamin'].sources[0].split('.')[-1] == 'fasta'):
+             input_metadata["fasta"] = convert_from_unicode(metadata['bamin'].sources[0])
         if "chromosome_names" in self.configuration:
             input_metadata["chromosomes"] = self.configuration["chromosome_names"]
               

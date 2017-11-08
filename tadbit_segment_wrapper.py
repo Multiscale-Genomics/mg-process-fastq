@@ -67,6 +67,10 @@ class tadbit_segment(Workflow):
 
         self.configuration.update(convert_from_unicode(configuration))
         
+        self.configuration['public_dir'] = '/orozco/services/MuG/MuG_public/'
+        #self.configuration['public_dir'] = '/scratch/genomes/'
+        
+        
         # Number of cores available
         num_cores = multiprocessing.cpu_count()
         self.configuration["ncpus"] = num_cores
@@ -107,8 +111,9 @@ class tadbit_segment(Workflow):
         #exp = Experiment("vre", resolution=10000, hic_data=hic_data)
          
         input_metadata = remap(self.configuration, "resolution","callers","workdir","ncpus")
-        if len(metadata['bamin'].sources)>0 and (metadata['bamin'].sources[0].split('.')[-1] == 'fa' or metadata['bamin'].sources[0].split('.')[-1] == 'fasta'):
-             input_metadata["fasta"] = convert_from_unicode(metadata['bamin'].sources[0])
+        assembly = convert_from_unicode(metadata['bamin'].meta_data['assembly'])
+        if os.path.isfile(self.configuration['public_dir']+'/'+assembly+'/'+assembly+'.fa'):
+             input_metadata["fasta"] = self.configuration['public_dir']+'/'+assembly+'/'+assembly+'.fa'
         if "chromosome_names" in self.configuration:
             input_metadata["chromosomes"] = self.configuration["chromosome_names"]
               

@@ -16,17 +16,9 @@
 """
 from __future__ import print_function
 
-import gzip
-import shutil
 import shlex
 import subprocess
 import os.path
-
-try:
-    import pysam
-except ImportError:
-    print("[Error] Cannot import \"pysam\" package. Have you installed it?")
-    exit(-1)
 
 class cd(object):
     """

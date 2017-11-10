@@ -119,9 +119,9 @@ class biobambam(Tool):
 
         Returns
         -------
-        output_files : list
+        output_files : dict
             Filtered bam fie.
-        output_metadata : list
+        output_metadata : dict
             List of matching metadata dict objects
         """
         logger.info("BIOBAMBAM FILTER: Ready to run")

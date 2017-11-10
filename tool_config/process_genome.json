@@ -7,23 +7,34 @@
     "institution": "EMBL-EBI",
     "author": "Mark McDowall",
     "contact": "mcdowall@ebi.ac.uk",
-    "user": "",
     "url": "https://github.com/Multiscale-Genomics/mg-process-fastq"
   },
   "external": true,
+  "has_custom_viewer": false
   "keywords": [
     "dna"
   ],
   "infrastructure": {
-    "memory": 12.0,
+    "memory": 12,
     "cpus": 4,
     "executable": "/home/pmes/code/mg-process-fastq/process_genome.py",
     "clouds": {
-      "mug-bsc": {
-        "launcher": "PMES",
-        "workflowType": "COMPSs",
-        "default_cloud": true
-      }
+        "mug-bsc": {
+            "launcher": "PMES",
+            "workflowType": "COMPSs",
+            "minimumVMs": 1,
+            "initialVMs": 1,
+            "imageName": "uuid_vmgenericmgtoolapi06_72",
+            "default_cloud": false
+        },
+        "mug-irb": {
+            "launcher": "PMES",
+            "workflowType": "COMPSs",
+            "minimumVMs": 1,
+            "initialVMs": 1,
+            "imageName": "uuid_vmgenericmgtoolapi_62",
+            "default_cloud": false
+        }
     }
   },
   "input_files": [
@@ -42,6 +53,23 @@
       "allow_multiple": false
     }
   ],
+  "input_files_combinations": [
+        [
+            "genome"
+        ]
+    ],
+    "input_files_combinations_internal": [
+        [
+            {
+                "sequence_genomic": 1
+            }
+        ],
+        [
+            {
+                "sequence_dna": 1
+            }
+        ]
+    ],
   "arguments": [],
   "output_files": [
     {

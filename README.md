@@ -8,6 +8,7 @@ Scripts required for the processing of FASTQ files (eg generating adjacency list
 - Python 2.7.12 (required for MACS2 in ChIP-Seq pipeline)
 - Python 3.5.2 (required for iNPS in MNase-Seq pipeline)
 - Python Modules:
+  - mg-tool-api
   - numpy
   - h5py
   - scipy
@@ -53,6 +54,3 @@ Create the Python environment
 
    pyenv-virtualenv 2.7.10 mg-process-fastq
    pip install --editable .
-
-
-

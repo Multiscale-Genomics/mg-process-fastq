@@ -18,7 +18,8 @@ from __future__ import print_function
 
 import sys
 import glob, os
-from subprocess import CalledProcessError, PIPE, Popen
+#from subprocess import CalledProcessError, PIPE, Popen
+import subprocess
 
 try:
     if hasattr(sys, '_run_from_cmdl') is True:
@@ -112,10 +113,26 @@ class tbNormalizeTool(Tool):
         output_metadata = {}
         output_files = []
         
-        out, err = Popen(_cmd, stdout=PIPE, stderr=PIPE).communicate()
-        print(out)
-        print(err)
-
+        try:
+            proc = subprocess.check_output(_cmd, stderr=subprocess.STDOUT)
+        except subprocess.CalledProcessError:
+            if not min_count:
+                print("cis/trans ratio failed, trying with min_count. Disabling plot.")
+                _cmd.append('--min_count')
+                _cmd.append('10')
+                _cmd.append('--normalize_only')
+                proc = subprocess.check_output(_cmd, stderr=subprocess.STDOUT)
+#         try:
+#             out, err = Popen(_cmd, stdout=PIPE, stderr=PIPE).communicate()
+#         except ZeroDivisionError: 
+#             if not min_count:
+#                 print("cis/trans ratio failed, trying with min_count")
+#                 _cmd.append('--min_count')
+#                 _cmd.append('10')
+#                 out, err = Popen(_cmd, stdout=PIPE, stderr=PIPE).communicate()
+#         print(out)
+#         print(err)
+        print(proc)
         os.chdir(workdir+"/04_normalization")
         for fl in glob.glob("biases_*.pickle"):
             output_files.append(os.path.abspath(fl))

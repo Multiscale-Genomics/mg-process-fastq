@@ -48,10 +48,6 @@
             "value": "refGenomes/R64-1-1/R64-1-1.fa"
         },
         {
-            "name": "parsing:chromosomes",
-            "value": "chr10,chr21"
-        },
-        {
             "name": "filtering:filters",
             "value": [
                 "1",

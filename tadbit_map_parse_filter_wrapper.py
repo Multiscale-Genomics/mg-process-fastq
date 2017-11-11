@@ -133,8 +133,8 @@ class tadbit_map_parse_filter(Workflow):
         m_results_files = {}
         
         assembly = "UNK"
-        if 'parsing:ref_genome_fasta' in input_files:
-            genome_fa = convert_from_unicode(input_files['parsing:ref_genome_fasta'])
+        if 'parsing:ref_genome' in input_files:
+            genome_fa = convert_from_unicode(input_files['parsing:ref_genome'])
         elif 'parsing_refGenome' in self.configuration:
             genome_fa = self.configuration['public_dir']+convert_from_unicode(self.configuration['parsing_refGenome'])
             

@@ -13,7 +13,7 @@
         }, {
             "required": true,
             "allow_multiple": false,
-            "name": "parsing:ref_genome_fasta",
+            "name": "parsing:ref_genome",
             "value": "59b7e020d9422a5969b65373"
         }, {
             "required": true,

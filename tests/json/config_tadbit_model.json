@@ -18,7 +18,7 @@
             "help": "Resolution of the normalization.",
             "type": "string",
             "required": true,
-            "value": "100000"
+            "value": "20000"
         },
         {
             "name": "optimization:gen_pos_chrom_name",
@@ -26,7 +26,7 @@
             "help": "Coordinates of the genomic region to model.",
             "type": "string",
             "required": true,
-            "value": "chr21"
+            "value": "chr10"
         },
         {
             "name": "optimization:gen_pos_begin",
@@ -34,7 +34,7 @@
             "help": "Genomic coordinate from which to start modeling.",
             "type": "int",
             "required": true,
-            "value": "15000000"
+            "value": "4900000"
         },
         {
             "name": "optimization:gen_pos_end",
@@ -42,7 +42,7 @@
             "help": "Genomic coordinate where to end modeling.",
             "type": "int",
             "required": true,
-            "value": "19900000"
+            "value": "5900000"
         },
         {
             "name": "optimization:num_mod_comp",
@@ -125,7 +125,7 @@
             "value": "2"
         },
         {
-            "name": "generation:num_mod_comp",
+            "name": "generation:num_mod_compis",
             "description": "Number of models to compute.",
             "help": "Number of models to compute for each optimization step.",
             "type": "int",

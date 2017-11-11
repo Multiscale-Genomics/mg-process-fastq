@@ -328,7 +328,7 @@ class tbParseMappingTool(Tool):
         expt_name = metadata['expt_name']
         filter_chrom = None
         if 'chromosomes' in metadata and metadata['chromosomes'] != '':
-            filter_chrom = [metadata['chromosomes']]
+            filter_chrom = metadata['chromosomes'].split(',')
             
         root_name = input_files[1].split("/")
 

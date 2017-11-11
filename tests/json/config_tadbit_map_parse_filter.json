@@ -49,7 +49,7 @@
         },
         {
             "name": "parsing:chromosomes",
-            "value": "chr10"
+            "value": "chr10,chr21"
         },
         {
             "name": "filtering:filters",

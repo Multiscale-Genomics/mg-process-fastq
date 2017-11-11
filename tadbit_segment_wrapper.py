@@ -67,7 +67,7 @@ class tadbit_segment(Workflow):
 
         self.configuration.update(convert_from_unicode(configuration))
         
-        self.configuration['public_dir'] = '/orozco/services/MuG/MuG_public/'
+        self.configuration['public_dir'] = '/orozco/services/MuG/MuG_public/refGenomes/'
         #self.configuration['public_dir'] = '/scratch/genomes/'
         
         
@@ -113,7 +113,7 @@ class tadbit_segment(Workflow):
         input_metadata = remap(self.configuration, "resolution","callers","workdir","ncpus")
         assembly = convert_from_unicode(metadata['bamin'].meta_data['assembly'])
         if os.path.isfile(self.configuration['public_dir']+'/'+assembly+'/'+assembly+'.fa'):
-             input_metadata["fasta"] = self.configuration['public_dir']+'/'+assembly+'/'+assembly+'.fa'
+             input_metadata["fasta"] = self.configuration['public_dir']+assembly+'/'+assembly+'.fa'
         if "chromosome_names" in self.configuration:
             input_metadata["chromosomes"] = self.configuration["chromosome_names"]
               

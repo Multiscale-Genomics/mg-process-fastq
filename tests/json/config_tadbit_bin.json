@@ -18,15 +18,6 @@
             "name": "project",
             "value": "/home/dcastillo/workspace/vre/mg-process-fastq-tadbit/tests/data"
         },
-        {
-            "name": "coord1",
-            "description": "Coordinate of the region to retrieve.",
-            "help": "Coordinate of the region to retrieve. By default all genome, arguments can be either one chromosome name, or the coordinate in the form: chr3:110000000-120000000",
-            "type": "string",
-            "required": true,
-            "default": "",
-            "value" : "chr21:15000000-19900000"
-        },
     	{
             "name": "resolution",
             "description": "Resolution of the normalization",

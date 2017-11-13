@@ -76,5 +76,6 @@ def test_wgbs_pipeline():
     # Add tests for all files created
     for f_out in rs_files:
         print("WGBS RESULTS FILE:", f_out)
+        # assert chipseq_files[f_out] == files_out[f_out]
         assert os.path.isfile(f_out) is True
         assert os.path.getsize(f_out) > 0

@@ -72,5 +72,6 @@ def test_genome_pipeline():
     # Add tests for all files created
     for f_out in genome_files:
         print("GENOME RESULTS FILE:", f_out)
+        assert genome_files[f_out] == files_out[f_out]
         assert os.path.isfile(genome_files[f_out]) is True
         assert os.path.getsize(genome_files[f_out]) > 0

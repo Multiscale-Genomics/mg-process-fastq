@@ -95,5 +95,6 @@ def test_chipseq_pipeline():
     # Add tests for all files created
     for f_out in chipseq_files:
         print("CHIP-SEQ RESULTS FILE:", f_out)
+        assert chipseq_files[f_out] == files_out[f_out]
         assert os.path.isfile(chipseq_files[f_out]) is True
         assert os.path.getsize(chipseq_files[f_out]) > 0

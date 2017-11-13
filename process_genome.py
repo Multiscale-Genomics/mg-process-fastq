@@ -120,7 +120,7 @@ class process_genome(Workflow):
 
         try:
             output_files_generated['gem_index'] = gemi['index']
-            output_files_generated['genome_gem'] = gemi['index']
+            output_files_generated['genome_gem'] = gemi['genome_gem']
 
             output_metadata['gem_index'] = gemm['index']
             output_metadata['genome_gem'] = gemm['genome_gem']

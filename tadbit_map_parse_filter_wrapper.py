@@ -141,6 +141,7 @@ class tadbit_map_parse_filter(Workflow):
         
         if 'mapping:refGenome' in input_files: 
             genome_gem = convert_from_unicode(input_files['mapping:refGenome'])
+            assembly = convert_from_unicode(metadata['mapping:refGenome'].meta_data['assembly'])
         elif 'mapping_refGenome' in self.configuration:
             genome_gem = self.configuration['public_dir']+convert_from_unicode(self.configuration['mapping_refGenome'])
             assembly = os.path.basename(genome_gem).split('.')[0]

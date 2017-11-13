@@ -125,7 +125,7 @@
             "value": "2"
         },
         {
-            "name": "generation:num_mod_compis",
+            "name": "generation:num_mod_comp",
             "description": "Number of models to compute.",
             "help": "Number of models to compute for each optimization step.",
             "type": "int",

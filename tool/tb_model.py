@@ -175,7 +175,8 @@ class tbModelTool(Tool):
             for fl in glob.glob("*.json"):
                 output_files.append(fl)
                 break
-            
+            for fl in glob.glob("*optimal_params*"):
+                os.unlink(fl)
         
         
         return (output_files, output_metadata)

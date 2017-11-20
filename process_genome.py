@@ -61,17 +61,28 @@ class process_genome(Workflow):
 
         Parameters
         ----------
-        input_files : list
-            List of file locations
-        metadata : list
-            Required meta data
-        output_files : list
-            List of output file locations
+        input_files : dict
+            genome : str
+                List of file locations
+        metadata : dict
+            genome : dict
+                Required meta data
+        output_files : dict
+            bwa_index : str
+                Location of the BWA index archive files
+            bwt_index : str
+                Location of the Bowtie2 index archive file
+            gem_index : str
+                Location of the GEM index file
+            genome_gem : str
+                Location of a the FASTA file generated for the GEM indexing step
 
         Returns
         -------
-        outputfiles : list
+        outputfiles : dict
             List of locations for the output index files
+        output_metadata : dict
+            Metadata about each of the files
         """
 
         output_files_generated = {}

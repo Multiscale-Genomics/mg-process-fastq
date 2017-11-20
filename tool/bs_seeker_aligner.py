@@ -183,8 +183,99 @@ class bssAlignerTool(Tool):
         bam_out : file
             Location of the BAM file generated during the alignment.
         """
+        script = bss_path + "/bs_seeker2-align.py"
+        params = [
+            "--input_1", input_fastq_1,
+            "--input_2", input_fastq_2,
+            "--aligner", aligner,
+            "--path", aligner_path,
+            "--genome", genome_fasta,
+            "--bt2-p", "4",
+            "-o", bam_out + "_tmp.bam",
+            "-f", "bam"
+        ]
+
+        results = self.run_aligner(genome_idx, bam_out, script, params)
+
+        return results
+
+    @task(
+        returns=bool, isModifier=False,
+        input_fastq=FILE_IN, aligner=IN, aligner_path=IN, bss_path=IN,
+        genome_fasta=FILE_IN, genome_idx=FILE_IN, bam_out=FILE_OUT
+    )
+    def bs_seeker_aligner_single(
+            self, input_fastq, aligner, aligner_path, bss_path,
+            genome_fasta, genome_idx, bam_out):
+        """
+        Alignment of the paired ends to the reference genome
+
+        Generates bam files for the alignments
+
+        This is performed by running the external program rather than
+        reimplementing the code from the main function to make it easier when
+        it comes to updating the changes in BS-Seeker2
+
+        Parameters
+        ----------
+        input_fastq1 : str
+            Location of paired end FASTQ file 1
+        input_fastq2 : str
+            Location of paired end FASTQ file 2
+        aligner : str
+            Aligner to use
+        aligner_path : str
+            Location of the aligner
+        genome_fasta : str
+            Location of the genome FASTA file
+        genome_idx : str
+            Location of the tar.gz genome index file
+        bam_out : str
+            Location of the aligned bam file
+
+        Returns
+        -------
+        bam_out : file
+            Location of the BAM file generated during the alignment.
+        """
+        script = bss_path + "/bs_seeker2-align.py"
+        params = [
+            "-i", input_fastq,
+            "--aligner", aligner,
+            "--path", aligner_path,
+            "--genome", genome_fasta,
+            "--bt2-p", "4",
+            "-o", bam_out + "_tmp.bam",
+            "-f", "bam"
+        ]
+
+        results = self.run_aligner(genome_idx, bam_out, script, params)
+
+        return results
+
+    def run_aligner(self, genome_idx, bam_out, script, params):
+        """
+        Run the aligner
+
+        Parameters
+        ----------
+        genome_idx : str
+            Location of the genome index archive
+        bam_out : str
+            Location of the output bam file
+        script : str
+            Location of the BS Seeker2 aligner script
+        params : list
+            Parameter list for the aligner
+
+        Returns
+        -------
+        bool
+            True if the function completed successfully
+        """
         g_dir = genome_idx.split("/")
         g_dir = "/".join(g_dir[:-1])
+        params += ["-d", g_dir]
 
         try:
             tar = tarfile.open(genome_idx)
@@ -194,19 +285,15 @@ class bssAlignerTool(Tool):
             return False
 
         command_line = (
-            "python " + bss_path + "/bs_seeker2-align.py"
-            " --input_1 " + input_fastq_1 + ""
-            " --input_2 " + input_fastq_2 + ""
-            " --aligner " + aligner + " --path " + aligner_path + ""
-            " --genome " + genome_fasta + " -d " + g_dir + ""
-            " --bt2-p 4 -o " + bam_out + "_tmp.bam"
+            "python " + script + " " + " ".join(params)
         ).format()
         print("command for aligner : ", command_line)
         args = shlex.split(command_line)
         process = subprocess.Popen(args)
         process.wait()
 
-        pysam.sort("-o", bam_out + "_tmp.bam", "-T", bam_out + "_tmp.bam" + "_sort", bam_out + "_tmp.bam")
+        pysam.sort("-o", bam_out + "_tmp.bam",
+                   "-T", bam_out + "_tmp.bam" + "_sort", bam_out + "_tmp.bam")
 
         try:
             with open(bam_out + "_tmp.bam", "rb") as f_in:
@@ -296,29 +383,47 @@ class bssAlignerTool(Tool):
 
         output_bam_list = []
         for fastq_file_pair in fastq_file_list:
-            tmp_fq1 = gz_data_path + "/tmp/" + fastq_file_pair[0]
-            tmp_fq2 = gz_data_path + "/tmp/" + fastq_file_pair[1]
-            print("WGBS - gz_data_path:", gz_data_path)
-            print("WGBS - fastq_file_pair - 0:", tmp_fq1,
-                  os.path.isfile(tmp_fq1), os.path.getsize(tmp_fq1))
-            print("WGBS - fastq_file_pair - 1:", tmp_fq2,
-                  os.path.isfile(tmp_fq2), os.path.getsize(tmp_fq2))
+            if "fastq2" in input_files:
+                tmp_fq1 = gz_data_path + "/tmp/" + fastq_file_pair[0]
+                tmp_fq2 = gz_data_path + "/tmp/" + fastq_file_pair[1]
+                print("WGBS - gz_data_path:", gz_data_path)
+                print("WGBS - fastq_file_pair - 0:", tmp_fq1,
+                      os.path.isfile(tmp_fq1), os.path.getsize(tmp_fq1))
+                print("WGBS - fastq_file_pair - 1:", tmp_fq2,
+                      os.path.isfile(tmp_fq2), os.path.getsize(tmp_fq2))
 
-            output_bam_file_tmp = tmp_fq1 + ".bam"
-            output_bam_list.append(output_bam_file_tmp)
+                output_bam_file_tmp = tmp_fq1 + ".bam"
+                output_bam_list.append(output_bam_file_tmp)
 
-            print(
-                "FILES:", tmp_fq1, tmp_fq2,
-                aligner, aligner_path, bss_path,
-                genome_fasta, genome_idx,
-                output_bam_file_tmp)
+                print(
+                    "FILES:", tmp_fq1, tmp_fq2,
+                    aligner, aligner_path, bss_path,
+                    genome_fasta, genome_idx,
+                    output_bam_file_tmp)
 
-            results = self.bs_seeker_aligner(
-                tmp_fq1, tmp_fq2,
-                aligner, aligner_path, bss_path,
-                genome_fasta, genome_idx,
-                output_bam_file_tmp
-            )
+                results = self.bs_seeker_aligner(
+                    tmp_fq1, tmp_fq2,
+                    aligner, aligner_path, bss_path,
+                    genome_fasta, genome_idx,
+                    output_bam_file_tmp
+                )
+            else:
+                tmp_fq = gz_data_path + "/tmp/" + fastq_file_pair[0]
+                output_bam_file_tmp = tmp_fq + ".bam"
+                output_bam_list.append(output_bam_file_tmp)
+
+                print(
+                    "FILES:", tmp_fq,
+                    aligner, aligner_path, bss_path,
+                    genome_fasta, genome_idx,
+                    output_bam_file_tmp)
+
+                results = self.bs_seeker_aligner_single(
+                    tmp_fq,
+                    aligner, aligner_path, bss_path,
+                    genome_fasta, genome_idx,
+                    output_bam_file_tmp
+                )
 
         barrier()
 

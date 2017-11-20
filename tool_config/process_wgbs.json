@@ -120,7 +120,7 @@
                 "compressed": "null"
             }
         }, {
-            "required": true,
+            "required": false,
             "allow_multiple": false,
             "name": "fastq2_filtered",
             "file": {

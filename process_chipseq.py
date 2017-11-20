@@ -73,16 +73,8 @@ class process_chipseq(Workflow):
             Location of the initial input files required by the workflow
             genome : str
                 Genome FASTA file
-            amb : str
-                BWA index file
-            ann : str
-                BWA index file
-            bwt : str
-                BWA index file
-            pac : str
-                BWA index file
-            sa : str
-                BWA index file
+            index : str
+                Location of the BWA archived index files
             loc : str
                 Location of the FASTQ reads files
             bg_loc : str
@@ -91,12 +83,7 @@ class process_chipseq(Workflow):
             Input file meta data associated with their roles
 
             genome : str
-            amb : str
-            ann : str
-            bwt : str
-            pac : str
-            sa : str
-            loc : str
+            index : str
             bg_loc : str
                 [OPTIONAL]
         output_files : dict
@@ -162,6 +149,7 @@ class process_chipseq(Workflow):
             logger.fatal("BWA aligner failed")
 
         if "bg_loc" in input_files:
+            # Align background files
             bwa_bg_files, bwa_bg_meta = bwa.run(
                 # Small changes can be handled easily using "remap"
                 remap(input_files,
@@ -187,10 +175,8 @@ class process_chipseq(Workflow):
         # Filter the bams
         b3f = biobambam(self.configuration)
         b3f_files, b3f_meta = b3f.run(
-            # Alternatively, we can rebuild the dict
             {"input": bwa_files['bam']},
             {"input": bwa_meta['bam']},
-            # Intermediate outputs should be created via tempfile?
             {"output": output_files["filtered"]}
         )
 
@@ -205,10 +191,10 @@ class process_chipseq(Workflow):
             logger.fatal("BioBamBam filtering failed")
 
         if "bg_loc" in input_files:
+            # Filter background aligned files
             b3f_bg_files, b3f_bg_meta = b3f.run(
                 {"input": bwa_bg_files['bam']},
                 {"input": bwa_bg_meta['bam']},
-                # Intermediate outputs should be created via tempfile?
                 {"output": output_files["filtered_bg"]}
             )
 
@@ -228,7 +214,6 @@ class process_chipseq(Workflow):
         macs_metadt = {"input": b3f_meta['bam']}
 
         if "bg_loc" in input_files:
-            # The dicts can be built incrementally
             macs_inputs["background"] = b3f_bg_files['bam']
             macs_metadt["background"] = b3f_bg_meta['bam']
 

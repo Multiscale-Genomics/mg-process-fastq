@@ -62,12 +62,12 @@ class process_rnaseq(Workflow):
 
         Parameters
         ----------
-        files_ids : list
+        files_ids : dict
             List of file locations (genome FASTA, FASTQ_01, FASTQ_02 (for
             paired ends))
-        metadata : list
+        metadata : dict
             Required meta data
-        output_files : list
+        output_files : dict
             List of output file locations
 
 
@@ -75,6 +75,22 @@ class process_rnaseq(Workflow):
         -------
         outputfiles : list
             List of locations for the output bam, bed and tsv files
+
+        Parameters
+        ----------
+        input_files : list
+            List of file locations
+        metadata : list
+            Required meta data
+        output_files : list
+            List of output file locations
+
+        Returns
+        -------
+        outputfiles : dict
+            List of locations for the output index files
+        output_metadata : dict
+            Metadata about each of the files
         """
 
         # Index the cDNA

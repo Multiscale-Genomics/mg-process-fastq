@@ -17,6 +17,7 @@
 
 from __future__ import print_function
 
+import os
 import shlex
 import subprocess
 import sys
@@ -97,11 +98,17 @@ class bssIndexerTool(Tool):
             args = shlex.split(command_line)
             process = subprocess.Popen(args)
             process.wait()
+        except Exception:
+            return False
 
+        try:
             # tar.gz the index
-            print("BS - idx_out", idx_out, idx_out.replace('.tar.gz', ''))
+            print("BS - idx_out:", idx_out, idx_out.replace('.tar.gz', ''))
             idx_out_pregz = idx_out.replace('.tar.gz', '.tar')
 
+            print("BS - idx archive:", idx_out_pregz)
+            print("BS - idx folder to add:", fasta_file + "_" + aligner)
+            print("BS - idx folder arcname:", ff_split[-1] + "_" + aligner)
             tar = tarfile.open(idx_out_pregz, "w")
             tar.add(fasta_file + "_" + aligner, arcname=ff_split[-1] + "_" + aligner)
             tar.close()
@@ -132,10 +139,21 @@ class bssIndexerTool(Tool):
             Location of the filtered FASTQ file
         """
 
+        print("WGBS - Index output files:", output_files)
+
         try:
-            aligner = input_metadata['aligner']
-            aligner_path = input_metadata['aligner_path']
-            bss_path = input_metadata['bss_path']
+            if "bss_path" in input_metadata:
+                bss_path = input_metadata["bss_path"]
+            else:
+                raise KeyError
+            if "aligner_path" in input_metadata:
+                aligner_path = input_metadata["aligner_path"]
+            else:
+                raise KeyError
+            if "aligner" in input_metadata:
+                aligner = input_metadata["aligner"]
+            else:
+                raise KeyError
         except KeyError:
             logger.fatal("WGBS - BS SEEKER2: Unassigned configuration variables")
 
@@ -150,6 +168,13 @@ class bssIndexerTool(Tool):
         if results is False:
             logger.fatal("BS SEEKER2 Indexer: run failed")
             return {}, {}
+
+        if (
+                os.path.isfile(output_files["index"]) is False and
+                os.path.getsize(output_files["index"]) == 0):
+            logger.fatal("BS SEEKER2 Indexer: Index archive not created")
+            return {}, {}
+
 
         output_metadata = {
             "index": Metadata(

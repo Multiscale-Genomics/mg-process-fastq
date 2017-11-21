@@ -36,6 +36,7 @@
             "visible": true,
             "validated": 1,
             "assembly": "GRCm38"
-        }
+        },
+        "compressed": 0
     }
 ]

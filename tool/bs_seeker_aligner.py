@@ -282,6 +282,7 @@ class bssAlignerTool(Tool):
             tar.extractall(path=g_dir)
             tar.close()
         except IOError:
+            logger.fatal("WGBS - BS SEEKER2: Missing index archive")
             return False
 
         command_line = (
@@ -300,6 +301,7 @@ class bssAlignerTool(Tool):
                 with open(bam_out, "wb") as f_out:
                     f_out.write(f_in.read())
         except IOError:
+            logger.fatal("WGBS - BS SEEKER2: Failed sorting")
             return False
 
         return True
@@ -324,9 +326,18 @@ class bssAlignerTool(Tool):
         """
 
         try:
-            aligner = input_metadata['aligner']
-            aligner_path = input_metadata['aligner_path']
-            bss_path = input_metadata['bss_path']
+            if "bss_path" in input_metadata:
+                bss_path = input_metadata["bss_path"]
+            else:
+                raise KeyError
+            if "aligner_path" in input_metadata:
+                aligner_path = input_metadata["aligner_path"]
+            else:
+                raise KeyError
+            if "aligner" in input_metadata:
+                aligner = input_metadata["aligner"]
+            else:
+                raise KeyError
         except KeyError:
             logger.fatal("WGBS - BS SEEKER2: Unassigned configuration variables")
 

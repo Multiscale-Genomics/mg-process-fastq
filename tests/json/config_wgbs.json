@@ -42,7 +42,7 @@
             "type": "string",
             "required": true,
             "default": "${HOME}/lib/bowtie2-2.3.2",
-            "value": "/home/compss/lib/bowtie2-2.3.2"
+            "value": "${HOME}/lib/bowtie2-2.3.2"
         },
         {
             "name": "bss_path",
@@ -51,7 +51,7 @@
             "type": "string",
             "required": true,
             "default": "${HOME}/lib/BSseeker2",
-            "value": "/home/compss/lib/BSseeker2"
+            "value": "${HOME}/lib/BSseeker2"
         }
     ],
     "output_files": [

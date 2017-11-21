@@ -154,7 +154,10 @@ class bssMethylationCallerTool(Tool):
         """
 
         try:
-            bss_path = input_metadata['bss_path']
+            if "bss_path" in input_metadata:
+                bss_path = input_metadata["bss_path"]
+            else:
+                raise KeyError
         except KeyError:
             logger.fatal("WGBS - BS SEEKER2: Unassigned configuration variables")
 

@@ -21,6 +21,7 @@ import os.path
 import pytest # pylint: disable=unused-import
 
 from process_wgbs import process_wgbs
+from basic_modules.metadata import Metadata
 
 @pytest.mark.wgbs
 @pytest.mark.pipeline
@@ -55,27 +56,55 @@ def test_wgbs_pipeline():
     fastq1_file = resource_path + "bsSeeker.Mouse.GRCm38_1.fastq"
     fastq2_file = resource_path + "bsSeeker.Mouse.GRCm38_2.fastq"
 
-    rs_handle = process_wgbs()
-    rs_files, rs_meta = rs_handle.run(
-        [
-            genomefa_file,
-            fastq1_file,
-            fastq2_file
-        ],
-        {
-            'assembly' : 'GRCh38',
-            'aligner' : 'bowtie2',
-            'aligner_path' : home + '/lib/bowtie2-2.3.2',
-            'bss_path' : home + '/lib/BSseeker2'
-        },
-        []
-    )
+    files = {
+        "genome" : genomefa_file,
+        "fastq1" : fastq1_file,
+        "fastq2" : fastq2_file
+    }
 
-    print(rs_files)
+    metadata = {
+        "genome": Metadata(
+            "Assembly", "fasta", files['genome'], None,
+            {'assembly' : 'GRCm38'}
+        ),
+        "fastq1": Metadata(
+            "data_wgbs_seq", "fastq", files['fastq1'], None,
+            {"assembly" : "GRCm38"}
+        ),
+        "fastq2": Metadata(
+            "data_wgbs_seq", "fastq", files['fastq2'], None,
+            {"assembly" : "GRCm38"}
+        ),
+    }
+
+    files_out = {
+        "index" : resource_path + "wgbs.Mouse.GRCm38.fasta.bt2.tar.gz",
+        "fastq1_filtered" : resource_path + 'bsSeeker.Mouse.GRCm38_1_filtered.fastq',
+        "fastq2_filtered" : resource_path + 'bsSeeker.Mouse.GRCm38_2_filtered.fastq',
+        "bam" : resource_path + "bsSeeker.Mouse.GRCm38_1_filtered.bam",
+        "bai" : resource_path + "bsSeeker.Mouse.GRCm38_1_filtered.bai",
+        "wig_file" : resource_path + "bsSeeker.Mouse.GRCm38_1.wig",
+        "cgmap_file" : resource_path + "bsSeeker.Mouse.GRCm38_1.cgmap",
+        "atcgmap_file" : resource_path + "bsSeeker.Mouse.GRCm38_1.atcgmap"
+    }
+
+    print("WGBS TEST FILES:", files)
+    rs_handle = process_wgbs(
+        configuration={
+            "bss_path" : home + "/lib/BSseeker2",
+            "aligner" : "bowtie2",
+            "aligner_path" : home + "/lib/bowtie2-2.3.2"
+        }
+    )
+    rs_files, rs_meta = rs_handle.run(files, metadata, files_out)
+
+    print("WGBS RESULTS FILES:", len(rs_files), rs_files)
+    # Checks that the returned files matches the expected set of results
+    assert len(rs_files) == 8
 
     # Add tests for all files created
     for f_out in rs_files:
         print("WGBS RESULTS FILE:", f_out)
-        # assert chipseq_files[f_out] == files_out[f_out]
-        assert os.path.isfile(f_out) is True
-        assert os.path.getsize(f_out) > 0
+        assert rs_files[f_out] == files_out[f_out]
+        assert os.path.isfile(rs_files[f_out]) is True
+        assert os.path.getsize(rs_files[f_out]) > 0

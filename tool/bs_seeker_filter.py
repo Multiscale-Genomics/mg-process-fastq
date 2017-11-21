@@ -111,6 +111,13 @@ class filterReadsTool(Tool):
             Location of the filtered FASTQ file
         """
 
+        try:
+            if "bss_path" not in input_metadata:
+                raise KeyError
+        except KeyError:
+            logger.fatal("WGBS - BS SEEKER2: Unassigned configuration variables")
+            return {}, {}
+
         output_metadata = {}
 
         print(

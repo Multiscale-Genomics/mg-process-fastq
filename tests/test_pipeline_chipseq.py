@@ -20,7 +20,6 @@ from __future__ import print_function
 import os.path
 import pytest # pylint: disable=unused-import
 
-from process_genome import process_genome
 from process_chipseq import process_chipseq
 from basic_modules.metadata import Metadata
 

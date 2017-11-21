@@ -104,6 +104,8 @@ class bwaIndexerTool(Tool):
             process = subprocess.Popen(args)
             process.wait()
 
+            shutil.rmtree(index_dir)
+
             return True
         except Exception:
             return False

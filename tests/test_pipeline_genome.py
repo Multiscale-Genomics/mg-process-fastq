@@ -25,6 +25,7 @@ from basic_modules.metadata import Metadata
 from process_genome import process_genome
 
 @pytest.mark.genome
+@pytest.mark.chipseq
 @pytest.mark.pipeline
 def test_genome_pipeline():
     """

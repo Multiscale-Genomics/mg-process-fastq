@@ -56,6 +56,7 @@ def chipseq_pipeline(verbose=False):
     if verbose is True:
         params.append('-s')
 
+    params.append('tests/test_pipeline_genome.py')
     params.append('tests/test_pipeline_chipseq.py')
 
     return pytest.main(params)

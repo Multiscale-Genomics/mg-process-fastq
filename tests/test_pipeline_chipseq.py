@@ -47,13 +47,6 @@ def test_chipseq_pipeline():
     """
     resource_path = os.path.join(os.path.dirname(__file__), "data/")
 
-    #genome_handle = process_genome()
-    # genome_files, genome_meta = genome_handle.run(
-    #     [resource_path + 'macs2.Human.GCA_000001405.22.fasta'],
-    #     {'assembly' : 'GRCh38'},
-    #     []
-    # )
-
     files = {
         'genome': resource_path + 'macs2.Human.GCA_000001405.22.fasta',
         'loc': resource_path + 'macs2.Human.DRR000150.22.fastq',

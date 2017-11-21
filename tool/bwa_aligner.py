@@ -17,6 +17,7 @@
 from __future__ import print_function
 import os
 import sys
+import shutil
 import tarfile
 
 try:
@@ -85,7 +86,7 @@ class bwaAlignerTool(Tool):
 
         gfl = genome_file_loc.split("/")
         genome_fa_ln = genome_idx.replace('.tar.gz', '/') + gfl[-1]
-        os.symlink(genome_file_loc, genome_fa_ln)
+        shutil.move(genome_file_loc, genome_fa_ln)
 
         out_bam = read_file_loc + '.out.bam'
         common_handle = common()
@@ -97,6 +98,8 @@ class bwaAlignerTool(Tool):
                     f_out.write(f_in.read())
         except IOError:
             return False
+
+        #shutil.rmtree(g_dir)
 
         return True
 

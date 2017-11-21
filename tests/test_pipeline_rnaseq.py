@@ -21,6 +21,7 @@ import os.path
 import pytest # pylint: disable=unused-import
 
 from process_rnaseq import process_rnaseq
+from basic_modules.metadata import Metadata
 
 @pytest.mark.rnaseq
 @pytest.mark.pipeline
@@ -47,6 +48,39 @@ def test_rnaseq_pipeline():
     """
     resource_path = os.path.join(os.path.dirname(__file__), "data/")
 
+    files = {
+        'cdna': resource_path + 'kallisto.Human.GRCh38.fasta',
+        'fastq1': resource_path + 'kallisto.Human.ERR030872_1.fastq',
+        'fastq2': resource_path + 'kallisto.Human.ERR030872_2.fastq'
+    }
+
+    metadata = {
+        "cdna": Metadata(
+            "Assembly", "fasta", files['cdna'], None,
+            {'assembly' : 'GCA_000001405.22'}),
+        "fastq1": Metadata(
+            "data_rna_seq", "fastq", files['fastq1'], None,
+            {'assembly' : 'GCA_000001405.22'}
+        ),
+        "fastq2": Metadata(
+            "data_rna_seq", "fastq", files['fastq2'], None,
+            {'assembly' : 'GCA_000001405.22'}
+        ),
+    }
+
+    root_name = files['loc'].split("/")
+    root_name[-1] = root_name[-1].replace('.fastq', '')
+
+    files_out = {
+        "bam": files['loc'].replace(".fastq", ".bam"),
+        "filtered": files['loc'].replace(".fastq", "_filtered.bam"),
+        "output": files['loc'].replace(".fastq", ".tsv"),
+        'narrow_peak': '/'.join(root_name) + '_filtered_peaks.narrowPeak',
+        'summits': '/'.join(root_name) + '_filtered_summits.bed',
+        'broad_peak': '/'.join(root_name) + '_filtered_peaks.broadPeak',
+        'gapped_peak': '/'.join(root_name) + '_filtered_peaks.gappedPeak'
+    }
+
     rs_handle = process_rnaseq()
     rs_files, rs_meta = rs_handle.run(
         [
@@ -63,6 +97,6 @@ def test_rnaseq_pipeline():
     # Add tests for all files created
     for f_out in rs_files:
         print("RNA SEQ RESULTS FILE:", f_out)
-        # assert chipseq_files[f_out] == files_out[f_out]
+        # assert rs_files[f_out] == files_out[f_out]
         assert os.path.isfile(f_out) is True
         assert os.path.getsize(f_out) > 0

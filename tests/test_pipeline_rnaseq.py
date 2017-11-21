@@ -68,35 +68,22 @@ def test_rnaseq_pipeline():
         ),
     }
 
-    root_name = files['loc'].split("/")
-    root_name[-1] = root_name[-1].replace('.fastq', '')
-
     files_out = {
-        "bam": files['loc'].replace(".fastq", ".bam"),
-        "filtered": files['loc'].replace(".fastq", "_filtered.bam"),
-        "output": files['loc'].replace(".fastq", ".tsv"),
-        'narrow_peak': '/'.join(root_name) + '_filtered_peaks.narrowPeak',
-        'summits': '/'.join(root_name) + '_filtered_summits.bed',
-        'broad_peak': '/'.join(root_name) + '_filtered_peaks.broadPeak',
-        'gapped_peak': '/'.join(root_name) + '_filtered_peaks.gappedPeak'
+        "index": 'tests/data/kallisto.idx',
+        "abundance_h5_file": 'tests/data/kallisto.abundance.h5',
+        "abundance_tsv_file": 'tests/data/kallisto.abundance.tsv',
+        "run_info_file": 'tests/data/kallisto.run_info.json'
     }
 
     rs_handle = process_rnaseq()
-    rs_files, rs_meta = rs_handle.run(
-        [
-            resource_path + 'kallisto.Human.GRCh38.fasta',
-            resource_path + 'kallisto.Human.ERR030872_1.fastq',
-            resource_path + 'kallisto.Human.ERR030872_2.fastq'
-        ],
-        {'assembly' : 'GRCh38'},
-        []
-    )
+    rs_files, rs_meta = rs_handle.run(files, metadata, files_out)
 
-    print(rs_files)
+    # Checks that the returned files matches the expected set of results
+    assert len(rs_files) == 4
 
     # Add tests for all files created
     for f_out in rs_files:
         print("RNA SEQ RESULTS FILE:", f_out)
-        # assert rs_files[f_out] == files_out[f_out]
-        assert os.path.isfile(f_out) is True
-        assert os.path.getsize(f_out) > 0
+        assert rs_files[f_out] == files_out[f_out]
+        assert os.path.isfile(rs_files[f_out]) is True
+        assert os.path.getsize(rs_files[f_out]) > 0

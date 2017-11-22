@@ -10,12 +10,14 @@
         "user": "",
         "url": "https://github.com/Multiscale-Genomics/mg-process-fastq"
     },
+    "status": 0,
     "external": true,
+    "has_custom_viewer": false,
     "keywords": [
         "dna","chromatin"
     ],
     "infrastructure": {
-        "memory": 12.0,
+        "memory": 12,
         "cpus": 4,
         "executable": "/home/pmes/code/mg-process-fastq/process_chipseq.py",
         "clouds": {
@@ -26,12 +28,6 @@
             }
         }
       },
-    "launcher": {
-        "type": "PMES",
-        "queue": "",
-        "executable": "/home/pmes/code/mg-process-fastq/process_chipseq.py",
-        "cpus": 4,
-        "memory": "12.0"
     },
     "input_files": [
         {
@@ -70,6 +66,37 @@
             "required": true,
             "allow_multiple": false
         }
+    ],
+    "input_files_combinations": [
+        [
+            "loc",
+            "genome",
+            "index"
+        ]
+    ],
+    "input_files_combinations_internal": [
+        [
+            {
+                "data_chip_seq": 1
+            },
+            {
+                "sequence_genomic": 1
+            },
+            {
+                "sequence_mapping_index_bwa": "+"
+            }
+        ],
+        [
+            {
+                "data_chip_seq": 1
+            },
+            {
+                "sequence_dna": 1
+            },
+            {
+                "sequence_mapping_index_bwa": "+"
+            }
+        ]
     ],
     "arguments": [
         {
@@ -336,6 +363,5 @@
                 "compressed": "null"
             }
         }
-    ],
-    "control_file": ".results.json"
+    ]
 }

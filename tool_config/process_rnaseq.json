@@ -10,12 +10,14 @@
         "user": "",
         "url": "https://github.com/Multiscale-Genomics/mg-process-fastq"
     },
+    "status": 0,
     "external": true,
+    "has_custom_viewer": false,
     "keywords": [
-        "dna","chromatin"
+        "dna", "rna"
     ],
     "infrastructure": {
-        "memory": 12.0,
+        "memory": 12,
         "cpus": 4,
         "executable": "/home/pmes/code/mg-process-fastq/process_rnaseq.py",
         "clouds": {
@@ -25,13 +27,6 @@
                 "default_cloud": true
             }
         }
-      },
-    "launcher": {
-        "type": "PMES",
-        "queue": "",
-        "executable": "/home/pmes/code/mg-process-fastq/process_rnaseq.py",
-        "cpus": 4,
-        "memory": "12.0"
     },
     "input_files": [
         {
@@ -123,6 +118,5 @@
                 "compressed": "null"
             }
         }
-    ],
-    "control_file": ".results.json"
+    ]
 }

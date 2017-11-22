@@ -33,6 +33,21 @@ rm tests/data/macs2.Human.GCA_000001405.22.fasta.bwa.tar.gz
 rm tests/data/tb.Human.GCA_000001405.22.fasta
 rm tests/data/tb.Human.GCA_000001405.22_gem*
 
+python tests/test_pipelines.py --pipeline genome
+tc=$?
+rc=$(($rc + $tc))
+# ls tests/data/
+rm -rf tests/data/inps.Mouse.GRCm38.fasta.bt2
+rm -rf tests/data/inps.Mouse.GRCm38.fasta.bwa
+rm tests/data/inps.Mouse.GRCm38.fasta.bt2.tar.gz
+rm tests/data/inps.Mouse.GRCm38.fasta.bwa.tar.gz
+rm -rf tests/data/macs2.Human.GCA_000001405.22.fasta.bt2
+rm -rf tests/data/macs2.Human.GCA_000001405.22.fasta.bwa
+rm tests/data/macs2.Human.GCA_000001405.22.fasta.bt2.tar.gz
+rm tests/data/macs2.Human.GCA_000001405.22.fasta.bwa.tar.gz
+rm tests/data/tb.Human.GCA_000001405.22.fasta
+rm tests/data/tb.Human.GCA_000001405.22_gem*
+
 if [[ $pv == "2.7.12" ]]; then
     python tests/test_toolchains.py --pipeline chipseq
     tc=$?

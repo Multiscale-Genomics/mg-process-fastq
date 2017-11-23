@@ -214,15 +214,15 @@ if __name__ == '__main__':
         if chipseq_toolchain(VERBOSE) > 0:
             sys.exit(1)
 
-    # if 'hic' in PIPELINES or 'all' in PIPELINES:
-    #     print('HIC')
-    #     if hic_toolchain(VERBOSE) > 0:
-    #         sys.exit(1)
+    if 'hic' in PIPELINES or 'all' in PIPELINES:
+        print('HIC')
+        if hic_toolchain(VERBOSE) > 0:
+            sys.exit(1)
 
-    # if 'mnaseseq' in PIPELINES or 'all' in PIPELINES:
-    #     print('MNASESEQ')
-    #     if mnaseseq_toolchain(VERBOSE) > 0:
-    #         sys.exit(1)
+    if 'mnaseseq' in PIPELINES or 'all' in PIPELINES:
+        print('MNASESEQ')
+        if mnaseseq_toolchain(VERBOSE) > 0:
+            sys.exit(1)
 
     if 'rnaseq' in PIPELINES or 'all' in PIPELINES:
         print('RNASEQ')

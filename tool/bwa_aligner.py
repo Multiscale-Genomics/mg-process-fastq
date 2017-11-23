@@ -86,7 +86,7 @@ class bwaAlignerTool(Tool):
 
         gfl = genome_file_loc.split("/")
         genome_fa_ln = genome_idx.replace('.tar.gz', '/') + gfl[-1]
-        shutil.move(genome_file_loc, genome_fa_ln)
+        shutil.copy(genome_file_loc, genome_fa_ln)
 
         out_bam = read_file_loc + '.out.bam'
         common_handle = common()

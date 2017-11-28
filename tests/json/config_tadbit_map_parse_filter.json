@@ -25,7 +25,7 @@
     "arguments": [
         {
             "name": "project",
-            "value": "/home/dcastillo/workspace/vre/mg-process-fastq-tadbit/tests/data/"
+            "value": "/scratch/results/vre/"
         },
         {
             "name": "description",

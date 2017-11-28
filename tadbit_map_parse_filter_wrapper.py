@@ -78,6 +78,7 @@ class tadbit_map_parse_filter(Workflow):
         
         # Number of cores available
         num_cores = multiprocessing.cpu_count()
+        
         self.configuration["ncpus"] = num_cores
         
         tmp_name = ''.join([letters[int(random()*52)]for _ in xrange(5)])
@@ -192,8 +193,15 @@ class tadbit_map_parse_filter(Workflow):
                 })
             m_results_meta["paired_reads"].error = True
             m_results_meta["paired_reads"].exception = tpm_meta['error']
-
-            
+        
+        for file_path in tfm1_files[:-2]: 
+            if os.path.isfile(file_path):
+                os.unlink(file_path)
+                
+        for file_path in tfm2_files[:-2]: 
+            if os.path.isfile(file_path):
+                os.unlink(file_path)
+        
         print("TB PARSED FILES:", tpm_files)
           
         input_metadata = remap(self.configuration, "ncpus", "chromosomes","workdir",'filters')
@@ -208,7 +216,7 @@ class tadbit_map_parse_filter(Workflow):
         input_metadata['root_dir'] = self.configuration['project'] 
         input_metadata['custom_filter'] = True
         input_metadata['histogram'] = True
-          
+        
         tbf = tbFilterTool()
         tf_files, tf_meta = tbf.run(tpm_files, [], input_metadata)
         with open(summary_file, 'a') as outfile:

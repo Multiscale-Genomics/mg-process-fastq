@@ -37,7 +37,7 @@ except ImportError:
 from basic_modules.tool import Tool
 from basic_modules.metadata import Metadata
 
-from os import path
+from os import path, unlink
 from pytadbit.mapping.mapper import full_mapping
 from pytadbit.utils.fastq_utils import quality_plot
 
@@ -156,25 +156,27 @@ class tbFullMappingTool(Tool):
         file_name = path.basename(fastq_file)
         file_name = file_name.replace('.fastq'+dsrc+gzipped, '')
         file_name = file_name.replace('.fq'+dsrc+gzipped, '')
-        fastq_file_tmp = workdir+'/'+file_name    
-        
-        with open(fastq_file_tmp + "_tmp.fastq"+dsrc+gzipped, "wb") as f_out:
-            with open(fastq_file, "rb") as f_in:
-                f_out.write(f_in.read())
+        fastq_file_tmp = workdir+'/'+file_name
 
         map_files = full_mapping(
-            gem_file, fastq_file_tmp + "_tmp.fastq"+dsrc+gzipped, output_dir,
+            gem_file, fastq_file, output_dir,
             r_enz=enzyme_name, windows=windows, frag_map=True, nthreads=ncpus,
             clean=True, temp_dir=workdir
         )
 
         with open(full_file, "wb") as f_out:
-            with open(fastq_file_tmp + "_tmp"+dsrc+"_full_1-end.map", "rb") as f_in:
+            with open(fastq_file_tmp +dsrc+"_full_1-end.map", "rb") as f_in:
                 f_out.write(f_in.read())
-
+        
+        if path.isfile(fastq_file_tmp +dsrc+"_full_1-end.map"):
+            unlink(fastq_file_tmp +dsrc+"_full_1-end.map")
+        
         with open(frag_file, "wb") as f_out:
-            with open(fastq_file_tmp + "_tmp"+dsrc+"_frag_1-end.map", "rb") as f_in:
+            with open(fastq_file_tmp +dsrc+"_frag_1-end.map", "rb") as f_in:
                 f_out.write(f_in.read())
+        
+        if path.isfile(fastq_file_tmp +dsrc+"_frag_1-end.map"):
+            unlink(fastq_file_tmp +dsrc+"_frag_1-end.map")
 
         return True
 

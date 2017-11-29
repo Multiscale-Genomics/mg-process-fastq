@@ -102,140 +102,140 @@
         {
             "name": "macs_gsize_param",
             "description": "Mappable genome size",
-            "help": "",
+            "help": "Mappable genome size",
             "type": "string",
             "required": false,
             "default": "null"
         }, {
             "name": "macs_tsize_param",
             "description": "Size of sequencing tags",
-            "help": "",
+            "help": "Size of sequencing tags",
             "type": "string",
             "required": false,
             "default": "null"
         }, {
             "name": "macs_bw_param",
-            "description": "Band width for scanning the genome when model building",
-            "help": "",
+            "description": "Band width",
+            "help": "Band width for scanning the genome when model building",
             "type": "string",
             "required": false,
             "default": "null"
         }, {
             "name": "macs_qvalue_param",
-            "description": "Minimum FDR cutoff for calling significant regions",
-            "help": "",
+            "description": "Minimum FDR",
+            "help": "Minimum FDR cutoff for calling significant regions",
             "type": "string",
             "required": false,
             "default": "null"
         }, {
             "name": "macs_pvalue_param",
             "description": "p-value cutoff",
-            "help": "",
+            "help": "p-value cutoff",
             "type": "string",
             "required": false,
             "default": "null"
         }, {
             "name": "macs_mfold_param",
-            "description": "Region to selection within an m-fold range of high-confidence enrichment ratio against the background for model building",
-            "help": "",
+            "description": "m-fold range",
+            "help": "Region to select within an m-fold range of high-confidence enrichment ratio against the background for model building",
             "type": "string",
             "required": false,
             "default": "null"
         }, {
             "name": "macs_nolambda_param",
-            "description": "Use background lambda instead of local",
-            "help": "",
-            "type": "string",
+            "description": "Use background lambda",
+            "help": "Use background lambda instead of local",
+            "type": "boolean",
             "required": false,
             "default": "null"
         }, {
             "name": "macs_slocal_param",
             "description": "Small local regions",
-            "help": "",
-            "type": "string",
+            "help": "Small local regions",
+            "type": "boolean",
             "required": false,
             "default": "null"
         }, {
             "name": "macs_llocal_param",
             "description": "Large local regions",
-            "help": "",
-            "type": "string",
+            "help": "Large local regions",
+            "type": "boolean",
             "required": false,
             "default": "null"
         }, {
             "name": "macs_fix-bimodal_param",
-            "description": "Turn on aut paired model process",
-            "help": "",
-            "type": "string",
+            "description": "Fix Bimodal",
+            "help": "Turn on auto paired model process",
+            "type": "bool",
             "required": false,
             "default": "null"
         }, {
             "name": "macs_nomodel_param",
-            "description": "Negate building shifting models",
-            "help": "",
-            "type": "string",
+            "description": "No Model",
+            "help": "Negate building shifting models",
+            "type": "bool",
             "required": false,
             "default": "null"
         }, {
             "name": "macs_extsize_param",
-            "description": "Used with momodel to expand read size to fixed-size fragments",
-            "help": "",
+            "description": "Extend Reads",
+            "help": "Used with nomodel to expand read size to fixed-size fragments",
             "type": "string",
             "required": false,
             "default": "null"
         }, {
             "name": "macs_shift_param",
-            "description": "",
-            "help": "",
+            "description": "Arbitary bp shift",
+            "help": "When using nomodel this value is used to adjust the cutting ends before applying the extsize",
             "type": "string",
             "required": false,
             "default": "null"
         }, {
             "name": "macs_keep-dups_param",
-            "description": "Controls for counting of duplicate tags",
-            "help": "",
+            "description": "Control counting duplicate tags",
+            "help": "Controls for counting of duplicate tags",
             "type": "string",
             "required": false,
             "default": "null"
         }, {
             "name": "macs_broad_param",
-            "description": "Control the placing highly eriched regions into a broad region with loose cutoffs",
-            "help": "",
-            "type": "string",
+            "description": "Enrichment region locations",
+            "help": "Control the placing highly enriched regions into a broad region with loose cutoffs",
+            "type": "boolean",
             "required": false,
             "default": "null"
         }, {
             "name": "macs_broad-cutoff_param",
             "description": "Cutoff for broad region",
-            "help": "",
+            "help": "Cutoff for broad region, requires macs_keep-dups_param to be set",
             "type": "string",
             "required": false,
             "default": "null"
         }, {
             "name": "macs_to-large_param",
             "description": "Scale up small datasets",
-            "help": "",
-            "type": "string",
+            "help": "Scale up small datasets",
+            "type": "boolean",
             "required": false,
             "default": "null"
         }, {
             "name": "macs_down-sample_param",
-            "description": "Random sampling to to downsize the dataset",
-            "help": "",
-            "type": "string",
+            "description": "Downsize large datasets",
+            "help": "Random sampling to to downsize the dataset",
+            "type": "boolean",
             "required": false,
             "default": "null"
         }, {
             "name": "macs_bdg_param",
-            "description": "Store the fragment pileup and scores in bedGraph files",
-            "help": "",
+            "description": "Store scores",
+            "help": "Store the fragment pileup and scores in bedGraph files",
             "type": "string",
             "required": false,
             "default": "null"
         }, {
             "name": "macs_call-summits_param",
-            "description": "Reanalyse the shape of the profile to deconvolve subpeaks",
-            "help": "",
+            "description": "Call summits",
+            "help": "Reanalyse the shape of the profile to deconvolve subpeaks",
             "type": "string",
             "required": false,
             "default": "null"

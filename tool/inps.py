@@ -53,8 +53,8 @@ class inps(Tool):
         print("iNPS Peak Caller")
         Tool.__init__(self)
 
-    @task(bam_file=FILE_IN, peak_bed=FILE_OUT)
-    def inps_peak_calling(self, bam_file, peak_bed):
+    @task(bam_file=FILE_IN, peak_bed=FILE_OUT, inps_params=IN)
+    def inps_peak_calling(self, bam_file, peak_bed, inps_params):
         """
         Convert Bam to Bed then make Nucleosome peak calls. These are saved as
         bed files That can then get displayed on genome browsers.
@@ -76,7 +76,8 @@ class inps(Tool):
         inps_cmd = os.path.join(os.path.expanduser("~"), "bin/iNPS_V1.2.2.py")
 
         command_line_1 = 'bedtools bamtobed -i ' + bam_file
-        command_line_2 = "python3 " + inps_cmd + " -i " + bed_file + " -o " + peak_bed + "_tmp"
+        command_line_2 = "python3 " + inps_cmd + " " + " ".join(inps_params)
+        command_line_2 = command_line_2 + " -i " + bed_file + " -o " + peak_bed + "_tmp"
 
         print("iNPS - cmd1:", command_line_1)
         print("iNPS - cmd2:", command_line_2)
@@ -117,9 +118,22 @@ class inps(Tool):
 
         """
 
+        command_params = []
+
+        if "inps_sp_param" in self.configuration:
+            command_params = command_params + [
+                "--s_p", str(self.configuration["inps_sp_param"])]
+        if "inps_pe_max_param" in self.configuration:
+            command_params = command_params + [
+                "--pe_max", str(self.configuration["inps_pe_max_param"])]
+        if "inps_pe_min_param" in self.configuration:
+            command_params = command_params + [
+                "--pe_min", str(self.configuration["inps_pe_min_param"])]
+
         results = self.inps_peak_calling(
             input_files["bam"],
-            output_files["bed"]
+            output_files["bed"],
+            command_params
         )
         results = compss_wait_on(results)
 

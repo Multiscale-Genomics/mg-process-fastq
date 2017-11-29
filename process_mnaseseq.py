@@ -82,9 +82,9 @@ class process_mnaseseq(Workflow):
         )
 
         output_metadata["bam"] = bwa_meta["bam"]
-        tool_name = output_metadata['bed'].meta_data['tool']
-        output_metadata['bed'].meta_data['tool_description'] = tool_name
-        output_metadata['bed'].meta_data['tool'] = "process_mnaseseq"
+        tool_name = output_metadata['bam'].meta_data['tool']
+        output_metadata['bam'].meta_data['tool_description'] = tool_name
+        output_metadata['bam'].meta_data['tool'] = "process_mnaseseq"
 
         inps_tool = inps()
         out_peak_bed, out_peak_bed_meta = inps_tool.run(

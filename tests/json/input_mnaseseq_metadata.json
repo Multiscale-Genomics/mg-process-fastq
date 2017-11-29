@@ -2,7 +2,7 @@
     {
         "compressed": 0,
         "_id": "59b7e020d9422a5969b65378",
-        "data_type": "ChIP-seq",
+        "data_type": "data_mnase_seq",
         "file_type": "fastq",
         "file_path": "tests/data/inps.Mouse.DRR000386.fastq.fastq",
         "sources": [],

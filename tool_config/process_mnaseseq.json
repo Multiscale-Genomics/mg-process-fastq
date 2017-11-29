@@ -10,7 +10,9 @@
         "user": "",
         "url": "https://github.com/Multiscale-Genomics/mg-process-fastq"
     },
+    "status": 0,
     "external": true,
+    "has_custom_viewer": false,
     "keywords": [
         "dna","chromatin"
     ],
@@ -25,13 +27,6 @@
                 "default_cloud": true
             }
         }
-      },
-    "launcher": {
-        "type": "PMES",
-        "queue": "",
-        "executable": "/home/pmes/code/mg-process-fastq/process_mnaseseq.py",
-        "cpus": 4,
-        "memory": "12.0"
     },
     "input_files": [
         {
@@ -60,7 +55,61 @@
             "allow_multiple": false
         }
     ],
-    "arguments": [],
+    "input_files_combinations": [
+        [
+            "loc",
+            "genome",
+            "index"
+        ]
+    ],
+    "input_files_combinations_internal": [
+        [
+            {
+                "data_mnase_seq": 1
+            },
+            {
+                "sequence_genomic": 1
+            },
+            {
+                "sequence_mapping_index_bwa": "+"
+            }
+        ],
+        [
+            {
+                "data_mnase_seq": 1
+            },
+            {
+                "sequence_dna": 1
+            },
+            {
+                "sequence_mapping_index_bwa": "+"
+            }
+        ]
+    ],
+    "arguments": [
+        {
+            "name": "inps_sp_param",
+            "description": "Single or Paired end",
+            "help": "Descriptor about whether the input data is single or paired end",
+            "type": "enum",
+            "required": false,
+            "default": "s"
+        }, {
+            "name": "inps_pe_max_param",
+            "description": "Max limit of paired end tags",
+            "help": "Upper limit of length of paired end tags. For use with only paired end data, ignored if single",
+            "type": "string",
+            "required": false,
+            "default": "200"
+        }, {
+            "name": "inps_sp_param",
+            "description": "Single or Paired end",
+            "help": "Lower limit of length of paired end tags. For use with only paired end data, ignored if single",
+            "type": "string",
+            "required": false,
+            "default": "100"
+        }, {
+    ],
     "output_files": [
         {
             "required": true,
@@ -73,7 +122,7 @@
                     "tool": "process_mnaseseq",
                     "description": "Aligned sequences"
                 },
-                "file_path": "macs2.bam",
+                "file_path": "inps.bam",
                 "data_type": "data_mnase_seq",
                 "compressed": "null"
             }
@@ -93,6 +142,5 @@
                 "compressed": "null"
             }
         }
-    ],
-    "control_file": ".results.json"
+    ]
 }

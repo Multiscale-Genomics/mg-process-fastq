@@ -72,12 +72,11 @@ class inps(Tool):
             Location of the collated bed file of nucleosome peak calls
         """
         bed_file = bam_file + ".bed"
-        pyenv3 = os.path.join(os.path.expanduser("~"), "bin/py3")
+        # pyenv3 = os.path.join(os.path.expanduser("~"), "bin/py3")
         inps_cmd = os.path.join(os.path.expanduser("~"), "bin/iNPS_V1.2.2.py")
 
         command_line_1 = 'bedtools bamtobed -i ' + bam_file
-        pyenv3 = os.path.join(os.path.expanduser("~"), "bin/py3")
-        command_line_2 = pyenv3 + ' ' + inps_cmd + ' -i ' + bed_file + ' -o ' + peak_bed + "_tmp"
+        command_line_2 = "python3 " + inps_cmd + " -i " + bed_file + " -o " + peak_bed + "_tmp"
 
         print("iNPS - cmd1:", command_line_1)
         print("iNPS - cmd2:", command_line_2)

@@ -109,7 +109,7 @@ class macs2(Tool):
         bgd_command = '-c ' + bam_file_bgd
 
         command_param = [
-            'macs2 callpeak', " ".join(macs_params), '-t', bam_file, 'n', name, bgd_command,
+            'macs2 callpeak', " ".join(macs_params), '-t', bam_file, '-n', name, bgd_command,
             ' --outdir ', output_dir
         ]
         command_line = ' '.join(command_param)

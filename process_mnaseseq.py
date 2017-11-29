@@ -81,22 +81,34 @@ class process_mnaseseq(Workflow):
             {"output": output_files["bam"]}
         )
 
-        output_metadata["bam"] = bwa_meta["bam"]
-        tool_name = output_metadata['bam'].meta_data['tool']
-        output_metadata['bam'].meta_data['tool_description'] = tool_name
-        output_metadata['bam'].meta_data['tool'] = "process_mnaseseq"
+        output_files_generated = {}
+
+        try:
+            output_files_generated["bam"] = bwa_files["bam"]
+            output_metadata["bam"] = bwa_meta["bam"]
+
+            tool_name = output_metadata['bam'].meta_data['tool']
+            output_metadata['bam'].meta_data['tool_description'] = tool_name
+            output_metadata['bam'].meta_data['tool'] = "process_mnaseseq"
+        except KeyError:
+            logger.fatal("BWA Alignment failed")
 
         inps_tool = inps()
-        out_peak_bed, out_peak_bed_meta = inps_tool.run(
+        inps_files, inps_meta = inps_tool.run(
             remap(bwa_files, "bam"),
             remap(bwa_meta, "bam"),
             {"bed": output_files["bed"]}
         )
 
-        output_metadata["bed"] = out_peak_bed_meta["bed"]
-        tool_name = output_metadata['bed'].meta_data['tool']
-        output_metadata['bed'].meta_data['tool_description'] = tool_name
-        output_metadata['bed'].meta_data['tool'] = "process_mnaseseq"
+        try:
+            output_files_generated["bed"] = inps_files["bed"]
+            output_metadata["bed"] = inps_meta["bed"]
+
+            tool_name = output_metadata['bed'].meta_data['tool']
+            output_metadata['bed'].meta_data['tool_description'] = tool_name
+            output_metadata['bed'].meta_data['tool'] = "process_mnaseseq"
+        except KeyError:
+            logger.fatal("BWA Alignment failed")
 
         return (output_files, output_metadata)
 

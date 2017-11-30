@@ -4,7 +4,7 @@
         "_id": "59b7e020d9422a5969b65378",
         "data_type": "hic_sequences",
         "file_type": "bam",
-        "file_path": "/home/dcastillo/workspace/vre/mg-process-fastq-tadbit/tests/data/paired_reads.bam",
+        "file_path": "/home/dcastillo/workspace/vre/mg-process-fastq-tadbit/tests/data/hic_chr10_paired_reads.bam",
         "sources": null,
         "taxon_id": "9606",
         "meta_data": {
@@ -18,7 +18,7 @@
         "_id": "59b7e020d9422a5969b65372",
         "data_type": "hic_biases",
         "file_type": "pickle",
-        "file_path": "/home/dcastillo/workspace/vre/mg-process-fastq-tadbit/tests/data/biases_100kb_138d14c5c1.pickle",
+        "file_path": "/home/dcastillo/workspace/vre/mg-process-fastq-tadbit/tests/data/hic_chr10_biases_20kb_825640f8ea.pickle",
         "sources": null,
         "taxon_id": "9606",
         "meta_data": {

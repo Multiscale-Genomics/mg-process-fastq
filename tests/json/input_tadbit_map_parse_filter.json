@@ -4,7 +4,7 @@
         "_id": "59b7e020d9422a5969b65378",
         "data_type": "hic_reads",
         "file_type": "fastq",
-        "file_path": "/home/dcastillo/workspace/vre/mg-process-fastq-tadbit/tests/data/tb.Human.SRR1658573_1.fastq",
+        "file_path": "/scratch/results/vre/DHYLtadHiC-mmERYS1-R1__05JUN15_PE100_C6W35AC-B__DHYLtadHiC-mmERYS1-R1_NoIndex_L003_R1_001.fastq.gz",
         "sources": null,
         "taxon_id": "9606",
         "meta_data": {
@@ -18,7 +18,7 @@
         "_id": "59b7e020d9422a5969b65372",
         "data_type": "hic_reads",
         "file_type": "fastq",
-        "file_path": "/home/dcastillo/workspace/vre/mg-process-fastq-tadbit/tests/data/tb.Human.SRR1658573_2.fastq",
+        "file_path": "/scratch/results/vre/DHYLtadHiC-mmERYS1-R1__05JUN15_PE100_C6W35AC-B__DHYLtadHiC-mmERYS1-R1_NoIndex_L003_R2_001.fastq.gz",
         "sources": null,
         "taxon_id": "9606",
         "meta_data": {

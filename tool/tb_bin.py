@@ -61,7 +61,7 @@ class tbBinTool(Tool):
 
     @task(bamin=FILE_IN, biases=FILE_IN, resolution=IN, c=IN, c2=IN, norm=IN, workdir=IN)
     # @constraint(ProcessorCoreCount=16)
-    def tb_bin(self, bamin, biases, resolution, coord1, coord2, norm, workdir, ncpus="1"):
+    def tb_bin(self, bamin, biases, resolution, coord1, coord2, norm, workdir, ncpus="1", metadata=None):
         """
         Function to bin to a given resolution the Hi-C
         matrix
@@ -173,8 +173,8 @@ class tbBinTool(Tool):
         hic_contacts_matrix_raw_fig = workdir+"/genomic_maps_raw.png"
         focus=None
         by_chrom=None
-        if start1:
-            focus=((start1/resolution),(end1/resolution))
+        if start1 is not None:
+            focus=((start1/resolution) if start1 != 0 else 1,(end1/resolution))
         else:
             by_chrom='all'
         hic_map(imx, resolution, savefig=hic_contacts_matrix_raw_fig, normalized=False,by_chrom=by_chrom,focus=focus)
@@ -185,6 +185,24 @@ class tbBinTool(Tool):
             hic_contacts_matrix_norm_fig = workdir+"/genomic_maps_nrm.png"    
             hic_map(imx, resolution, savefig=hic_contacts_matrix_norm_fig, normalized=True,by_chrom=by_chrom,focus=focus)
             output_files.append(hic_contacts_matrix_norm_fig)
+           
+        json_chr = Chromosome(name="VRE Chromosome", species= metadata["species"], assembly=metadata["assembly"], max_tad_size=260000)
+        json_chr.add_experiment("exp1", resolution, 
+                                 hic_data=imx,
+                                 silent=True)
+        
+        exp = json_chr.experiments[0]
+        json_file_name = out_files['RAW'].replace(".abc",".json")
+        if focus:
+            if focus[1]-focus[0] > 1200:
+                print("TADkit json too big, limiting to 1200 bins")
+                focus = (focus[0],focus[0]+1200)
+        else:
+            if exp.size > 1200:
+                print("TADkit json too big, limiting to 1200 bins")
+                focus = (1,1200)
+        exp.write_json(json_file_name,focus=focus)
+        output_files.append(json_file_name)
         
         return (output_files, output_metadata)
 
@@ -262,9 +280,11 @@ class tbBinTool(Tool):
             root_name = metadata['workdir']
         
         # input and output share most metadata
+        project_metadata = {}
+        project_metadata["species"] = metadata["species"]
+        project_metadata["assembly"] = metadata["assembly"]
         
-        
-        output_files, output_metadata = self.tb_bin(bamin, biases, resolution, coord1, coord2, norm, root_name, ncpus)
+        output_files, output_metadata = self.tb_bin(bamin, biases, resolution, coord1, coord2, norm, root_name, ncpus, project_metadata)
 
         return (output_files, output_metadata)
 

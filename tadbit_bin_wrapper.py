@@ -11,6 +11,7 @@ import argparse
 import sys
 import json
 import multiprocessing
+import urllib2
 
 from random import random
 from string import ascii_letters as letters
@@ -116,6 +117,13 @@ class tadbit_bin(Workflow):
         if 'hic_biases' in input_files:
             in_files.append(convert_from_unicode(input_files['hic_biases']))
             input_metadata["norm"] = ['raw','norm']
+        input_metadata["species"] = "Unknown"
+        input_metadata["assembly"] = "Unknown"
+        if "assembly" in metadata['bamin'].meta_data:
+            input_metadata["assembly"] = metadata['bamin'].meta_data["assembly"]
+        if metadata['bamin'].taxon_id:
+            dt = json.load(urllib2.urlopen("http://www.ebi.ac.uk/ena/data/taxonomy/v1/taxon/tax-id/"+metadata['bamin'].taxon_id))            
+            input_metadata["species"] = dt['scientificName']
         #hic_data = HiC_data((), len(bins_dict), sections, bins_dict, resolution=int(input_metadata['resolution']))
         tb = tbBinTool()
         tb_files, tb_meta = tb.run(in_files, [], input_metadata)
@@ -123,17 +131,18 @@ class tadbit_bin(Workflow):
         m_results_files["bin_stats"] = self.configuration['project']+"/bin_stats.tar.gz"
         m_results_files["hic_contacts_matrix_raw"] = self.configuration['project']+"/"+os.path.basename(tb_files[0])
         os.rename(tb_files[0], m_results_files["hic_contacts_matrix_raw"])
-        if len(tb_files) > 2:
+        if len(input_metadata["norm"]) > 1:
             m_results_files["hic_contacts_matrix_norm"] = self.configuration['project']+"/"+os.path.basename(tb_files[2])
             os.rename(tb_files[2], m_results_files["hic_contacts_matrix_norm"])
             
         with tarfile.open(m_results_files["bin_stats"], "w:gz") as tar:
             tar.add(tb_files[1],arcname=os.path.basename(tb_files[1]))
-            if len(tb_files) > 2:
+            if len(input_metadata["norm"]) > 1:
                 tar.add(tb_files[3],arcname=os.path.basename(tb_files[3]))
+            tar.add(tb_files[-1],arcname=os.path.basename(tb_files[-1]))
         if os.path.isdir(tb_files[1]):
             clean_temps(tb_files[1])
-        if len(tb_files) > 2:
+        if len(input_metadata["norm"]) > 1:
             if os.path.isdir(tb_files[3]):
                 clean_temps(tb_files[3])
             
@@ -161,7 +170,7 @@ class tadbit_bin(Workflow):
                     "description": "TADbit HiC matrices in png format",
                     "visible": False
                 })
-        if len(tb_files) > 2:
+        if len(input_metadata["norm"]) > 1:
             m_results_meta["hic_contacts_matrix_norm"] = Metadata(
                 data_type="hic_contacts_matrix",
                 file_type="TXT",

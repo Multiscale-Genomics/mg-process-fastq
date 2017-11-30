@@ -25,7 +25,7 @@
             "type": "string",
             "required": true,
             "default": "100000",
-            "value" : "100000"
+            "value" : "20000"
         }
     ],
     "output_files": [

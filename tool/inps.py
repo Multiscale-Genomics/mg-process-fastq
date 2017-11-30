@@ -53,7 +53,10 @@ class inps(Tool):
         print("iNPS Peak Caller")
         Tool.__init__(self)
 
-    @task(bam_file=FILE_IN, peak_bed=FILE_OUT, inps_params=IN)
+    @task(
+        returns=int,
+        bam_file=FILE_IN, peak_bed=FILE_OUT, inps_params=IN,
+        isModifier=False)
     def inps_peak_calling(self, bam_file, peak_bed, inps_params):
         """
         Convert Bam to Bed then make Nucleosome peak calls. These are saved as
@@ -95,7 +98,7 @@ class inps(Tool):
             with open(peak_bed, "wb") as f_out:
                 f_out.write(f_in.read())
 
-        return True
+        return 0
 
     def run(self, input_files, input_metadata, output_files):
         """

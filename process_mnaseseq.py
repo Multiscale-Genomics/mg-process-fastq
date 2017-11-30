@@ -110,7 +110,8 @@ class process_mnaseseq(Workflow):
         except KeyError:
             logger.fatal("BWA Alignment failed")
 
-        return (output_files, output_metadata)
+        print("MNASESEQ RESULTS:", output_metadata)
+        return output_files, output_metadata
 
 # ------------------------------------------------------------------------------
 

@@ -6,7 +6,7 @@
         "file_type": "fastq",
         "file_path": "tests/data/inps.Mouse.DRR000386.fastq.fastq",
         "sources": [],
-        "taxon_id": 9606,
+        "taxon_id": 10090,
         "meta_data": {
             "visible": true,
             "validated": 1,
@@ -19,7 +19,7 @@
         "file_type": "FASTA",
         "file_path": "tests/data/inps.Mouse.GRCm38.fasta",
         "sources": [],
-        "taxon_id": 9606,
+        "taxon_id": 10090,
         "meta_data": {
             "visible": true,
             "validated": 1,
@@ -32,7 +32,7 @@
         "file_type": "TAR",
         "file_path": "tests/data/inps.Mouse.GRCm38.fasta.bwa.tar.gz",
         "sources": ["tests/data/inps.Mouse.GRCm38.fasta"],
-        "taxon_id": 9606,
+        "taxon_id": 10090,
         "meta_data": {
             "visible": true,
             "validated": 1,

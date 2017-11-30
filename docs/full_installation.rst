@@ -155,7 +155,7 @@ iNPS Peak Caller
    cd ${HOME}/bin
    cat iNPS <<EOL
    #!/usr/bin/env bash
-   python3 ${HOME}/lib/iNPS/iNPS_V1.2.2.py
+   python3 ${HOME}/lib/iNPS/iNPS_V1.2.2.py "$@"
    EOL
 
    chmod 777 iNPS

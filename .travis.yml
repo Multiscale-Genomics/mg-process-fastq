@@ -125,11 +125,11 @@ install:
     - tar -xzf GEMTools-static-core2-1.7.1.tar.gz
 
     # iNPS Peak Caller
-    #- cd ${HOME}/lib
-    #- mkdir iNPS
-    #- cd iNPS
-    #- wget http://www.picb.ac.cn/hanlab/files/iNPS_V1.2.2.zip
-    #- unzip iNPS_V1.2.2.zip
+    - cd ${HOME}/lib
+    - mkdir iNPS
+    - cd iNPS
+    - wget http://www.picb.ac.cn/hanlab/files/iNPS_V1.2.2.zip
+    - unzip iNPS_V1.2.2.zip
 
     # Kallisto
     - cd ${HOME}/lib
@@ -176,6 +176,11 @@ before_script :
     - ln -s ${HOME}/lib/wigToBigWig wigToBigWig
     #- ln -s ${HOME}/lib/iNPS_V1.2.2.py iNPS_V1.2.2.py
     - ln -s ${HOME}/lib/kallisto_linux-v0.43.1/kallisto kallisto
+
+    - cat iNPS <<EOL
+   #!/usr/bin/env bash
+   python3 ${HOME}/lib/iNPS/iNPS_V1.2.2.py "$@"
+   EOL
 
     - ln -s ${HOME}/lib/bwa/bwa bwa
 

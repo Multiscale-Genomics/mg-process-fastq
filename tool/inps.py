@@ -76,10 +76,9 @@ class inps(Tool):
         """
         bed_file = bam_file + ".bed"
         # pyenv3 = os.path.join(os.path.expanduser("~"), "bin/py3")
-        inps_cmd = os.path.join(os.path.expanduser("~"), "bin/iNPS_V1.2.2.py")
 
         command_line_1 = 'bedtools bamtobed -i ' + bam_file
-        command_line_2 = "python3 " + inps_cmd + " " + " ".join(inps_params)
+        command_line_2 = "iNPS " + " ".join(inps_params)
         command_line_2 = command_line_2 + " -i " + bed_file + " -o " + peak_bed + "_tmp"
 
         print("iNPS - cmd1:", command_line_1)

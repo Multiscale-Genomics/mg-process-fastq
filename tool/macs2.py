@@ -303,19 +303,26 @@ class macs2(Tool):
         if "macs_mfold_param" in self.configuration:
             command_params = command_params + [
                 "--mfold", str(self.configuration["macs_mfold_param"])]
-        if "macs_nolambda_param" in self.configuration:
-            command_params = command_params + [
-                "--nolambda", str(self.configuration["macs_nolambda_param"])]
+        if (
+                "macs_nolambda_param" in self.configuration and
+                self.configuration["macs_nolambda_param"] is True
+            ):
+            command_params = command_params + ["--nolambda"]
         if "macs_slocal_param" in self.configuration:
             command_params = command_params + [
                 "--slocal", str(self.configuration["macs_slocal_param"])]
         if "macs_llocal_param" in self.configuration:
             command_params = command_params + [
                 "--llocal", str(self.configuration["macs_llocal_param"])]
-        if "macs_fix-bimodal_param" in self.configuration:
-            command_params = command_params + [
-                "--fix-bimodal", str(self.configuration["macs_fix-bimodal_param"])]
-        if "macs_nomodel_param" in self.configuration:
+        if (
+                "macs_fix-bimodal_param" in self.configuration and
+                self.configuration["macs_fix-bimodal_param"] is True
+            ):
+            command_params = command_params + ["--fix-bimodal"]
+        if (
+                "macs_nomodel_param" in self.configuration and
+                self.configuration["macs_fix-bimodal_param"] is True
+            ):
             command_params = command_params + ["--nomodel"]
         if "macs_extsize_param" in self.configuration:
             command_params = command_params + [
@@ -326,9 +333,11 @@ class macs2(Tool):
         if "macs_keep-dup_param" in self.configuration:
             command_params = command_params + [
                 "--keep-dup", str(self.configuration["macs_keep-dup_param"])]
-        if "macs_broad_param" in self.configuration:
-            command_params = command_params + [
-                "--broad", str(self.configuration["macs_broad_param"])]
+        if (
+                "macs_broad_param" in self.configuration and
+                self.configuration["macs_broad_param"] is True
+            ):
+            command_params = command_params + ["--broad"]
         if "macs_broad-cutoff_param" in self.configuration:
             command_params = command_params + [
                 "--broad-cutoff", str(self.configuration["macs_broad-cutoff_param"])]

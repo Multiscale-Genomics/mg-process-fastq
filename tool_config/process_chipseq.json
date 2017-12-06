@@ -290,7 +290,7 @@
         }, {
             "required": false,
             "allow_multiple": false,
-            "name": "filtered background",
+            "name": "filtered_bg",
             "file": {
                 "file_type": "bam_bg",
                 "meta_data": {

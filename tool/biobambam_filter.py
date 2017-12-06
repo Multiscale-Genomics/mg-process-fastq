@@ -80,7 +80,8 @@ class biobambam(Tool):
         """
 
         td_list = bam_file_in.split("/")
-        print("BIOBAMBAM: bam_file_in:", bam_file_in)
+        logger.info("BIOBAMBAM: bam_file_in:", bam_file_in)
+        logger.info("BIOBAMBAM: bam_file_out:", bam_file_out)
         tmp_dir = "/".join(td_list[0:-1])
 
         command_line = 'bamsormadup --tmpfile=' + tmp_dir
@@ -93,7 +94,8 @@ class biobambam(Tool):
                 with open(bam_tmp_out, "w") as f_out:
                     process = subprocess.Popen(args, stdin=f_in, stdout=f_out)
                     process.wait()
-        except IOError:
+        except IOError as error:
+            logger.fatal("I/O error({0}): {1}".format(error.errno, error.strerror))
             return False
 
         try:
@@ -101,6 +103,7 @@ class biobambam(Tool):
                 with open(bam_tmp_out, "rb") as f_in:
                     f_out.write(f_in.read())
         except IOError:
+            logger.fatal("I/O error({0}): {1}".format(error.errno, error.strerror))
             return False
 
         return True

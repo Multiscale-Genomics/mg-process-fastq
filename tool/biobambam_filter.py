@@ -89,6 +89,8 @@ class biobambam(Tool):
 
         bam_tmp_out = tmp_dir + '/' + td_list[-1] + '.filtered.tmp.bam'
 
+        logger.info("BIOBAMBAM: command_line:", command_line)
+
         try:
             with open(bam_file_in, "r") as f_in:
                 with open(bam_tmp_out, "w") as f_out:
@@ -102,7 +104,7 @@ class biobambam(Tool):
             with open(bam_file_out, "wb") as f_out:
                 with open(bam_tmp_out, "rb") as f_in:
                     f_out.write(f_in.read())
-        except IOError:
+        except IOError as error:
             logger.fatal("I/O error({0}): {1}".format(error.errno, error.strerror))
             return False
 

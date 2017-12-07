@@ -181,8 +181,8 @@ class process_chipseq(Workflow):
         )
 
         try:
-            output_files_generated["filtered"] = bwa_files["filtered"]
-            output_metadata["filtered"] = bwa_meta["filtered"]
+            output_files_generated["filtered"] = bwa_files["bam"]
+            output_metadata["filtered"] = bwa_meta["bam"]
 
             tool_name = output_metadata['filtered'].meta_data['tool']
             output_metadata['filtered'].meta_data['tool_description'] = tool_name
@@ -210,12 +210,12 @@ class process_chipseq(Workflow):
 
         ## MACS2 to call peaks
         macs_caller = macs2(self.configuration)
-        macs_inputs = {"input": b3f_files['bam']}
-        macs_metadt = {"input": b3f_meta['bam']}
+        macs_inputs = {"input": output_files_generated["filtered"]}
+        macs_metadt = {"input": output_metadata['filtered']}
 
         if "bg_loc" in input_files:
-            macs_inputs["background"] = b3f_bg_files['bam']
-            macs_metadt["background"] = b3f_bg_meta['bam']
+            macs_inputs["background"] = output_files_generated["filtered_bg"]
+            macs_metadt["background"] = output_metadata['filtered_bg']
 
         m_results_files, m_results_meta = macs_caller.run(
             macs_inputs, macs_metadt,

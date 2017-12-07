@@ -141,7 +141,7 @@ class biobambam(Tool):
         logger.info("BIOBAMBAM FILTER: completed")
 
         output_metadata = {
-            "filtered": Metadata(
+            "bam": Metadata(
                 data_type="data_chip_seq",
                 file_type="BAM",
                 file_path=output_files["output"],
@@ -155,7 +155,7 @@ class biobambam(Tool):
         }
 
         return (
-            {"filtered": output_files['output']},
+            {"bam": output_files['output']},
             output_metadata
         )
 

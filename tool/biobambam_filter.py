@@ -80,8 +80,8 @@ class biobambam(Tool):
         """
 
         td_list = bam_file_in.split("/")
-        logger.info("BIOBAMBAM: bam_file_in:", bam_file_in)
-        logger.info("BIOBAMBAM: bam_file_out:", bam_file_out)
+        logger.info("BIOBAMBAM: bam_file_in: " + bam_file_in)
+        logger.info("BIOBAMBAM: bam_file_out: " + bam_file_out)
         tmp_dir = "/".join(td_list[0:-1])
 
         command_line = 'bamsormadup --tmpfile=' + tmp_dir
@@ -89,7 +89,7 @@ class biobambam(Tool):
 
         bam_tmp_out = tmp_dir + '/' + td_list[-1] + '.filtered.tmp.bam'
 
-        logger.info("BIOBAMBAM: command_line:", command_line)
+        logger.info("BIOBAMBAM: command_line: " + command_line)
 
         try:
             with open(bam_file_in, "r") as f_in:
@@ -141,7 +141,7 @@ class biobambam(Tool):
         logger.info("BIOBAMBAM FILTER: completed")
 
         output_metadata = {
-            "bam": Metadata(
+            "filtered": Metadata(
                 data_type="data_chip_seq",
                 file_type="BAM",
                 file_path=output_files["output"],
@@ -155,7 +155,7 @@ class biobambam(Tool):
         }
 
         return (
-            {"bam": output_files['output']},
+            {"filtered": output_files['output']},
             output_metadata
         )
 

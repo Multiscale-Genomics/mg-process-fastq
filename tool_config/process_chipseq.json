@@ -275,9 +275,9 @@
         }, {
             "required": false,
             "allow_multiple": false,
-            "name": "background",
+            "name": "bam_bg",
             "file": {
-                "file_type": "bam_bg",
+                "file_type": "bam",
                 "meta_data": {
                     "visible": true,
                     "tool": "process_chipseq",
@@ -292,7 +292,7 @@
             "allow_multiple": false,
             "name": "filtered_bg",
             "file": {
-                "file_type": "bam_bg",
+                "file_type": "bam",
                 "meta_data": {
                     "visible": true,
                     "tool": "process_chipseq",

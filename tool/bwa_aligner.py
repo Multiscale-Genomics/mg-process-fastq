@@ -20,24 +20,27 @@ import sys
 import shutil
 import tarfile
 
+import pysam
+
 try:
     if hasattr(sys, '_run_from_cmdl') is True:
         raise ImportError
-    from pycompss.api.parameter import FILE_IN, FILE_OUT
+    from pycompss.api.parameter import FILE_IN, FILE_OUT, FILE_INOUT
     from pycompss.api.task import task
-    from pycompss.api.api import compss_wait_on
+    from pycompss.api.api import compss_wait_on, compss_open, barrier
 except ImportError:
     print("[Warning] Cannot import \"pycompss\" API packages.")
     print("          Using mock decorators.")
 
-    from utils.dummy_pycompss import FILE_IN, FILE_OUT
+    from utils.dummy_pycompss import FILE_IN, FILE_OUT, FILE_INOUT
     from utils.dummy_pycompss import task
-    from utils.dummy_pycompss import compss_wait_on
+    from utils.dummy_pycompss import compss_wait_on, compss_open, barrier
 
 from basic_modules.tool import Tool
 from basic_modules.metadata import Metadata
 from utils import logger
 
+from tool.fastq_splitter import fastq_splitter
 from tool.common import common
 
 # ------------------------------------------------------------------------------
@@ -54,6 +57,89 @@ class bwaAlignerTool(Tool):
         """
         logger.info("BWA Aligner")
         Tool.__init__(self)
+
+    @task(bam_file=FILE_INOUT)
+    def bam_sort(self, bam_file):
+        """
+        Wrapper for the pysam SAMtools sort function
+
+        Parameters
+        ----------
+        bam_file : str
+            Location of the bam file to sort
+        """
+        try:
+            pysam.sort("-o", bam_file, "-T", bam_file + "_sort", bam_file)
+        except IOError:
+            return False
+        return True
+
+    @task(bam_file_1=FILE_INOUT, bam_file_2=FILE_IN)
+    def bam_merge(self, bam_file_1, bam_file_2):
+        """
+        Wrapper for the pysam SAMtools merge function
+
+        Parameters
+        ----------
+        bam_file_1 : str
+            Location of the bam file to merge into
+        bam_file_2 : str
+            Location of the bam file that is to get merged into bam_file_1
+        """
+        pysam.merge(bam_file_1 + "_merge.bam", bam_file_1, bam_file_2)
+
+        try:
+            with open(bam_file_1 + "_merge.bam", "rb") as f_in:
+                with open(bam_file_1, "wb") as f_out:
+                    f_out.write(f_in.read())
+        except IOError:
+            return False
+
+        return True
+
+    @task(bam_in=FILE_IN, bam_out=FILE_OUT)
+    def bam_copy(self, bam_in, bam_out):
+        """
+        Wrapper function to copy from one bam file to another
+
+        Parameters
+        ----------
+        bam_in : str
+            Location of the input bam file
+        bam_out : str
+            Location of the output bam file
+        """
+        try:
+            with open(bam_in, "rb") as f_in:
+                with open(bam_out, "wb") as f_out:
+                    f_out.write(f_in.read())
+        except IOError:
+            return False
+
+        return True
+
+    @task(bam_file=FILE_IN, bam_idx_file=FILE_OUT)
+    def bam_index(self, bam_file, bam_idx_file):
+        """
+        Wrapper for the pysam SAMtools merge function
+
+        Parameters
+        ----------
+        bam_file : str
+            Location of the bam file that is to be indexed
+        bam_idx_file : str
+            Location of the bam index file (.bai)
+        """
+        pysam.index(bam_file, bam_file + "_tmp.bai")
+
+        try:
+            with open(bam_file + "_tmp.bai", "rb") as f_in:
+                with open(bam_idx_file, "wb") as f_out:
+                    f_out.write(f_in.read())
+        except IOError:
+            return False
+
+        return True
 
     @task(returns=bool, genome_file_loc=FILE_IN, read_file_loc=FILE_IN,
           bam_loc=FILE_OUT, genome_idx=FILE_IN, isModifier=False)
@@ -90,7 +176,7 @@ class bwaAlignerTool(Tool):
 
         out_bam = read_file_loc + '.out.bam'
         common_handle = common()
-        common_handle.bwa_align_reads(genome_fa_ln, read_file_loc, out_bam)
+        common_handle.bwa_align_reads_single(genome_fa_ln, read_file_loc, out_bam)
 
         try:
             with open(bam_loc, "wb") as f_out:
@@ -122,17 +208,135 @@ class bwaAlignerTool(Tool):
         output_metadata : dict
         """
 
-        logger.info("BWA ALIGNER: Aligning sequence reads to the genome")
+        sources = [input_files["genome"]]
 
-        results = self.bwa_aligner(
-            str(input_files["genome"]), str(input_files["loc"]), str(output_files["output"]),
-            str(input_files["index"]))
+        fqs = fastq_splitter()
 
+        fastq1 = input_files["loc"]
+        sources.append(input_files["loc"])
+
+        fastq_file_gz = fastq1 + ".tar.gz"
+        if "fastq2" in input_files:
+            fastq2 = input_files["fastq2"]
+            sources.append(input_files["fastq2"])
+            fastq_file_list = fqs.paired_splitter(
+                fastq1, fastq2, fastq1 + ".tar.gz"
+            )
+        else:
+            fastq_file_list = fqs.single_splitter(
+                fastq1, fastq1 + ".tar.gz"
+            )
+
+        fastq_file_list = compss_wait_on(fastq_file_list)
+        if not fastq_file_list:
+            logger.fatal("FASTQ SPLITTER: run failed")
+            return {}, {}
+
+        if hasattr(sys, '_run_from_cmdl') is True:
+            pass
+        else:
+            with compss_open(fastq_file_gz, "rb") as f_in:
+                with open(fastq_file_gz, "wb") as f_out:
+                    f_out.write(f_in.read())
+
+        gz_data_path = fastq_file_gz.split("/")
+        gz_data_path = "/".join(gz_data_path[:-1])
+
+        try:
+            tar = tarfile.open(fastq_file_gz)
+            tar.extractall(path=gz_data_path)
+            tar.close()
+        except tarfile.TarError:
+            logger.fatal("Split FASTQ files: Malformed tar file")
+            return {}, {}
+
+        # input and output share most metadata
+        output_metadata = {}
+
+        output_bam_file = output_files["output"]
+        #output_bai_file = output_files["bai"]
+
+        output_bam_list = []
+        for fastq_file_pair in fastq_file_list:
+            if "fastq2" in input_files:
+                # tmp_fq1 = gz_data_path + "/tmp/" + fastq_file_pair[0]
+                # tmp_fq2 = gz_data_path + "/tmp/" + fastq_file_pair[1]
+                # print("WGBS - gz_data_path:", gz_data_path)
+                # print("WGBS - fastq_file_pair - 0:", tmp_fq1,
+                #       os.path.isfile(tmp_fq1), os.path.getsize(tmp_fq1))
+                # print("WGBS - fastq_file_pair - 1:", tmp_fq2,
+                #       os.path.isfile(tmp_fq2), os.path.getsize(tmp_fq2))
+
+                # output_bam_file_tmp = tmp_fq1 + ".bam"
+                # output_bam_list.append(output_bam_file_tmp)
+
+                # print(
+                #     "FILES:", tmp_fq1, tmp_fq2,
+                #     output_bam_file_tmp)
+
+                # results = self.bwa_aligner(
+                #     tmp_fq1, tmp_fq2,
+                #     aligner, aligner_path, bss_path,
+                #     genome_fasta, genome_idx,
+                #     output_bam_file_tmp
+                # )
+                pass
+            else:
+                tmp_fq = gz_data_path + "/tmp/" + fastq_file_pair[0]
+                output_bam_file_tmp = tmp_fq + ".bam"
+                output_bam_list.append(output_bam_file_tmp)
+
+                print("FILES:", tmp_fq, output_bam_file_tmp)
+
+                results = self.bwa_aligner(
+                    str(input_files["genome"]), tmp_fq, output_bam_file_tmp,
+                    str(input_files["index"])
+                )
+
+        barrier()
+
+        results = self.bam_copy(output_bam_list.pop(0), output_bam_file)
         results = compss_wait_on(results)
 
         if results is False:
-            logger.fatal("BWA aligner failed")
-            return ({}, {})
+            logger.fatal("BS SEEKER2 Aligner: Bam copy failed")
+            return {}, {}
+
+        while True:
+            if len(output_bam_list) == 0:
+                break
+            results = self.bam_merge(output_bam_file, output_bam_list.pop(0))
+            results = compss_wait_on(results)
+
+            if results is False:
+                logger.fatal("BS SEEKER2 Aligner: Bam merging failed")
+                return {}, {}
+
+        results = self.bam_sort(output_bam_file)
+        results = compss_wait_on(results)
+
+        if results is False:
+            logger.fatal("BS SEEKER2 Aligner: Bam sorting failed")
+            return {}, {}
+
+        # results = self.bam_index(output_bam_file, output_bai_file)
+        # results = compss_wait_on(results)
+
+        # if results is False:
+        #     logger.fatal("BS SEEKER2 Aligner: Bam indexing failed")
+        #     return {}, {}
+
+        logger.info("BWA ALIGNER: Aligning sequence reads to the genome")
+
+        # results = self.bwa_aligner(
+        #     str(input_files["genome"]), str(input_files["loc"]), str(output_files["output"]),
+        #     str(input_files["index"]))
+
+        # results = compss_wait_on(results)
+
+        # if results is False:
+        #     logger.fatal("BWA aligner failed")
+        #     return ({}, {})
 
         logger.info("BWA ALIGNER: Alignments complete")
 

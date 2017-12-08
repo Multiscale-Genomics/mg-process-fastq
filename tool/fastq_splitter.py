@@ -101,7 +101,7 @@ class fastq_splitter(Tool):
             "." + str(fqr.output_tag) + "_" + str(fqr.output_file_count) + ".fastq")
         file_loc_1.insert(-1, tag)
 
-        files_out = [["/".join(file_loc_1)]]
+        files_out = [[file_loc_1[-1]]]
 
         while fqr.eof(1) is False:
             fqr.writeOutput(record1, 1)
@@ -113,18 +113,18 @@ class fastq_splitter(Tool):
                 file_loc_1 = fqr.fastq1.split("/")
                 new_suffix = "." + str(fqr.output_tag) + "_" + str(fqr.output_file_count) + ".fastq"
                 file_loc_1[-1] = re.sub('.fastq$', new_suffix, file_loc_1[-1])
-                #file_loc_1[-1] = file_loc_1[-1].replace(
-                #    ".fastq",
-                #    "." + str(fqr.output_tag) + "_" + str(fqr.output_file_count) + ".fastq")
-                file_loc_1.insert(-1, "tmp")
+                file_loc_1.insert(-1, tag)
 
-                #files_out.append(["/".join(file_loc_1)])
                 files_out.append([file_loc_1[-1]])
 
         fqr.closeFastQ()
         fqr.closeOutputFiles()
 
         output_file_pregz = out_file.replace('.tar.gz', '.tar')
+
+        tar = tarfile.open(output_file_pregz, "w")
+        tar.add("/".join(file_loc_1[:-1]), arcname='tmp')
+        tar.close()
 
         tar = tarfile.open(output_file_pregz, "w")
         tar.add("/".join(file_loc_1[:-1]), arcname='tmp')

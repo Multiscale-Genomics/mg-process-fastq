@@ -32,7 +32,7 @@ except ImportError:
     print("[Warning] Cannot import \"pycompss\" API packages.")
     print("          Using mock decorators.")
 
-    from utils.dummy_pycompss import FILE_IN, FILE_OUT, FILE_INOUT
+    from utils.dummy_pycompss import IN, FILE_IN, FILE_OUT, FILE_INOUT
     from utils.dummy_pycompss import task
     from utils.dummy_pycompss import compss_wait_on, compss_open, barrier
 
@@ -229,7 +229,7 @@ class bwaAlignerTool(Tool):
 
         out_bam = read_file_loc1 + '.out.bam'
         common_handle = common()
-        common_handle.bwa_align_reads_paired(
+        common_handle.bwa_aln_align_reads_paired(
             genome_fa_ln, read_file_loc1, read_file_loc2, out_bam)
 
         try:
@@ -324,7 +324,7 @@ class bwaAlignerTool(Tool):
 
                 results = self.bwa_aligner_paired(
                     str(input_files["genome"]), tmp_fq1, tmp_fq2, output_bam_file_tmp,
-                    str(input_files["index"])
+                    str(input_files["index"]), 'aln'
                 )
             else:
                 tmp_fq = gz_data_path + "/tmp/" + fastq_file_pair[0]
@@ -335,7 +335,7 @@ class bwaAlignerTool(Tool):
 
                 results = self.bwa_aligner_single(
                     str(input_files["genome"]), tmp_fq, output_bam_file_tmp,
-                    str(input_files["index"])
+                    str(input_files["index"]), 'aln'
                 )
 
         barrier()

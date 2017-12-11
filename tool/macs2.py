@@ -341,12 +341,16 @@ class macs2(Tool):
         if "macs_broad-cutoff_param" in self.configuration:
             command_params = command_params + [
                 "--broad-cutoff", str(self.configuration["macs_broad-cutoff_param"])]
-        if "macs_to-large_param" in self.configuration:
-            command_params = command_params + [
-                "--to-large", str(self.configuration["macs_to-large_param"])]
-        if "macs_down-sample_param" in self.configuration:
-            command_params = command_params + [
-                "--down-sample", str(self.configuration["macs_down-sample_param"])]
+        if (
+                "macs_to-large_param" in self.configuration and
+                self.configuration["macs_to-large_param"] is True
+            ):
+            command_params = command_params + ["--to-large"]
+        if (
+                "macs_down-sample_param" in self.configuration and
+                self.configuration["macs_down-sample_param"] is True
+            ):
+            command_params = command_params + ["--down-sample"]
         if "macs_bdg_param" in self.configuration:
             command_params = command_params + [
                 "--bdg", str(self.configuration["macs_bdg_param"])]

@@ -25,7 +25,7 @@ import pysam
 try:
     if hasattr(sys, '_run_from_cmdl') is True:
         raise ImportError
-    from pycompss.api.parameter import FILE_IN, FILE_OUT, FILE_INOUT
+    from pycompss.api.parameter import IN, FILE_IN, FILE_OUT, FILE_INOUT
     from pycompss.api.task import task
     from pycompss.api.api import compss_wait_on, compss_open, barrier
 except ImportError:
@@ -142,9 +142,9 @@ class bwaAlignerTool(Tool):
         return True
 
     @task(returns=bool, genome_file_loc=FILE_IN, read_file_loc=FILE_IN,
-          bam_loc=FILE_OUT, genome_idx=FILE_IN, isModifier=False)
+          bam_loc=FILE_OUT, genome_idx=FILE_IN, aligner=IN, isModifier=False)
     def bwa_aligner_single(  # pylint: disable=too-many-arguments
-            self, genome_file_loc, read_file_loc, bam_loc, genome_idx):  # pylint: disable=unused-argument
+            self, genome_file_loc, read_file_loc, bam_loc, genome_idx, aligner):  # pylint: disable=unused-argument
         """
         BWA Aligner
 
@@ -176,7 +176,10 @@ class bwaAlignerTool(Tool):
 
         out_bam = read_file_loc + '.out.bam'
         common_handle = common()
-        common_handle.bwa_align_reads_single(genome_fa_ln, read_file_loc, out_bam)
+        if aligner == 'mem':
+            common_handle.bwa_mem_align_reads_single(genome_fa_ln, read_file_loc, out_bam)
+        else:
+            common_handle.bwa_aln_align_reads_single(genome_fa_ln, read_file_loc, out_bam)
 
         try:
             with open(bam_loc, "wb") as f_out:
@@ -191,10 +194,10 @@ class bwaAlignerTool(Tool):
 
     @task(returns=bool, genome_file_loc=FILE_IN, read_file_loc1=FILE_IN,
           read_file_loc2=FILE_IN, bam_loc=FILE_OUT, genome_idx=FILE_IN,
-          isModifier=False)
+          aligner=IN, isModifier=False)
     def bwa_aligner_paired(  # pylint: disable=too-many-arguments
             self, genome_file_loc, read_file_loc1, read_file_loc2, bam_loc,
-            genome_idx):  # pylint: disable=unused-argument
+            genome_idx, aligner):  # pylint: disable=unused-argument
         """
         BWA Aligner
 

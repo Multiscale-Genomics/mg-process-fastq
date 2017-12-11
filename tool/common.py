@@ -159,7 +159,73 @@ class common(object):
 
         return (amb_name, ann_name, bwt_name, pac_name, sa_name)
 
-    def bwa_align_reads_single(self, genome_file, reads_file, bam_loc):
+    def bwa_aln_align_reads_single(self, genome_file, reads_file, bam_loc):
+        """
+        Map the reads to the genome using BWA.
+        Parameters
+        ----------
+        genome_file : str
+            Location of the assembly file in the file system
+        reads_file : str
+            Location of the reads file in the file system
+        bam_loc : str
+            Location of the output file
+        """
+
+        intermediate_file = reads_file + '.sai'
+        intermediate_sam_file = reads_file + '.sam'
+        output_bam_file = bam_loc
+
+        command_lines = [
+            'bwa aln -q 5 -f ' + intermediate_file + ' ' + genome_file + ' ' + reads_file,
+            'bwa samse -f ' + intermediate_sam_file  + ' ' + genome_file + ' ' +
+            intermediate_file + ' ' + reads_file,
+            'samtools view -b -o ' + output_bam_file + ' ' + intermediate_sam_file
+        ]
+
+        print("BWA COMMAND LINES:", command_lines)
+
+        for command_line in command_lines:
+            args = shlex.split(command_line)
+            process = subprocess.Popen(args)
+            process.wait()
+
+        return output_bam_file
+
+    def bwa_aln_align_reads_paired(self, genome_file, reads_file_1, reads_file_2, bam_loc):
+        """
+        Map the reads to the genome using BWA.
+        Parameters
+        ----------
+        genome_file : str
+            Location of the assembly file in the file system
+        reads_file : str
+            Location of the reads file in the file system
+        bam_loc : str
+            Location of the output file
+        """
+
+        intermediate_file = reads_file + '.sai'
+        intermediate_sam_file = reads_file + '.sam'
+        output_bam_file = bam_loc
+
+        command_lines = [
+            # 'bwa aln -q 5 -f ' + intermediate_file + ' ' + genome_file + ' ' + reads_file,
+            # 'bwa samse -f ' + intermediate_sam_file  + ' ' + genome_file + ' ' +
+            # intermediate_file + ' ' + reads_file,
+            # 'samtools view -b -o ' + output_bam_file + ' ' + intermediate_sam_file
+        ]
+
+        print("BWA COMMAND LINES:", command_lines)
+
+        for command_line in command_lines:
+            args = shlex.split(command_line)
+            process = subprocess.Popen(args)
+            process.wait()
+
+        return output_bam_file
+
+    def bwa_mem_align_reads_single(self, genome_file, reads_file, bam_loc):
         """
         Map the reads to the genome using BWA.
 
@@ -189,7 +255,7 @@ class common(object):
 
         return output_bam_file
 
-    def bwa_align_reads_paired(self, genome_file, reads_file_1, reads_file_2, bam_loc):
+    def bwa_mem_align_reads_paired(self, genome_file, reads_file_1, reads_file_2, bam_loc):
         """
         Map the reads to the genome using BWA.
 

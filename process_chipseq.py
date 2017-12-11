@@ -228,24 +228,28 @@ class process_chipseq(Workflow):
 
         if 'narrow_peak' in m_results_meta:
             output_files_generated['narrow_peak'] = m_results_files['narrow_peak']
+            output_metadata['narrow_peak'] = m_results_meta['narrow_peak']
 
             tool_name = output_metadata['narrow_peak'].meta_data['tool']
             output_metadata['narrow_peak'].meta_data['tool_description'] = tool_name
             output_metadata['narrow_peak'].meta_data['tool'] = "process_chipseq"
         if 'summits' in m_results_meta:
             output_files_generated['summits'] = m_results_files['summits']
+            output_metadata['summits'] = m_results_meta['summits']
 
             tool_name = output_metadata['summits'].meta_data['tool']
             output_metadata['summits'].meta_data['tool_description'] = tool_name
             output_metadata['summits'].meta_data['tool'] = "process_chipseq"
         if 'broad_peak' in m_results_meta:
             output_files_generated['broad_peak'] = m_results_files['broad_peak']
+            output_metadata['broad_peak'] = m_results_meta['broad_peak']
 
             tool_name = output_metadata['broad_peak'].meta_data['tool']
             output_metadata['broad_peak'].meta_data['tool_description'] = tool_name
             output_metadata['broad_peak'].meta_data['tool'] = "process_chipseq"
         if 'gapped_peak' in m_results_meta:
             output_files_generated['gapped_peak'] = m_results_files['gapped_peak']
+            output_metadata['gapped_peak'] = m_results_meta['gapped_peak']
 
             tool_name = output_metadata['gapped_peak'].meta_data['tool']
             output_metadata['gapped_peak'].meta_data['tool_description'] = tool_name

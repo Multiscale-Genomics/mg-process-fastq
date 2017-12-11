@@ -344,7 +344,7 @@ class bwaAlignerTool(Tool):
         results = compss_wait_on(results)
 
         if results is False:
-            logger.fatal("BS SEEKER2 Aligner: Bam copy failed")
+            logger.fatal("BWA Aligner: Bam copy failed")
             return {}, {}
 
         while True:
@@ -354,14 +354,14 @@ class bwaAlignerTool(Tool):
             results = compss_wait_on(results)
 
             if results is False:
-                logger.fatal("BS SEEKER2 Aligner: Bam merging failed")
+                logger.fatal("BWA Aligner: Bam merging failed")
                 return {}, {}
 
         results = self.bam_sort(output_bam_file)
         results = compss_wait_on(results)
 
         if results is False:
-            logger.fatal("BS SEEKER2 Aligner: Bam sorting failed")
+            logger.fatal("BWA Aligner: Bam sorting failed")
             return {}, {}
 
         # results = self.bam_index(output_bam_file, output_bai_file)

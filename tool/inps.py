@@ -16,10 +16,11 @@
 """
 from __future__ import print_function
 
-import os
 import shlex
 import subprocess
 import sys
+
+from utils import logger
 
 try:
     if hasattr(sys, '_run_from_cmdl') is True:
@@ -28,16 +29,15 @@ try:
     from pycompss.api.task import task
     from pycompss.api.api import compss_wait_on
 except ImportError:
-    print("[Warning] Cannot import \"pycompss\" API packages.")
-    print("          Using mock decorators.")
+    logger.warn("[Warning] Cannot import \"pycompss\" API packages.")
+    logger.warn("          Using mock decorators.")
 
-    from utils.dummy_pycompss import FILE_IN, FILE_OUT, IN
+    from utils.dummy_pycompss import FILE_IN, FILE_OUT, IN # pylint: disable=ungrouped-imports
     from utils.dummy_pycompss import task
     from utils.dummy_pycompss import compss_wait_on
 
 from basic_modules.tool import Tool
 from basic_modules.metadata import Metadata
-from utils import logger
 
 # ------------------------------------------------------------------------------
 
@@ -46,11 +46,11 @@ class inps(Tool):
     Tool for peak calling for MNase-seq data
     """
 
-    def __init__(self):
+    def __init__(self, configuration=None):
         """
         Init function
         """
-        print("iNPS Peak Caller")
+        logger.info("iNPS Peak Caller")
         Tool.__init__(self)
 
     @task(
@@ -81,8 +81,8 @@ class inps(Tool):
         command_line_2 = "iNPS " + " ".join(inps_params)
         command_line_2 = command_line_2 + " -i " + bed_file + " -o " + peak_bed + "_tmp"
 
-        print("iNPS - cmd1:", command_line_1)
-        print("iNPS - cmd2:", command_line_2)
+        logger.info("iNPS - cmd1:", command_line_1)
+        logger.info("iNPS - cmd2:", command_line_2)
 
         args = shlex.split(command_line_1)
         with open(bed_file, "w") as f_out:

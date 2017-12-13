@@ -23,6 +23,8 @@ import itertools
 import sys
 import os
 
+from utils import logger
+
 try:
     if hasattr(sys, '_run_from_cmdl') is True:
         raise ImportError
@@ -30,10 +32,10 @@ try:
     from pycompss.api.task import task
     from pycompss.api.api import compss_wait_on
 except ImportError:
-    print ("[Warning] Cannot import \"pycompss\" API packages.")
-    print ("          Using mock decorators.")
+    logger.warn("[Warning] Cannot import \"pycompss\" API packages.")
+    logger.warn("          Using mock decorators.")
 
-    from utils.dummy_pycompss import FILE_IN, FILE_OUT, IN
+    from utils.dummy_pycompss import FILE_IN, FILE_OUT, IN # pylint: disable=ungrouped-imports
     from utils.dummy_pycompss import task
     from utils.dummy_pycompss import compss_wait_on
 
@@ -52,7 +54,7 @@ class kallistoQuantificationTool(Tool):
         """
         Init function
         """
-        print("Kallisto Quantification")
+        logger.info("Kallisto Quantification")
         Tool.__init__(self)
 
     @task(
@@ -93,7 +95,7 @@ class kallistoQuantificationTool(Tool):
         command_line += " --single -l " + str(fq_stats['mean']) + " "
         command_line += "-s " + str(std) + " " + fastq_file_loc
 
-        print("KALLISTO_QUANT COMMAND", command_line)
+        logger.info("KALLISTO_QUANT COMMAND", command_line)
 
         args = shlex.split(command_line)
         process = subprocess.Popen(args)

@@ -24,6 +24,8 @@ import tarfile
 
 import pysam
 
+from utils import logger
+
 try:
     if hasattr(sys, '_run_from_cmdl') is True:
         raise ImportError
@@ -31,16 +33,15 @@ try:
     from pycompss.api.task import task
     from pycompss.api.api import compss_wait_on
 except ImportError:
-    print("[Warning] Cannot import \"pycompss\" API packages.")
-    print("          Using mock decorators.")
+    logger.warn("[Warning] Cannot import \"pycompss\" API packages.")
+    logger.warn("          Using mock decorators.")
 
-    from utils.dummy_pycompss import FILE_IN, FILE_OUT, IN
+    from utils.dummy_pycompss import FILE_IN, FILE_OUT, IN # pylint: disable=ungrouped-imports
     from utils.dummy_pycompss import task
     from utils.dummy_pycompss import compss_wait_on
 
 from basic_modules.tool import Tool
 from basic_modules.metadata import Metadata
-from utils import logger
 
 # ------------------------------------------------------------------------------
 
@@ -49,11 +50,11 @@ class bssMethylationCallerTool(Tool):
     Script from BS-Seeker2 for methylation calling
     """
 
-    def __init__(self):
+    def __init__(self, configuration=None):
         """
         Init function
         """
-        print("BS-Seeker Methylation Caller")
+        logger.info("BS-Seeker Methylation Caller")
         Tool.__init__(self)
 
     @task(
@@ -108,7 +109,7 @@ class bssMethylationCallerTool(Tool):
             "--sorted --input " + str(bam_file) + " --wig " + str(wig_file) + " "
             "--CGmap " + str(cgmap_file) + " --ATCGmap " + str(atcgmap_file) + " "
             "--db " + g_dir).format()
-        print ("command for methyl caller :", command_line)
+        logger.info("command for methyl caller :", command_line)
         args = shlex.split(command_line)
         process = subprocess.Popen(args)
         process.wait()

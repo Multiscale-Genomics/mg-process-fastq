@@ -22,6 +22,8 @@ import shlex
 import subprocess
 import sys
 
+from utils import logger
+
 try:
     if hasattr(sys, '_run_from_cmdl') is True:
         raise ImportError
@@ -29,16 +31,15 @@ try:
     from pycompss.api.task import task
     from pycompss.api.api import compss_wait_on
 except ImportError:
-    print("[Warning] Cannot import \"pycompss\" API packages.")
-    print("          Using mock decorators.")
+    logger.warn("[Warning] Cannot import \"pycompss\" API packages.")
+    logger.warn("          Using mock decorators.")
 
-    from utils.dummy_pycompss import FILE_IN, FILE_OUT
+    from utils.dummy_pycompss import FILE_IN, FILE_OUT # pylint: disable=ungrouped-imports
     from utils.dummy_pycompss import task
     from utils.dummy_pycompss import compss_wait_on
 
 from basic_modules.metadata import Metadata
 from basic_modules.tool import Tool
-from utils import logger
 
 # ------------------------------------------------------------------------------
 
@@ -51,7 +52,7 @@ class biobambam(Tool):
         """
         Init function
         """
-        print("BioBamBam2 Filter")
+        logger.info("BioBamBam2 Filter")
         Tool.__init__(self)
 
     @task(returns=bool, bam_file_in=FILE_IN, bam_file_out=FILE_OUT,

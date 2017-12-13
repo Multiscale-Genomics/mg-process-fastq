@@ -23,6 +23,8 @@ import subprocess
 import sys
 import tarfile
 
+from utils import logger
+
 try:
     if hasattr(sys, '_run_from_cmdl') is True:
         raise ImportError
@@ -30,16 +32,15 @@ try:
     from pycompss.api.task import task
     from pycompss.api.api import compss_wait_on
 except ImportError:
-    print("[Warning] Cannot import \"pycompss\" API packages.")
-    print("          Using mock decorators.")
+    logger.warn("[Warning] Cannot import \"pycompss\" API packages.")
+    logger.warn("          Using mock decorators.")
 
-    from utils.dummy_pycompss import FILE_IN, FILE_OUT, IN
+    from utils.dummy_pycompss import FILE_IN, FILE_OUT, IN # pylint: disable=ungrouped-imports
     from utils.dummy_pycompss import task
     from utils.dummy_pycompss import compss_wait_on
 
 from basic_modules.tool import Tool
 from basic_modules.metadata import Metadata
-from utils import logger
 
 # ------------------------------------------------------------------------------
 
@@ -49,11 +50,11 @@ class bssIndexerTool(Tool):
     it uses Bowtie2.
     """
 
-    def __init__(self):
+    def __init__(self, configuration=None):
         """
         Init function
         """
-        print("BS-Seeker Indexer wrapper")
+        logger.info("BS-Seeker Indexer wrapper")
         Tool.__init__(self)
 
     @task(
@@ -94,7 +95,7 @@ class bssIndexerTool(Tool):
         ).format()
 
         try:
-            print("BS - INDEX CMD:", command_line)
+            logger.info("BS - INDEX CMD:", command_line)
             args = shlex.split(command_line)
             process = subprocess.Popen(args)
             process.wait()
@@ -103,12 +104,12 @@ class bssIndexerTool(Tool):
 
         try:
             # tar.gz the index
-            print("BS - idx_out:", idx_out, idx_out.replace('.tar.gz', ''))
+            logger.info("BS - idx_out:", idx_out, idx_out.replace('.tar.gz', ''))
             idx_out_pregz = idx_out.replace('.tar.gz', '.tar')
 
-            print("BS - idx archive:", idx_out_pregz)
-            print("BS - idx folder to add:", fasta_file + "_" + aligner)
-            print("BS - idx folder arcname:", ff_split[-1] + "_" + aligner)
+            logger.info("BS - idx archive:", idx_out_pregz)
+            logger.info("BS - idx folder to add:", fasta_file + "_" + aligner)
+            logger.info("BS - idx folder arcname:", ff_split[-1] + "_" + aligner)
             tar = tarfile.open(idx_out_pregz, "w")
             tar.add(fasta_file + "_" + aligner, arcname=ff_split[-1] + "_" + aligner)
             tar.close()
@@ -139,7 +140,7 @@ class bssIndexerTool(Tool):
             Location of the filtered FASTQ file
         """
 
-        print("WGBS - Index output files:", output_files)
+        logger.info("WGBS - Index output files:", output_files)
 
         try:
             if "bss_path" in input_metadata:

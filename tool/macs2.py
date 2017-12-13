@@ -21,6 +21,8 @@ import shlex
 import subprocess
 import sys
 
+from utils import logger
+
 try:
     if hasattr(sys, '_run_from_cmdl') is True:
         raise ImportError
@@ -28,16 +30,15 @@ try:
     from pycompss.api.task import task
     from pycompss.api.api import compss_wait_on
 except ImportError:
-    print("[Warning] Cannot import \"pycompss\" API packages.")
-    print("          Using mock decorators.")
+    logger.warn("[Warning] Cannot import \"pycompss\" API packages.")
+    logger.warn("          Using mock decorators.")
 
-    from utils.dummy_pycompss import FILE_IN, FILE_OUT, IN
+    from utils.dummy_pycompss import FILE_IN, FILE_OUT, IN # pylint: disable=ungrouped-imports
     from utils.dummy_pycompss import task
     from utils.dummy_pycompss import compss_wait_on
 
 from basic_modules.metadata import Metadata
 from basic_modules.tool import Tool
-from utils import logger
 
 # ------------------------------------------------------------------------------
 
@@ -122,13 +123,13 @@ class macs2(Tool):
             logger.fatal("MACS2 ERROR", process.returncode)
             return process.returncode
 
-        print('Process Results 1:', process)
-        print('LIST DIR 1:', os.listdir(output_dir))
+        logger.info('Process Results 1:', process)
+        logger.info('LIST DIR 1:', os.listdir(output_dir))
 
         out_suffix = ['peaks.narrowPeak', 'peaks.broadPeak', 'peaks.gappedPeak', 'summits.bed']
         for f_suf in out_suffix:
             output_tmp = output_dir + '/' + name + '_out_' + f_suf
-            print(output_tmp, os.path.isfile(output_tmp))
+            logger.info(output_tmp, os.path.isfile(output_tmp))
             if os.path.isfile(output_tmp) is True and os.path.getsize(output_tmp) > 0:
                 if f_suf == 'peaks.narrowPeak':
                     with open(narrowpeak, "wb") as f_out:
@@ -201,9 +202,9 @@ class macs2(Tool):
         command_line = "macs2 callpeak " + " ".join(macs_params) + " -t " + bam_file
         command_line = command_line + ' -n ' + name + '_out --outdir ' + output_dir
 
-        print("MACS2 - NAME:", name)
-        print('Output Files:', narrowpeak, summits_bed, broadpeak, gappedpeak)
-        print('MACS2 COMMAND LINE:', command_line)
+        logger.info("MACS2 - NAME:", name)
+        logger.info('Output Files:', narrowpeak, summits_bed, broadpeak, gappedpeak)
+        logger.info('MACS2 COMMAND LINE:', command_line)
 
         args = shlex.split(command_line)
         process = subprocess.Popen(args)
@@ -216,7 +217,7 @@ class macs2(Tool):
         out_suffix = ['peaks.narrowPeak', 'peaks.broadPeak', 'peaks.gappedPeak', 'summits.bed']
         for f_suf in out_suffix:
             output_tmp = output_dir + '/' + name + '_out_' + f_suf
-            print(output_tmp, os.path.isfile(output_tmp))
+            logger.info(output_tmp, os.path.isfile(output_tmp))
             if os.path.isfile(output_tmp) is True and os.path.getsize(output_tmp) > 0:
                 if f_suf == 'peaks.narrowPeak':
                     with open(narrowpeak, "wb") as f_out:

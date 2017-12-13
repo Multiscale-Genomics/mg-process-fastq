@@ -21,6 +21,8 @@ import shlex
 import subprocess
 import sys
 
+from utils import logger
+
 try:
     if hasattr(sys, '_run_from_cmdl') is True:
         raise ImportError
@@ -28,16 +30,15 @@ try:
     from pycompss.api.task import task
     from pycompss.api.api import compss_wait_on
 except ImportError:
-    print("[Warning] Cannot import \"pycompss\" API packages.")
-    print("          Using mock decorators.")
+    logger.warn("[Warning] Cannot import \"pycompss\" API packages.")
+    logger.warn("          Using mock decorators.")
 
-    from utils.dummy_pycompss import FILE_IN, FILE_OUT
+    from utils.dummy_pycompss import FILE_IN, FILE_OUT # pylint: disable=ungrouped-imports
     from utils.dummy_pycompss import task
     from utils.dummy_pycompss import compss_wait_on
 
 from basic_modules.metadata import Metadata
 from basic_modules.tool import Tool
-from utils import logger
 
 # ------------------------------------------------------------------------------
 
@@ -46,7 +47,7 @@ class fastqcTool(Tool):
     Tool for running indexers over a genome FASTA file
     """
 
-    def __init__(self):
+    def __init__(self, configuration=None):
         """
         Init function
         """

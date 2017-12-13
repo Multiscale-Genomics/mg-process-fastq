@@ -25,6 +25,8 @@ import tarfile
 
 import pysam
 
+from utils import logger
+
 try:
     if hasattr(sys, '_run_from_cmdl') is True:
         raise ImportError
@@ -32,16 +34,15 @@ try:
     from pycompss.api.task import task
     from pycompss.api.api import compss_wait_on, compss_open, barrier
 except ImportError:
-    print("[Warning] Cannot import \"pycompss\" API packages.")
-    print("          Using mock decorators.")
+    logger.warn("[Warning] Cannot import \"pycompss\" API packages.")
+    logger.warn("          Using mock decorators.")
 
-    from utils.dummy_pycompss import FILE_IN, FILE_INOUT, FILE_OUT, IN
+    from utils.dummy_pycompss import FILE_IN, FILE_INOUT, FILE_OUT, IN # pylint: disable=ungrouped-imports
     from utils.dummy_pycompss import task
     from utils.dummy_pycompss import compss_wait_on, compss_open, barrier
 
 from basic_modules.tool import Tool
 from basic_modules.metadata import Metadata
-from utils import logger
 
 from tool.fastq_splitter import fastq_splitter
 
@@ -53,7 +54,7 @@ class bssAlignerTool(Tool):
     it uses Bowtie2.
     """
 
-    def __init__(self):
+    def __init__(self, configuration=None):
         """
         Init function
         """

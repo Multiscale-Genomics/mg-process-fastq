@@ -22,6 +22,8 @@ import tarfile
 
 import pysam
 
+from utils import logger
+
 try:
     if hasattr(sys, '_run_from_cmdl') is True:
         raise ImportError
@@ -29,16 +31,15 @@ try:
     from pycompss.api.task import task
     from pycompss.api.api import compss_wait_on, compss_open, barrier
 except ImportError:
-    print("[Warning] Cannot import \"pycompss\" API packages.")
-    print("          Using mock decorators.")
+    logger.warn("[Warning] Cannot import \"pycompss\" API packages.")
+    logger.warn("          Using mock decorators.")
 
-    from utils.dummy_pycompss import IN, FILE_IN, FILE_OUT, FILE_INOUT
+    from utils.dummy_pycompss import IN, FILE_IN, FILE_OUT, FILE_INOUT # pylint: disable=ungrouped-imports
     from utils.dummy_pycompss import task
     from utils.dummy_pycompss import compss_wait_on, compss_open, barrier
 
 from basic_modules.tool import Tool
 from basic_modules.metadata import Metadata
-from utils import logger
 
 from tool.fastq_splitter import fastq_splitter
 from tool.common import common

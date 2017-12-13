@@ -23,6 +23,8 @@ import sys
 import re
 import tarfile
 
+from utils import logger
+
 try:
     if hasattr(sys, '_run_from_cmdl') is True:
         raise ImportError
@@ -30,10 +32,10 @@ try:
     from pycompss.api.task import task
     from pycompss.api.api import compss_wait_on
 except ImportError:
-    print("[Warning] Cannot import \"pycompss\" API packages.")
-    print("          Using mock decorators.")
+    logger.warn("[Warning] Cannot import \"pycompss\" API packages.")
+    logger.warn("          Using mock decorators.")
 
-    from utils.dummy_pycompss import FILE_IN, FILE_OUT, IN, OUT
+    from utils.dummy_pycompss import FILE_IN, FILE_OUT, IN, OUT # pylint: disable=ungrouped-imports
     from utils.dummy_pycompss import task
     from utils.dummy_pycompss import compss_wait_on
 
@@ -49,11 +51,11 @@ class fastq_splitter(Tool):
     Script for splitting up FASTQ files into manageable chunks
     """
 
-    def __init__(self):
+    def __init__(self, configuration=None):
         """
         Init function
         """
-        print("FASTQ Splitter")
+        logger.info("FASTQ Splitter")
         Tool.__init__(self)
 
     @task(
@@ -281,7 +283,7 @@ class fastq_splitter(Tool):
 
         results = compss_wait_on(results)
 
-        print("FASTQ SPLITTER:", results)
+        logger.info("FASTQ SPLITTER:", results)
 
         fastq_tar_meta = Metadata(
             data_type=input_metadata["fastq1"].data_type,

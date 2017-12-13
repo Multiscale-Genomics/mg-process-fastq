@@ -53,7 +53,7 @@ class fastqcTool(Tool):
         logger.info("FastQC")
         Tool.__init__(self)
 
-    @task(fastq_file=FILE_IN, report_file=FILE_OUT)
+    @task(returns=bool, fastq_file=FILE_IN, report_file=FILE_OUT, isModifier=False)
     def validate(self, fastq_file, report_file): # pylint: disable=unused-argument
         """
         FastQC Validator
@@ -70,7 +70,8 @@ class fastqcTool(Tool):
             args = shlex.split(command_line)
             process = subprocess.Popen(args)
             process.wait()
-        except Exception:
+        except Exception error:
+            logger.fatal("FastQC error({0}): {1}".format(error.errno, error.strerror))
             return False
 
         try:
@@ -84,6 +85,8 @@ class fastqcTool(Tool):
         except IOError as error:
             logger.fatal("I/O error({0}): {1}".format(error.errno, error.strerror))
             return False
+
+        return True
 
     def run(self, input_files, input_metadata, output_files):
         """

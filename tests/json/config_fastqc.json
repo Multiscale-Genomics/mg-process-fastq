@@ -1,0 +1,41 @@
+{
+    "input_files": [
+        {
+            "required": true,
+            "allow_multiple": false,
+            "name": "fastq",
+            "value": "59b7e020d9422a5969b65379"
+        }
+    ],
+    "arguments": [
+        {
+            "name": "project",
+            "value": "run001"
+        },
+        {
+            "name": "description",
+            "value": null
+        }
+    ],
+    "output_files": [
+        {
+            "required": true,
+            "allow_multiple": false,
+            "name": "report",
+            "file": {
+                "file_type": "XML",
+                "meta_data": {
+                    "visible": true,
+                    "tool": "process_fastqc",
+                    "description": "Output"
+                },
+                "file_path": "tests/data/report.html",
+                "data_type": "HTML",
+                "compressed": "null"
+            }
+        }
+    ]
+}
+
+
+

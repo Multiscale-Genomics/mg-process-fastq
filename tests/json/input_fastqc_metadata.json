@@ -1,0 +1,14 @@
+[
+    {
+        "compressed": 0,
+        "_id": "59b7e020d9422a5969b65378",
+        "data_type": "data_rnaseq",
+        "file_type": "FASTQ",
+        "file_path": "tests/data/kallisto.Human.ERR030872_1.fastq",
+        "sources": [],
+        "taxon_id": 9606,
+        "meta_data": {
+            "visible": true
+        }
+    }
+]

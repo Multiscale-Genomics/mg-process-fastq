@@ -67,6 +67,7 @@ class fastqcTool(Tool):
         """
         try:
             command_line = 'fastqc ' + fastq_file
+            logger.info("FastQC COMMAND: {0}".format(command_line))
             args = shlex.split(command_line)
             process = subprocess.Popen(args)
             process.wait()

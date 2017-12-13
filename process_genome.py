@@ -101,7 +101,7 @@ class process_genome(Workflow):
             output_metadata['bwt_index'].meta_data['tool_description'] = tool_name
             output_metadata['bwt_index'].meta_data['tool'] = "process_genome"
         except KeyError:
-            logger.fatal("BWA indexer failed")
+            logger.fatal("Bowtie2 indexer failed")
 
         # BWA Indexer
         logger.info("Generating indexes for BWA")
@@ -144,7 +144,7 @@ class process_genome(Workflow):
             output_metadata['genome_gem'].meta_data['tool_description'] = tool_name
             output_metadata['genome_gem'].meta_data['tool'] = "process_genome"
         except KeyError:
-            logger.fatal("BWA indexer failed")
+            logger.fatal("GEM indexer failed")
 
         return (output_files_generated, output_metadata)
 

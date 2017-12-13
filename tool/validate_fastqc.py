@@ -56,7 +56,7 @@ class fastqcTool(Tool):
     @task(fastq_file=FILE_IN, report_file=FILE_OUT)
     def validate(self, fastq_file, report_file): # pylint: disable=unused-argument
         """
-        GEM Indexer
+        FastQC Validator
 
         Parameters
         ----------
@@ -68,25 +68,37 @@ class fastqcTool(Tool):
         try:
             command_line = 'fastqc ' + fastq_file
             args = shlex.split(command_line)
-            with open(report_file, "w") as f_out:
-                process = subprocess.Popen(args, stdout=f_out)
-                process.wait()
-
-            return True
+            process = subprocess.Popen(args)
+            process.wait()
         except Exception:
+            return False
+
+        try:
+            fastq_file_tmp = fastq_file.split("/")
+            fastq_file_tmp[-1] = fastq_file_tmp[-1].replace(".fastq", "_fastqc.html")
+            fastq_file_tmp = "/".join(fastq_file_tmp)
+            with open(report_file, "wb") as f_out:
+                with open(fastq_file_tmp, "rb") as f_in:
+                    f_out.write(f_in.read())
+        except IOError as error:
+            logger.fatal("I/O error({0}): {1}".format(error.errno, error.strerror))
             return False
 
     def run(self, input_files, input_metadata, output_files):
         """
-        Tool for generating assembly aligner index files for use with the GEM
-        indexer
+        Tool for assessing the quality of reads in a FastQ file
 
         Parameters
         ----------
-        input_files : list
-            List with a single str element with the location of the genome
-            assembly FASTA file
-        input_metadata : list
+        input_files : dict
+            fastq : str
+                List of file locations
+        metadata : dict
+            fastq : dict
+                Required meta data
+        output_files : dict
+            report : str
+                Location of the HTML
 
         Returns
         -------
@@ -97,7 +109,7 @@ class fastqcTool(Tool):
 
         # input and output share most metadata
         results = self.validate(
-            output_files['fastq_file'],
+            output_files['fastq'],
             output_files['report']
         )
         results = compss_wait_on(results)
@@ -111,8 +123,8 @@ class fastqcTool(Tool):
                 data_type="xml",
                 file_type="HTML",
                 file_path=output_files['report'],
-                sources=[input_metadata["fastq_file"].file_path],
-                taxon_id=input_metadata["fastq_file"].taxon_id,
+                sources=[input_metadata["fastq"].file_path],
+                taxon_id=input_metadata["fastq"].taxon_id,
                 meta_data={
                     "tool": "fastqc_validator"
                 }

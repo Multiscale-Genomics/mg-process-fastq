@@ -58,10 +58,10 @@ class process_fastqc(Workflow):
         Parameters
         ----------
         input_files : dict
-            fastq_file : str
+            fastq : str
                 List of file locations
         metadata : dict
-            fastq_file : dict
+            fastq : dict
                 Required meta data
         output_files : dict
             report : str

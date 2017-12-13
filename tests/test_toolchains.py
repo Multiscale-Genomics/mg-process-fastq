@@ -63,6 +63,7 @@ def chipseq_toolchain(verbose=False):
     if verbose is True:
         params.append('-s')
 
+    params.append('tests/test_fastqc_validation.py')
     params.append('tests/test_bwa_indexer.py')
     params.append('tests/test_bwa_aligner.py')
     params.append('tests/test_biobambam.py')
@@ -91,6 +92,7 @@ def hic_toolchain(verbose=False):
     if verbose is True:
         params.append('-s')
 
+    params.append('tests/test_fastqc_validation.py')
     params.append('tests/test_gem_indexer.py')
     params.append('tests/test_tb_full_mapping.py')
     params.append('tests/test_tb_parse_mapping.py')
@@ -118,6 +120,7 @@ def mnaseseq_toolchain(verbose=False):
     if verbose is True:
         params.append('-s')
 
+    params.append('tests/test_fastqc_validation.py')
     params.append('tests/test_bwa_indexer.py')
     params.append('tests/test_bwa_aligner.py')
     params.append('tests/test_inps.py')
@@ -141,6 +144,7 @@ def rnaseq_toolchain(verbose=False):
     if verbose is True:
         params.append('-s')
 
+    params.append('tests/test_fastqc_validation.py')
     params.append('tests/test_kallisto_indexer.py')
     params.append('tests/test_kallisto_quant.py')
 
@@ -166,6 +170,7 @@ def wgbs_toolchain(verbose=0):
     if verbose is True:
         params.append('-s')
 
+    params.append('tests/test_fastqc_validation.py')
     params.append('tests/test_bs_seeker_filter.py')
     params.append('tests/test_bs_seeker_indexer.py')
     params.append('tests/test_bs_seeker_aligner.py')

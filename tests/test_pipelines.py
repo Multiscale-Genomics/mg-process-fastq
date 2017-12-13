@@ -57,6 +57,7 @@ def chipseq_pipeline(verbose=False):
         params.append('-s')
 
     params.append('tests/test_pipeline_genome.py')
+    params.append('tests/test_fastqc_validation.py')
     params.append('tests/test_pipeline_chipseq.py')
 
     return pytest.main(params)
@@ -77,6 +78,7 @@ def hic_pipeline(verbose=False):
     if verbose is True:
         params.append('-s')
 
+    params.append('tests/test_fastqc_validation.py')
     params.append('tests/test_pipeline_tb.py')
 
     return pytest.main(params)
@@ -97,6 +99,7 @@ def mnaseseq_pipeline(verbose=False):
     if verbose is True:
         params.append('-s')
 
+    params.append('tests/test_fastqc_validation.py')
     params.append('tests/test_pipeline_mnaseseq.py')
 
     return pytest.main(params)
@@ -117,6 +120,7 @@ def rnaseq_pipeline(verbose=False):
     if verbose is True:
         params.append('-s')
 
+    params.append('tests/test_fastqc_validation.py')
     params.append('tests/test_pipeline_rnaseq.py')
 
     return pytest.main(params)
@@ -137,6 +141,7 @@ def wgbs_pipeline(verbose=False):
     if verbose is True:
         params.append('-s')
 
+    params.append('tests/test_fastqc_validation.py')
     params.append('tests/test_pipeline_wgbs.py')
 
     return pytest.main(params)

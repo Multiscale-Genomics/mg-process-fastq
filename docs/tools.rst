@@ -18,6 +18,16 @@ Tools for processing FastQ files
 
 .. automodule:: tool
 
+   File Validation
+   ===============
+
+   Pipelines and functions assessing the quality of input files.
+
+   FastQC
+   ------
+   .. autoclass:: tool.validate_fastqc.fastqcTool
+      :members:
+
    Indexers
    ========
 

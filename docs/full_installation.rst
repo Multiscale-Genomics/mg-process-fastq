@@ -130,6 +130,20 @@ BWA Sequence Aligner
    cd bwa
    make
 
+FastQC
+^^^^^^
+
+.. code-block:: none
+   :linenos:
+
+   cd ${HOME}/lib
+   wget http://www.bioinformatics.babraham.ac.uk/projects/fastqc/fastqc_v0.11.5.zip
+   unzip fastqc_v0.11.5.zip
+   cd FastQC/
+   chmod 755 fastqc
+
+
+
 GEM Sequence Aligner
 ^^^^^^^^^^^^^^^^^^^^
 
@@ -230,6 +244,8 @@ Setup the symlinks
    ln -s ${HOME}/lib/bowtie2-2.3.2/bowtie2-inspect bowtie2-inspect
    ln -s ${HOME}/lib/bowtie2-2.3.2/bowtie2-inspect-s bowtie2-inspect-s
    ln -s ${HOME}/lib/bowtie2-2.3.2/bowtie2-inspect-l bowtie2-inspect-l
+
+   ln -s ${HOME}/lib/FastQC/fastqc
 
    ln -s ${HOME}/lib/gemtools-1.7.1-core2/bin/gem-2-bed gem-2-bed
    ln -s ${HOME}/lib/gemtools-1.7.1-core2/bin/gem-2-gem gem-2-gem

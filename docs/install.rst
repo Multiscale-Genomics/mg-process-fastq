@@ -30,6 +30,7 @@ Software
 - BioBamBam2
 - Bowtie2
 - BWA
+- FastQC
 - GEMtools
 - HDF5
 - iNPS

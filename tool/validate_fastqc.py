@@ -70,8 +70,8 @@ class fastqcTool(Tool):
             args = shlex.split(command_line)
             process = subprocess.Popen(args)
             process.wait()
-        except Exception error:
-            logger.fatal("FastQC error({0}): {1}".format(error.errno, error.strerror))
+        except Exception as error:
+            logger.fatal("FastQC error: {0}".format(error))
             return False
 
         try:

@@ -75,6 +75,7 @@ class fastqcTool(Tool):
 
         try:
             fastq_file_tmp = fastq_file.split("/")
+            fastq_file_tmp[-1] = fastq_file_tmp[-1].replace(".fastq.gz", "_fastqc.html")
             fastq_file_tmp[-1] = fastq_file_tmp[-1].replace(".fastq", "_fastqc.html")
             fastq_file_tmp = "/".join(fastq_file_tmp)
             with open(report_file, "wb") as f_out:
@@ -109,7 +110,7 @@ class fastqcTool(Tool):
 
         # input and output share most metadata
         results = self.validate(
-            output_files['fastq'],
+            input_files['fastq'],
             output_files['report']
         )
         results = compss_wait_on(results)

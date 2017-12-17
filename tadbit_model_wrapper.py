@@ -132,7 +132,7 @@ class tadbit_model(Workflow):
         if "assembly" in metadata['hic_contacts_matrix_norm'].meta_data:
             input_metadata["assembly"] = metadata['hic_contacts_matrix_norm'].meta_data["assembly"]
         if metadata['hic_contacts_matrix_norm'].taxon_id:
-            dt = json.load(urllib2.urlopen("http://www.ebi.ac.uk/ena/data/taxonomy/v1/taxon/tax-id/"+metadata['hic_contacts_matrix_norm'].taxon_id))            
+            dt = json.load(urllib2.urlopen("http://www.ebi.ac.uk/ena/data/taxonomy/v1/taxon/tax-id/"+str(metadata['hic_contacts_matrix_norm'].taxon_id)))            
             input_metadata["species"] = dt['scientificName']
             
         input_metadata["num_mod_comp"] = self.configuration["num_mod_comp"]

@@ -16,7 +16,7 @@
     "arguments": [
     {
             "name": "project",
-            "value": "/home/dcastillo/workspace/vre/mg-process-fastq-tadbit/tests/data"
+            "value": "/scratch/results/vre/"
         },
     	{
             "name": "resolution",
@@ -34,7 +34,7 @@
             "type": "string",
             "required": false,
             "default": "",
-            "value" : "chr21"
+            "value" : "chr10"
         },
         {
             "name": "segmentation:callers",

@@ -10,7 +10,7 @@
     "arguments": [
     {
             "name": "project",
-            "value": "/home/dcastillo/workspace/vre/mg-process-fastq-tadbit/tests/data/"
+            "value": "/scratch/results/vre/"
         },
         {
             "name": "optimization:resolution",
@@ -18,7 +18,7 @@
             "help": "Resolution of the normalization.",
             "type": "string",
             "required": true,
-            "value": "20000"
+            "value": "100000"
         },
         {
             "name": "optimization:gen_pos_chrom_name",
@@ -34,7 +34,7 @@
             "help": "Genomic coordinate from which to start modeling.",
             "type": "int",
             "required": true,
-            "value": "4900000"
+            "value": "2900000"
         },
         {
             "name": "optimization:gen_pos_end",
@@ -42,7 +42,7 @@
             "help": "Genomic coordinate where to end modeling.",
             "type": "int",
             "required": true,
-            "value": "5900000"
+            "value": "7900000"
         },
         {
             "name": "optimization:num_mod_comp",
@@ -66,7 +66,7 @@
             "help": "Range of numbers for optimal maxdist parameter, i.e. 400:1000:100; or just a single number e.g. 800; or a list of numbers e.g. 400 600 800 1000.",
             "type": "string",
             "required": true,
-            "value": "1000:1200:200"
+            "value": "400:1200:200"
         },
         {
             "name": "optimization:upper_bound",
@@ -92,13 +92,13 @@
             "required": true,
             "value": "2"
         },
-        {
+		{
             "name": "generation:max_dist",
             "description": "Maximum distance.",
             "help": "Range of numbers for optimal maxdist parameter, i.e. 400:1000:100; or just a single number e.g. 800; or a list of numbers e.g. 400 600 800 1000.",
             "type": "string",
             "required": true,
-            "value": "1000"
+            "value": "1200"
         },
         {
             "name": "generation:upper_bound",
@@ -106,7 +106,7 @@
             "help": "Range of numbers for optimal upfreq parameter, i.e. 0:1.2:0.3; or just a single number e.g. 0.8; or a list of numbers e.g. 0.1 0.3 0.5 0.9.",
             "type": "string",
             "required": true,
-            "value": "1.2"
+            "value": "0.3"
         },
         {
             "name": "generation:lower_bound",
@@ -114,7 +114,7 @@
             "help": "Range of numbers for optimal low parameter, i.e. -1.2:0:0.3; or just a single number e.g. -0.8; or a list of numbers e.g. -0.1 -0.3 -0.5 -0.9.",
             "type": "string",
             "required": true,
-            "value": "0"
+            "value": "-1.2"
         },
         {
             "name": "generation:cutoff",
@@ -140,6 +140,7 @@
             "required": true,
             "value": "20"
         }
+        
     ],
     "output_files": [
     	{

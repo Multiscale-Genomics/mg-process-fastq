@@ -1,4 +1,5 @@
-.. Copyright 2017 EMBL-European Bioinformatics Institute
+.. See the NOTICE file distributed with this work for additional information
+   regarding copyright ownership.
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -29,6 +30,7 @@ Software
 - BioBamBam2
 - Bowtie2
 - BWA
+- FastQC
 - GEMtools
 - HDF5
 - iNPS
@@ -38,6 +40,7 @@ Software
 - R 2.9.1+
 - SAMtools
 - MCL
+- pigz
 
 Python Modules
 ^^^^^^^^^^^^^^

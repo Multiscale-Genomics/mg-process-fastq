@@ -21,6 +21,8 @@ import shlex
 import subprocess
 import sys
 
+from utils import logger
+
 try:
     if hasattr(sys, '_run_from_cmdl') is True:
         raise ImportError
@@ -28,14 +30,15 @@ try:
     from pycompss.api.task import task
     from pycompss.api.api import compss_wait_on
 except ImportError:
-    print ("[Warning] Cannot import \"pycompss\" API packages.")
-    print ("          Using mock decorators.")
+    logger.warn("[Warning] Cannot import \"pycompss\" API packages.")
+    logger.warn("          Using mock decorators.")
 
-    from dummy_pycompss import FILE_IN, FILE_OUT
-    from dummy_pycompss import task
-    from dummy_pycompss import compss_wait_on
+    from utils.dummy_pycompss import FILE_IN, FILE_OUT # pylint: disable=ungrouped-imports
+    from utils.dummy_pycompss import task
+    from utils.dummy_pycompss import compss_wait_on
 
 from basic_modules.tool import Tool
+from basic_modules.metadata import Metadata
 
 # ------------------------------------------------------------------------------
 
@@ -48,7 +51,7 @@ class kallistoIndexerTool(Tool):
         """
         Init function
         """
-        print("Kallisto Indexer")
+        logger.info("Kallisto Indexer")
         Tool.__init__(self)
 
     @task(cdna_file_loc=FILE_IN, cdna_idx_file=FILE_OUT)
@@ -65,15 +68,18 @@ class kallistoIndexerTool(Tool):
         """
 
         command_line = 'kallisto index -i ' + cdna_idx_file + ' ' + cdna_file_loc
-        print ("command : "+command_line)
+        logger.info("command : "+command_line)
 
-        args = shlex.split(command_line)
-        process = subprocess.Popen(args)
-        process.wait()
+        try:
+            args = shlex.split(command_line)
+            process = subprocess.Popen(args)
+            process.wait()
+        except Exception:
+            return False
 
         return True
 
-    def run(self, input_files, output_files, metadata=None):
+    def run(self, input_files, input_metadata, output_files):
         """
         Tool for generating assembly aligner index files for use with Kallisto
 
@@ -81,7 +87,7 @@ class kallistoIndexerTool(Tool):
         ----------
         input_files : list
             FASTA file location will all the cDNA sequences for a given genome
-        metadata : list
+        input_metadata : list
 
         Returns
         --------
@@ -90,16 +96,37 @@ class kallistoIndexerTool(Tool):
             list of the matching metadata
         """
 
-        file_name = input_files[0]
-        genome_idx_loc = file_name.replace('.fasta', '.idx')
-        genome_idx_loc = genome_idx_loc.replace('.fa', '.idx')
+        # file_name = input_files[0]
+        # genome_idx_loc = file_name.replace('.fasta', '.idx')
+        # genome_idx_loc = genome_idx_loc.replace('.fa', '.idx')
 
         # input and output share most metadata
         output_metadata = {}
 
-        results = self.kallisto_indexer(input_files[0], genome_idx_loc)
+        results = self.kallisto_indexer(
+            input_files["cdna"],
+            output_files["index"]
+        )
         results = compss_wait_on(results)
 
-        return ([genome_idx_loc], [output_metadata])
+        if results is False:
+            logger.fatal("Kallisto Indexer: run failed")
+            return {}, {}
+
+        output_metadata = {
+            "index": Metadata(
+                data_type="index_kallisto",
+                file_type="",
+                file_path=output_files["index"],
+                sources=[input_metadata["cdna"].file_path],
+                taxon_id=input_metadata["cdna"].taxon_id,
+                meta_data={
+                    "assembly": input_metadata["cdna"].meta_data["assembly"],
+                    "tool": "kallisto_indexer"
+                }
+            )
+        }
+
+        return (output_files, output_metadata)
 
 # ------------------------------------------------------------------------------

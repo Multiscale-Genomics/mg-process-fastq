@@ -17,10 +17,13 @@
 
 from __future__ import print_function
 
+import os
 import shlex
 import subprocess
 import sys
 import tarfile
+
+from utils import logger
 
 try:
     if hasattr(sys, '_run_from_cmdl') is True:
@@ -29,14 +32,15 @@ try:
     from pycompss.api.task import task
     from pycompss.api.api import compss_wait_on
 except ImportError:
-    print("[Warning] Cannot import \"pycompss\" API packages.")
-    print("          Using mock decorators.")
+    logger.warn("[Warning] Cannot import \"pycompss\" API packages.")
+    logger.warn("          Using mock decorators.")
 
-    from dummy_pycompss import FILE_IN, FILE_OUT, IN
-    from dummy_pycompss import task
-    from dummy_pycompss import compss_wait_on
+    from utils.dummy_pycompss import FILE_IN, FILE_OUT, IN # pylint: disable=ungrouped-imports
+    from utils.dummy_pycompss import task
+    from utils.dummy_pycompss import compss_wait_on
 
 from basic_modules.tool import Tool
+from basic_modules.metadata import Metadata
 
 # ------------------------------------------------------------------------------
 
@@ -46,11 +50,11 @@ class bssIndexerTool(Tool):
     it uses Bowtie2.
     """
 
-    def __init__(self):
+    def __init__(self, configuration=None):
         """
         Init function
         """
-        print("BS-Seeker Indexer wrapper")
+        logger.info("BS-Seeker Indexer wrapper")
         Tool.__init__(self)
 
     @task(
@@ -90,27 +94,36 @@ class bssIndexerTool(Tool):
             " --db " + "/".join(ff_split[:-1])
         ).format()
 
-        print("BS - INDEX CMD:", command_line)
-        args = shlex.split(command_line)
-        process = subprocess.Popen(args)
-        process.wait()
+        try:
+            logger.info("BS - INDEX CMD:", command_line)
+            args = shlex.split(command_line)
+            process = subprocess.Popen(args)
+            process.wait()
+        except Exception:
+            return False
 
-        # tar.gz the index
-        print("BS - idx_out", idx_out, idx_out.replace('.tar.gz', ''))
-        idx_out_pregz = idx_out.replace('.tar.gz', '.tar')
+        try:
+            # tar.gz the index
+            logger.info("BS - idx_out:", idx_out, idx_out.replace('.tar.gz', ''))
+            idx_out_pregz = idx_out.replace('.tar.gz', '.tar')
 
-        tar = tarfile.open(idx_out_pregz, "w")
-        tar.add(fasta_file + "_" + aligner, arcname=ff_split[-1] + "_" + aligner)
-        tar.close()
+            logger.info("BS - idx archive:", idx_out_pregz)
+            logger.info("BS - idx folder to add:", fasta_file + "_" + aligner)
+            logger.info("BS - idx folder arcname:", ff_split[-1] + "_" + aligner)
+            tar = tarfile.open(idx_out_pregz, "w")
+            tar.add(fasta_file + "_" + aligner, arcname=ff_split[-1] + "_" + aligner)
+            tar.close()
 
-        command_line = 'pigz ' + idx_out_pregz
-        args = shlex.split(command_line)
-        process = subprocess.Popen(args)
-        process.wait()
+            command_line = 'pigz ' + idx_out_pregz
+            args = shlex.split(command_line)
+            process = subprocess.Popen(args)
+            process.wait()
+        except Exception:
+            return False
 
         return True
 
-    def run(self, input_files, output_files, metadata=None):
+    def run(self, input_files, input_metadata, output_files):
         """
         Tool for indexing the genome assembly using BS-Seeker2. In this case it
         is using Bowtie2
@@ -127,28 +140,57 @@ class bssIndexerTool(Tool):
             Location of the filtered FASTQ file
         """
 
-        file_name = input_files[0]
-        genome_dir_split = file_name.split("/")
-        genome_dir = '/'.join(genome_dir_split[:-1])
+        logger.info("WGBS - Index output files:", output_files)
 
-        aligner = metadata['aligner']
-        aligner_path = metadata['aligner_path']
-        bss_path = metadata['bss_path']
+        try:
+            if "bss_path" in input_metadata:
+                bss_path = input_metadata["bss_path"]
+            else:
+                raise KeyError
+            if "aligner_path" in input_metadata:
+                aligner_path = input_metadata["aligner_path"]
+            else:
+                raise KeyError
+            if "aligner" in input_metadata:
+                aligner = input_metadata["aligner"]
+            else:
+                raise KeyError
+        except KeyError:
+            logger.fatal("WGBS - BS SEEKER2: Unassigned configuration variables")
 
-
-        output_file = file_name + '_' + aligner + '.tar.gz'
-
-        # input and output share most metadata
-        output_metadata = {}
 
         # handle error
         results = self.bss_build_index(
-            file_name, aligner, aligner_path, bss_path, output_file)
+            input_files["genome"],
+            aligner, aligner_path, bss_path,
+            output_files["index"])
         results = compss_wait_on(results)
 
-        if results is True:
-            pass
+        if results is False:
+            logger.fatal("BS SEEKER2 Indexer: run failed")
+            return {}, {}
 
-        return ([output_file], [output_metadata])
+        if (
+                os.path.isfile(output_files["index"]) is False and
+                os.path.getsize(output_files["index"]) == 0):
+            logger.fatal("BS SEEKER2 Indexer: Index archive not created")
+            return {}, {}
+
+
+        output_metadata = {
+            "index": Metadata(
+                data_type="sequence_mapping_index_bowtie",
+                file_type="TAR",
+                file_path=output_files["index"],
+                sources=[input_metadata["genome"].file_path],
+                taxon_id=input_metadata["genome"].taxon_id,
+                meta_data={
+                    "assembly": input_metadata["genome"].meta_data["assembly"],
+                    "tool": "bs_seeker_indexer"
+                }
+            )
+        }
+
+        return output_files, output_metadata
 
 # ------------------------------------------------------------------------------

@@ -23,6 +23,8 @@ import sys
 import re
 import tarfile
 
+from utils import logger
+
 try:
     if hasattr(sys, '_run_from_cmdl') is True:
         raise ImportError
@@ -30,15 +32,15 @@ try:
     from pycompss.api.task import task
     from pycompss.api.api import compss_wait_on
 except ImportError:
-    print("[Warning] Cannot import \"pycompss\" API packages.")
-    print("          Using mock decorators.")
+    logger.warn("[Warning] Cannot import \"pycompss\" API packages.")
+    logger.warn("          Using mock decorators.")
 
-    from dummy_pycompss import FILE_IN, FILE_OUT, IN, OUT
-    from dummy_pycompss import task
-    from dummy_pycompss import compss_wait_on
+    from utils.dummy_pycompss import FILE_IN, FILE_OUT, IN, OUT # pylint: disable=ungrouped-imports
+    from utils.dummy_pycompss import task
+    from utils.dummy_pycompss import compss_wait_on
 
-#from basic_modules.metadata import Metadata
 from basic_modules.tool import Tool
+from basic_modules.metadata import Metadata
 
 from fastqreader import fastqreader
 
@@ -49,11 +51,11 @@ class fastq_splitter(Tool):
     Script for splitting up FASTQ files into manageable chunks
     """
 
-    def __init__(self):
+    def __init__(self, configuration=None):
         """
         Init function
         """
-        print("FASTQ Splitter")
+        logger.info("FASTQ Splitter")
         Tool.__init__(self)
 
     @task(
@@ -101,7 +103,7 @@ class fastq_splitter(Tool):
             "." + str(fqr.output_tag) + "_" + str(fqr.output_file_count) + ".fastq")
         file_loc_1.insert(-1, tag)
 
-        files_out = [["/".join(file_loc_1)]]
+        files_out = [[file_loc_1[-1]]]
 
         while fqr.eof(1) is False:
             fqr.writeOutput(record1, 1)
@@ -113,18 +115,18 @@ class fastq_splitter(Tool):
                 file_loc_1 = fqr.fastq1.split("/")
                 new_suffix = "." + str(fqr.output_tag) + "_" + str(fqr.output_file_count) + ".fastq"
                 file_loc_1[-1] = re.sub('.fastq$', new_suffix, file_loc_1[-1])
-                #file_loc_1[-1] = file_loc_1[-1].replace(
-                #    ".fastq",
-                #    "." + str(fqr.output_tag) + "_" + str(fqr.output_file_count) + ".fastq")
-                file_loc_1.insert(-1, "tmp")
+                file_loc_1.insert(-1, tag)
 
-                #files_out.append(["/".join(file_loc_1)])
                 files_out.append([file_loc_1[-1]])
 
         fqr.closeFastQ()
         fqr.closeOutputFiles()
 
         output_file_pregz = out_file.replace('.tar.gz', '.tar')
+
+        tar = tarfile.open(output_file_pregz, "w")
+        tar.add("/".join(file_loc_1[:-1]), arcname='tmp')
+        tar.close()
 
         tar = tarfile.open(output_file_pregz, "w")
         tar.add("/".join(file_loc_1[:-1]), arcname='tmp')
@@ -244,18 +246,17 @@ class fastq_splitter(Tool):
 
         return files_out
 
-    def run(self, input_files, output_files, metadata=None):
+    def run(self, input_files, input_metadata, output_files):
         """
         The main function to run the splitting of FASTQ files (single or paired)
         so that they can aligned in a distributed manner
 
         Parameters
         ----------
-        input_files : list
+        input_files : dict
             List of input fastq file locations
-        output_files : list
         metadata : dict
-
+        output_files : dict
 
         Returns
         -------
@@ -266,22 +267,38 @@ class fastq_splitter(Tool):
 
         """
 
-        if len(input_files) == 2:
-            results = output_files = self.paired_splitter(
-                input_files[0], input_files[1],
-                input_files[0] + ".tar.gz"
+        sources = [input_files["fastq1"].file_path]
+
+        if "fastq2" in input_files:
+            sources.append(input_files["fastq2"].file_path)
+            results = self.paired_splitter(
+                input_files["fastq1"], input_files["fastq2"],
+                input_files["fastq1"] + ".tar.gz"
             )
         else:
-            results = output_files = self.single_splitter(
-                input_files[0],
-                input_files[0] + ".tar.gz",
+            results = self.single_splitter(
+                input_files["fastq1"],
+                input_files["fastq1"] + ".tar.gz",
             )
 
         results = compss_wait_on(results)
 
-        print("WGBS - FASTQ SPLITTER:", results)
+        logger.info("FASTQ SPLITTER:", results)
+
+        fastq_tar_meta = Metadata(
+            data_type=input_metadata["fastq1"].data_type,
+            file_type="TAR",
+            file_path=output_files["output"],
+            sources=sources,
+            taxon_id=input_metadata["fastq1"].taxon_id,
+            meta_data={
+                "tool": "fastq_splitter"
+            }
+        )
 
         return (
-            input_files[0] + ".tar.gz",
-            results
+            {"output": input_files["fastq1"] + ".tar.gz"},
+            {"output": fastq_tar_meta}
         )
+
+# ------------------------------------------------------------------------------

@@ -24,19 +24,21 @@ import subprocess
 import sys
 import tarfile
 
+from utils import logger
+
 try:
     if hasattr(sys, '_run_from_cmdl') is True:
         raise ImportError
-    from pycompss.api.parameter import FILE_IN, FILE_OUT, IN
+    from pycompss.api.parameter import FILE_IN, FILE_OUT
     from pycompss.api.task import task
     from pycompss.api.api import compss_wait_on
 except ImportError:
-    print ("[Warning] Cannot import \"pycompss\" API packages.")
-    print ("          Using mock decorators.")
+    logger.warn("[Warning] Cannot import \"pycompss\" API packages.")
+    logger.warn("          Using mock decorators.")
 
-    from dummy_pycompss import FILE_IN, FILE_OUT, IN
-    from dummy_pycompss import task
-    from dummy_pycompss import compss_wait_on
+    from utils.dummy_pycompss import FILE_IN, FILE_OUT # pylint: disable=ungrouped-imports
+    from utils.dummy_pycompss import task
+    from utils.dummy_pycompss import compss_wait_on
 
 from basic_modules.tool import Tool
 from basic_modules.metadata import Metadata
@@ -50,7 +52,7 @@ class bowtieIndexerTool(Tool):
     Tool for running indexers over a genome FASTA file
     """
 
-    def __init__(self):
+    def __init__(self, configuration=None):
         """
         Init function
         """
@@ -70,45 +72,47 @@ class bowtieIndexerTool(Tool):
         idx_loc : str
             Location of the output index file
         """
+        try:
+            file_name = file_loc.split('/')
+            file_name[-1] = file_name[-1].replace('.fasta', '')
+            file_name[-1].replace('.fa', '')
+            file_name = "/".join(file_name)
 
-        file_name = file_loc.split('/')
-        file_name[-1] = file_name[-1].replace('.fasta', '')
-        file_name[-1].replace('.fa', '')
-        file_name = "/".join(file_name)
+            common_handle = common()
+            common_handle.bowtie_index_genome(file_loc, file_name)
 
-        common_handle = common()
-        common_handle.bowtie_index_genome(file_loc, file_name)
+            # tar.gz the index
+            print("BT - index_loc", index_loc, index_loc.replace('.tar.gz', ''))
+            idx_out_pregz = index_loc.replace('.tar.gz', '.tar')
 
-        # tar.gz the index
-        print("BT - index_loc", index_loc, index_loc.replace('.tar.gz', ''))
-        idx_out_pregz = index_loc.replace('.tar.gz', '.tar')
+            index_dir = index_loc.replace('.tar.gz', '')
+            os.mkdir(index_dir)
 
-        index_dir = index_loc.replace('.tar.gz', '')
-        os.mkdir(index_dir)
+            idx_split = index_dir.split("/")
 
-        idx_split = index_dir.split("/")
+            shutil.move(file_name + ".1.bt2", index_dir)
+            shutil.move(file_name + ".2.bt2", index_dir)
+            shutil.move(file_name + ".3.bt2", index_dir)
+            shutil.move(file_name + ".4.bt2", index_dir)
+            shutil.move(file_name + ".rev.1.bt2", index_dir)
+            shutil.move(file_name + ".rev.2.bt2", index_dir)
 
-        shutil.move(file_name + ".1.bt2", index_dir)
-        shutil.move(file_name + ".2.bt2", index_dir)
-        shutil.move(file_name + ".3.bt2", index_dir)
-        shutil.move(file_name + ".4.bt2", index_dir)
-        shutil.move(file_name + ".rev.1.bt2", index_dir)
-        shutil.move(file_name + ".rev.2.bt2", index_dir)
+            index_folder = idx_split[-1]
 
-        index_folder = idx_split[-1]
+            tar = tarfile.open(idx_out_pregz, "w")
+            tar.add(index_dir, arcname=index_folder)
+            tar.close()
 
-        tar = tarfile.open(idx_out_pregz, "w")
-        tar.add(index_dir, arcname=index_folder)
-        tar.close()
+            command_line = 'pigz ' + idx_out_pregz
+            args = shlex.split(command_line)
+            process = subprocess.Popen(args)
+            process.wait()
 
-        command_line = 'pigz ' + idx_out_pregz
-        args = shlex.split(command_line)
-        process = subprocess.Popen(args)
-        process.wait()
+            return True
+        except Exception:
+            return False
 
-        return True
-
-    def run(self, input_files, metadata, output_files):
+    def run(self, input_files, input_metadata, output_files):
         """
         Tool for generating assembly aligner index files for use with the
         Bowtie 2 aligner
@@ -131,18 +135,25 @@ class bowtieIndexerTool(Tool):
             input_files["genome"],
             output_files["index"]
         )
+        results = compss_wait_on(results)
+
+        if results is False:
+            logger.fatal("Bowtie2 Indexer: run failed")
+            return {}, {}
 
         output_metadata = {
             "index": Metadata(
-                "index_bwt", "", [metadata["genome"].id],
-                {
-                    "assembly": metadata["genome"].meta_data["assembly"],
+                data_type="sequence_mapping_index_bowtie",
+                file_type="TAR",
+                file_path=output_files["index"],
+                sources=[input_metadata["genome"].file_path],
+                taxon_id=input_metadata["genome"].taxon_id,
+                meta_data={
+                    "assembly": input_metadata["genome"].meta_data["assembly"],
                     "tool": "bowtie_indexer"
                 }
             )
         }
-
-        results = compss_wait_on(results)
 
         return (output_files, output_metadata)
 

@@ -21,6 +21,8 @@ import shlex
 import subprocess
 import sys
 
+from utils import logger
+
 try:
     if hasattr(sys, '_run_from_cmdl') is True:
         raise ImportError
@@ -28,12 +30,12 @@ try:
     from pycompss.api.task import task
     from pycompss.api.api import compss_wait_on
 except ImportError:
-    print("[Warning] Cannot import \"pycompss\" API packages.")
-    print("          Using mock decorators.")
+    logger.warn("[Warning] Cannot import \"pycompss\" API packages.")
+    logger.warn("          Using mock decorators.")
 
-    from dummy_pycompss import FILE_IN, FILE_OUT
-    from dummy_pycompss import task
-    from dummy_pycompss import compss_wait_on
+    from utils.dummy_pycompss import FILE_IN, FILE_OUT # pylint: disable=ungrouped-imports
+    from utils.dummy_pycompss import task
+    from utils.dummy_pycompss import compss_wait_on
 
 from basic_modules.metadata import Metadata
 from basic_modules.tool import Tool
@@ -47,11 +49,11 @@ class gemIndexerTool(Tool):
     Tool for running indexers over a genome FASTA file
     """
 
-    def __init__(self):
+    def __init__(self, configuration=None):
         """
         Init function
         """
-        print ("GEM Indexer")
+        logger.info("GEM Indexer")
         Tool.__init__(self)
 
     @task(genome_file=FILE_IN, new_genome_file=FILE_OUT, index_loc=FILE_OUT)
@@ -68,20 +70,23 @@ class gemIndexerTool(Tool):
         idx_loc : str
             Location of the output index file
         """
-        common_handle = common()
-        common_handle.replaceENAHeader(genome_file, new_genome_file)
+        try:
+            common_handle = common()
+            common_handle.replaceENAHeader(genome_file, new_genome_file)
 
-        idx_result = common_handle.gem_index_genome(new_genome_file, new_genome_file)
+            idx_result = common_handle.gem_index_genome(new_genome_file, new_genome_file)
 
-        idx_out_pregz = index_loc.replace('.gem.gz', '.gem')
-        command_line = 'pigz ' + idx_out_pregz
-        args = shlex.split(command_line)
-        process = subprocess.Popen(args)
-        process.wait()
+            idx_out_pregz = index_loc.replace('.gem.gz', '.gem')
+            command_line = 'pigz ' + idx_out_pregz
+            args = shlex.split(command_line)
+            process = subprocess.Popen(args)
+            process.wait()
 
-        return True
+            return True
+        except Exception:
+            return False
 
-    def run(self, input_files, metadata, output_files):
+    def run(self, input_files, input_metadata, output_files):
         """
         Tool for generating assembly aligner index files for use with the GEM
         indexer
@@ -91,7 +96,7 @@ class gemIndexerTool(Tool):
         input_files : list
             List with a single str element with the location of the genome
             assembly FASTA file
-        metadata : list
+        input_metadata : list
 
         Returns
         -------
@@ -108,18 +113,30 @@ class gemIndexerTool(Tool):
         )
         results = compss_wait_on(results)
 
+        if results is False:
+            logger.fatal("GEM Indexer: run failed")
+            return {}, {}
+
         output_metadata = {
             "genome_gem": Metadata(
-                "assembly", "fasta", [metadata["genome"].id],
-                {
-                    "assembly": metadata["genome"].meta_data["assembly"],
+                data_type="sequence_dna",
+                file_type="FASTA",
+                file_path=output_files['genome_gem'],
+                sources=[input_metadata["genome"].file_path],
+                taxon_id=input_metadata["genome"].taxon_id,
+                meta_data={
+                    "assembly": input_metadata["genome"].meta_data["assembly"],
                     "tool": "gem_indexer"
                 }
             ),
             "index": Metadata(
-                "index_gem", "gem", [output_files['genome_gem']],
-                {
-                    "assembly": metadata["genome"].meta_data["assembly"],
+                data_type="sequence_mapping_index_gem",
+                file_type="GEM",
+                file_path=output_files['index'],
+                sources=[output_files['genome_gem']],
+                taxon_id=input_metadata["genome"].taxon_id,
+                meta_data={
+                    "assembly": input_metadata["genome"].meta_data["assembly"],
                     "tool": "gem_indexer"
                 }
             )

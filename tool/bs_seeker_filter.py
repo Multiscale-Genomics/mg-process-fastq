@@ -21,6 +21,8 @@ import shlex
 import subprocess
 import sys
 
+from utils import logger
+
 try:
     if hasattr(sys, '_run_from_cmdl') is True:
         raise ImportError
@@ -28,14 +30,15 @@ try:
     from pycompss.api.task import task
     from pycompss.api.api import compss_wait_on
 except ImportError:
-    print("[Warning] Cannot import \"pycompss\" API packages.")
-    print("          Using mock decorators.")
+    logger.warn("[Warning] Cannot import \"pycompss\" API packages.")
+    logger.warn("          Using mock decorators.")
 
-    from dummy_pycompss import FILE_IN, FILE_OUT, IN
-    from dummy_pycompss import task
-    from dummy_pycompss import compss_wait_on
+    from utils.dummy_pycompss import FILE_IN, FILE_OUT, IN # pylint: disable=ungrouped-imports
+    from utils.dummy_pycompss import task
+    from utils.dummy_pycompss import compss_wait_on
 
 from basic_modules.tool import Tool
+from basic_modules.metadata import Metadata
 
 # ------------------------------------------------------------------------------
 
@@ -44,11 +47,11 @@ class filterReadsTool(Tool):
     Script from BS-Seeker2 for filtering FASTQ files to remove repeats
     """
 
-    def __init__(self):
+    def __init__(self, configuration=None):
         """
         Init function
         """
-        print("BS-Seeker FilterReads wrapper")
+        logger.info("BS-Seeker FilterReads wrapper")
         Tool.__init__(self)
 
     @task(infile=FILE_IN, outfile=FILE_OUT, bss_path=IN)
@@ -78,19 +81,22 @@ class filterReadsTool(Tool):
             " -o " + outfile + ".tmp"
         ).format()
 
-        print(command_line)
+        logger.info(command_line)
 
         args = shlex.split(command_line)
         process = subprocess.Popen(args)
         process.wait()
 
-        with open(outfile, 'wb') as f_out:
-            with open(outfile + '.tmp', 'rb') as f_in:
-                f_out.write(f_in.read())
+        try:
+            with open(outfile, 'wb') as f_out:
+                with open(outfile + '.tmp', 'rb') as f_in:
+                    f_out.write(f_in.read())
+        except ImportError:
+            return False
 
         return True
 
-    def run(self, input_files, output_files, metadata=None):
+    def run(self, input_files, input_metadata, output_files):
         """
         Tool for filtering duplicate entries from FASTQ files using BS-Seeker2
 
@@ -98,7 +104,7 @@ class filterReadsTool(Tool):
         ----------
         input_files : list
             FASTQ file
-        metadata : list
+        input_metadata : list
 
         Returns
         -------
@@ -106,19 +112,45 @@ class filterReadsTool(Tool):
             Location of the filtered FASTQ file
         """
 
-        file_name = input_files[0]
-        output_file = file_name + '.filtered.fastq'
+        try:
+            if "bss_path" not in input_metadata:
+                raise KeyError
+        except KeyError:
+            logger.fatal("WGBS - BS SEEKER2: Unassigned configuration variables")
+            return {}, {}
 
         output_metadata = {}
 
-        print("BS FILTER PARAMS:", file_name, output_file, metadata["bss_path"])
-        results = self.bss_seeker_filter(file_name, output_file, metadata["bss_path"])
+        print(
+            "BS FILTER PARAMS:",
+            input_files["fastq"],
+            output_files["fastq_filtered"],
+            input_metadata["bss_path"])
 
+        results = self.bss_seeker_filter(
+            input_files["fastq"],
+            output_files["fastq_filtered"],
+            input_metadata["bss_path"]
+        )
         results = compss_wait_on(results)
 
         if results is False:
-            pass
+            logger.fatal("BS SEEKER2 Filter: run failed")
+            return {}, {}
 
-        return ([output_file], output_metadata)
+        output_metadata = {
+            "fastq_filtered": Metadata(
+                data_type="data_wgbs",
+                file_type="fastq",
+                file_path=output_files["fastq_filtered"],
+                sources=[input_metadata["fastq"].file_path],
+                taxon_id=input_metadata["fastq"].taxon_id,
+                meta_data={
+                    "tool": "bs_seeker_filter"
+                }
+            )
+        }
+
+        return (output_files, output_metadata)
 
 # ------------------------------------------------------------------------------

@@ -16,27 +16,28 @@
 """
 from __future__ import print_function
 
-import os
 import shlex
 import subprocess
 import sys
 
+from utils import logger
+
 try:
     if hasattr(sys, '_run_from_cmdl') is True:
         raise ImportError
-    from pycompss.api.parameter import FILE_IN, FILE_OUT
+    from pycompss.api.parameter import FILE_IN, FILE_OUT, IN
     from pycompss.api.task import task
     from pycompss.api.api import compss_wait_on
 except ImportError:
-    print("[Warning] Cannot import \"pycompss\" API packages.")
-    print("          Using mock decorators.")
+    logger.warn("[Warning] Cannot import \"pycompss\" API packages.")
+    logger.warn("          Using mock decorators.")
 
-    from dummy_pycompss import FILE_IN, FILE_OUT
-    from dummy_pycompss import task
-    from dummy_pycompss import compss_wait_on
+    from utils.dummy_pycompss import FILE_IN, FILE_OUT, IN # pylint: disable=ungrouped-imports
+    from utils.dummy_pycompss import task
+    from utils.dummy_pycompss import compss_wait_on
 
-#from basic_modules.metadata import Metadata
 from basic_modules.tool import Tool
+from basic_modules.metadata import Metadata
 
 # ------------------------------------------------------------------------------
 
@@ -45,15 +46,18 @@ class inps(Tool):
     Tool for peak calling for MNase-seq data
     """
 
-    def __init__(self):
+    def __init__(self, configuration=None):
         """
         Init function
         """
-        print("iNPS Peak Caller")
+        logger.info("iNPS Peak Caller")
         Tool.__init__(self)
 
-    @task(bam_file=FILE_IN, peak_bed=FILE_OUT)
-    def inps_peak_calling(self, bam_file, peak_bed):
+    @task(
+        returns=int,
+        bam_file=FILE_IN, peak_bed=FILE_OUT, inps_params=IN,
+        isModifier=False)
+    def inps_peak_calling(self, bam_file, peak_bed, inps_params):
         """
         Convert Bam to Bed then make Nucleosome peak calls. These are saved as
         bed files That can then get displayed on genome browsers.
@@ -71,15 +75,14 @@ class inps(Tool):
             Location of the collated bed file of nucleosome peak calls
         """
         bed_file = bam_file + ".bed"
-        pyenv3 = os.path.join(os.path.expanduser("~"), "bin/py3")
-        inps_cmd = os.path.join(os.path.expanduser("~"), "bin/iNPS_V1.2.2.py")
+        # pyenv3 = os.path.join(os.path.expanduser("~"), "bin/py3")
 
         command_line_1 = 'bedtools bamtobed -i ' + bam_file
-        pyenv3 = os.path.join(os.path.expanduser("~"), "bin/py3")
-        command_line_2 = pyenv3 + ' ' + inps_cmd + ' -i ' + bed_file + ' -o ' + peak_bed + "_tmp"
+        command_line_2 = "iNPS " + " ".join(inps_params)
+        command_line_2 = command_line_2 + " -i " + bed_file + " -o " + peak_bed + "_tmp"
 
-        print("iNPS - cmd1:", command_line_1)
-        print("iNPS - cmd2:", command_line_2)
+        logger.info("iNPS - cmd1:", command_line_1)
+        logger.info("iNPS - cmd2:", command_line_2)
 
         args = shlex.split(command_line_1)
         with open(bed_file, "w") as f_out:
@@ -94,9 +97,9 @@ class inps(Tool):
             with open(peak_bed, "wb") as f_out:
                 f_out.write(f_in.read())
 
-        return True
+        return 0
 
-    def run(self, input_files, output_files, metadata=None):
+    def run(self, input_files, input_metadata, output_files):
         """
         The main function to run iNPS for peak calling over a given BAM file
         and matching background BAM file.
@@ -117,15 +120,39 @@ class inps(Tool):
 
         """
 
-        bam_file = input_files[0]
-        peak_bed = bam_file.replace('.bam', '.bed')
+        command_params = []
 
-        # input and output share most metadata
-        output_metadata = {}
+        if "inps_sp_param" in self.configuration:
+            command_params = command_params + [
+                "--s_p", str(self.configuration["inps_sp_param"])]
+        if "inps_pe_max_param" in self.configuration:
+            command_params = command_params + [
+                "--pe_max", str(self.configuration["inps_pe_max_param"])]
+        if "inps_pe_min_param" in self.configuration:
+            command_params = command_params + [
+                "--pe_min", str(self.configuration["inps_pe_min_param"])]
 
-        results = self.inps_peak_calling(bam_file, peak_bed)
+        results = self.inps_peak_calling(
+            input_files["bam"],
+            output_files["bed"],
+            command_params
+        )
         results = compss_wait_on(results)
 
-        return ([peak_bed], output_metadata)
+        output_metadata = {
+            "bed": Metadata(
+                data_type=input_metadata['bam'].data_type,
+                file_type="BED",
+                file_path=output_files["bed"],
+                sources=[input_metadata["bam"].file_path],
+                taxon_id=input_metadata["bam"].taxon_id,
+                meta_data={
+                    "assembly": input_metadata["bam"].meta_data["assembly"],
+                    "tool": "inps"
+                }
+            )
+        }
+
+        return (output_files, output_metadata)
 
 # ------------------------------------------------------------------------------

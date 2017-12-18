@@ -20,7 +20,6 @@ from __future__ import print_function
 import os.path
 import pytest # pylint: disable=unused-import
 
-from process_genome import process_genome
 from process_chipseq import process_chipseq
 from basic_modules.metadata import Metadata
 
@@ -47,13 +46,6 @@ def test_chipseq_pipeline():
 
     """
     resource_path = os.path.join(os.path.dirname(__file__), "data/")
-
-    #genome_handle = process_genome()
-    # genome_files, genome_meta = genome_handle.run(
-    #     [resource_path + 'macs2.Human.GCA_000001405.22.fasta'],
-    #     {'assembly' : 'GRCh38'},
-    #     []
-    # )
 
     files = {
         'genome': resource_path + 'macs2.Human.GCA_000001405.22.fasta',
@@ -87,7 +79,7 @@ def test_chipseq_pipeline():
         'gapped_peak': '/'.join(root_name) + '_filtered_peaks.gappedPeak'
     }
 
-    chipseq_handle = process_chipseq()
+    chipseq_handle = process_chipseq({"macs_nomodel_param" : True})
     chipseq_files, chipseq_meta = chipseq_handle.run(files, metadata, files_out)
 
     print(chipseq_files)
@@ -95,5 +87,6 @@ def test_chipseq_pipeline():
     # Add tests for all files created
     for f_out in chipseq_files:
         print("CHIP-SEQ RESULTS FILE:", f_out)
+        #assert chipseq_files[f_out] == files_out[f_out]
         assert os.path.isfile(chipseq_files[f_out]) is True
         assert os.path.getsize(chipseq_files[f_out]) > 0

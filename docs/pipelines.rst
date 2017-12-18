@@ -1,4 +1,5 @@
-.. Copyright 2017 EMBL-European Bioinformatics Institute
+.. See the NOTICE file distributed with this work for additional information
+   regarding copyright ownership.
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -50,9 +51,9 @@ Download and index genome files
       :linenos:
 
       python process_genome.py                              \
-          --taxon_id 9606                                   \
-          --assembly GRCh38                                 \
-          --genome /<dataset_dir>/Homo_sapiens.GRCh38.fasta
+         --config tests/json/config_genome_indexer.json \
+         --in_metadata tests/json/input_genome_indexer.json \
+         --out_metadata tests/json/output_genome_indexer.json
 
    When using a local version of the [COMPS virtual machine](https://www.bsc.es/research-and-development/software-and-apps/software-list/comp-superscalar/):
 
@@ -60,13 +61,14 @@ Download and index genome files
       :linenos:
 
       runcompss                               \
-          --lang=python                       \
-          --library_path=${HOME}/bin          \
-          --pythonpath=/<pyenv_virtenv_dir>/lib/python2.7/site-packages/ \
-          --log_level=debug process_genome.py \
-          --taxon_id 9606                     \
-          --genome /<dataset_dir>/tb.Human.GCA_000001405.22.fasta \
-          --assembly GRCh38
+         --lang=python                       \
+         --library_path=${HOME}/bin          \
+         --pythonpath=/<pyenv_virtenv_dir>/lib/python2.7/site-packages/ \
+         --log_level=debug \
+         process_genome.py \
+            --config tests/json/config_genome_indexer.json \
+            --in_metadata tests/json/input_genome_indexer.json \
+            --out_metadata tests/json/output_genome_indexer.json
 
 
    Methods
@@ -219,11 +221,9 @@ ChIP-Seq Analysis
       :linenos:
 
       python process_chipseq.py                            \
-         --genome /<dataset_dir>/Homo_sapiens.GRCh38.fasta \
-         --assembly GCA_000001405.25                       \
-         --taxon_id 9606                                   \
-         --file /<dataset_dir>/<file_name>.fastq           \
-         --bgd_file /<dataset_dir>/<bgd_file_name>.fastq
+         --config tests/json/config_chipseq.json \
+         --in_metadata tests/json/input_chipseq.json \
+         --out_metadata tests/json/output_chipseq.json
 
    When using a local version of the [COMPS virtual machine](https://www.bsc.es/research-and-development/software-and-apps/software-list/comp-superscalar/):
 
@@ -236,10 +236,9 @@ ChIP-Seq Analysis
          --pythonpath=/<pyenv_virtenv_dir>/lib/python2.7/site-packages/ \
          --log_level=debug          \
          process_chipseq.py         \
-            --taxon_id 9606         \
-            --genome /<dataset_dir>/Human.GCA_000001405.22.fasta \
-            --assembly GRCh38       \
-            --file /<dataset_dir>/DRR000150.22.fastq
+            --config tests/json/config_chipseq.json \
+            --in_metadata tests/json/input_chipseq.json \
+            --out_metadata tests/json/output_chipseq.json
 
 
    Methods
@@ -285,10 +284,9 @@ Mnase-Seq Analysis
       :linenos:
 
       python process_mnaseseq.py                           \
-         --genome /<dataset_dir>/Homo_sapiens.GRCh38.fasta \
-         --assembly GCA_000001405.25                       \
-         --taxon_id 9606                                   \
-         --file /<dataset_dir>/<file_name>.fastq
+         --config tests/json/config_mnaseseq.json \
+         --in_metadata tests/json/input_mnaseseq.json \
+         --out_metadata tests/json/output_mnaseseq.json
 
    When using a local version of the [COMPS virtual machine](https://www.bsc.es/research-and-development/software-and-apps/software-list/comp-superscalar/):
 
@@ -301,10 +299,9 @@ Mnase-Seq Analysis
          --pythonpath=/<pyenv_virtenv_dir>/lib/python2.7/site-packages/ \
          --log_level=debug                             \
          process_mnaseseq.py                           \
-            --taxon_id 10090                           \
-            --genome /<dataset_dir>/Mouse.GRCm38.fasta \
-            --assembly GRCm38                          \
-            --file /<dataset_dir>/DRR000386.fastq
+            --config tests/json/config_mnaseseq.json \
+            --in_metadata tests/json/input_mnaseseq.json \
+            --out_metadata tests/json/output_mnaseseq.json
 
 
    Methods
@@ -348,11 +345,9 @@ RNA-Seq Analysis
       :linenos:
 
       python process_rnaseq.py                                       \
-         --genome /<dataset_dir>/Homo_sapiens.GRCh38.cdna.all.fasta  \
-         --assembly GCA_000001405.25                                 \
-         --taxon_id 9606                                             \
-         --file /<dataset_dir>/expt_1.fastq                          \
-         --file2 /<dataset_dir>/expt_2.fastq
+         --config tests/json/config_rnaseq.json \
+         --in_metadata tests/json/input_rnaseq.json \
+         --out_metadata tests/json/output_rnaseq.json
 
 
    When using a local version of the [COMPS virtual machine](https://www.bsc.es/research-and-development/software-and-apps/software-list/comp-superscalar/):
@@ -366,11 +361,9 @@ RNA-Seq Analysis
          --pythonpath=/<pyenv_virtenv_dir>/lib/python2.7/site-packages/ \
          --log_level=debug                             \
          process_rnaseq.py                             \
-            --taxon_id 9606                            \
-            --genome /<dataset_dir>/Human.GRCh38.fasta \
-            --assembly GRCh38                          \
-            --file /<dataset_dir>/ERR030872_1.fastq    \
-            --file2 /<dataset_dir>/ERR030872_2.fastq
+            --config tests/json/config_rnaseq.json \
+            --in_metadata tests/json/input_rnaseq.json \
+            --out_metadata tests/json/output_rnaseq.json
 
    Methods
    =======
@@ -426,14 +419,9 @@ Whole Genome BiSulphate Sequencing Analysis
       :linenos:
 
       python process_rnaseq.py                   \
-         --assembly GCA_000001405.22             \
-         --taxon_id 9606                         \
-         --genome <data_dir>/GCA_000001405.22.fa \
-         --fastq1 <data_dir>/expt1_a.fastq       \
-         --fastq2 <data_dir>/expt1_b.fastq       \
-         --aligner bowtie2                       \
-         --aligner_path /home/compss/lib         \
-         --bss_path <script_dir>/BS-Seeker2
+         --config tests/json/config_wgbs.json \
+         --in_metadata tests/json/input_wgbs.json \
+         --out_metadata tests/json/output_wgbs.json
 
    When using a local version of the [COMPS virtual machine](https://www.bsc.es/research-and-development/software-and-apps/software-list/comp-superscalar/):
 
@@ -446,14 +434,9 @@ Whole Genome BiSulphate Sequencing Analysis
          --pythonpath=/<pyenv_virtenv_dir>/lib/python2.7/site-packages/ \
          --log_level=debug                       \
          process_wgbs.py                         \
-            --taxon_id 10090                     \
-            --genome /<dataset_dir>/Mouse.GRCm38.fasta \
-            --assembly GRCm38                    \
-            --fastq1 /<dataset_dir>/expt_1.fastq \
-            --fastq2 /<dataset_dir>/expt_2.fastq \
-            --aligner bowtie2                    \
-            --aligner_path ${HOME}/lib/bowtie2-2.3.2 \
-            --bss_path ${HOME}/lib/BSseeker2
+            --config tests/json/config_wgbs.json \
+            --in_metadata tests/json/input_wgbs.json \
+            --out_metadata tests/json/output_wgbs.json
 
 
    Methods

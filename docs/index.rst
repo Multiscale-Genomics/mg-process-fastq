@@ -1,4 +1,5 @@
-.. Copyright 2017 EMBL-European Bioinformatics Institute
+.. See the NOTICE file distributed with this work for additional information
+   regarding copyright ownership.
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -22,7 +23,7 @@ MuG - FASTQ Pipelines's documentation!
 
 .. toctree::
    :maxdepth: 2
-   :caption: Main Sections:
+   :caption: Contents:
 
    install
    full_installation
@@ -31,6 +32,12 @@ MuG - FASTQ Pipelines's documentation!
    common
    fastqfunctions
    testing
+   settingUpTravis
+   docker
+   testData_ChIPSeq
+   testData_MNaseSeq
+   testData_RNASeq
+   testData_WGBS
    adr
    license
 

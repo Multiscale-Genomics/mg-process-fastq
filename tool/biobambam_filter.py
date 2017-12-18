@@ -22,6 +22,8 @@ import shlex
 import subprocess
 import sys
 
+from utils import logger
+
 try:
     if hasattr(sys, '_run_from_cmdl') is True:
         raise ImportError
@@ -29,12 +31,12 @@ try:
     from pycompss.api.task import task
     from pycompss.api.api import compss_wait_on
 except ImportError:
-    print("[Warning] Cannot import \"pycompss\" API packages.")
-    print("          Using mock decorators.")
+    logger.warn("[Warning] Cannot import \"pycompss\" API packages.")
+    logger.warn("          Using mock decorators.")
 
-    from dummy_pycompss import FILE_IN, FILE_OUT
-    from dummy_pycompss import task
-    from dummy_pycompss import compss_wait_on
+    from utils.dummy_pycompss import FILE_IN, FILE_OUT # pylint: disable=ungrouped-imports
+    from utils.dummy_pycompss import task
+    from utils.dummy_pycompss import compss_wait_on
 
 from basic_modules.metadata import Metadata
 from basic_modules.tool import Tool
@@ -50,7 +52,7 @@ class biobambam(Tool):
         """
         Init function
         """
-        print("BioBamBam2 Filter")
+        logger.info("BioBamBam2 Filter")
         Tool.__init__(self)
 
     @task(returns=bool, bam_file_in=FILE_IN, bam_file_out=FILE_OUT,
@@ -79,7 +81,8 @@ class biobambam(Tool):
         """
 
         td_list = bam_file_in.split("/")
-        print("BIOBAMBAM: bam_file_in:", bam_file_in)
+        logger.info("BIOBAMBAM: bam_file_in: " + bam_file_in)
+        logger.info("BIOBAMBAM: bam_file_out: " + bam_file_out)
         tmp_dir = "/".join(td_list[0:-1])
 
         command_line = 'bamsormadup --tmpfile=' + tmp_dir
@@ -87,18 +90,28 @@ class biobambam(Tool):
 
         bam_tmp_out = tmp_dir + '/' + td_list[-1] + '.filtered.tmp.bam'
 
-        with open(bam_file_in, "r") as f_in:
-            with open(bam_tmp_out, "w") as f_out:
-                process = subprocess.Popen(args, stdin=f_in, stdout=f_out)
-                process.wait()
+        logger.info("BIOBAMBAM: command_line: " + command_line)
 
-        with open(bam_file_out, "wb") as f_out:
-            with open(bam_tmp_out, "rb") as f_in:
-                f_out.write(f_in.read())
+        try:
+            with open(bam_file_in, "r") as f_in:
+                with open(bam_tmp_out, "w") as f_out:
+                    process = subprocess.Popen(args, stdin=f_in, stdout=f_out)
+                    process.wait()
+        except IOError as error:
+            logger.fatal("I/O error({0}): {1}".format(error.errno, error.strerror))
+            return False
+
+        try:
+            with open(bam_file_out, "wb") as f_out:
+                with open(bam_tmp_out, "rb") as f_in:
+                    f_out.write(f_in.read())
+        except IOError as error:
+            logger.fatal("I/O error({0}): {1}".format(error.errno, error.strerror))
+            return False
 
         return True
 
-    def run(self, input_files, metadata, output_files):
+    def run(self, input_files, input_metadata, output_files):
         """
         The main function to run BioBAMBAMfilter to remove duplicates and
         spurious reads from the FASTQ files before analysis.
@@ -112,30 +125,39 @@ class biobambam(Tool):
 
         Returns
         -------
-        output_files : list
+        output_files : dict
             Filtered bam fie.
-        output_metadata : list
+        output_metadata : dict
             List of matching metadata dict objects
         """
-        print("BIOBAMBAM: input_files:", input_files)
+        logger.info("BIOBAMBAM FILTER: Ready to run")
 
         results = self.biobambam_filter_alignments(input_files['input'], output_files['output'])
         results = compss_wait_on(results)
 
-        print("BIOBAMBAM FILTER:", os.path.isfile(output_files['output']))
+        if results is False:
+            logger.fatal("BIOBAMBAM: run failed")
+            return {}, {}
 
-        bam_meta = Metadata(
-            "data_chip_seq", "bam", output_files["output"],
-            [metadata['input'].id],
-            {
-                'assembly' : metadata['input'].meta_data['assembly'],
-                "tool": "biobambam_filter"
-            }
-        )
+        logger.info("BIOBAMBAM FILTER: completed")
+
+        output_metadata = {
+            "bam": Metadata(
+                data_type="data_chip_seq",
+                file_type="BAM",
+                file_path=output_files["output"],
+                sources=[input_metadata["input"].file_path],
+                taxon_id=input_metadata["input"].taxon_id,
+                meta_data={
+                    "assembly": input_metadata["input"].meta_data["assembly"],
+                    "tool": "biobambam_filter"
+                }
+            )
+        }
 
         return (
             {"bam": output_files['output']},
-            {"bam": bam_meta}
+            output_metadata
         )
 
 # ------------------------------------------------------------------------------

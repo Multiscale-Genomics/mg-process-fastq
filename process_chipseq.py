@@ -23,12 +23,10 @@ from __future__ import print_function
 from functools import wraps # pylint: disable=unused-import
 
 import argparse
-import os.path
 
 from basic_modules.workflow import Workflow
-from basic_modules.metadata import Metadata
-
-from dmp import dmp
+from utils import logger
+from utils import remap
 
 from tool.bwa_aligner import bwaAlignerTool
 from tool.biobambam_filter import biobambam
@@ -42,8 +40,6 @@ class process_chipseq(Workflow):
     filtered and analysed for peak calling
     """
 
-    #configuration = {}
-
     def __init__(self, configuration=None):
         """
         Initialise the tool with its configuration.
@@ -55,6 +51,7 @@ class process_chipseq(Workflow):
             a dictionary containing parameters that define how the operation
             should be carried out, which are specific to each Tool.
         """
+        logger.info("Processing ChIP-Seq")
         if configuration is None:
             configuration = {}
 
@@ -76,16 +73,8 @@ class process_chipseq(Workflow):
             Location of the initial input files required by the workflow
             genome : str
                 Genome FASTA file
-            amb : str
-                BWA index file
-            ann : str
-                BWA index file
-            bwt : str
-                BWA index file
-            pac : str
-                BWA index file
-            sa : str
-                BWA index file
+            index : str
+                Location of the BWA archived index files
             loc : str
                 Location of the FASTQ reads files
             bg_loc : str
@@ -94,12 +83,7 @@ class process_chipseq(Workflow):
             Input file meta data associated with their roles
 
             genome : str
-            amb : str
-            ann : str
-            bwt : str
-            pac : str
-            sa : str
-            loc : str
+            index : str
             bg_loc : str
                 [OPTIONAL]
         output_files : dict
@@ -140,16 +124,12 @@ class process_chipseq(Workflow):
             broad_peak : Metadata
             gapped_peak : Metadata
         """
-        print("INPUT RUN METADATA:", metadata)
+        output_files_generated = {}
+        output_metadata = {}
+
+        logger.info("PROCESS CHIPSEQ - DEFINED OUTPUT:", output_files["bam"])
 
         bwa = bwaAlignerTool(self.configuration)
-
-        print(
-            "PROCESS CHIPSEQ - FILES PASSED TO TOOLS:",
-            remap(input_files, "genome", "loc", "index")
-        )
-
-        print("PROCESS CHIPSEQ - DEFINED OUTPUT:", output_files["bam"])
         bwa_files, bwa_meta = bwa.run(
             # ideally parameter "roles" don't change
             remap(input_files,
@@ -158,47 +138,84 @@ class process_chipseq(Workflow):
                   "genome", "loc", "index"),
             {"output": output_files["bam"]}
         )
+        try:
+            output_files_generated["bam"] = bwa_files["bam"]
+            output_metadata["bam"] = bwa_meta["bam"]
+
+            tool_name = output_metadata['bam'].meta_data['tool']
+            output_metadata['bam'].meta_data['tool_description'] = tool_name
+            output_metadata['bam'].meta_data['tool'] = "process_chipseq"
+        except KeyError:
+            logger.fatal("BWA aligner failed")
 
         if "bg_loc" in input_files:
+            # Align background files
             bwa_bg_files, bwa_bg_meta = bwa.run(
                 # Small changes can be handled easily using "remap"
                 remap(input_files,
-                      "genome", "bg_loc", "index"),
+                      "genome", "index", loc="bg_loc"),
                 remap(metadata,
-                      "genome", "bg_loc", "index"),
+                      "genome", "index", loc="bg_loc"),
                 # Intermediate outputs should be created via tempfile?
                 {"output": output_files["bam_bg"]}
             )
+
+            try:
+                output_files_generated["bam_bg"] = bwa_bg_files["bam_bg"]
+                output_metadata["bam_bg"] = bwa_bg_meta["bam_bg"]
+
+                tool_name = output_metadata['bam_bg'].meta_data['tool']
+                output_metadata['bam_bg'].meta_data['tool_description'] = tool_name
+                output_metadata['bam_bg'].meta_data['tool'] = "process_chipseq"
+            except KeyError:
+                logger.fatal("Background BWA aligner failed")
 
         # For multiple files there will need to be merging into a single bam file
 
         # Filter the bams
         b3f = biobambam(self.configuration)
         b3f_files, b3f_meta = b3f.run(
-            # Alternatively, we can rebuild the dict
             {"input": bwa_files['bam']},
             {"input": bwa_meta['bam']},
-            # Intermediate outputs should be created via tempfile?
             {"output": output_files["filtered"]}
         )
 
+        try:
+            output_files_generated["filtered"] = bwa_files["bam"]
+            output_metadata["filtered"] = bwa_meta["bam"]
+
+            tool_name = output_metadata['filtered'].meta_data['tool']
+            output_metadata['filtered'].meta_data['tool_description'] = tool_name
+            output_metadata['filtered'].meta_data['tool'] = "process_chipseq"
+        except KeyError:
+            logger.fatal("BioBamBam filtering failed")
+
         if "bg_loc" in input_files:
+            # Filter background aligned files
             b3f_bg_files, b3f_bg_meta = b3f.run(
                 {"input": bwa_bg_files['bam']},
                 {"input": bwa_bg_meta['bam']},
-                # Intermediate outputs should be created via tempfile?
                 {"output": output_files["filtered_bg"]}
             )
 
+            try:
+                output_files_generated["filtered_bg"] = bwa_files["filtered_bg"]
+                output_metadata["filtered_bg"] = bwa_meta["filtered_bg"]
+
+                tool_name = output_metadata['filtered_bg'].meta_data['tool']
+                output_metadata['filtered_bg'].meta_data['tool_description'] = tool_name
+                output_metadata['filtered_bg'].meta_data['tool'] = "process_chipseq"
+            except KeyError:
+                logger.fatal("Background BioBamBam filtering failed")
+
         ## MACS2 to call peaks
         macs_caller = macs2(self.configuration)
-        macs_inputs = {"input": b3f_files['bam']}
-        macs_metadt = {"input": b3f_meta['bam']}
+        macs_inputs = {"input": output_files_generated["filtered"]}
+        macs_metadt = {"input": output_metadata['filtered']}
 
         if "bg_loc" in input_files:
-            # The dicts can be built incrementally
-            macs_inputs["background"] = b3f_bg_files['bam']
-            macs_metadt["background"] = b3f_bg_meta['bam']
+            macs_inputs["background"] = output_files_generated["filtered_bg"]
+            macs_metadt["background"] = output_metadata['filtered_bg']
 
         m_results_files, m_results_meta = macs_caller.run(
             macs_inputs, macs_metadt,
@@ -206,49 +223,45 @@ class process_chipseq(Workflow):
             # Extra entries in output_files will be disregarded.
             remap(output_files, 'narrow_peak', 'summits', 'broad_peak', 'gapped_peak'))
 
-        # Outputs are collected with some name changes
-        m_results_files["bam"] = bwa_files["bam"]
-        m_results_files["filtered"] = b3f_files["bam"]
+        if len(m_results_meta) == 0:
+            logger.fatal("MACS2 peak calling failed")
 
-        # Equivalent meta data is collected
-        m_results_meta["bam"] = bwa_meta["bam"]
-        m_results_meta["filtered"] = b3f_meta["bam"]
+        if 'narrow_peak' in m_results_meta:
+            output_files_generated['narrow_peak'] = m_results_files['narrow_peak']
+            output_metadata['narrow_peak'] = m_results_meta['narrow_peak']
 
-        if "bg_loc" in input_files:
-            m_results_files["bam_bg"] = bwa_bg_files["bam"]
-            m_results_files["filtered_bg"] = b3f_bg_files["bam"]
+            tool_name = output_metadata['narrow_peak'].meta_data['tool']
+            output_metadata['narrow_peak'].meta_data['tool_description'] = tool_name
+            output_metadata['narrow_peak'].meta_data['tool'] = "process_chipseq"
+        if 'summits' in m_results_meta:
+            output_files_generated['summits'] = m_results_files['summits']
+            output_metadata['summits'] = m_results_meta['summits']
 
-            m_results_meta["bam_bg"] = bwa_bg_meta["bam"]
-            m_results_meta["filtered_bg"] = b3f_bg_meta["bam"]
+            tool_name = output_metadata['summits'].meta_data['tool']
+            output_metadata['summits'].meta_data['tool_description'] = tool_name
+            output_metadata['summits'].meta_data['tool'] = "process_chipseq"
+        if 'broad_peak' in m_results_meta:
+            output_files_generated['broad_peak'] = m_results_files['broad_peak']
+            output_metadata['broad_peak'] = m_results_meta['broad_peak']
 
-        print("CHIPSEQ RESULTS:", m_results_meta)
-        return m_results_files, m_results_meta
+            tool_name = output_metadata['broad_peak'].meta_data['tool']
+            output_metadata['broad_peak'].meta_data['tool_description'] = tool_name
+            output_metadata['broad_peak'].meta_data['tool'] = "process_chipseq"
+        if 'gapped_peak' in m_results_meta:
+            output_files_generated['gapped_peak'] = m_results_files['gapped_peak']
+            output_metadata['gapped_peak'] = m_results_meta['gapped_peak']
+
+            tool_name = output_metadata['gapped_peak'].meta_data['tool']
+            output_metadata['gapped_peak'].meta_data['tool_description'] = tool_name
+            output_metadata['gapped_peak'].meta_data['tool'] = "process_chipseq"
+
+        print("CHIPSEQ RESULTS:", output_metadata)
+        return output_files_generated, output_metadata
+
 
 # ------------------------------------------------------------------------------
 
-def main(input_files, output_files, input_metadata):
-    """
-    Main function
-    -------------
-
-    This function launches the app.
-    """
-
-    # import pprint  # Pretty print - module for dictionary fancy printing
-
-    # 1. Instantiate and launch the App
-    print("1. Instantiate and launch the App")
-    from apps.workflowapp import WorkflowApp
-    app = WorkflowApp()
-    result = app.launch(process_chipseq, input_files, input_metadata, output_files, {})
-
-    # 2. The App has finished
-    print("2. Execution finished")
-    print(result)
-
-    return result
-
-def main_json():
+def main_json(config, in_metadata, out_metadata):
     """
     Alternative main function
     -------------
@@ -260,159 +273,36 @@ def main_json():
     print("1. Instantiate and launch the App")
     from apps.jsonapp import JSONApp
     app = JSONApp()
-    root_path = os.path.expanduser('~') + "/code/mg-process-fastq"
     result = app.launch(process_chipseq,
-                        root_path,
-                        "tests/json/config_chipseq.json",
-                        "tests/json/input_chipseq_metadata.json")
+                        config,
+                        in_metadata,
+                        out_metadata)
 
     # 2. The App has finished
-    print("2. Execution finished; see " + root_path + "/results.json")
+    print("2. Execution finished; see " + out_metadata)
     print(result)
 
     return result
-
-def prepare_files(
-        dm_handler, taxon_id, genome_fa, assembly, file_loc, file_bg_loc=None):
-    """
-    Function to load the DM API with the required files and prepare the
-    parameters passed from teh command line ready for use in the main function
-    """
-    # print(dm_handler.get_files_by_user("test"))
-
-    root_name = file_loc.split("/")
-    parent_dir = '/'.join(root_name[0:-1])
-
-    genome_file = dm_handler.set_file(
-        "test", genome_fa, "file", "fasta", 64000, parent_dir,
-        "Assembly", taxon_id, None, None,
-        meta_data={"assembly" : assembly, 'tool': 'bwa_indexer'})
-    index_file = dm_handler.set_file(
-        "test", genome_fa + ".bwa.tar.gz", "file", "index_bwa", 64000, parent_dir,
-        "Index", taxon_id, None, [genome_file],
-        meta_data={'assembly' : assembly, 'tool': 'bwa_indexer'})
-
-    # Maybe it is necessary to prepare a metadata parser from json file
-    # when building the Metadata objects.
-    metadata = {
-        "genome": Metadata(
-            "Assembly", "fasta", genome_fa, None,
-            {'assembly' : assembly}, genome_file),
-        "index": Metadata(
-            "Index", "bwa_index", genome_fa + ".bwa.tar.gz", [genome_file],
-            {'assembly': assembly, "tool": "bwa_indexer"}, index_file),
-    }
-
-    fq1_file = dm_handler.set_file(
-        "test", file_loc, "file", "fastq", 64000, parent_dir, "data_chip_seq",
-        taxon_id, None, None, meta_data={'assembly' : assembly})
-    metadata["loc"] = Metadata(
-        "data_chip_seq", "fastq", file_loc, None,
-        {'assembly' : assembly}, fq1_file
-    )
-
-    files = {
-        "genome": genome_fa,
-        "index": genome_fa + ".bwa.tar.gz",
-        "loc": file_loc
-    }
-
-    root_name = file_loc.split("/")
-    root_name[-1] = root_name[-1].replace('.fastq', '')
-
-    files_out = {
-        "bam": file_loc.replace(".fastq", ".bam"),
-        "filtered": file_loc.replace(".fastq", "_filtered.bam"),
-        "output": file_loc.replace(".fastq", ".tsv"),
-        'narrow_peak': '/'.join(root_name) + '_filtered_peaks.narrowPeak',
-        'summits': '/'.join(root_name) + '_filtered_summits.bed',
-        'broad_peak': '/'.join(root_name) + '_filtered_peaks.broadPeak',
-        'gapped_peak': '/'.join(root_name) + '_filtered_peaks.gappedPeak'
-    }
-
-    if file_bg_loc:
-        fq2_file = dm_handler.set_file(
-            "test", file_bg_loc, "fastq", "file", "ChIP-seq", taxon_id, None, None,
-            meta_data={'assembly' : assembly})
-
-        metadata["bg_loc"] = Metadata(
-            "data_chip_seq", "fastq", file_bg_loc, None,
-            {'assembly': assembly, 'main_expt': fq1_file, 'background': True},
-            fq2_file
-        )
-
-        files["bg_loc"] = file_bg_loc
-
-        files_out["bam_bg"] = file_bg_loc.replace(".fastq", ".bam"),
-        files_out["filtered_bg"] = file_bg_loc.replace(".fastq", "_filtered.bam"),
-
-
-    # print(dm_handler.get_files_by_user("test"))
-
-    return [files, files_out, metadata]
-
-# ------------------------------------------------------------------------------
-
-def remap(indict, *args, **kwargs):
-    """
-    Re-map keys of indict using information from arguments.
-
-    Non-keyword arguments are keys of input dictionary that are passed
-    unchanged to the output. Keyword arguments must be in the form
-
-    old="new"
-
-    and act as a translation table for new key names.
-    """
-    outdict = {role: indict[role] for role in args}
-    outdict.update(
-        {new: indict[old] for old, new in kwargs.items()}
-    )
-    return outdict
 
 # ------------------------------------------------------------------------------
 
 if __name__ == "__main__":
     import sys
-    sys._run_from_cmdl = True
+    sys._run_from_cmdl = True  # pylint: disable=protected-access
 
     # Set up the command line parameters
     PARSER = argparse.ArgumentParser(description="ChIP-seq peak calling")
-    PARSER.add_argument("--taxon_id", help="Taxon_ID (9606)")
-    PARSER.add_argument("--genome", help="Genome FASTA file")
-    PARSER.add_argument("--assembly", help="Genome assembly ID (GCA_000001405.25)")
-    PARSER.add_argument("--file", help="Location of FASTQ input file")
-    PARSER.add_argument("--bgd_file", help="Location of FASTQ background file", default=None)
-    PARSER.add_argument("--json",
-                        help="Use defined JSON config files",
-                        action='store_const', const=True, default=False)
-
+    PARSER.add_argument("--config", help="Configuration file")
+    PARSER.add_argument("--in_metadata", help="Location of input metadata file")
+    PARSER.add_argument("--out_metadata", help="Location of output metadata file")
 
     # Get the matching parameters from the command line
     ARGS = PARSER.parse_args()
 
-    TAXON_ID = ARGS.taxon_id
-    GENOME_FA = ARGS.genome
-    ASSEMBLY = ARGS.assembly
-    FILE_LOC = ARGS.file
-    FILE_BG_LOC = ARGS.bgd_file
-    JSON_CONFIG = ARGS.json
+    CONFIG = ARGS.config
+    IN_METADATA = ARGS.in_metadata
+    OUT_METADATA = ARGS.out_metadata
 
-    if JSON_CONFIG is True:
-        RESULTS = main_json()
-    else:
-        #
-        # MuG Tool Steps
-        # --------------
-        #
-        # 1. Create data files
-        DM_HANDLER = dmp(test=True)
-
-        #2. Register the data with the DMP
-        PARAMS = prepare_files(DM_HANDLER, TAXON_ID, GENOME_FA, ASSEMBLY, FILE_LOC, FILE_BG_LOC)
-
-        # 3. Instantiate and launch the App
-        RESULTS = main(PARAMS[0], PARAMS[1], PARAMS[2])
-        print(DM_HANDLER.get_files_by_user("test"))
+    RESULTS = main_json(CONFIG, IN_METADATA, OUT_METADATA)
 
     print(RESULTS)

@@ -1,4 +1,5 @@
-.. Copyright 2017 EMBL-European Bioinformatics Institute
+.. See the NOTICE file distributed with this work for additional information
+   regarding copyright ownership.
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -34,7 +35,7 @@ Setup the System Environment
    sudo apt-get install -y make build-essential libssl-dev zlib1g-dev       \\
    libbz2-dev libreadline-dev libsqlite3-dev wget curl llvm libncurses5-dev \\
    libncursesw5-dev xz-utils tk-dev unzip mcl libgtk2.0-dev r-base-core     \\
-   libcurl4-gnutls-dev python-rpy2 git libtbb2 pigz
+   libcurl4-gnutls-dev python-rpy2 git libtbb2 pigz liblzma-dev libhdf5-dev
 
    cd ${HOME}
    mkdir bin lib code
@@ -54,6 +55,9 @@ space.
    echo 'export PYENV_ROOT="$HOME/.pyenv"' >> ~/.bash_profile
    echo 'export PATH="$PYENV_ROOT/bin:$PATH"' >> ~/.bash_profile
    echo 'eval "$(pyenv init -)"' >> ~/.bash_profile
+
+   # Add the .bash_profile to your .bashrc file
+   echo 'source ~/.bash_profile"' >> ~/.bashrc
 
    git clone https://github.com/pyenv/pyenv-virtualenv.git ${PYENV_ROOT}/plugins/pyenv-virtualenv
 
@@ -126,6 +130,20 @@ BWA Sequence Aligner
    cd bwa
    make
 
+FastQC
+^^^^^^
+
+.. code-block:: none
+   :linenos:
+
+   cd ${HOME}/lib
+   wget http://www.bioinformatics.babraham.ac.uk/projects/fastqc/fastqc_v0.11.5.zip
+   unzip fastqc_v0.11.5.zip
+   cd FastQC/
+   chmod 755 fastqc
+
+
+
 GEM Sequence Aligner
 ^^^^^^^^^^^^^^^^^^^^
 
@@ -147,6 +165,14 @@ iNPS Peak Caller
    cd iNPS
    wget http://www.picb.ac.cn/hanlab/files/iNPS_V1.2.2.zip
    unzip iNPS_V1.2.2.zip
+
+   cd ${HOME}/bin
+   cat iNPS <<EOL
+   #!/usr/bin/env bash
+   python3 ${HOME}/lib/iNPS/iNPS_V1.2.2.py "$@"
+   EOL
+
+   chmod 777 iNPS
 
 Kallisto
 ^^^^^^^^
@@ -218,6 +244,8 @@ Setup the symlinks
    ln -s ${HOME}/lib/bowtie2-2.3.2/bowtie2-inspect bowtie2-inspect
    ln -s ${HOME}/lib/bowtie2-2.3.2/bowtie2-inspect-s bowtie2-inspect-s
    ln -s ${HOME}/lib/bowtie2-2.3.2/bowtie2-inspect-l bowtie2-inspect-l
+
+   ln -s ${HOME}/lib/FastQC/fastqc
 
    ln -s ${HOME}/lib/gemtools-1.7.1-core2/bin/gem-2-bed gem-2-bed
    ln -s ${HOME}/lib/gemtools-1.7.1-core2/bin/gem-2-gem gem-2-gem

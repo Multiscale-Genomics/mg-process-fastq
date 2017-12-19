@@ -50,8 +50,8 @@ class process_genome(Workflow):
         logger.info("Processing Genomes")
         if configuration is None:
             configuration = {}
-        
-        self.configuration.update(convert_from_unicode(configuration))
+
+        self.configuration.update(configuration)
 
     def run(self, input_files, metadata, output_files):
         """

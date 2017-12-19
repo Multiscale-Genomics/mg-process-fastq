@@ -122,7 +122,7 @@ class tadbit_bin(Workflow):
         if "assembly" in metadata['bamin'].meta_data:
             input_metadata["assembly"] = metadata['bamin'].meta_data["assembly"]
         if metadata['bamin'].taxon_id:
-            dt = json.load(urllib2.urlopen("http://www.ebi.ac.uk/ena/data/taxonomy/v1/taxon/tax-id/"+metadata['bamin'].taxon_id))            
+            dt = json.load(urllib2.urlopen("http://www.ebi.ac.uk/ena/data/taxonomy/v1/taxon/tax-id/"+str(metadata['bamin'].taxon_id)))            
             input_metadata["species"] = dt['scientificName']
         #hic_data = HiC_data((), len(bins_dict), sections, bins_dict, resolution=int(input_metadata['resolution']))
         tb = tbBinTool()

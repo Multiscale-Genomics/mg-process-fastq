@@ -186,7 +186,7 @@ class tbSegmentTool(Tool):
         if "callers" in metadata:
             callers = metadata['callers']
             
-        root_name = bamin.split("/")
+        root_name = os.path.dirname(os.path.abspath(bamin))
         if 'workdir' in metadata:
             root_name = metadata['workdir']
         

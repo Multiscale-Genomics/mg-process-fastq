@@ -18,7 +18,7 @@ from __future__ import print_function
 
 import sys
 import glob, os
-#from subprocess import CalledProcessError, PIPE, Popen
+from subprocess import PIPE, Popen
 import subprocess
 
 try:
@@ -206,7 +206,7 @@ class tbNormalizeTool(Tool):
         if 'min_count' in metadata:
             min_count = metadata['min_count']
             
-        root_name = bamin.split("/")
+        root_name = os.path.dirname(os.path.abspath(bamin))
         if 'workdir' in metadata:
             root_name = metadata['workdir']
         

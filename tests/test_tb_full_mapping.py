@@ -21,17 +21,61 @@ import os.path
 import gzip
 import pytest # pylint: disable=unused-import
 
+from tool.gem_indexer import gemIndexerTool
 from tool.tb_full_mapping import tbFullMappingTool
+from basic_modules.metadata import Metadata
 
+def generate_gem():
+    
+    resource_path = os.path.join(os.path.dirname(__file__), "data/")
+    genome_fa = resource_path + "tb.Human.GCA_000001405.22.fasta"
+    genome_gem_fa = resource_path + "tb.Human.GCA_000001405.22_gem.fasta"
+
+    with gzip.open(genome_fa + '.gz', 'rb') as fgz_in:
+        with open(genome_fa, 'wb') as f_out:
+            f_out.write(fgz_in.read())
+
+
+    genome_gem_idx = resource_path + "tb.Human.GCA_000001405.22_gem.fasta.gem.gz"
+
+    input_files = {
+        "genome": genome_fa
+    }
+
+    output_files = {
+        "index": genome_gem_idx,
+        "genome_gem": genome_gem_fa
+    }
+
+    metadata = {
+        "genome": Metadata(
+            "Assembly", "fasta", genome_fa, None,
+            {'assembly' : 'test'}),
+    }
+
+    print(input_files, output_files)
+
+    gem_it = gemIndexerTool()
+    gem_it.run(input_files, metadata, output_files)
+
+    
 @pytest.mark.hic
 def test_tb_extract_fastq():
     """
     Extract the compressed FASTQ files
-    """
+    """        
     resource_path = os.path.join(os.path.dirname(__file__), "data/")
     fastq_file_1 = resource_path + "tb.Human.SRR1658573_1.fastq"
     fastq_file_2 = resource_path + "tb.Human.SRR1658573_2.fastq"
-
+    gem_file = resource_path + "tb.Human.GCA_000001405.22_gem.fasta.gem"
+    
+    if not os.path.isfile(gem_file):
+        generate_gem()
+    
+        with gzip.open(gem_file + '.gz', 'rb') as fgz_in:
+            with open(gem_file, 'w') as f_out:
+                f_out.write(fgz_in.read())
+            
     with gzip.open(fastq_file_1 + '.gz', 'rb') as fgz_in:
         with open(fastq_file_1, 'w') as f_out:
             f_out.write(fgz_in.read())
@@ -44,6 +88,8 @@ def test_tb_extract_fastq():
     assert os.path.getsize(fastq_file_1) > 0
     assert os.path.isfile(fastq_file_2) is True
     assert os.path.getsize(fastq_file_2) > 0
+    
+
 
 @pytest.mark.hic
 def test_tb_full_mapping_frag_01():
@@ -53,7 +99,7 @@ def test_tb_full_mapping_frag_01():
     """
     resource_path = os.path.join(os.path.dirname(__file__), "data/")
     gem_file = resource_path + "tb.Human.GCA_000001405.22_gem.fasta.gem"
-
+    
     fastq_file_1 = resource_path + "tb.Human.SRR1658573_1.fastq"
 
     files = [
@@ -90,7 +136,7 @@ def test_tb_full_mapping_frag_02():
     """
     resource_path = os.path.join(os.path.dirname(__file__), "data/")
     gem_file = resource_path + "tb.Human.GCA_000001405.22_gem.fasta.gem"
-
+        
     fastq_file_2 = resource_path + "tb.Human.SRR1658573_2.fastq"
 
     files = [
@@ -127,7 +173,7 @@ def test_tb_full_mapping_iter_01():
     """
     resource_path = os.path.join(os.path.dirname(__file__), "data/")
     gem_file = resource_path + "tb.Human.GCA_000001405.22_gem.fasta.gem"
-
+        
     fastq_file_1 = resource_path + "tb.Human.SRR1658573_1.fastq"
 
     files = [
@@ -170,7 +216,7 @@ def test_tb_full_mapping_iter_02():
     """
     resource_path = os.path.join(os.path.dirname(__file__), "data/")
     gem_file = resource_path + "tb.Human.GCA_000001405.22_gem.fasta.gem"
-
+        
     fastq_file_2 = resource_path + "tb.Human.SRR1658573_2.fastq"
 
     files = [

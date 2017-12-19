@@ -211,8 +211,10 @@ class tbFullMappingTool(Tool):
         gem_file = input_files[0]
         fastq_file = input_files[1]
         windows = metadata['windows']
-        if len(windows) == 0:
+        if windows and len(windows) == 0:
             windows = None
+        if 'ncpus' not in metadata:
+            metadata['ncpus'] = 8
         if 'iterative_mapping' in metadata:
             if isinstance(metadata['iterative_mapping'], basestring):
                 frag_base = not (metadata['iterative_mapping'].lower() in ("yes", "true", "t", "1"))

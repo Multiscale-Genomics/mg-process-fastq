@@ -246,8 +246,8 @@ class tbModelTool(Tool):
         upper_bound = metadata['upper_bound']
         lower_bound = metadata['lower_bound']
         cutoff = metadata['cutoff']
-            
-        root_name = hic_contacts_matrix_norm.split("/")
+        
+        root_name = os.path.dirname(os.path.abspath(hic_contacts_matrix_norm))  
         if 'workdir' in metadata:
             root_name = metadata['workdir']
 

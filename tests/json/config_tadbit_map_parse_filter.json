@@ -59,6 +59,10 @@
             ]
         },
         {
+        	"name": "chromosomes",
+        	"value": "chr21"
+        },
+        {
             "name": "mapping:windows",
             "value": "1:20 1:40"
         },

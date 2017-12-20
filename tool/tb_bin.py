@@ -17,13 +17,13 @@
 from __future__ import print_function
 
 import sys
-from sys                             import stdout
-from subprocess import CalledProcessError, PIPE, Popen
-import glob, os
-from cPickle                         import load
+from sys import stdout
+from subprocess import PIPE, Popen
+import os
+from cPickle import load
 
 from pytadbit.parsers.hic_bam_parser import write_matrix
-from pytadbit import HiC_data, Experiment, Chromosome
+from pytadbit import Chromosome
 from pytadbit.parsers.hic_parser import load_hic_data_from_bam
 from pytadbit.mapping.analyze import hic_map
 
@@ -77,10 +77,10 @@ class tbBinTool(Tool):
         coord1 : str
             Coordinate of the region to retrieve. By default all genome,
             arguments can be either one chromosome name, or the coordinate in
-            the form: "-c chr3:110000000-120000000"                                             
+            the form: "-c chr3:110000000-120000000"
         coord2 : str
             Coordinate of a second region to retrieve the matrix in the
-            intersection with the first region. 
+            intersection with the first region.
         norm : list
             [['raw']] normalization(s) to apply. Order matters. Choices: [norm,
             decay, raw]
@@ -88,7 +88,7 @@ class tbBinTool(Tool):
             Location of working directory
         ncpus : int
             Number of cpus to use
-                
+
         Returns
         -------
         hic_contacts_matrix_raw : str
@@ -101,47 +101,47 @@ class tbBinTool(Tool):
             Location of HiC normalized matrix in png format
 
         """
-        print("TB BIN:",bamin, resolution, workdir)
-            
+        print("TB BIN:", bamin, resolution, workdir)
+
         output_metadata = {}
-        
+
         if coord2 and not coord1:
             coord1, coord2 = coord2, coord1
-    
+
         if not coord1:
             region1 = None
-            start1  = None
-            end1    = None
+            start1 = None
+            end1 = None
             region2 = None
-            start2  = None
-            end2    = None
+            start2 = None
+            end2 = None
         else:
             try:
-                crm1, pos1   = coord1.split(':')
+                crm1, pos1 = coord1.split(':')
                 start1, end1 = pos1.split('-')
                 region1 = crm1
-                start1  = int(start1)
-                end1    = int(end1)
+                start1 = int(start1)
+                end1 = int(end1)
             except ValueError:
                 region1 = coord1
-                start1  = None
-                end1    = None
+                start1 = None
+                end1 = None
             if coord2:
                 try:
-                    crm2, pos2   = coord2.split(':')
+                    crm2, pos2 = coord2.split(':')
                     start2, end2 = pos2.split('-')
                     region2 = crm2
-                    start2  = int(start2)
-                    end2    = int(end2)
+                    start2 = int(start2)
+                    end2 = int(end2)
                 except ValueError:
                     region2 = coord2
-                    start2  = None
-                    end2    = None
+                    start2 = None
+                    end2 = None
             else:
                 region2 = None
-                start2  = None
-                end2    = None
-    
+                start2 = None
+                end2 = None
+
         if region1:
             if region1:
                 stdout.write('\nExtraction of %s' % (region1))
@@ -159,51 +159,53 @@ class tbBinTool(Tool):
                     stdout.write('\n')
         else:
             stdout.write('\nExtraction of full genome\n')
-            
-        out_files = write_matrix(bamin, resolution,
-                         load(open(biases)) if biases else None,
-                         workdir, filter_exclude=[],
-                         normalizations=norm,half_matrix=True,
-                         region1=region1, start1=start1, end1=end1,
-                         region2=region2, start2=start2, end2=end2,
-                         tmpdir=workdir, append_to_tar=None, ncpus=ncpus,
-                         verbose=True)
+
+        out_files = write_matrix(
+            bamin, resolution,
+            load(open(biases)) if biases else None,
+            workdir, filter_exclude=[],
+            normalizations=norm, half_matrix=True,
+            region1=region1, start1=start1, end1=end1,
+            region2=region2, start2=start2, end2=end2,
+            tmpdir=workdir, append_to_tar=None, ncpus=ncpus,
+            verbose=True)
         output_files = [out_files['RAW']]
-        imx = load_hic_data_from_bam(bamin, resolution, biases=biases if biases else None, ncpus=ncpus,tmpdir=workdir)
+        imx = load_hic_data_from_bam(bamin, resolution, biases=biases if biases else None, ncpus=ncpus, tmpdir=workdir)
         hic_contacts_matrix_raw_fig = workdir+"/genomic_maps_raw.png"
-        focus=None
-        by_chrom=None
+        focus = None
+        by_chrom = None
         if start1 is not None:
-            focus=((start1/resolution) if start1 != 0 else 1,(end1/resolution))
+            focus = ((start1/resolution) if start1 != 0 else 1, (end1/resolution))
         else:
-            by_chrom='all'
-        hic_map(imx, resolution, savefig=hic_contacts_matrix_raw_fig, normalized=False,by_chrom=by_chrom,focus=focus)
+            by_chrom = 'all'
+        hic_map(imx, resolution, savefig=hic_contacts_matrix_raw_fig, normalized=False, by_chrom=by_chrom, focus=focus)
         output_files.append(hic_contacts_matrix_raw_fig)
-        
+
         if len(norm) > 1:
             output_files.append(out_files['NRM'])
-            hic_contacts_matrix_norm_fig = workdir+"/genomic_maps_nrm.png"    
-            hic_map(imx, resolution, savefig=hic_contacts_matrix_norm_fig, normalized=True,by_chrom=by_chrom,focus=focus)
+            hic_contacts_matrix_norm_fig = workdir+"/genomic_maps_nrm.png"
+            hic_map(imx, resolution, savefig=hic_contacts_matrix_norm_fig, normalized=True, by_chrom=by_chrom, focus=focus)
             output_files.append(hic_contacts_matrix_norm_fig)
-           
-        json_chr = Chromosome(name="VRE Chromosome", species= metadata["species"], assembly=metadata["assembly"], max_tad_size=260000)
-        json_chr.add_experiment("exp1", resolution, 
-                                 hic_data=imx,
-                                 silent=True)
-        
+
+        json_chr = Chromosome(name="VRE Chromosome", species=metadata["species"], assembly=metadata["assembly"], max_tad_size=260000)
+        json_chr.add_experiment(
+            "exp1", resolution,
+            hic_data=imx,
+            silent=True)
+
         exp = json_chr.experiments[0]
-        json_file_name = out_files['RAW'].replace(".abc",".json")
+        json_file_name = out_files['RAW'].replace(".abc", ".json")
         if focus:
             if focus[1]-focus[0] > 1200:
                 print("TADkit json too big, limiting to 1200 bins")
-                focus = (focus[0],focus[0]+1200)
+                focus = (focus[0], focus[0]+1200)
         else:
             if exp.size > 1200:
                 print("TADkit json too big, limiting to 1200 bins")
-                focus = (1,1200)
-        exp.write_json(json_file_name,focus=focus)
+                focus = (1, 1200)
+        exp.write_json(json_file_name, focus=focus)
         output_files.append(json_file_name)
-        
+
         return (output_files, output_metadata)
 
     def run(self, input_files, output_files, metadata=None):
@@ -224,10 +226,10 @@ class tbBinTool(Tool):
             coord1 : str
                 Coordinate of the region to retrieve. By default all genome,
                 arguments can be either one chromosome name, or the coordinate in
-                the form: "-c chr3:110000000-120000000"                                             
+                the form: "-c chr3:110000000-120000000"
             coord2 : str
                 Coordinate of a second region to retrieve the matrix in the
-                intersection with the first region. 
+                intersection with the first region.
             norm : str
                 [['raw']] normalization(s) to apply. Order matters. Choices: [norm,
                 decay, raw]
@@ -248,14 +250,14 @@ class tbBinTool(Tool):
         """
 
         bamin = input_files[0]
-        
-        if not os.path.isfile(bamin.replace('.bam','.bam.bai')):
+
+        if not os.path.isfile(bamin.replace('.bam', '.bam.bai')):
             print('Creating bam index')
             _cmd = ['samtools', 'index', bamin]
             out, err = Popen(_cmd, stdout=PIPE, stderr=PIPE).communicate()
             print(out)
             print(err)
-            
+
         biases = None
         if len(input_files) > 1:
             biases = input_files[1]
@@ -263,27 +265,27 @@ class tbBinTool(Tool):
         if 'resolution' in metadata:
             resolution = int(metadata['resolution'])
 
-        coord1 = coord2 = norm = None 
-        ncpus=1
+        coord1 = coord2 = norm = None
+        ncpus = 1
         if 'ncpus' in metadata:
             ncpus = metadata['ncpus']
-            
+
         if 'coord1' in metadata:
             coord1 = metadata['coord1']
         if 'coord2' in metadata:
             coord2 = metadata['coord2']
         if 'norm' in metadata:
             norm = metadata['norm']
-        
+
         root_name = os.path.dirname(os.path.abspath(bamin))
         if 'workdir' in metadata:
             root_name = metadata['workdir']
-        
+
         # input and output share most metadata
         project_metadata = {}
         project_metadata["species"] = metadata["species"]
         project_metadata["assembly"] = metadata["assembly"]
-        
+
         output_files, output_metadata = self.tb_bin(bamin, biases, resolution, coord1, coord2, norm, root_name, ncpus, project_metadata)
 
         return (output_files, output_metadata)

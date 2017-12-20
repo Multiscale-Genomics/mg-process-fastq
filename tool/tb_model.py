@@ -17,8 +17,9 @@
 from __future__ import print_function
 
 import sys
-import glob, os
-from subprocess import CalledProcessError, PIPE, Popen
+import glob
+import os
+from subprocess import PIPE, Popen
 
 try:
     if hasattr(sys, '_run_from_cmdl') is True:
@@ -53,14 +54,14 @@ class tbModelTool(Tool):
         print("TADbit - Modeling")
         Tool.__init__(self)
 
-    @task(hic_contacts_matrix_norm=FILE_IN, resolution=IN, gen_pos_chrom_name=IN , gen_pos_begin=IN,
-                                gen_pos_end=IN, num_mod_comp=IN, num_mod_keep=IN,
-                                max_dist=IN, upper_bound=IN, lower_bound=IN, cutoff=IN, workdir=IN)
+    @task(hic_contacts_matrix_norm=FILE_IN, resolution=IN, gen_pos_chrom_name=IN, gen_pos_begin=IN,
+          gen_pos_end=IN, num_mod_comp=IN, num_mod_keep=IN,
+          max_dist=IN, upper_bound=IN, lower_bound=IN, cutoff=IN, workdir=IN)
     # @constraint(ProcessorCoreCount=16)
-    def tb_model(self, optimize_only, hic_contacts_matrix_norm, resolution, gen_pos_chrom_name , gen_pos_begin,
-                                gen_pos_end, num_mod_comp, num_mod_keep,
-                                max_dist, upper_bound, lower_bound, cutoff, workdir,metadata,
-                                ncpus=1):
+    def tb_model(self, optimize_only, hic_contacts_matrix_norm, resolution, gen_pos_chrom_name, gen_pos_begin,
+                 gen_pos_end, num_mod_comp, num_mod_keep,
+                 max_dist, upper_bound, lower_bound, cutoff, workdir, metadata,
+                 ncpus=1):
         """
         Function to normalize to a given resolution the Hi-C
         matrix
@@ -74,9 +75,9 @@ class tbModelTool(Tool):
         resolution : str
             Resolution of the Hi-C
         gen_pos_chrom_name : str
-            Coordinates of the genomic region to model.                                                                                                
+            Coordinates of the genomic region to model.
         gen_pos_begin : int
-            Genomic coordinate from which to start modeling. 
+            Genomic coordinate from which to start modeling.
         gen_pos_end : int
             Genomic coordinate where to end modeling.
         num_mod_comp : int
@@ -90,13 +91,13 @@ class tbModelTool(Tool):
         lower_bound : int
             Range of numbers for optimal low parameter, i.e. -1.2:0:0.3; or just a single number e.g. -0.8; or a list of numbers e.g. -0.1 -0.3 -0.5 -0.9.
         cutoff : str
-            Range of numbers for optimal cutoff distance. Cutoff is computed based on the resolution. This cutoff distance is calculated taking as reference the diameter 
+            Range of numbers for optimal cutoff distance. Cutoff is computed based on the resolution. This cutoff distance is calculated taking as reference the diameter
             of a modeled particle in the 3D model. i.e. 1.5:2.5:0.5; or just a single number e.g. 2; or a list of numbers e.g. 2 2.5.
         workdir : str
             Location of working directory
         ncpus : str
             Number of cpus to use
-                
+
         Returns
         -------
         tadkit_models : str
@@ -107,9 +108,9 @@ class tbModelTool(Tool):
         """
         #chr_hic_data = read_matrix(matrix_file, resolution=int(resolution))
 
-        print("TB MODELING:",hic_contacts_matrix_norm, resolution, gen_pos_chrom_name , gen_pos_begin,
-                                gen_pos_end, num_mod_comp, num_mod_keep,
-                                max_dist, upper_bound, lower_bound, cutoff, workdir)
+        print("TB MODELING:", hic_contacts_matrix_norm, resolution, gen_pos_chrom_name, gen_pos_begin,
+              gen_pos_end, num_mod_comp, num_mod_keep,
+              max_dist, upper_bound, lower_bound, cutoff, workdir)
 
         try:
             beg = int(float(gen_pos_begin) / int(resolution))
@@ -119,26 +120,26 @@ class tbModelTool(Tool):
                                 'genomic coordinates, not bin')
         except TypeError:
             pass
-        
+
         name = '{0}_{1}_{2}'.format(gen_pos_chrom_name, beg, end)
         if not os.path.exists(os.path.join(workdir, name)):
             os.makedirs(os.path.join(workdir, name))
-        
+
         _cmd = [
-                'model_and_analyze.py',
+            'model_and_analyze.py',
             '--norm', hic_contacts_matrix_norm,
             '--res', resolution,
             '--crm', gen_pos_chrom_name,
-            '--beg',str(gen_pos_begin),
-            '--end',str(gen_pos_end),
-            '--maxdist',max_dist,
+            '--beg', str(gen_pos_begin),
+            '--end', str(gen_pos_end),
+            '--maxdist', max_dist,
             '--upfreq', upper_bound,
             '--lowfreq='+lower_bound,
             '--dcutoff', cutoff,
             '--ncpus', str(ncpus),
-            '--assembly',metadata["assembly"],
-            '--species',metadata["species"],
-            '--fig_format','png'
+            '--assembly', metadata["assembly"],
+            '--species', metadata["species"],
+            '--fig_format', 'png'
             ]
         if optimize_only:
             _cmd.append('--nmodels_opt')
@@ -148,9 +149,7 @@ class tbModelTool(Tool):
             _cmd.append('--optimize_only')
             _cmd.append('--outdir')
             _cmd.append(workdir)
-            
         else:
-
             _cmd.append('--nmodels_opt')
             _cmd.append('0')
             _cmd.append('--nkeep_opt')
@@ -161,15 +160,15 @@ class tbModelTool(Tool):
             _cmd.append(str(num_mod_keep))
             _cmd.append('--outdir')
             _cmd.append(workdir)
-            
+
         output_metadata = {}
-        
+
         out, err = Popen(_cmd, stdout=PIPE, stderr=PIPE).communicate()
         print(out)
         print(err)
 
         output_files = [os.path.join(workdir, name)]
-        
+
         if not optimize_only:
             os.chdir(os.path.join(workdir, name))
             for fl in glob.glob("*.json"):
@@ -177,8 +176,7 @@ class tbModelTool(Tool):
                 break
             for fl in glob.glob("*optimal_params*"):
                 os.unlink(fl)
-        
-        
+
         return (output_files, output_metadata)
 
     def run(self, input_files, output_files, metadata=None):
@@ -194,11 +192,11 @@ class tbModelTool(Tool):
             optimize_only: bool
                 True if only optimize, False for computing the models and stats
             gen_pos_chrom_name : str
-                Coordinates of the genomic region to model.   
+                Coordinates of the genomic region to model.
             resolution : str
-                Resolution of the Hi-C                                                                                             
+                Resolution of the Hi-C
             gen_pos_begin : int
-                Genomic coordinate from which to start modeling. 
+                Genomic coordinate from which to start modeling.
             gen_pos_end : int
                 Genomic coordinate where to end modeling.
             num_mod_comp : int
@@ -212,7 +210,7 @@ class tbModelTool(Tool):
             lower_bound : int
                 Range of numbers for optimal low parameter, i.e. -1.2:0:0.3; or just a single number e.g. -0.8; or a list of numbers e.g. -0.1 -0.3 -0.5 -0.9.
             cutoff : str
-                Range of numbers for optimal cutoff distance. Cutoff is computed based on the resolution. This cutoff distance is calculated taking as reference the diameter 
+                Range of numbers for optimal cutoff distance. Cutoff is computed based on the resolution. This cutoff distance is calculated taking as reference the diameter
                 of a modeled particle in the 3D model. i.e. 1.5:2.5:0.5; or just a single number e.g. 2; or a list of numbers e.g. 2 2.5.
             workdir : str
                 Location of working directory
@@ -229,12 +227,11 @@ class tbModelTool(Tool):
         """
 
         hic_contacts_matrix_norm = input_files[0]
-        
-        
-        ncpus=1
+
+        ncpus = 1
         if 'ncpus' in metadata:
             ncpus = metadata['ncpus']
-        
+
         optimize_only = metadata["optimize_only"]
         gen_pos_chrom_name = metadata['gen_pos_chrom_name']
         resolution = metadata['resolution']
@@ -246,22 +243,20 @@ class tbModelTool(Tool):
         upper_bound = metadata['upper_bound']
         lower_bound = metadata['lower_bound']
         cutoff = metadata['cutoff']
-        
-        root_name = os.path.dirname(os.path.abspath(hic_contacts_matrix_norm))  
+
+        root_name = os.path.dirname(os.path.abspath(hic_contacts_matrix_norm))
         if 'workdir' in metadata:
             root_name = metadata['workdir']
 
         project_metadata = {}
         project_metadata["species"] = metadata["species"]
         project_metadata["assembly"] = metadata["assembly"]
-        
+
         # input and output share most metadata
-        
-        
-        output_files, output_metadata = self.tb_model(optimize_only, hic_contacts_matrix_norm, resolution, gen_pos_chrom_name , gen_pos_begin,
-                                gen_pos_end, num_mod_comp, num_mod_keep,
-                                max_dist, upper_bound, lower_bound, cutoff, root_name,
-                                project_metadata, ncpus)
+
+        output_files, output_metadata = self.tb_model(optimize_only, hic_contacts_matrix_norm, resolution, gen_pos_chrom_name, gen_pos_begin,
+                                                      gen_pos_end, num_mod_comp, num_mod_keep,
+                                                      max_dist, upper_bound, lower_bound, cutoff, root_name,
+                                                      project_metadata, ncpus)
 
         return (output_files, output_metadata)
-

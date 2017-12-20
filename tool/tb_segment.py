@@ -17,7 +17,7 @@
 from __future__ import print_function
 
 import sys
-import glob, os
+import os
 from subprocess import CalledProcessError, PIPE, Popen
 
 try:
@@ -54,7 +54,7 @@ class tbSegmentTool(Tool):
 
     @task(bamin=FILE_IN, biases=FILE_IN, resolution=IN, workdir=IN)
     # @constraint(ProcessorCoreCount=16)
-    def tb_segment(self, bamin, biases, resolution, callers, chromosomes, workdir, fasta=None ,ncpus="1"):
+    def tb_segment(self, bamin, biases, resolution, callers, chromosomes, workdir, fasta=None, ncpus="1"):
         """
         Function to find tads and compartments in the Hi-C
         matrix
@@ -73,7 +73,7 @@ class tbSegmentTool(Tool):
             Location of working directory
         ncpus : int
             Number of cpus to use
-                
+
         Returns
         -------
         compartments : str
@@ -84,48 +84,48 @@ class tbSegmentTool(Tool):
             Location of filtered_bins png
 
         """
-        print("TB SEGMENT:",bamin, resolution, workdir)
+        print("TB SEGMENT:", bamin, resolution, workdir)
 
         _cmd = [
-                'tadbit', 'segment', 
+            'tadbit', 'segment',
             '--nosql', '--mreads', bamin,
             '--workdir', workdir,
             '--resolution', resolution,
             '--cpu', str(ncpus)
             ]
-    
+
         if '2' not in callers:
             _cmd.append('--only_tads')
         if '1' not in callers:
             _cmd.append('--only_compartments')
-        
+
         if chromosomes:
             _cmd.append('--chromosomes')
             _cmd.append(chromosomes)
         if fasta:
             _cmd.append('--fasta')
             _cmd.append(fasta)
-        
+
         if biases:
             _cmd.append('--biases')
             _cmd.append(biases)
-            
+
         output_metadata = {}
         output_files = []
-        
+
         out, err = Popen(_cmd, stdout=PIPE, stderr=PIPE).communicate()
         print(out)
         print(err)
 
         if '1' in callers:
             tad_dir = os.path.join(workdir, '06_segmentation',
-                                 'tads_%s' % (nice(int(resolution))))
-            output_files.append(tad_dir) 
+                                   'tads_%s' % (nice(int(resolution))))
+            output_files.append(tad_dir)
         if '2' in callers:
             cmprt_dir = os.path.join(workdir, '06_segmentation',
-                                  'compartments_%s' % (nice(int(resolution))))
+                                     'compartments_%s' % (nice(int(resolution))))
             output_files.append(cmprt_dir)
-            
+
         return (output_files, output_metadata)
 
     def run(self, input_files, output_files, metadata=None):
@@ -160,19 +160,19 @@ class tbSegmentTool(Tool):
         """
 
         bamin = input_files[0]
-        
-        if not os.path.isfile(bamin.replace('.bam','.bam.bai')):
+
+        if not os.path.isfile(bamin.replace('.bam', '.bam.bai')):
             print('Creating bam index')
             _cmd = ['samtools', 'index', bamin]
             out, err = Popen(_cmd, stdout=PIPE, stderr=PIPE).communicate()
             print(out)
             print(err)
-        
+
         resolution = '1000000'
         if 'resolution' in metadata:
             resolution = metadata['resolution']
-            
-        ncpus=1
+
+        ncpus = 1
         if 'ncpus' in metadata:
             ncpus = metadata['ncpus']
         biases = chromosomes = fasta = None
@@ -185,14 +185,13 @@ class tbSegmentTool(Tool):
         callers = "1"
         if "callers" in metadata:
             callers = metadata['callers']
-            
+
         root_name = os.path.dirname(os.path.abspath(bamin))
         if 'workdir' in metadata:
             root_name = metadata['workdir']
-        
+
         # input and output share most metadata
-        
-        
+
         output_files, output_metadata = self.tb_segment(bamin, biases, resolution, callers, chromosomes, root_name, fasta, ncpus)
 
         return (output_files, output_metadata)

@@ -17,7 +17,8 @@
 from __future__ import print_function
 
 import sys
-import glob, os
+import glob
+import os
 from subprocess import PIPE, Popen
 import subprocess
 
@@ -67,17 +68,17 @@ class tbNormalizeTool(Tool):
         resolution : str
             Resolution of the Hi-C
         min_perc : str
-            lower percentile from which consider bins as good.                                                                                                
+            lower percentile from which consider bins as good.
         max_perc : str
-            upper percentile until which consider bins as good. 
+            upper percentile until which consider bins as good.
         workdir : str
             Location of working directory
         ncpus : str
             Number of cpus to use
         min_count : str
-            minimum number of reads mapped to a bin (recommended value 
+            minimum number of reads mapped to a bin (recommended value
             could be 2500). If set this option overrides the perc_zero
-                
+
         Returns
         -------
         hic_biases : str
@@ -90,16 +91,16 @@ class tbNormalizeTool(Tool):
         """
         #chr_hic_data = read_matrix(matrix_file, resolution=int(resolution))
 
-        print("TB NORMALIZATION:",bamin, resolution, min_perc, max_perc, workdir)
+        print("TB NORMALIZATION:", bamin, resolution, min_perc, max_perc, workdir)
 
         _cmd = [
-                'tadbit', 'normalize', 
+            'tadbit', 'normalize',
             '--bam', bamin,
             '--workdir', workdir,
             '--resolution', resolution,
             '--cpus', str(ncpus)
             ]
-    
+
         if min_perc:
             _cmd.append('--min_perc')
             _cmd.append(min_perc)
@@ -109,10 +110,10 @@ class tbNormalizeTool(Tool):
         if min_count:
             _cmd.append('--min_count')
             _cmd.append(min_count)
-            
+
         output_metadata = {}
         output_files = []
-        
+
         try:
             proc = subprocess.check_output(_cmd, stderr=subprocess.STDOUT)
         except subprocess.CalledProcessError:
@@ -122,28 +123,19 @@ class tbNormalizeTool(Tool):
                 _cmd.append('10')
                 _cmd.append('--normalize_only')
                 proc = subprocess.check_output(_cmd, stderr=subprocess.STDOUT)
-#         try:
-#             out, err = Popen(_cmd, stdout=PIPE, stderr=PIPE).communicate()
-#         except ZeroDivisionError: 
-#             if not min_count:
-#                 print("cis/trans ratio failed, trying with min_count")
-#                 _cmd.append('--min_count')
-#                 _cmd.append('10')
-#                 out, err = Popen(_cmd, stdout=PIPE, stderr=PIPE).communicate()
-#         print(out)
-#         print(err)
+
         print(proc)
         os.chdir(workdir+"/04_normalization")
         for fl in glob.glob("biases_*.pickle"):
             output_files.append(os.path.abspath(fl))
-            break 
+            break
         for fl in glob.glob("interactions*.png"):
             output_files.append(os.path.abspath(fl))
             break
         for fl in glob.glob("filtered_bins_*.png"):
             output_files.append(os.path.abspath(fl))
             break
-        
+
         return (output_files, output_metadata)
 
     def run(self, input_files, output_files, metadata=None):
@@ -159,15 +151,15 @@ class tbNormalizeTool(Tool):
             resolution : str
                 Resolution of the Hi-C
             min_perc : str
-                lower percentile from which consider bins as good.                                                                                                
+                lower percentile from which consider bins as good.
             max_perc : str
-                upper percentile until which consider bins as good. 
+                upper percentile until which consider bins as good.
             workdir : str
                 Location of working directory
             ncpus : str
                 Number of cpus to use
             min_count : str
-                minimum number of reads mapped to a bin (recommended value 
+                minimum number of reads mapped to a bin (recommended value
                 could be 2500). If set this option overrides the perc_zero
 
 
@@ -182,37 +174,35 @@ class tbNormalizeTool(Tool):
         """
 
         bamin = input_files[0]
-        
-        if not os.path.isfile(bamin.replace('.bam','.bam.bai')):
+
+        if not os.path.isfile(bamin.replace('.bam', '.bam.bai')):
             print('Creating bam index')
             _cmd = ['samtools', 'index', bamin]
             out, err = Popen(_cmd, stdout=PIPE, stderr=PIPE).communicate()
             print(out)
             print(err)
-            
+
         resolution = '1000000'
         if 'resolution' in metadata:
             resolution = metadata['resolution']
 
-        min_perc = max_perc = min_count = None 
-        ncpus=1
+        min_perc = max_perc = min_count = None
+        ncpus = 1
         if 'ncpus' in metadata:
             ncpus = metadata['ncpus']
-            
         if 'min_perc' in metadata:
             min_perc = metadata['min_perc']
         if 'max_perc' in metadata:
             max_perc = metadata['max_perc']
         if 'min_count' in metadata:
             min_count = metadata['min_count']
-            
+
         root_name = os.path.dirname(os.path.abspath(bamin))
         if 'workdir' in metadata:
             root_name = metadata['workdir']
-        
+
         # input and output share most metadata
-        
-        
+
         output_files, output_metadata = self.tb_normalize(bamin, resolution, min_perc, max_perc, root_name, ncpus, min_count)
 
         return (output_files, output_metadata)

@@ -18,7 +18,6 @@
 from __future__ import print_function
 import sys
 import os.path
-import ast
 
 from pytadbit.parsers.hic_bam_parser import bed2D_to_BAMhic
 
@@ -38,8 +37,7 @@ except ImportError:
 
 from basic_modules.tool import Tool
 
-from pytadbit.mapping.filter import apply_filter
-from pytadbit.mapping.filter import filter_reads
+from pytadbit.mapping.filter import apply_filter, filter_reads
 from pytadbit.mapping.analyze import insert_sizes
 
 # ------------------------------------------------------------------------------
@@ -63,7 +61,7 @@ class tbFilterTool(Tool):
         output_sc=FILE_OUT, output_tc=FILE_OUT, output_tl=FILE_OUT,
         output_ts=FILE_OUT, returns=int)
     def tb_filter(
-            self, reads, filter_reads_file, custom_filter,min_dist_RE,min_fragment_size,
+            self, reads, filter_reads_file, custom_filter, min_dist_RE, min_fragment_size,
             max_fragment_size, conservative, output_de, output_d,
             output_e, output_ed, output_or, output_rb, output_sc, output_tc,
             output_tl, output_ts):
@@ -92,7 +90,7 @@ class tbFilterTool(Tool):
 
         with open(reads_tmp + "_tmp.tsv", "wb") as f_out:
             with open(reads, "rb") as f_in:
-                f_out.write(f_in.read())            
+                f_out.write(f_in.read())
         masked = filter_reads(
             reads_tmp + "_tmp.tsv",
             max_molecule_length=610,
@@ -103,11 +101,11 @@ class tbFilterTool(Tool):
             re_proximity=4)
 
         filter_reads_file_tmp = filter_reads_file.replace(".tsv", '')
-        filters_suffixes = ['self-circle','dangling-end', 'error', 'extra dangling-end','too close from REs', 'too short','too large', 'over-represented' ,'duplicated', 'random breaks']                
-            
+        filters_suffixes = ['self-circle', 'dangling-end', 'error', 'extra dangling-end', 'too close from REs', 'too short', 'too large', 'over-represented', 'duplicated', 'random breaks']
+
         if custom_filter:
             applied_filters = custom_filter
-            filters_suffixes = [filters_suffixes[i-1] for i in applied_filters]               
+            filters_suffixes = [filters_suffixes[i-1] for i in applied_filters]
         else:
             if conservative is True:
                 applied_filters = [1, 2, 3, 4, 6, 7, 8, 9, 10]
@@ -117,7 +115,7 @@ class tbFilterTool(Tool):
                 applied_filters = [1, 2, 3, 9, 10]
 
         apply_filter(reads_tmp + "_tmp.tsv", filter_reads_file_tmp + "_tmp.tsv", masked, filters=applied_filters)
-        
+
         with open(filter_reads_file, "wb") as f_out:
             with open(filter_reads_file_tmp + "_tmp.tsv", "rb") as f_in:
                 f_out.write(f_in.read())
@@ -196,27 +194,27 @@ class tbFilterTool(Tool):
         """
 
         reads = input_files[0]
-        
+
         conservative = True
         custom_filter = None
         if 'custom_filter' in metadata:
             custom_filter = metadata['filters']
-            
+
         elif 'conservative' in metadata:
             conservative = metadata['conservative']
-        
-        min_dist_RE=915
-        max_fragment_size=100000
-        min_fragment_size=100
+
+        min_dist_RE = 915
+        max_fragment_size = 100000
+        min_fragment_size = 100
         if 'min_dist_RE' in metadata:
-            min_dist_RE=int(metadata['min_dist_RE'])
+            min_dist_RE = int(metadata['min_dist_RE'])
         if 'min_fragment_size' in metadata:
-            min_fragment_size=int(metadata['min_fragment_size'])
+            min_fragment_size = int(metadata['min_fragment_size'])
         if 'max_fragment_size' in metadata:
-            max_fragment_size=int(metadata['max_fragment_size'])
+            max_fragment_size = int(metadata['max_fragment_size'])
 
         root_name = reads.split("/")
-        
+
         filtered_reads_file = "/".join(root_name[0:-1]) + '/' + metadata['expt_name'] + '_filtered_map.tsv'
 
         output_de = filtered_reads_file + '_dangling-end.tsv'
@@ -236,7 +234,7 @@ class tbFilterTool(Tool):
         # handle error
         results = self.tb_filter(
             reads, filtered_reads_file, custom_filter, min_dist_RE,
-            min_fragment_size,max_fragment_size, conservative,
+            min_fragment_size, max_fragment_size, conservative,
             output_de, output_d, output_e, output_ed, output_or, output_rb,
             output_sc, output_tc, output_tl, output_ts)
         results = compss_wait_on(results)
@@ -245,27 +243,27 @@ class tbFilterTool(Tool):
             outbam = metadata['root_dir'] + '/' + metadata['outbam']
             bed2D_to_BAMhic(filtered_reads_file, True, 32, outbam, 'mid', results)
             filtered_reads_file = outbam
-        
+
         hist_path = ''
         if 'histogram' in metadata:
             hist_path = "/".join(root_name[0:-1]) + '/histogram_fragment_sizes_.png'
             log_path = "/".join(root_name[0:-1]) + '/filter_log.txt'
-            
+
             median, max_f, mad = insert_sizes(
                 reads, nreads=1000000, stats=('median', 'first_decay', 'MAD'),
                 savefig=hist_path)
-            
+
             orig_stdout = sys.stdout
             f = open(log_path, "w")
             sys.stdout = f
-            
+
             #insert size
             print ('Insert size\n')
-            
+
             print ('  - median insert size =', median)
             print ('  - double median absolution of insert size =', mad)
             print ('  - max insert size (when a gap in continuity of > 10 bp is found in fragment lengths) =', max_f)
-    
+
             max_mole = max_f # pseudo DEs
             min_dist = max_f + mad # random breaks
             print ('   Using the maximum continuous fragment size'
@@ -277,8 +275,7 @@ class tbFilterTool(Tool):
             sys.stdout = orig_stdout
             f.close()
 
-            
-        
+
         return ([filtered_reads_file, log_path, hist_path], output_metadata)
 
 # ------------------------------------------------------------------------------

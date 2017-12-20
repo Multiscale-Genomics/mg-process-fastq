@@ -34,10 +34,10 @@ except ImportError:
     from utils.dummy_pycompss import constraint
     from utils.dummy_pycompss import compss_wait_on
 
-from basic_modules.tool import Tool
-from basic_modules.metadata import Metadata
-
 from os import path, unlink
+
+from basic_modules.tool import Tool
+
 from pytadbit.mapping.mapper import full_mapping
 from pytadbit.utils.fastq_utils import quality_plot
 
@@ -61,7 +61,7 @@ class tbFullMappingTool(Tool):
     # @constraint(ProcessorCoreCount=32)
     def tb_full_mapping_iter(
             self, gem_file, fastq_file, windows,
-            window1, window2, window3, window4,ncpus=1,workdir='/tmp/'):
+            window1, window2, window3, window4, ncpus=1, workdir='/tmp/'):
         """
         Function to map the FASTQ files to the GEM file over different window
         sizes ready for alignment
@@ -113,7 +113,7 @@ class tbFullMappingTool(Tool):
     # @constraint(ProcessorCoreCount=16)
     def tb_full_mapping_frag(
             self, gem_file, fastq_file, enzyme_name, windows,
-            full_file, frag_file,ncpus=1,workdir='/tmp/'):
+            full_file, frag_file, ncpus=1, workdir='/tmp/'):
         """
         Function to map the FASTQ files to the GEM file based on fragments
         derived from the restriction enzyme that was used.
@@ -152,7 +152,7 @@ class tbFullMappingTool(Tool):
             gzipped = '.gz'
         if fastq_file.endswith('.fastq.dsrc'):
             dsrc = '.dsrc'
-        
+
         file_name = path.basename(fastq_file)
         file_name = file_name.replace('.fastq'+dsrc+gzipped, '')
         file_name = file_name.replace('.fq'+dsrc+gzipped, '')
@@ -167,14 +167,14 @@ class tbFullMappingTool(Tool):
         with open(full_file, "wb") as f_out:
             with open(fastq_file_tmp +dsrc+"_full_1-end.map", "rb") as f_in:
                 f_out.write(f_in.read())
-        
+
         if path.isfile(fastq_file_tmp +dsrc+"_full_1-end.map"):
             unlink(fastq_file_tmp +dsrc+"_full_1-end.map")
-        
+
         with open(frag_file, "wb") as f_out:
             with open(fastq_file_tmp +dsrc+"_frag_1-end.map", "rb") as f_in:
                 f_out.write(f_in.read())
-        
+
         if path.isfile(fastq_file_tmp +dsrc+"_frag_1-end.map"):
             unlink(fastq_file_tmp +dsrc+"_frag_1-end.map")
 
@@ -217,37 +217,37 @@ class tbFullMappingTool(Tool):
             metadata['ncpus'] = 8
         if 'iterative_mapping' in metadata:
             if isinstance(metadata['iterative_mapping'], basestring):
-                frag_base = not (metadata['iterative_mapping'].lower() in ("yes", "true", "t", "1"))
+                frag_base = not metadata['iterative_mapping'].lower() in ("yes", "true", "t", "1")
             else:
-                frag_base = not metadata['iterative_mapping'] 
+                frag_base = not metadata['iterative_mapping']
         else:
-            frag_base = (windows == None)
+            frag_base = (windows is None)
         if 'workdir' in metadata:
             root_path = metadata['workdir']
-        else:        
+        else:
             root_path = path.dirname(path.abspath(fastq_file))
-        
+
         gzipped = ''
         if fastq_file.lower().endswith('.fastq.gz') or fastq_file.lower().endswith('.fq.gz'):
-            gzipped = '.gz'    
+            gzipped = '.gz'
         file_name = path.basename(fastq_file)
         file_name = (file_name.replace('.fastq'+gzipped, '')).replace('.FASTQ'+gzipped, '')
         file_name = (file_name.replace('.fq'+gzipped, '')).replace('.FQ'+gzipped, '')
         quality_plot_file = ''
         log_path = ''
         #name = root_name[-1]
-        
+
         if 'quality_plot' in metadata:
             quality_plot_file = 'QC-plot_'+file_name + '.png'
             log_path = root_path+'/'+'mapping_log_'+file_name + '.txt'
-        
-            dangling_ends, ligated = quality_plot(fastq_file, r_enz=metadata['enzyme_name'],
-                  nreads=100000, paired=False,
-                  savefig=path.join(
-                      root_path,
-                      quality_plot_file))
-            
-            
+
+            dangling_ends, ligated = quality_plot(
+                fastq_file, r_enz=metadata['enzyme_name'],
+                nreads=100000, paired=False,
+                savefig=path.join(
+                    root_path,
+                    quality_plot_file))
+
             orig_stdout = sys.stdout
             f = open(log_path, "w")
             sys.stdout = f
@@ -257,27 +257,27 @@ class tbFullMappingTool(Tool):
                 print('  - Dangling-ends (sensu-stricto): ', dangling_ends[renz])
             for renz in ligated:
                 print('  - Ligation sites: ', ligated[renz])
-            
+
             sys.stdout = orig_stdout
             f.close()
-            
+
         file_name = root_path+'/'+file_name
         output_metadata = {}
         # input and output share most metadata
-        
+
         if frag_base:
             full_file = file_name + "_full.map"
             frag_file = file_name + "_frag.map"
 
             results = self.tb_full_mapping_frag(
                 gem_file, fastq_file, metadata['enzyme_name'], None,
-                full_file, frag_file, ncpus=metadata['ncpus'],workdir=root_path
+                full_file, frag_file, ncpus=metadata['ncpus'], workdir=root_path
             )
             results = compss_wait_on(results)
-            
+
             output_metadata['func'] = 'frag'
             return ([full_file, frag_file, log_path, root_path+'/'+quality_plot_file], output_metadata)
-        
+
         window1 = window2 = window3 = window4 = None
         window1 = file_name + "_full_" + str(windows[0][0]) + "-" + str(windows[0][1]) + ".map"
         if len(windows) > 1:
@@ -289,12 +289,10 @@ class tbFullMappingTool(Tool):
 
         results = self.tb_full_mapping_iter(
             gem_file, fastq_file, windows,
-            window1, window2, window3, window4,ncpus=metadata['ncpus'],workdir=root_path
+            window1, window2, window3, window4, ncpus=metadata['ncpus'], workdir=root_path
         )
         results = compss_wait_on(results)
 
-        
-        
         output_metadata['func'] = 'iter'
         return ([window1, window2, window3, window4, log_path, root_path+'/'+quality_plot_file], output_metadata)
 

@@ -55,7 +55,7 @@ setup(
     tests_require=[
         'pytest',
     ],
-    cmdclass={
-        'install' : Install_DamIDSeq,
-    },
+    # cmdclass={
+    #     'install' : Install_DamIDSeq,
+    # },
 )

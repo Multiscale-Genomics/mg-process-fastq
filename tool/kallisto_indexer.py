@@ -68,7 +68,7 @@ class kallistoIndexerTool(Tool):
         """
 
         command_line = 'kallisto index -i ' + cdna_idx_file + ' ' + cdna_file_loc
-        logger.info("command : "+command_line)
+        logger.info("command : " + command_line)
 
         try:
             args = shlex.split(command_line)

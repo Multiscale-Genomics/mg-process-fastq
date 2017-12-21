@@ -84,6 +84,13 @@ install:
     - pip install -e .
     - pip install -r requirements.txt
 
+    # FastQC
+    - cd ${HOME}/lib
+    - wget http://www.bioinformatics.babraham.ac.uk/projects/fastqc/fastqc_v0.11.5.zip
+    - unzip fastqc_v0.11.5.zip
+    - cd FastQC/
+    - chmod 755 fastqc
+
     # htslib
     - cd ${HOME}/lib
     - git clone https://github.com/samtools/htslib.git
@@ -170,6 +177,8 @@ install:
 
 before_script:
     - cd ${HOME}/bin
+
+    - ln -s ${HOME}/lib/FastQC/fastqc
 
     - ln -s ${HOME}/lib/bedtools2/bin/bedtools bedtools
 

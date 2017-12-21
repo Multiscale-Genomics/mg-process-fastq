@@ -184,10 +184,9 @@ before_script:
 
     - ln -s ${HOME}/lib/bedToBigBed bedToBigBed
     - ln -s ${HOME}/lib/wigToBigWig wigToBigWig
-    #- ln -s ${HOME}/lib/iNPS_V1.2.2.py iNPS_V1.2.2.py
     - ln -s ${HOME}/lib/kallisto_linux-v0.43.1/kallisto kallisto
 
-    - ln -s ${HOME}/build/Multiscale-Genomics/mg-process-fastq/scritps/travis/iNPS iNPS
+    - ln -s ${HOME}/build/Multiscale-Genomics/mg-process-fastq/scritps/iNPS iNPS
 
     - ln -s ${HOME}/lib/bwa/bwa bwa
 

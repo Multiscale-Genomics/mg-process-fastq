@@ -205,8 +205,8 @@ class common(object):
             Location of the output file
         """
 
-        intermediate_file = reads_file + '.sai'
-        intermediate_sam_file = reads_file + '.sam'
+        intermediate_file = reads_file_1 + '.sai'
+        intermediate_sam_file = reads_file_2 + '.sam'
         output_bam_file = bam_loc
 
         command_lines = [

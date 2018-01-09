@@ -46,7 +46,7 @@ class bsgenomeTool(Tool):
     Tool for peak calling for iDamID-seq data
     """
 
-    def __init__(self):
+    def __init__(self, configuration=None):
         """
         Init function
         """
@@ -64,7 +64,8 @@ class bsgenomeTool(Tool):
         genome_2bit=FILE_OUT, chrom_size=FILE_OUT, seed_file=FILE_OUT, bsgenome=FILE_OUT,
         isModifier=False)
     def bsgenome_creater(
-            self, genome, circ_chrom, seed_file_param, genome_2bit, chrom_size, seed_file, bsgenome):
+            self, genome, circ_chrom, seed_file_param,
+            genome_2bit, chrom_size, seed_file, bsgenome):
         """
         Make iDamID-seq peak calls. These are saved as bed files That can then
         get displayed on genome browsers. Uses an R script that wraps teh iDEAR

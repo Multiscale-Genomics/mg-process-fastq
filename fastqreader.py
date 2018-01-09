@@ -20,7 +20,7 @@
 import os
 import re
 
-class fastqreader:
+class fastqreader(object):
     """
     Module for reading single end and paired end FASTQ files
     """
@@ -157,24 +157,24 @@ class fastqreader:
         if tag != '' and self.output_tag != tag:
             self.output_tag = tag
 
-        f1 = self.fastq1.split("/")
+        fq1 = self.fastq1.split("/")
         new_suffix = "." + str(self.output_tag) + "_" + str(self.output_file_count) + ".fastq"
-        f1[-1] = re.sub('.fastq$', new_suffix, f1[-1])
-        f1.insert(-1, "tmp")
+        fq1[-1] = re.sub('.fastq$', new_suffix, fq1[-1])
+        fq1.insert(-1, "tmp")
 
-        if os.path.isdir("/".join(f1[0:-1])) is False:
-            os.mkdir("/".join(f1[0:-1]))
+        if os.path.isdir("/".join(fq1[0:-1])) is False:
+            os.mkdir("/".join(fq1[0:-1]))
 
-        self.f1_output_file = open("/".join(f1), "w")
+        self.f1_output_file = open("/".join(fq1), "w")
 
         if self.paired is True:
-            f2 = self.fastq2.split("/")
+            fq2 = self.fastq2.split("/")
             new_suffix = "." + str(self.output_tag) + "_" + str(self.output_file_count) + ".fastq"
-            f2[-1] = re.sub('.fastq$', new_suffix, f2[-1])
-            f2.insert(-1, "tmp")
-            self.f2_output_file = open("/".join(f2), "w")
+            fq2[-1] = re.sub('.fastq$', new_suffix, fq2[-1])
+            fq2.insert(-1, "tmp")
+            self.f2_output_file = open("/".join(fq2), "w")
 
-    def writeOutput(self, read, side = 1):
+    def writeOutput(self, read, side=1):
         """
         Writer to print the extracted lines
 

@@ -57,6 +57,11 @@ class kallistoQuantificationTool(Tool):
         logger.info("Kallisto Quantification")
         Tool.__init__(self)
 
+        if configuration is None:
+            configuration = {}
+
+        self.configuration.update(configuration)
+
     @task(
         cdna_idx_file=FILE_IN,
         fastq_file_loc=FILE_IN,

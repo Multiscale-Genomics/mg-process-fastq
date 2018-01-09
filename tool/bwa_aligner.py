@@ -59,6 +59,11 @@ class bwaAlignerTool(Tool):
         logger.info("BWA Aligner")
         Tool.__init__(self)
 
+        if configuration is None:
+            configuration = {}
+
+        self.configuration.update(configuration)
+
     @task(bam_file=FILE_INOUT)
     def bam_sort(self, bam_file):
         """

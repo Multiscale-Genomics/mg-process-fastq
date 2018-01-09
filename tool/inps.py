@@ -53,6 +53,11 @@ class inps(Tool):
         logger.info("iNPS Peak Caller")
         Tool.__init__(self)
 
+        if configuration is None:
+            configuration = {}
+
+        self.configuration.update(configuration)
+
     @task(
         returns=int,
         bam_file=FILE_IN, peak_bed=FILE_OUT, inps_params=IN,

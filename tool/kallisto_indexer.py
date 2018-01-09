@@ -47,12 +47,17 @@ class kallistoIndexerTool(Tool):
     Tool for running indexers over a genome FASTA file
     """
 
-    def __init__(self):
+    def __init__(self, configuration=None):
         """
         Init function
         """
         logger.info("Kallisto Indexer")
         Tool.__init__(self)
+
+        if configuration is None:
+            configuration = {}
+
+        self.configuration.update(configuration)
 
     @task(cdna_file_loc=FILE_IN, cdna_idx_file=FILE_OUT)
     def kallisto_indexer(self, cdna_file_loc, cdna_idx_file):

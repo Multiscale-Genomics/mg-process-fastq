@@ -42,27 +42,32 @@ from basic_modules.metadata import Metadata
 
 # ------------------------------------------------------------------------------
 
-class idear(Tool):
+class idearTool(Tool):
     """
     Tool for peak calling for MNase-seq data
     """
 
-    def __init__(self):
+    def __init__(self, configuration=None):
         """
         Init function
         """
         print("iNPS Peak Caller")
         Tool.__init__(self)
 
+        if configuration is None:
+            configuration = {}
+
+        self.configuration.update(configuration)
+
     @task(
         returns=int,
         sample_name=IN, bg_name=IN, sample_bam_file_1=FILE_IN, sample_bam_file_2=FILE_IN,
         bg_bam_file_1=FILE_IN, bg_bam_file_2=FILE_IN, species=IN, assembly=IN, bsgenome=FILE_IN,
-        peak_bed=FILE_OUT, isModifier=False)
+        peak_bw=FILE_OUT, isModifier=False)
     def idear_peak_calling(
             self, sample_name, bg_name, sample_bam_file_1, sample_bam_file_2,
             bg_bam_file_1, bg_bam_file_2, common_species_name, assembly,
-            bsgenome, peak_bed):
+            bsgenome, peak_bw):
         """
         Make iDamID-seq peak calls. These are saved as bed files That can then
         get displayed on genome browsers. Uses an R script that wraps teh iDEAR
@@ -113,15 +118,15 @@ class idear(Tool):
             '--file4', bg_bam_file_2,
             '--species', common_species_name,
             '--assembly', assembly,
-            '--output', peak_bed + '.tmp']
+            '--output', peak_bw + '.tmp']
         logger.info("iDEAR CMD: " + ' '.join(args))
 
         process = subprocess.Popen(args)
         process.wait()
 
         try:
-            with open(peak_bed + ".tmp", "rb") as f_in:
-                with open(peak_bed, "wb") as f_out:
+            with open(peak_bw + ".tmp", "rb") as f_in:
+                with open(peak_bw, "wb") as f_out:
                     f_out.write(f_in.read())
         except IOError:
             logger.fatal("iDEAR failed to generate peak file")
@@ -162,21 +167,23 @@ class idear(Tool):
             sample_name, background_name,
             input_files["bam_1"], input_files["bam_2"],
             input_files["bg_bam_1"], input_files["bg_bam_2"],
-            input_metadata["bam"].taxon_id,
-            input_metadata["bam"].meta_data["assembly"],
+            input_metadata["bam_1"].taxon_id,
+            input_metadata["bam_1"].meta_data["assembly"],
             input_files["bsgenome"],
-            output_files["bed"]
+            output_files["bigwig"]
         )
         results = compss_wait_on(results)
 
         output_metadata = {
-            "bed": Metadata(
+            "bigwig": Metadata(
                 data_type=input_metadata['bam_1'].data_type,
-                file_type="BED",
-                file_path=output_files["bed"],
+                file_type="BIGWIG",
+                file_path=output_files["bigwig"],
                 sources=[
                     input_metadata["bam_1"].file_path,
                     input_metadata["bam_2"].file_path,
+                    input_metadata["bg_bam_1"].file_path,
+                    input_metadata["bg_bam_2"].file_path,
                     input_metadata["bsgenome"].file_path
                 ],
                 taxon_id=input_metadata["bam_1"].taxon_id,

@@ -54,6 +54,11 @@ class filterReadsTool(Tool):
         logger.info("BS-Seeker FilterReads wrapper")
         Tool.__init__(self)
 
+        if configuration is None:
+            configuration = {}
+
+        self.configuration.update(configuration)
+
     @task(infile=FILE_IN, outfile=FILE_OUT, bss_path=IN)
     def bss_seeker_filter(self, infile, outfile, bss_path):
         """

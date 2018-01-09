@@ -30,7 +30,7 @@ from utils import remap
 
 from tool.bwa_aligner import bwaAlignerTool
 from tool.biobambam_filter import biobambam
-# from tool.idear import idear
+from tool.idear import idearTool
 
 
 # ------------------------------------------------------------------------------
@@ -117,84 +117,71 @@ class process_damidseq(Workflow):
 
         logger.info("PROCESS DAMIDSEQ - DEFINED OUTPUT:", output_files["bam"])
 
-        bwa = bwaAlignerTool(self.configuration)
-        bwa_files, bwa_meta = bwa.run(
-            # ideally parameter "roles" don't change
-            remap(input_files,
-                  "genome", "loc", "index"),
-            remap(metadata,
-                  "genome", "loc", "index"),
-            {"output": output_files["bam"]}
-        )
-        try:
-            output_files_generated["bam"] = bwa_files["bam"]
-            output_metadata["bam"] = bwa_meta["bam"]
+        alignment_set = [
+            ["fastq_1", "bam_1"], ["fastq_2", "bam_2"],
+            ["bg_fastq_1", "bg_bam_1"], ["bg_fastq_2", "bg_bam_2"],
+        ]
 
-            tool_name = output_metadata['bam'].meta_data['tool']
-            output_metadata['bam'].meta_data['tool_description'] = tool_name
-            output_metadata['bam'].meta_data['tool'] = "process_chipseq"
-        except KeyError:
-            logger.fatal("BWA aligner failed")
-
-        if "bg_loc" in input_files:
-            # Align background files
-            bwa_bg_files, bwa_bg_meta = bwa.run(
-                # Small changes can be handled easily using "remap"
+        for aln in alignment_set:
+            bwa = bwaAlignerTool(self.configuration)
+            bwa_files, bwa_meta = bwa.run(
                 remap(input_files,
-                      "genome", "index", loc="bg_loc"),
+                      "genome", aln[0], "index"),
                 remap(metadata,
-                      "genome", "index", loc="bg_loc"),
-                # Intermediate outputs should be created via tempfile?
-                {"output": output_files["bam_bg"]}
+                      "genome", aln[0], "index"),
+                {"output": output_files["bam"]}
             )
 
             try:
-                output_files_generated["bam_bg"] = bwa_bg_files["bam_bg"]
-                output_metadata["bam_bg"] = bwa_bg_meta["bam_bg"]
+                output_files_generated[aln[1]] = bwa_files["bam"]
+                output_metadata[aln[1]] = bwa_meta["bam"]
 
-                tool_name = output_metadata['bam_bg'].meta_data['tool']
-                output_metadata['bam_bg'].meta_data['tool_description'] = tool_name
-                output_metadata['bam_bg'].meta_data['tool'] = "process_chipseq"
+                tool_name = output_metadata["bam"].meta_data["tool"]
+                output_metadata[aln[1]].meta_data["tool_description"] = tool_name
+                output_metadata[aln[1]].meta_data["tool"] = "process_damidseq"
             except KeyError:
-                logger.fatal("Background BWA aligner failed")
+                logger.fatal("BWA aligner failed")
 
-        # For multiple files there will need to be merging into a single bam file
+            # Filter the bams
+            b3f = biobambam(self.configuration)
+            b3f_files, b3f_meta = b3f.run(
+                {"input": bwa_files['bam']},
+                {"input": bwa_meta['bam']},
+                {"output": output_files["filtered"]}
+            )
 
-        # Filter the bams
-        b3f = biobambam(self.configuration)
-        b3f_files, b3f_meta = b3f.run(
-            {"input": bwa_files['bam']},
-            {"input": bwa_meta['bam']},
-            {"output": output_files["filtered"]}
+            try:
+                output_files_generated[aln[0] + "_filtered"] = b3f_files["filtered"]
+                output_metadata[aln[0] + "_filtered"] = b3f_meta["filtered"]
+
+                tool_name = output_metadata[aln[0] + "_filtered"].meta_data["tool"]
+                output_metadata[aln[0] + "_filtered"].meta_data["tool_description"] = tool_name
+                output_metadata[aln[0] + "_filtered"].meta_data["tool"] = "process_damidseq"
+            except KeyError:
+                logger.fatal("BioBamBam filtering failed")
+
+
+
+
+        ## iDEAR to call peaks
+        idear_caller = idearTool(self.configuration)
+        idear_caller.run(
+            {
+                "bam_1" : output_files_generated["bam_1_filtered"],
+                "bam_2" : output_files_generated["bam_2_filtered"],
+                "bg_bam_1" : output_files_generated["bg_bam_1_filtered"],
+                "bg_bam_2" : output_files_generated["bg_bam_2_filtered"],
+                "bsgenome" : input_files["bsgenome"]
+            }, {
+                "bam_1" : output_metadata["bam_1_filtered"],
+                "bam_2" : output_metadata["bam_2_filtered"],
+                "bg_bam_1" : output_metadata["bg_bam_1_filtered"],
+                "bg_bam_2" : output_metadata["bg_bam_2_filtered"],
+                "bsgenome" : metadata["bsgenome"]
+            }, {
+                "bigwig" : output_files["bigwig"],
+            }
         )
-
-        try:
-            output_files_generated["filtered"] = bwa_files["filtered"]
-            output_metadata["filtered"] = bwa_meta["filtered"]
-
-            tool_name = output_metadata['filtered'].meta_data['tool']
-            output_metadata['filtered'].meta_data['tool_description'] = tool_name
-            output_metadata['filtered'].meta_data['tool'] = "process_chipseq"
-        except KeyError:
-            logger.fatal("BioBamBam filtering failed")
-
-        if "bg_loc" in input_files:
-            # Filter background aligned files
-            b3f_bg_files, b3f_bg_meta = b3f.run(
-                {"input": bwa_bg_files['bam']},
-                {"input": bwa_bg_meta['bam']},
-                {"output": output_files["filtered_bg"]}
-            )
-
-            try:
-                output_files_generated["filtered_bg"] = bwa_files["filtered_bg"]
-                output_metadata["filtered_bg"] = bwa_meta["filtered_bg"]
-
-                tool_name = output_metadata['filtered_bg'].meta_data['tool']
-                output_metadata['filtered_bg'].meta_data['tool_description'] = tool_name
-                output_metadata['filtered_bg'].meta_data['tool'] = "process_chipseq"
-            except KeyError:
-                logger.fatal("Background BioBamBam filtering failed")
 
         ## MACS2 to call peaks
         # macs_caller = macs2(self.configuration)
@@ -257,7 +244,7 @@ def main_json(config, in_metadata, out_metadata):
     print("1. Instantiate and launch the App")
     from apps.jsonapp import JSONApp
     app = JSONApp()
-    result = app.launch(process_chipseq,
+    result = app.launch(process_damidseq,
                         config,
                         in_metadata,
                         out_metadata)
@@ -275,7 +262,7 @@ if __name__ == "__main__":
     sys._run_from_cmdl = True  # pylint: disable=protected-access
 
     # Set up the command line parameters
-    PARSER = argparse.ArgumentParser(description="ChIP-seq peak calling")
+    PARSER = argparse.ArgumentParser(description="iDamID-seq peak calling")
     PARSER.add_argument("--config", help="Configuration file")
     PARSER.add_argument("--in_metadata", help="Location of input metadata file")
     PARSER.add_argument("--out_metadata", help="Location of output metadata file")

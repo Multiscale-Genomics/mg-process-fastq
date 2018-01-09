@@ -55,6 +55,11 @@ class biobambam(Tool):
         logger.info("BioBamBam2 Filter")
         Tool.__init__(self)
 
+        if configuration is None:
+            configuration = {}
+
+        self.configuration.update(configuration)
+
     @task(returns=bool, bam_file_in=FILE_IN, bam_file_out=FILE_OUT,
           isModifier=False)
     def biobambam_filter_alignments(self, bam_file_in, bam_file_out):

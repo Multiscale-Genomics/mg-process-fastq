@@ -61,6 +61,11 @@ class bssAlignerTool(Tool):
         print("BS-Seeker Aligner")
         Tool.__init__(self)
 
+        if configuration is None:
+            configuration = {}
+
+        self.configuration.update(configuration)
+
     @task(bam_file=FILE_INOUT)
     def bam_sort(self, bam_file):
         """

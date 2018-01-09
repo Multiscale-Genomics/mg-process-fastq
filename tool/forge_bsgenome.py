@@ -20,7 +20,6 @@ import shlex
 import subprocess
 import sys
 
-from xml.dom import minidom
 from utils import logger
 
 try:
@@ -42,7 +41,7 @@ from basic_modules.metadata import Metadata
 
 # ------------------------------------------------------------------------------
 
-class idear(Tool):
+class bsgenomeTool(Tool):
     """
     Tool for peak calling for iDamID-seq data
     """
@@ -54,13 +53,18 @@ class idear(Tool):
         print("Forge BSgenome")
         Tool.__init__(self)
 
+        if configuration is None:
+            configuration = {}
+
+        self.configuration.update(configuration)
+
     @task(
         returns=int,
         genome=FILE_IN, circ_chrom=IN, seed_file_param=IN,
-        genome_2bit=FILE_OUT, chrom_size=FILE_OUT, seed_file=FILE_OUT, index=FILE_OUT,
+        genome_2bit=FILE_OUT, chrom_size=FILE_OUT, seed_file=FILE_OUT, bsgenome=FILE_OUT,
         isModifier=False)
     def bsgenome_creater(
-            self, genome, circ_chrom, seed_file_param, genome_2bit, chrom_size, seed_file, index):
+            self, genome, circ_chrom, seed_file_param, genome_2bit, chrom_size, seed_file, bsgenome):
         """
         Make iDamID-seq peak calls. These are saved as bed files That can then
         get displayed on genome browsers. Uses an R script that wraps teh iDEAR
@@ -151,7 +155,7 @@ class idear(Tool):
 
         try:
             with open(package_build + "tar.gz", "rb") as f_in:
-                with open(index, "wb") as f_out:
+                with open(bsgenome, "wb") as f_out:
                     f_out.write(f_in.read())
         except IOError:
             logger.fatal("BSgenome failed to generate the index file")
@@ -208,15 +212,15 @@ class idear(Tool):
             output_files["genome_2bit"],
             output_files["chrom_size"],
             output_files["seed_file"],
-            output_files["index"]
+            output_files["bsgenome"]
         )
         results = compss_wait_on(results)
 
         output_metadata = {
-            "index": Metadata(
+            "bsgenome": Metadata(
                 data_type=input_metadata['genome'].data_type,
                 file_type="TAR",
-                file_path=output_files["index"],
+                file_path=output_files["bsgenome"],
                 sources=[input_metadata["genome"].file_path],
                 taxon_id=input_metadata["genome"].taxon_id,
                 meta_data={

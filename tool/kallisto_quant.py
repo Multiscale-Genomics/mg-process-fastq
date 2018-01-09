@@ -28,14 +28,14 @@ from utils import logger
 try:
     if hasattr(sys, '_run_from_cmdl') is True:
         raise ImportError
-    from pycompss.api.parameter import FILE_IN, FILE_OUT, IN
+    from pycompss.api.parameter import FILE_IN, FILE_OUT
     from pycompss.api.task import task
     from pycompss.api.api import compss_wait_on
 except ImportError:
     logger.warn("[Warning] Cannot import \"pycompss\" API packages.")
     logger.warn("          Using mock decorators.")
 
-    from utils.dummy_pycompss import FILE_IN, FILE_OUT, IN # pylint: disable=ungrouped-imports
+    from utils.dummy_pycompss import FILE_IN, FILE_OUT # pylint: disable=ungrouped-imports
     from utils.dummy_pycompss import task
     from utils.dummy_pycompss import compss_wait_on
 

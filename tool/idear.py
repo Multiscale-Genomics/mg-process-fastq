@@ -16,6 +16,7 @@
 """
 from __future__ import print_function
 
+import os
 import shlex
 import subprocess
 import sys
@@ -56,11 +57,12 @@ class idear(Tool):
     @task(
         returns=int,
         sample_name=IN, bg_name=IN, sample_bam_file_1=FILE_IN, sample_bam_file_2=FILE_IN,
-        bg_bam_file_1=FILE_IN, bg_bam_file_2=FILE_IN, species=IN, assembly=IN, peak_bed=FILE_OUT,
-        isModifier=False)
+        bg_bam_file_1=FILE_IN, bg_bam_file_2=FILE_IN, species=IN, assembly=IN, bsgenome=FILE_IN,
+        peak_bed=FILE_OUT, isModifier=False)
     def idear_peak_calling(
             self, sample_name, bg_name, sample_bam_file_1, sample_bam_file_2,
-            bg_bam_file_1, bg_bam_file_2, common_species_name, assembly, peak_bed):
+            bg_bam_file_1, bg_bam_file_2, common_species_name, assembly,
+            bsgenome, peak_bed):
         """
         Make iDamID-seq peak calls. These are saved as bed files That can then
         get displayed on genome browsers. Uses an R script that wraps teh iDEAR
@@ -94,14 +96,26 @@ class idear(Tool):
         # mkdir tmp_R_lib
         # R CMD INSTALL -l ${PWD}/tmp_R_lib BSgenome.human.grch38_1.4.2.tar.gz
 
-        command_line = 'idear --sample_name ' + sample_name + ' --background_name ' + bg_name
-        command_line += ' --file1 ' + sample_bam_file_1 + ' --file2 ' + sample_bam_file_2
-        command_line += ' --file3 ' + bg_bam_file_1 + ' --file4 ' + bg_bam_file_2
-        command_line += ' --species ' + common_species_name + ' --assembly ' + assembly
-        command_line += ' --output ' + peak_bed + '.tmp'
-        logger.info("iDEAR CMD: " + command_line)
+        if not os.path.exists("tmp_R_lib"):
+            os.makedirs("tmp_R_lib")
 
-        args = shlex.split(command_line)
+        args = shlex.split("R CMD INSTALL -l " + bsgenome)
+        process = subprocess.Popen(args)
+        process.wait()
+
+        args = [
+            'idear',
+            '--sample_name', sample_name,
+            '--background_name', bg_name,
+            '--file1', sample_bam_file_1,
+            '--file2', sample_bam_file_2,
+            '--file3', bg_bam_file_1,
+            '--file4', bg_bam_file_2,
+            '--species', common_species_name,
+            '--assembly', assembly,
+            '--output', peak_bed + '.tmp']
+        logger.info("iDEAR CMD: " + ' '.join(args))
+
         process = subprocess.Popen(args)
         process.wait()
 
@@ -148,9 +162,10 @@ class idear(Tool):
             sample_name, background_name,
             input_files["bam_1"], input_files["bam_2"],
             input_files["bg_bam_1"], input_files["bg_bam_2"],
-            output_files["bed"],
             input_metadata["bam"].taxon_id,
-            input_metadata["bam"].meta_data["assembly"]
+            input_metadata["bam"].meta_data["assembly"],
+            input_files["bsgenome"],
+            output_files["bed"]
         )
         results = compss_wait_on(results)
 
@@ -159,7 +174,11 @@ class idear(Tool):
                 data_type=input_metadata['bam_1'].data_type,
                 file_type="BED",
                 file_path=output_files["bed"],
-                sources=[input_metadata["bam_1"].file_path],
+                sources=[
+                    input_metadata["bam_1"].file_path,
+                    input_metadata["bam_2"].file_path,
+                    input_metadata["bsgenome"].file_path
+                ],
                 taxon_id=input_metadata["bam_1"].taxon_id,
                 meta_data={
                     "assembly": input_metadata["bam_1"].meta_data["assembly"],

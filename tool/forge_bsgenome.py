@@ -20,6 +20,7 @@ import shlex
 import subprocess
 import sys
 
+from xml.dom import minidom
 from utils import logger
 
 try:
@@ -43,7 +44,7 @@ from basic_modules.metadata import Metadata
 
 class idear(Tool):
     """
-    Tool for peak calling for MNase-seq data
+    Tool for peak calling for iDamID-seq data
     """
 
     def __init__(self):
@@ -55,11 +56,11 @@ class idear(Tool):
 
     @task(
         returns=int,
-        genome=FILE_IN, seed_file_param=IN,
+        genome=FILE_IN, circ_chrom=IN, seed_file_param=IN,
         genome_2bit=FILE_OUT, chrom_size=FILE_OUT, seed_file=FILE_OUT, index=FILE_OUT,
         isModifier=False)
     def bsgenome_creater(
-            self, genome, seed_file_param, genome_2bit, chrom_size, seed_file, index):
+            self, genome, circ_chrom, seed_file_param, genome_2bit, chrom_size, seed_file, index):
         """
         Make iDamID-seq peak calls. These are saved as bed files That can then
         get displayed on genome browsers. Uses an R script that wraps teh iDEAR
@@ -102,33 +103,58 @@ class idear(Tool):
             sub_proc = subprocess.Popen(args, shell=True, stdout=f_out)
             sub_proc.wait()
 
-        chrom_list = []
+        chrom_seq_list = []
+        chrom_circ_list = []
         with open(chrom_size, "rb") as f_in:
             for line in f_in:
                 line = line.split(" ")
-                chrom_list.append(line[0])
+                if any(cc in line[0] for cc in circ_chrom):
+                    chrom_circ_list.append(line[0])
+                else:
+                    chrom_seq_list.append(line[0])
+
+        genome_split = genome.split("/")
+        seed_file_param["seqnames"] = 'c("' + '","'.join(chrom_seq_list) + '")'
+        seed_file_param["circ_seqs"] = 'c("' + '","'.join(chrom_circ_list) + '")'
+        seed_file_param["seqs_srcdir"] = "/".join(genome_split[0:-1])
+        seed_file_param["seqfile_name"] = genome_split[-1]
 
         # Create the seed file
-        with open(, "wb") as f_out:
+        seed_order = [
+            "Package", "Title", "Description", "Version", "organism", "common_name",
+            "provider", "provider_version", "release_date", "release_name", "organism_biocview",
+            "BSgenomeObjname", "seqnames", "circ_seqs", "seqs_srcdir", "seqfile_name"
+        ]
+        with open(seed_file, "wb") as f_out:
+            for seed_key in seed_order:
+                f_out.write(seed_key + ": " + seed_file_param[seed_key])
 
-
-        command_line = 'forge_bsgenome --file ' + genome
+        # Forge the BSgenomedirectory
+        command_line = 'forge_bsgenome --file ' + seed_file
         logger.info("BSGENOME CMD: " + command_line)
-
-        command_line_build = "R CMD build BSgenome."
-        command_line_check = "R CMD check <pkgdir>"
-
 
         args = shlex.split(command_line)
         process = subprocess.Popen(args)
         process.wait()
 
+        package_build = seed_file_param["seqs_srcdir"] + "/" + seed_file_param["Package"]
+        command_line_build = "R CMD build " + package_build
+        command_line_check = "R CMD check " + package_build + "tar.gz"
+
+        args = shlex.split(command_line_build)
+        process = subprocess.Popen(args)
+        process.wait()
+
+        args = shlex.split(command_line_check)
+        process = subprocess.Popen(args)
+        process.wait()
+
         try:
-            with open(peak_bed + ".tmp", "rb") as f_in:
-                with open(peak_bed, "wb") as f_out:
+            with open(package_build + "tar.gz", "rb") as f_in:
+                with open(index, "wb") as f_out:
                     f_out.write(f_in.read())
         except IOError:
-            logger.fatal("iDEAR failed to generate peak file")
+            logger.fatal("BSgenome failed to generate the index file")
             return False
 
         return True
@@ -154,34 +180,81 @@ class idear(Tool):
 
         """
 
-        sample_name = None
-        background_name = None
+        seed_param = {}
 
-        if "idear_sample_param" in self.configuration:
-            sample_name = str(self.configuration["idear_sample_param"])
-        if "idear_background_param" in self.configuration:
-            background_name = str(self.configuration["idear_background_param"])
+        seed_param["Title"] = str(self.configuration["idear_title"])
+        seed_param["Description"] = str(self.configuration["idear_description"])
+        seed_param["common_name"] = str(self.configuration["idear_common_name"])
+        seed_param["BSgenomeObjname"] = str(self.configuration["idear_common_name"])
+        seed_param["assembly"] = input_metadata["genome"].meta_data["assembly"]
+        seed_param["release_name"] = input_metadata["genome"].meta_data["assembly"]
+        seed_param["organism"] = str(self.configuration["idear_organism"])
+        org_split = str(self.configuration["idear_organism"]).split(" ")
+        seed_param["organism_biocview"] = "_".join(org_split)
+        seed_param["release_date"] = str(self.configuration["idear_release_date"])
+        seed_param["provider"] = str(self.configuration["idear_provider"])
 
-        results = self.idear_peak_calling(
-            sample_name, background_name,
-            input_files["bam_1"], input_files["bam_2"],
-            input_files["bg_bam_1"], input_files["bg_bam_2"],
-            output_files["bed"],
-            input_metadata["bam"].taxon_id,
-            input_metadata["bam"].meta_data["assembly"]
+        seed_param["Package"] = "BSgenome." + seed_param["common_name"] + "." + seed_param["assembly"]
+        seed_param["Version"] = "1.4.2"
+
+        circ_chroms = []
+        if "idear_circ_chrom" in self.configuration:
+            circ_chroms = str(self.configuration["idear_title"]).split(",")
+
+        results = self.bsgenome_creater(
+            input_files["genome"],
+            circ_chroms,
+            seed_param,
+            output_files["genome_2bit"],
+            output_files["chrom_size"],
+            output_files["seed_file"],
+            output_files["index"]
         )
         results = compss_wait_on(results)
 
         output_metadata = {
-            "bed": Metadata(
-                data_type=input_metadata['bam_1'].data_type,
-                file_type="BED",
-                file_path=output_files["bed"],
-                sources=[input_metadata["bam_1"].file_path],
-                taxon_id=input_metadata["bam_1"].taxon_id,
+            "index": Metadata(
+                data_type=input_metadata['genome'].data_type,
+                file_type="TAR",
+                file_path=output_files["index"],
+                sources=[input_metadata["genome"].file_path],
+                taxon_id=input_metadata["genome"].taxon_id,
                 meta_data={
-                    "assembly": input_metadata["bam_1"].meta_data["assembly"],
-                    "tool": "idear"
+                    "assembly": input_metadata["genome"].meta_data["assembly"],
+                    "tool": "forge_bsgenome"
+                }
+            ),
+            "chrom_size": Metadata(
+                data_type=input_metadata['genome'].data_type,
+                file_type="TXT",
+                file_path=output_files["chrom_size"],
+                sources=[input_metadata["genome"].file_path],
+                taxon_id=input_metadata["genome"].taxon_id,
+                meta_data={
+                    "assembly": input_metadata["genome"].meta_data["assembly"],
+                    "tool": "forge_bsgenome"
+                }
+            ),
+            "genome_2bit": Metadata(
+                data_type=input_metadata['genome'].data_type,
+                file_type="2BIT",
+                file_path=output_files["genome_2bit"],
+                sources=[input_metadata["genome"].file_path],
+                taxon_id=input_metadata["genome"].taxon_id,
+                meta_data={
+                    "assembly": input_metadata["genome"].meta_data["assembly"],
+                    "tool": "forge_bsgenome"
+                }
+            ),
+            "seed_file": Metadata(
+                data_type=input_metadata['genome'].data_type,
+                file_type="TXT",
+                file_path=output_files["seed_file"],
+                sources=[input_metadata["genome"].file_path],
+                taxon_id=input_metadata["genome"].taxon_id,
+                meta_data={
+                    "assembly": input_metadata["genome"].meta_data["assembly"],
+                    "tool": "forge_bsgenome"
                 }
             )
         }

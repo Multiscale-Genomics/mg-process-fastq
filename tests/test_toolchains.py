@@ -52,6 +52,7 @@ def chipseq_toolchain(verbose=False):
 
     .. code-block:: none
 
+       pytest -m chipseq tests/test_fastqc_validation.py
        pytest -m chipseq tests/test_bwa_indexer.py
        pytest -m chipseq tests/test_bwa_aligner.py
        pytest -m chipseq tests/test_biobambam.py
@@ -68,6 +69,36 @@ def chipseq_toolchain(verbose=False):
     params.append('tests/test_bwa_aligner.py')
     params.append('tests/test_biobambam.py')
     params.append('tests/test_macs2.py')
+
+    return pytest.main(params)
+
+def idamidseq_toolchain(verbose=False):
+    """
+    Runs the tests for all of the tools from the ChIP-seq pipeline
+
+    Runs the following tests:
+
+    .. code-block:: none
+
+       pytest -m idamidseq tests/test_fastqc_validation.py
+       pytest -m idamidseq tests/test_bwa_indexer.py
+       pytest -m idamidseq tests/test_bwa_aligner.py
+       pytest -m idamidseq tests/test_biobambam.py
+       pytest -m idamidseq tests/test_bsgenome.py
+       pytest -m idamidseq tests/test_idear.py
+    """
+
+    params = ['-m idamidseq']
+
+    if verbose is True:
+        params.append('-s')
+
+    # params.append('tests/test_fastqc_validation.py')
+    params.append('tests/test_bwa_indexer.py')
+    # params.append('tests/test_bwa_aligner.py')
+    # params.append('tests/test_biobambam.py')
+    # params.append('tests/test_bsgenome.py')
+    # params.append('tests/test_idear.py')
 
     return pytest.main(params)
 
@@ -187,7 +218,7 @@ if __name__ == '__main__':
         "--pipeline",
         required=True,
         type=str,
-        choices=['genome', 'chipseq', 'hic', 'mnaseseq', 'rnaseq', 'wgbs', 'all'],
+        choices=['genome', 'chipseq', 'hic', 'idamidseq', 'mnaseseq', 'rnaseq', 'wgbs', 'all'],
         help=""
     )
     PARSER.add_argument("--verbose", action="store_const", const=True, default=False)
@@ -222,6 +253,11 @@ if __name__ == '__main__':
     if 'hic' in PIPELINES or 'all' in PIPELINES:
         print('HIC')
         if hic_toolchain(VERBOSE) > 0:
+            sys.exit(1)
+
+    if 'idamidseq' in PIPELINES or 'all' in PIPELINES:
+        print('IDAMIDSEQ')
+        if idamidseq_toolchain(VERBOSE) > 0:
             sys.exit(1)
 
     if 'mnaseseq' in PIPELINES or 'all' in PIPELINES:

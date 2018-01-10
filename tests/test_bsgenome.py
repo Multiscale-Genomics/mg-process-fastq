@@ -22,7 +22,7 @@ from basic_modules.metadata import Metadata
 
 from tool.macs2 import macs2
 
-@pytest.mark.idamseq
+@pytest.mark.idamidseq
 def test_bsgenome():
     """
     Function to test forging BSgenomes

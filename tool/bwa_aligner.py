@@ -87,7 +87,8 @@ class bwaAlignerTool(Tool):
         bam_file_2 : str
             Location of the bam file that is to get merged into bam_file_1
         """
-        pysam.merge(bam_file_1 + "_merge.bam", bam_file_1, bam_file_2)
+        logger.info("Merging: " + bam_file_1 + " - " + bam_file_2)
+        pysam.merge("-f", bam_file_1 + "_merge.bam", bam_file_1, bam_file_2)
 
         try:
             with open(bam_file_1 + "_merge.bam", "rb") as f_in:

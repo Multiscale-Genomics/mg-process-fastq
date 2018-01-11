@@ -16,7 +16,6 @@
 """
 
 import os.path
-import time
 import pytest # pylint: disable=unused-import
 
 from basic_modules.metadata import Metadata
@@ -24,7 +23,7 @@ from basic_modules.metadata import Metadata
 from tool import biobambam_filter
 
 @pytest.mark.chipseq
-def test_biobambam():
+def test_biobambam_chipseq():
     """
     Test case to ensure that BioBamBam works
     """
@@ -50,3 +49,39 @@ def test_biobambam():
 
     assert os.path.isfile(resource_path + "macs2.Human.DRR000150.22_filtered.bam") is True
     assert os.path.getsize(resource_path + "macs2.Human.DRR000150.22_filtered.bam") > 0
+
+@pytest.mark.idamidseq
+def test_biobambam_idamidseq():
+    """
+    Test case to ensure that BioBamBam works
+    """
+
+    resource_path = os.path.join(os.path.dirname(__file__), "data/")
+
+    bam_files = [
+        resource_path + "idear.Human.SRR3714775.bam",
+        resource_path + "idear.Human.SRR3714776.bam",
+        resource_path + "idear.Human.SRR3714777.bam",
+        resource_path + "idear.Human.SRR3714778.bam"
+    ]
+
+    for bam_file in bam_files:
+        input_files = {
+            "input": bam_file
+        }
+
+        output_files = {
+            "output": bam_file.replace(".bam", "_filtered.bam")
+        }
+
+        metadata = {
+            "input": Metadata(
+                "data_damid_seq", "bam", [], None,
+                {'assembly' : 'test'}),
+        }
+
+        bbb = biobambam_filter.biobambam()
+        bbb.run(input_files, metadata, output_files)
+
+        assert os.path.isfile(bam_file.replace(".bam", "_filtered.bam")) is True
+        assert os.path.getsize(bam_file.replace(".bam", "_filtered.bam")) > 0

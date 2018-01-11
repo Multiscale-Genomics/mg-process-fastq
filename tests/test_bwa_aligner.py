@@ -75,10 +75,10 @@ def test_bwa_aligner_idamidseq():
     resource_path = os.path.join(os.path.dirname(__file__), "data/")
     genome_fa = resource_path + "idear.Human.GCA_000001405.22.fasta"
     fastq_files = [
-        resource_path + "SRR3714775.fastq",
-        # resource_path + "SRR3714776.fastq",
-        # resource_path + "SRR3714777.fastq",
-        # resource_path + "SRR3714778.fastq"
+        resource_path + "idear.Human.SRR3714775.fastq",
+        resource_path + "idear.Human.SRR3714776.fastq",
+        resource_path + "idear.Human.SRR3714777.fastq",
+        resource_path + "idear.Human.SRR3714778.fastq"
     ]
 
     for fastq_file in fastq_files:
@@ -106,7 +106,7 @@ def test_bwa_aligner_idamidseq():
                 }
             ),
             "loc": Metadata(
-                "data_chip_seq", "fastq", fastq_file, None,
+                "data_damid_seq", "fastq", fastq_file, None,
                 {"assembly": "test"}
             )
         }

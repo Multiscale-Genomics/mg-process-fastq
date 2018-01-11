@@ -127,25 +127,27 @@ class fastqreader(object):
         read_score = ''
 
         if side == 1:
-            read_id = self.f1_content.pop()
-            read_seq = self.f1_content.pop()
-            read_addition = self.f1_content.pop()
-            read_score = self.f1_content.pop()
+            try:
+                read_id = self.f1_content.pop()
+                read_seq = self.f1_content.pop()
+                read_addition = self.f1_content.pop()
+                read_score = self.f1_content.pop()
+            except IndexError as idxe:
+                self.f1_eof = True
+                return False
+
         elif side == 2:
-            read_id = self.f2_content.pop()
-            read_seq = self.f2_content.pop()
-            read_addition = self.f2_content.pop()
-            read_score = self.f2_content.pop()
+            try:
+                read_id = self.f2_content.pop()
+                read_seq = self.f2_content.pop()
+                read_addition = self.f2_content.pop()
+                read_score = self.f2_content.pop()
+            except IndexError as idxe:
+                self.f2_eof = True
+                return False
         else:
             return 'ERROR'
 
-        if read_id == '':  # and read == []:
-            if side == 1:
-                self.f1_eof = True
-                return False
-            if side == 2:
-                self.f2_eof = True
-                return False
         return {
             'id': read_id.rstrip(),
             'seq': read_seq,

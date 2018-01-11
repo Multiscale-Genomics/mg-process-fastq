@@ -24,7 +24,7 @@ from basic_modules.metadata import Metadata
 from tool.bwa_aligner import bwaAlignerTool
 
 @pytest.mark.chipseq
-def test_bwa_aligner():
+def test_bwa_aligner_chipseq():
     """
     Function to test BWA Aligner
     """
@@ -67,8 +67,58 @@ def test_bwa_aligner():
     assert os.path.isfile(resource_path + "macs2.Human.DRR000150.22.bam") is True
     assert os.path.getsize(resource_path + "macs2.Human.DRR000150.22.bam") > 0
 
+@pytest.mark.idamidseq
+def test_bwa_aligner_idamidseq():
+    """
+    Function to test BWA Aligner
+    """
+    resource_path = os.path.join(os.path.dirname(__file__), "data/")
+    genome_fa = resource_path + "idear.Human.GCA_000001405.22.fasta"
+    fastq_files = [
+        resource_path + "SRR3714775.fastq",
+        # resource_path + "SRR3714776.fastq",
+        # resource_path + "SRR3714777.fastq",
+        # resource_path + "SRR3714778.fastq"
+    ]
+
+    for fastq_file in fastq_files:
+        print(fastq_file.replace(".fastq", ".bam"))
+
+        input_files = {
+            "genome": genome_fa,
+            "index": genome_fa + ".bwa.tar.gz",
+            "loc": fastq_file
+        }
+
+        output_files = {
+            "output": fastq_file.replace(".fastq", ".bam")
+        }
+
+        metadata = {
+            "genome": Metadata(
+                "Assembly", "fasta", genome_fa, None,
+                {"assembly": "test"}),
+            "index": Metadata(
+                "index_bwa", "", [genome_fa],
+                {
+                    "assembly": "test",
+                    "tool": "bwa_indexer"
+                }
+            ),
+            "loc": Metadata(
+                "data_chip_seq", "fastq", fastq_file, None,
+                {"assembly": "test"}
+            )
+        }
+
+        bwa_t = bwaAlignerTool()
+        bwa_t.run(input_files, metadata, output_files)
+
+        assert os.path.isfile(fastq_file.replace(".fastq", ".bam")) is True
+        assert os.path.getsize(fastq_file.replace(".fastq", ".bam")) > 0
+
 @pytest.mark.mnaseseq
-def test_bwa_aligner_02():
+def test_bwa_aligner_mnaseseq():
     """
     Function to test BWA Aligner for MNase seq data
     """

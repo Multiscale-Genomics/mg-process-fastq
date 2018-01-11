@@ -30,8 +30,6 @@ class fastqreader(object):
         """
         Initialise the module
         """
-        self.paired = False
-
         self.fastq1 = ''
         self.fastq2 = ''
 

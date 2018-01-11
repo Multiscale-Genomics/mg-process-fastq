@@ -8,6 +8,7 @@ FASTQ IDs.
 import argparse
 import time
 
+from sets import Set
 from fastqreader import fastqreader
 
 # Extract the rows that matched to chr21
@@ -148,14 +149,14 @@ def single_selector(in_file1, rows, tag='tmp'):
 
     counter = 0
 
-    while fqr.eof() is False and counter < 1000:
+    while fqr.eof() is False:
         r1_id = record1["id"].split(" ")
 
         if r1_id[0][1:] in rows:
             fqr.writeOutput(record1)
             counter += 1
 
-            if counter % 1000 == 0:
+            if counter % 100000 == 0:
                 time_2 = current_milli_time()
                 print("Extracted:", str(counter), "reads (avg per 1000: " + str(time_2-time_1) + ") ...")
                 time_1 = time_2
@@ -176,12 +177,11 @@ def get_if_list(row_file):
     id_list = fid.readlines()
     id_list = [i.rstrip() for i in id_list]
 
-    from sets import Set
     id_set = Set(id_list)
 
     fid.close()
 
-    return list(id_set)
+    return id_set
 
 
 if __name__ == "__main__":

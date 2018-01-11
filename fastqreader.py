@@ -19,6 +19,7 @@
 
 import os
 import re
+from collections import deque
 
 class fastqreader(object):
     """
@@ -37,6 +38,9 @@ class fastqreader(object):
         self.f1_file = None
         self.f2_file = None
 
+        self.f1_content = None
+        self.f2_content = None
+
         self.f1_eof = False
         self.f2_eof = False
 
@@ -45,6 +49,8 @@ class fastqreader(object):
 
         self.output_tag = ''
         self.output_file_count = 0
+
+        self.paired = False
 
     def openFastQ(self, file1, file2=None):
         """
@@ -59,11 +65,13 @@ class fastqreader(object):
         """
         self.fastq1 = file1
         self.f1_file = open(self.fastq1, "r")
+        self.f1_content = deque(reversed(self.f1_file.readlines()))
         self.f1_eof = False
 
         if file2 is not None:
             self.fastq2 = file2
             self.f2_file = open(self.fastq2, "r")
+            self.f2_content = deque(reversed(self.f2_file.readlines()))
             self.f2_eof = False
             self.paired = True
 
@@ -73,7 +81,7 @@ class fastqreader(object):
         """
         self.f1_file.close()
 
-        if self.paired == True:
+        if self.paired is True:
             self.f2_file.close()
 
     def eof(self, side=1):
@@ -119,19 +127,19 @@ class fastqreader(object):
         read_score = ''
 
         if side == 1:
-            read_id = self.f1_file.readline()
-            read_seq = self.f1_file.readline()
-            read_addition = self.f1_file.readline()
-            read_score = self.f1_file.readline()
+            read_id = self.f1_content.pop()
+            read_seq = self.f1_content.pop()
+            read_addition = self.f1_content.pop()
+            read_score = self.f1_content.pop()
         elif side == 2:
-            read_id = self.f2_file.readline()
-            read_seq = self.f2_file.readline()
-            read_addition = self.f2_file.readline()
-            read_score = self.f2_file.readline()
+            read_id = self.f2_content.pop()
+            read_seq = self.f2_content.pop()
+            read_addition = self.f2_content.pop()
+            read_score = self.f2_content.pop()
         else:
             return 'ERROR'
 
-        if read_id == '':
+        if read_id == '':  # and read == []:
             if side == 1:
                 self.f1_eof = True
                 return False
@@ -140,9 +148,9 @@ class fastqreader(object):
                 return False
         return {
             'id': read_id.rstrip(),
-            'seq': read_seq.rstrip(),
-            'add': read_addition.rstrip(),
-            'score': read_score.rstrip()
+            'seq': read_seq,
+            'add': read_addition,
+            'score': read_score
         }
 
     def createOutputFiles(self, tag=''):
@@ -190,7 +198,7 @@ class fastqreader(object):
         bool
             False if a value other than 1 or 2 is entered for the side.
         """
-        line = read["id"] + "\n" + read["seq"] + "\n" + read["add"] + "\n" + read["score"] + "\n"
+        line = read["id"] + "\n" + read["seq"] + read["add"] + read["score"]
         if side == 1:
             self.f1_output_file.write(line)
         elif side == 2:

@@ -165,7 +165,9 @@ class bsgenomeTool(Tool):
             process.wait()
 
             try:
-                with open(package_build + "_" + seed_file_param["Version"] + ".tar.gz", "rb") as f_in:
+                with open(
+                    package_build + "_" + seed_file_param["Version"] + ".tar.gz", "rb"
+                ) as f_in:
                     with open(bsgenome, "wb") as f_out:
                         f_out.write(f_in.read())
             except IOError:
@@ -209,7 +211,9 @@ class bsgenomeTool(Tool):
         seed_param["release_date"] = str(self.configuration["idear_release_date"])
         seed_param["provider"] = str(self.configuration["idear_provider"])
 
-        seed_param["Package"] = "BSgenome." + seed_param["common_name"] + "." + seed_param["assembly"]
+        seed_param["Package"] = (
+            "BSgenome." + seed_param["common_name"] + "." + seed_param["assembly"]
+        )
         seed_param["Version"] = "1.4.2"
         seed_param["provider_version"] = seed_param["assembly"]
 

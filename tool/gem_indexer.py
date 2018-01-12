@@ -79,7 +79,7 @@ class gemIndexerTool(Tool):
             common_handle = common()
             common_handle.replaceENAHeader(genome_file, new_genome_file)
 
-            idx_result = common_handle.gem_index_genome(new_genome_file, new_genome_file)
+            common_handle.gem_index_genome(new_genome_file, new_genome_file)
 
             idx_out_pregz = index_loc.replace('.gem.gz', '.gem')
             command_line = 'pigz ' + idx_out_pregz
@@ -88,7 +88,7 @@ class gemIndexerTool(Tool):
             process.wait()
 
             return True
-        except Exception:
+        except IOError:
             return False
 
     def run(self, input_files, input_metadata, output_files):

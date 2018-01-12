@@ -26,9 +26,7 @@ import argparse
 from basic_modules.workflow import Workflow
 from utils import logger
 
-from tool.bowtie_indexer import bowtieIndexerTool
-from tool.bwa_indexer import bwaIndexerTool
-from tool.gem_indexer import gemIndexerTool
+from tool.forge_bsgenome import bsgenomeTool
 
 # ------------------------------------------------------------------------------
 
@@ -47,7 +45,7 @@ class process_bsgenome(Workflow):
             a dictionary containing parameters that define how the operation
             should be carried out, which are specific to each Tool.
         """
-        logger.info("Processing Genomes")
+        logger.info("Processing Genome")
         if configuration is None:
             configuration = {}
 
@@ -63,19 +61,13 @@ class process_bsgenome(Workflow):
         ----------
         input_files : dict
             genome : str
-                List of file locations
+                Location of the FASTA input file
         metadata : dict
             genome : dict
                 Required meta data
         output_files : dict
-            bwa_index : str
-                Location of the BWA index archive files
-            bwt_index : str
-                Location of the Bowtie2 index archive file
-            gem_index : str
-                Location of the GEM index file
-            genome_gem : str
-                Location of a the FASTA file generated for the GEM indexing step
+            BSgenome : str
+                Location of a the BSgenome R package
 
         Returns
         -------
@@ -90,18 +82,18 @@ class process_bsgenome(Workflow):
 
         # BSgenome
         logger.info("Generating BSgenome")
-        bwa = bwaIndexerTool()
-        bwai, bwam = bwa.run(input_files, metadata, {'index': output_files['bwa_index']})
+        bsg = bsgenomeTool()
+        bsgi, bsgm = bsg.run(input_files, metadata, {'index': output_files['index']})
 
         try:
-            output_files_generated['bwa_index'] = bwai['index']
-            output_metadata['bwa_index'] = bwam['index']
+            output_files_generated['index'] = bsgi['index']
+            output_metadata['index'] = bsgm['index']
 
-            tool_name = output_metadata['bwa_index'].meta_data['tool']
-            output_metadata['bwa_index'].meta_data['tool_description'] = tool_name
-            output_metadata['bwa_index'].meta_data['tool'] = "process_genome"
+            tool_name = output_metadata['index'].meta_data['tool']
+            output_metadata['index'].meta_data['tool_description'] = tool_name
+            output_metadata['index'].meta_data['tool'] = "process_bsgenome"
         except KeyError:
-            logger.fatal("BWA indexer failed")
+            logger.fatal("BSgenome indexer failed")
 
         return (output_files_generated, output_metadata)
 

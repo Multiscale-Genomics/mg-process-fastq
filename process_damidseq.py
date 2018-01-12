@@ -160,9 +160,6 @@ class process_damidseq(Workflow):
             except KeyError:
                 logger.fatal("BioBamBam filtering failed")
 
-
-
-
         ## iDEAR to call peaks
         idear_caller = idearTool(self.configuration)
         idear_caller.run(
@@ -182,49 +179,6 @@ class process_damidseq(Workflow):
                 "bigwig" : output_files["bigwig"],
             }
         )
-
-        ## MACS2 to call peaks
-        # macs_caller = macs2(self.configuration)
-        # macs_inputs = {"input": b3f_files['bam']}
-        # macs_metadt = {"input": b3f_meta['bam']}
-
-        # if "bg_loc" in input_files:
-        #     macs_inputs["background"] = b3f_bg_files['bam']
-        #     macs_metadt["background"] = b3f_bg_meta['bam']
-
-        # m_results_files, m_results_meta = macs_caller.run(
-        #     macs_inputs, macs_metadt,
-        #     # Outputs of the final step may match workflow outputs;
-        #     # Extra entries in output_files will be disregarded.
-        #     remap(output_files, 'narrow_peak', 'summits', 'broad_peak', 'gapped_peak'))
-
-        # if len(m_results_meta) == 0:
-        #     logger.fatal("MACS2 peak calling failed")
-
-        # if 'narrow_peak' in m_results_meta:
-        #     output_files_generated['narrow_peak'] = m_results_files['narrow_peak']
-
-        #     tool_name = output_metadata['narrow_peak'].meta_data['tool']
-        #     output_metadata['narrow_peak'].meta_data['tool_description'] = tool_name
-        #     output_metadata['narrow_peak'].meta_data['tool'] = "process_chipseq"
-        # if 'summits' in m_results_meta:
-        #     output_files_generated['summits'] = m_results_files['summits']
-
-        #     tool_name = output_metadata['summits'].meta_data['tool']
-        #     output_metadata['summits'].meta_data['tool_description'] = tool_name
-        #     output_metadata['summits'].meta_data['tool'] = "process_chipseq"
-        # if 'broad_peak' in m_results_meta:
-        #     output_files_generated['broad_peak'] = m_results_files['broad_peak']
-
-        #     tool_name = output_metadata['broad_peak'].meta_data['tool']
-        #     output_metadata['broad_peak'].meta_data['tool_description'] = tool_name
-        #     output_metadata['broad_peak'].meta_data['tool'] = "process_chipseq"
-        # if 'gapped_peak' in m_results_meta:
-        #     output_files_generated['gapped_peak'] = m_results_files['gapped_peak']
-
-        #     tool_name = output_metadata['gapped_peak'].meta_data['tool']
-        #     output_metadata['gapped_peak'].meta_data['tool_description'] = tool_name
-        #     output_metadata['gapped_peak'].meta_data['tool'] = "process_chipseq"
 
         print("DAMID-SEQ RESULTS:", output_metadata)
         return output_files_generated, output_metadata

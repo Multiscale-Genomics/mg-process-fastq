@@ -93,7 +93,7 @@ def idamidseq_toolchain(verbose=False):
     if verbose is True:
         params.append('-s')
 
-    # params.append('tests/test_fastqc_validation.py')
+    params.append('tests/test_fastqc_validation.py')
     params.append('tests/test_bwa_indexer.py')
     params.append('tests/test_bwa_aligner.py')
     params.append('tests/test_biobambam.py')

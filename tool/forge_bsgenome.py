@@ -143,7 +143,7 @@ class bsgenomeTool(Tool):
         # Forge the BSgenomedirectory
         rscript = os.path.join(os.path.dirname(__file__), "../scripts/forge_bsgenome.R")
         command_line = "Rscript " + rscript + " --file " + seed_file
-        logger.info("BSGENOME CMD: " + command_line)
+        logger.info("BSGENOME CMD: Rscript scripts/forge_bsgenome.R --file " + seed_file)
 
         with cd(seed_file_param["seqs_srcdir"]):
             args = shlex.split(command_line)

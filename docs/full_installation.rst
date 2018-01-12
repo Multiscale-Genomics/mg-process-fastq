@@ -122,8 +122,8 @@ Bowtie2 Aligner
    :linenos:
 
    cd ${HOME}/lib
-   wget --max-redirect 1 https://downloads.sourceforge.net/project/bowtie-bio/bowtie2/2.3.2/bowtie2-2.3.2-linux-x86_64.zip
-   unzip bowtie2-2.3.2-linux-x86_64.zip
+   wget --max-redirect 1 https://downloads.sourceforge.net/project/bowtie-bio/bowtie2/2.3.4/bowtie2-2.3.4-linux-x86_64.zip
+   unzip bowtie2-2.3.4-linux-x86_64.zip
 
 BWA Sequence Aligner
 ^^^^^^^^^^^^^^^^^^^^
@@ -173,6 +173,7 @@ iNPS Peak Caller
    unzip iNPS_V1.2.2.zip
 
    cd ${HOME}/bin
+   touch iNPS
    cat iNPS <<EOL
    #!/usr/bin/env bash
    python3 ${HOME}/lib/iNPS/iNPS_V1.2.2.py "$@"
@@ -220,6 +221,7 @@ bedTools
 .. code-block:: none
    :linenos:
 
+   cd ${HOME}/lib
    wget https://github.com/arq5x/bedtools2/releases/download/v2.26.0/bedtools-2.26.0.tar.gz
    tar -zxvf bedtools-2.26.0.tar.gz
    cd bedtools2

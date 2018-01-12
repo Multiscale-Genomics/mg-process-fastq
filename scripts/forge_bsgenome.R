@@ -20,10 +20,9 @@ library(BSgenome)
 
 option_list = list(
     make_option(c("-f", "--file"), type="character", default=NULL,
-                help="Sample Name", metavar="character")
-);
+                help="Sample Name", metavar="character"))
 
-opt_parser = OptionParser(option_list=option_list);
-opt = parse_args(opt_parser);
+opt_parser = OptionParser(option_list=option_list)
+opt = parse_args(opt_parser)
 
 forgeBSgenomeDataPkg(opt$file)

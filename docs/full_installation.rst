@@ -35,7 +35,8 @@ Setup the System Environment
    sudo apt-get install -y make build-essential libssl-dev zlib1g-dev       \\
    libbz2-dev libreadline-dev libsqlite3-dev wget curl llvm libncurses5-dev \\
    libncursesw5-dev xz-utils tk-dev unzip mcl libgtk2.0-dev r-base-core     \\
-   libcurl4-gnutls-dev python-rpy2 git libtbb2 pigz liblzma-dev libhdf5-dev
+   libcurl4-gnutls-dev python-rpy2 git libtbb2 pigz liblzma-dev libhdf5-dev \\
+   texlive-latex-base
 
    cd ${HOME}
    mkdir bin lib code
@@ -80,6 +81,11 @@ UCSC Tools
    cd ${HOME}/lib
    wget http://hgdownload.cse.ucsc.edu/admin/exe/linux.x86_64/bedToBigBed
    wget http://hgdownload.cse.ucsc.edu/admin/exe/linux.x86_64/wigToBigWig
+
+   wget http://hgdownload.soe.ucsc.edu/admin/exe/linux.x86_64/faToTwoBit
+   wget http://hgdownload.soe.ucsc.edu/admin/exe/linux.x86_64/twoBitInfo
+
+   chmod +x bedToBigBed wigToBigWig faToTwoBit twoBitInfo
 
 BioBamBam2
 ^^^^^^^^^^
@@ -232,6 +238,8 @@ Setup the symlinks
 
    ln -s ${HOME}/lib/bedToBigBed bedToBigBed
    ln -s ${HOME}/lib/wigToBigWig wigToBigWig
+   ln -s ${HOME}/lib/faToTwoBit faToTwoBit
+   ln -s ${HOME}/lib/twoBitInfo twoBitInfo
 
    ln -s ${HOME}/lib/bwa/bwa bwa
 

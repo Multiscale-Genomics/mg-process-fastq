@@ -130,7 +130,7 @@ class fastqreader(object):
                 read_seq = self.f1_content.pop()
                 read_addition = self.f1_content.pop()
                 read_score = self.f1_content.pop()
-            except IndexError as idxe:
+            except IndexError:
                 self.f1_eof = True
                 return False
 
@@ -140,7 +140,7 @@ class fastqreader(object):
                 read_seq = self.f2_content.pop()
                 read_addition = self.f2_content.pop()
                 read_score = self.f2_content.pop()
-            except IndexError as idxe:
+            except IndexError:
                 self.f2_eof = True
                 return False
         else:

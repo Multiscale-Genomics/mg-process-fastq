@@ -51,7 +51,7 @@ class idearTool(Tool):
         """
         Init function
         """
-        print("iNPS Peak Caller")
+        print("iDEAR Peak Caller")
         Tool.__init__(self)
 
         if configuration is None:
@@ -104,19 +104,21 @@ class idearTool(Tool):
         if not os.path.exists("tmp_R_lib"):
             os.makedirs("tmp_R_lib")
 
-        args = shlex.split("R CMD INSTALL -l " + bsgenome)
+        args = shlex.split("R CMD INSTALL -l tmp_R_lib " + bsgenome)
         process = subprocess.Popen(args)
         process.wait()
 
+        rscript = os.path.join(os.path.dirname(__file__), "../scripts/idear.R")
+
         args = [
-            'idear',
+            'Rscript', rscript,
             '--sample_name', sample_name,
             '--background_name', bg_name,
             '--file1', sample_bam_file_1,
             '--file2', sample_bam_file_2,
             '--file3', bg_bam_file_1,
             '--file4', bg_bam_file_2,
-            '--species', common_species_name,
+            '--species', str(common_species_name),
             '--assembly', assembly,
             '--output', peak_bw + '.tmp']
         logger.info("iDEAR CMD: " + ' '.join(args))

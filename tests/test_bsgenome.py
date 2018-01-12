@@ -20,7 +20,7 @@ import pytest # pylint: disable=unused-import
 
 from basic_modules.metadata import Metadata
 
-from tool.macs2 import macs2
+from tool.forge_bsgenome import bsgenomeTool
 
 @pytest.mark.idamidseq
 def test_bsgenome():
@@ -31,24 +31,40 @@ def test_bsgenome():
     resource_path = os.path.join(os.path.dirname(__file__), "data/")
 
     input_files = {
-        "genome": resource_path + "idear.Human.fasta"
+        "genome": resource_path + "idear.Human.GCA_000001405.22.fasta"
     }
 
     output_files = {
-        "bigwig": resource_path + "macs2.Human.DRR000150.22_peaks.narrowPeak",
-
+        "bsgenome": resource_path + "idear.Human.GCA_000001405.22.22.bsgenome.tar.gz",
+        "chrom_size": resource_path + "chrom.size",
+        "genome_2bit": resource_path + "idear.Human.GCA_000001405.22.2bit",
+        "seed_file": resource_path + "idear.Human.GCA_000001405.22.seed"
     }
 
     metadata = {
-        "input": Metadata(
-            "data_chipseq", "fastq", [], None,
+        "genome": Metadata(
+            "data_damid_seq", "fastq", [], None,
             {'assembly' : 'test'}),
     }
 
-    macs_handle = macs2({"macs_nomodel_param": True})
-    macs_handle.run(input_files, metadata, output_files)
+    config = {
+        "idear_title": "Full genome sequences for Homo sapiens (GRCh38)",
+        "idear_description": "Full genome sequences for Homo sapiens (GRCh38)",
+        "idear_common_name": "Human",
+        "idear_organism": "Homo sapiens",
+        "idear_provider": "ENA",
+        "idear_release_date": "2013",
+        #"idear_circ_chrom": "",
+    }
 
-    assert os.path.isfile(resource_path + "macs2.Human.DRR000150.22_peaks.narrowPeak") is True
-    assert os.path.getsize(resource_path + "macs2.Human.DRR000150.22_peaks.narrowPeak") > 0
-    assert os.path.isfile(resource_path + "macs2.Human.DRR000150.22_peaks.summits.bed") is True
-    assert os.path.getsize(resource_path + "macs2.Human.DRR000150.22_peaks.summits.bed") > 0
+    bsg_handle = bsgenomeTool(config)
+    bsg_handle.run(input_files, metadata, output_files)
+
+    assert os.path.isfile(resource_path + "idear.Human.GCA_000001405.22.22.bsgenome.tar.gz") is True
+    assert os.path.getsize(resource_path + "idear.Human.GCA_000001405.22.22.bsgenome.tar.gz") > 0
+    assert os.path.isfile(resource_path + "chrom.size") is True
+    assert os.path.getsize(resource_path + "chrom.size") > 0
+    assert os.path.isfile(resource_path + "idear.Human.GCA_000001405.22.2bit") is True
+    assert os.path.getsize(resource_path + "idear.Human.GCA_000001405.22.2bit") > 0
+    assert os.path.isfile(resource_path + "idear.Human.GCA_000001405.22.seed") is True
+    assert os.path.getsize(resource_path + "idear.Human.GCA_000001405.22.seed") > 0

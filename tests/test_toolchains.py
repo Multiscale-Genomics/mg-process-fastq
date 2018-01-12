@@ -94,10 +94,10 @@ def idamidseq_toolchain(verbose=False):
         params.append('-s')
 
     # params.append('tests/test_fastqc_validation.py')
-    # params.append('tests/test_bwa_indexer.py')
+    params.append('tests/test_bwa_indexer.py')
     params.append('tests/test_bwa_aligner.py')
     params.append('tests/test_biobambam.py')
-    # params.append('tests/test_bsgenome.py')
+    params.append('tests/test_bsgenome.py')
     # params.append('tests/test_idear.py')
 
     return pytest.main(params)

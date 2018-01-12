@@ -17,6 +17,7 @@
 from __future__ import print_function
 
 import os.path
+import gzip
 import pytest # pylint: disable=unused-import
 
 from basic_modules.metadata import Metadata
@@ -81,9 +82,17 @@ def test_bwa_aligner_idamidseq():
         resource_path + "idear.Human.SRR3714778.fastq"
     ]
 
+    # Unzipped the test data
     for fastq_file in fastq_files:
-        print(fastq_file.replace(".fastq", ".bam"))
+        with gzip.open(fastq_file + '.gz', 'rb') as fgz_in:
+            with open(fastq_file, 'w') as f_out:
+                f_out.write(fgz_in.read())
 
+        assert os.path.isfile(fastq_file) is True
+        assert os.path.getsize(fastq_file) > 0
+
+    # Run the aligner for each fastq file
+    for fastq_file in fastq_files:
         input_files = {
             "genome": genome_fa,
             "index": genome_fa + ".bwa.tar.gz",

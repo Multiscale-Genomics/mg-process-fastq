@@ -16,6 +16,7 @@
 """
 from __future__ import print_function
 
+import os
 import shlex
 import subprocess
 import sys
@@ -38,6 +39,8 @@ except ImportError:
 
 from basic_modules.tool import Tool
 from basic_modules.metadata import Metadata
+
+from tool.common import cd
 
 # ------------------------------------------------------------------------------
 
@@ -104,23 +107,26 @@ class bsgenomeTool(Tool):
         process.wait()
 
         args = shlex.split(command_line_chrom_size)
+
         with open(chrom_size, "w") as f_out:
-            sub_proc = subprocess.Popen(args, shell=True, stdout=f_out)
-            sub_proc.wait()
+            sub_proc_1 = subprocess.Popen(command_line_chrom_size, shell=True, stdout=f_out)
+            sub_proc_1.wait()
 
         chrom_seq_list = []
         chrom_circ_list = []
-        with open(chrom_size, "rb") as f_in:
+        with open(chrom_size, "r") as f_in:
             for line in f_in:
-                line = line.split(" ")
+                line = line.split("\t")
                 if any(cc in line[0] for cc in circ_chrom):
                     chrom_circ_list.append(line[0])
                 else:
                     chrom_seq_list.append(line[0])
 
-        genome_split = genome.split("/")
+        genome_split = genome_2bit.split("/")
         seed_file_param["seqnames"] = 'c("' + '","'.join(chrom_seq_list) + '")'
-        seed_file_param["circ_seqs"] = 'c("' + '","'.join(chrom_circ_list) + '")'
+        if len(chrom_circ_list) > 0:
+            seed_file_param["circ_seqs"] = 'c("' + '","'.join(chrom_circ_list) + '")'
+        seed_file_param["circ_seqs"] = ""
         seed_file_param["seqs_srcdir"] = "/".join(genome_split[0:-1])
         seed_file_param["seqfile_name"] = genome_split[-1]
 
@@ -132,35 +138,39 @@ class bsgenomeTool(Tool):
         ]
         with open(seed_file, "wb") as f_out:
             for seed_key in seed_order:
-                f_out.write(seed_key + ": " + seed_file_param[seed_key])
+                f_out.write(seed_key + ": " + seed_file_param[seed_key] + "\n")
 
         # Forge the BSgenomedirectory
-        command_line = 'forge_bsgenome --file ' + seed_file
+        rscript = os.path.join(os.path.dirname(__file__), "../scripts/forge_bsgenome.R")
+        command_line = "Rscript " + rscript + " --file " + seed_file
         logger.info("BSGENOME CMD: " + command_line)
 
-        args = shlex.split(command_line)
-        process = subprocess.Popen(args)
-        process.wait()
+        with cd(seed_file_param["seqs_srcdir"]):
+            args = shlex.split(command_line)
+            process = subprocess.Popen(args)
+            process.wait()
 
-        package_build = seed_file_param["seqs_srcdir"] + "/" + seed_file_param["Package"]
-        command_line_build = "R CMD build " + package_build
-        command_line_check = "R CMD check " + package_build + "tar.gz"
+            package_build = seed_file_param["seqs_srcdir"] + "/" + seed_file_param["Package"]
+            command_line_build = "R CMD build " + package_build
+            command_line_check = "R CMD check " + package_build
 
-        args = shlex.split(command_line_build)
-        process = subprocess.Popen(args)
-        process.wait()
+            print(command_line_build)
+            args = shlex.split(command_line_build)
+            process = subprocess.Popen(args)
+            process.wait()
 
-        args = shlex.split(command_line_check)
-        process = subprocess.Popen(args)
-        process.wait()
+            print(command_line_check)
+            args = shlex.split(command_line_check)
+            process = subprocess.Popen(args)
+            process.wait()
 
-        try:
-            with open(package_build + "tar.gz", "rb") as f_in:
-                with open(bsgenome, "wb") as f_out:
-                    f_out.write(f_in.read())
-        except IOError:
-            logger.fatal("BSgenome failed to generate the index file")
-            return False
+            try:
+                with open(package_build + "_" + seed_file_param["Version"] + ".tar.gz", "rb") as f_in:
+                    with open(bsgenome, "wb") as f_out:
+                        f_out.write(f_in.read())
+            except IOError:
+                logger.fatal("BSgenome failed to generate the index file")
+                return False
 
         return True
 
@@ -201,10 +211,11 @@ class bsgenomeTool(Tool):
 
         seed_param["Package"] = "BSgenome." + seed_param["common_name"] + "." + seed_param["assembly"]
         seed_param["Version"] = "1.4.2"
+        seed_param["provider_version"] = seed_param["assembly"]
 
         circ_chroms = []
         if "idear_circ_chrom" in self.configuration:
-            circ_chroms = str(self.configuration["idear_title"]).split(",")
+            circ_chroms = str(self.configuration["idear_circ_chrom"]).split(",")
 
         results = self.bsgenome_creater(
             input_files["genome"],

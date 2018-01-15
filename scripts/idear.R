@@ -37,14 +37,19 @@ option_list = list(
     make_option(c("-a", "--assembly"), type="character", default=NULL,
                 help="Assembly", metavar="character"),
     make_option(c("-o", "--output"), type="character", default=NULL,
-                help="BigWig file", metavar="character")
+                help="BigWig file", metavar="character"),
+    make_option(c("-l", "--local_lib"), type="character", default=NULL,
+                help="Local R library", metavar="character")
 );
 
 opt_parser = OptionParser(option_list=option_list);
 opt = parse_args(opt_parser);
 
-library(paste('BSgenome.', opt$species, '.', opt$a, sep=""), character.only=TRUE)
-genome <- get(paste('BSgenome.', sp, '.', a, sep=""))
+library(
+    paste('BSgenome.', opt$species, '.', opt$a, sep=""),
+    lib.loc=opt$local_lib,
+    character.only=TRUE)
+genome <- get(paste('BSgenome.', opt$species, '.', opt$a, sep=""))
 
 fragments <- getDpnIFragments(genome)
 

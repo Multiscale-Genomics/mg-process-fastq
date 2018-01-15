@@ -83,6 +83,28 @@ def hic_pipeline(verbose=False):
 
     return pytest.main(params)
 
+def idamidseq_pipeline(verbose=False):
+    """
+    Runs the tests for the ChIP-seq pipeline
+
+    Runs the following tests:
+
+    .. code-block:: none
+
+       pytest -m chipseq tests/test_pipeline_chipseq.py
+    """
+
+    params = ['-m idamidseq']
+
+    if verbose is True:
+        params.append('-s')
+
+    params.append('tests/test_pipeline_genome.py')
+    params.append('tests/test_fastqc_validation.py')
+    params.append('tests/test_pipeline_chipseq.py')
+
+    return pytest.main(params)
+
 def mnaseseq_pipeline(verbose=False):
     """
     Runs the tests for the MNase-seq pipeline
@@ -155,7 +177,7 @@ if __name__ == '__main__':
         "--pipeline",
         required=True,
         type=str,
-        choices=['genome', 'chipseq', 'hic', 'mnaseseq', 'rnaseq', 'wgbs', 'all'],
+        choices=['genome', 'chipseq', 'hic', 'idamidseq', 'mnaseseq', 'rnaseq', 'wgbs', 'all'],
         help=""
     )
     PARSER.add_argument("--verbose", action='store_const', const=True, default=False)
@@ -190,6 +212,11 @@ if __name__ == '__main__':
     if 'hic' in PIPELINES or 'all' in PIPELINES:
         print('HIC')
         if hic_pipeline(VERBOSE) > 0:
+            sys.exit(1)
+
+    if 'idamidseq' in PIPELINES or 'all' in PIPELINES:
+        print('IDAMIDSEQ')
+        if idamidseq_pipeline(VERBOSE) > 0:
             sys.exit(1)
 
     if 'mnaseseq' in PIPELINES or 'all' in PIPELINES:

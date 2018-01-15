@@ -405,6 +405,18 @@ the COMPSs environment.
 
    ln -s ${HOME}/.pyenv/versions/mg-process-fastq/bin/macs2 ${HOME}/bin/macs2
 
+Install iDEAR
+^^^^^^^^^^^^^
+
+.. code-block:: none
+   :linenos:
+
+   cd ${HOME}/lib
+   source("https://bioconductor.org/biocLite.R")
+   biocLite("BSgenome")
+   biocLite("DESeq2")
+   if(!require("devtools")) install.packages("devtools")
+   devtools::install_bitbucket("juanlmateo/idear")
 
 Install TADbit
 ^^^^^^^^^^^^^^

@@ -36,6 +36,11 @@ Tools for processing FastQ files
    .. autoclass:: tool.bowtie_indexer.bowtieIndexerTool
       :members:
 
+   BSgenome Index
+   --------------
+   .. autoclass:: tool.forge_bsgenome.bsgenomeTool
+      :members:
+
    BS-Seeker2 Indexer
    ------------------
    .. autoclass:: tool.bs_seeker_indexer.bssIndexerTool

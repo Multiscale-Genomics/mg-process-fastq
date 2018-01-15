@@ -1,10 +1,38 @@
 [
     {
         "compressed": 0,
-        "_id": "59b7e020d9422a5969b65378",
+        "_id": "59b7e020d9422a5969b65375",
         "data_type": "data_idamid_seq",
         "file_type": "fastq",
-        "file_path": "tests/data/idear.Human.SRR3714775.fastq",
+        "file_path": "tests/data/idear.Human.SRR3714775.fastq.gz",
+        "sources": [],
+        "taxon_id": 9606,
+        "meta_data": {
+            "visible": true,
+            "validated": 1,
+            "assembly": "GCA_000001405.22"
+        }
+    },
+    {
+        "compressed": 0,
+        "_id": "59b7e020d9422a5969b65376",
+        "data_type": "data_idamid_seq",
+        "file_type": "fastq",
+        "file_path": "tests/data/idear.Human.SRR3714776.fastq.gz",
+        "sources": [],
+        "taxon_id": 9606,
+        "meta_data": {
+            "visible": true,
+            "validated": 1,
+            "assembly": "GCA_000001405.22"
+        }
+    },
+    {
+        "compressed": 0,
+        "_id": "59b7e020d9422a5969b65377",
+        "data_type": "data_idamid_seq",
+        "file_type": "fastq",
+        "file_path": "tests/data/idear.Human.SRR3714777.fastq.gz",
         "sources": [],
         "taxon_id": 9606,
         "meta_data": {
@@ -18,35 +46,7 @@
         "_id": "59b7e020d9422a5969b65378",
         "data_type": "data_idamid_seq",
         "file_type": "fastq",
-        "file_path": "tests/data/idear.Human.SRR3714776.fastq",
-        "sources": [],
-        "taxon_id": 9606,
-        "meta_data": {
-            "visible": true,
-            "validated": 1,
-            "assembly": "GCA_000001405.22"
-        }
-    },
-    {
-        "compressed": 0,
-        "_id": "59b7e020d9422a5969b65378",
-        "data_type": "data_idamid_seq",
-        "file_type": "fastq",
-        "file_path": "tests/data/idear.Human.SRR3714777.fastq",
-        "sources": [],
-        "taxon_id": 9606,
-        "meta_data": {
-            "visible": true,
-            "validated": 1,
-            "assembly": "GCA_000001405.22"
-        }
-    },
-    {
-        "compressed": 0,
-        "_id": "59b7e020d9422a5969b65378",
-        "data_type": "data_idamid_seq",
-        "file_type": "fastq",
-        "file_path": "tests/data/idear.Human.SRR3714778.fastq",
+        "file_path": "tests/data/idear.Human.SRR3714778.fastq.gz",
         "sources": [],
         "taxon_id": 9606,
         "meta_data": {

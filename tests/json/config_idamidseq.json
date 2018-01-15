@@ -3,7 +3,7 @@
         {
             "required": true,
             "allow_multiple": false,
-            "name": "fastq1",
+            "name": "fastq_1",
             "value": "59b7e020d9422a5969b65375"
         }, {
             "required": true,
@@ -78,67 +78,7 @@
         {
             "required": true,
             "allow_multiple": false,
-            "name": "bam",
-            "file": {
-                "file_type": "html",
-                "meta_data": {
-                    "visible": true,
-                    "tool": "fastqc",
-                    "description": "Output"
-                },
-                "file_path": "tests/data/idear.Human.SRR3714775.report",
-                "data_type": "data_idamid_seq",
-                "compressed": "null"
-            }
-        }, {
-            "required": true,
-            "allow_multiple": false,
-            "name": "bam",
-            "file": {
-                "file_type": "html",
-                "meta_data": {
-                    "visible": true,
-                    "tool": "fastqc",
-                    "description": "Output"
-                },
-                "file_path": "tests/data/idear.Human.SRR3714776.report",
-                "data_type": "data_idamid_seq",
-                "compressed": "null"
-            }
-        }, {
-            "required": true,
-            "allow_multiple": false,
-            "name": "bam",
-            "file": {
-                "file_type": "html",
-                "meta_data": {
-                    "visible": true,
-                    "tool": "fastqc",
-                    "description": "Output"
-                },
-                "file_path": "tests/data/idear.Human.SRR3714777.report",
-                "data_type": "data_idamid_seq",
-                "compressed": "null"
-            }
-        }, {
-            "required": true,
-            "allow_multiple": false,
-            "name": "bam",
-            "file": {
-                "file_type": "html",
-                "meta_data": {
-                    "visible": true,
-                    "tool": "fastqc",
-                    "description": "Output"
-                },
-                "file_path": "tests/data/idear.Human.SRR3714778.report",
-                "data_type": "data_idamid_seq",
-                "compressed": "null"
-            }
-        }, {
-            "required": true,
-            "allow_multiple": false,
-            "name": "bam",
+            "name": "bam_1",
             "file": {
                 "file_type": "bam",
                 "meta_data": {
@@ -153,7 +93,7 @@
         }, {
             "required": true,
             "allow_multiple": false,
-            "name": "bam",
+            "name": "bam_2",
             "file": {
                 "file_type": "bam",
                 "meta_data": {
@@ -168,7 +108,7 @@
         }, {
             "required": true,
             "allow_multiple": false,
-            "name": "bam",
+            "name": "bg_bam_1",
             "file": {
                 "file_type": "bam",
                 "meta_data": {
@@ -183,7 +123,7 @@
         }, {
             "required": true,
             "allow_multiple": false,
-            "name": "bam",
+            "name": "bg_bam_2",
             "file": {
                 "file_type": "bam",
                 "meta_data": {
@@ -198,7 +138,7 @@
         }, {
             "required": true,
             "allow_multiple": false,
-            "name": "filtered",
+            "name": "bam_1_filtered",
             "file": {
                 "file_type": "bam",
                 "meta_data": {
@@ -213,7 +153,7 @@
         }, {
             "required": true,
             "allow_multiple": false,
-            "name": "filtered",
+            "name": "bam_2_filtered",
             "file": {
                 "file_type": "bam",
                 "meta_data": {
@@ -228,7 +168,7 @@
         }, {
             "required": true,
             "allow_multiple": false,
-            "name": "filtered",
+            "name": "bg_bam_1_filtered",
             "file": {
                 "file_type": "bam",
                 "meta_data": {
@@ -243,7 +183,7 @@
         }, {
             "required": true,
             "allow_multiple": false,
-            "name": "filtered",
+            "name": "bg_bam_2_filtered",
             "file": {
                 "file_type": "bam",
                 "meta_data": {

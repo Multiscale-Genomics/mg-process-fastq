@@ -115,7 +115,7 @@ class process_damidseq(Workflow):
         output_files_generated = {}
         output_metadata = {}
 
-        logger.info("PROCESS DAMIDSEQ - DEFINED OUTPUT:", output_files["bam"])
+        logger.info("PROCESS DAMIDSEQ - DEFINED OUTPUT:", output_files)
 
         alignment_set = [
             ["fastq_1", "bam_1"], ["fastq_2", "bam_2"],
@@ -126,10 +126,10 @@ class process_damidseq(Workflow):
             bwa = bwaAlignerTool(self.configuration)
             bwa_files, bwa_meta = bwa.run(
                 remap(input_files,
-                      "genome", aln[0], "index"),
+                      "genome", "index", loc=aln[0]),
                 remap(metadata,
-                      "genome", aln[0], "index"),
-                {"output": output_files["bam"]}
+                      "genome", "index", loc=aln[0]),
+                {"output": output_files[aln[1]]}
             )
 
             try:

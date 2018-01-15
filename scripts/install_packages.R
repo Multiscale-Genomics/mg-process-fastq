@@ -15,6 +15,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+install.packages("optparse")
 source("https://bioconductor.org/biocLite.R")
 biocLite("BSgenome")
 biocLite("DESeq2")

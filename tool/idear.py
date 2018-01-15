@@ -101,14 +101,15 @@ class idearTool(Tool):
         # mkdir tmp_R_lib
         # R CMD INSTALL -l ${PWD}/tmp_R_lib BSgenome.human.grch38_1.4.2.tar.gz
 
-        if not os.path.exists("tmp_R_lib"):
-            os.makedirs("tmp_R_lib")
+        rscript = os.path.join(os.path.dirname(__file__), "../scripts/idear.R")
+        rlib = os.path.join(os.getcwd(), "tmp_R_lib")
+
+        if not os.path.exists(rlib):
+            os.makedirs(rlib)
 
         args = shlex.split("R CMD INSTALL -l tmp_R_lib " + bsgenome)
         process = subprocess.Popen(args)
         process.wait()
-
-        rscript = os.path.join(os.path.dirname(__file__), "../scripts/idear.R")
 
         args = [
             'Rscript', rscript,
@@ -120,7 +121,8 @@ class idearTool(Tool):
             '--file4', bg_bam_file_2,
             '--species', str(common_species_name),
             '--assembly', assembly,
-            '--output', peak_bw + '.tmp']
+            '--output', peak_bw + '.tmp',
+            '--local_lib', rlib]
         logger.info("iDEAR CMD: " + ' '.join(args))
 
         process = subprocess.Popen(args)
@@ -159,17 +161,20 @@ class idearTool(Tool):
 
         sample_name = None
         background_name = None
+        common_name = None
 
         if "idear_sample_param" in self.configuration:
             sample_name = str(self.configuration["idear_sample_param"])
         if "idear_background_param" in self.configuration:
             background_name = str(self.configuration["idear_background_param"])
+        if "idear_common_name" in self.configuration:
+            common_name = str(self.configuration["idear_common_name"])
 
         results = self.idear_peak_calling(
             sample_name, background_name,
             input_files["bam_1"], input_files["bam_2"],
             input_files["bg_bam_1"], input_files["bg_bam_2"],
-            input_metadata["bam_1"].taxon_id,
+            common_name,
             input_metadata["bam_1"].meta_data["assembly"],
             input_files["bsgenome"],
             output_files["bigwig"]

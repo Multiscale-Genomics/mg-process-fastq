@@ -1,0 +1,338 @@
+{
+    "input_files": [
+        {
+            "required": true,
+            "allow_multiple": false,
+            "name": "fastq1",
+            "value": "59b7e020d9422a5969b65375"
+        }, {
+            "required": true,
+            "allow_multiple": false,
+            "name": "fastq_2",
+            "value": "59b7e020d9422a5969b65376"
+        }, {
+            "required": true,
+            "allow_multiple": false,
+            "name": "bg_fastq_1",
+            "value": "59b7e020d9422a5969b65377"
+        }, {
+            "required": true,
+            "allow_multiple": false,
+            "name": "bg_fastq_2",
+            "value": "59b7e020d9422a5969b65378"
+        }, {
+            "required": true,
+            "allow_multiple": false,
+            "name": "genome",
+            "value": "59b7e020d9422a5969b65372"
+        }, {
+            "required": true,
+            "allow_multiple": false,
+            "name": "index",
+            "value": "59b7e020d9422a5969b65373"
+        }
+    ],
+    "arguments": [
+        {
+            "name": "project",
+            "value": "run001"
+        },
+        {
+            "name": "description",
+            "value": null
+        },
+        {
+            "name": "idear_title",
+            "value": "Full genome sequences for Homo sapiens (GRCh38)"
+        },
+        {
+            "name": "idear_description",
+            "value": "Full genome sequences for Homo sapiens (GRCh38)"
+        },
+        {
+            "name": "idear_common_name",
+            "value": "Human"
+        },
+        {
+            "name": "idear_organism",
+            "value": "Homo sapiens"
+        },
+        {
+            "name": "idear_provider",
+            "value": "ENA"
+        },
+        {
+            "name": "idear_release_date",
+            "value": "2013"
+        },
+        {
+            "name": "idear_sample_param",
+            "value": "Nup98"
+        },
+        {
+            "name": "idear_background_param",
+            "value": "GFP"
+        }
+    ],
+    "output_files": [
+        {
+            "required": true,
+            "allow_multiple": false,
+            "name": "bam",
+            "file": {
+                "file_type": "html",
+                "meta_data": {
+                    "visible": true,
+                    "tool": "fastqc",
+                    "description": "Output"
+                },
+                "file_path": "tests/data/idear.Human.SRR3714775.report",
+                "data_type": "data_idamid_seq",
+                "compressed": "null"
+            }
+        }, {
+            "required": true,
+            "allow_multiple": false,
+            "name": "bam",
+            "file": {
+                "file_type": "html",
+                "meta_data": {
+                    "visible": true,
+                    "tool": "fastqc",
+                    "description": "Output"
+                },
+                "file_path": "tests/data/idear.Human.SRR3714776.report",
+                "data_type": "data_idamid_seq",
+                "compressed": "null"
+            }
+        }, {
+            "required": true,
+            "allow_multiple": false,
+            "name": "bam",
+            "file": {
+                "file_type": "html",
+                "meta_data": {
+                    "visible": true,
+                    "tool": "fastqc",
+                    "description": "Output"
+                },
+                "file_path": "tests/data/idear.Human.SRR3714777.report",
+                "data_type": "data_idamid_seq",
+                "compressed": "null"
+            }
+        }, {
+            "required": true,
+            "allow_multiple": false,
+            "name": "bam",
+            "file": {
+                "file_type": "html",
+                "meta_data": {
+                    "visible": true,
+                    "tool": "fastqc",
+                    "description": "Output"
+                },
+                "file_path": "tests/data/idear.Human.SRR3714778.report",
+                "data_type": "data_idamid_seq",
+                "compressed": "null"
+            }
+        }, {
+            "required": true,
+            "allow_multiple": false,
+            "name": "bam",
+            "file": {
+                "file_type": "bam",
+                "meta_data": {
+                    "visible": true,
+                    "tool": "bwa_aligner",
+                    "description": "Output"
+                },
+                "file_path": "tests/data/idear.Human.SRR3714775.bam",
+                "data_type": "data_idamid_seq",
+                "compressed": "null"
+            }
+        }, {
+            "required": true,
+            "allow_multiple": false,
+            "name": "bam",
+            "file": {
+                "file_type": "bam",
+                "meta_data": {
+                    "visible": true,
+                    "tool": "bwa_aligner",
+                    "description": "Output"
+                },
+                "file_path": "tests/data/idear.Human.SRR3714776.bam",
+                "data_type": "data_idamid_seq",
+                "compressed": "null"
+            }
+        }, {
+            "required": true,
+            "allow_multiple": false,
+            "name": "bam",
+            "file": {
+                "file_type": "bam",
+                "meta_data": {
+                    "visible": true,
+                    "tool": "bwa_aligner",
+                    "description": "Output"
+                },
+                "file_path": "tests/data/idear.Human.SRR3714777.bam",
+                "data_type": "data_idamid_seq",
+                "compressed": "null"
+            }
+        }, {
+            "required": true,
+            "allow_multiple": false,
+            "name": "bam",
+            "file": {
+                "file_type": "bam",
+                "meta_data": {
+                    "visible": true,
+                    "tool": "bwa_aligner",
+                    "description": "Output"
+                },
+                "file_path": "tests/data/idear.Human.SRR3714778.bam",
+                "data_type": "data_idamid_seq",
+                "compressed": "null"
+            }
+        }, {
+            "required": true,
+            "allow_multiple": false,
+            "name": "filtered",
+            "file": {
+                "file_type": "bam",
+                "meta_data": {
+                    "visible": true,
+                    "tool": "biobambam",
+                    "description": "Output"
+                },
+                "file_path": "tests/data/idear.Human.SRR3714775_filtered.bam",
+                "data_type": "data_idamid_seq",
+                "compressed": "null"
+            }
+        }, {
+            "required": true,
+            "allow_multiple": false,
+            "name": "filtered",
+            "file": {
+                "file_type": "bam",
+                "meta_data": {
+                    "visible": true,
+                    "tool": "biobambam",
+                    "description": "Output"
+                },
+                "file_path": "tests/data/idear.Human.SRR3714776_filtered.bam",
+                "data_type": "data_idamid_seq",
+                "compressed": "null"
+            }
+        }, {
+            "required": true,
+            "allow_multiple": false,
+            "name": "filtered",
+            "file": {
+                "file_type": "bam",
+                "meta_data": {
+                    "visible": true,
+                    "tool": "biobambam",
+                    "description": "Output"
+                },
+                "file_path": "tests/data/idear.Human.SRR3714777_filtered.bam",
+                "data_type": "data_idamid_seq",
+                "compressed": "null"
+            }
+        }, {
+            "required": true,
+            "allow_multiple": false,
+            "name": "filtered",
+            "file": {
+                "file_type": "bam",
+                "meta_data": {
+                    "visible": true,
+                    "tool": "biobambam",
+                    "description": "Output"
+                },
+                "file_path": "tests/data/idear.Human.SRR3714778_filtered.bam",
+                "data_type": "data_idamid_seq",
+                "compressed": "null"
+            }
+        }, {
+            "required": false,
+            "allow_multiple": false,
+            "name": "bsgenome",
+            "file": {
+                "file_type": "TAR",
+                "meta_data": {
+                    "visible": true,
+                    "tool": "forge_bsgenome",
+                    "description": "Output"
+                },
+                "file_path": "tests/data/idear.Human.GCA_000001405.22.22.bsgenome.tar.gz",
+                "data_type": "data_idamid_seq",
+                "compressed": "null"
+            }
+        }, {
+            "required": false,
+            "allow_multiple": false,
+            "name": "chrom_size",
+            "file": {
+                "file_type": "TXT",
+                "meta_data": {
+                    "visible": true,
+                    "tool": "forge_bsgenome",
+                    "description": "Output"
+                },
+                "file_path": "tests/data/chrom.size",
+                "data_type": "data_idamid_seq",
+                "compressed": "null"
+            }
+        }, {
+            "required": false,
+            "allow_multiple": false,
+            "name": "genome_2bit",
+            "file": {
+                "file_type": "2BIT",
+                "meta_data": {
+                    "visible": true,
+                    "tool": "forge_bsgenome",
+                    "description": "Output"
+                },
+                "file_path": "tests/data/idear.Human.GCA_000001405.22.2bit",
+                "data_type": "data_idamid_seq",
+                "compressed": "null"
+            }
+        }, {
+            "required": false,
+            "allow_multiple": false,
+            "name": "seed_file",
+            "file": {
+                "file_type": "TXT",
+                "meta_data": {
+                    "visible": true,
+                    "tool": "forge_bsgenome",
+                    "description": "Output"
+                },
+                "file_path": "tests/data/idear.Human.GCA_000001405.22.seed",
+                "data_type": "data_idamid_seq",
+                "compressed": "null"
+            }
+        }, {
+            "required": false,
+            "allow_multiple": false,
+            "name": "narrow_peak",
+            "file": {
+                "file_type": "bed",
+                "meta_data": {
+                    "visible": true,
+                    "tool": "idear",
+                    "description": "Output"
+                },
+                "file_path": "tests/data/idear.Human.Nup98-GFP.bw",
+                "data_type": "data_idamid_seq",
+                "compressed": "null"
+            }
+        }
+    ]
+}
+
+
+

@@ -181,9 +181,18 @@ class bwaAlignerTool(Tool):
         genome_fa_ln = genome_idx.replace('.tar.gz', '/') + gfl[-1]
         shutil.copy(genome_file_loc, genome_fa_ln)
 
+        if (
+            os.path.isfile(genome_fa_ln) is False or
+            os.path.getsize(genome_fa_ln) == 0
+        ):
+            return False
+        if (
+            os.path.isfile(read_file_loc) is False or
+            os.path.getsize(read_file_loc) == 0
+        ):
+            return False
+        
         out_bam = read_file_loc + '.out.bam'
-
-        # print("BWA ALIGNER PARAMS:", genome_fa_ln, read_file_loc, out_bam)
 
         common_handle = common()
         if aligner == 'mem':
@@ -279,16 +288,16 @@ class bwaAlignerTool(Tool):
         fastq1 = input_files["loc"]
         sources.append(input_files["loc"])
 
-        fastq_file_gz = fastq1 + ".tar.gz"
+        fastq_file_gz = str(fastq1 + ".tar.gz")
         if "fastq2" in input_files:
             fastq2 = input_files["fastq2"]
             sources.append(input_files["fastq2"])
             fastq_file_list = fqs.paired_splitter(
-                fastq1, fastq2, fastq1 + ".tar.gz"
+                fastq1, fastq2, fastq_file_gz
             )
         else:
             fastq_file_list = fqs.single_splitter(
-                fastq1, fastq1 + ".tar.gz"
+                fastq1, fastq_file_gz
             )
 
         fastq_file_list = compss_wait_on(fastq_file_list)
@@ -299,6 +308,7 @@ class bwaAlignerTool(Tool):
         if hasattr(sys, '_run_from_cmdl') is True:
             pass
         else:
+            logger.info("Getting the tar file")
             with compss_open(fastq_file_gz, "rb") as f_in:
                 with open(fastq_file_gz, "wb") as f_out:
                     f_out.write(f_in.read())
@@ -330,7 +340,7 @@ class bwaAlignerTool(Tool):
                 output_bam_file_tmp = tmp_fq1 + ".bam"
                 output_bam_list.append(output_bam_file_tmp)
 
-                print("FILES:", tmp_fq1, tmp_fq2, output_bam_file_tmp)
+                # print("FILES:", tmp_fq1, tmp_fq2, output_bam_file_tmp)
 
                 results = self.bwa_aligner_paired(
                     str(input_files["genome"]), tmp_fq1, tmp_fq2, output_bam_file_tmp,
@@ -341,7 +351,7 @@ class bwaAlignerTool(Tool):
                 output_bam_file_tmp = tmp_fq + ".bam"
                 output_bam_list.append(output_bam_file_tmp)
 
-                print("FILES:", tmp_fq, output_bam_file_tmp)
+                # print("FILES:", str(input_files["genome"]), str(input_files["index"]), tmp_fq, output_bam_file_tmp)
 
                 results = self.bwa_aligner_single(
                     str(input_files["genome"]), tmp_fq, output_bam_file_tmp,

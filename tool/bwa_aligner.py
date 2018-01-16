@@ -151,7 +151,7 @@ class bwaAlignerTool(Tool):
     @task(returns=bool, genome_file_loc=FILE_IN, read_file_loc=FILE_IN,
           bam_loc=FILE_OUT, genome_idx=FILE_IN, aligner=IN, isModifier=False)
     def bwa_aligner_single(  # pylint: disable=too-many-arguments
-            self, genome_file_loc, read_file_loc, bam_loc, genome_idx, aligner):  # pylint: disable=unused-argument
+            self, genome_file_loc, read_file_loc, bam_loc, genome_idx, aligner="aln"):  # pylint: disable=unused-argument
         """
         BWA Aligner
 
@@ -182,6 +182,9 @@ class bwaAlignerTool(Tool):
         shutil.copy(genome_file_loc, genome_fa_ln)
 
         out_bam = read_file_loc + '.out.bam'
+
+        # print("BWA ALIGNER PARAMS:", genome_fa_ln, read_file_loc, out_bam)
+
         common_handle = common()
         if aligner == 'mem':
             common_handle.bwa_mem_align_reads_single(genome_fa_ln, read_file_loc, out_bam)

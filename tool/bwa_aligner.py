@@ -185,28 +185,27 @@ class bwaAlignerTool(Tool):
         shutil.copy(genome_file_loc, genome_fa_ln)
 
         if (
-            os.path.isfile(genome_fa_ln) is False or
-            os.path.getsize(genome_fa_ln) == 0
-        ):
+                os.path.isfile(genome_fa_ln) is False or
+                os.path.getsize(genome_fa_ln) == 0):
             return False
         if (
-            os.path.isfile(read_file_loc) is False or
-            os.path.getsize(read_file_loc) == 0
-        ):
+                os.path.isfile(read_file_loc) is False or
+                os.path.getsize(read_file_loc) == 0):
             return False
-        
+
         out_bam = read_file_loc + '.out.bam'
-        f = open(out_bam, "w")
-        f.close()
 
         common_handle = common()
         if aligner == 'mem':
-            logger.info(common_handle.bwa_mem_align_reads_single(genome_fa_ln, read_file_loc, out_bam))
+            logger.info(
+                common_handle.bwa_mem_align_reads_single(genome_fa_ln, read_file_loc, out_bam)
+            )
         else:
-            #logger.info(common_handle.bwa_aln_align_reads_single(genome_fa_ln, read_file_loc, out_bam))
+            # logger.info(
+            #     common_handle.bwa_aln_align_reads_single(genome_fa_ln, read_file_loc, out_bam)
+            # )
             intermediate_file = read_file_loc + '.sai'
             intermediate_sam_file = read_file_loc + '.sam'
-            output_bam_file = bam_loc
 
             command_lines = [
                 'bwa aln -q 5 -f ' + intermediate_file + ' ' + genome_fa_ln + ' ' + read_file_loc,
@@ -226,9 +225,11 @@ class bwaAlignerTool(Tool):
                     msg.errno, msg.strerror, command_line))
                 return False
             except:
-                logger.info("Unexpected error ({0}): {1}\n{2}".format(
-                    sys.exc_info()[0], sys.exc_info()[1],
-                    traceback.print_tb(sys.exc_info()[2]))
+                logger.info(
+                    "Unexpected error ({0}): {1}\n{2}".format(
+                        sys.exc_info()[0], sys.exc_info()[1],
+                        traceback.print_tb(sys.exc_info()[2])
+                    )
                 )
                 return False
 

@@ -16,11 +16,12 @@
 """
 from __future__ import print_function
 
+import sys
 import shlex
 import subprocess
 import os.path
 
-from utils import logger
+# from utils import logger
 
 class cd(object):
     """

@@ -207,9 +207,15 @@ class bwaAlignerTool(Tool):
             intermediate_file = read_file_loc + '.sai'
             intermediate_sam_file = read_file_loc + '.sam'
 
+            cmd_samse = ' '.join([
+                'bwa samse',
+                '-f', intermediate_sam_file,
+                genome_fa_ln, intermediate_file, read_file_loc
+            ])
+
             command_lines = [
                 'bwa aln -q 5 -f ' + intermediate_file + ' ' + genome_fa_ln + ' ' + read_file_loc,
-                'bwa samse -f ' + intermediate_sam_file  + ' ' + genome_fa_ln + ' ' + intermediate_file + ' ' + read_file_loc,
+                cmd_samse,
                 'samtools view -b -o ' + out_bam + ' ' + intermediate_sam_file
             ]
 

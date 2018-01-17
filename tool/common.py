@@ -179,9 +179,15 @@ class common(object):
         intermediate_sam_file = reads_file + '.sam'
         output_bam_file = bam_loc
 
+        cmd_samse = ' '.join([
+            'bwa samse',
+            '-f', intermediate_sam_file,
+            genome_file, intermediate_file, reads_file
+        ])
+
         command_lines = [
             'bwa aln -q 5 -f ' + intermediate_file + ' ' + genome_file + ' ' + reads_file,
-            'bwa samse -f ' + intermediate_sam_file  + ' ' + genome_file + ' ' + intermediate_file + ' ' + reads_file,
+            cmd_samse,
             'samtools view -b -o ' + output_bam_file + ' ' + intermediate_sam_file
         ]
 

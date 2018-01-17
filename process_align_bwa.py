@@ -29,12 +29,10 @@ from utils import logger
 from utils import remap
 
 from tool.bwa_aligner import bwaAlignerTool
-from tool.biobambam_filter import biobambam
-from tool.macs2 import macs2
 
 # ------------------------------------------------------------------------------
 
-class process_chipseq(Workflow):
+class process_bwa(Workflow):
     """
     Functions for processing Chip-Seq FastQ files. Files are the aligned,
     filtered and analysed for peak calling
@@ -51,7 +49,7 @@ class process_chipseq(Workflow):
             a dictionary containing parameters that define how the operation
             should be carried out, which are specific to each Tool.
         """
-        logger.info("Processing ChIP-Seq")
+        logger.info("Processing BWA Aligner")
         if configuration is None:
             configuration = {}
 
@@ -77,52 +75,29 @@ class process_chipseq(Workflow):
                 Location of the BWA archived index files
             loc : str
                 Location of the FASTQ reads files
-            bg_loc : str
-                Location of the background FASTQ reads files [OPTIONAL]
         metadata : dict
             Input file meta data associated with their roles
 
             genome : str
             index : str
-            bg_loc : str
-                [OPTIONAL]
+            loc : str
         output_files : dict
             Output file locations
 
-            bam [, "bam_bg"] : str
-            filtered [, "filtered_bg"] : str
-            narrow_peak : str
-            summits : str
-            broad_peak : str
-            gapped_peak : str
+            bam : str
+                Output bam file location
 
         Returns
         -------
         output_files : dict
             Output file locations associated with their roles, for the output
 
-            bam [, "bam_bg"] : str
-                Aligned FASTQ short read file [ and aligned background file]
-                locations
-            filtered [, "filtered_bg"] : str
-                Filtered versions of the respective bam files
-            narrow_peak : str
-                Results files in bed4+1 format
-            summits : str
-                Results files in bed6+4 format
-            broad_peak : str
-                Results files in bed6+3 format
-            gapped_peak : str
-                Results files in bed12+3 format
+            bam : str
+                Aligned FASTQ short read file locations
         output_metadata : dict
             Output metadata for the associated files in output_files
 
-            bam [, "bam_bg"] : Metadata
-            filtered [, "filtered_bg"] : Metadata
-            narrow_peak : Metadata
-            summits : Metadata
-            broad_peak : Metadata
-            gapped_peak : Metadata
+            bam : Metadata
         """
         output_files_generated = {}
         output_metadata = {}
@@ -145,13 +120,10 @@ class process_chipseq(Workflow):
 
             tool_name = output_metadata['bam'].meta_data['tool']
             output_metadata['bam'].meta_data['tool_description'] = tool_name
-            output_metadata['bam'].meta_data['tool'] = "process_chipseq"
+            output_metadata['bam'].meta_data['tool'] = "process_bwa"
         except KeyError:
             logger.fatal("BWA aligner failed")
 
-
-
-        print("CHIPSEQ RESULTS:", output_metadata)
         return output_files_generated, output_metadata
 
 
@@ -169,14 +141,13 @@ def main_json(config, in_metadata, out_metadata):
     print("1. Instantiate and launch the App")
     from apps.jsonapp import JSONApp
     app = JSONApp()
-    result = app.launch(process_chipseq,
+    result = app.launch(process_bwa,
                         config,
                         in_metadata,
                         out_metadata)
 
     # 2. The App has finished
     print("2. Execution finished; see " + out_metadata)
-    print(result)
 
     return result
 
@@ -187,7 +158,7 @@ if __name__ == "__main__":
     sys._run_from_cmdl = True  # pylint: disable=protected-access
 
     # Set up the command line parameters
-    PARSER = argparse.ArgumentParser(description="ChIP-seq peak calling")
+    PARSER = argparse.ArgumentParser(description="BWA Alignment")
     PARSER.add_argument("--config", help="Configuration file")
     PARSER.add_argument("--in_metadata", help="Location of input metadata file")
     PARSER.add_argument("--out_metadata", help="Location of output metadata file")

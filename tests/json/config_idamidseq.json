@@ -258,9 +258,9 @@
         }, {
             "required": false,
             "allow_multiple": false,
-            "name": "narrow_peak",
+            "name": "bigwig",
             "file": {
-                "file_type": "bed",
+                "file_type": "bigwig",
                 "meta_data": {
                     "visible": true,
                     "tool": "idear",

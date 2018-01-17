@@ -17,8 +17,11 @@
 from __future__ import print_function
 import os
 import sys
+import shlex
+import subprocess
 import shutil
 import tarfile
+import traceback
 
 import pysam
 
@@ -200,7 +203,34 @@ class bwaAlignerTool(Tool):
         if aligner == 'mem':
             logger.info(common_handle.bwa_mem_align_reads_single(genome_fa_ln, read_file_loc, out_bam))
         else:
-            logger.info(common_handle.bwa_aln_align_reads_single(genome_fa_ln, read_file_loc, out_bam))
+            #logger.info(common_handle.bwa_aln_align_reads_single(genome_fa_ln, read_file_loc, out_bam))
+            intermediate_file = read_file_loc + '.sai'
+            intermediate_sam_file = read_file_loc + '.sam'
+            output_bam_file = bam_loc
+
+            command_lines = [
+                'bwa aln -q 5 -f ' + intermediate_file + ' ' + genome_fa_ln + ' ' + read_file_loc,
+                'bwa samse -f ' + intermediate_sam_file  + ' ' + genome_fa_ln + ' ' + intermediate_file + ' ' + read_file_loc,
+                'samtools view -b -o ' + out_bam + ' ' + intermediate_sam_file
+            ]
+
+            # print("BWA COMMAND LINES:", command_lines)
+            try:
+                for command_line in command_lines:
+                    logger.info("BWA ALN COMMAND: " + command_line)
+                    args = shlex.split(command_line)
+                    process = subprocess.Popen(args)
+                    process.wait()
+            except (IOError, OSError) as msg:
+                logger.info("I/O error({0}): {1}\n{2}".format(
+                    msg.errno, msg.strerror, command_line))
+                return False
+            except:
+                logger.info("Unexpected error ({0}): {1}\n{2}".format(
+                    sys.exc_info()[0], sys.exc_info()[1],
+                    traceback.print_tb(sys.exc_info()[2]))
+                )
+                return False
 
         try:
             with open(bam_loc, "wb") as f_out:

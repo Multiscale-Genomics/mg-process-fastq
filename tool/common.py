@@ -20,6 +20,8 @@ import shlex
 import subprocess
 import os.path
 
+from utils import logger
+
 class cd(object):
     """
     Context manager for changing the current working directory
@@ -183,11 +185,15 @@ class common(object):
         ]
 
         # print("BWA COMMAND LINES:", command_lines)
-
-        for command_line in command_lines:
-            args = shlex.split(command_line)
-            process = subprocess.Popen(args)
-            process.wait()
+        try:
+            for command_line in command_lines:
+                args = shlex.split(command_line)
+                process = subprocess.Popen(args)
+                process.wait()
+        except (IOError, OSError) as msg:
+            return "I/O error({0}): {1}\n{2}".format(msg.errno, msg.strerror, command_line)
+        except:
+            return "Unexpected error:", sys.exc_info()[0]
 
         return output_bam_file
 

@@ -193,12 +193,14 @@ class bwaAlignerTool(Tool):
             return False
         
         out_bam = read_file_loc + '.out.bam'
+        f = open(out_bam, "w")
+        f.close()
 
         common_handle = common()
         if aligner == 'mem':
-            common_handle.bwa_mem_align_reads_single(genome_fa_ln, read_file_loc, out_bam)
+            logger.info(common_handle.bwa_mem_align_reads_single(genome_fa_ln, read_file_loc, out_bam))
         else:
-            common_handle.bwa_aln_align_reads_single(genome_fa_ln, read_file_loc, out_bam)
+            logger.info(common_handle.bwa_aln_align_reads_single(genome_fa_ln, read_file_loc, out_bam))
 
         try:
             with open(bam_loc, "wb") as f_out:
@@ -357,7 +359,6 @@ class bwaAlignerTool(Tool):
                     str(input_files["genome"]), tmp_fq, output_bam_file_tmp,
                     str(input_files["index"]), 'aln'
                 )
-
         barrier()
 
         results = self.bam_copy(output_bam_list.pop(0), output_bam_file)

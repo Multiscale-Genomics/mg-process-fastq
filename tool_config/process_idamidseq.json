@@ -1,0 +1,395 @@
+{
+    "_id": "process_idamidseq",
+    "name": "Process iDamID-seq",
+    "title": "iDamID-seq Analysis",
+    "short_description": "Align iDamID-seq data, filtering with BioBamBam and Peak Calling using iDEAR.",
+    "owner": {
+        "institution": "EMBL-EBI",
+        "author": "Mark McDowall",
+        "contact": "mcdowall@ebi.ac.uk",
+        "user": "",
+        "url": "https://github.com/Multiscale-Genomics/mg-process-fastq"
+    },
+    "status": 0,
+    "external": true,
+    "has_custom_viewer": false,
+    "keywords": [
+        "dna","chromatin"
+    ],
+    "infrastructure": {
+        "memory": 12,
+        "cpus": 4,
+        "executable": "/home/pmes/code/mg-process-fastq/process_idamidseq.py",
+        "clouds": {
+            "mug-bsc": {
+                "launcher": "PMES",
+                "workflowType": "COMPSs",
+                "default_cloud": true
+            }
+        }
+      },
+    },
+    "input_files": [
+        {
+            "name": "fastq_1",
+            "description": "Sequence read file",
+            "help": "path to a FASTQ sequence read file",
+            "file_type": ["FASTQ"],
+            "data_type": ["data_idamid_seq"],
+            "required": true,
+            "allow_multiple": false
+        },
+        {
+            "name": "bg_fastq_1",
+            "description": "Sequence read file",
+            "help": "path to a FASTQ sequence read file",
+            "file_type": ["FASTQ"],
+            "data_type": ["data_idamid_seq"],
+            "required": false,
+            "allow_multiple": false
+        },
+        {
+            "name": "fastq_2",
+            "description": "Sequence read file",
+            "help": "path to a FASTQ sequence read file",
+            "file_type": ["FASTQ"],
+            "data_type": ["data_idamid_seq"],
+            "required": true,
+            "allow_multiple": false
+        },
+        {
+            "name": "bg_fastq_2",
+            "description": "Sequence read file",
+            "help": "path to a FASTQ sequence read file",
+            "file_type": ["FASTQ"],
+            "data_type": ["data_idamid_seq"],
+            "required": false,
+            "allow_multiple": false
+        },
+        {
+            "name": "genome",
+            "description": "Genome sequence file",
+            "help": "path to a assembly sequence file",
+            "file_type": ["FASTA"],
+            "data_type": ["sequence_genomic", "sequence_dna"],
+            "required": true,
+            "allow_multiple": false
+        },
+        {
+            "name": "index",
+            "description": "BWA index for matching species",
+            "help": "path to matching BWA index file",
+            "file_type": ["TAR"],
+            "data_type": ["sequence_mapping_index_bwa"],
+            "required": true,
+            "allow_multiple": false
+        }
+    ],
+    "input_files_combinations": [
+        [
+            "fastq_1", "fastq_2",
+            "bg_fastq_1", "bg_fastq_2",
+            "genome",
+            "index"
+        ]
+    ],
+    "input_files_combinations_internal": [
+        [
+            {
+                "data_idamid_seq": 1
+            },
+            {
+                "data_idamid_seq": 1
+            },
+            {
+                "data_idamid_seq": 1
+            },
+            {
+                "data_idamid_seq": 1
+            },
+            {
+                "sequence_genomic": 1
+            },
+            {
+                "sequence_mapping_index_bwa": "+"
+            }
+        ],
+        [
+            {
+                "data_idamid_seq": 1
+            },
+            {
+                "data_idamid_seq": 1
+            },
+            {
+                "data_idamid_seq": 1
+            },
+            {
+                "data_idamid_seq": 1
+            },
+            {
+                "sequence_dna": 1
+            },
+            {
+                "sequence_mapping_index_bwa": "+"
+            }
+        ]
+    ],
+    "arguments": [
+        {
+            "name": "idear_title",
+            "description": "Name of the genome assembly",
+            "help": "Name of the genomic assembly",
+            "type": "string",
+            "required": true,
+            "default": ""
+        }, {
+            "name": "idear_description",
+            "description": "Short description of the assembly",
+            "help": "",
+            "type": "string",
+            "required": true,
+            "default": ""
+        }, {
+            "name": "idear_common_name",
+            "description": "Common name",
+            "help": "Common name of the species (eg Human)",
+            "type": "string",
+            "required": true,
+            "default": ""
+        }, {
+            "name": "idear_organism",
+            "description": "Organism",
+            "help": "Full name of the orgnaism (eg Homo sapiens)",
+            "type": "string",
+            "required": true,
+            "default": ""
+        }, {
+            "name": "idear_provider",
+            "description": "Provider",
+            "help": "Source for where the assembly was acquired (eg ENA)",
+            "type": "string",
+            "required": true,
+            "default": "ENA"
+        }, {
+            "name": "idear_release_date",
+            "description": "Release Date",
+            "help": "Year that the assembly was published (eg 2013)",
+            "type": "string",
+            "required": true,
+            "default": "2013"
+        }, {
+            "name": "idear_sample_param",
+            "description": "Sample dataset tag",
+            "help": "Dataset tag used in the experiment (eg Nup98)",
+            "type": "string",
+            "required": true,
+            "default": "NNN"
+        }, {
+            "name": "idear_background_param",
+            "description": "Background dataset tag",
+            "help": "Background dataset tag used in the experiment (eg GFP)",
+            "type": "string",
+            "required": true,
+            "default": "GFP"
+        }
+    ],
+    "output_files": [
+        {
+            "required": true,
+            "allow_multiple": false,
+            "name": "bam_1",
+            "file": {
+                "file_type": "bam",
+                "meta_data": {
+                    "visible": true,
+                    "tool": "process_idamidseq",
+                    "description": "Aligned sequences"
+                },
+                "file_path": "fastq_1.bam",
+                "data_type": "data_idamid_seq",
+                "compressed": "null"
+            }
+        }, {
+            "required": true,
+            "allow_multiple": false,
+            "name": "bam_1_filtered",
+            "file": {
+                "file_type": "bam",
+                "meta_data": {
+                    "visible": true,
+                    "tool": "process_idamidseq",
+                    "description": "Filtered aligned sequences"
+                },
+                "file_path": "fastq_1.filtered.bam",
+                "data_type": "data_idamid_seq",
+                "compressed": "null"
+            }
+        }, {
+            "required": true,
+            "allow_multiple": false,
+            "name": "bam_2",
+            "file": {
+                "file_type": "bam",
+                "meta_data": {
+                    "visible": true,
+                    "tool": "process_idamidseq",
+                    "description": "Aligned sequences"
+                },
+                "file_path": "fastq_2.bam",
+                "data_type": "data_idamid_seq",
+                "compressed": "null"
+            }
+        }, {
+            "required": true,
+            "allow_multiple": false,
+            "name": "bam_2_filtered",
+            "file": {
+                "file_type": "bam",
+                "meta_data": {
+                    "visible": true,
+                    "tool": "process_idamidseq",
+                    "description": "Filtered aligned sequences"
+                },
+                "file_path": "fastq_2.filtered.bam",
+                "data_type": "data_idamid_seq",
+                "compressed": "null"
+            }
+        }, {
+            "required": false,
+            "allow_multiple": false,
+            "name": "bg_bam_1",
+            "file": {
+                "file_type": "bam",
+                "meta_data": {
+                    "visible": true,
+                    "tool": "process_idamidseq",
+                    "description": "Background aligned sequences"
+                },
+                "file_path": "bg_fastq_1.bam",
+                "data_type": "data_idamid_seq",
+                "compressed": "null"
+            }
+        }, {
+            "required": false,
+            "allow_multiple": false,
+            "name": "bg_bam_1_filtered",
+            "file": {
+                "file_type": "bam",
+                "meta_data": {
+                    "visible": true,
+                    "tool": "process_idamidseq",
+                    "description": "Filtered background aligned sequences"
+                },
+                "file_path": "bg_fastq_1.filtered.bam",
+                "data_type": "data_idamid_seq",
+                "compressed": "null"
+            }
+        }, {
+            "required": false,
+            "allow_multiple": false,
+            "name": "bg_bam_2",
+            "file": {
+                "file_type": "bam",
+                "meta_data": {
+                    "visible": true,
+                    "tool": "process_idamidseq",
+                    "description": "Background aligned sequences"
+                },
+                "file_path": "bg_fastq_2.bam",
+                "data_type": "data_idamid_seq",
+                "compressed": "null"
+            }
+        }, {
+            "required": false,
+            "allow_multiple": false,
+            "name": "bg_bam_2_filtered",
+            "file": {
+                "file_type": "bam",
+                "meta_data": {
+                    "visible": true,
+                    "tool": "process_idamidseq",
+                    "description": "Filtered background aligned sequences"
+                },
+                "file_path": "bg_fastq_2.filtered.bam",
+                "data_type": "data_idamid_seq",
+                "compressed": "null"
+            }
+        }, {
+            "required": false,
+            "allow_multiple": false,
+            "name": "bsgenome",
+            "file": {
+                "file_type": "TAR",
+                "meta_data": {
+                    "visible": true,
+                    "tool": "process_idamidseq",
+                    "description": "Output"
+                },
+                "file_path": "bsgenome.tar.gz",
+                "data_type": "data_idamid_seq",
+                "compressed": true
+            }
+        }, {
+            "required": false,
+            "allow_multiple": false,
+            "name": "chrom_size",
+            "file": {
+                "file_type": "TXT",
+                "meta_data": {
+                    "visible": true,
+                    "tool": "process_idamidseq",
+                    "description": "Output"
+                },
+                "file_path": "chrom.size",
+                "data_type": "data_idamid_seq",
+                "compressed": "null"
+            }
+        }, {
+            "required": false,
+            "allow_multiple": false,
+            "name": "genome_2bit",
+            "file": {
+                "file_type": "2BIT",
+                "meta_data": {
+                    "visible": true,
+                    "tool": "process_idamidseq",
+                    "description": "Output"
+                },
+                "file_path": "bsgenome.2bit",
+                "data_type": "data_idamid_seq",
+                "compressed": "null"
+            }
+        }, {
+            "required": false,
+            "allow_multiple": false,
+            "name": "seed_file",
+            "file": {
+                "file_type": "TXT",
+                "meta_data": {
+                    "visible": true,
+                    "tool": "process_idamidseq",
+                    "description": "Output"
+                },
+                "file_path": "bsgenome.seed",
+                "data_type": "data_idamid_seq",
+                "compressed": "null"
+            }
+        }, {
+            "required": false,
+            "allow_multiple": false,
+            "name": "bigwig",
+            "file": {
+                "file_type": "bigwig",
+                "meta_data": {
+                    "visible": true,
+                    "tool": "process_idamidseq",
+                    "description": "Output"
+                },
+                "file_path": "idear.bw",
+                "data_type": "data_idamid_seq",
+                "compressed": "null"
+            }
+        }
+    ]
+}

@@ -10,7 +10,18 @@
         "meta_data": {
             "visible": true,
             "validated": 1,
-            "assembly": "GCA_000001405.22"
+            "assembly": "hg38"
         }
+    },
+    {
+        "_id": "MuGUSER5a394e70646c9_5a609b0f317dd3.78427312_dummy",
+        "file_path": "/scratch/genomes/",
+        "meta_data": [],
+        "sources": [],
+        "taxon_id": 0,
+        "data_type": "configuration_file",
+        "file_type": "TXT",
+        "user_id": "public",
+        "type": "dir"
     }
 ]

@@ -131,6 +131,12 @@ class tadbit_model(Workflow):
         m_results_meta = {}
         m_results_files = {}
 
+        if "norm" in metadata['hic_contacts_matrix_norm'].meta_data:
+            if metadata['hic_contacts_matrix_norm'].meta_data["norm"] != 'norm':
+                clean_temps(self.configuration['workdir'])
+                print("Only normalized matrices can be used to build 3D models.\nExiting")
+                raise ValueError('Missing normalized input matrix.') 
+            
         input_metadata = remap(self.configuration, "optimize_only", "gen_pos_chrom_name", "resolution", "gen_pos_begin",
                                "gen_pos_end", "max_dist", "upper_bound", "lower_bound", "cutoff", "workdir", "ncpus")
         in_files = [convert_from_unicode(input_files['hic_contacts_matrix_norm'])]

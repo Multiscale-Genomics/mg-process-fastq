@@ -56,7 +56,7 @@ class tbNormalizeTool(Tool):
 
     @task(bamin=FILE_IN, resolution=IN, min_perc=IN, max_perc=IN, workdir=IN)
     # @constraint(ProcessorCoreCount=16)
-    def tb_normalize(self, bamin, resolution, min_perc, max_perc, workdir, ncpus="1", min_count=None):
+    def tb_normalize(self, bamin, normalization, resolution, min_perc, max_perc, workdir, ncpus="1", min_count=None, fasta=None, mappability=None, rest_enzyme=None):
         """
         Function to normalize to a given resolution the Hi-C
         matrix
@@ -65,6 +65,8 @@ class tbNormalizeTool(Tool):
         ----------
         bamin : str
             Location of the tadbit bam paired reads
+        normalization: str
+            normalization(s) to apply. Order matters. Choices: [Vanilla, oneD]
         resolution : str
             Resolution of the Hi-C
         min_perc : str
@@ -78,6 +80,13 @@ class tbNormalizeTool(Tool):
         min_count : str
             minimum number of reads mapped to a bin (recommended value
             could be 2500). If set this option overrides the perc_zero
+        fasta: str
+            Location of the fasta file with genome sequence, to compute GC content and
+            number of restriction sites per bin. Required for oneD normalization
+        mappability: str
+            Location of the file with mappability, required for oneD normalization
+        rest_enzyme: str
+            For oneD normalization. Name of the restriction enzyme used to do the Hi-C experiment
 
         Returns
         -------
@@ -91,11 +100,12 @@ class tbNormalizeTool(Tool):
         """
         #chr_hic_data = read_matrix(matrix_file, resolution=int(resolution))
 
-        print("TB NORMALIZATION:", bamin, resolution, min_perc, max_perc, workdir)
+        print("TB NORMALIZATION:", bamin, normalization, resolution, min_perc, max_perc, workdir)
 
         _cmd = [
             'tadbit', 'normalize',
             '--bam', bamin,
+            '--normalization', normalization,
             '--workdir', workdir,
             '--resolution', resolution,
             '--cpus', str(ncpus)
@@ -111,20 +121,31 @@ class tbNormalizeTool(Tool):
             _cmd.append('--min_count')
             _cmd.append(min_count)
 
+        if normalization == 'oneD':
+            _cmd.append('--fasta')
+            _cmd.append(fasta)
+            _cmd.append('--mappability')
+            _cmd.append(mappability)
+            _cmd.append('--renz')
+            _cmd.append(rest_enzyme)
+                    
         output_metadata = {}
         output_files = []
 
         try:
             proc = subprocess.check_output(_cmd, stderr=subprocess.STDOUT)
-        except subprocess.CalledProcessError:
+        except subprocess.CalledProcessError as e:
+            print(e.output)
             if not min_count:
                 print("cis/trans ratio failed, trying with min_count. Disabling plot.")
                 _cmd.append('--min_count')
                 _cmd.append('10')
                 _cmd.append('--normalize_only')
-                proc = subprocess.check_output(_cmd, stderr=subprocess.STDOUT)
+                try:
+                    proc = subprocess.check_output(_cmd, stderr=subprocess.STDOUT)
+                except subprocess.CalledProcessError as e:
+                    print(e.output)
 
-        print(proc)
         os.chdir(workdir+"/04_normalization")
         for fl in glob.glob("biases_*.pickle"):
             output_files.append(os.path.abspath(fl))
@@ -148,6 +169,8 @@ class tbNormalizeTool(Tool):
             bamin : str
                 Location of the tadbit bam paired reads
         metadata : dict
+            normalization: str
+                normalization(s) to apply. Order matters. Choices: [Vanilla, oneD]
             resolution : str
                 Resolution of the Hi-C
             min_perc : str
@@ -161,6 +184,13 @@ class tbNormalizeTool(Tool):
             min_count : str
                 minimum number of reads mapped to a bin (recommended value
                 could be 2500). If set this option overrides the perc_zero
+            fasta: str
+                Location of the fasta file with genome sequence, to compute GC content and
+                number of restriction sites per bin. Required for oneD normalization
+            mappability: str
+                Location of the file with mappability, required for oneD normalization
+            rest_enzyme: str
+                For oneD normalization. Name of the restriction enzyme used to do the Hi-C experiment
 
 
 
@@ -185,8 +215,12 @@ class tbNormalizeTool(Tool):
         resolution = '1000000'
         if 'resolution' in metadata:
             resolution = metadata['resolution']
-
-        min_perc = max_perc = min_count = None
+        
+        normalization = 'Vanilla'
+        if 'normalization' in metadata:
+            normalization = metadata['normalization']
+        
+        min_perc = max_perc = min_count = fasta = mappability = rest_enzyme = None
         ncpus = 1
         if 'ncpus' in metadata:
             ncpus = metadata['ncpus']
@@ -196,6 +230,12 @@ class tbNormalizeTool(Tool):
             max_perc = metadata['max_perc']
         if 'min_count' in metadata:
             min_count = metadata['min_count']
+        if 'fasta' in metadata:
+            fasta = metadata['fasta']
+        if 'mappability' in metadata:
+            mappability = metadata['mappability']
+        if 'rest_enzyme' in metadata:
+            rest_enzyme = metadata['rest_enzyme']
 
         root_name = os.path.dirname(os.path.abspath(bamin))
         if 'workdir' in metadata:
@@ -203,7 +243,7 @@ class tbNormalizeTool(Tool):
 
         # input and output share most metadata
 
-        output_files, output_metadata = self.tb_normalize(bamin, resolution, min_perc, max_perc, root_name, ncpus, min_count)
+        output_files, output_metadata = self.tb_normalize(bamin, normalization, resolution, min_perc, max_perc, root_name, ncpus, min_count, fasta, mappability, rest_enzyme)
 
         return (output_files, output_metadata)
 

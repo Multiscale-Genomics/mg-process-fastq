@@ -71,12 +71,15 @@ class tadbit_normalize(Workflow):
         # Number of cores available
         num_cores = multiprocessing.cpu_count()
         self.configuration["ncpus"] = num_cores
-
+        
+        if "normalization" not in self.configuration:
+            self.configuration["normalization"] = "Vanilla"
+        
         tmp_name = ''.join([letters[int(random()*52)]for _ in xrange(5)])
         self.configuration['workdir'] = self.configuration['project']+'/_tmp_tadbit_'+tmp_name
         if not os.path.exists(self.configuration['workdir']):
             os.makedirs(self.configuration['workdir'])
-
+        
         self.configuration.update(
             {(key.split(':'))[-1]: val for key, val in self.configuration.items()}
         )
@@ -104,7 +107,13 @@ class tadbit_normalize(Workflow):
         )
 
         bamin = convert_from_unicode(input_files['bamin'])
-        input_metadata = remap(self.configuration, "resolution", "min_perc", "workdir", "max_perc", "ncpus")
+        input_metadata = remap(self.configuration, "normalization", "resolution", "min_perc", "workdir", "max_perc", "ncpus")
+
+        assembly = convert_from_unicode(metadata['bamin'].meta_data['assembly'])
+        if 'refGenomes_folder' in input_files and os.path.isfile(convert_from_unicode(input_files['refGenomes_folder'])+assembly+'/'+assembly+'.fa'):
+            input_metadata["fasta"] = convert_from_unicode(input_files['refGenomes_folder'])+assembly+'/'+assembly+'.fa'
+            input_metadata["mappability"] = convert_from_unicode(input_files['refGenomes_folder'])+assembly+'/'+assembly+'.bedGraph'
+            input_metadata["rest_enzyme"] = self.configuration["rest_enzyme"]
 
         bamfile = AlignmentFile(bamin, 'rb')
         if len(bamfile.references) == 1:

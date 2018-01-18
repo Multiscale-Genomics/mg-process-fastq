@@ -5,6 +5,12 @@
             "allow_multiple": false,
             "name": "bamin",
             "value": "59b7e020d9422a5969b65378"
+        },
+        {
+            "name": "refGenomes_folder",
+            "value": "MuGUSER5a394e70646c9_5a609b0f317dd3.78427312_dummy",
+            "required": true,
+            "allow_multiple": false
         }
     ],
     "arguments": [
@@ -38,6 +44,24 @@
             "required": false,
             "default": "99.8",
             "value": "99.8"
+        },
+        {
+            "name": "normalization",
+            "description": "Normalization method",
+            "help": "normalization(s) to apply. Order matters. Choices Vanilla, oneD",
+            "type": "string",
+            "required": false,
+            "default": "Vanilla",
+            "value": "oneD"
+        },
+        {
+            "name": "rest_enzyme",
+            "description": "Restriction enzyme",
+            "help": "For oneD normalization. Name of the restriction enzyme used to do the Hi-C experiment",
+            "type": "string",
+            "required": false,
+            "default": "MboI",
+            "value": "MboI"
         }
     ],
     "output_files": [

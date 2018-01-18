@@ -118,8 +118,10 @@ class process_damidseq(Workflow):
         logger.info("PROCESS DAMIDSEQ - DEFINED OUTPUT:", output_files)
 
         alignment_set = [
-            ["fastq_1", "bam_1"], ["fastq_2", "bam_2"],
-            ["bg_fastq_1", "bg_bam_1"], ["bg_fastq_2", "bg_bam_2"],
+            ["fastq_1", "bam_1", "bam_1_filtered"],
+            ["fastq_2", "bam_2", "bam_2_filtered"],
+            ["bg_fastq_1", "bg_bam_1", "bg_bam_1_filtered"],
+            ["bg_fastq_2", "bg_bam_2", "bg_bam_2_filtered"],
         ]
 
         for aln in alignment_set:
@@ -147,16 +149,16 @@ class process_damidseq(Workflow):
             b3f_files, b3f_meta = b3f.run(
                 {"input": bwa_files['bam']},
                 {"input": bwa_meta['bam']},
-                {"output": output_files["filtered"]}
+                {"output": output_files[aln[2]]}
             )
 
             try:
-                output_files_generated[aln[0] + "_filtered"] = b3f_files["filtered"]
-                output_metadata[aln[0] + "_filtered"] = b3f_meta["filtered"]
+                output_files_generated[aln[2]] = b3f_files["filtered"]
+                output_metadata[aln[2]] = b3f_meta["filtered"]
 
-                tool_name = output_metadata[aln[0] + "_filtered"].meta_data["tool"]
-                output_metadata[aln[0] + "_filtered"].meta_data["tool_description"] = tool_name
-                output_metadata[aln[0] + "_filtered"].meta_data["tool"] = "process_damidseq"
+                tool_name = output_metadata[aln[2]].meta_data["tool"]
+                output_metadata[aln[2]].meta_data["tool_description"] = tool_name
+                output_metadata[aln[2]].meta_data["tool"] = "process_damidseq"
             except KeyError:
                 logger.fatal("BioBamBam filtering failed")
 

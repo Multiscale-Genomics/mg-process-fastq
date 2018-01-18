@@ -91,7 +91,7 @@ class biobambam(Tool):
         tmp_dir = "/".join(td_list[0:-1])
 
         command_line = 'bamsormadup --tmpfile=' + tmp_dir
-        args = shlex.split(command_line)
+        # args = shlex.split(command_line)
 
         bam_tmp_out = tmp_dir + '/' + td_list[-1] + '.filtered.tmp.bam'
 
@@ -100,7 +100,7 @@ class biobambam(Tool):
         try:
             with open(bam_file_in, "r") as f_in:
                 with open(bam_tmp_out, "w") as f_out:
-                    process = subprocess.Popen(args, stdin=f_in, stdout=f_out)
+                    process = subprocess.Popen(command_line, shell=True, stdin=f_in, stdout=f_out)
                     process.wait()
         except IOError as error:
             logger.fatal("I/O error({0}): {1}".format(error.errno, error.strerror))

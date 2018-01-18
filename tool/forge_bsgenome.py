@@ -70,50 +70,39 @@ class bsgenomeTool(Tool):
             self, genome, circ_chrom, seed_file_param,
             genome_2bit, chrom_size, seed_file, bsgenome):
         """
-        Make iDamID-seq peak calls. These are saved as bed files That can then
-        get displayed on genome browsers. Uses an R script that wraps teh iDEAR
-        protocol.
+        Make BSgenome index files.Uses an R script that wraps the required code.
 
         Parameters
         ----------
-        sample_name : str
-        bg_name : str
-        sample_bam_file_1 : str
-            Location of the aligned sequences in bam format
-        sample_bam_file_2 : str
-            Location of the aligned sequences in bam format
-        bg_bam_file_1 : str
-            Location of the aligned background sequences in bam format
-        bg_bam_file_2 : str
-            Location of the aligned background sequences in bam format
-        species : str
-            Species name for the alignments
-        assembly : str
-            Assembly used for the aligned sequences
-        peak_bed : str
-            Location of the peak bed file
+        genome : str
+        circo_chrom : str
+            Comma separated list of chromosome ids that are circular in the genome
+        seed_file_param : dict
+            Parameters required for the function to build the seed file
+        genome_2bit : str
+        chrom_size : str
+        seed_file : str
+        bsgenome : str
 
         Returns
         -------
-        peak_bed : str
-            Location of the collated bed file
+
         """
 
         command_line_2bit = "faToTwoBit " + genome + " " + genome_2bit
         command_line_chrom_size = "twoBitInfo " + genome_2bit + " stdout | sort -k2rn"
 
         try:
-            args = shlex.split(command_line_2bit)
+            # args = shlex.split(command_line_2bit)
             process = subprocess.Popen(args)
             process.wait()
-
-            args = shlex.split(command_line_chrom_size)
         except (IOError, OSError) as msg:
             logger.fatal("I/O error({0}) - faToTwoBit: {1}\n{2}".format(
                 msg.errno, msg.strerror, command_line_2bit))
             return False
 
         try:
+            # args = shlex.split(command_line_chrom_size)
             with open(chrom_size, "w") as f_out:
                 sub_proc_1 = subprocess.Popen(command_line_chrom_size, shell=True, stdout=f_out)
                 sub_proc_1.wait()

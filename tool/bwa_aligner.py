@@ -223,8 +223,8 @@ class bwaAlignerTool(Tool):
             try:
                 for command_line in command_lines:
                     logger.info("BWA ALN COMMAND: " + command_line)
-                    args = shlex.split(command_line)
-                    process = subprocess.Popen(args)
+                    #args = shlex.split(command_line)
+                    process = subprocess.Popen(command_line, shell=True)
                     process.wait()
             except (IOError, OSError) as msg:
                 logger.info("I/O error({0}): {1}\n{2}".format(
@@ -383,7 +383,11 @@ class bwaAlignerTool(Tool):
                 output_bam_list.append(output_bam_file_tmp)
 
                 # print("FILES:", str(input_files["genome"]), str(input_files["index"]), tmp_fq, output_bam_file_tmp)
+                f = open(tmp_fq, "r")
+                logger.info(f.readline())
+                f.close()
 
+                logger.info("BWAL ALN FILES:" + tmp_fq)
                 results = self.bwa_aligner_single(
                     str(input_files["genome"]), tmp_fq, output_bam_file_tmp,
                     str(input_files["index"]), 'aln'

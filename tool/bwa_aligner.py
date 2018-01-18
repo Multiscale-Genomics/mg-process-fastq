@@ -230,14 +230,6 @@ class bwaAlignerTool(Tool):
                 logger.info("I/O error({0}): {1}\n{2}".format(
                     msg.errno, msg.strerror, command_line))
                 return False
-            except:
-                logger.info(
-                    "Unexpected error ({0}): {1}\n{2}".format(
-                        sys.exc_info()[0], sys.exc_info()[1],
-                        traceback.print_tb(sys.exc_info()[2])
-                    )
-                )
-                return False
 
         try:
             with open(bam_loc, "wb") as f_out:

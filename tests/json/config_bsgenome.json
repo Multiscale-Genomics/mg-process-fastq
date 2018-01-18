@@ -1,0 +1,110 @@
+{
+    "input_files": [
+        {
+            "required": true,
+            "allow_multiple": false,
+            "name": "genome",
+            "value": "59b7e020d9422a5969b65372"
+        }
+    ],
+    "arguments": [
+        {
+            "name": "project",
+            "value": "run001"
+        },
+        {
+            "name": "description",
+            "value": null
+        },
+        {
+            "name": "idear_title",
+            "value": "Full genome sequences for Homo sapiens (GRCh38)"
+        },
+        {
+            "name": "idear_description",
+            "value": "Full genome sequences for Homo sapiens (GRCh38)"
+        },
+        {
+            "name": "idear_common_name",
+            "value": "Human"
+        },
+        {
+            "name": "idear_organism",
+            "value": "Homo sapiens"
+        },
+        {
+            "name": "idear_provider",
+            "value": "ENA"
+        },
+        {
+            "name": "idear_release_date",
+            "value": "2013"
+        }
+    ],
+    "output_files": [
+        {
+            "required": false,
+            "allow_multiple": false,
+            "name": "bsgenome",
+            "file": {
+                "file_type": "TAR",
+                "meta_data": {
+                    "visible": true,
+                    "tool": "forge_bsgenome",
+                    "description": "Output"
+                },
+                "file_path": "tests/data/idear.Human.GCA_000001405.22.22.bsgenome.tar.gz",
+                "data_type": "data_idamid_seq",
+                "compressed": "null"
+            }
+        }, {
+            "required": false,
+            "allow_multiple": false,
+            "name": "chrom_size",
+            "file": {
+                "file_type": "TXT",
+                "meta_data": {
+                    "visible": true,
+                    "tool": "forge_bsgenome",
+                    "description": "Output"
+                },
+                "file_path": "tests/data/chrom.size",
+                "data_type": "data_idamid_seq",
+                "compressed": "null"
+            }
+        }, {
+            "required": false,
+            "allow_multiple": false,
+            "name": "genome_2bit",
+            "file": {
+                "file_type": "2BIT",
+                "meta_data": {
+                    "visible": true,
+                    "tool": "forge_bsgenome",
+                    "description": "Output"
+                },
+                "file_path": "tests/data/idear.Human.GCA_000001405.22.2bit",
+                "data_type": "data_idamid_seq",
+                "compressed": "null"
+            }
+        }, {
+            "required": false,
+            "allow_multiple": false,
+            "name": "seed_file",
+            "file": {
+                "file_type": "TXT",
+                "meta_data": {
+                    "visible": true,
+                    "tool": "forge_bsgenome",
+                    "description": "Output"
+                },
+                "file_path": "tests/data/idear.Human.GCA_000001405.22.seed",
+                "data_type": "data_idamid_seq",
+                "compressed": "null"
+            }
+        }
+    ]
+}
+
+
+

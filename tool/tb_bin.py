@@ -178,12 +178,18 @@ class tbBinTool(Tool):
             focus = ((start1/resolution) if start1 != 0 else 1, (end1/resolution))
         else:
             by_chrom = 'all'
+            hic_contacts_matrix_raw_fig = workdir+"/genomic_maps_raw"
         hic_map(imx, resolution, savefig=hic_contacts_matrix_raw_fig, normalized=False, by_chrom=by_chrom, focus=focus)
+        if by_chrom == 'all':
+            hic_map(imx, resolution, savefig=hic_contacts_matrix_raw_fig+"/full_map.png", normalized=False, by_chrom=None, focus=focus)
         output_files.append(hic_contacts_matrix_raw_fig)
 
         if len(norm) > 1:
             output_files.append(out_files['NRM'])
             hic_contacts_matrix_norm_fig = workdir+"/genomic_maps_nrm.png"
+            if by_chrom == 'all':
+                hic_contacts_matrix_norm_fig = workdir+"/genomic_maps_nrm"
+                hic_map(imx, resolution, savefig=hic_contacts_matrix_raw_fig+"/full_map.png", normalized=True, by_chrom=None, focus=focus)
             hic_map(imx, resolution, savefig=hic_contacts_matrix_norm_fig, normalized=True, by_chrom=by_chrom, focus=focus)
             output_files.append(hic_contacts_matrix_norm_fig)
 

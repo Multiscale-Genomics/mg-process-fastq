@@ -82,16 +82,17 @@ class process_bsgenome(Workflow):
 
         # BSgenome
         logger.info("Generating BSgenome")
-        bsg = bsgenomeTool()
-        bsgi, bsgm = bsg.run(input_files, metadata, {'index': output_files['index']})
+        bsg = bsgenomeTool(self.configuration)
+        bsgi, bsgm = bsg.run(input_files, metadata, output_files)
 
         try:
-            output_files_generated['index'] = bsgi['index']
-            output_metadata['index'] = bsgm['index']
+            for file_key in ["bsgenome", "chrom_size", "genome_2bit", "seed_file"]:
+                output_files_generated[file_key] = bsgi[file_key]
+                output_metadata[file_key] = bsgm[file_key]
 
-            tool_name = output_metadata['index'].meta_data['tool']
-            output_metadata['index'].meta_data['tool_description'] = tool_name
-            output_metadata['index'].meta_data['tool'] = "process_bsgenome"
+                tool_name = output_metadata[file_key].meta_data['tool']
+                output_metadata[file_key].meta_data['tool_description'] = tool_name
+                output_metadata[file_key].meta_data['tool'] = "process_bsgenome"
         except KeyError:
             logger.fatal("BSgenome indexer failed")
 
@@ -128,7 +129,7 @@ if __name__ == "__main__":
     sys._run_from_cmdl = True  # pylint: disable=protected-access
 
     # Set up the command line parameters
-    PARSER = argparse.ArgumentParser(description="Index the genome file")
+    PARSER = argparse.ArgumentParser(description="Generate BSgenome files")
     PARSER.add_argument("--config", help="Configuration file")
     PARSER.add_argument("--in_metadata", help="Location of input metadata file")
     PARSER.add_argument("--out_metadata", help="Location of output metadata file")

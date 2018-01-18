@@ -89,7 +89,7 @@ class bsgenomeTool(Tool):
         species : str
             Species name for the alignments
         assembly : str
-            Assembly used for teh aligned sequences
+            Assembly used for the aligned sequences
         peak_bed : str
             Location of the peak bed file
 
@@ -102,15 +102,25 @@ class bsgenomeTool(Tool):
         command_line_2bit = "faToTwoBit " + genome + " " + genome_2bit
         command_line_chrom_size = "twoBitInfo " + genome_2bit + " stdout | sort -k2rn"
 
-        args = shlex.split(command_line_2bit)
-        process = subprocess.Popen(args)
-        process.wait()
+        try:
+            args = shlex.split(command_line_2bit)
+            process = subprocess.Popen(args)
+            process.wait()
 
-        args = shlex.split(command_line_chrom_size)
+            args = shlex.split(command_line_chrom_size)
+        except (IOError, OSError) as msg:
+            logger.fatal("I/O error({0}) - faToTwoBit: {1}\n{2}".format(
+                msg.errno, msg.strerror, command_line_2bit))
+            return False
 
-        with open(chrom_size, "w") as f_out:
-            sub_proc_1 = subprocess.Popen(command_line_chrom_size, shell=True, stdout=f_out)
-            sub_proc_1.wait()
+        try:
+            with open(chrom_size, "w") as f_out:
+                sub_proc_1 = subprocess.Popen(command_line_chrom_size, shell=True, stdout=f_out)
+                sub_proc_1.wait()
+        except (IOError, OSError) as msg:
+            logger.fatal("I/O error({0} - twoBitInfo): {1}\n{2}".format(
+                msg.errno, msg.strerror, command_line_chrom_size))
+            return False
 
         chrom_seq_list = []
         chrom_circ_list = []

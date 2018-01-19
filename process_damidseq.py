@@ -138,11 +138,17 @@ class process_damidseq(Workflow):
                 output_files_generated[aln[1]] = bwa_files["bam"]
                 output_metadata[aln[1]] = bwa_meta["bam"]
 
-                tool_name = output_metadata["bam"].meta_data["tool"]
+                tool_name = output_metadata[aln[1]].meta_data["tool"]
                 output_metadata[aln[1]].meta_data["tool_description"] = tool_name
                 output_metadata[aln[1]].meta_data["tool"] = "process_damidseq"
-            except KeyError:
-                logger.fatal("BWA aligner failed")
+            except KeyError as msg:
+                logger.fatal(
+                    "KeyError error - BWA aligner failed: {0}\n{1}\n{2}\n{3}".format(
+                        msg, aln[1],
+                        "Available file keys: " + ", ".join(bwa_files.keys()),
+                        "Available mets keys: " + ", ".join(bwa_meta.keys())
+                    )
+                )
 
             # Filter the bams
             b3f = biobambam(self.configuration)

@@ -149,7 +149,7 @@ class biobambam(Tool):
 
         output_metadata = {
             "bam": Metadata(
-                data_type="data_chip_seq",
+                data_type=input_metadata["input"].data_type,
                 file_type="BAM",
                 file_path=output_files["output"],
                 sources=[input_metadata["input"].file_path],

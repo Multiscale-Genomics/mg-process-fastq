@@ -4,13 +4,13 @@
         "_id": "59b7e020d9422a5969b65375",
         "data_type": "data_idamid_seq",
         "file_type": "fastq",
-        "file_path": "tests/data/idear.Human.SRR3714775.fastq",
+        "file_path": "/home/compss/VMShare/tests/data/idear.Human.SRR3714775.fastq",
         "sources": [],
         "taxon_id": 9606,
         "meta_data": {
             "visible": true,
             "validated": 1,
-            "assembly": "GCA_000001405.22"
+            "assembly": "GRCh38"
         }
     },
     {
@@ -18,13 +18,13 @@
         "_id": "59b7e020d9422a5969b65376",
         "data_type": "data_idamid_seq",
         "file_type": "fastq",
-        "file_path": "tests/data/idear.Human.SRR3714776.fastq",
+        "file_path": "/home/compss/VMShare/tests/data/idear.Human.SRR3714776.fastq",
         "sources": [],
         "taxon_id": 9606,
         "meta_data": {
             "visible": true,
             "validated": 1,
-            "assembly": "GCA_000001405.22"
+            "assembly": "GRCh38"
         }
     },
     {
@@ -32,13 +32,13 @@
         "_id": "59b7e020d9422a5969b65377",
         "data_type": "data_idamid_seq",
         "file_type": "fastq",
-        "file_path": "tests/data/idear.Human.SRR3714777.fastq",
+        "file_path": "/home/compss/VMShare/tests/data/idear.Human.SRR3714777.fastq",
         "sources": [],
         "taxon_id": 9606,
         "meta_data": {
             "visible": true,
             "validated": 1,
-            "assembly": "GCA_000001405.22"
+            "assembly": "GRCh38"
         }
     },
     {
@@ -52,7 +52,7 @@
         "meta_data": {
             "visible": true,
             "validated": 1,
-            "assembly": "GCA_000001405.22"
+            "assembly": "GRCh38"
         }
     },
     {
@@ -65,7 +65,7 @@
         "meta_data": {
             "visible": true,
             "validated": 1,
-            "assembly": "GCA_000001405.22"
+            "assembly": "GRCh38"
         }
     },
     {
@@ -79,7 +79,21 @@
             "visible": true,
             "validated": 1,
             "tool": "bwa_indexer",
-            "assembly": "GCA_000001405.22"
+            "assembly": "GRCh38"
+        }
+    },
+    {
+        "_id": "59b7e020d9422a5969b65374",
+        "data_type": "bsgenome",
+        "file_type": "TAR",
+        "file_path": "tests/data/idear.Human.GCA_000001405.22.22.bsgenome.tar.gz",
+        "sources": ["tests/data/idear.Human.GCA_000001405.22.fasta"],
+        "taxon_id": 9606,
+        "meta_data": {
+            "visible": true,
+            "validated": 1,
+            "tool": "forge_bsgenome",
+            "assembly": "GRCh38"
         }
     }
 ]

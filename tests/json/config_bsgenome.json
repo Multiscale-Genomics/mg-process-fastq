@@ -18,11 +18,11 @@
         },
         {
             "name": "idear_title",
-            "value": "Full genome sequences for Homo sapiens (GRCh38)"
+            "value": "Human BSgenome"
         },
         {
             "name": "idear_description",
-            "value": "Full genome sequences for Homo sapiens (GRCh38)"
+            "value": "Full genome sequences for Homo sapiens (GRCh38) in BSgenome format."
         },
         {
             "name": "idear_common_name",

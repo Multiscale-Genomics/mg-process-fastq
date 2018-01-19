@@ -17,7 +17,6 @@
 from __future__ import print_function
 
 import os
-import shlex
 import subprocess
 import sys
 
@@ -34,8 +33,8 @@ except ImportError:
     logger.warn("          Using mock decorators.")
 
     from utils.dummy_pycompss import FILE_IN, FILE_OUT, IN  # pylint: disable=ungrouped-imports
-    from utils.dummy_pycompss import task
-    from utils.dummy_pycompss import compss_wait_on
+    from utils.dummy_pycompss import task  # pylint: disable=ungrouped-imports
+    from utils.dummy_pycompss import compss_wait_on  # pylint: disable=ungrouped-imports
 
 from basic_modules.tool import Tool
 from basic_modules.metadata import Metadata
@@ -60,6 +59,99 @@ class bsgenomeTool(Tool):
             configuration = {}
 
         self.configuration.update(configuration)
+
+    def genome_to_2bit(self, genome, genome_2bit):
+        """
+        Generate the 2bit genome file from a FASTA file
+
+        Parameters
+        ----------
+        genome : str
+            Location of the FASRA genome file
+        genome_2bit : str
+            Location of the 2bit genome file
+
+        Returns
+        -------
+        bool
+            True if successful, False if not.
+        """
+        command_line_2bit = "faToTwoBit " + genome + " " + genome_2bit
+
+        try:
+            logger.info("faToTwoBit ...")
+            # args = shlex.split(command_line_2bit)
+            process = subprocess.Popen(
+                command_line_2bit, shell=True,
+                stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            process.wait()
+            out, err = process.communicate()
+            logger.info(out)
+            if process.returncode > 0:
+                logger.warn(err)
+                return False
+        except (IOError, OSError) as msg:
+            logger.fatal("I/O error({0}) - faToTwoBit: {1}\n{2}".format(
+                msg.errno, msg.strerror, command_line_2bit))
+            return False
+
+        return True
+
+    def get_chrom_size(self, genome_2bit, chrom_size, circ_chrom):
+        """
+        Generate the chrom.size file and identify the available chromosomes in
+        the 2Bit file.
+
+        Parameters
+        ----------
+        genome_2bit : str
+            Location of the 2bit genome file
+        chrom_size : str
+            Location to save the chrom.size file to
+        circ_chrom : list
+            List of chromosomes that are known to be circular
+
+        Returns
+        -------
+        If successful 2 lists:
+            [0] : List of the linear chromosomes in the 2bit file
+            [1] : List of circular chromosomes in the 2bit file
+
+        Returns (False, False) if there is an IOError
+        """
+        command_line_chrom_size = "twoBitInfo " + genome_2bit + " stdout | sort -k2rn"
+
+        try:
+            logger.info("twoBitInfo ...")
+            # args = shlex.split(command_line_chrom_size)
+            with open(chrom_size, "w") as f_out:
+                sub_proc_1 = subprocess.Popen(
+                    command_line_chrom_size, shell=True,
+                    stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+                sub_proc_1.wait()
+                out, err = sub_proc_1.communicate()
+                f_out.write(out)
+                logger.info(out)
+                logger.warn(err)
+        except (IOError, OSError) as msg:
+            logger.fatal("I/O error({0} - twoBitInfo): {1}\n{2}".format(
+                msg.errno, msg.strerror, command_line_chrom_size))
+            out, err = sub_proc_1.communicate()
+            logger.info(out)
+            logger.warn(err)
+            return (False, False)
+
+        chrom_seq_list = []
+        chrom_circ_list = []
+        with open(chrom_size, "r") as f_in:
+            for line in f_in:
+                line = line.split("\t")
+                if any(cc in line[0] for cc in circ_chrom):
+                    chrom_circ_list.append(line[0])
+                else:
+                    chrom_seq_list.append(line[0])
+
+        return (chrom_seq_list, chrom_circ_list)
 
     @task(
         returns=int,
@@ -89,56 +181,12 @@ class bsgenomeTool(Tool):
 
         """
 
-        command_line_2bit = "faToTwoBit " + genome + " " + genome_2bit
-        command_line_chrom_size = "twoBitInfo " + genome_2bit + " stdout | sort -k2rn"
-
-        try:
-            logger.info("faToTwoBit ...")
-            # args = shlex.split(command_line_2bit)
-            process = subprocess.Popen(
-                command_line_2bit, shell=True,
-                stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-            process.wait()
-            out, err = process.communicate()
-            logger.info(out)
-            if process.returncode > 0:
-                logger.warn(err)
-                logger.warn(os.environ['PATH'])
-                return False
-        except (IOError, OSError) as msg:
-            logger.fatal("I/O error({0}) - faToTwoBit: {1}\n{2}".format(
-                msg.errno, msg.strerror, command_line_2bit))
+        if self.genome_to_2bit(genome, genome_2bit) is False:
             return False
 
-        try:
-            logger.info("twoBitInfo ...")
-            # args = shlex.split(command_line_chrom_size)
-            with open(chrom_size, "w") as f_out:
-                sub_proc_1 = subprocess.Popen(
-                    command_line_chrom_size, shell=True,
-                    stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-                sub_proc_1.wait()
-                out, err = sub_proc_1.communicate()
-                f_out.write(out)
-                logger.info(out)
-                logger.warn(err)
-        except (IOError, OSError) as msg:
-            logger.fatal("I/O error({0} - twoBitInfo): {1}\n{2}".format(
-                msg.errno, msg.strerror, command_line_chrom_size))
-            out, err = sub_proc_1.communicate()
-            logger.info(out)
-            logger.warn(err)
+        chrom_seq_list, chrom_circ_list = self.get_chrom_size(genome_2bit, chrom_size, circ_chrom)
+        if chrom_seq_list is False:
             return False
-
-        chrom_seq_list = []
-        chrom_circ_list = []
-        with open(chrom_size, "r") as f_in:
-            for line in f_in:
-                line = line.split("\t")
-                if any(cc in line[0] for cc in circ_chrom):
-                    chrom_circ_list.append(line[0])
-                else:
-                    chrom_seq_list.append(line[0])
 
         genome_split = genome_2bit.split("/")
         seed_file_param["seqnames"] = 'c("' + '","'.join(chrom_seq_list) + '")'
@@ -273,15 +321,20 @@ class bsgenomeTool(Tool):
         seed_param["Title"] = str(self.configuration["idear_title"])
         seed_param["Description"] = str(self.configuration["idear_description"])
         seed_param["Author"] = str(self.configuration["idear_provider"])
-        seed_param["Maintainer"] = str(self.configuration["idear_provider"]) + "<datasubs@ebi.ac.uk>"
+
+        maintainer = str(self.configuration["idear_provider"]) + " <datasubs@ebi.ac.uk>"
+        seed_param["Maintainer"] = maintainer
+
         seed_param["License"] = "Apache 2.0"
         seed_param["common_name"] = str(self.configuration["idear_common_name"])
         seed_param["BSgenomeObjname"] = str(self.configuration["idear_common_name"])
         seed_param["assembly"] = input_metadata["genome"].meta_data["assembly"]
         seed_param["release_name"] = input_metadata["genome"].meta_data["assembly"]
         seed_param["organism"] = str(self.configuration["idear_organism"])
+
         org_split = str(self.configuration["idear_organism"]).split(" ")
         seed_param["organism_biocview"] = "_".join(org_split)
+
         seed_param["release_date"] = str(self.configuration["idear_release_date"])
         seed_param["provider"] = str(self.configuration["idear_provider"])
 

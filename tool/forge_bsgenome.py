@@ -93,22 +93,41 @@ class bsgenomeTool(Tool):
         command_line_chrom_size = "twoBitInfo " + genome_2bit + " stdout | sort -k2rn"
 
         try:
+            logger.info("faToTwoBit ...")
             # args = shlex.split(command_line_2bit)
-            process = subprocess.Popen(args)
+            process = subprocess.Popen(
+                command_line_2bit, shell=True,
+                stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             process.wait()
+            out, err = process.communicate()
+            logger.info(out)
+            if process.returncode > 0:
+                logger.warn(err)
+                logger.warn(os.environ['PATH'])
+                return False
         except (IOError, OSError) as msg:
             logger.fatal("I/O error({0}) - faToTwoBit: {1}\n{2}".format(
                 msg.errno, msg.strerror, command_line_2bit))
             return False
 
         try:
+            logger.info("twoBitInfo ...")
             # args = shlex.split(command_line_chrom_size)
             with open(chrom_size, "w") as f_out:
-                sub_proc_1 = subprocess.Popen(command_line_chrom_size, shell=True, stdout=f_out)
+                sub_proc_1 = subprocess.Popen(
+                    command_line_chrom_size, shell=True,
+                    stdout=subprocess.PIPE, stderr=subprocess.PIPE)
                 sub_proc_1.wait()
+                out, err = sub_proc_1.communicate()
+                f_out.write(out)
+                logger.info(out)
+                logger.warn(err)
         except (IOError, OSError) as msg:
             logger.fatal("I/O error({0} - twoBitInfo): {1}\n{2}".format(
                 msg.errno, msg.strerror, command_line_chrom_size))
+            out, err = sub_proc_1.communicate()
+            logger.info(out)
+            logger.warn(err)
             return False
 
         chrom_seq_list = []
@@ -131,12 +150,14 @@ class bsgenomeTool(Tool):
 
         # Create the seed file
         seed_order = [
-            "Package", "Title", "Description", "Version", "organism", "common_name",
-            "provider", "provider_version", "release_date", "release_name", "organism_biocview",
-            "BSgenomeObjname", "seqnames", "circ_seqs", "seqs_srcdir", "seqfile_name"
+            "Package", "Title", "Description", "Author", "Maintainer", "License", "Version",
+            "organism", "common_name", "provider", "provider_version", "release_date",
+            "release_name", "organism_biocview", "BSgenomeObjname", "seqnames", "circ_seqs",
+            "seqs_srcdir", "seqfile_name"
         ]
         with open(seed_file, "wb") as f_out:
             for seed_key in seed_order:
+                logger.info(seed_key + ": " + seed_file_param[seed_key])
                 f_out.write(seed_key + ": " + seed_file_param[seed_key] + "\n")
 
         # Forge the BSgenomedirectory
@@ -145,23 +166,70 @@ class bsgenomeTool(Tool):
         logger.info("BSGENOME CMD: Rscript scripts/forge_bsgenome.R --file " + seed_file)
 
         with cd(seed_file_param["seqs_srcdir"]):
-            args = shlex.split(command_line)
-            process = subprocess.Popen(args)
-            process.wait()
+            # args = shlex.split(command_line)
+            try:
+                logger.info("command_line")
+                process = subprocess.Popen(
+                    command_line, shell=True,
+                    stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+                process.wait()
+                out, err = process.communicate()
+                logger.info(out)
+            except (IOError, OSError) as msg:
+                logger.fatal("I/O error({0} - forge_bsgenome.R): {1}\n{2}".format(
+                    msg.errno, msg.strerror, command_line))
+                out, err = process.communicate()
+                logger.info(out)
+                logger.warn(err)
+                return False
 
             package_build = seed_file_param["seqs_srcdir"] + "/" + seed_file_param["Package"]
             command_line_build = "R CMD build " + package_build
             command_line_check = "R CMD check " + package_build
 
-            print(command_line_build)
-            args = shlex.split(command_line_build)
-            process = subprocess.Popen(args)
-            process.wait()
+            try:
+                logger.info(command_line_build)
+                # args = shlex.split(command_line_build)
+                process = subprocess.Popen(
+                    command_line_build, shell=True,
+                    stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+                process.wait()
+                out, err = process.communicate()
+                logger.info(out)
+            except (IOError, OSError) as msg:
+                logger.fatal("I/O error({0} - BUILD): {1}\n{2}".format(
+                    msg.errno, msg.strerror, command_line_build))
+                out, err = process.communicate()
+                logger.info(out)
+                logger.warn(err)
+                return False
 
-            print(command_line_check)
-            args = shlex.split(command_line_check)
-            process = subprocess.Popen(args)
-            process.wait()
+            try:
+                logger.info(command_line_check)
+                # args = shlex.split(command_line_check)
+                process = subprocess.Popen(
+                    command_line_check, shell=True,
+                    stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+                process.wait()
+                out, err = process.communicate()
+                logger.info(out)
+
+                with open(package_build + ".Rcheck/00install.out", "r") as f_in:
+                    logger.warn(f_in.read())
+                with open(package_build + ".Rcheck/00check.log", "r") as f_in:
+                    logger.warn(f_in.read())
+            except (IOError, OSError) as msg:
+                logger.fatal("I/O error({0} - CHECK): {1}\n{2}".format(
+                    msg.errno, msg.strerror, command_line_check))
+                out, err = process.communicate()
+                logger.info(out)
+                logger.warn(err)
+
+                with open(package_build + ".Rcheck/00install.out", "r") as f_in:
+                    logger.warn(f_in.read())
+                with open(package_build + ".Rcheck/00check.log", "r") as f_in:
+                    logger.warn(f_in.read())
+                return False
 
             try:
                 with open(
@@ -169,8 +237,12 @@ class bsgenomeTool(Tool):
                 ) as f_in:
                     with open(bsgenome, "wb") as f_out:
                         f_out.write(f_in.read())
-            except IOError:
+            except (IOError, OSError) as msg:
                 logger.fatal("BSgenome failed to generate the index file")
+                logger.fatal("I/O error({0}) - Change Package name: {1}\n{2}\n{3}".format(
+                    msg.errno, msg.strerror,
+                    package_build + "_" + seed_file_param["Version"] + ".tar.gz",
+                    bsgenome))
                 return False
 
         return True
@@ -200,6 +272,9 @@ class bsgenomeTool(Tool):
 
         seed_param["Title"] = str(self.configuration["idear_title"])
         seed_param["Description"] = str(self.configuration["idear_description"])
+        seed_param["Author"] = str(self.configuration["idear_provider"])
+        seed_param["Maintainer"] = str(self.configuration["idear_provider"]) + "<datasubs@ebi.ac.uk>"
+        seed_param["License"] = "Apache 2.0"
         seed_param["common_name"] = str(self.configuration["idear_common_name"])
         seed_param["BSgenomeObjname"] = str(self.configuration["idear_common_name"])
         seed_param["assembly"] = input_metadata["genome"].meta_data["assembly"]

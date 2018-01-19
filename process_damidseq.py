@@ -153,14 +153,17 @@ class process_damidseq(Workflow):
             )
 
             try:
-                output_files_generated[aln[2]] = b3f_files["filtered"]
-                output_metadata[aln[2]] = b3f_meta["filtered"]
+                output_files_generated[aln[2]] = b3f_files["bam"]
+                output_metadata[aln[2]] = b3f_meta["bam"]
 
                 tool_name = output_metadata[aln[2]].meta_data["tool"]
                 output_metadata[aln[2]].meta_data["tool_description"] = tool_name
                 output_metadata[aln[2]].meta_data["tool"] = "process_damidseq"
-            except KeyError:
-                logger.fatal("BioBamBam filtering failed")
+            except KeyError as msg:
+                logger.fatal("KeyError error - BioBamBam filtering failed: {0}\n{1}".format(
+                    msg, aln[2]))
+
+                return {}, {}
 
         ## iDEAR to call peaks
         idear_caller = idearTool(self.configuration)

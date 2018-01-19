@@ -102,8 +102,9 @@ class biobambam(Tool):
                 with open(bam_tmp_out, "w") as f_out:
                     process = subprocess.Popen(command_line, shell=True, stdin=f_in, stdout=f_out)
                     process.wait()
-        except IOError as error:
-            logger.fatal("I/O error({0}): {1}".format(error.errno, error.strerror))
+        except (IOError, OSError) as msg:
+            logger.fatal("I/O error({0}) - bamsormadup: {1}\n{2}".format(
+                msg.errno, msg.strerror, command_line))
             return False
 
         try:

@@ -77,6 +77,69 @@ Download and index genome files
    .. autoclass:: process_genome.process_genome
       :members:
 
+BSgenome Builder
+----------------
+.. automodule:: process_bsgenome
+
+   This pipeline can process FASTQ to identify protein-DNA binding sites.
+
+   Running from the command line
+   =============================
+
+   Parameters
+   ----------
+   config : str
+      Configuration JSON file
+   in_metadata : str
+      Location of input JSON metadata for files
+   out_metadata : str
+      Location of output JSON metadata for files
+
+   Returns
+   -------
+   bsgenome : file
+      BSgenome index
+   genome_2bit : file
+      Compressed representation of the genome required for generating the index
+   chrom_size : file
+      Location of the chrom.size file
+   seed_file : file
+      Configuaration file for generating the BSgenome R package
+
+   Example
+   -------
+
+   When running the pipeline on a local machine:
+
+   .. code-block:: none
+      :linenos:
+
+      python process_bsgenome.py                            \
+         --config tests/json/config_bsgenome.json \
+         --in_metadata tests/json/input_bsgenome.json \
+         --out_metadata tests/json/output_bsgenome.json
+
+   When using a local version of the [COMPS virtual machine](https://www.bsc.es/research-and-development/software-and-apps/software-list/comp-superscalar/):
+
+   .. code-block:: none
+      :linenos:
+
+      runcompss                     \
+         --lang=python              \
+         --library_path=${HOME}/bin \
+         --pythonpath=/<pyenv_virtenv_dir>/lib/python2.7/site-packages/ \
+         --log_level=debug          \
+         process_bsgenome.py         \
+            --config tests/json/config_bsgenome.json \
+            --in_metadata tests/json/input_bsgenome.json \
+            --out_metadata tests/json/output_bsgenome.json
+
+
+   Methods
+   =======
+   .. autoclass:: process_idamidseq.process_idamidseq
+      :members:
+
 
 Hi-C Analysis
 -------------
@@ -248,7 +311,7 @@ ChIP-Seq Analysis
 
 
 iDamID-Seq Analysis
------------------
+-------------------
 .. automodule:: process_idamidseq
 
    This pipeline can process FASTQ to identify protein-DNA binding sites.
@@ -279,7 +342,7 @@ iDamID-Seq Analysis
    .. code-block:: none
       :linenos:
 
-      python process_chipseq.py                            \
+      python process_idamidseq.py                            \
          --config tests/json/config_idamidseq.json \
          --in_metadata tests/json/input_idamidseq.json \
          --out_metadata tests/json/output_idamidseq.json
@@ -294,7 +357,7 @@ iDamID-Seq Analysis
          --library_path=${HOME}/bin \
          --pythonpath=/<pyenv_virtenv_dir>/lib/python2.7/site-packages/ \
          --log_level=debug          \
-         process_chipseq.py         \
+         process_idamidseq.py         \
             --config tests/json/config_idamidseq.json \
             --in_metadata tests/json/input_idamidseq.json \
             --out_metadata tests/json/output_idamidseq.json

@@ -30,7 +30,7 @@
     },
     "input_files": [
         {
-            "name": "genome",
+            "name": "cdna",
             "description": "Genome sequence file",
             "help": "path to a assembly sequence file",
             "file_type": ["FASTA"],

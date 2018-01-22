@@ -20,24 +20,10 @@ import shlex
 import subprocess
 import os.path
 
-# from utils import logger
+from tool.common import cd
+from utils import logger
 
-class cd(object):
-    """
-    Context manager for changing the current working directory
-    """
-
-    def __init__(self, newpath):
-        self.newpath = os.path.expanduser(newpath)
-
-    def __enter__(self):
-        self.savedpath = os.getcwd()
-        os.chdir(self.newpath)
-
-    def __exit__(self, etype, value, traceback):
-        os.chdir(self.savedpath)
-
-class common(object):
+class alignerUtils(object):
     """
     Functions for downloading and processing *-seq FastQ files. Functions
     provided allow for the downloading andindexing of the genome assemblies.
@@ -47,7 +33,7 @@ class common(object):
         """
         Initialise the module
         """
-        print("Common functions")
+        logger.info("Alignment Utils")
 
     def replaceENAHeader(self, file_path, file_out):
         """
@@ -138,10 +124,10 @@ class common(object):
         .. code-block:: python
            :linenos:
 
-           from tool.common import common
-           cf = common()
+           from tool.aligner_utils import alignerUtils
+           au_handle = alignerUtils()
 
-           indexes = cf.bwa_index_genome('/<data_dir>/human_GRCh38.fa.gz')
+           indexes = au_handle.bwa_index_genome('/<data_dir>/human_GRCh38.fa.gz')
            print(indexes)
 
 
@@ -174,31 +160,38 @@ class common(object):
             Location of the output file
         """
 
-        intermediate_file = reads_file + '.sai'
-        intermediate_sam_file = reads_file + '.sam'
-        output_bam_file = bam_loc
+        cmd_aln = ' '.join([
+            'bwa aln',
+            '-q', '5',
+            '-f', reads_file + '.sai',
+            genome_file, reads_file
+        ])
 
         cmd_samse = ' '.join([
             'bwa samse',
-            '-f', intermediate_sam_file,
-            genome_file, intermediate_file, reads_file
+            '-f', reads_file + '.sam',
+            genome_file, reads_file + '.sai', reads_file
         ])
 
-        command_lines = [
-            'bwa aln -q 5 -f ' + intermediate_file + ' ' + genome_file + ' ' + reads_file,
-            cmd_samse,
-            'samtools view -b -o ' + output_bam_file + ' ' + intermediate_sam_file
-        ]
+        cmd_view = ' '.join([
+            'samtools view',
+            '-b',
+            '-o', bam_loc,
+            reads_file + '.sam'
+        ])
+
+        command_lines = [cmd_aln, cmd_samse, cmd_view]
 
         # print("BWA COMMAND LINES:", command_lines)
         try:
             for command_line in command_lines:
+                logger.info("BWA ALN COMMAND: " + command_line)
                 process = subprocess.Popen(command_line, shell=True)
                 process.wait()
         except (IOError, OSError) as msg:
-            return "I/O error({0}): {1}\n{2}".format(msg.errno, msg.strerror, command_line)
-
-        return output_bam_file
+            logger.info("I/O error({0}): {1}\n{2}".format(
+                msg.errno, msg.strerror, command_line))
+            return False
 
     def bwa_aln_align_reads_paired(self, genome_file, reads_file_1, reads_file_2, bam_loc):
         """

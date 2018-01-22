@@ -69,6 +69,7 @@ before_install:
     - mkdir -p ${HOME}/bin
     - mkdir -p ${HOME}/lib
     - mkdir -p ${HOME}/code
+    - mkdir -p ${HOME}/R
     - lsb_release -a
 
 services:
@@ -239,6 +240,8 @@ before_script:
     - ln -s ${HOME}/lib/samtools/bin/zoom2sam.pl zoom2sam.pl
 
     - cd ${HOME}/build/Multiscale-Genomics/mg-process-fastq
+
+    - echo "R_LIB=${HOME}/R" > ${HOME}/.Renviron
     - Rscript scripts/install_packages.R
 
 
@@ -255,6 +258,8 @@ before_script:
     - chmod +x scripts/travis/harness.sh
     - ls tests/data/
     - git status
+
+    - export PATH="${HOME}/bin:$PATH"
 
 script:
     "./scripts/travis/harness.sh"

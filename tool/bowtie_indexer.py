@@ -43,7 +43,7 @@ except ImportError:
 from basic_modules.tool import Tool
 from basic_modules.metadata import Metadata
 
-from tool.common import common
+from tool.aligner_utils import alignerUtils
 
 # ------------------------------------------------------------------------------
 
@@ -83,8 +83,8 @@ class bowtieIndexerTool(Tool):
             file_name[-1].replace('.fa', '')
             file_name = "/".join(file_name)
 
-            common_handle = common()
-            common_handle.bowtie_index_genome(file_loc, file_name)
+            au_handle = alignerUtils()
+            au_handle.bowtie_index_genome(file_loc, file_name)
 
             # tar.gz the index
             print("BT - index_loc", index_loc, index_loc.replace('.tar.gz', ''))

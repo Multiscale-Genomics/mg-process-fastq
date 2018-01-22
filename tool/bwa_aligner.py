@@ -17,13 +17,8 @@
 from __future__ import print_function
 import os
 import sys
-import shlex
-import subprocess
 import shutil
 import tarfile
-import traceback
-
-import pysam
 
 from utils import logger
 
@@ -45,7 +40,8 @@ from basic_modules.tool import Tool
 from basic_modules.metadata import Metadata
 
 from tool.fastq_splitter import fastq_splitter
-from tool.common import common
+from tool.aligner_utils import alignerUtils
+from tool.bam_utils import bamUtils
 
 # ------------------------------------------------------------------------------
 
@@ -59,7 +55,7 @@ class bwaAlignerTool(Tool):
         """
         Init function
         """
-        logger.info("BWA Aligner")
+        logger.info("BWA ALN Aligner")
         Tool.__init__(self)
 
         if configuration is None:
@@ -77,11 +73,8 @@ class bwaAlignerTool(Tool):
         bam_file : str
             Location of the bam file to sort
         """
-        try:
-            pysam.sort("-o", bam_file, "-T", bam_file + "_sort", bam_file)
-        except IOError:
-            return False
-        return True
+        bam_handle = bamUtils()
+        return bam_handle.bam_sort(bam_file)
 
     @task(bam_file_1=FILE_INOUT, bam_file_2=FILE_IN)
     def bam_merge(self, bam_file_1, bam_file_2):
@@ -95,17 +88,8 @@ class bwaAlignerTool(Tool):
         bam_file_2 : str
             Location of the bam file that is to get merged into bam_file_1
         """
-        logger.info("Merging: " + bam_file_1 + " - " + bam_file_2)
-        pysam.merge("-f", bam_file_1 + "_merge.bam", bam_file_1, bam_file_2)
-
-        try:
-            with open(bam_file_1 + "_merge.bam", "rb") as f_in:
-                with open(bam_file_1, "wb") as f_out:
-                    f_out.write(f_in.read())
-        except IOError:
-            return False
-
-        return True
+        bam_handle = bamUtils()
+        return bam_handle.bam_merge(bam_file_1, bam_file_2)
 
     @task(bam_in=FILE_IN, bam_out=FILE_OUT)
     def bam_copy(self, bam_in, bam_out):
@@ -119,14 +103,8 @@ class bwaAlignerTool(Tool):
         bam_out : str
             Location of the output bam file
         """
-        try:
-            with open(bam_in, "rb") as f_in:
-                with open(bam_out, "wb") as f_out:
-                    f_out.write(f_in.read())
-        except IOError:
-            return False
-
-        return True
+        bam_handle = bamUtils()
+        return bam_handle.bam_copy(bam_in, bam_out)
 
     @task(bam_file=FILE_IN, bam_idx_file=FILE_OUT)
     def bam_index(self, bam_file, bam_idx_file):
@@ -140,21 +118,13 @@ class bwaAlignerTool(Tool):
         bam_idx_file : str
             Location of the bam index file (.bai)
         """
-        pysam.index(bam_file, bam_file + "_tmp.bai")
-
-        try:
-            with open(bam_file + "_tmp.bai", "rb") as f_in:
-                with open(bam_idx_file, "wb") as f_out:
-                    f_out.write(f_in.read())
-        except IOError:
-            return False
-
-        return True
+        bam_handle = bamUtils()
+        return bam_handle.bam_index(bam_file, bam_idx_file)
 
     @task(returns=bool, genome_file_loc=FILE_IN, read_file_loc=FILE_IN,
           bam_loc=FILE_OUT, genome_idx=FILE_IN, aligner=IN, isModifier=False)
     def bwa_aligner_single(  # pylint: disable=too-many-arguments
-            self, genome_file_loc, read_file_loc, bam_loc, genome_idx, aligner="aln"):  # pylint: disable=unused-argument
+            self, genome_file_loc, read_file_loc, bam_loc, genome_idx, aln_params):  # pylint: disable=unused-argument
         """
         BWA Aligner
 
@@ -195,41 +165,10 @@ class bwaAlignerTool(Tool):
 
         out_bam = read_file_loc + '.out.bam'
 
-        common_handle = common()
-        if aligner == 'mem':
-            logger.info(
-                common_handle.bwa_mem_align_reads_single(genome_fa_ln, read_file_loc, out_bam)
-            )
-        else:
-            # logger.info(
-            #     common_handle.bwa_aln_align_reads_single(genome_fa_ln, read_file_loc, out_bam)
-            # )
-            intermediate_file = read_file_loc + '.sai'
-            intermediate_sam_file = read_file_loc + '.sam'
-
-            cmd_samse = ' '.join([
-                'bwa samse',
-                '-f', intermediate_sam_file,
-                genome_fa_ln, intermediate_file, read_file_loc
-            ])
-
-            command_lines = [
-                'bwa aln -q 5 -f ' + intermediate_file + ' ' + genome_fa_ln + ' ' + read_file_loc,
-                cmd_samse,
-                'samtools view -b -o ' + out_bam + ' ' + intermediate_sam_file
-            ]
-
-            # print("BWA COMMAND LINES:", command_lines)
-            try:
-                for command_line in command_lines:
-                    logger.info("BWA ALN COMMAND: " + command_line)
-                    #args = shlex.split(command_line)
-                    process = subprocess.Popen(command_line, shell=True)
-                    process.wait()
-            except (IOError, OSError) as msg:
-                logger.info("I/O error({0}): {1}\n{2}".format(
-                    msg.errno, msg.strerror, command_line))
-                return False
+        au_handle = alignerUtils()
+        logger.info(
+            au_handle.bwa_aln_align_reads_single(genome_fa_ln, read_file_loc, out_bam)
+        )
 
         try:
             with open(bam_loc, "wb") as f_out:
@@ -278,8 +217,8 @@ class bwaAlignerTool(Tool):
         shutil.copy(genome_file_loc, genome_fa_ln)
 
         out_bam = read_file_loc1 + '.out.bam'
-        common_handle = common()
-        common_handle.bwa_aln_align_reads_paired(
+        au_handle = alignerUtils()
+        au_handle.bwa_aln_align_reads_paired(
             genome_fa_ln, read_file_loc1, read_file_loc2, out_bam)
 
         try:
@@ -361,6 +300,52 @@ class bwaAlignerTool(Tool):
         output_bam_file = output_files["output"]
         #output_bai_file = output_files["bai"]
 
+        command_params = []
+        if "bwa_edit_dist_param" in self.configuration:
+            command_params = command_params + [
+                "-n", str(self.configuration["bwa_edit_dist_param"])]
+        if "bwa_max_gap_open_param" in self.configuration:
+            command_params = command_params + [
+                "-o", str(self.configuration["bwa_max_gap_open_param"])]
+        if "bwa_max_gap_ext_param" in self.configuration:
+            command_params = command_params + [
+                "-e", str(self.configuration["bwa_max_gap_ext_param"])]
+        if "bwa_dis_long_del_range_param" in self.configuration:
+            command_params = command_params + [
+                "-d", str(self.configuration["bwa_dis_long_del_range_param"])]
+        if "bwa_dis_indel_range_param" in self.configuration:
+            command_params = command_params + [
+                "-i", str(self.configuration["bwa_dis_indel_range_param"])]
+        if "bwa_n_subseq_seed_param" in self.configuration:
+            command_params = command_params + [
+                "-l", str(self.configuration["bwa_n_subseq_seed_param"])]
+        if "bwa_max_edit_dist_param" in self.configuration:
+            command_params = command_params + [
+                "-k", str(self.configuration["bwa_max_edit_dist_param"])]
+        if "bwa_mismatch_penalty_param" in self.configuration:
+            command_params = command_params + [
+                "-M", str(self.configuration["bwa_mismatch_penalty_param"])]
+        if "bwa_gap_open_penalty_param" in self.configuration:
+            command_params = command_params + [
+                "-O", str(self.configuration["bwa_gap_open_penalty_param"])]
+        if "bwa_gap_ext_penalty_param" in self.configuration:
+            command_params = command_params + [
+                "-E", str(self.configuration["bwa_gap_ext_penalty_param"])]
+        if "bwa_use_subopt_threshold_param" in self.configuration:
+            command_params = command_params + [
+                "-R", str(self.configuration["bwa_use_subopt_threshold_param"])]
+        if "bwa_reverse_query_param" in self.configuration:
+            command_params = command_params + ["-c"]
+        if "bwa_dis_iter_search_param" in self.configuration:
+            command_params = command_params + ["-N"]
+        if "bwa_read_trim_param" in self.configuration:
+            command_params = command_params + [
+                "-q", str(self.configuration["bwa_read_trim_param"])]
+        if "bwa_barcode_len_param" in self.configuration:
+            command_params = command_params + [
+                "-B", str(self.configuration["bwa_barcode_len_param"])]
+
+
         logger.info("BWA ALIGNER: Aligning sequence reads to the genome")
 
         output_bam_list = []
@@ -375,22 +360,17 @@ class bwaAlignerTool(Tool):
 
                 results = self.bwa_aligner_paired(
                     str(input_files["genome"]), tmp_fq1, tmp_fq2, output_bam_file_tmp,
-                    str(input_files["index"]), 'aln'
+                    str(input_files["index"]), command_params
                 )
             else:
                 tmp_fq = gz_data_path + "/tmp/" + fastq_file_pair[0]
                 output_bam_file_tmp = tmp_fq + ".bam"
                 output_bam_list.append(output_bam_file_tmp)
 
-                # print("FILES:", str(input_files["genome"]), str(input_files["index"]), tmp_fq, output_bam_file_tmp)
-                f = open(tmp_fq, "r")
-                logger.info(f.readline())
-                f.close()
-
                 logger.info("BWAL ALN FILES:" + tmp_fq)
                 results = self.bwa_aligner_single(
                     str(input_files["genome"]), tmp_fq, output_bam_file_tmp,
-                    str(input_files["index"]), 'aln'
+                    str(input_files["index"]), command_params
                 )
         barrier()
 
@@ -402,14 +382,15 @@ class bwaAlignerTool(Tool):
             return {}, {}
 
         while True:
-            if len(output_bam_list) == 0:
-                break
-            results = self.bam_merge(output_bam_file, output_bam_list.pop(0))
-            results = compss_wait_on(results)
+            if output_bam_list:
+                results = self.bam_merge(output_bam_file, output_bam_list.pop(0))
+                results = compss_wait_on(results)
 
-            if results is False:
-                logger.fatal("BWA Aligner: Bam merging failed")
-                return {}, {}
+                if results is False:
+                    logger.fatal("BWA Aligner: Bam merging failed")
+                    return {}, {}
+            else:
+                break
 
         results = self.bam_sort(output_bam_file)
         results = compss_wait_on(results)

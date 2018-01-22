@@ -13,18 +13,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-matrix:
-  include:
-    - language: python
-    - language: r
+language: python
 
 os: linux
 
 python:
     - "2.7.12"
     #- "3.6.3"
-
-r : bioc-release
 
 #sudo: false
 

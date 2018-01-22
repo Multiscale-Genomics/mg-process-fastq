@@ -20,6 +20,8 @@ import shlex
 import subprocess
 import os.path
 
+# from utils import logger
+
 class cd(object):
     """
     Context manager for changing the current working directory
@@ -176,19 +178,25 @@ class common(object):
         intermediate_sam_file = reads_file + '.sam'
         output_bam_file = bam_loc
 
+        cmd_samse = ' '.join([
+            'bwa samse',
+            '-f', intermediate_sam_file,
+            genome_file, intermediate_file, reads_file
+        ])
+
         command_lines = [
             'bwa aln -q 5 -f ' + intermediate_file + ' ' + genome_file + ' ' + reads_file,
-            'bwa samse -f ' + intermediate_sam_file  + ' ' + genome_file + ' ' +
-            intermediate_file + ' ' + reads_file,
+            cmd_samse,
             'samtools view -b -o ' + output_bam_file + ' ' + intermediate_sam_file
         ]
 
-        print("BWA COMMAND LINES:", command_lines)
-
-        for command_line in command_lines:
-            args = shlex.split(command_line)
-            process = subprocess.Popen(args)
-            process.wait()
+        # print("BWA COMMAND LINES:", command_lines)
+        try:
+            for command_line in command_lines:
+                process = subprocess.Popen(command_line, shell=True)
+                process.wait()
+        except (IOError, OSError) as msg:
+            return "I/O error({0}): {1}\n{2}".format(msg.errno, msg.strerror, command_line)
 
         return output_bam_file
 

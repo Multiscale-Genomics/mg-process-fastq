@@ -58,6 +58,11 @@ class fastq_splitter(Tool):
         logger.info("FASTQ Splitter")
         Tool.__init__(self)
 
+        if configuration is None:
+            configuration = {}
+
+        self.configuration.update(configuration)
+
     @task(
         in_file1=FILE_IN, tag=IN,
         out_file=FILE_OUT, files_out=OUT,

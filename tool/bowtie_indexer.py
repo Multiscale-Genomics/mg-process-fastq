@@ -59,6 +59,11 @@ class bowtieIndexerTool(Tool):
         print("Bowtie2 Indexer")
         Tool.__init__(self)
 
+        if configuration is None:
+            configuration = {}
+
+        self.configuration.update(configuration)
+
     @task(file_loc=FILE_IN, index_loc=FILE_OUT)
     def bowtie2_indexer(
             self, file_loc, index_loc): # pylint: disable=unused-argument

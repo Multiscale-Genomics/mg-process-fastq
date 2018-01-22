@@ -26,7 +26,7 @@ from tool.bwa_indexer import bwaIndexerTool
 
 @pytest.mark.chipseq
 @pytest.mark.genome
-def test_bwa_indexer():
+def test_bwa_indexer_chipseq():
     """
     Test case to ensure that the BWA indexer works.
     """
@@ -55,9 +55,41 @@ def test_bwa_indexer():
     assert os.path.isfile(resource_path + "macs2.Human.GCA_000001405.22.fasta.bwa.tar.gz") is True
     assert os.path.getsize(resource_path + "macs2.Human.GCA_000001405.22.fasta.bwa.tar.gz") > 0
 
+@pytest.mark.idamidseq
+@pytest.mark.genome
+def test_bwa_indexer_idear():
+    """
+    Test case to ensure that the BWA indexer works
+    """
+    resource_path = os.path.join(os.path.dirname(__file__), "data/")
+    genome_fa = resource_path + "idear.Human.GCA_000001405.22.fasta"
+
+    input_files = {
+        "genome": genome_fa
+    }
+
+    output_files = {
+        "index": genome_fa + ".bwa.tar.gz"
+    }
+
+    metadata = {
+        "genome": Metadata(
+            "Assembly", "fasta", genome_fa, None,
+            {'assembly' : 'test'}),
+    }
+
+    print(input_files, output_files)
+
+    bwa_it = bwaIndexerTool()
+    bwa_it.run(input_files, metadata, output_files)
+
+    assert os.path.isfile(resource_path + "idear.Human.GCA_000001405.22.fasta.bwa.tar.gz") is True
+    assert os.path.getsize(resource_path + "idear.Human.GCA_000001405.22.fasta.bwa.tar.gz") > 0
+
+
 @pytest.mark.mnaseseq
 @pytest.mark.genome
-def test_bwa_indexer_02():
+def test_bwa_indexer_03():
     """
     Test case to ensure that the BWA indexer works
     """

@@ -36,6 +36,11 @@ Tools for processing FastQ files
    .. autoclass:: tool.bowtie_indexer.bowtieIndexerTool
       :members:
 
+   BSgenome Index
+   --------------
+   .. autoclass:: tool.forge_bsgenome.bsgenomeTool
+      :members:
+
    BS-Seeker2 Indexer
    ------------------
    .. autoclass:: tool.bs_seeker_indexer.bssIndexerTool
@@ -98,6 +103,11 @@ Tools for processing FastQ files
    BS-Seeker2 Methylation Caller
    -----------------------------
    .. autoclass:: tool.bs_seeker_methylation_caller.bssMethylationCallerTool
+      :members:
+
+   iDEAR
+   ----
+   .. autoclass:: tool.idear.idearTool
       :members:
 
    iNPS

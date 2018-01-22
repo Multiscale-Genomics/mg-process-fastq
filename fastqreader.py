@@ -19,8 +19,9 @@
 
 import os
 import re
+from collections import deque
 
-class fastqreader:
+class fastqreader(object):
     """
     Module for reading single end and paired end FASTQ files
     """
@@ -29,13 +30,14 @@ class fastqreader:
         """
         Initialise the module
         """
-        self.paired = False
-
         self.fastq1 = ''
         self.fastq2 = ''
 
         self.f1_file = None
         self.f2_file = None
+
+        self.f1_content = None
+        self.f2_content = None
 
         self.f1_eof = False
         self.f2_eof = False
@@ -45,6 +47,8 @@ class fastqreader:
 
         self.output_tag = ''
         self.output_file_count = 0
+
+        self.paired = False
 
     def openFastQ(self, file1, file2=None):
         """
@@ -59,11 +63,13 @@ class fastqreader:
         """
         self.fastq1 = file1
         self.f1_file = open(self.fastq1, "r")
+        self.f1_content = deque(reversed(self.f1_file.readlines()))
         self.f1_eof = False
 
         if file2 is not None:
             self.fastq2 = file2
             self.f2_file = open(self.fastq2, "r")
+            self.f2_content = deque(reversed(self.f2_file.readlines()))
             self.f2_eof = False
             self.paired = True
 
@@ -73,7 +79,7 @@ class fastqreader:
         """
         self.f1_file.close()
 
-        if self.paired == True:
+        if self.paired is True:
             self.f2_file.close()
 
     def eof(self, side=1):
@@ -119,30 +125,32 @@ class fastqreader:
         read_score = ''
 
         if side == 1:
-            read_id = self.f1_file.readline()
-            read_seq = self.f1_file.readline()
-            read_addition = self.f1_file.readline()
-            read_score = self.f1_file.readline()
+            try:
+                read_id = self.f1_content.pop()
+                read_seq = self.f1_content.pop()
+                read_addition = self.f1_content.pop()
+                read_score = self.f1_content.pop()
+            except IndexError:
+                self.f1_eof = True
+                return False
+
         elif side == 2:
-            read_id = self.f2_file.readline()
-            read_seq = self.f2_file.readline()
-            read_addition = self.f2_file.readline()
-            read_score = self.f2_file.readline()
+            try:
+                read_id = self.f2_content.pop()
+                read_seq = self.f2_content.pop()
+                read_addition = self.f2_content.pop()
+                read_score = self.f2_content.pop()
+            except IndexError:
+                self.f2_eof = True
+                return False
         else:
             return 'ERROR'
 
-        if read_id == '':
-            if side == 1:
-                self.f1_eof = True
-                return False
-            if side == 2:
-                self.f2_eof = True
-                return False
         return {
             'id': read_id.rstrip(),
-            'seq': read_seq.rstrip(),
-            'add': read_addition.rstrip(),
-            'score': read_score.rstrip()
+            'seq': read_seq,
+            'add': read_addition,
+            'score': read_score
         }
 
     def createOutputFiles(self, tag=''):
@@ -157,24 +165,24 @@ class fastqreader:
         if tag != '' and self.output_tag != tag:
             self.output_tag = tag
 
-        f1 = self.fastq1.split("/")
+        fq1 = self.fastq1.split("/")
         new_suffix = "." + str(self.output_tag) + "_" + str(self.output_file_count) + ".fastq"
-        f1[-1] = re.sub('.fastq$', new_suffix, f1[-1])
-        f1.insert(-1, "tmp")
+        fq1[-1] = re.sub('.fastq$', new_suffix, fq1[-1])
+        fq1.insert(-1, "tmp")
 
-        if os.path.isdir("/".join(f1[0:-1])) is False:
-            os.mkdir("/".join(f1[0:-1]))
+        if os.path.isdir("/".join(fq1[0:-1])) is False:
+            os.mkdir("/".join(fq1[0:-1]))
 
-        self.f1_output_file = open("/".join(f1), "w")
+        self.f1_output_file = open("/".join(fq1), "w")
 
         if self.paired is True:
-            f2 = self.fastq2.split("/")
+            fq2 = self.fastq2.split("/")
             new_suffix = "." + str(self.output_tag) + "_" + str(self.output_file_count) + ".fastq"
-            f2[-1] = re.sub('.fastq$', new_suffix, f2[-1])
-            f2.insert(-1, "tmp")
-            self.f2_output_file = open("/".join(f2), "w")
+            fq2[-1] = re.sub('.fastq$', new_suffix, fq2[-1])
+            fq2.insert(-1, "tmp")
+            self.f2_output_file = open("/".join(fq2), "w")
 
-    def writeOutput(self, read, side = 1):
+    def writeOutput(self, read, side=1):
         """
         Writer to print the extracted lines
 
@@ -190,7 +198,7 @@ class fastqreader:
         bool
             False if a value other than 1 or 2 is entered for the side.
         """
-        line = read["id"] + "\n" + read["seq"] + "\n" + read["add"] + "\n" + read["score"] + "\n"
+        line = read["id"] + "\n" + read["seq"] + read["add"] + read["score"]
         if side == 1:
             self.f1_output_file.write(line)
         elif side == 2:

@@ -55,6 +55,11 @@ class biobambam(Tool):
         logger.info("BioBamBam2 Filter")
         Tool.__init__(self)
 
+        if configuration is None:
+            configuration = {}
+
+        self.configuration.update(configuration)
+
     @task(returns=bool, bam_file_in=FILE_IN, bam_file_out=FILE_OUT,
           isModifier=False)
     def biobambam_filter_alignments(self, bam_file_in, bam_file_out):
@@ -86,7 +91,7 @@ class biobambam(Tool):
         tmp_dir = "/".join(td_list[0:-1])
 
         command_line = 'bamsormadup --tmpfile=' + tmp_dir
-        args = shlex.split(command_line)
+        # args = shlex.split(command_line)
 
         bam_tmp_out = tmp_dir + '/' + td_list[-1] + '.filtered.tmp.bam'
 
@@ -95,10 +100,11 @@ class biobambam(Tool):
         try:
             with open(bam_file_in, "r") as f_in:
                 with open(bam_tmp_out, "w") as f_out:
-                    process = subprocess.Popen(args, stdin=f_in, stdout=f_out)
+                    process = subprocess.Popen(command_line, shell=True, stdin=f_in, stdout=f_out)
                     process.wait()
-        except IOError as error:
-            logger.fatal("I/O error({0}): {1}".format(error.errno, error.strerror))
+        except (IOError, OSError) as msg:
+            logger.fatal("I/O error({0}) - bamsormadup: {1}\n{2}".format(
+                msg.errno, msg.strerror, command_line))
             return False
 
         try:
@@ -143,7 +149,7 @@ class biobambam(Tool):
 
         output_metadata = {
             "bam": Metadata(
-                data_type="data_chip_seq",
+                data_type=input_metadata["input"].data_type,
                 file_type="BAM",
                 file_path=output_files["output"],
                 sources=[input_metadata["input"].file_path],

@@ -35,7 +35,8 @@ Setup the System Environment
    sudo apt-get install -y make build-essential libssl-dev zlib1g-dev       \\
    libbz2-dev libreadline-dev libsqlite3-dev wget curl llvm libncurses5-dev \\
    libncursesw5-dev xz-utils tk-dev unzip mcl libgtk2.0-dev r-base-core     \\
-   libcurl4-gnutls-dev python-rpy2 git libtbb2 pigz liblzma-dev libhdf5-dev
+   libcurl4-gnutls-dev python-rpy2 git libtbb2 pigz liblzma-dev libhdf5-dev \\
+   texlive-latex-base
 
    cd ${HOME}
    mkdir bin lib code
@@ -81,6 +82,11 @@ UCSC Tools
    wget http://hgdownload.cse.ucsc.edu/admin/exe/linux.x86_64/bedToBigBed
    wget http://hgdownload.cse.ucsc.edu/admin/exe/linux.x86_64/wigToBigWig
 
+   wget http://hgdownload.soe.ucsc.edu/admin/exe/linux.x86_64/faToTwoBit
+   wget http://hgdownload.soe.ucsc.edu/admin/exe/linux.x86_64/twoBitInfo
+
+   chmod +x bedToBigBed wigToBigWig faToTwoBit twoBitInfo
+
 BioBamBam2
 ^^^^^^^^^^
 
@@ -116,8 +122,8 @@ Bowtie2 Aligner
    :linenos:
 
    cd ${HOME}/lib
-   wget --max-redirect 1 https://downloads.sourceforge.net/project/bowtie-bio/bowtie2/2.3.2/bowtie2-2.3.2-linux-x86_64.zip
-   unzip bowtie2-2.3.2-linux-x86_64.zip
+   wget --max-redirect 1 https://downloads.sourceforge.net/project/bowtie-bio/bowtie2/2.3.4/bowtie2-2.3.4-linux-x86_64.zip
+   unzip bowtie2-2.3.4-linux-x86_64.zip
 
 BWA Sequence Aligner
 ^^^^^^^^^^^^^^^^^^^^
@@ -167,6 +173,7 @@ iNPS Peak Caller
    unzip iNPS_V1.2.2.zip
 
    cd ${HOME}/bin
+   touch iNPS
    cat iNPS <<EOL
    #!/usr/bin/env bash
    python3 ${HOME}/lib/iNPS/iNPS_V1.2.2.py "$@"
@@ -214,6 +221,7 @@ bedTools
 .. code-block:: none
    :linenos:
 
+   cd ${HOME}/lib
    wget https://github.com/arq5x/bedtools2/releases/download/v2.26.0/bedtools-2.26.0.tar.gz
    tar -zxvf bedtools-2.26.0.tar.gz
    cd bedtools2
@@ -232,6 +240,8 @@ Setup the symlinks
 
    ln -s ${HOME}/lib/bedToBigBed bedToBigBed
    ln -s ${HOME}/lib/wigToBigWig wigToBigWig
+   ln -s ${HOME}/lib/faToTwoBit faToTwoBit
+   ln -s ${HOME}/lib/twoBitInfo twoBitInfo
 
    ln -s ${HOME}/lib/bwa/bwa bwa
 
@@ -395,6 +405,18 @@ the COMPSs environment.
 
    ln -s ${HOME}/.pyenv/versions/mg-process-fastq/bin/macs2 ${HOME}/bin/macs2
 
+Install iDEAR
+^^^^^^^^^^^^^
+
+.. code-block:: none
+   :linenos:
+
+   cd ${HOME}/lib
+   source("https://bioconductor.org/biocLite.R")
+   biocLite("BSgenome")
+   biocLite("DESeq2")
+   if(!require("devtools")) install.packages("devtools")
+   devtools::install_bitbucket("juanlmateo/idear")
 
 Install TADbit
 ^^^^^^^^^^^^^^

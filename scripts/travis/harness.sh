@@ -33,6 +33,12 @@ rm tests/data/macs2.Human.GCA_000001405.22.fasta.bwa.tar.gz
 rm tests/data/tb.Human.GCA_000001405.22.fasta
 rm tests/data/tb.Human.GCA_000001405.22_gem*
 
+# python tests/test_toolchains.py --pipeline idamidseq
+# tc=$?
+# rc=$(($rc + $tc))
+# sh tidy_data.sh
+
+
 python tests/test_pipelines.py --pipeline genome
 tc=$?
 rc=$(($rc + $tc))

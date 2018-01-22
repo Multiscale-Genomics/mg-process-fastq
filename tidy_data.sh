@@ -22,7 +22,8 @@ cd $DIR
 cd tests/data
 
 # Known test data files to keep
-a=$(git ls-tree -r master --name-only | sort)
+c=$(git rev-parse --abbrev-ref HEAD)
+a=$(git ls-tree -r $c --name-only | sort)
 
 # All files in test/data
 b=$(ls | sort)

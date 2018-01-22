@@ -54,6 +54,11 @@ class fastqcTool(Tool):
         logger.info("FastQC")
         Tool.__init__(self)
 
+        if configuration is None:
+            configuration = {}
+
+        self.configuration.update(configuration)
+
     @task(returns=bool, fastq_file=FILE_IN, report_file=FILE_OUT, isModifier=False)
     def validate(self, fastq_file, report_file): # pylint: disable=unused-argument
         """

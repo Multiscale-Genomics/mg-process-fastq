@@ -25,7 +25,7 @@ from basic_modules.metadata import Metadata
 from tool.validate_fastqc import fastqcTool
 
 @pytest.mark.chipseq
-def test_fastqc_1():
+def test_fastqc_chipseq_0():
     """
     Test case to ensure that the GEM indexer works.
     """
@@ -52,7 +52,7 @@ def test_fastqc_1():
     assert os.path.getsize(output_files["report"]) > 0
 
 @pytest.mark.hic
-def test_fastqc_2():
+def test_fastqc_hic_0():
     """
     Test case to ensure that the GEM indexer works.
     """
@@ -79,7 +79,7 @@ def test_fastqc_2():
     assert os.path.getsize(output_files["report"]) > 0
 
 @pytest.mark.hic
-def test_fastqc_3():
+def test_fastqc_hic_1():
     """
     Test case to ensure that the GEM indexer works.
     """
@@ -105,8 +105,116 @@ def test_fastqc_3():
     assert os.path.isfile(output_files["report"]) is True
     assert os.path.getsize(output_files["report"]) > 0
 
+@pytest.mark.idamidseq
+def test_fastqc_idamseq_0():
+    """
+    Test case to ensure that the GEM indexer works.
+    """
+    resource_path = os.path.join(os.path.dirname(__file__), "data/")
+
+    input_files = {
+        "fastq": resource_path + "idear.Human.SRR3714775.fastq.gz"
+    }
+
+    output_files = {
+        "report": resource_path + "idear.Human.SRR3714775.report",
+    }
+
+    metadata = {
+        "fastq": Metadata(
+            "data_idamseq", "fastq", [], None,
+            {'assembly' : 'test'})
+    }
+
+    fastqc_handle = fastqcTool()
+    fastqc_handle.run(input_files, metadata, output_files)
+
+    assert os.path.isfile(output_files["report"]) is True
+    assert os.path.getsize(output_files["report"]) > 0
+
+@pytest.mark.idamidseq
+def test_fastqc_idamseq_1():
+    """
+    Test case to ensure that the GEM indexer works.
+    """
+    resource_path = os.path.join(os.path.dirname(__file__), "data/")
+
+    input_files = {
+        "fastq": resource_path + "idear.Human.SRR3714776.fastq.gz"
+    }
+
+    output_files = {
+        "report": resource_path + "idear.Human.SRR3714776.report",
+    }
+
+    metadata = {
+        "fastq": Metadata(
+            "data_idamseq", "fastq", [], None,
+            {'assembly' : 'test'})
+    }
+
+    fastqc_handle = fastqcTool()
+    fastqc_handle.run(input_files, metadata, output_files)
+
+    assert os.path.isfile(output_files["report"]) is True
+    assert os.path.getsize(output_files["report"]) > 0
+
+@pytest.mark.idamidseq
+def test_fastqc_idamseq_2():
+    """
+    Test case to ensure that the GEM indexer works.
+    """
+    resource_path = os.path.join(os.path.dirname(__file__), "data/")
+
+    input_files = {
+        "fastq": resource_path + "idear.Human.SRR3714777.fastq.gz"
+    }
+
+    output_files = {
+        "report": resource_path + "idear.Human.SRR3714777.report",
+    }
+
+    metadata = {
+        "fastq": Metadata(
+            "data_idamseq", "fastq", [], None,
+            {'assembly' : 'test'})
+    }
+
+    fastqc_handle = fastqcTool()
+    fastqc_handle.run(input_files, metadata, output_files)
+
+    assert os.path.isfile(output_files["report"]) is True
+    assert os.path.getsize(output_files["report"]) > 0
+
+@pytest.mark.idamidseq
+def test_fastqc_idamseq_3():
+    """
+    Test case to ensure that the GEM indexer works.
+    """
+    resource_path = os.path.join(os.path.dirname(__file__), "data/")
+
+    input_files = {
+        "fastq": resource_path + "idear.Human.SRR3714778.fastq.gz"
+    }
+
+    output_files = {
+        "report": resource_path + "idear.Human.SRR3714778.report",
+    }
+
+    metadata = {
+        "fastq": Metadata(
+            "data_idamseq", "fastq", [], None,
+            {'assembly' : 'test'})
+    }
+
+    fastqc_handle = fastqcTool()
+    fastqc_handle.run(input_files, metadata, output_files)
+
+    assert os.path.isfile(output_files["report"]) is True
+    assert os.path.getsize(output_files["report"]) > 0
+
 @pytest.mark.inps
-def test_fastqc_4():
+def test_fastqc_inps_0():
     """
     Test case to ensure that the GEM indexer works.
     """
@@ -133,7 +241,7 @@ def test_fastqc_4():
     assert os.path.getsize(output_files["report"]) > 0
 
 @pytest.mark.rnaseq
-def test_fastqc_5():
+def test_fastqc_rnaseq_0():
     """
     Test case to ensure that the GEM indexer works.
     """
@@ -160,7 +268,7 @@ def test_fastqc_5():
     assert os.path.getsize(output_files["report"]) > 0
 
 @pytest.mark.rnaseq
-def test_fastqc_6():
+def test_fastqc_rnaseq_1():
     """
     Test case to ensure that the GEM indexer works.
     """
@@ -187,7 +295,7 @@ def test_fastqc_6():
     assert os.path.getsize(output_files["report"]) > 0
 
 @pytest.mark.wgbs
-def test_fastqc_7():
+def test_fastqc_wgbs_0():
     """
     Test case to ensure that the GEM indexer works.
     """
@@ -214,7 +322,7 @@ def test_fastqc_7():
     assert os.path.getsize(output_files["report"]) > 0
 
 @pytest.mark.wgbs
-def test_fastqc_8():
+def test_fastqc_wgbs_1():
     """
     Test case to ensure that the GEM indexer works.
     """

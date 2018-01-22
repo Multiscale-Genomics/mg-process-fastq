@@ -17,8 +17,11 @@
 from __future__ import print_function
 import os
 import sys
+import shlex
+import subprocess
 import shutil
 import tarfile
+import traceback
 
 import pysam
 
@@ -59,6 +62,11 @@ class bwaAlignerTool(Tool):
         logger.info("BWA Aligner")
         Tool.__init__(self)
 
+        if configuration is None:
+            configuration = {}
+
+        self.configuration.update(configuration)
+
     @task(bam_file=FILE_INOUT)
     def bam_sort(self, bam_file):
         """
@@ -87,7 +95,8 @@ class bwaAlignerTool(Tool):
         bam_file_2 : str
             Location of the bam file that is to get merged into bam_file_1
         """
-        pysam.merge(bam_file_1 + "_merge.bam", bam_file_1, bam_file_2)
+        logger.info("Merging: " + bam_file_1 + " - " + bam_file_2)
+        pysam.merge("-f", bam_file_1 + "_merge.bam", bam_file_1, bam_file_2)
 
         try:
             with open(bam_file_1 + "_merge.bam", "rb") as f_in:
@@ -145,7 +154,7 @@ class bwaAlignerTool(Tool):
     @task(returns=bool, genome_file_loc=FILE_IN, read_file_loc=FILE_IN,
           bam_loc=FILE_OUT, genome_idx=FILE_IN, aligner=IN, isModifier=False)
     def bwa_aligner_single(  # pylint: disable=too-many-arguments
-            self, genome_file_loc, read_file_loc, bam_loc, genome_idx, aligner):  # pylint: disable=unused-argument
+            self, genome_file_loc, read_file_loc, bam_loc, genome_idx, aligner="aln"):  # pylint: disable=unused-argument
         """
         BWA Aligner
 
@@ -175,12 +184,52 @@ class bwaAlignerTool(Tool):
         genome_fa_ln = genome_idx.replace('.tar.gz', '/') + gfl[-1]
         shutil.copy(genome_file_loc, genome_fa_ln)
 
+        if (
+                os.path.isfile(genome_fa_ln) is False or
+                os.path.getsize(genome_fa_ln) == 0):
+            return False
+        if (
+                os.path.isfile(read_file_loc) is False or
+                os.path.getsize(read_file_loc) == 0):
+            return False
+
         out_bam = read_file_loc + '.out.bam'
+
         common_handle = common()
         if aligner == 'mem':
-            common_handle.bwa_mem_align_reads_single(genome_fa_ln, read_file_loc, out_bam)
+            logger.info(
+                common_handle.bwa_mem_align_reads_single(genome_fa_ln, read_file_loc, out_bam)
+            )
         else:
-            common_handle.bwa_aln_align_reads_single(genome_fa_ln, read_file_loc, out_bam)
+            # logger.info(
+            #     common_handle.bwa_aln_align_reads_single(genome_fa_ln, read_file_loc, out_bam)
+            # )
+            intermediate_file = read_file_loc + '.sai'
+            intermediate_sam_file = read_file_loc + '.sam'
+
+            cmd_samse = ' '.join([
+                'bwa samse',
+                '-f', intermediate_sam_file,
+                genome_fa_ln, intermediate_file, read_file_loc
+            ])
+
+            command_lines = [
+                'bwa aln -q 5 -f ' + intermediate_file + ' ' + genome_fa_ln + ' ' + read_file_loc,
+                cmd_samse,
+                'samtools view -b -o ' + out_bam + ' ' + intermediate_sam_file
+            ]
+
+            # print("BWA COMMAND LINES:", command_lines)
+            try:
+                for command_line in command_lines:
+                    logger.info("BWA ALN COMMAND: " + command_line)
+                    #args = shlex.split(command_line)
+                    process = subprocess.Popen(command_line, shell=True)
+                    process.wait()
+            except (IOError, OSError) as msg:
+                logger.info("I/O error({0}): {1}\n{2}".format(
+                    msg.errno, msg.strerror, command_line))
+                return False
 
         try:
             with open(bam_loc, "wb") as f_out:
@@ -270,16 +319,16 @@ class bwaAlignerTool(Tool):
         fastq1 = input_files["loc"]
         sources.append(input_files["loc"])
 
-        fastq_file_gz = fastq1 + ".tar.gz"
+        fastq_file_gz = str(fastq1 + ".tar.gz")
         if "fastq2" in input_files:
             fastq2 = input_files["fastq2"]
             sources.append(input_files["fastq2"])
             fastq_file_list = fqs.paired_splitter(
-                fastq1, fastq2, fastq1 + ".tar.gz"
+                fastq1, fastq2, fastq_file_gz
             )
         else:
             fastq_file_list = fqs.single_splitter(
-                fastq1, fastq1 + ".tar.gz"
+                fastq1, fastq_file_gz
             )
 
         fastq_file_list = compss_wait_on(fastq_file_list)
@@ -290,6 +339,7 @@ class bwaAlignerTool(Tool):
         if hasattr(sys, '_run_from_cmdl') is True:
             pass
         else:
+            logger.info("Getting the tar file")
             with compss_open(fastq_file_gz, "rb") as f_in:
                 with open(fastq_file_gz, "wb") as f_out:
                     f_out.write(f_in.read())
@@ -321,7 +371,7 @@ class bwaAlignerTool(Tool):
                 output_bam_file_tmp = tmp_fq1 + ".bam"
                 output_bam_list.append(output_bam_file_tmp)
 
-                print("FILES:", tmp_fq1, tmp_fq2, output_bam_file_tmp)
+                # print("FILES:", tmp_fq1, tmp_fq2, output_bam_file_tmp)
 
                 results = self.bwa_aligner_paired(
                     str(input_files["genome"]), tmp_fq1, tmp_fq2, output_bam_file_tmp,
@@ -332,13 +382,16 @@ class bwaAlignerTool(Tool):
                 output_bam_file_tmp = tmp_fq + ".bam"
                 output_bam_list.append(output_bam_file_tmp)
 
-                print("FILES:", tmp_fq, output_bam_file_tmp)
+                # print("FILES:", str(input_files["genome"]), str(input_files["index"]), tmp_fq, output_bam_file_tmp)
+                f = open(tmp_fq, "r")
+                logger.info(f.readline())
+                f.close()
 
+                logger.info("BWAL ALN FILES:" + tmp_fq)
                 results = self.bwa_aligner_single(
                     str(input_files["genome"]), tmp_fq, output_bam_file_tmp,
                     str(input_files["index"]), 'aln'
                 )
-
         barrier()
 
         results = self.bam_copy(output_bam_list.pop(0), output_bam_file)

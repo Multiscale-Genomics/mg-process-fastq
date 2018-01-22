@@ -57,6 +57,11 @@ class bssMethylationCallerTool(Tool):
         logger.info("BS-Seeker Methylation Caller")
         Tool.__init__(self)
 
+        if configuration is None:
+            configuration = {}
+
+        self.configuration.update(configuration)
+
     @task(
         bss_path=IN, bam_file=FILE_IN, genome_idx=FILE_IN,
         wig_file=FILE_OUT, cgmap_file=FILE_OUT, atcgmap_file=FILE_OUT)

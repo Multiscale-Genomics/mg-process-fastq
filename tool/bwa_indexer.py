@@ -59,6 +59,11 @@ class bwaIndexerTool(Tool):
         logger.info("BWA Indexer")
         Tool.__init__(self)
 
+        if configuration is None:
+            configuration = {}
+
+        self.configuration.update(configuration)
+
     @task(file_loc=FILE_IN, idx_out=FILE_OUT)
     def bwa_indexer(self, file_loc, idx_out): # pylint: disable=unused-argument
         """

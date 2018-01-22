@@ -57,6 +57,11 @@ class bssIndexerTool(Tool):
         logger.info("BS-Seeker Indexer wrapper")
         Tool.__init__(self)
 
+        if configuration is None:
+            configuration = {}
+
+        self.configuration.update(configuration)
+
     @task(
         fasta_file=FILE_IN, aligner=IN, aligner_path=IN, bss_path=IN,
         idx_out=FILE_OUT)

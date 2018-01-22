@@ -239,6 +239,10 @@ before_script:
     - ln -s ${HOME}/lib/samtools/bin/zoom2sam.pl zoom2sam.pl
 
     - cd ${HOME}/build/Multiscale-Genomics/mg-process-fastq
+    - Rscript scripts/install_packages.R
+
+
+    - cd ${HOME}/build/Multiscale-Genomics/mg-process-fastq
     - docker run -p 80:80 --name biobambamcontainer multiscalegenomics/mgprocessfastq:biobambamimage
     - pwd
 

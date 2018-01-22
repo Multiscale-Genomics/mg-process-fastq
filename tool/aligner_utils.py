@@ -147,7 +147,7 @@ class alignerUtils(object):
 
         return (amb_name, ann_name, bwt_name, pac_name, sa_name)
 
-    def bwa_aln_align_reads_single(self, genome_file, reads_file, bam_loc):
+    def bwa_aln_align_reads_single(self, genome_file, reads_file, bam_loc, params):
         """
         Map the reads to the genome using BWA.
         Parameters
@@ -160,9 +160,12 @@ class alignerUtils(object):
             Location of the output file
         """
 
+
+
         cmd_aln = ' '.join([
             'bwa aln',
             '-q', '5',
+            ' '.join(params),
             '-f', reads_file + '.sai',
             genome_file, reads_file
         ])
@@ -193,7 +196,7 @@ class alignerUtils(object):
                 msg.errno, msg.strerror, command_line))
             return False
 
-    def bwa_aln_align_reads_paired(self, genome_file, reads_file_1, reads_file_2, bam_loc):
+    def bwa_aln_align_reads_paired(self, genome_file, reads_file_1, reads_file_2, bam_loc, params):
         """
         Map the reads to the genome using BWA.
         Parameters
@@ -226,7 +229,7 @@ class alignerUtils(object):
 
         return output_bam_file
 
-    def bwa_mem_align_reads_single(self, genome_file, reads_file, bam_loc):
+    def bwa_mem_align_reads_single(self, genome_file, reads_file, bam_loc, params):
         """
         Map the reads to the genome using BWA.
 
@@ -256,7 +259,7 @@ class alignerUtils(object):
 
         return output_bam_file
 
-    def bwa_mem_align_reads_paired(self, genome_file, reads_file_1, reads_file_2, bam_loc):
+    def bwa_mem_align_reads_paired(self, genome_file, reads_file_1, reads_file_2, bam_loc, params):
         """
         Map the reads to the genome using BWA.
 

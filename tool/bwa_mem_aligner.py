@@ -167,7 +167,7 @@ class bwaAlignerTool(Tool):
 
         au_handle = alignerUtils()
         logger.info(
-            au_handle.bwa_mem_align_reads_single(genome_fa_ln, read_file_loc, out_bam)
+            au_handle.bwa_mem_align_reads_single(genome_fa_ln, read_file_loc, out_bam, mem_params)
         )
 
         try:

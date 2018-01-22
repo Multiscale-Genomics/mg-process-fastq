@@ -202,16 +202,24 @@ class macs2(Tool):
         command_line = "macs2 callpeak " + " ".join(macs_params) + " -t " + bam_file
         command_line = command_line + ' -n ' + name + '_out --outdir ' + output_dir
 
-        logger.info("MACS2 - NAME:", name)
-        logger.info('Output Files:', narrowpeak, summits_bed, broadpeak, gappedpeak)
-        logger.info('MACS2 COMMAND LINE:', command_line)
+        logger.info("MACS2 - NAME: " + name)
+        logger.info("Output Files: " + narrowpeak, summits_bed, broadpeak, gappedpeak)
+        logger.info("MACS2 COMMAND LINE: " + command_line)
 
-        args = shlex.split(command_line)
-        process = subprocess.Popen(args)
-        process.wait()
+        if os.path.isfile(bam_file) is False or os.path.getsize(bam_file) == 0:
+            logger.fatal("MISSING FILE: " + bam_file)
+
+        try:
+            args = shlex.split(command_line)
+            process = subprocess.Popen(args)
+            process.wait()
+        except (IOError, OSError) as msg:
+            logger.fatal("I/O error({0}): {1}\n{2}".format(
+                msg.errno, msg.strerror, command_line))
+            return msg.errno
 
         if process.returncode is not 0:
-            logger.fatal("MACS2 ERROR", process.returncode)
+            logger.fatal("MACS2 ERROR: " + str(process.returncode))
             return process.returncode
 
         out_suffix = ['peaks.narrowPeak', 'peaks.broadPeak', 'peaks.gappedPeak', 'summits.bed']
@@ -359,7 +367,7 @@ class macs2(Tool):
             command_params = command_params + [
                 "--call-summits", str(self.configuration["macs_call-summits_param"])]
 
-        logger.info("MACS2 COMMAND PARAMS:", command_params)
+        logger.info("MACS2 COMMAND PARAMS:" + ", ".join(command_params))
 
         # handle error
         if 'background' in input_files:

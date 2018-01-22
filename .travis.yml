@@ -242,10 +242,10 @@ before_script:
     - cd ${HOME}/build/Multiscale-Genomics/mg-process-fastq
 
     # - echo "R_LIB=${HOME}/R" > ${HOME}/.Renviron
-    - echo "options(repos = c(CRAN = 'http://mirrors.ebi.ac.uk/CRAN/'))" > ${HOME}/.Rprofile
-    - echo ".libPaths('~/R')" >> ${HOME}/.Rprofile
-    - echo 'message("Using library:", .libPaths()[1])' >> ${HOME}/.Rprofile
-    - Rscript scripts/install_packages.R
+    # - echo "options(repos = c(CRAN = 'http://mirrors.ebi.ac.uk/CRAN/'))" > ${HOME}/.Rprofile
+    # - echo ".libPaths('~/R')" >> ${HOME}/.Rprofile
+    # - echo 'message("Using library:", .libPaths()[1])' >> ${HOME}/.Rprofile
+    # - Rscript scripts/install_packages.R
 
 
     - cd ${HOME}/build/Multiscale-Genomics/mg-process-fastq

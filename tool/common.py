@@ -16,7 +16,6 @@
 """
 from __future__ import print_function
 
-import sys
 import shlex
 import subprocess
 import os.path

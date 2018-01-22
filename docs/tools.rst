@@ -105,6 +105,11 @@ Tools for processing FastQ files
    .. autoclass:: tool.bs_seeker_methylation_caller.bssMethylationCallerTool
       :members:
 
+   iDEAR
+   ----
+   .. autoclass:: tool.idear.idearTool
+      :members:
+
    iNPS
    ----
    .. autoclass:: tool.inps.inps

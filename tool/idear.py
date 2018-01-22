@@ -44,7 +44,7 @@ from basic_modules.metadata import Metadata
 
 class idearTool(Tool):
     """
-    Tool for peak calling for MNase-seq data
+    Tool for peak calling for iDamID-seq data
     """
 
     def __init__(self, configuration=None):

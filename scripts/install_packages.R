@@ -15,9 +15,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-install.packages("optparse", repos="https://mirrors.ebi.ac.uk/CRAN/")
+install.packages("optparse", repos="http://cloud.r-project.org/")
 source("http://bioconductor.org/biocLite.R")
 biocLite("BSgenome")
 biocLite("DESeq2")
-if(!require("devtools")) install.packages("devtools", repos="https://mirrors.ebi.ac.uk/CRAN/")
+if(!require("devtools")) install.packages("devtools", repos="http://cloud.r-project.org/")
 devtools::install_bitbucket("juanlmateo/idear")

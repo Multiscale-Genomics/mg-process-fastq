@@ -31,11 +31,11 @@ def test_biobambam_chipseq():
     resource_path = os.path.join(os.path.dirname(__file__), "data/")
 
     input_files = {
-        "input": resource_path + "macs2.Human.DRR000150.22.bam"
+        "input": resource_path + "macs2.Human.DRR000150.22_aln.bam"
     }
 
     output_files = {
-        "output": resource_path + "macs2.Human.DRR000150.22_filtered.bam"
+        "output": resource_path + "macs2.Human.DRR000150.22_aln_filtered.bam"
     }
 
     metadata = {
@@ -47,8 +47,8 @@ def test_biobambam_chipseq():
     bbb = biobambam_filter.biobambam()
     bbb.run(input_files, metadata, output_files)
 
-    assert os.path.isfile(resource_path + "macs2.Human.DRR000150.22_filtered.bam") is True
-    assert os.path.getsize(resource_path + "macs2.Human.DRR000150.22_filtered.bam") > 0
+    assert os.path.isfile(resource_path + "macs2.Human.DRR000150.22_aln_filtered.bam") is True
+    assert os.path.getsize(resource_path + "macs2.Human.DRR000150.22_aln_filtered.bam") > 0
 
 @pytest.mark.idamidseq
 def test_biobambam_idamidseq():

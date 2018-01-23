@@ -75,12 +75,15 @@ class process_bwa(Workflow):
                 Location of the BWA archived index files
             loc : str
                 Location of the FASTQ reads files
+            fastq2 : str
+                [OPTIONAL] Location of the FASTQ reads file for paired end data
         metadata : dict
             Input file meta data associated with their roles
 
             genome : str
             index : str
             loc : str
+            fastq2 : str
         output_files : dict
             Output file locations
 

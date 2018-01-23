@@ -17,6 +17,7 @@
 
 from __future__ import print_function
 
+import os
 import shlex
 import subprocess
 import sys
@@ -66,8 +67,7 @@ class fastq_splitter(Tool):
     @task(
         in_file1=FILE_IN, tag=IN,
         out_file=FILE_OUT, files_out=OUT,
-        returns=list
-    )
+        returns=list)
     def single_splitter(self, in_file1, out_file, tag='tmp'):
         """
         Function to divide the FastQ files into separate sub files of 1000000
@@ -129,10 +129,8 @@ class fastq_splitter(Tool):
 
         output_file_pregz = out_file.replace('.tar.gz', '.tar')
 
-        tar = tarfile.open(output_file_pregz, "w")
-        tar.add("/".join(file_loc_1[:-1]), arcname='tmp')
-        tar.close()
-
+        if os.path.isfile(out_file):
+            os.remove(out_file)
         tar = tarfile.open(output_file_pregz, "w")
         tar.add("/".join(file_loc_1[:-1]), arcname='tmp')
         tar.close()
@@ -147,8 +145,7 @@ class fastq_splitter(Tool):
     @task(
         in_file1=FILE_IN, in_file2=FILE_IN, tag=IN,
         out_file=FILE_OUT, files_out=OUT,
-        returns=list
-    )
+        returns=list)
     def paired_splitter(self, in_file1, in_file2, out_file, tag='tmp'):
         """
         Function to divide the FastQ files into separte sub files of 1000000
@@ -240,6 +237,8 @@ class fastq_splitter(Tool):
 
         output_file_pregz = out_file.replace('.tar.gz', '.tar')
 
+        if os.path.isfile(out_file):
+            os.remove(out_file)
         tar = tarfile.open(output_file_pregz, "w")
         tar.add("/".join(file_loc_1[:-1]), arcname='tmp')
         tar.close()

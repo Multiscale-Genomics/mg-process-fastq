@@ -43,7 +43,7 @@ except ImportError:
 from basic_modules.tool import Tool
 from basic_modules.metadata import Metadata
 
-from tool.common import common
+from tool.aligner_utils import alignerUtils
 
 # ------------------------------------------------------------------------------
 
@@ -81,8 +81,8 @@ class bwaIndexerTool(Tool):
         bool
         """
         try:
-            common_handler = common()
-            amb_loc, ann_loc, bwt_loc, pac_loc, sa_loc = common_handler.bwa_index_genome(file_loc)
+            au_handler = alignerUtils()
+            amb_loc, ann_loc, bwt_loc, pac_loc, sa_loc = au_handler.bwa_index_genome(file_loc)
 
             # tar.gz the index
             print("BS - idx_out", idx_out, idx_out.replace('.tar.gz', ''))

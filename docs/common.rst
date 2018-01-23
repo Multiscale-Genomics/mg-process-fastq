@@ -13,13 +13,26 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 
-Common Functions Used By Tools
-==============================
-
-The following functions are ones that have been used across multiple tools for
-transformations of the data when requried.
+Utility Functions
+=================
 
 .. automodule:: tool
 
+   Common Functions
+   ----------------
+
+   The following functions are ones that have been used across multiple tools for
+   transformations of the data when requried.
+
    .. autoclass:: tool.common.common
+      :members:
+
+   Alignment Utilities
+   -------------------
+   .. autoclass:: tool.aligner_utils.alignerUtils
+      :members:
+
+   Bam Utilities
+   -------------
+   .. autoclass:: tool.bam_utils.bamUtils
       :members:

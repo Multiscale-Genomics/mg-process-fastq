@@ -46,7 +46,7 @@ from tool.bam_utils import bamUtils
 # ------------------------------------------------------------------------------
 
 
-class bwaAlignerTool(Tool):
+class bwaAlignerMEMTool(Tool):
     """
     Tool for aligning sequence reads to a genome using BWA
     """
@@ -55,7 +55,7 @@ class bwaAlignerTool(Tool):
         """
         Init function
         """
-        logger.info("BWA ALN Aligner")
+        logger.info("BWA MEM Aligner")
         Tool.__init__(self)
 
         if configuration is None:
@@ -122,9 +122,9 @@ class bwaAlignerTool(Tool):
         return bam_handle.bam_index(bam_file, bam_idx_file)
 
     @task(returns=bool, genome_file_loc=FILE_IN, read_file_loc=FILE_IN,
-          bam_loc=FILE_OUT, genome_idx=FILE_IN, aln_params=IN, isModifier=False)
+          bam_loc=FILE_OUT, genome_idx=FILE_IN, mem_params=IN, isModifier=False)
     def bwa_aligner_single(  # pylint: disable=too-many-arguments
-            self, genome_file_loc, read_file_loc, bam_loc, genome_idx, aln_params):  # pylint: disable=unused-argument
+            self, genome_file_loc, read_file_loc, bam_loc, genome_idx, mem_params):  # pylint: disable=unused-argument
         """
         BWA Aligner
 
@@ -167,8 +167,8 @@ class bwaAlignerTool(Tool):
 
         au_handle = alignerUtils()
         logger.info(
-            "BWA FINISHED: " + str(au_handle.bwa_aln_align_reads_single(
-                genome_fa_ln, read_file_loc, out_bam, aln_params))
+            "BWA FINISHED: " + str(au_handle.bwa_mem_align_reads(
+                genome_fa_ln, out_bam, mem_params, read_file_loc))
         )
 
         try:
@@ -178,16 +178,16 @@ class bwaAlignerTool(Tool):
         except IOError:
             return False
 
-        # shutil.rmtree(g_dir)
+        #shutil.rmtree(g_dir)
 
         return True
 
     @task(returns=bool, genome_file_loc=FILE_IN, read_file_loc1=FILE_IN,
           read_file_loc2=FILE_IN, bam_loc=FILE_OUT, genome_idx=FILE_IN,
-          aln_params=IN, isModifier=False)
+          mem_params=IN, isModifier=False)
     def bwa_aligner_paired(  # pylint: disable=too-many-arguments
             self, genome_file_loc, read_file_loc1, read_file_loc2, bam_loc,
-            genome_idx, aln_params):  # pylint: disable=unused-argument
+            genome_idx, mem_params):  # pylint: disable=unused-argument
         """
         BWA Aligner
 
@@ -220,8 +220,8 @@ class bwaAlignerTool(Tool):
         out_bam = read_file_loc1 + '.out.bam'
         au_handle = alignerUtils()
         logger.info(
-            "BWA FINISHED: " + str(au_handle.bwa_aln_align_reads_paired(
-                genome_fa_ln, read_file_loc1, read_file_loc2, out_bam, aln_params))
+            "BWA FINISHED: " + str(au_handle.bwa_mem_align_reads(
+                genome_fa_ln, out_bam, mem_params, read_file_loc1, read_file_loc2))
         )
 
         try:
@@ -231,58 +231,62 @@ class bwaAlignerTool(Tool):
         except IOError:
             return False
 
-        # shutil.rmtree(g_dir)
+        #shutil.rmtree(g_dir)
 
         return True
 
-    def get_aln_params(self, params):
+    def get_mem_params(self, params):
         """
 
         """
         command_params = []
-        if "bwa_edit_dist_param" in params:
+        if "bwa_mem_min_seed_len_param" in params:
             command_params = command_params + [
-                "-n", str(params["bwa_edit_dist_param"])]
-        if "bwa_max_gap_open_param" in params:
+                "-k", str(params["bwa_mem_min_seed_len_param"])]
+        if "bwa_mem_band_width_param" in params:
             command_params = command_params + [
-                "-o", str(params["bwa_max_gap_open_param"])]
-        if "bwa_max_gap_ext_param" in params:
+                "-w", str(params["bwa_mem_band_width_param"])]
+        if "bwa_mem_zdropoff_param" in params:
             command_params = command_params + [
-                "-e", str(params["bwa_max_gap_ext_param"])]
-        if "bwa_dis_long_del_range_param" in params:
+                "-d", str(params["bwa_mem_zdropoff_param"])]
+        if "bwa_mem_reseeding_param" in params:
             command_params = command_params + [
-                "-d", str(params["bwa_dis_long_del_range_param"])]
-        if "bwa_dis_indel_range_param" in params:
+                "-r", str(params["bwa_mem_reseeding_param"])]
+        if "bwa_mem_insensitive_param" in params:
             command_params = command_params + [
-                "-i", str(params["bwa_dis_indel_range_param"])]
-        if "bwa_n_subseq_seed_param" in params:
+                "-c", str(params["bwa_mem_insensitive_param"])]
+        if "bwa_mem_paried_rescue_mode_param" in params:
+            command_params = command_params + ["-P"]
+        if "bwa_mem_matching_score_param" in params:
             command_params = command_params + [
-                "-l", str(params["bwa_n_subseq_seed_param"])]
-        if "bwa_max_edit_dist_param" in params:
+                "-A", str(params["bwa_mem_matching_score_param"])]
+        if "bwa_mem_mismatch_penalty_param" in params:
             command_params = command_params + [
-                "-k", str(params["bwa_max_edit_dist_param"])]
-        if "bwa_mismatch_penalty_param" in params:
+                "-B", str(params["bwa_mem_mismatch_penalty_param"])]
+        if "bwa_mem_gap_open_penalty_param" in params:
             command_params = command_params + [
-                "-M", str(params["bwa_mismatch_penalty_param"])]
-        if "bwa_gap_open_penalty_param" in params:
+                "-O", str(params["bwa_mem_gap_open_penalty_param"])]
+        if "bwa_mem_gap_ext_penalty_param" in params:
             command_params = command_params + [
-                "-O", str(params["bwa_gap_open_penalty_param"])]
-        if "bwa_gap_ext_penalty_param" in params:
+                "-E", str(params["bwa_mem_gap_ext_penalty_param"])]
+        if "bwa_mem_clipping_penalty_param" in params:
             command_params = command_params + [
-                "-E", str(params["bwa_gap_ext_penalty_param"])]
-        if "bwa_use_subopt_threshold_param" in params:
+                "-L", str(params["bwa_mem_clipping_penalty_param"])]
+        if "bwa_mem_unpaired_penalty_param" in params:
             command_params = command_params + [
-                "-R", str(params["bwa_use_subopt_threshold_param"])]
-        if "bwa_reverse_query_param" in params:
-            command_params = command_params + ["-c"]
-        if "bwa_dis_iter_search_param" in params:
-            command_params = command_params + ["-N"]
-        if "bwa_read_trim_param" in params:
+                "-U", str(params["bwa_mem_unpaired_penalty_param"])]
+        if "bwa_mem_reads_interleaved_param" in params:
+            command_params = command_params + ["-p"]
+        if "bwa_mem_complete_read_head_param" in params:
             command_params = command_params + [
-                "-q", str(params["bwa_read_trim_param"])]
-        if "bwa_barcode_len_param" in params:
+                "-R", str(params["bwa_mem_complete_read_head_param"])]
+        if "bwa_mem_alignment_threshold_param" in params:
             command_params = command_params + [
-                "-B", str(params["bwa_barcode_len_param"])]
+                "-T", str(params["bwa_mem_alignment_threshold_param"])]
+        if "bwa_mem_hard_clipping_param" in params:
+            command_params = command_params + ["-H"]
+        if "bwa_mem_short_split_secondary_param" in params:
+            command_params = command_params + ["-M"]
 
         return command_params
 
@@ -368,7 +372,7 @@ class bwaAlignerTool(Tool):
 
                 results = self.bwa_aligner_paired(
                     str(input_files["genome"]), tmp_fq1, tmp_fq2, output_bam_file_tmp,
-                    str(input_files["index"]), self.get_aln_params(self.configuration)
+                    str(input_files["index"]), self.get_mem_params(self.configuration)
                 )
             else:
                 tmp_fq = gz_data_path + "/tmp/" + fastq_file_pair[0]
@@ -378,7 +382,7 @@ class bwaAlignerTool(Tool):
                 logger.info("BWAL ALN FILES:" + tmp_fq)
                 results = self.bwa_aligner_single(
                     str(input_files["genome"]), tmp_fq, output_bam_file_tmp,
-                    str(input_files["index"]), self.get_aln_params(self.configuration)
+                    str(input_files["index"]), self.get_mem_params(self.configuration)
                 )
         barrier()
 

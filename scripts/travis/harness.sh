@@ -54,6 +54,11 @@ rm tests/data/macs2.Human.GCA_000001405.22.fasta.bwa.tar.gz
 rm tests/data/tb.Human.GCA_000001405.22.fasta
 rm tests/data/tb.Human.GCA_000001405.22_gem*
 
+python tests/test_toolchains.py --pipeline bwa
+tc=$?
+rc=$(($rc + $tc))
+sh tidy_data.sh
+
 if [[ $pv == "2.7.12" ]]; then
     python tests/test_toolchains.py --pipeline chipseq
     tc=$?

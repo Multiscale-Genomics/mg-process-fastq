@@ -40,7 +40,7 @@ except ImportError:
 from basic_modules.metadata import Metadata
 from basic_modules.tool import Tool
 
-from tool.common import common
+from tool.aligner_utils import alignerUtils
 
 # ------------------------------------------------------------------------------
 
@@ -76,10 +76,10 @@ class gemIndexerTool(Tool):
             Location of the output index file
         """
         try:
-            common_handle = common()
-            common_handle.replaceENAHeader(genome_file, new_genome_file)
+            au_handle = alignerUtils()
+            au_handle.replaceENAHeader(genome_file, new_genome_file)
 
-            common_handle.gem_index_genome(new_genome_file, new_genome_file)
+            au_handle.gem_index_genome(new_genome_file, new_genome_file)
 
             idx_out_pregz = index_loc.replace('.gem.gz', '.gem')
             command_line = 'pigz ' + idx_out_pregz

@@ -46,15 +46,14 @@ def genome_toolchain(verbose=False):
 
 def bwa_toolchain(verbose=False):
     """
-    Runs the tests for all of the tools from the Genome indexing pipeline
+    Runs the tests for all of the tools from the BWA pipeline
 
     Runs the following tests:
 
     .. code-block:: none
 
-       pytest -m genome tests/test_bowtie_indexer.py
        pytest -m genome tests/test_bwa_indexer.py
-       pytest -m genome tests/test_gem_indexer.py
+       pytest -m chipseq tests/test_bwa_aligner.py
     """
 
     params = ['-m bwa']

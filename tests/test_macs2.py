@@ -30,9 +30,6 @@ def test_macs2():
 
     resource_path = os.path.join(os.path.dirname(__file__), "data/")
 
-    # bam_file_stub = resource_path + "macs2.Human.DRR000150.22.filtered"
-    # bam_file = bam_file_stub + '.bam'
-
     input_files = {
         "input": resource_path + "macs2.Human.DRR000150.22_aln_filtered.bam"
     }
@@ -65,9 +62,6 @@ def test_macs2_background():
     """
 
     resource_path = os.path.join(os.path.dirname(__file__), "data/")
-
-    # bam_file_stub = resource_path + "macs2.Human.DRR000150.22.filtered"
-    # bam_file = bam_file_stub + '.bam'
 
     input_files = {
         "input": resource_path + "macs2.Human.DRR000150.22_aln_filtered.bam",

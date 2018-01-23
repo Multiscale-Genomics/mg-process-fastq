@@ -122,7 +122,7 @@ class bwaAlignerTool(Tool):
         return bam_handle.bam_index(bam_file, bam_idx_file)
 
     @task(returns=bool, genome_file_loc=FILE_IN, read_file_loc=FILE_IN,
-          bam_loc=FILE_OUT, genome_idx=FILE_IN, aligner=IN, isModifier=False)
+          bam_loc=FILE_OUT, genome_idx=FILE_IN, aln_params=IN, isModifier=False)
     def bwa_aligner_single(  # pylint: disable=too-many-arguments
             self, genome_file_loc, read_file_loc, bam_loc, genome_idx, aln_params):  # pylint: disable=unused-argument
         """
@@ -167,7 +167,8 @@ class bwaAlignerTool(Tool):
 
         au_handle = alignerUtils()
         logger.info(
-            au_handle.bwa_aln_align_reads_single(genome_fa_ln, read_file_loc, out_bam, aln_params)
+            "BWA FINISHED: " + str(au_handle.bwa_aln_align_reads_single(
+                genome_fa_ln, read_file_loc, out_bam, aln_params))
         )
 
         try:
@@ -177,16 +178,16 @@ class bwaAlignerTool(Tool):
         except IOError:
             return False
 
-        #shutil.rmtree(g_dir)
+        # shutil.rmtree(g_dir)
 
         return True
 
     @task(returns=bool, genome_file_loc=FILE_IN, read_file_loc1=FILE_IN,
           read_file_loc2=FILE_IN, bam_loc=FILE_OUT, genome_idx=FILE_IN,
-          aligner=IN, isModifier=False)
+          aln_params=IN, isModifier=False)
     def bwa_aligner_paired(  # pylint: disable=too-many-arguments
             self, genome_file_loc, read_file_loc1, read_file_loc2, bam_loc,
-            genome_idx, aligner):  # pylint: disable=unused-argument
+            genome_idx, aln_params):  # pylint: disable=unused-argument
         """
         BWA Aligner
 
@@ -218,8 +219,10 @@ class bwaAlignerTool(Tool):
 
         out_bam = read_file_loc1 + '.out.bam'
         au_handle = alignerUtils()
-        au_handle.bwa_aln_align_reads_paired(
-            genome_fa_ln, read_file_loc1, read_file_loc2, out_bam)
+        logger.info(
+            "BWA FINISHED: " + str(au_handle.bwa_aln_align_reads_paired(
+                genome_fa_ln, read_file_loc1, read_file_loc2, out_bam, aln_params))
+        )
 
         try:
             with open(bam_loc, "wb") as f_out:
@@ -228,7 +231,7 @@ class bwaAlignerTool(Tool):
         except IOError:
             return False
 
-        #shutil.rmtree(g_dir)
+        # shutil.rmtree(g_dir)
 
         return True
 

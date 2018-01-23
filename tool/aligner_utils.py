@@ -196,6 +196,8 @@ class alignerUtils(object):
                 msg.errno, msg.strerror, command_line))
             return False
 
+        return True
+
     def bwa_aln_align_reads_paired(self, genome_file, reads_file_1, reads_file_2, bam_loc, params):
         """
         Map the reads to the genome using BWA.
@@ -209,25 +211,53 @@ class alignerUtils(object):
             Location of the output file
         """
 
-        intermediate_file = reads_file_1 + '.sai'
-        intermediate_sam_file = reads_file_2 + '.sam'
         output_bam_file = bam_loc
 
-        command_lines = [
-            # 'bwa aln -q 5 -f ' + intermediate_file + ' ' + genome_file + ' ' + reads_file,
-            # 'bwa samse -f ' + intermediate_sam_file  + ' ' + genome_file + ' ' +
-            # intermediate_file + ' ' + reads_file,
-            # 'samtools view -b -o ' + output_bam_file + ' ' + intermediate_sam_file
-        ]
+        cmd_aln_1 = ' '.join([
+            'bwa aln',
+            '-q', '5',
+            ' '.join(params),
+            '-f', reads_file_1 + '.sai',
+            genome_file, reads_file_1
+        ])
 
-        print("BWA COMMAND LINES:", command_lines)
+        cmd_aln_2 = ' '.join([
+            'bwa aln',
+            '-q', '5',
+            ' '.join(params),
+            '-f', reads_file_2 + '.sai',
+            genome_file, reads_file_2
+        ])
 
-        for command_line in command_lines:
-            args = shlex.split(command_line)
-            process = subprocess.Popen(args)
-            process.wait()
 
-        return output_bam_file
+        cmd_samse = ' '.join([
+            'bwa samse',
+            '-f', reads_file_1 + '.sam',
+            genome_file,
+            reads_file_1 + '.sai', reads_file_2 + '.sai',
+            reads_file_1, reads_file_2
+        ])
+
+        cmd_view = ' '.join([
+            'samtools view',
+            '-b',
+            '-o', bam_loc,
+            reads_file_1 + '.sam'
+        ])
+
+        command_lines = [cmd_aln_1, cmd_aln_2, cmd_samse, cmd_view]
+
+        try:
+            for command_line in command_lines:
+                logger.info("BWA ALN COMMAND: " + command_line)
+                process = subprocess.Popen(command_line, shell=True)
+                process.wait()
+        except (IOError, OSError) as msg:
+            logger.info("I/O error({0}): {1}\n{2}".format(
+                msg.errno, msg.strerror, command_line))
+            return False
+
+        return True
 
     def bwa_mem_align_reads_single(self, genome_file, reads_file, bam_loc, params):
         """

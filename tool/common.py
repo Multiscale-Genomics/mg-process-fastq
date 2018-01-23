@@ -18,12 +18,13 @@ from __future__ import print_function
 
 import os.path
 
-class cd(object):
+class cd(object):  # pylint: disable=too-few-public-methods, invalid-name
     """
     Context manager for changing the current working directory
     """
 
     def __init__(self, newpath):
+        self.savedpath = os.getcwd()
         self.newpath = os.path.expanduser(newpath)
 
     def __enter__(self):

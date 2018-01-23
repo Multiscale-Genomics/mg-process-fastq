@@ -44,6 +44,29 @@ def genome_toolchain(verbose=False):
 
     return pytest.main(params)
 
+def bwa_toolchain(verbose=False):
+    """
+    Runs the tests for all of the tools from the Genome indexing pipeline
+
+    Runs the following tests:
+
+    .. code-block:: none
+
+       pytest -m genome tests/test_bowtie_indexer.py
+       pytest -m genome tests/test_bwa_indexer.py
+       pytest -m genome tests/test_gem_indexer.py
+    """
+
+    params = ['-m bwa']
+
+    if verbose is True:
+        params.append('-s')
+
+    params.append('tests/test_bwa_indexer.py')
+    params.append('tests/test_bwa_aligner.py')
+
+    return pytest.main(params)
+
 def chipseq_toolchain(verbose=False):
     """
     Runs the tests for all of the tools from the ChIP-seq pipeline
@@ -218,7 +241,10 @@ if __name__ == '__main__':
         "--pipeline",
         required=True,
         type=str,
-        choices=['genome', 'chipseq', 'hic', 'idamidseq', 'mnaseseq', 'rnaseq', 'wgbs', 'all'],
+        choices=[
+            'genome', 'bwa', 'chipseq', 'hic', 'idamidseq', 'mnaseseq', 'rnaseq',
+            'wgbs', 'all'
+        ],
         help=""
     )
     PARSER.add_argument("--verbose", action="store_const", const=True, default=False)
@@ -243,6 +269,12 @@ if __name__ == '__main__':
         print('GENOME')
 
         if genome_toolchain(VERBOSE) > 0:
+            sys.exit(1)
+
+    if 'bwa' in PIPELINES or 'all' in PIPELINES:
+        print('GENOME')
+
+        if bwa_toolchain(VERBOSE) > 0:
             sys.exit(1)
 
     if 'chipseq' in PIPELINES or 'all' in PIPELINES:

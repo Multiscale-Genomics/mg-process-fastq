@@ -24,8 +24,40 @@ from basic_modules.metadata import Metadata
 
 from tool.bwa_indexer import bwaIndexerTool
 
+@pytest.mark.genome
+@pytest.mark.bwa
+def test_bwa_indexer_bwa():
+    """
+    Test case to ensure that the BWA indexer works.
+    """
+    resource_path = os.path.join(os.path.dirname(__file__), "data/")
+    genome_fa = resource_path + "bsSeeker.Mouse.GRCm38.fasta"
+
+    input_files = {
+        "genome": genome_fa
+    }
+
+    output_files = {
+        "index": genome_fa + ".bwa.tar.gz"
+    }
+
+    metadata = {
+        "genome": Metadata(
+            "Assembly", "fasta", genome_fa, None,
+            {'assembly' : 'test'}),
+    }
+
+    print(input_files, output_files)
+
+    bwa_it = bwaIndexerTool()
+    bwa_it.run(input_files, metadata, output_files)
+
+    assert os.path.isfile(resource_path + "bsSeeker.Mouse.GRCm38.fasta.bwa.tar.gz") is True
+    assert os.path.getsize(resource_path + "bsSeeker.Mouse.GRCm38.fasta.bwa.tar.gz") > 0
+
 @pytest.mark.chipseq
 @pytest.mark.genome
+@pytest.mark.bwa
 def test_bwa_indexer_chipseq():
     """
     Test case to ensure that the BWA indexer works.
@@ -57,6 +89,7 @@ def test_bwa_indexer_chipseq():
 
 @pytest.mark.idamidseq
 @pytest.mark.genome
+@pytest.mark.bwa
 def test_bwa_indexer_idear():
     """
     Test case to ensure that the BWA indexer works
@@ -89,7 +122,8 @@ def test_bwa_indexer_idear():
 
 @pytest.mark.mnaseseq
 @pytest.mark.genome
-def test_bwa_indexer_03():
+@pytest.mark.bwa
+def test_bwa_indexer_mnaseseq():
     """
     Test case to ensure that the BWA indexer works
     """

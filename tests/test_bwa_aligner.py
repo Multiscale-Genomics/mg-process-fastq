@@ -25,6 +25,7 @@ from basic_modules.metadata import Metadata
 from tool.bwa_aligner import bwaAlignerTool
 
 @pytest.mark.chipseq
+@pytest.mark.bwa
 def test_bwa_aligner_chipseq():
     """
     Function to test BWA Aligner
@@ -68,7 +69,58 @@ def test_bwa_aligner_chipseq():
     assert os.path.isfile(resource_path + "macs2.Human.DRR000150.22.bam") is True
     assert os.path.getsize(resource_path + "macs2.Human.DRR000150.22.bam") > 0
 
+@pytest.mark.bwa
+def test_bwa_aligner_aln_paired():
+    """
+    Function to test BWA Aligner
+    """
+    resource_path = os.path.join(os.path.dirname(__file__), "data/")
+    genome_fa = resource_path + "bsSeeker.Mouse.GRCm38.fasta"
+    fastq_file_1 = resource_path + "bsSeeker.Mouse.GRCm38_1.fastq"
+    fastq_file_2 = resource_path + "bsSeeker.Mouse.GRCm38_2.fastq"
+
+    input_files = {
+        "genome": genome_fa,
+        "index": genome_fa + ".bwa.tar.gz",
+        "loc": fastq_file_1,
+        "fastq2": fastq_file_2
+    }
+
+    output_files = {
+        "output": fastq_file_1.replace(".fastq", ".bam")
+    }
+
+    metadata = {
+        "genome": Metadata(
+            "Assembly", "fasta", genome_fa, None,
+            {"assembly": "test"}),
+        "index": Metadata(
+            "index_bwa", "", [genome_fa],
+            {
+                "assembly": "test",
+                "tool": "bwa_indexer"
+            }
+        ),
+        "loc": Metadata(
+            "data_wgbs", "fastq", fastq_file_1, None,
+            {"assembly": "test"}
+        ),
+        "fastq2": Metadata(
+            "data_wgbs", "fastq", fastq_file_2, None,
+            {"assembly": "test"}
+        )
+    }
+
+    bwa_t = bwaAlignerTool()
+    bwa_t.run(input_files, metadata, output_files)
+
+    print(__file__)
+
+    assert os.path.isfile(resource_path + "bsSeeker.Mouse.GRCm38_1.bam") is True
+    assert os.path.getsize(resource_path + "bsSeeker.Mouse.GRCm38_1.bam") > 0
+
 @pytest.mark.idamidseq
+@pytest.mark.bwa
 def test_bwa_aligner_idamidseq():
     """
     Function to test BWA Aligner
@@ -127,6 +179,7 @@ def test_bwa_aligner_idamidseq():
         assert os.path.getsize(fastq_file.replace(".fastq", ".bam")) > 0
 
 @pytest.mark.mnaseseq
+@pytest.mark.bwa
 def test_bwa_aligner_mnaseseq():
     """
     Function to test BWA Aligner for MNase seq data

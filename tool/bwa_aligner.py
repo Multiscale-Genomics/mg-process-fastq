@@ -235,6 +235,57 @@ class bwaAlignerTool(Tool):
 
         return True
 
+    def get_aln_params(self, params):
+        """
+
+        """
+        command_params = []
+        if "bwa_edit_dist_param" in params:
+            command_params = command_params + [
+                "-n", str(params["bwa_edit_dist_param"])]
+        if "bwa_max_gap_open_param" in params:
+            command_params = command_params + [
+                "-o", str(params["bwa_max_gap_open_param"])]
+        if "bwa_max_gap_ext_param" in params:
+            command_params = command_params + [
+                "-e", str(params["bwa_max_gap_ext_param"])]
+        if "bwa_dis_long_del_range_param" in params:
+            command_params = command_params + [
+                "-d", str(params["bwa_dis_long_del_range_param"])]
+        if "bwa_dis_indel_range_param" in params:
+            command_params = command_params + [
+                "-i", str(params["bwa_dis_indel_range_param"])]
+        if "bwa_n_subseq_seed_param" in params:
+            command_params = command_params + [
+                "-l", str(params["bwa_n_subseq_seed_param"])]
+        if "bwa_max_edit_dist_param" in params:
+            command_params = command_params + [
+                "-k", str(params["bwa_max_edit_dist_param"])]
+        if "bwa_mismatch_penalty_param" in params:
+            command_params = command_params + [
+                "-M", str(params["bwa_mismatch_penalty_param"])]
+        if "bwa_gap_open_penalty_param" in params:
+            command_params = command_params + [
+                "-O", str(params["bwa_gap_open_penalty_param"])]
+        if "bwa_gap_ext_penalty_param" in params:
+            command_params = command_params + [
+                "-E", str(params["bwa_gap_ext_penalty_param"])]
+        if "bwa_use_subopt_threshold_param" in params:
+            command_params = command_params + [
+                "-R", str(params["bwa_use_subopt_threshold_param"])]
+        if "bwa_reverse_query_param" in params:
+            command_params = command_params + ["-c"]
+        if "bwa_dis_iter_search_param" in params:
+            command_params = command_params + ["-N"]
+        if "bwa_read_trim_param" in params:
+            command_params = command_params + [
+                "-q", str(params["bwa_read_trim_param"])]
+        if "bwa_barcode_len_param" in params:
+            command_params = command_params + [
+                "-B", str(params["bwa_barcode_len_param"])]
+
+        return command_params
+
     def run(self, input_files, input_metadata, output_files):
         """
         The main function to align bam files to a genome using BWA
@@ -303,52 +354,6 @@ class bwaAlignerTool(Tool):
         output_bam_file = output_files["output"]
         #output_bai_file = output_files["bai"]
 
-        command_params = []
-        if "bwa_edit_dist_param" in self.configuration:
-            command_params = command_params + [
-                "-n", str(self.configuration["bwa_edit_dist_param"])]
-        if "bwa_max_gap_open_param" in self.configuration:
-            command_params = command_params + [
-                "-o", str(self.configuration["bwa_max_gap_open_param"])]
-        if "bwa_max_gap_ext_param" in self.configuration:
-            command_params = command_params + [
-                "-e", str(self.configuration["bwa_max_gap_ext_param"])]
-        if "bwa_dis_long_del_range_param" in self.configuration:
-            command_params = command_params + [
-                "-d", str(self.configuration["bwa_dis_long_del_range_param"])]
-        if "bwa_dis_indel_range_param" in self.configuration:
-            command_params = command_params + [
-                "-i", str(self.configuration["bwa_dis_indel_range_param"])]
-        if "bwa_n_subseq_seed_param" in self.configuration:
-            command_params = command_params + [
-                "-l", str(self.configuration["bwa_n_subseq_seed_param"])]
-        if "bwa_max_edit_dist_param" in self.configuration:
-            command_params = command_params + [
-                "-k", str(self.configuration["bwa_max_edit_dist_param"])]
-        if "bwa_mismatch_penalty_param" in self.configuration:
-            command_params = command_params + [
-                "-M", str(self.configuration["bwa_mismatch_penalty_param"])]
-        if "bwa_gap_open_penalty_param" in self.configuration:
-            command_params = command_params + [
-                "-O", str(self.configuration["bwa_gap_open_penalty_param"])]
-        if "bwa_gap_ext_penalty_param" in self.configuration:
-            command_params = command_params + [
-                "-E", str(self.configuration["bwa_gap_ext_penalty_param"])]
-        if "bwa_use_subopt_threshold_param" in self.configuration:
-            command_params = command_params + [
-                "-R", str(self.configuration["bwa_use_subopt_threshold_param"])]
-        if "bwa_reverse_query_param" in self.configuration:
-            command_params = command_params + ["-c"]
-        if "bwa_dis_iter_search_param" in self.configuration:
-            command_params = command_params + ["-N"]
-        if "bwa_read_trim_param" in self.configuration:
-            command_params = command_params + [
-                "-q", str(self.configuration["bwa_read_trim_param"])]
-        if "bwa_barcode_len_param" in self.configuration:
-            command_params = command_params + [
-                "-B", str(self.configuration["bwa_barcode_len_param"])]
-
-
         logger.info("BWA ALIGNER: Aligning sequence reads to the genome")
 
         output_bam_list = []
@@ -363,7 +368,7 @@ class bwaAlignerTool(Tool):
 
                 results = self.bwa_aligner_paired(
                     str(input_files["genome"]), tmp_fq1, tmp_fq2, output_bam_file_tmp,
-                    str(input_files["index"]), command_params
+                    str(input_files["index"]), self.get_aln_params(self.configuration)
                 )
             else:
                 tmp_fq = gz_data_path + "/tmp/" + fastq_file_pair[0]
@@ -373,7 +378,7 @@ class bwaAlignerTool(Tool):
                 logger.info("BWAL ALN FILES:" + tmp_fq)
                 results = self.bwa_aligner_single(
                     str(input_files["genome"]), tmp_fq, output_bam_file_tmp,
-                    str(input_files["index"]), command_params
+                    str(input_files["index"]), self.get_aln_params(self.configuration)
                 )
         barrier()
 

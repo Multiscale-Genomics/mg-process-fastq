@@ -160,8 +160,6 @@ class alignerUtils(object):
             Location of the output file
         """
 
-
-
         cmd_aln = ' '.join([
             'bwa aln',
             '-q', '5',
@@ -188,7 +186,7 @@ class alignerUtils(object):
         # print("BWA COMMAND LINES:", command_lines)
         try:
             for command_line in command_lines:
-                logger.info("BWA ALN COMMAND: " + command_line)
+                logger.info("BWA MEM COMMAND: " + command_line)
                 process = subprocess.Popen(command_line, shell=True)
                 process.wait()
         except (IOError, OSError) as msg:
@@ -210,8 +208,6 @@ class alignerUtils(object):
         bam_loc : str
             Location of the output file
         """
-
-        output_bam_file = bam_loc
 
         cmd_aln_1 = ' '.join([
             'bwa aln',
@@ -249,7 +245,7 @@ class alignerUtils(object):
 
         try:
             for command_line in command_lines:
-                logger.info("BWA ALN COMMAND: " + command_line)
+                logger.info("BWA MEM COMMAND: " + command_line)
                 process = subprocess.Popen(command_line, shell=True)
                 process.wait()
         except (IOError, OSError) as msg:
@@ -259,7 +255,8 @@ class alignerUtils(object):
 
         return True
 
-    def bwa_mem_align_reads_single(self, genome_file, reads_file, bam_loc, params):
+    def bwa_mem_align_reads(
+            self, genome_file, bam_loc, params, reads_file_1, reads_file_2=None):
         """
         Map the reads to the genome using BWA.
 
@@ -273,48 +270,40 @@ class alignerUtils(object):
             Location of the output file
         """
 
-        intermediate_sam_file = reads_file + '.sam'
-        output_bam_file = bam_loc
+        reads = [reads_file_1]
+        if reads_file_2 is not None:
+            reads.append(reads_file_2)
 
-        command_line = 'bwa mem ' + genome_file + ' ' + reads_file
-        args = shlex.split(command_line)
-        with open(intermediate_sam_file, "w") as f_out:
-            sub_proc = subprocess.Popen(args, stdout=f_out)
-            sub_proc.wait()
+        cmd_aln = ' '.join([
+            'bwa mem -t 4',
+            ' '.join(params),
+            genome_file
+        ] + reads)
 
-        command_line = 'samtools view -b -o ' + output_bam_file + ' ' + intermediate_sam_file
-        args = shlex.split(command_line)
-        process = subprocess.Popen(args)
-        process.wait()
+        cmd_view = ' '.join([
+            'samtools view',
+            '-b',
+            '-o', bam_loc,
+            reads_file_1 + '.sam'
+        ])
 
-        return output_bam_file
+        try:
+            with open(reads_file_1 + '.sam', "w") as f_out:
+                logger.info("BWA MEM COMMAND: " + cmd_aln)
+                process = subprocess.Popen(cmd_aln, shell=True, stdout=f_out)
+                process.wait()
+        except (IOError, OSError) as msg:
+            logger.info("I/O error({0}): {1}\n{2}".format(
+                msg.errno, msg.strerror, cmd_aln))
+            return False
 
-    def bwa_mem_align_reads_paired(self, genome_file, reads_file_1, reads_file_2, bam_loc, params):
-        """
-        Map the reads to the genome using BWA.
+        try:
+            logger.info("BWA MEM COMMAND: " + cmd_view)
+            process = subprocess.Popen(cmd_view, shell=True)
+            process.wait()
+        except (IOError, OSError) as msg:
+            logger.info("I/O error({0}): {1}\n{2}".format(
+                msg.errno, msg.strerror, cmd_view))
+            return False
 
-        Parameters
-        ----------
-        genome_file : str
-            Location of the assembly file in the file system
-        reads_file : str
-            Location of the reads file in the file system
-        bam_loc : str
-            Location of the output file
-        """
-
-        intermediate_sam_file = reads_file_1 + '.sam'
-        output_bam_file = bam_loc
-
-        command_line = 'bwa mem ' + genome_file + ' ' + reads_file_1 + ' ' + reads_file_2
-        args = shlex.split(command_line)
-        with open(intermediate_sam_file, "w") as f_out:
-            sub_proc = subprocess.Popen(args, stdout=f_out)
-            sub_proc.wait()
-
-        command_line = 'samtools view -b -o ' + output_bam_file + ' ' + intermediate_sam_file
-        args = shlex.split(command_line)
-        process = subprocess.Popen(args)
-        process.wait()
-
-        return output_bam_file
+        return True

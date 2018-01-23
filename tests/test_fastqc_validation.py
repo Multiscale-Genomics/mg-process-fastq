@@ -32,11 +32,11 @@ def test_fastqc_chipseq_0():
     resource_path = os.path.join(os.path.dirname(__file__), "data/")
 
     input_files = {
-        "fastq": resource_path + "kallisto.Human.ERR030872_1.fastq"
+        "fastq": resource_path + "macs2.Human.DRR000150.22.fastq"
     }
 
     output_files = {
-        "report": resource_path + "kallisto.Human.ERR030872_1.report",
+        "report": resource_path + "macs2.Human.DRR000150.22.report",
     }
 
     metadata = {

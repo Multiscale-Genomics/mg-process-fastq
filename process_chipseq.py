@@ -255,7 +255,6 @@ class process_chipseq(Workflow):
             output_metadata['gapped_peak'].meta_data['tool_description'] = tool_name
             output_metadata['gapped_peak'].meta_data['tool'] = "process_chipseq"
 
-        print("CHIPSEQ RESULTS:", output_metadata)
         return output_files_generated, output_metadata
 
 

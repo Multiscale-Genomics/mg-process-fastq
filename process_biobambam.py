@@ -26,7 +26,6 @@ import argparse
 
 from basic_modules.workflow import Workflow
 from utils import logger
-from utils import remap
 
 from tool.biobambam_filter import biobambam
 
@@ -56,13 +55,7 @@ class process_biobambam(Workflow):  # pylint disable=too-few-public-methods, inv
 
     def run(self, input_files, metadata, output_files):
         """
-        Main run function for processing ChIP-seq FastQ data. Pipeline aligns
-        the FASTQ files to the genome using BWA. MACS 2 is then used for peak
-        calling to identify transcription factor binding sites within the
-        genome.
-
-        Currently this can only handle a single data file and a single
-        background file.
+        Main run function for filtering FastQ aligned reads using BioBamBam.
 
         Parameters
         ----------
@@ -84,28 +77,13 @@ class process_biobambam(Workflow):  # pylint disable=too-few-public-methods, inv
         output_files : dict
             Output file locations associated with their roles, for the output
 
-            bam [, "bam_bg"] : str
-                Aligned FASTQ short read file [ and aligned background file]
-                locations
-            filtered [, "filtered_bg"] : str
-                Filtered versions of the respective bam files
-            narrow_peak : str
-                Results files in bed4+1 format
-            summits : str
-                Results files in bed6+4 format
-            broad_peak : str
-                Results files in bed6+3 format
-            gapped_peak : str
-                Results files in bed12+3 format
+            filtered : str
+                Filtered version of the bam file
+
         output_metadata : dict
             Output metadata for the associated files in output_files
 
-            bam [, "bam_bg"] : Metadata
-            filtered [, "filtered_bg"] : Metadata
-            narrow_peak : Metadata
-            summits : Metadata
-            broad_peak : Metadata
-            gapped_peak : Metadata
+            filtered : Metadata
         """
         output_files_generated = {}
         output_metadata = {}
@@ -163,7 +141,7 @@ if __name__ == "__main__":
     # sys._run_from_cmdl = True  # pylint: disable=protected-access
 
     # Set up the command line parameters
-    PARSER = argparse.ArgumentParser(description="ChIP-seq peak calling")
+    PARSER = argparse.ArgumentParser(description="BioBamBam filtering")
     PARSER.add_argument("--config", help="Configuration file")
     PARSER.add_argument("--in_metadata", help="Location of input metadata file")
     PARSER.add_argument("--out_metadata", help="Location of output metadata file")

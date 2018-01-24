@@ -77,6 +77,67 @@ Download and index genome files
    .. autoclass:: process_genome.process_genome
       :members:
 
+
+BioBamBam Alignment Filtering
+-----------------------------
+.. automodule:: process_biobambam
+
+   This pipeline to filter sequencing artifacts from aligned reads.
+
+   Running from the command line
+   =============================
+
+   Parameters
+   ----------
+   config : str
+      Configuration JSON file
+   in_metadata : str
+      Location of input JSON metadata for files
+   out_metadata : str
+      Location of output JSON metadata for files
+
+   Returns
+   -------
+   bed : file
+      Bed files with the locations of transcription factor binding sites
+      within the genome
+
+   Example
+   -------
+   REQUIREMENT - Needs an aligned bam file
+
+   When running the pipeline on a local machine:
+
+   .. code-block:: none
+      :linenos:
+
+      python process_biobambam.py \
+         --config tests/json/config_biobambam.json \
+         --in_metadata tests/json/input_biobambam.json \
+         --out_metadata tests/json/output_biobambam.json
+
+   When using a local version of the [COMPS virtual machine](https://www.bsc.es/research-and-development/software-and-apps/software-list/comp-superscalar/):
+
+   .. code-block:: none
+      :linenos:
+
+      runcompss                     \
+         --lang=python              \
+         --library_path=${HOME}/bin \
+         --pythonpath=/<pyenv_virtenv_dir>/lib/python2.7/site-packages/ \
+         --log_level=debug          \
+         process_biobambam.py         \
+            --config tests/json/config_biobambam.json \
+            --in_metadata tests/json/input_biobambam.json \
+            --out_metadata tests/json/output_biobambam.json
+
+
+   Methods
+   =======
+   .. autoclass:: process_biobambam.process_biobambam
+      :members:
+
+
 BSgenome Builder
 ----------------
 .. automodule:: process_bsgenome
@@ -141,57 +202,29 @@ BSgenome Builder
       :members:
 
 
-Hi-C Analysis
--------------
+BWA Alignment - bwa aln
+-----------------------
+.. automodule:: process_bwa
 
-.. automodule:: process_hic
-
-   This pipeline can process paired end FASTQ files to identify structural
-   interactions that occur so that the genome can fold into the confines of the
-   nucleus
+   This pipeline aligns FASTQ reads to a given indexed genome. The pipeline can
+   handle single-end and paired-end reads.
 
    Running from the command line
    =============================
 
    Parameters
    ----------
-   genome : str
-      Location of the genomes FASTA file
-   genome_gem : str
-      Location of the genome GEM index file
-   taxon_id : int
-      Species taxonomic ID
-   assembly : str
-      Genomic assembly ID
-   file1 : str
-      Location of FASTQ file 1
-   file2 : str
-      Location of FASTQ file 2
-   resolutions : str
-      Comma separated list of resolutions to calculate the matrix for.
-      [DEFAULT : 1000000,10000000]
-   enzyme_name : str
-      Name of the enzyme used to digest the genome (example 'MboI')
-   window_type : str
-      iter | frag. Analysis windowing type to use
-   windows1 : str
-      FASTQ sampling window sizes to use for the first paired end FASTQ file,
-      the default is to use `[[1,25], [1,50], [1,75], [1,100]]`. This would be
-      represented as `1,25,50,75,100` as input for this variable
-   windows2 : str
-      FASTQ sampling window sizes to use for the second paired end FASTQ file,
-      the default is to use `[[1,25], [1,50], [1,75], [1,100]]`. This would be
-      represented as `1,25,50,75,100` as input for this variable
-   normalized : int
-      1 | 0. Determines whether the counts of alignments
-      should be normalized
-   tag : str
-      Name for the experiment output files to use
+   config : str
+      Configuration JSON file
+   in_metadata : str
+      Location of input JSON metadata for files
+   out_metadata : str
+      Location of output JSON metadata for files
 
    Returns
    -------
-   Adjacency List : file
-   HDF5 Adjacency Array : file
+   bam : file
+      Aligned reads in bam file
 
    Example
    -------
@@ -202,49 +235,116 @@ Hi-C Analysis
    .. code-block:: none
       :linenos:
 
-      python process_hic.py                                   \
-         --genome /<dataset_dir>/Homo_sapiens.GRCh38.fasta    \
-         --genome_gem /<dataset_dir>/Homo_sapiens.GRCh38.gem  \
-         --assembly GCA_000001405.25                          \
-         --taxon_id 9606                                      \
-         --file1 /<dataset_dir>/<file_name>_1.fastq           \
-         --file2 /<dataset_dir>/<file_name>_2.fastq           \
-         --resolutions 1000000,10000000                       \
-         --enzyme_name MboI                                   \
-         --windows1 1,100                                     \
-         --windows2 1,100                                     \
-         --normalized 1                                       \
-         --tag Human.SRR1658573                            \
-         --window_type frag
+      python process_bwa.py                            \
+         --config tests/json/config_chipseq.json \
+         --in_metadata tests/json/input_chipseq.json \
+         --out_metadata tests/json/output_chipseq.json
 
    When using a local version of the [COMPS virtual machine](https://www.bsc.es/research-and-development/software-and-apps/software-list/comp-superscalar/):
 
    .. code-block:: none
       :linenos:
 
-      runcompss                        \
-         --lang=python                 \
-         --library_path=${HOME}/bin    \
+      runcompss                     \
+         --lang=python              \
+         --library_path=${HOME}/bin \
          --pythonpath=/<pyenv_virtenv_dir>/lib/python2.7/site-packages/ \
-         --log_level=debug             \
-         process_hic.py                \
-            --taxon_id 9606            \
-            --genome /<dataset_dir>/.Human.GCA_000001405.22_gem.fasta \
-            --assembly GRCh38          \
-            --file1 /<dataset_dir>/Human.SRR1658573_1.fastq \
-            --file2 /<dataset_dir>/Human.SRR1658573_2.fastq \
-            --genome_gem /<dataset_dir>/Human.GCA_000001405.22_gem.fasta.gem \
-            --enzyme_name MboI         \
-            --resolutions 10000,100000 \
-            --windows1 1,100           \
-            --windows2 1,100           \
-            --normalized 1             \
-            --tag Human.SRR1658573     \
-            --window_type frag
+         --log_level=debug          \
+         process_bwa.py         \
+            --config tests/json/config_bwa_aln_single.json \
+            --in_metadata tests/json/input_bwa_aln_single_metadata.json \
+            --out_metadata tests/json/output_bwa_aln_single.json
+
+   .. code-block:: none
+      :linenos:
+
+      runcompss                     \
+         --lang=python              \
+         --library_path=${HOME}/bin \
+         --pythonpath=/<pyenv_virtenv_dir>/lib/python2.7/site-packages/ \
+         --log_level=debug          \
+         process_bwa.py         \
+            --config tests/json/config_bwa_aln_paired.json \
+            --in_metadata tests/json/input_bwa_aln_paired_metadata.json \
+            --out_metadata tests/json/output_bwa_aln_paired.json
+
 
    Methods
    =======
-   .. autoclass:: process_hic.process_hic
+   .. autoclass:: process_bwa.process_bwa
+      :members:
+
+
+BWA Alignment - bwa mem
+-----------------------
+.. automodule:: process_bwa_mem
+
+   This pipeline aligns FASTQ reads to a given indexed genome. The pipeline can
+   handle single-end and paired-end reads.
+
+   Running from the command line
+   =============================
+
+   Parameters
+   ----------
+   config : str
+      Configuration JSON file
+   in_metadata : str
+      Location of input JSON metadata for files
+   out_metadata : str
+      Location of output JSON metadata for files
+
+   Returns
+   -------
+   bam : file
+      Aligned reads in bam file
+
+   Example
+   -------
+   REQUIREMENT - Needs the indexing step to be run first
+
+   When running the pipeline on a local machine:
+
+   .. code-block:: none
+      :linenos:
+
+      python process_bwa.py                            \
+         --config tests/json/config_chipseq.json \
+         --in_metadata tests/json/input_chipseq.json \
+         --out_metadata tests/json/output_chipseq.json
+
+   When using a local version of the [COMPS virtual machine](https://www.bsc.es/research-and-development/software-and-apps/software-list/comp-superscalar/):
+
+   .. code-block:: none
+      :linenos:
+
+      runcompss                     \
+         --lang=python              \
+         --library_path=${HOME}/bin \
+         --pythonpath=/<pyenv_virtenv_dir>/lib/python2.7/site-packages/ \
+         --log_level=debug          \
+         process_bwa_mem.py         \
+            --config tests/json/config_bwa_mem_single.json \
+            --in_metadata tests/json/input_bwa_mem_single_metadata.json \
+            --out_metadata tests/json/output_bwa_mem_single.json
+
+   .. code-block:: none
+      :linenos:
+
+      runcompss                     \
+         --lang=python              \
+         --library_path=${HOME}/bin \
+         --pythonpath=/<pyenv_virtenv_dir>/lib/python2.7/site-packages/ \
+         --log_level=debug          \
+         process_bwa_mem.py         \
+            --config tests/json/config_bwa_mem_paired.json \
+            --in_metadata tests/json/input_bwa_mem_paired_metadata.json \
+            --out_metadata tests/json/output_bwa_mem_paired.json
+
+
+   Methods
+   =======
+   .. autoclass:: process_bwa_mem.process_bwa_mem
       :members:
 
 
@@ -259,14 +359,12 @@ ChIP-Seq Analysis
 
    Parameters
    ----------
-   genome : str
-      Genome accession (e.g. GCA_000001405.22)
-   taxon_id : int
-      Species (e.g. 9606)
-   file : str
-      Location of FASTQ input file
-   bgd_file : str
-      Location of FASTQ background file
+   config : str
+      Configuration JSON file
+   in_metadata : str
+      Location of input JSON metadata for files
+   out_metadata : str
+      Location of output JSON metadata for files
 
    Returns
    -------
@@ -380,16 +478,12 @@ Mnase-Seq Analysis
 
    Parameters
    ----------
-   assembly : str
-      Genome assembly ID (e.g. GCA_000001635.2)
-   taxon_id : int
-      Taxon ID (e.g. 10090)
-   genome : str
-      Location of genome assembly FASTA file
-   species : str
-      Species (e.g. mus_musculus)
-   file : str
-      Location of FASTQ input file
+   config : str
+      Configuration JSON file
+   in_metadata : str
+      Location of input JSON metadata for files
+   out_metadata : str
+      Location of output JSON metadata for files
 
    Returns
    -------
@@ -443,16 +537,12 @@ RNA-Seq Analysis
 
    Parameters
    ----------
-   assembly : str
-      Genome assembly ID (e.g. GCA_000001405.22)
-   taxon_id : int
-      Taxon ID (e.g. 9606)
-   genome : str
-      Location of genome assembly FASTA file
-   file : str
-      Location of FASTQ input file
-   file2 : str
-      [OPTIONAL] Location if FASTQ file if the data is paired end
+   config : str
+      Configuration JSON file
+   in_metadata : str
+      Location of input JSON metadata for files
+   out_metadata : str
+      Location of output JSON metadata for files
 
    Returns
    -------
@@ -504,22 +594,12 @@ Whole Genome BiSulphate Sequencing Analysis
 
    Parameters
    ----------
-   assembly : str
-      Genome assembly ID (e.g. GCA_000001405.22)
-   taxon_id : int
-      Taxon ID (e.g. 9606)
-   genome : str
-      Location of genome assembly FASTA file
-   fastq1 : str
-      Location of FASTQ input file
-   fastq2 : str
-      Location of FASTQ input file
-   aligner : str
-      The aligner for BS-Seeker to use (bowtie2)
-   aligner_path
-      Location of the bowtie2 executable
-   bss_path : str
-      Location of the BS-Seeker2 scripts
+   config : str
+      Configuration JSON file
+   in_metadata : str
+      Location of input JSON metadata for files
+   out_metadata : str
+      Location of output JSON metadata for files
 
    Returns
    -------
@@ -566,3 +646,108 @@ Whole Genome BiSulphate Sequencing Analysis
    .. autoclass:: process_wgbs.process_wgbs
       :members:
 
+Hi-C Analysis
+-------------
+
+.. automodule:: process_hic
+
+   This pipeline can process paired end FASTQ files to identify structural
+   interactions that occur so that the genome can fold into the confines of the
+   nucleus
+
+   Running from the command line
+   =============================
+
+   Parameters
+   ----------
+   genome : str
+      Location of the genomes FASTA file
+   genome_gem : str
+      Location of the genome GEM index file
+   taxon_id : int
+      Species taxonomic ID
+   assembly : str
+      Genomic assembly ID
+   file1 : str
+      Location of FASTQ file 1
+   file2 : str
+      Location of FASTQ file 2
+   resolutions : str
+      Comma separated list of resolutions to calculate the matrix for.
+      [DEFAULT : 1000000,10000000]
+   enzyme_name : str
+      Name of the enzyme used to digest the genome (example 'MboI')
+   window_type : str
+      iter | frag. Analysis windowing type to use
+   windows1 : str
+      FASTQ sampling window sizes to use for the first paired end FASTQ file,
+      the default is to use `[[1,25], [1,50], [1,75], [1,100]]`. This would be
+      represented as `1,25,50,75,100` as input for this variable
+   windows2 : str
+      FASTQ sampling window sizes to use for the second paired end FASTQ file,
+      the default is to use `[[1,25], [1,50], [1,75], [1,100]]`. This would be
+      represented as `1,25,50,75,100` as input for this variable
+   normalized : int
+      1 | 0. Determines whether the counts of alignments
+      should be normalized
+   tag : str
+      Name for the experiment output files to use
+
+   Returns
+   -------
+   Adjacency List : file
+   HDF5 Adjacency Array : file
+
+   Example
+   -------
+   REQUIREMENT - Needs the indexing step to be run first
+
+   When running the pipeline on a local machine:
+
+   .. code-block:: none
+      :linenos:
+
+      python process_hic.py                                   \
+         --genome /<dataset_dir>/Homo_sapiens.GRCh38.fasta    \
+         --genome_gem /<dataset_dir>/Homo_sapiens.GRCh38.gem  \
+         --assembly GCA_000001405.25                          \
+         --taxon_id 9606                                      \
+         --file1 /<dataset_dir>/<file_name>_1.fastq           \
+         --file2 /<dataset_dir>/<file_name>_2.fastq           \
+         --resolutions 1000000,10000000                       \
+         --enzyme_name MboI                                   \
+         --windows1 1,100                                     \
+         --windows2 1,100                                     \
+         --normalized 1                                       \
+         --tag Human.SRR1658573                            \
+         --window_type frag
+
+   When using a local version of the [COMPS virtual machine](https://www.bsc.es/research-and-development/software-and-apps/software-list/comp-superscalar/):
+
+   .. code-block:: none
+      :linenos:
+
+      runcompss                        \
+         --lang=python                 \
+         --library_path=${HOME}/bin    \
+         --pythonpath=/<pyenv_virtenv_dir>/lib/python2.7/site-packages/ \
+         --log_level=debug             \
+         process_hic.py                \
+            --taxon_id 9606            \
+            --genome /<dataset_dir>/.Human.GCA_000001405.22_gem.fasta \
+            --assembly GRCh38          \
+            --file1 /<dataset_dir>/Human.SRR1658573_1.fastq \
+            --file2 /<dataset_dir>/Human.SRR1658573_2.fastq \
+            --genome_gem /<dataset_dir>/Human.GCA_000001405.22_gem.fasta.gem \
+            --enzyme_name MboI         \
+            --resolutions 10000,100000 \
+            --windows1 1,100           \
+            --windows2 1,100           \
+            --normalized 1             \
+            --tag Human.SRR1658573     \
+            --window_type frag
+
+   Methods
+   =======
+   .. autoclass:: process_hic.process_hic
+      :members:

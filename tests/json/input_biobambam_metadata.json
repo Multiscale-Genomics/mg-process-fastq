@@ -4,7 +4,7 @@
         "_id": "59b7e020d9422a5969b65378",
         "data_type": "data_chip_seq",
         "file_type": "bam",
-        "file_path": "tests/data/macs2.Human.DRR000150.22.bam",
+        "file_path": "tests/data/macs2.Human.DRR000150.22_aln.bam",
         "sources": [],
         "taxon_id": 9606,
         "meta_data": {

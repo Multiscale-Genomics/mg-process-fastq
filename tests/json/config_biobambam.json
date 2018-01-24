@@ -3,7 +3,7 @@
         {
             "required": true,
             "allow_multiple": false,
-            "name": "input",
+            "name": "bam",
             "value": "59b7e020d9422a5969b65378"
         }
     ],
@@ -29,7 +29,7 @@
                     "tool": "biobambam",
                     "description": "Output"
                 },
-                "file_path": "tests/data/macs2.Human.DRR000150.22_filtered.bam",
+                "file_path": "tests/data/macs2.Human.DRR000150.22_aln_filtered.bam",
                 "data_type": "data_chip_seq",
                 "compressed": "null"
             }

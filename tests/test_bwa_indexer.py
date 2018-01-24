@@ -26,6 +26,7 @@ from tool.bwa_indexer import bwaIndexerTool
 
 @pytest.mark.genome
 @pytest.mark.bwa
+@pytest.mark.wgbs
 def test_bwa_indexer_bwa():
     """
     Test case to ensure that the BWA indexer works.

@@ -198,14 +198,13 @@ def main_json(config, in_metadata, out_metadata):
 # ------------------------------------------------------------------------------
 
 if __name__ == "__main__":
-    import sys
-    sys._run_from_cmdl = True  # pylint: disable=protected-access
 
     # Set up the command line parameters
     PARSER = argparse.ArgumentParser(description="Parse RNA-seq for expression analysis")
     PARSER.add_argument("--config", help="Configuration file")
     PARSER.add_argument("--in_metadata", help="Location of input metadata file")
     PARSER.add_argument("--out_metadata", help="Location of output metadata file")
+    PARSER.add_argument("--local", action="store_const", const=True, default=False)
 
     # Get the matching parameters from the command line
     ARGS = PARSER.parse_args()
@@ -213,6 +212,11 @@ if __name__ == "__main__":
     CONFIG = ARGS.config
     IN_METADATA = ARGS.in_metadata
     OUT_METADATA = ARGS.out_metadata
+    LOCAL = ARGS.local
+
+    if LOCAL:
+        import sys
+        sys._run_from_cmdl = True  # pylint: disable=protected-access
 
     RESULTS = main_json(CONFIG, IN_METADATA, OUT_METADATA)
 

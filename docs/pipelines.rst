@@ -98,9 +98,8 @@ BioBamBam Alignment Filtering
 
    Returns
    -------
-   bed : file
-      Bed files with the locations of transcription factor binding sites
-      within the genome
+   filtered : file
+      Filtered bam file
 
    Example
    -------

@@ -1,0 +1,275 @@
+{
+    "_id": "process_bwa_mem",
+    "name": "BWA MEM",
+    "title": "BWA MEM Alignment",
+    "short_description": "Align FASTQ data using BWA mem",
+    "owner": {
+        "institution": "EMBL-EBI",
+        "author": "Mark McDowall",
+        "contact": "mcdowall@ebi.ac.uk",
+        "user": "",
+        "url": "https://github.com/Multiscale-Genomics/mg-process-fastq"
+    },
+    "status": 0,
+    "external": true,
+    "has_custom_viewer": false,
+    "keywords": [
+        "dna"
+    ],
+    "infrastructure": {
+        "memory": 12,
+        "cpus": 4,
+        "executable": "/home/pmes/code/mg-process-fastq/process_bwa_mem.py",
+        "clouds": {
+            "mug-bsc": {
+                "launcher": "PMES",
+                "workflowType": "COMPSs",
+                "default_cloud": true
+            }
+        }
+      },
+    },
+    "input_files": [
+        {
+            "name": "loc",
+            "description": "Sequence read file",
+            "help": "path to a FASTQ sequence read file",
+            "file_type": ["FASTQ"],
+            "data_type": ["data_seq"],
+            "required": true,
+            "allow_multiple": false
+        },
+        {
+            "name": "fastq2",
+            "description": "Sequence read file",
+            "help": "path to a FASTQ sequence read file",
+            "file_type": ["FASTQ"],
+            "data_type": ["data_seq"],
+            "required": false,
+            "allow_multiple": false
+        },
+        {
+            "name": "genome",
+            "description": "Genome sequence file",
+            "help": "path to a assembly sequence file",
+            "file_type": ["FASTA"],
+            "data_type": ["sequence_genomic", "sequence_dna"],
+            "required": true,
+            "allow_multiple": false
+        },
+        {
+            "name": "index",
+            "description": "BWA index for matching species",
+            "help": "path to matching BWA index file",
+            "file_type": ["TAR"],
+            "data_type": ["sequence_mapping_index_bwa"],
+            "required": true,
+            "allow_multiple": false
+        }
+    ],
+    "input_files_combinations": [
+        [
+            "loc",
+            "genome",
+            "index"
+        ],
+        [
+            "loc",
+            "fastq2",
+            "genome",
+            "index"
+        ]
+    ],
+    "input_files_combinations_internal": [
+        [
+            {
+                "data_seq": 1
+            },
+            {
+                "sequence_genomic": 1
+            },
+            {
+                "sequence_mapping_index_bwa": "+"
+            }
+        ],
+        [
+            {
+                "data_seq": 1
+            },
+            {
+                "sequence_dna": 1
+            },
+            {
+                "sequence_mapping_index_bwa": "+"
+            }
+        ],
+        [
+            {
+                "data_seq": 1
+            },
+            {
+                "data_chip_seq": 1
+            },
+            {
+                "sequence_genomic": 1
+            },
+            {
+                "sequence_mapping_index_bwa": "+"
+            }
+        ],
+        [
+            {
+                "data_seq": 1
+            },
+            {
+                "data_chip_seq": 1
+            },
+            {
+                "sequence_dna": 1
+            },
+            {
+                "sequence_mapping_index_bwa": "+"
+            }
+        ]
+    ],
+    "arguments": [
+        {
+            "name": "bwa_mem_min_seed_len_param",
+            "description": "Minimum seed length [19]",
+            "help": "Minimum seed length",
+            "type": "string",
+            "required": false,
+            "default": "19"
+        }, {
+            "name": "bwa_mem_band_width_param",
+            "description": "Band width",
+            "help": "Band width",
+            "type": "string",
+            "required": false,
+            "default": "100"
+        }, {
+            "name": "bwa_mem_zdropoff_param",
+            "description": "Off-diagonal X-dropoff (Z-dropoff)",
+            "help": "Off-diagonal X-dropoff (Z-dropoff)",
+            "type": "string",
+            "required": false,
+            "default": "100"
+        }, {
+            "name": "bwa_mem_reseeding_param",
+            "description": "Trigger re-seeding for a MEM longer than minSeedLen*FLOAT",
+            "help": "",
+            "type": "string",
+            "required": false,
+            "default": "1.5"
+        }, {
+            "name": "bwa_mem_insensitive_param",
+            "description": "Discard a MEM if it has more than N occurence in the genome",
+            "help": "Discard a MEM if it has more than N occurence in the genome",
+            "type": "string",
+            "required": false,
+            "default": "10000"
+        }, {
+            "name": "bwa_mem_paried_rescue_mode_param",
+            "description": "In the paired-end mode, perform SW to rescue missing hits only but do not try to find hits that fit a proper pair",
+            "help": "In the paired-end mode, perform SW to rescue missing hits only but do not try to find hits that fit a proper pair",
+            "type": "bool",
+            "required": false,
+            "default": false
+        }, {
+            "name": "bwa_mem_matching_score_param",
+            "description": "Matching score",
+            "help": "Matching score",
+            "type": "string",
+            "required": false,
+            "default": "1"
+        }, {
+            "name": "bwa_mem_mismatch_penalty_param",
+            "description": "Mismatch penalty",
+            "help": "Mismatch penalty",
+            "type": "string",
+            "required": false,
+            "default": "4"
+        }, {
+            "name": "bwa_mem_gap_open_penalty_param",
+            "description": "Gap open penalty",
+            "help": "Gap open penalty",
+            "type": "string",
+            "required": false,
+            "default": "6"
+        }, {
+            "name": "bwa_mem_gap_ext_penalty_param",
+            "description": "Gap extension penalty",
+            "help": "Gap extension penalty",
+            "type": "string",
+            "required": false,
+            "default": "1"
+        }, {
+            "name": "bwa_mem_clipping_penalty_param",
+            "description": "Clipping penalty",
+            "help": "Clipping penalty",
+            "type": "string",
+            "required": false,
+            "default": "5"
+        }, {
+            "name": "bwa_mem_unpaired_penalty_param",
+            "description": "Penalty for an unpaired read pair",
+            "help": "Penalty for an unpaired read pair",
+            "type": "string",
+            "required": false,
+            "default": "9"
+        }, {
+            "name": "bwa_mem_reads_interleaved_param",
+            "description": "Assume the first input query file is interleaved paired-end FASTA/Q",
+            "help": "Assume the first input query file is interleaved paired-end FASTA/Q",
+            "type": "bool",
+            "required": false,
+            "default": false
+        }, {
+            "name": "bwa_mem_complete_read_head_param",
+            "description": "Complete read group header line",
+            "help": "Complete read group header line",
+            "type": "string",
+            "required": false,
+            "default": "0"
+        }, {
+            "name": "bwa_mem_alignment_threshold_param",
+            "description": "Don’t output alignment with score lower than N. This option only affects output",
+            "help": "Don’t output alignment with score lower than N. This option only affects output",
+            "type": "string",
+            "required": false,
+            "default": "30"
+        }, {
+            "name": "bwa_mem_hard_clipping_param",
+            "description": "Use hard clipping ’H’ in the SAM output",
+            "help": "Use hard clipping ’H’ in the SAM output",
+            "type": "bool",
+            "required": false,
+            "default": false
+        }, {
+            "name": "bwa_mem_short_split_secondary_param",
+            "description": "Mark shorter split hits as secondary (for Picard compatibility)",
+            "help": "Mark shorter split hits as secondary (for Picard compatibility)",
+            "type": "bool",
+            "required": false,
+            "default": false
+        }
+    ],
+    "output_files": [
+        {
+            "required": true,
+            "allow_multiple": false,
+            "name": "bam",
+            "file": {
+                "file_type": "bam",
+                "meta_data": {
+                    "visible": true,
+                    "tool": "process_bwa_mem",
+                    "description": "Aligned sequences"
+                },
+                "file_path": "bwa_mem.bam",
+                "data_type": "data_seq",
+                "compressed": "null"
+            }
+        }
+    ]
+}

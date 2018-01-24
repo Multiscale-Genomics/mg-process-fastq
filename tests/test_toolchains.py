@@ -52,8 +52,8 @@ def bwa_toolchain(verbose=False):
 
     .. code-block:: none
 
-       pytest -m genome tests/test_bwa_indexer.py
-       pytest -m chipseq tests/test_bwa_aligner.py
+       pytest -m bwa tests/test_bwa_indexer.py
+       pytest -m bwa tests/test_bwa_aligner.py
     """
 
     params = ['-m bwa']

@@ -147,6 +147,64 @@ class alignerUtils(object):
 
         return (amb_name, ann_name, bwt_name, pac_name, sa_name)
 
+    def bowtie2_align_reads(
+            self, genome_file, bam_loc, params, reads_file_1, reads_file_2=None):
+        """
+        Map the reads to the genome using BWA.
+
+        Parameters
+        ----------
+        genome_file : str
+            Location of the assembly file in the file system
+        reads_file : str
+            Location of the reads file in the file system
+        bam_loc : str
+            Location of the output file
+        """
+
+        reads = [reads_file_1]
+        if reads_file_2 is not None:
+            reads = [
+                "-1", reads_file_1,
+                "-2", reads_file_2
+            ]
+        else:
+            reads = ["-U", reads_file_1]
+
+        cmd_aln = ' '.join([
+            'bowtie2',
+            ' '.join(params),
+            genome_file
+        ] + reads)
+
+        cmd_view = ' '.join([
+            'samtools view',
+            '-b',
+            '-o', bam_loc,
+            reads_file_1 + '.sam'
+        ])
+
+        try:
+            with open(reads_file_1 + '.sam', "w") as f_out:
+                logger.info("BOWTIE2 COMMAND: " + cmd_aln)
+                process = subprocess.Popen(cmd_aln, shell=True, stdout=f_out)
+                process.wait()
+        except (IOError, OSError) as msg:
+            logger.info("I/O error({0}): {1}\n{2}".format(
+                msg.errno, msg.strerror, cmd_aln))
+            return False
+
+        try:
+            logger.info("BOWTIE2 COMMAND: " + cmd_view)
+            process = subprocess.Popen(cmd_view, shell=True)
+            process.wait()
+        except (IOError, OSError) as msg:
+            logger.info("I/O error({0}): {1}\n{2}".format(
+                msg.errno, msg.strerror, cmd_view))
+            return False
+
+        return True
+
     def bwa_aln_align_reads_single(self, genome_file, reads_file, bam_loc, params):
         """
         Map the reads to the genome using BWA.

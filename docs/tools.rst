@@ -65,11 +65,15 @@ Tools for processing FastQ files
    Aligners
    ========
 
-   BWA
-   ---
+   BWA - ALN
+   ---------
    .. autoclass:: tool.bwa_aligner.bwaAlignerTool
       :members:
 
+   BWA - MEM
+   ---------
+   .. autoclass:: tool.bwa_aligner.bwaAlignerMEMTool
+      :members:
 
    BS-Seeker2 Aligner
    ------------------

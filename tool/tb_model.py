@@ -139,6 +139,7 @@ class tbModelTool(Tool):
             '--ncpus', str(ncpus),
             '--assembly', metadata["assembly"],
             '--species', metadata["species"],
+            '--project', metadata["project"],
             '--fig_format', 'png'
             ]
         if optimize_only:
@@ -251,6 +252,7 @@ class tbModelTool(Tool):
         project_metadata = {}
         project_metadata["species"] = metadata["species"]
         project_metadata["assembly"] = metadata["assembly"]
+        project_metadata["project"] = os.path.basename(os.path.normpath(metadata["project"]))
 
         # input and output share most metadata
 

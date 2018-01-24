@@ -138,7 +138,7 @@ class tadbit_model(Workflow):
                 raise ValueError('Missing normalized input matrix.') 
             
         input_metadata = remap(self.configuration, "optimize_only", "gen_pos_chrom_name", "resolution", "gen_pos_begin",
-                               "gen_pos_end", "max_dist", "upper_bound", "lower_bound", "cutoff", "workdir", "ncpus")
+                               "gen_pos_end", "max_dist", "upper_bound", "lower_bound", "cutoff", "workdir", "project", "ncpus")
         in_files = [convert_from_unicode(input_files['hic_contacts_matrix_norm'])]
         input_metadata["species"] = "Unknown"
         input_metadata["assembly"] = "Unknown"

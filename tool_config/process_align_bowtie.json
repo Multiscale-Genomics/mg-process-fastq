@@ -88,82 +88,82 @@
     ],
     "arguments": [
         {
-            "name": "",
+            "name": "bowtie2_interleaved_param",
+            "description": "",
+            "help": "",
+            "type": "bool",
+            "required": false,
+            "default": false
+        }, {
+            "name": "bowtie2_tab5_param",
+            "description": "",
+            "help": "",
+            "type": "bool",
+            "required": false,
+            "default": false
+        }, {
+            "name": "bowtie2_tab6_param",
+            "description": "",
+            "help": "",
+            "type": "bool",
+            "required": false,
+            "default": false
+        }, {
+            "name": "bowtie2_qseq_param",
+            "description": "",
+            "help": "",
+            "type": "bool",
+            "required": false,
+            "default": false
+        }, {
+            "name": "bowtie2_read_only_param",
             "description": "",
             "help": "",
             "type": "string",
             "required": false,
             "default": ""
         }, {
-            "name": "",
+            "name": "bowtie2_skip_1st_n_reads_param",
             "description": "",
             "help": "",
             "type": "string",
             "required": false,
             "default": ""
         }, {
-            "name": "",
+            "name": "bowtie2_aln_1st_n_reads_param",
             "description": "",
             "help": "",
             "type": "string",
             "required": false,
             "default": ""
         }, {
-            "name": "",
+            "name": "bowtie2_trim5_param",
             "description": "",
             "help": "",
             "type": "string",
             "required": false,
             "default": ""
         }, {
-            "name": "",
+            "name": "bowtie2_trim3_param",
             "description": "",
             "help": "",
             "type": "string",
             "required": false,
             "default": ""
         }, {
-            "name": "",
+            "name": "bowtie2_phred33_param",
             "description": "",
             "help": "",
-            "type": "string",
+            "type": "bool",
             "required": false,
-            "default": ""
+            "default": false
         }, {
-            "name": "",
+            "name": "bowtie2_phre64_param",
             "description": "",
             "help": "",
-            "type": "string",
+            "type": "bool",
             "required": false,
-            "default": ""
-        }, {
-            "name": "",
-            "description": "",
-            "help": "",
-            "type": "string",
-            "required": false,
-            "default": ""
-        }, {
-            "name": "",
-            "description": "",
-            "help": "",
-            "type": "string",
-            "required": false,
-            "default": ""
-        }, {
-            "name": "",
-            "description": "",
-            "help": "",
-            "type": "string",
-            "required": false,
-            "default": ""
-        }, {
-            "name": "",
-            "description": "",
-            "help": "",
-            "type": "string",
-            "required": false,
-            "default": ""
+            "default": false
         }, {
             "name": "",
             "description": "",

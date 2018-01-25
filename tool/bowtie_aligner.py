@@ -183,65 +183,64 @@ class bowtie2AlignerTool(Tool):
         """
         command_params = ["-q"]
 
-        # Input Options
-        if "bowtie2_interleaved_param" in params:
-            command_params = command_params.append("--interleaved")
-        if "bowtie2_tab5_param" in params:
-            command_params = command_params.append("--tab5")
-        if "bowtie2_tab6_param" in params:
-            command_params = command_params.append("--tab6")
-        if "bowtie2_qseq_param" in params:
-            command_params = command_params.append("--qseq")
-        if "bowtie2_read_only_param" in params:
-            command_params = command_params.append("-r")
-        if "bowtie2_skip_1st_n_reads_param" in params:
-            command_params = command_params + [
-                "-s", str(params["bowtie2_skip_1st_n_reads_param"])]
-        if "bowtie2_aln_1st_n_reads_param" in params:
-            command_params = command_params + [
-                "-u", str(params["bowtie2_aln_1st_n_reads_param"])]
-        if "bowtie2_trim5_param" in params:
-            command_params = command_params + [
-                "-5", str(params["bowtie2_trim5_param"])]
-        if "bowtie2_trim3_param" in params:
-            command_params = command_params + [
-                "-3", str(params["bowtie2_trim3_param"])]
-        if "bowtie2_phred33_param" in params:
-            command_params = command_params.append("--phred33")
-        if "bowtie2_phre64_param" in params:
-            command_params = command_params.append("--phred64")
+        command_parameters = {
+            # Input Options
+            "bowtie2_interleaved_param" : ["--interleaved", False],
+            "bowtie2_tab5_param" : ["--tab5", False],
+            "bowtie2_tab6_param" : ["--tab6", False],
+            "bowtie2_qseq_param" : ["--qseq", False],
+            "bowtie2_read_only_param" : ["-r", True],
+            "bowtie2_skip_1st_n_reads_param" : ["-s", True],
+            "bowtie2_aln_1st_n_reads_param" : ["-u", True],
+            "bowtie2_trim5_param" : ["-5", True],
+            "bowtie2_trim3_param" : ["-3", True],
+            "bowtie2_phred33_param" : ["--phred33", False],
+            "bowtie2_phre64_param" : ["--phred64", False],
+            # Alignment Options
+            "bowtie2_num_mismatch_param" : ["-N", True],
+            "bowtie2_seed_len_param" : ["-L", True],
+            "bowtie2_seed_func_param" : ["-i", True],
+            "bowtie2_ambg_char_func_param" : ["--n-cell", True],
+            "bowtie2_dpads_param" : ["--dpad", True],
+            "bowtie2_gbar_param" : ["--gbar", True],
+            "bowtie2_ignore_quals_param" : ["--ignore-quals", False],
+            "bowtie2_nofw_param" : ["--nofw", False],
+            "bowtie2_norc_param" : ["--norc", False],
+            "bowtie2_no_1mm_upfront_param" : ["--no-1mm-upfront", False],
+            "bowtie2_end_to_end_param" : ["--end-to-end", False],
+            "bowtie2_local_param" : ["--local", False],
+            # Effort Options
+            "bowtie2_seed-extension-attempts_param" : ["-D", True],
+            "bowtie2_reseed_param" : ["-R", True],
+            # Paired-end Options
+            "bowtie2_min_frag_len_param" : ["-I", True],
+            "bowtie2_max_frag_len_param" : ["-X", True],
+            "bowtie2_fr_param" : ["--fr", False],
+            "bowtie2_rf_param" : ["--rf", False],
+            "bowtie2_ff_param" : ["--ff", False],
+            "bowtie2_no_mixed_param" : ["--no-mixed", False],
+            "bowtie2_no_discordant_param" : ["--no-discordant", False],
+            "bowtie2_dovetail_param" : ["--dovetail", False],
+            "bowtie2_no_contain_param" : ["--no-contain", False],
+            "bowtie2_no_overlap_param" : ["--no-overlap", False],
+            # SAM Options
+            "bowtie2_no_unal_param" : ["--no-unal", False],
+            "bowtie2_no_hd_param" : ["--no-hd", False],
+            "bowtie2_no_sq_param" : ["--no-dq", False],
+            "bowtie2_rg_id_param" : ["--rg-id", True],
+            "bowtie2_rg_param" : ["--rg", True],
+            "bowtie2_omit_sec_seq_param" : ["--omit-sec-seq", False],
+            "bowtie2_soft_clipped_unmapped_tlen_param" : ["--soft-clipped-unmapped-tlen", False],
+            "bowtie2_sam_no_qname_trunc_param" : ["--sam-no-qname-trunc", False],
+            "bowtie2_xeq_param" : ["--xeq", False],
+        }
 
-        # Alignment Options
-        if "bowtie2_num_mismatch_param" in params:
-            command_params = command_params + [
-                "-N", str(params["bowtie2_num_mismatch_param"])]
-        if "bowtie2_seed_len_param" in params:
-            command_params = command_params + [
-                "-L", str(params["bowtie2_seed_len_param"])]
-        if "bowtie2_seed_func_param" in params:
-            command_params = command_params + [
-                "-i", str(params["bowtie2_seed_func_param"])]
-        if "bowtie2_ambg_char_func_param" in params:
-            command_params = command_params + [
-                "--n-cell", str(params["bowtie2_ambg_char_func_param"])]
-        if "bowtie2_dpads_param" in params:
-            command_params = command_params + [
-                "--dpad", str(params["bowtie2_dpads_param"])]
-        if "bowtie2_gbar_param" in params:
-            command_params = command_params + [
-                "--gbar", str(params["bowtie2_gbar_param"])]
-        if "bowtie2_ignore_quals_param" in params:
-            command_params = command_params.append("--ignore-quals")
-        if "bowtie2_nofw_param" in params:
-            command_params = command_params.append("--nofw")
-        if "bowtie2_norc_param" in params:
-            command_params = command_params.append("--norc")
-        if "bowtie2_no_1mm_upfront_param" in params:
-            command_params = command_params.append("--no-1mm-upfront")
-        if "bowtie2_end_to_end_param" in params:
-            command_params = command_params.append("--end-to-end")
-        if "bowtie2_local_param" in params:
-            command_params = command_params.append("--local")
+        for param in params:
+            if param in command_parameters:
+                if command_parameters[param][1]:
+                    command_params = command_params + [command_parameters[param][0], params[param]]
+                else:
+                    command_params.append(command_parameters[param][0])
 
         # Scoring Options
         if "bowtie2_ma_param" in params:
@@ -273,59 +272,6 @@ class bowtie2AlignerTool(Tool):
         # if "bowtie2_reporting-a_param" in params:
         #     command_params = command_params.append("-a")
 
-        # Effort Options
-        if "bowtie2_seed-extension-attempts_param" in params:
-            command_params = command_params + [
-                "-D", str(params["bowtie2_seed-extension-attempts_param"])]
-        if "bowtie2_reseed_param" in params:
-            command_params = command_params + [
-                "-R", str(params["bowtie2_reseed_param"])]
-
-        # Paired-end Options
-        if "bowtie2_min_frag_len_param" in params:
-            command_params = command_params + [
-                "-I", str(params["bowtie2_min_frag_len_param"])]
-        if "bowtie2_max_frag_len_param" in params:
-            command_params = command_params + [
-                "-X", str(params["bowtie2_max_frag_len_param"])]
-        if "bowtie2_fr_param" in params:
-            command_params = command_params.apend("--fr")
-        if "bowtie2_rf_param" in params:
-            command_params = command_params.apend("--rf")
-        if "bowtie2_ff_param" in params:
-            command_params = command_params.apend("--ff")
-        if "bowtie2_no_mixed_param" in params:
-            command_params = command_params.apend("--no-mixed")
-        if "bowtie2_no_discordant_param" in params:
-            command_params = command_params.apend("--no-discordant")
-        if "bowtie2_dovetail_param" in params:
-            command_params = command_params.apend("--dovetail")
-        if "bowtie2_no_contain_param" in params:
-            command_params = command_params.apend("--no-contain")
-        if "bowtie2_no_overlap_param" in params:
-            command_params = command_params.apend("--no-overlap")
-
-        # SAM Options
-        if "bowtie2_no-unal_param" in params:
-            command_params = command_params.append("--no-unal")
-        if "bowtie2_no-hd_param" in params:
-            command_params = command_params.append("--no-hd")
-        if "bowtie2_no-sq_param" in params:
-            command_params = command_params.append("--no-dq")
-        if "bowtie2_rg-id_param" in params:
-            command_params = command_params + [
-                "--rg-id", str(params["bowtie2_rg-id_param"])]
-        if "bowtie2_rg_param" in params:
-            command_params = command_params + [
-                "--rg", str(params["bowtie2_rg_param"])]
-        if "bowtie2_omit-sec-seq_param" in params:
-            command_params = command_params.append("--omit-sec-seq")
-        if "bowtie2_soft-clipped-unmapped-tlen_param" in params:
-            command_params = command_params.append("--soft-clipped-unmapped-tlen")
-        if "bowtie2_sam-no-qname-trunc_param" in params:
-            command_params = command_params.append("--sam-no-qname-trunc")
-        if "bowtie2_xeq_param" in params:
-            command_params = command_params.append("--xeq")
 
 
         return command_params

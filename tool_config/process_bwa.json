@@ -19,7 +19,7 @@
     "infrastructure": {
         "memory": 12,
         "cpus": 4,
-        "executable": "/home/pmes/code/mg-process-fastq/process_bwa.py",
+        "executable": "/home/pmes/code/mg-process-fastq/process_align_bwa.py",
         "clouds": {
             "mug-bsc": {
                 "launcher": "PMES",

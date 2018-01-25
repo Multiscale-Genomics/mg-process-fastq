@@ -25,14 +25,14 @@ from utils import logger
 try:
     if hasattr(sys, '_run_from_cmdl') is True:
         raise ImportError
-    from pycompss.api.parameter import IN, FILE_IN, FILE_OUT, FILE_INOUT
+    from pycompss.api.parameter import IN, FILE_IN, FILE_OUT
     from pycompss.api.task import task
     from pycompss.api.api import compss_wait_on, compss_open, barrier
 except ImportError:
     logger.warn("[Warning] Cannot import \"pycompss\" API packages.")
     logger.warn("          Using mock decorators.")
 
-    from utils.dummy_pycompss import IN, FILE_IN, FILE_OUT, FILE_INOUT # pylint: disable=ungrouped-imports
+    from utils.dummy_pycompss import IN, FILE_IN, FILE_OUT # pylint: disable=ungrouped-imports
     from utils.dummy_pycompss import task
     from utils.dummy_pycompss import compss_wait_on, compss_open, barrier
 
@@ -396,9 +396,8 @@ class bowtie2AlignerTool(Tool):
         output_metadata = {}
 
         output_bam_file = output_files["output"]
-        #output_bai_file = output_files["bai"]
 
-        logger.info("BWA ALIGNER: Aligning sequence reads to the genome")
+        logger.info("BOWTIE2 ALIGNER: Aligning sequence reads to the genome")
 
         output_bam_list = []
         for fastq_file_pair in fastq_file_list:
@@ -407,8 +406,6 @@ class bowtie2AlignerTool(Tool):
                 tmp_fq2 = gz_data_path + "/tmp/" + fastq_file_pair[1]
                 output_bam_file_tmp = tmp_fq1 + ".bam"
                 output_bam_list.append(output_bam_file_tmp)
-
-                # print("FILES:", tmp_fq1, tmp_fq2, output_bam_file_tmp)
 
                 results = self.bowtie2_aligner_paired(
                     str(input_files["genome"]), tmp_fq1, tmp_fq2, output_bam_file_tmp,
@@ -419,7 +416,7 @@ class bowtie2AlignerTool(Tool):
                 output_bam_file_tmp = tmp_fq + ".bam"
                 output_bam_list.append(output_bam_file_tmp)
 
-                logger.info("BWAL ALN FILES:" + tmp_fq)
+                logger.info("BOWTIE2 ALN FILES:" + tmp_fq)
                 results = self.bowtie2_aligner_single(
                     str(input_files["genome"]), tmp_fq, output_bam_file_tmp,
                     str(input_files["index"]), self.get_aln_params(self.configuration)
@@ -432,7 +429,7 @@ class bowtie2AlignerTool(Tool):
         results = compss_wait_on(results)
 
         if results is False:
-            logger.fatal("BWA Aligner: Bam copy failed")
+            logger.fatal("BOWTIE2 Aligner: Bam copy failed")
             return {}, {}
 
         while True:
@@ -441,7 +438,7 @@ class bowtie2AlignerTool(Tool):
                 results = compss_wait_on(results)
 
                 if results is False:
-                    logger.fatal("BWA Aligner: Bam merging failed")
+                    logger.fatal("BOWTIE2 Aligner: Bam merging failed")
                     return {}, {}
             else:
                 break
@@ -450,17 +447,17 @@ class bowtie2AlignerTool(Tool):
         results = compss_wait_on(results)
 
         if results is False:
-            logger.fatal("BWA Aligner: Bam sorting failed")
+            logger.fatal("BOWTIE2 Aligner: Bam sorting failed")
             return {}, {}
 
         # results = bam_handle.bam_index(output_bam_file, output_bai_file)
         # results = compss_wait_on(results)
 
         # if results is False:
-        #     logger.fatal("BWA Aligner: Bam indexing failed")
+        #     logger.fatal("BOWTIE2 Aligner: Bam indexing failed")
         #     return {}, {}
 
-        logger.info("BWA ALIGNER: Alignments complete")
+        logger.info("BOWTIE2 ALIGNER: Alignments complete")
 
         output_metadata = {
             "bam": Metadata(
@@ -471,7 +468,7 @@ class bowtie2AlignerTool(Tool):
                 taxon_id=input_metadata["genome"].taxon_id,
                 meta_data={
                     "assembly": input_metadata["genome"].meta_data["assembly"],
-                    "tool": "bwa_aligner"
+                    "tool": "bowtie_aligner"
                 }
             )
         }

@@ -41,7 +41,7 @@ from basic_modules.metadata import Metadata
 
 from tool.fastq_splitter import fastq_splitter
 from tool.aligner_utils import alignerUtils
-from tool.bam_utils import bamUtils
+from tool.bam_utils import bamUtilsTask
 
 # ------------------------------------------------------------------------------
 
@@ -63,70 +63,12 @@ class bwaAlignerMEMTool(Tool):
 
         self.configuration.update(configuration)
 
-    @task(bam_file=FILE_INOUT)
-    def bam_sort(self, bam_file):
-        """
-        Wrapper for the pysam SAMtools sort function
-
-        Parameters
-        ----------
-        bam_file : str
-            Location of the bam file to sort
-        """
-        bam_handle = bamUtils()
-        return bam_handle.bam_sort(bam_file)
-
-    @task(bam_file_1=FILE_INOUT, bam_file_2=FILE_IN)
-    def bam_merge(self, bam_file_1, bam_file_2):
-        """
-        Wrapper for the pysam SAMtools merge function
-
-        Parameters
-        ----------
-        bam_file_1 : str
-            Location of the bam file to merge into
-        bam_file_2 : str
-            Location of the bam file that is to get merged into bam_file_1
-        """
-        bam_handle = bamUtils()
-        return bam_handle.bam_merge(bam_file_1, bam_file_2)
-
-    @task(bam_in=FILE_IN, bam_out=FILE_OUT)
-    def bam_copy(self, bam_in, bam_out):
-        """
-        Wrapper function to copy from one bam file to another
-
-        Parameters
-        ----------
-        bam_in : str
-            Location of the input bam file
-        bam_out : str
-            Location of the output bam file
-        """
-        bam_handle = bamUtils()
-        return bam_handle.bam_copy(bam_in, bam_out)
-
-    @task(bam_file=FILE_IN, bam_idx_file=FILE_OUT)
-    def bam_index(self, bam_file, bam_idx_file):
-        """
-        Wrapper for the pysam SAMtools merge function
-
-        Parameters
-        ----------
-        bam_file : str
-            Location of the bam file that is to be indexed
-        bam_idx_file : str
-            Location of the bam index file (.bai)
-        """
-        bam_handle = bamUtils()
-        return bam_handle.bam_index(bam_file, bam_idx_file)
-
     @task(returns=bool, genome_file_loc=FILE_IN, read_file_loc=FILE_IN,
           bam_loc=FILE_OUT, genome_idx=FILE_IN, mem_params=IN, isModifier=False)
     def bwa_aligner_single(  # pylint: disable=too-many-arguments
             self, genome_file_loc, read_file_loc, bam_loc, genome_idx, mem_params):  # pylint: disable=unused-argument
         """
-        BWA Aligner
+        BWA MEM Aligner - Single Ended
 
         Parameters
         ----------
@@ -134,6 +76,12 @@ class bwaAlignerMEMTool(Tool):
             Location of the genomic fasta
         read_file_loc : str
             Location of the FASTQ file
+        bam_loc : str
+            Location of the output aligned bam file
+        genome_idx : idx
+            Location of the BWA index file
+        aln_params : dict
+            Alignment parameters
 
         Returns
         -------
@@ -189,14 +137,22 @@ class bwaAlignerMEMTool(Tool):
             self, genome_file_loc, read_file_loc1, read_file_loc2, bam_loc,
             genome_idx, mem_params):  # pylint: disable=unused-argument
         """
-        BWA Aligner
+        BWA MEM Aligner - Paired End
 
         Parameters
         ----------
         genome_file_loc : str
             Location of the genomic fasta
-        read_file_loc : str
+        read_file_loc1 : str
             Location of the FASTQ file
+        read_file_loc2 : str
+            Location of the FASTQ file
+        bam_loc : str
+            Location of the output aligned bam file
+        genome_idx : idx
+            Location of the BWA index file
+        aln_params : dict
+            Alignment parameters
 
         Returns
         -------
@@ -237,7 +193,16 @@ class bwaAlignerMEMTool(Tool):
 
     def get_mem_params(self, params):
         """
+        Function to handle to extraction of commandline parameters and formatting
+        them for use in the aligner for BWA MEM
 
+        Parameters
+        ----------
+        params : dict
+
+        Returns
+        -------
+        list
         """
         command_params = []
         if "bwa_mem_min_seed_len_param" in params:
@@ -386,7 +351,9 @@ class bwaAlignerMEMTool(Tool):
                 )
         barrier()
 
-        results = self.bam_copy(output_bam_list.pop(0), output_bam_file)
+        bam_handle = bamUtilsTask()
+
+        results = bam_handle.bam_copy(output_bam_list.pop(0), output_bam_file)
         results = compss_wait_on(results)
 
         if results is False:
@@ -395,7 +362,7 @@ class bwaAlignerMEMTool(Tool):
 
         while True:
             if output_bam_list:
-                results = self.bam_merge(output_bam_file, output_bam_list.pop(0))
+                results = bam_handle.bam_merge(output_bam_file, output_bam_list.pop(0))
                 results = compss_wait_on(results)
 
                 if results is False:
@@ -404,14 +371,14 @@ class bwaAlignerMEMTool(Tool):
             else:
                 break
 
-        results = self.bam_sort(output_bam_file)
+        results = bam_handle.bam_sort(output_bam_file)
         results = compss_wait_on(results)
 
         if results is False:
             logger.fatal("BWA Aligner: Bam sorting failed")
             return {}, {}
 
-        # results = self.bam_index(output_bam_file, output_bai_file)
+        # results = bam_handle.bam_index(output_bam_file, output_bai_file)
         # results = compss_wait_on(results)
 
         # if results is False:

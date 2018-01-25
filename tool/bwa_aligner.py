@@ -68,7 +68,7 @@ class bwaAlignerTool(Tool):
     def bwa_aligner_single(  # pylint: disable=too-many-arguments
             self, genome_file_loc, read_file_loc, bam_loc, genome_idx, aln_params):  # pylint: disable=unused-argument
         """
-        BWA Aligner
+        BWA ALN Aligner - Single Ended
 
         Parameters
         ----------
@@ -76,6 +76,12 @@ class bwaAlignerTool(Tool):
             Location of the genomic fasta
         read_file_loc : str
             Location of the FASTQ file
+        bam_loc : str
+            Location of the output aligned bam file
+        genome_idx : idx
+            Location of the BWA index file
+        aln_params : dict
+            Alignment parameters
 
         Returns
         -------
@@ -131,14 +137,22 @@ class bwaAlignerTool(Tool):
             self, genome_file_loc, read_file_loc1, read_file_loc2, bam_loc,
             genome_idx, aln_params):  # pylint: disable=unused-argument
         """
-        BWA Aligner
+        BWA ALN Aligner - Paired End
 
         Parameters
         ----------
         genome_file_loc : str
             Location of the genomic fasta
-        read_file_loc : str
+        read_file_loc1 : str
             Location of the FASTQ file
+        read_file_loc2 : str
+            Location of the FASTQ file
+        bam_loc : str
+            Location of the output aligned bam file
+        genome_idx : idx
+            Location of the BWA index file
+        aln_params : dict
+            Alignment parameters
 
         Returns
         -------
@@ -179,7 +193,16 @@ class bwaAlignerTool(Tool):
 
     def get_aln_params(self, params):
         """
+        Function to handle to extraction of commandline parameters and formatting
+        them for use in the aligner for BWA ALN
 
+        Parameters
+        ----------
+        params : dict
+
+        Returns
+        -------
+        list
         """
         command_params = []
         if "bwa_edit_dist_param" in params:

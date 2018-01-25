@@ -42,6 +42,11 @@
             "allow_multiple": false
         }
     ],
+    "input_files_combinations": [
+        [
+            "fastq"
+        ]
+    ],
     "arguments": [],
     "output_files": [
         {

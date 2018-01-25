@@ -62,30 +62,6 @@
             "index"
         ]
     ],
-    "input_files_combinations_internal": [
-        [
-            {
-                "data_mnase_seq": 1
-            },
-            {
-                "sequence_genomic": 1
-            },
-            {
-                "sequence_mapping_index_bwa": "+"
-            }
-        ],
-        [
-            {
-                "data_mnase_seq": 1
-            },
-            {
-                "sequence_dna": 1
-            },
-            {
-                "sequence_mapping_index_bwa": "+"
-            }
-        ]
-    ],
     "arguments": [
         {
             "name": "inps_sp_param",

@@ -57,19 +57,7 @@
         [
             "genome"
         ]
-    ],
-    "input_files_combinations_internal": [
-        [
-            {
-                "sequence_genomic": 1
-            }
-        ],
-        [
-            {
-                "sequence_dna": 1
-            }
-        ]
-    ],
+  ],
   "arguments": [],
   "output_files": [
     {

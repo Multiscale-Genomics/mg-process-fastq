@@ -93,48 +93,6 @@
             "index"
         ]
     ],
-    "input_files_combinations_internal": [
-        [
-            {
-                "data_idamid_seq": 1
-            },
-            {
-                "data_idamid_seq": 1
-            },
-            {
-                "data_idamid_seq": 1
-            },
-            {
-                "data_idamid_seq": 1
-            },
-            {
-                "sequence_genomic": 1
-            },
-            {
-                "sequence_mapping_index_bwa": "+"
-            }
-        ],
-        [
-            {
-                "data_idamid_seq": 1
-            },
-            {
-                "data_idamid_seq": 1
-            },
-            {
-                "data_idamid_seq": 1
-            },
-            {
-                "data_idamid_seq": 1
-            },
-            {
-                "sequence_dna": 1
-            },
-            {
-                "sequence_mapping_index_bwa": "+"
-            }
-        ]
-    ],
     "arguments": [
         {
             "name": "idear_title",

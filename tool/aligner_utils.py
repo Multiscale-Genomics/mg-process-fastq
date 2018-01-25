@@ -173,6 +173,7 @@ class alignerUtils(object):
 
         cmd_aln = ' '.join([
             'bowtie2',
+            '-x', genome_file,
             ' '.join(params),
             genome_file
         ] + reads)

@@ -24,7 +24,8 @@ from tool import bowtie_indexer
 
 @pytest.mark.chipseq
 @pytest.mark.genome
-def test_bowtie_indexer():
+@pytest.mark.bowtie2
+def test_bowtie_indexer_chipseq():
     """
     Test to ensure Bowtie indexer is working for macs data set
     """
@@ -54,13 +55,43 @@ def test_bowtie_indexer():
 
 @pytest.mark.mnaseseq
 @pytest.mark.genome
-def test_bowtie_indexer_02():
+def test_bowtie_indexer_mnaseseq():
     """
     Test to ensure Bowtie indexer is working for macs data set
     """
     resource_path = os.path.join(os.path.dirname(__file__), "data/")
 
     genome_fa = resource_path + "inps.Mouse.GRCm38.fasta"
+
+    input_files = {
+        "genome": genome_fa
+    }
+
+    output_files = {
+        "index": genome_fa + ".bt2.tar.gz"
+    }
+
+    metadata = {
+        "genome": Metadata(
+            "Assembly", "fasta", genome_fa, None,
+            {'assembly' : 'test'}),
+    }
+
+    bti = bowtie_indexer.bowtieIndexerTool()
+    bti.run(input_files, metadata, output_files)
+
+    assert os.path.isfile(output_files["index"]) is True
+    assert os.path.getsize(output_files["index"]) > 0
+
+@pytest.mark.genome
+@pytest.mark.bowtie2
+def test_bowtie_indexer_wgbs():
+    """
+    Test to ensure Bowtie indexer is working for macs data set
+    """
+    resource_path = os.path.join(os.path.dirname(__file__), "data/")
+
+    genome_fa = resource_path + "bsSeeker.Mouse.GRCm38.fasta"
 
     input_files = {
         "genome": genome_fa

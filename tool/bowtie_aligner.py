@@ -181,123 +181,97 @@ class bowtie2AlignerTool(Tool):
         """
 
         """
-        command_params = []
+        command_params = ["-q"]
 
         # Input Options
-        if "bowtie2__param" in params:
+        if "bowtie2_interleaved_param" in params:
+            command_params = command_params.append("--interleaved")
+        if "bowtie2_tab5_param" in params:
+            command_params = command_params.append("--tab5")
+        if "bowtie2_tab6_param" in params:
+            command_params = command_params.append("--tab6")
+        if "bowtie2_qseq_param" in params:
+            command_params = command_params.append("--qseq")
+        if "bowtie2_read_only_param" in params:
+            command_params = command_params.append("-r")
+        if "bowtie2_skip_1st_n_reads_param" in params:
             command_params = command_params + [
-                "", str(params[""])]
-        if "bowtie2__param" in params:
+                "-s", str(params["bowtie2_skip_1st_n_reads_param"])]
+        if "bowtie2_aln_1st_n_reads_param" in params:
             command_params = command_params + [
-                "", str(params[""])]
-        if "bowtie2__param" in params:
+                "-u", str(params["bowtie2_aln_1st_n_reads_param"])]
+        if "bowtie2_trim5_param" in params:
             command_params = command_params + [
-                "", str(params[""])]
-        if "bowtie2__param" in params:
+                "-5", str(params["bowtie2_trim5_param"])]
+        if "bowtie2_trim3_param" in params:
             command_params = command_params + [
-                "", str(params[""])]
-        if "bowtie2__param" in params:
-            command_params = command_params + [
-                "", str(params[""])]
-        if "bowtie2__param" in params:
-            command_params = command_params + [
-                "", str(params[""])]
-        if "bowtie2__param" in params:
-            command_params = command_params + [
-                "", str(params[""])]
-        if "bowtie2__param" in params:
-            command_params = command_params + [
-                "", str(params[""])]
-        if "bowtie2__param" in params:
-            command_params = command_params + [
-                "", str(params[""])]
-        if "bowtie2__param" in params:
-            command_params = command_params + [
-                "", str(params[""])]
-        if "bowtie2__param" in params:
-            command_params = command_params + [
-                "", str(params[""])]
-        if "bowtie2__param" in params:
-            command_params = command_params + [
-                "", str(params[""])]
-        if "bowtie2__param" in params:
-            command_params = command_params + [
-                "", str(params[""])]
-        if "bowtie2__param" in params:
-            command_params = command_params + [
-                "", str(params[""])]
-        if "bowtie2__param" in params:
-            command_params = command_params + [
-                "", str(params[""])]
-        if "bowtie2__param" in params:
-            command_params = command_params + [
-                "", str(params[""])]
-        if "bowtie2__param" in params:
-            command_params = command_params + [
-                "", str(params[""])]
+                "-3", str(params["bowtie2_trim3_param"])]
+        if "bowtie2_phred33_param" in params:
+            command_params = command_params.append("--phred33")
+        if "bowtie2_phre64_param" in params:
+            command_params = command_params.append("--phred64")
 
         # Alignment Options
-        if "bowtie2__param" in params:
+        if "bowtie2_num_mismatch_param" in params:
             command_params = command_params + [
-                "", str(params[""])]
-        if "bowtie2__param" in params:
+                "-N", str(params["bowtie2_num_mismatch_param"])]
+        if "bowtie2_seed_len_param" in params:
             command_params = command_params + [
-                "", str(params[""])]
-        if "bowtie2__param" in params:
+                "-L", str(params["bowtie2_seed_len_param"])]
+        if "bowtie2_seed_func_param" in params:
             command_params = command_params + [
-                "", str(params[""])]
-        if "bowtie2__param" in params:
+                "-i", str(params["bowtie2_seed_func_param"])]
+        if "bowtie2_ambg_char_func_param" in params:
             command_params = command_params + [
-                "", str(params[""])]
-        if "bowtie2__param" in params:
+                "--n-cell", str(params["bowtie2_ambg_char_func_param"])]
+        if "bowtie2_dpads_param" in params:
             command_params = command_params + [
-                "", str(params[""])]
-        if "bowtie2__param" in params:
+                "--dpad", str(params["bowtie2_dpads_param"])]
+        if "bowtie2_gbar_param" in params:
             command_params = command_params + [
-                "", str(params[""])]
-        if "bowtie2__param" in params:
-            command_params = command_params + [
-                "", str(params[""])]
-        if "bowtie2__param" in params:
-            command_params = command_params + [
-                "", str(params[""])]
-        if "bowtie2__param" in params:
-            command_params = command_params + [
-                "", str(params[""])]
-        if "bowtie2__param" in params:
-            command_params = command_params + [
-                "", str(params[""])]
-        if "bowtie2__param" in params:
-            command_params = command_params + [
-                "", str(params[""])]
+                "--gbar", str(params["bowtie2_gbar_param"])]
+        if "bowtie2_ignore_quals_param" in params:
+            command_params = command_params.append("--ignore-quals")
+        if "bowtie2_nofw_param" in params:
+            command_params = command_params.append("--nofw")
+        if "bowtie2_norc_param" in params:
+            command_params = command_params.append("--norc")
+        if "bowtie2_no_1mm_upfront_param" in params:
+            command_params = command_params.append("--no-1mm-upfront")
+        if "bowtie2_end_to_end_param" in params:
+            command_params = command_params.append("--end-to-end")
+        if "bowtie2_local_param" in params:
+            command_params = command_params.append("--local")
 
         # Scoring Options
-        if "bowtie2__param" in params:
+        if "bowtie2_ma_param" in params:
             command_params = command_params + [
-                "", str(params[""])]
-        if "bowtie2__param" in params:
+                "--ma_", str(params["bowtie2_ma_param"])]
+        if "bowtie2_mp-mx_param" in params and "bowtie2_mp-mn_param" in params:
             command_params = command_params + [
-                "", str(params[""])]
-        if "bowtie2__param" in params:
+                "--mp",
+                str(params["bowtie2_mp-mx_param"]) + "," + str(params["bowtie2_mp-mn_param"])]
+        if "bowtie2_np_param" in params:
             command_params = command_params + [
-                "", str(params[""])]
-        if "bowtie2__param" in params:
+                "--np", str(params["bowtie2_np_param"])]
+        if "bowtie2_rdg-o_param" in params and "bowtie2_rdg-e_param" in params:
             command_params = command_params + [
-                "", str(params[""])]
-        if "bowtie2__param" in params:
+                "--rdg",
+                str(params["bowtie2_rdg-o_param"]) + "," + str(params["bowtie2_rdg-e_param"])]
+        if "bowtie2_rfg_param" in params:
             command_params = command_params + [
-                "", str(params[""])]
-        if "bowtie2__param" in params:
-            command_params = command_params + [
-                "", str(params[""])]
+                "--rfg",
+                str(params["bowtie2_rfg-o_param"]) + "," + str(params["bowtie2_rfg-e_param"])]
+        # if "bowtie2_score-min_param" in params:
+        #     command_params = command_params + [
+        #         "--score-min", str(params["bowtie2_score-min_param"])]
 
         # Reporting Options
-        if "bowtie2__param" in params:
-            command_params = command_params + [
-                "", str(params[""])]
-        if "bowtie2__param" in params:
-            command_params = command_params + [
-                "", str(params[""])]
+        # if "bowtie2_reporting-k_param" in params:
+        #     command_params = command_params + [
+        #         "-k", str(params["bowtie2_reporting-k_param"])]
+        # if "bowtie2_reporting-a_param" in params:
+        #     command_params = command_params.append("-a")
 
         # Effort Options
         if "bowtie2_seed-extension-attempts_param" in params:
@@ -308,30 +282,28 @@ class bowtie2AlignerTool(Tool):
                 "-R", str(params["bowtie2_reseed_param"])]
 
         # Paired-end Options
-        if "bowtie2__param" in params:
+        if "bowtie2_min_frag_len_param" in params:
             command_params = command_params + [
-                "", str(params[""])]
-        if "bowtie2__param" in params:
+                "-I", str(params["bowtie2_min_frag_len_param"])]
+        if "bowtie2_max_frag_len_param" in params:
             command_params = command_params + [
-                "", str(params[""])]
-        if "bowtie2__param" in params:
-            command_params = command_params + [
-                "", str(params[""])]
-        if "bowtie2__param" in params:
-            command_params = command_params + [
-                "", str(params[""])]
-        if "bowtie2__param" in params:
-            command_params = command_params + [
-                "", str(params[""])]
-        if "bowtie2__param" in params:
-            command_params = command_params + [
-                "", str(params[""])]
-        if "bowtie2__param" in params:
-            command_params = command_params + [
-                "", str(params[""])]
-        if "bowtie2__param" in params:
-            command_params = command_params + [
-                "", str(params[""])]
+                "-X", str(params["bowtie2_max_frag_len_param"])]
+        if "bowtie2_fr_param" in params:
+            command_params = command_params.apend("--fr")
+        if "bowtie2_rf_param" in params:
+            command_params = command_params.apend("--rf")
+        if "bowtie2_ff_param" in params:
+            command_params = command_params.apend("--ff")
+        if "bowtie2_no_mixed_param" in params:
+            command_params = command_params.apend("--no-mixed")
+        if "bowtie2_no_discordant_param" in params:
+            command_params = command_params.apend("--no-discordant")
+        if "bowtie2_dovetail_param" in params:
+            command_params = command_params.apend("--dovetail")
+        if "bowtie2_no_contain_param" in params:
+            command_params = command_params.apend("--no-contain")
+        if "bowtie2_no_overlap_param" in params:
+            command_params = command_params.apend("--no-overlap")
 
         # SAM Options
         if "bowtie2_no-unal_param" in params:

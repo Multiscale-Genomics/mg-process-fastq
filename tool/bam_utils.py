@@ -15,9 +15,22 @@
    limitations under the License.
 """
 from __future__ import print_function
-
+import sys
 import pysam
+
 from utils import logger
+
+try:
+    if hasattr(sys, '_run_from_cmdl') is True:
+        raise ImportError
+    from pycompss.api.parameter import FILE_IN, FILE_OUT, FILE_INOUT
+    from pycompss.api.task import task
+except ImportError:
+    logger.warn("[Warning] Cannot import \"pycompss\" API packages.")
+    logger.warn("          Using mock decorators.")
+
+    from utils.dummy_pycompss import FILE_IN, FILE_OUT, FILE_INOUT # pylint: disable=ungrouped-imports
+    from utils.dummy_pycompss import task
 
 # ------------------------------------------------------------------------------
 
@@ -111,3 +124,73 @@ class bamUtils(object):
             return False
 
         return True
+
+
+class bamUtilsTask(object):
+    """
+    Tool for aligning sequence reads to a genome using BWA
+    """
+
+    def __init__(self):
+        """
+        Init function
+        """
+        logger.info("BAM @task Utils")
+
+    @task(bam_file=FILE_INOUT)
+    def bam_sort(self, bam_file):
+        """
+        Wrapper for the pysam SAMtools sort function
+
+        Parameters
+        ----------
+        bam_file : str
+            Location of the bam file to sort
+        """
+        bam_handle = bamUtils()
+        return bam_handle.bam_sort(bam_file)
+
+    @task(bam_file_1=FILE_INOUT, bam_file_2=FILE_IN)
+    def bam_merge(self, bam_file_1, bam_file_2):
+        """
+        Wrapper for the pysam SAMtools merge function
+
+        Parameters
+        ----------
+        bam_file_1 : str
+            Location of the bam file to merge into
+        bam_file_2 : str
+            Location of the bam file that is to get merged into bam_file_1
+        """
+        bam_handle = bamUtils()
+        return bam_handle.bam_merge(bam_file_1, bam_file_2)
+
+    @task(bam_in=FILE_IN, bam_out=FILE_OUT)
+    def bam_copy(self, bam_in, bam_out):
+        """
+        Wrapper function to copy from one bam file to another
+
+        Parameters
+        ----------
+        bam_in : str
+            Location of the input bam file
+        bam_out : str
+            Location of the output bam file
+        """
+        bam_handle = bamUtils()
+        return bam_handle.bam_copy(bam_in, bam_out)
+
+    @task(bam_file=FILE_IN, bam_idx_file=FILE_OUT)
+    def bam_index(self, bam_file, bam_idx_file):
+        """
+        Wrapper for the pysam SAMtools merge function
+
+        Parameters
+        ----------
+        bam_file : str
+            Location of the bam file that is to be indexed
+        bam_idx_file : str
+            Location of the bam index file (.bai)
+        """
+        bam_handle = bamUtils()
+        return bam_handle.bam_index(bam_file, bam_idx_file)

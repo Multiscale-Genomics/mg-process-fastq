@@ -34,8 +34,7 @@ from tool.bwa_aligner import bwaAlignerTool
 
 class process_bwa(Workflow):
     """
-    Functions for processing Chip-Seq FastQ files. Files are the aligned,
-    filtered and analysed for peak calling
+    Functions for aligning FastQ files with BWA
     """
 
     def __init__(self, configuration=None):
@@ -57,10 +56,7 @@ class process_bwa(Workflow):
 
     def run(self, input_files, metadata, output_files):
         """
-        Main run function for processing ChIP-seq FastQ data. Pipeline aligns
-        the FASTQ files to the genome using BWA. MACS 2 is then used for peak
-        calling to identify transcription factor binding sites within the
-        genome.
+        Main run function for aligning FastQ reads with BWA.
 
         Currently this can only handle a single data file and a single
         background file.

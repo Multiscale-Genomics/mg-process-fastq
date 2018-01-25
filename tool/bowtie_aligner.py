@@ -207,7 +207,7 @@ class bowtie2AlignerTool(Tool):
         command_params = ["-q"]
 
         command_parameters = {
-            # Input Options
+            # Input Options - 11
             "bowtie2_interleaved_param" : ["--interleaved", False],
             "bowtie2_tab5_param" : ["--tab5", False],
             "bowtie2_tab6_param" : ["--tab6", False],
@@ -219,7 +219,7 @@ class bowtie2AlignerTool(Tool):
             "bowtie2_trim3_param" : ["-3", True],
             "bowtie2_phred33_param" : ["--phred33", False],
             "bowtie2_phre64_param" : ["--phred64", False],
-            # Alignment Options
+            # Alignment Options - 12
             "bowtie2_num_mismatch_param" : ["-N", True],
             "bowtie2_seed_len_param" : ["-L", True],
             "bowtie2_seed_func_param" : ["-i", True],
@@ -232,10 +232,10 @@ class bowtie2AlignerTool(Tool):
             "bowtie2_no_1mm_upfront_param" : ["--no-1mm-upfront", False],
             "bowtie2_end_to_end_param" : ["--end-to-end", False],
             "bowtie2_local_param" : ["--local", False],
-            # Effort Options
+            # Effort Options - 2
             "bowtie2_seed-extension-attempts_param" : ["-D", True],
             "bowtie2_reseed_param" : ["-R", True],
-            # Paired-end Options
+            # Paired-end Options - 10
             "bowtie2_min_frag_len_param" : ["-I", True],
             "bowtie2_max_frag_len_param" : ["-X", True],
             "bowtie2_fr_param" : ["--fr", False],
@@ -246,7 +246,7 @@ class bowtie2AlignerTool(Tool):
             "bowtie2_dovetail_param" : ["--dovetail", False],
             "bowtie2_no_contain_param" : ["--no-contain", False],
             "bowtie2_no_overlap_param" : ["--no-overlap", False],
-            # SAM Options
+            # SAM Options - 9
             "bowtie2_no_unal_param" : ["--no-unal", False],
             "bowtie2_no_hd_param" : ["--no-hd", False],
             "bowtie2_no_sq_param" : ["--no-dq", False],
@@ -265,7 +265,7 @@ class bowtie2AlignerTool(Tool):
                 else:
                     command_params.append(command_parameters[param][0])
 
-        # Scoring Options
+        # Scoring Options - 8
         if "bowtie2_ma_param" in params:
             command_params = command_params + [
                 "--ma_", str(params["bowtie2_ma_param"])]

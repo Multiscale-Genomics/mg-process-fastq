@@ -57,6 +57,13 @@
             "allow_multiple": false
         }
     ],
+    "input_files_combinations": [
+        [
+            "genome",
+            "fastq1",
+            "fastq2"
+        ]
+    ],
     "arguments": [
         {
             "name": "aligner",

@@ -110,7 +110,7 @@ class bowtie2AlignerTool(Tool):
         au_handle = alignerUtils()
         logger.info(
             "BOWTIE2 FINISHED: " + str(au_handle.bowtie2_align_reads(
-                genome_fa_ln, read_file_loc, out_bam, aln_params))
+                genome_fa_ln, out_bam, aln_params, read_file_loc))
         )
 
         try:
@@ -163,7 +163,7 @@ class bowtie2AlignerTool(Tool):
         au_handle = alignerUtils()
         logger.info(
             "BOWTIE2 FINISHED: " + str(au_handle.bowtie2_align_reads(
-                genome_fa_ln, read_file_loc1, read_file_loc2, out_bam, aln_params))
+                genome_fa_ln, out_bam, aln_params, read_file_loc1, read_file_loc2))
         )
 
         try:

@@ -44,6 +44,28 @@ def genome_toolchain(verbose=False):
 
     return pytest.main(params)
 
+def bowtie2_toolchain(verbose=False):
+    """
+    Runs the tests for all of the tools from the BWA pipeline
+
+    Runs the following tests:
+
+    .. code-block:: none
+
+       pytest -m bowtie2 tests/test_bowtie_indexer.py
+       pytest -m bowtie2 tests/test_bowtie2_aligner.py
+    """
+
+    params = ['-m bowtie2']
+
+    if verbose is True:
+        params.append('-s')
+
+    params.append('tests/test_bowtie_indexer.py')
+    params.append('tests/test_bowtie2_aligner.py')
+
+    return pytest.main(params)
+
 def bwa_toolchain(verbose=False):
     """
     Runs the tests for all of the tools from the BWA pipeline
@@ -241,8 +263,8 @@ if __name__ == '__main__':
         required=True,
         type=str,
         choices=[
-            'genome', 'bwa', 'chipseq', 'hic', 'idamidseq', 'mnaseseq', 'rnaseq',
-            'wgbs', 'all'
+            'genome', 'bowtie2', 'bwa', 'chipseq', 'hic', 'idamidseq', 'mnaseseq',
+            'rnaseq', 'wgbs', 'all'
         ],
         help=""
     )
@@ -270,8 +292,14 @@ if __name__ == '__main__':
         if genome_toolchain(VERBOSE) > 0:
             sys.exit(1)
 
+    if 'bowtie2' in PIPELINES or 'all' in PIPELINES:
+        print('BOWTIE2')
+
+        if bowtie2_toolchain(VERBOSE) > 0:
+            sys.exit(1)
+
     if 'bwa' in PIPELINES or 'all' in PIPELINES:
-        print('GENOME')
+        print('BWA')
 
         if bwa_toolchain(VERBOSE) > 0:
             sys.exit(1)

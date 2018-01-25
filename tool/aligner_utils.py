@@ -162,20 +162,23 @@ class alignerUtils(object):
             Location of the output file
         """
 
-        reads = [reads_file_1]
+        reads = ["-U", reads_file_1]
         if reads_file_2 is not None:
             reads = [
                 "-1", reads_file_1,
                 "-2", reads_file_2
             ]
-        else:
-            reads = ["-U", reads_file_1]
+
+        logger.info(genome_file)
+        logger.info(' '.join(params))
+
+        g_idx = genome_file.split("/")
+        g_idx[-1] = g_idx[-1].replace(".fasta", "")
 
         cmd_aln = ' '.join([
             'bowtie2',
-            '-x', genome_file,
+            '-x', '/'.join(g_idx),
             ' '.join(params),
-            genome_file
         ] + reads)
 
         cmd_view = ' '.join([

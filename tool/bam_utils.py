@@ -128,7 +128,9 @@ class bamUtils(object):
 
 class bamUtilsTask(object):
     """
-    Tool for aligning sequence reads to a genome using BWA
+    Wrappers so that the function above can be used as part of a @task within
+    COMPSs avoiding the files being copied around the infrstructure too many
+    times
     """
 
     def __init__(self):

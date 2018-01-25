@@ -65,6 +65,11 @@ Tools for processing FastQ files
    Aligners
    ========
 
+   Bowtie2
+   -------
+   .. autoclass:: tool.bowtie_aligner.bowtie2AlignerTool
+      :members:
+
    BWA - ALN
    ---------
    .. autoclass:: tool.bwa_aligner.bwaAlignerTool

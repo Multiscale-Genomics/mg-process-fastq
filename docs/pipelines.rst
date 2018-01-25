@@ -137,6 +137,79 @@ BioBamBam Alignment Filtering
       :members:
 
 
+Bowtie2 Alignment
+-----------------
+.. automodule:: process_align_bowtie
+
+   This pipeline aligns FASTQ reads to a given indexed genome. The pipeline can
+   handle single-end and paired-end reads.
+
+   Running from the command line
+   =============================
+
+   Parameters
+   ----------
+   config : str
+      Configuration JSON file
+   in_metadata : str
+      Location of input JSON metadata for files
+   out_metadata : str
+      Location of output JSON metadata for files
+
+   Returns
+   -------
+   bam : file
+      Aligned reads in bam file
+
+   Example
+   -------
+   REQUIREMENT - Needs the indexing step to be run first
+
+   When running the pipeline on a local machine:
+
+   .. code-block:: none
+      :linenos:
+
+      python process_align_bowtie.py                            \
+         --config tests/json/config_bowtie2.json \
+         --in_metadata tests/json/input_bowtie2.json \
+         --out_metadata tests/json/output_bowtie2.json
+
+   When using a local version of the [COMPS virtual machine](https://www.bsc.es/research-and-development/software-and-apps/software-list/comp-superscalar/):
+
+   .. code-block:: none
+      :linenos:
+
+      runcompss                     \
+         --lang=python              \
+         --library_path=${HOME}/bin \
+         --pythonpath=/<pyenv_virtenv_dir>/lib/python2.7/site-packages/ \
+         --log_level=debug          \
+         process_align_bowtie.py         \
+            --config tests/json/config_bowtie2_single.json \
+            --in_metadata tests/json/input_bowtie2_single_metadata.json \
+            --out_metadata tests/json/output_bowtie2_single.json
+
+   .. code-block:: none
+      :linenos:
+
+      runcompss                     \
+         --lang=python              \
+         --library_path=${HOME}/bin \
+         --pythonpath=/<pyenv_virtenv_dir>/lib/python2.7/site-packages/ \
+         --log_level=debug          \
+         process_align_bowtie.py         \
+            --config tests/json/config_bowtie2_paired.json \
+            --in_metadata tests/json/input_bowtie2_paired_metadata.json \
+            --out_metadata tests/json/output_bowtie2_paired.json
+
+
+   Methods
+   =======
+   .. autoclass:: process_align_bowtie.process_bowtie
+      :members:
+
+
 BSgenome Builder
 ----------------
 .. automodule:: process_bsgenome
@@ -203,7 +276,7 @@ BSgenome Builder
 
 BWA Alignment - bwa aln
 -----------------------
-.. automodule:: process_bwa
+.. automodule:: process_align_bwa
 
    This pipeline aligns FASTQ reads to a given indexed genome. The pipeline can
    handle single-end and paired-end reads.
@@ -234,7 +307,7 @@ BWA Alignment - bwa aln
    .. code-block:: none
       :linenos:
 
-      python process_bwa.py                            \
+      python process_align_bwa.py                            \
          --config tests/json/config_chipseq.json \
          --in_metadata tests/json/input_chipseq.json \
          --out_metadata tests/json/output_chipseq.json
@@ -249,7 +322,7 @@ BWA Alignment - bwa aln
          --library_path=${HOME}/bin \
          --pythonpath=/<pyenv_virtenv_dir>/lib/python2.7/site-packages/ \
          --log_level=debug          \
-         process_bwa.py         \
+         process_align_bwa.py         \
             --config tests/json/config_bwa_aln_single.json \
             --in_metadata tests/json/input_bwa_aln_single_metadata.json \
             --out_metadata tests/json/output_bwa_aln_single.json
@@ -262,7 +335,7 @@ BWA Alignment - bwa aln
          --library_path=${HOME}/bin \
          --pythonpath=/<pyenv_virtenv_dir>/lib/python2.7/site-packages/ \
          --log_level=debug          \
-         process_bwa.py         \
+         process_align_bwa.py         \
             --config tests/json/config_bwa_aln_paired.json \
             --in_metadata tests/json/input_bwa_aln_paired_metadata.json \
             --out_metadata tests/json/output_bwa_aln_paired.json
@@ -276,7 +349,7 @@ BWA Alignment - bwa aln
 
 BWA Alignment - bwa mem
 -----------------------
-.. automodule:: process_bwa_mem
+.. automodule:: process_align_bwa_mem
 
    This pipeline aligns FASTQ reads to a given indexed genome. The pipeline can
    handle single-end and paired-end reads.
@@ -307,7 +380,7 @@ BWA Alignment - bwa mem
    .. code-block:: none
       :linenos:
 
-      python process_bwa.py                            \
+      python process_align_bwa.py                            \
          --config tests/json/config_chipseq.json \
          --in_metadata tests/json/input_chipseq.json \
          --out_metadata tests/json/output_chipseq.json
@@ -322,7 +395,7 @@ BWA Alignment - bwa mem
          --library_path=${HOME}/bin \
          --pythonpath=/<pyenv_virtenv_dir>/lib/python2.7/site-packages/ \
          --log_level=debug          \
-         process_bwa_mem.py         \
+         process_align_bwa_mem.py         \
             --config tests/json/config_bwa_mem_single.json \
             --in_metadata tests/json/input_bwa_mem_single_metadata.json \
             --out_metadata tests/json/output_bwa_mem_single.json
@@ -335,7 +408,7 @@ BWA Alignment - bwa mem
          --library_path=${HOME}/bin \
          --pythonpath=/<pyenv_virtenv_dir>/lib/python2.7/site-packages/ \
          --log_level=debug          \
-         process_bwa_mem.py         \
+         process_align_bwa_mem.py         \
             --config tests/json/config_bwa_mem_paired.json \
             --in_metadata tests/json/input_bwa_mem_paired_metadata.json \
             --out_metadata tests/json/output_bwa_mem_paired.json
@@ -343,7 +416,7 @@ BWA Alignment - bwa mem
 
    Methods
    =======
-   .. autoclass:: process_bwa_mem.process_bwa_mem
+   .. autoclass:: process_align_bwa_mem.process_bwa_mem
       :members:
 
 

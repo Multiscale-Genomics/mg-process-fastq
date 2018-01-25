@@ -36,3 +36,6 @@ Utility Functions
    -------------
    .. autoclass:: tool.bam_utils.bamUtils
       :members:
+
+   .. autoclass:: tool.bam_utils.bamUtilsTask
+      :members:

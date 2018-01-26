@@ -53,7 +53,14 @@ class bwaAlignerTool(Tool):
 
     def __init__(self, configuration=None):
         """
-        Init function
+        Initialise the tool with its configuration.
+
+
+        Parameters
+        ----------
+        configuration : dict
+            a dictionary containing parameters that define how the operation
+            should be carried out, which are specific to each Tool.
         """
         logger.info("BWA ALN Aligner")
         Tool.__init__(self)

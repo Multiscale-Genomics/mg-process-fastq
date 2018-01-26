@@ -39,8 +39,7 @@ class process_rnaseq(Workflow):
 
     def __init__(self, configuration=None):
         """
-        Initialise the tool with its configuration.
-
+        Initialise the class
 
         Parameters
         ----------

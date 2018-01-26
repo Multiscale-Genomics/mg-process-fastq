@@ -38,8 +38,7 @@ class process_biobambam(Workflow):  # pylint disable=too-few-public-methods, inv
 
     def __init__(self, configuration=None):
         """
-        Initialise the tool with its configuration.
-
+        Initialise the class
 
         Parameters
         ----------

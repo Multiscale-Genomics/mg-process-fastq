@@ -116,9 +116,14 @@ class macs2(Tool):
         ]
         command_line = ' '.join(command_param)
 
-        args = shlex.split(command_line)
-        process = subprocess.Popen(args)
-        process.wait()
+        try:
+            args = shlex.split(command_line)
+            process = subprocess.Popen(args)
+            process.wait()
+        except (IOError, OSError) as msg:
+            logger.fatal("I/O error({0}): {1}\n{2}".format(
+                msg.errno, msg.strerror, command_line))
+            return msg.errno
 
         if process.returncode is not 0:
             logger.fatal("MACS2 ERROR", process.returncode)

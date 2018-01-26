@@ -40,8 +40,7 @@ class process_bwa_mem(Workflow):
 
     def __init__(self, configuration=None):
         """
-        Initialise the tool with its configuration.
-
+        Initialise the class
 
         Parameters
         ----------

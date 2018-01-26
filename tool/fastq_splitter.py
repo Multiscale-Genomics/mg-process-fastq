@@ -37,8 +37,8 @@ except ImportError:
     logger.warn("          Using mock decorators.")
 
     from utils.dummy_pycompss import FILE_IN, FILE_OUT, IN, OUT # pylint: disable=ungrouped-imports
-    from utils.dummy_pycompss import task
-    from utils.dummy_pycompss import compss_wait_on
+    from utils.dummy_pycompss import task # pylint: disable=ungrouped-imports
+    from utils.dummy_pycompss import compss_wait_on # pylint: disable=ungrouped-imports
 
 from basic_modules.tool import Tool
 from basic_modules.metadata import Metadata
@@ -71,12 +71,11 @@ class fastq_splitter(Tool):
 
         self.configuration.update(configuration)
 
-    @staticmethod
     @task(
         in_file1=FILE_IN, tag=IN,
         out_file=FILE_OUT, files_out=OUT,
         returns=list)
-    def single_splitter(in_file1, out_file, tag='tmp'):
+    def single_splitter(self, in_file1, out_file, tag='tmp'):  # pylint disable=no-self-use
         """
         Function to divide the FastQ files into separate sub files of 1000000
         sequences so that the aligner can run in parallel.
@@ -150,12 +149,11 @@ class fastq_splitter(Tool):
 
         return files_out
 
-    @staticmethod
     @task(
         in_file1=FILE_IN, in_file2=FILE_IN, tag=IN,
         out_file=FILE_OUT, files_out=OUT,
         returns=list)
-    def paired_splitter(in_file1, in_file2, out_file, tag='tmp'):
+    def paired_splitter(self, in_file1, in_file2, out_file, tag='tmp'):  # pylint disable=no-self-use
         """
         Function to divide the FastQ files into separte sub files of 1000000
         sequences so that the aligner can run in parallel.

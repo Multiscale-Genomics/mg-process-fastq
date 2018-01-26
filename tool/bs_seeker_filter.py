@@ -34,8 +34,8 @@ except ImportError:
     logger.warn("          Using mock decorators.")
 
     from utils.dummy_pycompss import FILE_IN, FILE_OUT, IN # pylint: disable=ungrouped-imports
-    from utils.dummy_pycompss import task
-    from utils.dummy_pycompss import compss_wait_on
+    from utils.dummy_pycompss import task # pylint: disable=ungrouped-imports
+    from utils.dummy_pycompss import compss_wait_on # pylint: disable=ungrouped-imports
 
 from basic_modules.tool import Tool
 from basic_modules.metadata import Metadata
@@ -66,9 +66,8 @@ class filterReadsTool(Tool):
 
         self.configuration.update(configuration)
 
-    @staticmethod
     @task(infile=FILE_IN, outfile=FILE_OUT, bss_path=IN)
-    def bss_seeker_filter(infile, outfile, bss_path):
+    def bss_seeker_filter(self, infile, outfile, bss_path):  # pylint disable=no-self-use
         """
         This is optional, but removes reads that can be problematic for the
         alignment of whole genome datasets.

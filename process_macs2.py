@@ -125,9 +125,6 @@ class process_macs2(Workflow):
             # Extra entries in output_files will be disregarded.
             remap(output_files, 'narrow_peak', 'summits', 'broad_peak', 'gapped_peak'))
 
-        if len(m_results_meta) == 0:
-            logger.fatal("MACS2 peak calling failed")
-
         if 'narrow_peak' in m_results_meta:
             output_files_generated['narrow_peak'] = m_results_files['narrow_peak']
             output_metadata['narrow_peak'] = m_results_meta['narrow_peak']

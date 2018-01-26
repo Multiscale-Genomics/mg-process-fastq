@@ -34,8 +34,8 @@ except ImportError:
     logger.warn("          Using mock decorators.")
 
     from utils.dummy_pycompss import FILE_IN, FILE_OUT # pylint: disable=ungrouped-imports
-    from utils.dummy_pycompss import task
-    from utils.dummy_pycompss import compss_wait_on
+    from utils.dummy_pycompss import task # pylint: disable=ungrouped-imports
+    from utils.dummy_pycompss import compss_wait_on # pylint: disable=ungrouped-imports
 
 from basic_modules.metadata import Metadata
 from basic_modules.tool import Tool
@@ -68,9 +68,8 @@ class gemIndexerTool(Tool):
 
         self.configuration.update(configuration)
 
-    @staticmethod
     @task(genome_file=FILE_IN, new_genome_file=FILE_OUT, index_loc=FILE_OUT)
-    def gem_indexer(genome_file, new_genome_file, index_loc): # pylint: disable=unused-argument
+    def gem_indexer(self, genome_file, new_genome_file, index_loc): # pylint: disable=unused-argument, no-self-use
         """
         GEM Indexer
 

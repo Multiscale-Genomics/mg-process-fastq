@@ -37,8 +37,8 @@ except ImportError:
     logger.warn("          Using mock decorators.")
 
     from utils.dummy_pycompss import FILE_IN, FILE_OUT, IN # pylint: disable=ungrouped-imports
-    from utils.dummy_pycompss import task
-    from utils.dummy_pycompss import compss_wait_on
+    from utils.dummy_pycompss import task # pylint: disable=ungrouped-imports
+    from utils.dummy_pycompss import compss_wait_on # pylint: disable=ungrouped-imports
 
 from basic_modules.tool import Tool
 from basic_modules.metadata import Metadata
@@ -71,12 +71,11 @@ class bssMethylationCallerTool(Tool):
 
         self.configuration.update(configuration)
 
-    @staticmethod
     @task(
         bss_path=IN, bam_file=FILE_IN, genome_idx=FILE_IN,
         wig_file=FILE_OUT, cgmap_file=FILE_OUT, atcgmap_file=FILE_OUT)
-    def bss_methylation_caller(
-            bss_path, bam_file, genome_idx, wig_file, cgmap_file, atcgmap_file):
+    def bss_methylation_caller(  # pylint disable=no-self-use
+            self, bss_path, bam_file, genome_idx, wig_file, cgmap_file, atcgmap_file):
         """
         Takes the merged and sorted bam file and calls the methylation sites.
         Generates a wig file of the potential sites.

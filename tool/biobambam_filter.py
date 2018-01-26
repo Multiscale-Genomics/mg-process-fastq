@@ -35,8 +35,8 @@ except ImportError:
     logger.warn("          Using mock decorators.")
 
     from utils.dummy_pycompss import FILE_IN, FILE_OUT # pylint: disable=ungrouped-imports
-    from utils.dummy_pycompss import task
-    from utils.dummy_pycompss import compss_wait_on
+    from utils.dummy_pycompss import task # pylint: disable=ungrouped-imports
+    from utils.dummy_pycompss import compss_wait_on # pylint: disable=ungrouped-imports
 
 from basic_modules.metadata import Metadata
 from basic_modules.tool import Tool
@@ -67,10 +67,9 @@ class biobambam(Tool):
 
         self.configuration.update(configuration)
 
-    @staticmethod
     @task(returns=bool, bam_file_in=FILE_IN, bam_file_out=FILE_OUT,
           isModifier=False)
-    def biobambam_filter_alignments(bam_file_in, bam_file_out):
+    def biobambam_filter_alignments(self, bam_file_in, bam_file_out):  # pylint disable=no-self-use
         """
         Sorts and filters the bam file.
 

@@ -34,8 +34,8 @@ except ImportError:
     logger.warn("          Using mock decorators.")
 
     from utils.dummy_pycompss import FILE_IN, FILE_OUT # pylint: disable=ungrouped-imports
-    from utils.dummy_pycompss import task
-    from utils.dummy_pycompss import compss_wait_on
+    from utils.dummy_pycompss import task # pylint: disable=ungrouped-imports
+    from utils.dummy_pycompss import compss_wait_on # pylint: disable=ungrouped-imports
 
 from basic_modules.tool import Tool
 from basic_modules.metadata import Metadata
@@ -66,9 +66,8 @@ class kallistoIndexerTool(Tool):
 
         self.configuration.update(configuration)
 
-    @staticmethod
     @task(cdna_file_loc=FILE_IN, cdna_idx_file=FILE_OUT)
-    def kallisto_indexer(cdna_file_loc, cdna_idx_file):
+    def kallisto_indexer(self, cdna_file_loc, cdna_idx_file):  # pylint disable=no-self-use
         """
         Kallisto Indexer
 

@@ -30,7 +30,7 @@ except ImportError:
     logger.warn("          Using mock decorators.")
 
     from utils.dummy_pycompss import FILE_IN, FILE_OUT, FILE_INOUT # pylint: disable=ungrouped-imports
-    from utils.dummy_pycompss import task
+    from utils.dummy_pycompss import task # pylint: disable=ungrouped-imports
 
 # ------------------------------------------------------------------------------
 
@@ -172,9 +172,8 @@ class bamUtilsTask(object):
         """
         logger.info("BAM @task Utils")
 
-    @staticmethod
     @task(bam_file=FILE_INOUT)
-    def bam_sort(bam_file):
+    def bam_sort(self, bam_file):  # pylint: disable=no-self-use
         """
         Wrapper for the pysam SAMtools sort function
 
@@ -186,9 +185,8 @@ class bamUtilsTask(object):
         bam_handle = bamUtils()
         return bam_handle.bam_sort(bam_file)
 
-    @staticmethod
     @task(bam_file_1=FILE_INOUT, bam_file_2=FILE_IN)
-    def bam_merge(bam_file_1, bam_file_2):
+    def bam_merge(self, bam_file_1, bam_file_2):  # pylint: disable=no-self-use
         """
         Wrapper for the pysam SAMtools merge function
 
@@ -202,9 +200,8 @@ class bamUtilsTask(object):
         bam_handle = bamUtils()
         return bam_handle.bam_merge(bam_file_1, bam_file_2)
 
-    @staticmethod
     @task(bam_in=FILE_IN, bam_out=FILE_OUT)
-    def bam_copy(bam_in, bam_out):
+    def bam_copy(self, bam_in, bam_out):  # pylint: disable=no-self-use
         """
         Wrapper function to copy from one bam file to another
 
@@ -218,9 +215,8 @@ class bamUtilsTask(object):
         bam_handle = bamUtils()
         return bam_handle.bam_copy(bam_in, bam_out)
 
-    @staticmethod
     @task(bam_file=FILE_IN, bam_idx_file=FILE_OUT)
-    def bam_index(bam_file, bam_idx_file):
+    def bam_index(self, bam_file, bam_idx_file):  # pylint: disable=no-self-use
         """
         Wrapper for the pysam SAMtools merge function
 
@@ -234,9 +230,8 @@ class bamUtilsTask(object):
         bam_handle = bamUtils()
         return bam_handle.bam_index(bam_file, bam_idx_file)
 
-    @staticmethod
     @task(bam_file=FILE_IN)
-    def check_header(bam_file):
+    def check_header(self, bam_file):  # pylint: disable=no-self-use
         """
         Wrapper for the pysam SAMtools merge function
 

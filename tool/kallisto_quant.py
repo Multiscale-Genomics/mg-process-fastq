@@ -36,8 +36,8 @@ except ImportError:
     logger.warn("          Using mock decorators.")
 
     from utils.dummy_pycompss import FILE_IN, FILE_OUT # pylint: disable=ungrouped-imports
-    from utils.dummy_pycompss import task
-    from utils.dummy_pycompss import compss_wait_on
+    from utils.dummy_pycompss import task # pylint: disable=ungrouped-imports
+    from utils.dummy_pycompss import compss_wait_on # pylint: disable=ungrouped-imports
 
 from basic_modules.tool import Tool
 from basic_modules.metadata import Metadata
@@ -139,7 +139,6 @@ class kallistoQuantificationTool(Tool):
 
         return True
 
-    @staticmethod
     @task(
         fastq_file_loc_01=FILE_IN,
         fastq_file_loc_02=FILE_IN,
@@ -147,8 +146,8 @@ class kallistoQuantificationTool(Tool):
         abundance_h5_file=FILE_OUT,
         abundance_tsv_file=FILE_OUT,
         run_info_file=FILE_OUT)
-    def kallisto_quant_paired(
-            cdna_idx_file, fastq_file_loc_01, fastq_file_loc_02,
+    def kallisto_quant_paired(  # pylint disable=no-self-use
+            self, cdna_idx_file, fastq_file_loc_01, fastq_file_loc_02,
             abundance_h5_file, abundance_tsv_file, run_info_file):
         """
         Kallisto quantifier for paired end RNA-seq data

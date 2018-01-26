@@ -34,8 +34,8 @@ except ImportError:
     logger.warn("          Using mock decorators.")
 
     from utils.dummy_pycompss import FILE_IN, FILE_OUT, IN  # pylint: disable=ungrouped-imports
-    from utils.dummy_pycompss import task
-    from utils.dummy_pycompss import compss_wait_on
+    from utils.dummy_pycompss import task # pylint: disable=ungrouped-imports
+    from utils.dummy_pycompss import compss_wait_on # pylint: disable=ungrouped-imports
 
 from basic_modules.tool import Tool
 from basic_modules.metadata import Metadata
@@ -66,14 +66,13 @@ class idearTool(Tool):
 
         self.configuration.update(configuration)
 
-    @staticmethod
     @task(
         returns=int,
         sample_name=IN, bg_name=IN, sample_bam_file_1=FILE_IN, sample_bam_file_2=FILE_IN,
         bg_bam_file_1=FILE_IN, bg_bam_file_2=FILE_IN, species=IN, assembly=IN, bsgenome=FILE_IN,
         peak_bw=FILE_OUT, isModifier=False)
-    def idear_peak_calling(
-            sample_name, bg_name, sample_bam_file_1, sample_bam_file_2,
+    def idear_peak_calling(  # pylint disable=no-self-use
+            self, sample_name, bg_name, sample_bam_file_1, sample_bam_file_2,
             bg_bam_file_1, bg_bam_file_2, common_species_name, assembly,
             bsgenome, peak_bw):
         """

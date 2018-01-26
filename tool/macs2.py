@@ -59,7 +59,6 @@ class macs2(Tool):
 
         self.configuration.update(configuration)
 
-    @staticmethod
     @task(
         returns=int,
         name=IN,
@@ -71,8 +70,8 @@ class macs2(Tool):
         broadpeak=FILE_OUT,
         gappedpeak=FILE_OUT,
         isModifier=False)
-    def macs2_peak_calling(
-            name, bam_file, bam_file_bgd, macs_params,
+    def macs2_peak_calling(  # pylint: disable=no-self-use
+            self, name, bam_file, bam_file_bgd, macs_params,
             narrowpeak, summits_bed, broadpeak, gappedpeak): # pylint: disable=unused-argument
         """
         Function to run MACS2 for peak calling on aligned sequence files and
@@ -169,12 +168,11 @@ class macs2(Tool):
 
         return 0
 
-    @staticmethod
     @task(returns=int, name=IN, macs_params=IN, bam_file=FILE_IN,
           narrowpeak=FILE_OUT, summits_bed=FILE_OUT, broadpeak=FILE_OUT,
           gappedpeak=FILE_OUT, isModifier=False)
-    def macs2_peak_calling_nobgd( # pylint: disable=too-many-arguments
-            name, bam_file, macs_params,
+    def macs2_peak_calling_nobgd( # pylint: disable=too-many-arguments, no-self-use
+            self, name, bam_file, macs_params,
             narrowpeak, summits_bed, broadpeak, gappedpeak): # pylint: disable=unused-argument
         """
         Function to run MACS2 for peak calling on aligned sequence files without

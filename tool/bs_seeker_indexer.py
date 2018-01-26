@@ -36,8 +36,8 @@ except ImportError:
     logger.warn("          Using mock decorators.")
 
     from utils.dummy_pycompss import FILE_IN, FILE_OUT, IN # pylint: disable=ungrouped-imports
-    from utils.dummy_pycompss import task
-    from utils.dummy_pycompss import compss_wait_on
+    from utils.dummy_pycompss import task # pylint: disable=ungrouped-imports
+    from utils.dummy_pycompss import compss_wait_on # pylint: disable=ungrouped-imports
 
 from basic_modules.tool import Tool
 from basic_modules.metadata import Metadata
@@ -69,11 +69,10 @@ class bssIndexerTool(Tool):
 
         self.configuration.update(configuration)
 
-    @staticmethod
     @task(
         fasta_file=FILE_IN, aligner=IN, aligner_path=IN, bss_path=IN,
         idx_out=FILE_OUT)
-    def bss_build_index(fasta_file, aligner, aligner_path, bss_path, idx_out):
+    def bss_build_index(self, fasta_file, aligner, aligner_path, bss_path, idx_out):  # pylint disable=no-self-use
         """
         Function to submit the FASTA file for the reference sequence and build
         the required index file used by the aligner.

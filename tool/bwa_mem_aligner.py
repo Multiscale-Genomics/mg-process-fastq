@@ -33,8 +33,8 @@ except ImportError:
     logger.warn("          Using mock decorators.")
 
     from utils.dummy_pycompss import IN, FILE_IN, FILE_OUT # pylint: disable=ungrouped-imports
-    from utils.dummy_pycompss import task
-    from utils.dummy_pycompss import compss_wait_on, compss_open, barrier
+    from utils.dummy_pycompss import task # pylint: disable=ungrouped-imports
+    from utils.dummy_pycompss import compss_wait_on, compss_open, barrier # pylint: disable=ungrouped-imports
 
 from basic_modules.tool import Tool
 from basic_modules.metadata import Metadata
@@ -70,11 +70,10 @@ class bwaAlignerMEMTool(Tool):
 
         self.configuration.update(configuration)
 
-    @staticmethod
     @task(returns=bool, genome_file_loc=FILE_IN, read_file_loc=FILE_IN,
           bam_loc=FILE_OUT, genome_idx=FILE_IN, mem_params=IN, isModifier=False)
-    def bwa_aligner_single(  # pylint: disable=too-many-arguments
-            genome_file_loc, read_file_loc, bam_loc, genome_idx, mem_params):  # pylint: disable=unused-argument
+    def bwa_aligner_single(  # pylint: disable=too-many-arguments, no-self-use
+            self, genome_file_loc, read_file_loc, bam_loc, genome_idx, mem_params):  # pylint: disable=unused-argument
         """
         BWA MEM Aligner - Single Ended
 
@@ -138,12 +137,11 @@ class bwaAlignerMEMTool(Tool):
 
         return True
 
-    @staticmethod
     @task(returns=bool, genome_file_loc=FILE_IN, read_file_loc1=FILE_IN,
           read_file_loc2=FILE_IN, bam_loc=FILE_OUT, genome_idx=FILE_IN,
           mem_params=IN, isModifier=False)
-    def bwa_aligner_paired(  # pylint: disable=too-many-arguments
-            genome_file_loc, read_file_loc1, read_file_loc2, bam_loc,
+    def bwa_aligner_paired(  # pylint: disable=too-many-arguments, no-self-use
+            self, genome_file_loc, read_file_loc1, read_file_loc2, bam_loc,
             genome_idx, mem_params):  # pylint: disable=unused-argument
         """
         BWA MEM Aligner - Paired End

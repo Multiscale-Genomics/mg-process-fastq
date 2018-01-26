@@ -37,8 +37,8 @@ except ImportError:
     logger.warn("          Using mock decorators.")
 
     from utils.dummy_pycompss import FILE_IN, FILE_OUT # pylint: disable=ungrouped-imports
-    from utils.dummy_pycompss import task
-    from utils.dummy_pycompss import compss_wait_on
+    from utils.dummy_pycompss import task # pylint: disable=ungrouped-imports
+    from utils.dummy_pycompss import compss_wait_on # pylint: disable=ungrouped-imports
 
 from basic_modules.tool import Tool
 from basic_modules.metadata import Metadata
@@ -71,9 +71,8 @@ class bowtieIndexerTool(Tool):
 
         self.configuration.update(configuration)
 
-    @staticmethod
     @task(file_loc=FILE_IN, index_loc=FILE_OUT)
-    def bowtie2_indexer(file_loc, index_loc): # pylint: disable=unused-argument
+    def bowtie2_indexer(self, file_loc, index_loc): # pylint: disable=unused-argument, no-self-use
         """
         Bowtie2 Indexer
 

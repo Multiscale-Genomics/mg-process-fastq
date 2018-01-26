@@ -66,9 +66,8 @@ class fastqcTool(Tool):
 
         self.configuration.update(configuration)
 
-    @staticmethod
     @task(returns=bool, fastq_file=FILE_IN, report_file=FILE_OUT, isModifier=False)
-    def validate(fastq_file, report_file): # pylint: disable=unused-argument
+    def validate(self, fastq_file, report_file): # pylint: disable=unused-argument, no-self-use
         """
         FastQC Validator
 

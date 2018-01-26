@@ -191,7 +191,7 @@ class bowtie2AlignerTool(Tool):
 
         return True
 
-    def get_aln_params(self, params):
+    def get_aln_params(self, params, paired=False):
         """
         Function to handle to extraction of commandline parameters and formatting
         them for use in the aligner for Bowtie2
@@ -211,8 +211,8 @@ class bowtie2AlignerTool(Tool):
             "bowtie2_interleaved_param" : ["--interleaved", False],
             "bowtie2_tab5_param" : ["--tab5", False],
             "bowtie2_tab6_param" : ["--tab6", False],
-            "bowtie2_qseq_param" : ["--qseq", False],
-            "bowtie2_read_only_param" : ["-r", True],
+            # "bowtie2_qseq_param" : ["--qseq", False],
+            # "bowtie2_read_only_param" : ["-r", True],
             "bowtie2_skip_1st_n_reads_param" : ["-s", True],
             "bowtie2_aln_1st_n_reads_param" : ["-u", True],
             "bowtie2_trim5_param" : ["-5", True],
@@ -222,8 +222,8 @@ class bowtie2AlignerTool(Tool):
             # Alignment Options - 12
             "bowtie2_num_mismatch_param" : ["-N", True],
             "bowtie2_seed_len_param" : ["-L", True],
-            "bowtie2_seed_func_param" : ["-i", True],
-            "bowtie2_ambg_char_func_param" : ["--n-cell", True],
+            # "bowtie2_seed_func_param" : ["-i", True],
+            # "bowtie2_ambg_char_func_param" : ["--n-cell", True],
             "bowtie2_dpads_param" : ["--dpad", True],
             "bowtie2_gbar_param" : ["--gbar", True],
             "bowtie2_ignore_quals_param" : ["--ignore-quals", False],
@@ -233,19 +233,8 @@ class bowtie2AlignerTool(Tool):
             "bowtie2_end_to_end_param" : ["--end-to-end", False],
             "bowtie2_local_param" : ["--local", False],
             # Effort Options - 2
-            "bowtie2_seed-extension-attempts_param" : ["-D", True],
+            "bowtie2_seed_extension_attempts_param" : ["-D", True],
             "bowtie2_reseed_param" : ["-R", True],
-            # Paired-end Options - 10
-            "bowtie2_min_frag_len_param" : ["-I", True],
-            "bowtie2_max_frag_len_param" : ["-X", True],
-            "bowtie2_fr_param" : ["--fr", False],
-            "bowtie2_rf_param" : ["--rf", False],
-            "bowtie2_ff_param" : ["--ff", False],
-            "bowtie2_no_mixed_param" : ["--no-mixed", False],
-            "bowtie2_no_discordant_param" : ["--no-discordant", False],
-            "bowtie2_dovetail_param" : ["--dovetail", False],
-            "bowtie2_no_contain_param" : ["--no-contain", False],
-            "bowtie2_no_overlap_param" : ["--no-overlap", False],
             # SAM Options - 9
             "bowtie2_no_unal_param" : ["--no-unal", False],
             "bowtie2_no_hd_param" : ["--no-hd", False],
@@ -258,32 +247,44 @@ class bowtie2AlignerTool(Tool):
             "bowtie2_xeq_param" : ["--xeq", False],
         }
 
+        if paired:
+            # Paired-end Options - 10
+            command_parameters["bowtie2_min_frag_len_param"] = ["-I", True]
+            command_parameters["bowtie2_max_frag_len_param"] = ["-X", True]
+            command_parameters["bowtie2_frrfff_param"] = ["", True]
+            command_parameters["bowtie2_no_mixed_param"] = ["--no-mixed", False]
+            command_parameters["bowtie2_no_discordant_param"] = ["--no-discordant", False]
+            command_parameters["bowtie2_dovetail_param"] = ["--dovetail", False]
+            command_parameters["bowtie2_no_contain_param"] = ["--no-contain", False]
+            command_parameters["bowtie2_no_overlap_param"] = ["--no-overlap", False]
+
         for param in params:
             if param in command_parameters:
                 if command_parameters[param][1]:
                     command_params = command_params + [command_parameters[param][0], params[param]]
                 else:
-                    command_params.append(command_parameters[param][0])
+                    if command_parameters[param][0]:
+                        command_params.append(command_parameters[param][0])
 
         # Scoring Options - 8
         if "bowtie2_ma_param" in params:
             command_params = command_params + [
                 "--ma_", str(params["bowtie2_ma_param"])]
-        if "bowtie2_mp-mx_param" in params and "bowtie2_mp-mn_param" in params:
+        if "bowtie2_mp_mx_param" in params and "bowtie2_mp_mn_param" in params:
             command_params = command_params + [
                 "--mp",
-                str(params["bowtie2_mp-mx_param"]) + "," + str(params["bowtie2_mp-mn_param"])]
+                str(params["bowtie2_mp_mx_param"]) + "," + str(params["bowtie2_mp_mn_param"])]
         if "bowtie2_np_param" in params:
             command_params = command_params + [
                 "--np", str(params["bowtie2_np_param"])]
-        if "bowtie2_rdg-o_param" in params and "bowtie2_rdg-e_param" in params:
+        if "bowtie2_rdg_o_param" in params and "bowtie2_rdg_e_param" in params:
             command_params = command_params + [
                 "--rdg",
-                str(params["bowtie2_rdg-o_param"]) + "," + str(params["bowtie2_rdg-e_param"])]
-        if "bowtie2_rfg_param" in params:
+                str(params["bowtie2_rdg_o_param"]) + "," + str(params["bowtie2_rdg_e_param"])]
+        if "bowtie2_rfg_o_param" in params and "bowtie2_rfg_e_param" in params:
             command_params = command_params + [
                 "--rfg",
-                str(params["bowtie2_rfg-o_param"]) + "," + str(params["bowtie2_rfg-e_param"])]
+                str(params["bowtie2_rfg_o_param"]) + "," + str(params["bowtie2_rfg_e_param"])]
         # if "bowtie2_score-min_param" in params:
         #     command_params = command_params + [
         #         "--score-min", str(params["bowtie2_score-min_param"])]
@@ -378,7 +379,7 @@ class bowtie2AlignerTool(Tool):
 
                 results = self.bowtie2_aligner_paired(
                     str(input_files["genome"]), tmp_fq1, tmp_fq2, output_bam_file_tmp,
-                    str(input_files["index"]), self.get_aln_params(self.configuration)
+                    str(input_files["index"]), self.get_aln_params(self.configuration, True)
                 )
             else:
                 tmp_fq = gz_data_path + "/tmp/" + fastq_file_pair[0]

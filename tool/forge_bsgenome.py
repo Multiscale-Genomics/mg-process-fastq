@@ -167,7 +167,7 @@ class bsgenomeTool(Tool):
         genome=FILE_IN, circ_chrom=IN, seed_file_param=IN,
         genome_2bit=FILE_OUT, chrom_size=FILE_OUT, seed_file=FILE_OUT, bsgenome=FILE_OUT,
         isModifier=False)
-    def bsgenome_creater(
+    def bsgenome_creater(  # pylint disable=no-self-use
             self, genome, circ_chrom, seed_file_param,
             genome_2bit, chrom_size, seed_file, bsgenome):
         """

@@ -101,10 +101,12 @@ class bssIndexerTool(Tool):
 
         try:
             logger.info("BS - INDEX CMD:", command_line)
-            args = shlex.split(command_line)
-            process = subprocess.Popen(args)
+            # args = shlex.split(command_line)
+            process = subprocess.Popen(command_line, shell=True)
             process.wait()
-        except Exception:
+        except (IOError, OSError) as msg:
+            logger.fatal("I/O error({0}) - BS - INDEX CMD: {1}\n{2}".format(
+                msg.errno, msg.strerror, command_line))
             return False
 
         try:
@@ -123,7 +125,9 @@ class bssIndexerTool(Tool):
             args = shlex.split(command_line)
             process = subprocess.Popen(args)
             process.wait()
-        except Exception:
+        except (IOError, OSError) as msg:
+            logger.fatal("I/O error({0}): {1}\n{2}".format(
+                msg.errno, msg.strerror, command_line))
             return False
 
         return True
@@ -148,16 +152,16 @@ class bssIndexerTool(Tool):
         logger.info("WGBS - Index output files:", output_files)
 
         try:
-            if "bss_path" in input_metadata:
-                bss_path = input_metadata["bss_path"]
+            if "bss_path" in self.configuration:
+                bss_path = self.configuration["bss_path"]
             else:
                 raise KeyError
-            if "aligner_path" in input_metadata:
-                aligner_path = input_metadata["aligner_path"]
+            if "aligner_path" in self.configuration:
+                aligner_path = self.configuration["aligner_path"]
             else:
                 raise KeyError
-            if "aligner" in input_metadata:
-                aligner = input_metadata["aligner"]
+            if "aligner" in self.configuration:
+                aligner = self.configuration["aligner"]
             else:
                 raise KeyError
         except KeyError:
@@ -165,6 +169,10 @@ class bssIndexerTool(Tool):
 
 
         # handle error
+        logger.info("FASTA: " + str(input_files["genome"]))
+        logger.info("ALIGNER: " + str(aligner))
+        logger.info("ALIGNER PATH: " + str(aligner))
+        logger.info("BSS PATH: " + str(aligner))
         results = self.bss_build_index(
             input_files["genome"],
             aligner, aligner_path, bss_path,
@@ -174,13 +182,6 @@ class bssIndexerTool(Tool):
         if results is False:
             logger.fatal("BS SEEKER2 Indexer: run failed")
             return {}, {}
-
-        if (
-                os.path.isfile(output_files["index"]) is False and
-                os.path.getsize(output_files["index"]) == 0):
-            logger.fatal("BS SEEKER2 Indexer: Index archive not created")
-            return {}, {}
-
 
         output_metadata = {
             "index": Metadata(

@@ -118,7 +118,7 @@ class filterReadsTool(Tool):
         """
 
         try:
-            if "bss_path" not in input_metadata:
+            if "bss_path" not in self.configuration:
                 raise KeyError
         except KeyError:
             logger.fatal("WGBS - BS SEEKER2: Unassigned configuration variables")
@@ -126,16 +126,14 @@ class filterReadsTool(Tool):
 
         output_metadata = {}
 
-        print(
-            "BS FILTER PARAMS:",
-            input_files["fastq"],
-            output_files["fastq_filtered"],
-            input_metadata["bss_path"])
+        logger.info("BS FILTER PARAMS - FASTQ: " + input_files["fastq"])
+        logger.info("BS FILTER PARAMS - FASTQ FILTERED: " + output_files["fastq_filtered"])
+        logger.info("BS FILTER PARAMS - BSS PATH: " + self.configuration["bss_path"])
 
         results = self.bss_seeker_filter(
             input_files["fastq"],
             output_files["fastq_filtered"],
-            input_metadata["bss_path"]
+            self.configuration["bss_path"]
         )
         results = compss_wait_on(results)
 

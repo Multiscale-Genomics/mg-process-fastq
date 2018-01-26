@@ -57,8 +57,6 @@ class process_wgbs(Workflow):
         if configuration is None:
             configuration = {}
         self.configuration.update(configuration)
-        print("CONFIGURATION:", configuration)
-        print("SELF.CONFIGURATION:", self.configuration)
 
     def run(self, input_files, metadata, output_files):
         """
@@ -110,33 +108,16 @@ class process_wgbs(Workflow):
 
 
         """
-        try:
-            if "bss_path" in self.configuration:
-                metadata["bss_path"] = self.configuration["bss_path"]
-            else:
-                raise KeyError
-            if "aligner_path" in self.configuration:
-                metadata["aligner_path"] = self.configuration["aligner_path"]
-            else:
-                raise KeyError
-            if "aligner" in self.configuration:
-                metadata["aligner"] = self.configuration["aligner"]
-            else:
-                raise KeyError
-        except KeyError:
-            logger.fatal("WGBS - BS SEEKER2: Unassigned configuration variables")
 
         output_results_files = {}
         output_metadata = {}
 
-        logger.info("PIPELINE - metadata:", metadata)
-
         logger.info("WGBS - BS-Seeker2 Index")
         # Build the matching WGBS genome index
-        builder = bssIndexerTool()
+        builder = bssIndexerTool(self.configuration)
         genome_idx, gidx_meta = builder.run(
             remap(input_files, "genome"),
-            remap(metadata, "genome", "aligner", "aligner_path", "bss_path"),
+            remap(metadata, "genome"),
             remap(output_files, "index")
         )
         output_results_files["index"] = genome_idx["index"]
@@ -144,13 +125,10 @@ class process_wgbs(Workflow):
 
         # Filter the FASTQ reads to remove duplicates
         logger.info("WGBS - Filter")
-        frt = filterReadsTool()
+        frt = filterReadsTool(self.configuration)
         fastq1f, filter1_meta = frt.run(
             {"fastq": input_files["fastq1"]},
-            {
-                "fastq": metadata["fastq1"],
-                "bss_path": metadata["bss_path"]
-            },
+            {"fastq": metadata["fastq1"]},
             {"fastq_filtered": output_files["fastq1_filtered"]}
         )
 
@@ -168,10 +146,7 @@ class process_wgbs(Workflow):
             logger.info("WGBS - Filter background")
             fastq2f, filter2_meta = frt.run(
                 {"fastq": input_files["fastq2"]},
-                {
-                    "fastq": metadata["fastq2"],
-                    "bss_path": metadata["bss_path"]
-                },
+                {"fastq": metadata["fastq2"]},
                 {"fastq_filtered": output_files["fastq2_filtered"]}
             )
 
@@ -194,8 +169,7 @@ class process_wgbs(Workflow):
         aligner_input_files = remap(input_files, "genome", "fastq1", "fastq2")
         aligner_input_files["index"] = genome_idx["index"]
 
-        aligner_meta = remap(
-            metadata, "genome", "fastq1", "fastq2", "aligner", "aligner_path", "bss_path")
+        aligner_meta = remap(metadata, "genome")
         aligner_meta["index"] = output_metadata["index"]
         bam, bam_meta = bss_aligner.run(
             aligner_input_files,
@@ -222,9 +196,7 @@ class process_wgbs(Workflow):
 
         # Methylation peak caller
         peak_caller_handle = bssMethylationCallerTool()
-        mct_meta = remap(
-            metadata, "genome", "fastq1", "fastq2",
-            "aligner", "aligner_path", "bss_path")
+        mct_meta = remap(metadata, "genome", "fastq1", "fastq2")
         mct_meta["bam"] = output_metadata["bam"]
         mct_meta["bai"] = output_metadata["bai"]
         mct_meta["index"] = output_metadata["index"]

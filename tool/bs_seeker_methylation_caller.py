@@ -43,6 +43,8 @@ except ImportError:
 from basic_modules.tool import Tool
 from basic_modules.metadata import Metadata
 
+from tool.bam_utils import bamUtilsTask
+
 # ------------------------------------------------------------------------------
 
 class bssMethylationCallerTool(Tool):
@@ -121,28 +123,6 @@ class bssMethylationCallerTool(Tool):
 
         return True
 
-    @task(bam_file=FILE_IN, returns=int)
-    def check_header(self, bam_file):
-        """
-        Wrapper for the pysam SAMtools merge function
-
-        Parameters
-        ----------
-        bam_file_1 : str
-            Location of the bam file to merge into
-        bam_file_2 : str
-            Location of the bam file that is to get merged into bam_file_1
-        """
-        output = True
-
-        bam_file_handle = pysam.AlignmentFile(bam_file, "rb")
-        if ("SO" not in bam_file_handle.header["HD"] or
-                bam_file_handle.header["HD"]["SO"] == "unsorted"):
-            output = False
-        bam_file_handle.close()
-
-        return output
-
     def run(self, input_files, input_metadata, output_files):
         """
         Tool for methylation calling using BS-Seeker2.
@@ -160,14 +140,16 @@ class bssMethylationCallerTool(Tool):
         """
 
         try:
-            if "bss_path" in input_metadata:
-                bss_path = input_metadata["bss_path"]
+            if "bss_path" in self.configuration:
+                bss_path = self.configuration["bss_path"]
             else:
                 raise KeyError
         except KeyError:
             logger.fatal("WGBS - BS SEEKER2: Unassigned configuration variables")
 
-        results = self.check_header(input_files["bam"])
+        bam_handler = bamUtilsTask()
+
+        results = bam_handler.check_header(input_files["bam"])
         results = compss_wait_on(results)
         if results is False:
             logger.fatal(

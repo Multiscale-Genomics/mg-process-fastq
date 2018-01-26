@@ -45,6 +45,7 @@ from basic_modules.tool import Tool
 from basic_modules.metadata import Metadata
 
 from tool.fastq_splitter import fastq_splitter
+from tool.bam_utils import bamUtilsTask
 
 # ------------------------------------------------------------------------------
 
@@ -65,89 +66,6 @@ class bssAlignerTool(Tool):
             configuration = {}
 
         self.configuration.update(configuration)
-
-    @task(bam_file=FILE_INOUT)
-    def bam_sort(self, bam_file):
-        """
-        Wrapper for the pysam SAMtools sort function
-
-        Parameters
-        ----------
-        bam_file : str
-            Location of the bam file to sort
-        """
-        try:
-            pysam.sort("-o", bam_file, "-T", bam_file + "_sort", bam_file)
-        except Exception:
-            return False
-        return True
-
-    @task(bam_file_1=FILE_INOUT, bam_file_2=FILE_IN)
-    def bam_merge(self, bam_file_1, bam_file_2):
-        """
-        Wrapper for the pysam SAMtools merge function
-
-        Parameters
-        ----------
-        bam_file_1 : str
-            Location of the bam file to merge into
-        bam_file_2 : str
-            Location of the bam file that is to get merged into bam_file_1
-        """
-        pysam.merge(bam_file_1 + "_merge.bam", bam_file_1, bam_file_2)
-
-        try:
-            with open(bam_file_1 + "_merge.bam", "rb") as f_in:
-                with open(bam_file_1, "wb") as f_out:
-                    f_out.write(f_in.read())
-        except IOError:
-            return False
-
-        return True
-
-    @task(bam_in=FILE_IN, bam_out=FILE_OUT)
-    def bam_copy(self, bam_in, bam_out):
-        """
-        Wrapper function to copy from one bam file to another
-
-        Parameters
-        ----------
-        bam_in : str
-            Location of the input bam file
-        bam_out : str
-            Location of the output bam file
-        """
-        try:
-            with open(bam_in, "rb") as f_in:
-                with open(bam_out, "wb") as f_out:
-                    f_out.write(f_in.read())
-        except IOError:
-            return False
-
-        return True
-
-    @task(bam_file=FILE_IN, bam_idx_file=FILE_OUT)
-    def bam_index(self, bam_file, bam_idx_file):
-        """
-        Wrapper for the pysam SAMtools merge function
-
-        Parameters
-        ----------
-        bam_file : str
-            Location of the bam file that is to be indexed
-        bam_idx_file : str
-            Location of the bam index file (.bai)
-        """
-        pysam.index(bam_file, bam_file + "_tmp.bai")
-
-        try:
-            with open(bam_file + "_tmp.bai", "rb") as f_in:
-                with open(bam_idx_file, "wb") as f_out:
-                    f_out.write(f_in.read())
-        except IOError:
-            return False
-
-        return True
 
     @task(
         returns=bool, isModifier=False,
@@ -332,16 +250,16 @@ class bssAlignerTool(Tool):
         """
 
         try:
-            if "bss_path" in input_metadata:
-                bss_path = input_metadata["bss_path"]
+            if "bss_path" in self.configuration:
+                bss_path = self.configuration["bss_path"]
             else:
                 raise KeyError
-            if "aligner_path" in input_metadata:
-                aligner_path = input_metadata["aligner_path"]
+            if "aligner_path" in self.configuration:
+                aligner_path = self.configuration["aligner_path"]
             else:
                 raise KeyError
-            if "aligner" in input_metadata:
-                aligner = input_metadata["aligner"]
+            if "aligner" in self.configuration:
+                aligner = self.configuration["aligner"]
             else:
                 raise KeyError
         except KeyError:
@@ -444,7 +362,9 @@ class bssAlignerTool(Tool):
 
         barrier()
 
-        results = self.bam_copy(output_bam_list.pop(0), output_bam_file)
+        bam_handler = bamUtilsTask()
+
+        results = bam_handler.bam_copy(output_bam_list.pop(0), output_bam_file)
         results = compss_wait_on(results)
 
         if results is False:
@@ -454,21 +374,21 @@ class bssAlignerTool(Tool):
         while True:
             if len(output_bam_list) == 0:
                 break
-            results = self.bam_merge(output_bam_file, output_bam_list.pop(0))
+            results = bam_handler.bam_merge(output_bam_file, output_bam_list.pop(0))
             results = compss_wait_on(results)
 
             if results is False:
                 logger.fatal("BS SEEKER2 Aligner: Bam merging failed")
                 return {}, {}
 
-        results = self.bam_sort(output_bam_file)
+        results = bam_handler.bam_sort(output_bam_file)
         results = compss_wait_on(results)
 
         if results is False:
             logger.fatal("BS SEEKER2 Aligner: Bam sorting failed")
             return {}, {}
 
-        results = self.bam_index(output_bam_file, output_bai_file)
+        results = bam_handler.bam_index(output_bam_file, output_bai_file)
         results = compss_wait_on(results)
 
         if results is False:

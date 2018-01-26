@@ -199,6 +199,8 @@ class bowtie2AlignerTool(Tool):
         Parameters
         ----------
         params : dict
+        paired : bool
+            Indicate if the parameters are paired-end specific. [DEFAULT=False]
 
         Returns
         -------

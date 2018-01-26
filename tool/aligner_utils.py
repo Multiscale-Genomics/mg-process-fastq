@@ -35,7 +35,8 @@ class alignerUtils(object):
         """
         logger.info("Alignment Utils")
 
-    def replaceENAHeader(self, file_path, file_out):
+    @staticmethod
+    def replaceENAHeader(file_path, file_out):
         """
         The ENA header has pipes in the header as part of teh stable_id. This
         function removes the ENA stable_id and replaces it with the final
@@ -52,7 +53,8 @@ class alignerUtils(object):
 
         return True
 
-    def gem_index_genome(self, genome_file, gem_file):
+    @staticmethod
+    def gem_index_genome(genome_file, gem_file):
         """
         Create an index of the genome FASTA file with GEM. These are saved
         alongside the assembly file.
@@ -71,7 +73,8 @@ class alignerUtils(object):
 
         return True
 
-    def bowtie_index_genome(self, genome_file, index_name=None):
+    @staticmethod
+    def bowtie_index_genome(genome_file, index_name=None):
         """
         Create an index of the genome FASTA file with Bowtie2. These are saved
         alongside the assembly file.
@@ -95,7 +98,8 @@ class alignerUtils(object):
 
         return True
 
-    def bwa_index_genome(self, genome_file):
+    @staticmethod
+    def bwa_index_genome(genome_file):
         """
         Create an index of the genome FASTA file with BWA. These are saved
         alongside the assembly file. If the index has already been generated
@@ -147,8 +151,9 @@ class alignerUtils(object):
 
         return (amb_name, ann_name, bwt_name, pac_name, sa_name)
 
+    @staticmethod
     def bowtie2_align_reads(
-            self, genome_file, bam_loc, params, reads_file_1, reads_file_2=None):
+            genome_file, bam_loc, params, reads_file_1, reads_file_2=None):
         """
         Map the reads to the genome using BWA.
 
@@ -209,7 +214,8 @@ class alignerUtils(object):
 
         return True
 
-    def bwa_aln_align_reads_single(self, genome_file, reads_file, bam_loc, params):
+    @staticmethod
+    def bwa_aln_align_reads_single(genome_file, reads_file, bam_loc, params):
         """
         Map the reads to the genome using BWA.
         Parameters
@@ -258,7 +264,8 @@ class alignerUtils(object):
 
         return True
 
-    def bwa_aln_align_reads_paired(self, genome_file, reads_file_1, reads_file_2, bam_loc, params):
+    @staticmethod
+    def bwa_aln_align_reads_paired(genome_file, reads_file_1, reads_file_2, bam_loc, params):
         """
         Map the reads to the genome using BWA.
         Parameters
@@ -317,8 +324,9 @@ class alignerUtils(object):
 
         return True
 
+    @staticmethod
     def bwa_mem_align_reads(
-            self, genome_file, bam_loc, params, reads_file_1, reads_file_2=None):
+            genome_file, bam_loc, params, reads_file_1, reads_file_2=None):
         """
         Map the reads to the genome using BWA.
 

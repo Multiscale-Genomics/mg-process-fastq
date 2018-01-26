@@ -63,10 +63,11 @@ class bwaAlignerTool(Tool):
 
         self.configuration.update(configuration)
 
+    @staticmethod
     @task(returns=bool, genome_file_loc=FILE_IN, read_file_loc=FILE_IN,
           bam_loc=FILE_OUT, genome_idx=FILE_IN, aln_params=IN, isModifier=False)
     def bwa_aligner_single(  # pylint: disable=too-many-arguments
-            self, genome_file_loc, read_file_loc, bam_loc, genome_idx, aln_params):  # pylint: disable=unused-argument
+            genome_file_loc, read_file_loc, bam_loc, genome_idx, aln_params):  # pylint: disable=unused-argument
         """
         BWA ALN Aligner - Single Ended
 
@@ -130,11 +131,12 @@ class bwaAlignerTool(Tool):
 
         return True
 
+    @staticmethod
     @task(returns=bool, genome_file_loc=FILE_IN, read_file_loc1=FILE_IN,
           read_file_loc2=FILE_IN, bam_loc=FILE_OUT, genome_idx=FILE_IN,
           aln_params=IN, isModifier=False)
     def bwa_aligner_paired(  # pylint: disable=too-many-arguments
-            self, genome_file_loc, read_file_loc1, read_file_loc2, bam_loc,
+            genome_file_loc, read_file_loc1, read_file_loc2, bam_loc,
             genome_idx, aln_params):  # pylint: disable=unused-argument
         """
         BWA ALN Aligner - Paired End
@@ -191,7 +193,8 @@ class bwaAlignerTool(Tool):
 
         return True
 
-    def get_aln_params(self, params):
+    @staticmethod
+    def get_aln_params(params):
         """
         Function to handle to extraction of commandline parameters and formatting
         them for use in the aligner for BWA ALN

@@ -59,8 +59,9 @@ class fastqcTool(Tool):
 
         self.configuration.update(configuration)
 
+    @staticmethod
     @task(returns=bool, fastq_file=FILE_IN, report_file=FILE_OUT, isModifier=False)
-    def validate(self, fastq_file, report_file): # pylint: disable=unused-argument
+    def validate(fastq_file, report_file): # pylint: disable=unused-argument
         """
         FastQC Validator
 
@@ -77,7 +78,7 @@ class fastqcTool(Tool):
             args = shlex.split(command_line)
             process = subprocess.Popen(args)
             process.wait()
-        except Exception as error:
+        except (IOError, OSError) as error:
             logger.fatal("FastQC error: {0}".format(error))
             return False
 

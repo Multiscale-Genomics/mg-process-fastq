@@ -59,8 +59,9 @@ class filterReadsTool(Tool):
 
         self.configuration.update(configuration)
 
+    @staticmethod
     @task(infile=FILE_IN, outfile=FILE_OUT, bss_path=IN)
-    def bss_seeker_filter(self, infile, outfile, bss_path):
+    def bss_seeker_filter(infile, outfile, bss_path):
         """
         This is optional, but removes reads that can be problematic for the
         alignment of whole genome datasets.

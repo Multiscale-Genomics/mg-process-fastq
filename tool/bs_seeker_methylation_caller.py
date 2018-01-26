@@ -64,12 +64,12 @@ class bssMethylationCallerTool(Tool):
 
         self.configuration.update(configuration)
 
+    @staticmethod
     @task(
         bss_path=IN, bam_file=FILE_IN, genome_idx=FILE_IN,
         wig_file=FILE_OUT, cgmap_file=FILE_OUT, atcgmap_file=FILE_OUT)
     def bss_methylation_caller(
-            self, bss_path, bam_file, genome_idx,
-            wig_file, cgmap_file, atcgmap_file):
+            bss_path, bam_file, genome_idx, wig_file, cgmap_file, atcgmap_file):
         """
         Takes the merged and sorted bam file and calls the methylation sites.
         Generates a wig file of the potential sites.

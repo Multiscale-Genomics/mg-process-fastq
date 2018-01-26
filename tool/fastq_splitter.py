@@ -64,11 +64,12 @@ class fastq_splitter(Tool):
 
         self.configuration.update(configuration)
 
+    @staticmethod
     @task(
         in_file1=FILE_IN, tag=IN,
         out_file=FILE_OUT, files_out=OUT,
         returns=list)
-    def single_splitter(self, in_file1, out_file, tag='tmp'):
+    def single_splitter(in_file1, out_file, tag='tmp'):
         """
         Function to divide the FastQ files into separate sub files of 1000000
         sequences so that the aligner can run in parallel.
@@ -142,11 +143,12 @@ class fastq_splitter(Tool):
 
         return files_out
 
+    @staticmethod
     @task(
         in_file1=FILE_IN, in_file2=FILE_IN, tag=IN,
         out_file=FILE_OUT, files_out=OUT,
         returns=list)
-    def paired_splitter(self, in_file1, in_file2, out_file, tag='tmp'):
+    def paired_splitter(in_file1, in_file2, out_file, tag='tmp'):
         """
         Function to divide the FastQ files into separte sub files of 1000000
         sequences so that the aligner can run in parallel.

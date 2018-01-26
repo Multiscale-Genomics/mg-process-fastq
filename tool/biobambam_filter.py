@@ -60,9 +60,10 @@ class biobambam(Tool):
 
         self.configuration.update(configuration)
 
+    @staticmethod
     @task(returns=bool, bam_file_in=FILE_IN, bam_file_out=FILE_OUT,
           isModifier=False)
-    def biobambam_filter_alignments(self, bam_file_in, bam_file_out):
+    def biobambam_filter_alignments(bam_file_in, bam_file_out):
         """
         Sorts and filters the bam file.
 

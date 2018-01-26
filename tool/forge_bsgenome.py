@@ -52,7 +52,7 @@ class bsgenomeTool(Tool):
         """
         Init function
         """
-        print("Forge BSgenome")
+        logger.info("Forge BSgenome")
         Tool.__init__(self)
 
         if configuration is None:
@@ -60,7 +60,8 @@ class bsgenomeTool(Tool):
 
         self.configuration.update(configuration)
 
-    def genome_to_2bit(self, genome, genome_2bit):
+    @staticmethod
+    def genome_to_2bit(genome, genome_2bit):
         """
         Generate the 2bit genome file from a FASTA file
 
@@ -97,7 +98,8 @@ class bsgenomeTool(Tool):
 
         return True
 
-    def get_chrom_size(self, genome_2bit, chrom_size, circ_chrom):
+    @staticmethod
+    def get_chrom_size(genome_2bit, chrom_size, circ_chrom):
         """
         Generate the chrom.size file and identify the available chromosomes in
         the 2Bit file.

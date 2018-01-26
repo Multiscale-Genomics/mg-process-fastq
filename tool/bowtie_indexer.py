@@ -64,9 +64,9 @@ class bowtieIndexerTool(Tool):
 
         self.configuration.update(configuration)
 
+    @staticmethod
     @task(file_loc=FILE_IN, index_loc=FILE_OUT)
-    def bowtie2_indexer(
-            self, file_loc, index_loc): # pylint: disable=unused-argument
+    def bowtie2_indexer(file_loc, index_loc): # pylint: disable=unused-argument
         """
         Bowtie2 Indexer
 
@@ -114,7 +114,8 @@ class bowtieIndexerTool(Tool):
             process.wait()
 
             return True
-        except Exception:
+        except IOError as error:
+            logger.fatal("I/O error({0}): {1}".format(error.errno, error.strerror))
             return False
 
     def run(self, input_files, input_metadata, output_files):

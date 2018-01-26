@@ -59,8 +59,9 @@ class kallistoIndexerTool(Tool):
 
         self.configuration.update(configuration)
 
+    @staticmethod
     @task(cdna_file_loc=FILE_IN, cdna_idx_file=FILE_OUT)
-    def kallisto_indexer(self, cdna_file_loc, cdna_idx_file):
+    def kallisto_indexer(cdna_file_loc, cdna_idx_file):
         """
         Kallisto Indexer
 
@@ -79,7 +80,9 @@ class kallistoIndexerTool(Tool):
             args = shlex.split(command_line)
             process = subprocess.Popen(args)
             process.wait()
-        except Exception:
+        except (IOError, OSError) as msg:
+            logger.fatal("I/O error({0}) - KALLISTO INDEX CMD: {1}\n{2}".format(
+                msg.errno, msg.strerror, command_line))
             return False
 
         return True

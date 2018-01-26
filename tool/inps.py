@@ -58,11 +58,12 @@ class inps(Tool):
 
         self.configuration.update(configuration)
 
+    @staticmethod
     @task(
         returns=int,
         bam_file=FILE_IN, peak_bed=FILE_OUT, inps_params=IN,
         isModifier=False)
-    def inps_peak_calling(self, bam_file, peak_bed, inps_params):
+    def inps_peak_calling(bam_file, peak_bed, inps_params):
         """
         Convert Bam to Bed then make Nucleosome peak calls. These are saved as
         bed files That can then get displayed on genome browsers.

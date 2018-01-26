@@ -59,6 +59,7 @@ class macs2(Tool):
 
         self.configuration.update(configuration)
 
+    @staticmethod
     @task(
         returns=int,
         name=IN,
@@ -71,7 +72,7 @@ class macs2(Tool):
         gappedpeak=FILE_OUT,
         isModifier=False)
     def macs2_peak_calling(
-            self, name, bam_file, bam_file_bgd, macs_params,
+            name, bam_file, bam_file_bgd, macs_params,
             narrowpeak, summits_bed, broadpeak, gappedpeak): # pylint: disable=unused-argument
         """
         Function to run MACS2 for peak calling on aligned sequence files and
@@ -163,11 +164,12 @@ class macs2(Tool):
 
         return 0
 
+    @staticmethod
     @task(returns=int, name=IN, macs_params=IN, bam_file=FILE_IN,
           narrowpeak=FILE_OUT, summits_bed=FILE_OUT, broadpeak=FILE_OUT,
           gappedpeak=FILE_OUT, isModifier=False)
     def macs2_peak_calling_nobgd( # pylint: disable=too-many-arguments
-            self, name, bam_file, macs_params,
+            name, bam_file, macs_params,
             narrowpeak, summits_bed, broadpeak, gappedpeak): # pylint: disable=unused-argument
         """
         Function to run MACS2 for peak calling on aligned sequence files without
@@ -259,6 +261,55 @@ class macs2(Tool):
 
         return 0
 
+    @staticmethod
+    def get_macs2_params(params):
+        """
+        Function to handle to extraction of commandline parameters and formatting
+        them for use in the aligner for BWA ALN
+
+        Parameters
+        ----------
+        params : dict
+
+        Returns
+        -------
+        list
+        """
+        command_params = []
+
+        command_parameters = {
+            "macs_gsize_param" : ["--gsize", True],
+            "macs_tsize_param" : ["--tsize", True],
+            "macs_bw_param" : ["--bw", True],
+            "macs_qvalue_param" : ["--qvalue", True],
+            "macs_pvalue_param" : ["--pvalue", True],
+            "macs_mfold_param" : ["--mfold", True],
+            "macs_nolambda_param" : ["--nolambda", False],
+            "macs_slocal_param" : ["--slocal", True],
+            "macs_llocal_param" : ["--llocal", True],
+            "macs_fix-bimodal_param" : ["--fix-bimodal", False],
+            "macs_nomodel_param" : ["--nomodel", False],
+            "macs_extsize_param" : ["--extsize", True],
+            "macs_shift_param" : ["--shift", True],
+            "macs_keep-dup_param" : ["--keep-dup", True],
+            "macs_broad_param" : ["--broad", False],
+            "macs_broad-cutoff_param" : ["--broad-cutoff", True],
+            "macs_to-large_param" : ["--to-large", False],
+            "macs_down-sample_param" : ["--down-sample", False],
+            "macs_bdg_param" : ["--bdg", True],
+            "macs_call-summits_param" : ["--call-summits", True],
+        }
+
+        for param in params:
+            if param in command_parameters:
+                if command_parameters[param][1]:
+                    command_params = command_params + [command_parameters[param][0], params[param]]
+                else:
+                    if command_parameters[param][0]:
+                        command_params.append(command_parameters[param][0])
+
+        return command_params
+
     def run(self, input_files, input_metadata, output_files):
         """
         The main function to run MACS 2 for peak calling over a given BAM file
@@ -292,80 +343,7 @@ class macs2(Tool):
             'gapped_peak': "bed12+3"
         }
 
-        command_params = []
-
-        if "macs_gsize_param" in self.configuration:
-            command_params = command_params + [
-                "--gsize", str(self.configuration["macs_gsize_param"])]
-        if "macs_tsize_param" in self.configuration:
-            command_params = command_params + [
-                "--tsize", str(self.configuration["macs_tsize_param"])]
-        if "macs_bw_param" in self.configuration:
-            command_params = command_params + [
-                "--bw", str(self.configuration["macs_bw_param"])]
-        if "macs_qvalue_param" in self.configuration:
-            command_params = command_params + [
-                "--qvalue", str(self.configuration["macs_qvalue_param"])]
-        if "macs_pvalue_param" in self.configuration:
-            command_params = command_params + [
-                "--pvalue", str(self.configuration["macs_pvalue_param"])]
-        if "macs_mfold_param" in self.configuration:
-            command_params = command_params + [
-                "--mfold", str(self.configuration["macs_mfold_param"])]
-        if (
-                "macs_nolambda_param" in self.configuration and
-                self.configuration["macs_nolambda_param"] is True
-            ):
-            command_params = command_params + ["--nolambda"]
-        if "macs_slocal_param" in self.configuration:
-            command_params = command_params + [
-                "--slocal", str(self.configuration["macs_slocal_param"])]
-        if "macs_llocal_param" in self.configuration:
-            command_params = command_params + [
-                "--llocal", str(self.configuration["macs_llocal_param"])]
-        if (
-                "macs_fix-bimodal_param" in self.configuration and
-                self.configuration["macs_fix-bimodal_param"] is True
-            ):
-            command_params = command_params + ["--fix-bimodal"]
-        if (
-                "macs_nomodel_param" in self.configuration and
-                self.configuration["macs_nomodel_param"] is True
-            ):
-            command_params = command_params + ["--nomodel"]
-        if "macs_extsize_param" in self.configuration:
-            command_params = command_params + [
-                "--extsize", str(self.configuration["macs_extsize_param"])]
-        if "macs_shift_param" in self.configuration:
-            command_params = command_params + [
-                "--shift", str(self.configuration["macs_shift_param"])]
-        if "macs_keep-dup_param" in self.configuration:
-            command_params = command_params + [
-                "--keep-dup", str(self.configuration["macs_keep-dup_param"])]
-        if (
-                "macs_broad_param" in self.configuration and
-                self.configuration["macs_broad_param"] is True
-            ):
-            command_params = command_params + ["--broad"]
-        if "macs_broad-cutoff_param" in self.configuration:
-            command_params = command_params + [
-                "--broad-cutoff", str(self.configuration["macs_broad-cutoff_param"])]
-        if (
-                "macs_to-large_param" in self.configuration and
-                self.configuration["macs_to-large_param"] is True
-            ):
-            command_params = command_params + ["--to-large"]
-        if (
-                "macs_down-sample_param" in self.configuration and
-                self.configuration["macs_down-sample_param"] is True
-            ):
-            command_params = command_params + ["--down-sample"]
-        if "macs_bdg_param" in self.configuration:
-            command_params = command_params + [
-                "--bdg", str(self.configuration["macs_bdg_param"])]
-        if "macs_call-summits_param" in self.configuration:
-            command_params = command_params + [
-                "--call-summits", str(self.configuration["macs_call-summits_param"])]
+        command_params = self.get_macs2_params(self.configuration)
 
         logger.info("MACS2 COMMAND PARAMS:" + ", ".join(command_params))
 

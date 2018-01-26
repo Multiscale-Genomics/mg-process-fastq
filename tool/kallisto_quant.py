@@ -132,6 +132,7 @@ class kallistoQuantificationTool(Tool):
 
         return True
 
+    @staticmethod
     @task(
         fastq_file_loc_01=FILE_IN,
         fastq_file_loc_02=FILE_IN,
@@ -140,7 +141,7 @@ class kallistoQuantificationTool(Tool):
         abundance_tsv_file=FILE_OUT,
         run_info_file=FILE_OUT)
     def kallisto_quant_paired(
-            self, cdna_idx_file, fastq_file_loc_01, fastq_file_loc_02,
+            cdna_idx_file, fastq_file_loc_01, fastq_file_loc_02,
             abundance_h5_file, abundance_tsv_file, run_info_file):
         """
         Kallisto quantifier for paired end RNA-seq data
@@ -196,7 +197,8 @@ class kallistoQuantificationTool(Tool):
 
         return True
 
-    def seq_read_stats(self, file_in):
+    @staticmethod
+    def seq_read_stats(file_in):
         """
         Calculate the mean and standard deviation of the reads in a fastq file
 

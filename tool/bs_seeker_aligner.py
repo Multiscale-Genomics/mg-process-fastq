@@ -177,7 +177,8 @@ class bssAlignerTool(Tool):
 
         return results
 
-    def run_aligner(self, genome_idx, bam_out, script, params):
+    @staticmethod
+    def run_aligner(genome_idx, bam_out, script, params):
         """
         Run the aligner
 

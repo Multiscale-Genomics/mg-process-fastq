@@ -62,10 +62,11 @@ class bssIndexerTool(Tool):
 
         self.configuration.update(configuration)
 
+    @staticmethod
     @task(
         fasta_file=FILE_IN, aligner=IN, aligner_path=IN, bss_path=IN,
         idx_out=FILE_OUT)
-    def bss_build_index(self, fasta_file, aligner, aligner_path, bss_path, idx_out):
+    def bss_build_index(fasta_file, aligner, aligner_path, bss_path, idx_out):
         """
         Function to submit the FASTA file for the reference sequence and build
         the required index file used by the aligner.

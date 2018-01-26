@@ -64,8 +64,9 @@ class bwaIndexerTool(Tool):
 
         self.configuration.update(configuration)
 
+    @staticmethod
     @task(file_loc=FILE_IN, idx_out=FILE_OUT)
-    def bwa_indexer(self, file_loc, idx_out): # pylint: disable=unused-argument
+    def bwa_indexer(file_loc, idx_out):
         """
         BWA Indexer
 
@@ -113,7 +114,9 @@ class bwaIndexerTool(Tool):
             shutil.rmtree(index_dir)
 
             return True
-        except Exception:
+        except (IOError, OSError) as msg:
+            logger.fatal("I/O error({0}) - BWA INDEXER: {1}\n{2}".format(
+                msg.errno, msg.strerror, command_line))
             return False
 
     def run(self, input_files, input_metadata, output_files):

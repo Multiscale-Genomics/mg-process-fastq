@@ -61,8 +61,9 @@ class gemIndexerTool(Tool):
 
         self.configuration.update(configuration)
 
+    @staticmethod
     @task(genome_file=FILE_IN, new_genome_file=FILE_OUT, index_loc=FILE_OUT)
-    def gem_indexer(self, genome_file, new_genome_file, index_loc): # pylint: disable=unused-argument
+    def gem_indexer(genome_file, new_genome_file, index_loc): # pylint: disable=unused-argument
         """
         GEM Indexer
 

@@ -125,6 +125,27 @@ class bamUtils(object):
 
         return True
 
+    def check_header(self, bam_file):
+        """
+        Wrapper for the pysam SAMtools merge function
+
+        Parameters
+        ----------
+        bam_file_1 : str
+            Location of the bam file to merge into
+        bam_file_2 : str
+            Location of the bam file that is to get merged into bam_file_1
+        """
+        output = True
+
+        bam_file_handle = pysam.AlignmentFile(bam_file, "rb")
+        if ("SO" not in bam_file_handle.header["HD"] or
+                bam_file_handle.header["HD"]["SO"] == "unsorted"):
+            output = False
+        bam_file_handle.close()
+
+        return output
+
 
 class bamUtilsTask(object):
     """
@@ -196,3 +217,18 @@ class bamUtilsTask(object):
         """
         bam_handle = bamUtils()
         return bam_handle.bam_index(bam_file, bam_idx_file)
+
+    @task(bam_file=FILE_IN)
+    def check_header(self, bam_file):
+        """
+        Wrapper for the pysam SAMtools merge function
+
+        Parameters
+        ----------
+        bam_file_1 : str
+            Location of the bam file to merge into
+        bam_file_2 : str
+            Location of the bam file that is to get merged into bam_file_1
+        """
+        bam_handle = bamUtils()
+        return bam_handle.check_header(bam_file)

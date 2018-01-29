@@ -164,7 +164,7 @@ class process_wgbs(Workflow):
         logger.info("WGBS - BS-Seeker2 Aligner")
         # Handles the alignment of all of the split packets then merges them
         # back together.
-        bss_aligner = bssAlignerTool()
+        bss_aligner = bssAlignerTool(self.configuration)
         aligner_input_files = remap(input_files, "genome", "fastq1", "fastq2")
         aligner_input_files["index"] = genome_idx["index"]
 
@@ -194,7 +194,7 @@ class process_wgbs(Workflow):
             return {}, {}
 
         # Methylation peak caller
-        peak_caller_handle = bssMethylationCallerTool()
+        peak_caller_handle = bssMethylationCallerTool(self.configuration)
         mct_meta = remap(metadata, "genome", "fastq1", "fastq2")
         mct_meta["bam"] = output_metadata["bam"]
         mct_meta["bai"] = output_metadata["bai"]

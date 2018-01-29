@@ -51,7 +51,7 @@ class process_fastqc(Workflow):
 
         self.configuration.update(configuration)
 
-    def run(self, input_files, metadata, output_files):
+    def run(self, input_files, metadata, output_files):  # pylint: disable=no-self-use
         """
         Main run function for the validation of FASTQ files. The pipeline uses FastQC
 

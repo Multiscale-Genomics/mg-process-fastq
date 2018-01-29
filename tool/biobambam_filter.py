@@ -17,8 +17,6 @@
 
 from __future__ import print_function
 
-import os
-import shlex
 import subprocess
 import sys
 
@@ -69,7 +67,7 @@ class biobambam(Tool):
 
     @task(returns=bool, bam_file_in=FILE_IN, bam_file_out=FILE_OUT,
           isModifier=False)
-    def biobambam_filter_alignments(self, bam_file_in, bam_file_out):  # pylint disable=no-self-use
+    def biobambam_filter_alignments(self, bam_file_in, bam_file_out):  # pylint: disable=no-self-use
         """
         Sorts and filters the bam file.
 
@@ -98,7 +96,6 @@ class biobambam(Tool):
         tmp_dir = "/".join(td_list[0:-1])
 
         command_line = 'bamsormadup --tmpfile=' + tmp_dir
-        # args = shlex.split(command_line)
 
         bam_tmp_out = tmp_dir + '/' + td_list[-1] + '.filtered.tmp.bam'
 

@@ -54,13 +54,16 @@ def test_bs_seeker_aligner():
             {'assembly' : 'test'}),
         "fastq2": Metadata(
             "data_wgbs", "fastq", input_files["fastq2"], None,
-            {'assembly' : 'test'}),
+            {'assembly' : 'test'})
+    }
+
+    config_param = {
         "aligner" : "bowtie2",
         "aligner_path" : home + "/lib/bowtie2-2.3.2",
         "bss_path" : home + "/lib/BSseeker2"
     }
 
-    bsa = bs_seeker_aligner.bssAlignerTool()
+    bsa = bs_seeker_aligner.bssAlignerTool(config_param)
     bsa.run(input_files, metadata, output_files)
 
     assert os.path.isfile(output_files["bam"]) is True

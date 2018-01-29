@@ -41,13 +41,16 @@ def test_bs_seeker_indexer():
     metadata = {
         "genome": Metadata(
             "Assembly", "fasta", input_files["genome"], None,
-            {'assembly' : 'test'}),
+            {'assembly' : 'test'})
+    }
+
+    config_param = {
         "aligner" : "bowtie2",
         "aligner_path" : home + "/lib/bowtie2-2.3.2",
         "bss_path" : home + "/lib/BSseeker2"
     }
 
-    bsi = bs_seeker_indexer.bssIndexerTool()
+    bsi = bs_seeker_indexer.bssIndexerTool(config_param)
     bsi.run(input_files, metadata, output_files)
 
     assert os.path.isfile(output_files["index"]) is True

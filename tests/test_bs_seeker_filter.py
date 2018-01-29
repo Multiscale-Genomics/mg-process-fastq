@@ -41,13 +41,16 @@ def test_bs_seeker_filter_01():
     metadata = {
         "fastq": Metadata(
             "data_wgbs", "fastq", input_files["fastq"], None,
-            {'assembly' : 'test'}),
+            {'assembly' : 'test'})
+    }
+
+    config_param = {
         "aligner" : "bowtie2",
         "aligner_path" : home + "/lib/bowtie2-2.3.2",
         "bss_path" : home + "/lib/BSseeker2"
     }
 
-    bsi = bs_seeker_filter.filterReadsTool()
+    bsi = bs_seeker_filter.filterReadsTool(config_param)
     bsi.run(input_files, metadata, output_files)
 
     assert os.path.isfile(output_files["fastq_filtered"]) is True
@@ -72,13 +75,16 @@ def test_bs_seeker_filter_02():
     metadata = {
         "fastq": Metadata(
             "data_wgbs", "fastq", input_files["fastq"], None,
-            {'assembly' : 'test'}),
+            {'assembly' : 'test'})
+    }
+
+    config_param = {
         "aligner" : "bowtie2",
         "aligner_path" : home + "/lib/bowtie2-2.3.2",
         "bss_path" : home + "/lib/BSseeker2"
     }
 
-    bsi = bs_seeker_filter.filterReadsTool()
+    bsi = bs_seeker_filter.filterReadsTool(config_param)
     bsi.run(input_files, metadata, output_files)
 
     assert os.path.isfile(output_files["fastq_filtered"]) is True

@@ -18,7 +18,7 @@
 # Get the location of this script - Should be in the root of the module
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
-cd $DIR
+cd "$DIR"
 cd tests/data
 
 # Known test data files to keep

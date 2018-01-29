@@ -45,7 +45,7 @@ Download and index genome files
 
    Example
    -------
-   When running the pipeline on a local machine
+   When running the pipeline on a local machine without COMPSs:
 
    .. code-block:: none
       :linenos:
@@ -53,7 +53,8 @@ Download and index genome files
       python process_genome.py                              \
          --config tests/json/config_genome_indexer.json \
          --in_metadata tests/json/input_genome_indexer.json \
-         --out_metadata tests/json/output_genome_indexer.json
+         --out_metadata tests/json/output_genome_indexer.json \
+         --local
 
    When using a local version of the [COMPS virtual machine](https://www.bsc.es/research-and-development/software-and-apps/software-list/comp-superscalar/):
 
@@ -105,7 +106,7 @@ BioBamBam Alignment Filtering
    -------
    REQUIREMENT - Needs an aligned bam file
 
-   When running the pipeline on a local machine:
+   When running the pipeline on a local machine without COMPSs:
 
    .. code-block:: none
       :linenos:
@@ -113,7 +114,8 @@ BioBamBam Alignment Filtering
       python process_biobambam.py \
          --config tests/json/config_biobambam.json \
          --in_metadata tests/json/input_biobambam.json \
-         --out_metadata tests/json/output_biobambam.json
+         --out_metadata tests/json/output_biobambam.json \
+         --local
 
    When using a local version of the [COMPS virtual machine](https://www.bsc.es/research-and-development/software-and-apps/software-list/comp-superscalar/):
 
@@ -165,15 +167,16 @@ Bowtie2 Alignment
    -------
    REQUIREMENT - Needs the indexing step to be run first
 
-   When running the pipeline on a local machine:
+   When running the pipeline on a local machine without COMPSs:
 
    .. code-block:: none
       :linenos:
 
-      python process_align_bowtie.py                            \
+      python process_align_bowtie.py \
          --config tests/json/config_bowtie2.json \
          --in_metadata tests/json/input_bowtie2.json \
-         --out_metadata tests/json/output_bowtie2.json
+         --out_metadata tests/json/output_bowtie2.json \
+         --local
 
    When using a local version of the [COMPS virtual machine](https://www.bsc.es/research-and-development/software-and-apps/software-list/comp-superscalar/):
 
@@ -242,7 +245,7 @@ BSgenome Builder
    Example
    -------
 
-   When running the pipeline on a local machine:
+   When running the pipeline on a local machine without COMPSs:
 
    .. code-block:: none
       :linenos:
@@ -250,7 +253,8 @@ BSgenome Builder
       python process_bsgenome.py                            \
          --config tests/json/config_bsgenome.json \
          --in_metadata tests/json/input_bsgenome.json \
-         --out_metadata tests/json/output_bsgenome.json
+         --out_metadata tests/json/output_bsgenome.json \
+         --local
 
    When using a local version of the [COMPS virtual machine](https://www.bsc.es/research-and-development/software-and-apps/software-list/comp-superscalar/):
 
@@ -302,7 +306,7 @@ BWA Alignment - bwa aln
    -------
    REQUIREMENT - Needs the indexing step to be run first
 
-   When running the pipeline on a local machine:
+   When running the pipeline on a local machine without COMPSs:
 
    .. code-block:: none
       :linenos:
@@ -310,7 +314,8 @@ BWA Alignment - bwa aln
       python process_align_bwa.py                            \
          --config tests/json/config_chipseq.json \
          --in_metadata tests/json/input_chipseq.json \
-         --out_metadata tests/json/output_chipseq.json
+         --out_metadata tests/json/output_chipseq.json \
+         --local
 
    When using a local version of the [COMPS virtual machine](https://www.bsc.es/research-and-development/software-and-apps/software-list/comp-superscalar/):
 
@@ -375,7 +380,7 @@ BWA Alignment - bwa mem
    -------
    REQUIREMENT - Needs the indexing step to be run first
 
-   When running the pipeline on a local machine:
+   When running the pipeline on a local machine without COMPSs:
 
    .. code-block:: none
       :linenos:
@@ -383,7 +388,8 @@ BWA Alignment - bwa mem
       python process_align_bwa.py                            \
          --config tests/json/config_chipseq.json \
          --in_metadata tests/json/input_chipseq.json \
-         --out_metadata tests/json/output_chipseq.json
+         --out_metadata tests/json/output_chipseq.json \
+         --local
 
    When using a local version of the [COMPS virtual machine](https://www.bsc.es/research-and-development/software-and-apps/software-list/comp-superscalar/):
 
@@ -448,7 +454,7 @@ ChIP-Seq Analysis
    -------
    REQUIREMENT - Needs the indexing step to be run first
 
-   When running the pipeline on a local machine:
+   When running the pipeline on a local machine without COMPSs:
 
    .. code-block:: none
       :linenos:
@@ -456,7 +462,8 @@ ChIP-Seq Analysis
       python process_chipseq.py                            \
          --config tests/json/config_chipseq.json \
          --in_metadata tests/json/input_chipseq.json \
-         --out_metadata tests/json/output_chipseq.json
+         --out_metadata tests/json/output_chipseq.json \
+         --local
 
    When using a local version of the [COMPS virtual machine](https://www.bsc.es/research-and-development/software-and-apps/software-list/comp-superscalar/):
 
@@ -507,7 +514,7 @@ iDamID-Seq Analysis
    -------
    REQUIREMENT - Needs the indexing step to be run first
 
-   When running the pipeline on a local machine:
+   When running the pipeline on a local machine without COMPSs:
 
    .. code-block:: none
       :linenos:
@@ -515,7 +522,8 @@ iDamID-Seq Analysis
       python process_idamidseq.py                            \
          --config tests/json/config_idamidseq.json \
          --in_metadata tests/json/input_idamidseq.json \
-         --out_metadata tests/json/output_idamidseq.json
+         --out_metadata tests/json/output_idamidseq.json \
+         --local
 
    When using a local version of the [COMPS virtual machine](https://www.bsc.es/research-and-development/software-and-apps/software-list/comp-superscalar/):
 
@@ -536,6 +544,79 @@ iDamID-Seq Analysis
    Methods
    =======
    .. autoclass:: process_idamidseq.process_idamidseq
+      :members:
+
+
+MACS2 Analysis
+--------------
+.. automodule:: process_macs2
+
+   Transcript binding site peak caller for ChIP-seq data
+
+   Running from the command line
+   =============================
+
+   Parameters
+   ----------
+   config : str
+      Configuration JSON file
+   in_metadata : str
+      Location of input JSON metadata for files
+   out_metadata : str
+      Location of output JSON metadata for files
+
+   Returns
+   -------
+   bam : file
+      Aligned reads in bam file
+
+   Example
+   -------
+   REQUIREMENT - Needs the indexing step to be run first
+
+   When running the pipeline on a local machine without COMPSs:
+
+   .. code-block:: none
+      :linenos:
+
+      python process_align_bwa.py                            \
+         --config tests/json/config_macs2.json \
+         --in_metadata tests/json/input_macs2.json \
+         --out_metadata tests/json/output_macs2.json \
+         --local
+
+   When using a local version of the [COMPS virtual machine](https://www.bsc.es/research-and-development/software-and-apps/software-list/comp-superscalar/):
+
+   .. code-block:: none
+      :linenos:
+
+      runcompss                     \
+         --lang=python              \
+         --library_path=${HOME}/bin \
+         --pythonpath=/<pyenv_virtenv_dir>/lib/python2.7/site-packages/ \
+         --log_level=debug          \
+         process_macs2.py         \
+            --config tests/json/config_macs2_single.json \
+            --in_metadata tests/json/input_macs2_metadata.json \
+            --out_metadata tests/json/output_macs2.json
+
+   .. code-block:: none
+      :linenos:
+
+      runcompss                     \
+         --lang=python              \
+         --library_path=${HOME}/bin \
+         --pythonpath=/<pyenv_virtenv_dir>/lib/python2.7/site-packages/ \
+         --log_level=debug          \
+         process_macs2.py         \
+            --config tests/json/config_macs2_bgd_paired.json \
+            --in_metadata tests/json/input_macs2_bgd_paired_metadata.json \
+            --out_metadata tests/json/output_macs2_bgd.json
+
+
+   Methods
+   =======
+   .. autoclass:: process_bwa.process_bwa
       :members:
 
 
@@ -566,7 +647,7 @@ Mnase-Seq Analysis
    -------
    REQUIREMENT - Needs the indexing step to be run first
 
-   When running the pipeline on a local machine:
+   When running the pipeline on a local machine without COMPSs:
 
    .. code-block:: none
       :linenos:
@@ -574,7 +655,8 @@ Mnase-Seq Analysis
       python process_mnaseseq.py                           \
          --config tests/json/config_mnaseseq.json \
          --in_metadata tests/json/input_mnaseseq.json \
-         --out_metadata tests/json/output_mnaseseq.json
+         --out_metadata tests/json/output_mnaseseq.json \
+         --local
 
    When using a local version of the [COMPS virtual machine](https://www.bsc.es/research-and-development/software-and-apps/software-list/comp-superscalar/):
 
@@ -623,7 +705,7 @@ RNA-Seq Analysis
 
    Example
    -------
-   When running the pipeline on a local machine:
+   When running the pipeline on a local machinewithout COMPSs:
 
    .. code-block:: none
       :linenos:
@@ -631,7 +713,8 @@ RNA-Seq Analysis
       python process_rnaseq.py                                       \
          --config tests/json/config_rnaseq.json \
          --in_metadata tests/json/input_rnaseq.json \
-         --out_metadata tests/json/output_rnaseq.json
+         --out_metadata tests/json/output_rnaseq.json \
+         --local
 
 
    When using a local version of the [COMPS virtual machine](https://www.bsc.es/research-and-development/software-and-apps/software-list/comp-superscalar/):
@@ -687,7 +770,7 @@ Whole Genome BiSulphate Sequencing Analysis
 
    Example
    -------
-   When running the pipeline on a local machine:
+   When running the pipeline on a local machine without COMPSs:
 
    .. code-block:: none
       :linenos:
@@ -695,7 +778,8 @@ Whole Genome BiSulphate Sequencing Analysis
       python process_rnaseq.py                   \
          --config tests/json/config_wgbs.json \
          --in_metadata tests/json/input_wgbs.json \
-         --out_metadata tests/json/output_wgbs.json
+         --out_metadata tests/json/output_wgbs.json \
+         --local
 
    When using a local version of the [COMPS virtual machine](https://www.bsc.es/research-and-development/software-and-apps/software-list/comp-superscalar/):
 

@@ -1,6 +1,21 @@
 #!/usr/bin/python
 
 """
+.. See the NOTICE file distributed with this work for additional information
+   regarding copyright ownership.
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+
 Script to extract FASTQ entry pairs from paired end FASTQ files given a list of
 FASTQ IDs.
 """
@@ -10,12 +25,6 @@ import time
 
 from sets import Set
 from fastqreader import fastqreader
-
-# Extract the rows that matched to chr21
-# grep chr21 hic_test/map/SRR1658573_1_full_1-100.map | tr "\t" "~" | cut -d"~" -f1 -f5 | tr ":" "\t" | awk '(NR==1) || (($4>15000000) && ($4<20000000))' | tr "\t" "~" | cut -d "~" -f1 > SRR1658573_1_chr21_1-100.row
-# grep chr21 hic_test/map/SRR1658573_2_full_1-100.map | tr "\t" "~" | cut -d"~" -f1 -f5 | tr ":" "\t" | awk '(NR==1) || (($4>15000000) && ($4<20000000))' | tr "\t" "~" | cut -d "~" -f1 > SRR1658573_2_chr21_1-100.row
-
-# grep -Fx -f SRR1658573_1_chr21_1-100.row SRR1658573_2_chr21_1-100.row > SRR1658573_chr21.row
 
 def paired_selector(in_file1, in_file2, rows, tag='tmp'):
     """
@@ -158,7 +167,10 @@ def single_selector(in_file1, rows, tag='tmp'):
 
             if counter % 100000 == 0:
                 time_2 = current_milli_time()
-                print("Extracted:", str(counter), "reads (avg per 1000: " + str(time_2-time_1) + ") ...")
+                print(
+                    "Extracted:", str(counter),
+                    "reads (avg per 1000: " + str(time_2-time_1) + ") ..."
+                )
                 time_1 = time_2
 
         record1 = fqr.next()
@@ -191,7 +203,11 @@ if __name__ == "__main__":
     PARSER.add_argument("--input_1", help="File 1")
     PARSER.add_argument("--input_2", required=False, default=None, help="File 2")
     PARSER.add_argument("--rows", help="Row File")
-    PARSER.add_argument("--output_tag", help="Inserted before the file descriptor and after the file name: e.g. 'matching' would convert file_id-1.fastq to file_id-1.matching.fastq")
+    PARSER.add_argument(
+        "--output_tag", help="""
+            Inserted before the file descriptor and after the file name:
+                'matching' would convert file_id-1.fastq to file_id-1.matching.fastq"""
+    )
 
     ARGS = PARSER.parse_args()
     FILE_01 = ARGS.input_1

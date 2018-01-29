@@ -36,9 +36,6 @@ class fastqreader(object):
         self.f1_file = None
         self.f2_file = None
 
-        self.f1_content = None
-        self.f2_content = None
-
         self.f1_eof = False
         self.f2_eof = False
 
@@ -63,13 +60,11 @@ class fastqreader(object):
         """
         self.fastq1 = file1
         self.f1_file = open(self.fastq1, "r")
-        self.f1_content = deque(reversed(self.f1_file.readlines()))
         self.f1_eof = False
 
         if file2 is not None:
             self.fastq2 = file2
             self.f2_file = open(self.fastq2, "r")
-            self.f2_content = deque(reversed(self.f2_file.readlines()))
             self.f2_eof = False
             self.paired = True
 
@@ -126,20 +121,20 @@ class fastqreader(object):
 
         if side == 1:
             try:
-                read_id = self.f1_content.pop()
-                read_seq = self.f1_content.pop()
-                read_addition = self.f1_content.pop()
-                read_score = self.f1_content.pop()
+                read_id = self.f1_file.readline()
+                read_seq = self.f1_file.readline()
+                read_addition = self.f1_file.readline()
+                read_score = self.f1_file.readline()
             except IndexError:
                 self.f1_eof = True
                 return False
 
         elif side == 2:
             try:
-                read_id = self.f2_content.pop()
-                read_seq = self.f2_content.pop()
-                read_addition = self.f2_content.pop()
-                read_score = self.f2_content.pop()
+                read_id = self.f2_file.readline()
+                read_seq = self.f2_file.readline()
+                read_addition = self.f2_file.readline()
+                read_score = self.f2_file.readline()
             except IndexError:
                 self.f2_eof = True
                 return False

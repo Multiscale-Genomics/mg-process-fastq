@@ -30,14 +30,14 @@ from utils import logger
 try:
     if hasattr(sys, '_run_from_cmdl') is True:
         raise ImportError
-    from pycompss.api.parameter import FILE_IN, FILE_INOUT, FILE_OUT, IN
+    from pycompss.api.parameter import FILE_IN, FILE_OUT, IN
     from pycompss.api.task import task
     from pycompss.api.api import compss_wait_on, compss_open, barrier
 except ImportError:
     logger.warn("[Warning] Cannot import \"pycompss\" API packages.")
     logger.warn("          Using mock decorators.")
 
-    from utils.dummy_pycompss import FILE_IN, FILE_INOUT, FILE_OUT, IN # pylint: disable=ungrouped-imports
+    from utils.dummy_pycompss import FILE_IN, FILE_OUT, IN # pylint: disable=ungrouped-imports
     from utils.dummy_pycompss import task # pylint: disable=ungrouped-imports
     from utils.dummy_pycompss import compss_wait_on, compss_open, barrier # pylint: disable=ungrouped-imports
 
@@ -288,11 +288,11 @@ class bssAlignerTool(Tool):
             fastq2 = input_files["fastq2"]
             sources.append(input_files["fastq2"])
             fastq_file_list = fqs.paired_splitter(
-                fastq1, fastq2, fastq1 + ".tar.gz"
+                fastq1, fastq2, fastq_file_gz
             )
         else:
             fastq_file_list = fqs.single_splitter(
-                fastq1, fastq1 + ".tar.gz"
+                fastq1, fastq_file_gz
             )
 
         fastq_file_list = compss_wait_on(fastq_file_list)
@@ -329,20 +329,8 @@ class bssAlignerTool(Tool):
             if "fastq2" in input_files:
                 tmp_fq1 = gz_data_path + "/tmp/" + fastq_file_pair[0]
                 tmp_fq2 = gz_data_path + "/tmp/" + fastq_file_pair[1]
-                print("WGBS - gz_data_path:", gz_data_path)
-                print("WGBS - fastq_file_pair - 0:", tmp_fq1,
-                      os.path.isfile(tmp_fq1), os.path.getsize(tmp_fq1))
-                print("WGBS - fastq_file_pair - 1:", tmp_fq2,
-                      os.path.isfile(tmp_fq2), os.path.getsize(tmp_fq2))
-
                 output_bam_file_tmp = tmp_fq1 + ".bam"
                 output_bam_list.append(output_bam_file_tmp)
-
-                print(
-                    "FILES:", tmp_fq1, tmp_fq2,
-                    aligner, aligner_path, bss_path,
-                    genome_fasta, genome_idx,
-                    output_bam_file_tmp)
 
                 results = self.bs_seeker_aligner(
                     tmp_fq1, tmp_fq2,
@@ -354,12 +342,6 @@ class bssAlignerTool(Tool):
                 tmp_fq = gz_data_path + "/tmp/" + fastq_file_pair[0]
                 output_bam_file_tmp = tmp_fq + ".bam"
                 output_bam_list.append(output_bam_file_tmp)
-
-                print(
-                    "FILES:", tmp_fq,
-                    aligner, aligner_path, bss_path,
-                    genome_fasta, genome_idx,
-                    output_bam_file_tmp)
 
                 results = self.bs_seeker_aligner_single(
                     tmp_fq,

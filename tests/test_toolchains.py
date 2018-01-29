@@ -52,8 +52,10 @@ def biobambam_toolchain(verbose=False):
 
     .. code-block:: none
 
-       pytest -m bwa tests/test_bwa_indexer.py
-       pytest -m bwa tests/test_bwa_aligner.py
+       pytest -m chipseq tests/test_fastqc_validation.py
+       pytest -m chipseq tests/test_bwa_indexer.py
+       pytest -m chipseq tests/test_bwa_aligner.py
+       pytest -m chipseq tests/test_biobambam.py
     """
 
     params = ['-m chipseq']
@@ -61,6 +63,7 @@ def biobambam_toolchain(verbose=False):
     if verbose is True:
         params.append('-s')
 
+    params.append('tests/test_fastqc_validation.py')
     params.append('tests/test_bwa_indexer.py')
     params.append('tests/test_bwa_aligner.py')
     params.append('tests/test_biobambam.py')
@@ -75,6 +78,7 @@ def bowtie2_toolchain(verbose=False):
 
     .. code-block:: none
 
+       pytest -m bowtie2 tests/test_fastqc_validation.py
        pytest -m bowtie2 tests/test_bowtie_indexer.py
        pytest -m bowtie2 tests/test_bowtie2_aligner.py
     """
@@ -84,6 +88,7 @@ def bowtie2_toolchain(verbose=False):
     if verbose is True:
         params.append('-s')
 
+    params.append('tests/test_fastqc_validation.py')
     params.append('tests/test_bowtie_indexer.py')
     params.append('tests/test_bowtie2_aligner.py')
 
@@ -97,6 +102,7 @@ def bwa_toolchain(verbose=False):
 
     .. code-block:: none
 
+       pytest -m bwa tests/test_fastqc_validation.py
        pytest -m bwa tests/test_bwa_indexer.py
        pytest -m bwa tests/test_bwa_aligner.py
     """
@@ -106,6 +112,7 @@ def bwa_toolchain(verbose=False):
     if verbose is True:
         params.append('-s')
 
+    params.append('tests/test_fastqc_validation.py')
     params.append('tests/test_bwa_indexer.py')
     params.append('tests/test_bwa_aligner.py')
 
@@ -177,6 +184,7 @@ def hic_toolchain(verbose=False):
 
     .. code-block:: none
 
+       pytest -m hic tests/test_fastqc_validation.py
        pytest -m hic tests/test_gem_indexer.py
        pytest -m hic tests/test_tb_full_mapping.py
        pytest -m hic tests/test_tb_parse_mapping.py
@@ -208,6 +216,7 @@ def mnaseseq_toolchain(verbose=False):
 
     .. code-block:: none
 
+       pytest -m mnaseseq tests/test_fastqc_validation.py
        pytest -m mnaseseq tests/test_bwa_indexer.py
        pytest -m mnaseseq tests/test_bwa_aligner.py
        pytest -m mnaseseq tests/test_inps.py
@@ -233,6 +242,7 @@ def rnaseq_toolchain(verbose=False):
 
     .. code-block:: none
 
+       pytest -m rnaseq tests/test_fastqc_validation.py
        pytest -m rnaseq tests/test_kallisto_indexer.py
        pytest -m rnaseq tests/test_kallisto_quant.py
     """
@@ -256,9 +266,9 @@ def wgbs_toolchain(verbose=0):
 
     .. code-block:: none
 
+       pytest -m wgbs tests/test_fastqc_validation.py
        pytest -m wgbs tests/test_bs_seeker_filter.py
        pytest -m wgbs tests/test_bs_seeker_indexer.py
-       pytest -m wgbs tests/test_fastq_splitter.py
        pytest -m wgbs tests/test_bs_seeker_aligner.py
        pytest -m wgbs tests/test_bs_seeker_methylation_caller.py
     """

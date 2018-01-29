@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-#!/home/pmes/.pyenv/shims/python
+#!/home/pmes/miniconda2/bin/python
 
 # -*- coding: utf-8 -*-
 

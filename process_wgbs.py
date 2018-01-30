@@ -172,10 +172,12 @@ class process_wgbs(Workflow):
         }
         aligner_input_files["index"] = genome_idx["index"]
 
-        aligner_meta = remap(metadata, "genome")
-        aligner_meta["fastq1"] = output_metadata["fastq1_filtered"]
-        aligner_meta["fastq2"] = output_metadata["fastq2_filtered"]
-        aligner_meta["index"] = output_metadata["index"]
+        aligner_meta = {
+            "genome" : metadata["genome"],
+            "fastq1" : output_metadata["fastq1_filtered"],
+            "fastq2" : output_metadata["fastq2_filtered"],
+            "index" : output_metadata["index"]
+        }
         bam, bam_meta = bss_aligner.run(
             aligner_input_files,
             aligner_meta,
@@ -203,19 +205,21 @@ class process_wgbs(Workflow):
         peak_caller_handle = bssMethylationCallerTool(self.configuration)
         mct_input_files = {
             "genome" : input_files["genome"],
-            "index" : output_metadata["index"],
-            "fastq1" : output_metadata["fastq1"],
-            "fastq2" : output_metadata["fastq2"],
-            "bam" : output_metadata["bam"],
-            "bai" : output_metadata["bai"]
+            "index" : output_results_files["index"],
+            "fastq1" : output_results_files["fastq1_filtered"],
+            "fastq2" : output_results_files["fastq2_filtered"],
+            "bam" : output_results_files["bam"],
+            "bai" : output_results_files["bai"]
         }
 
-        mct_meta = remap(metadata, "genome")
-        mct_meta["fastq1"] = output_metadata["fastq1"]
-        mct_meta["fastq2"] = output_metadata["fastq2"]
-        mct_meta["bam"] = output_metadata["bam"]
-        mct_meta["bai"] = output_metadata["bai"]
-        mct_meta["index"] = output_metadata["index"]
+        mct_meta = {
+            "genome" : metadata["genome"],
+            "fastq1" : output_metadata["fastq1_filtered"],
+            "fastq2" : output_metadata["fastq2_filtered"],
+            "bam" : output_metadata["bam"],
+            "bai" : output_metadata["bai"],
+            "index" : output_metadata["index"]
+        }
         peak_files, peak_meta = peak_caller_handle.run(
             mct_input_files,
             mct_meta,

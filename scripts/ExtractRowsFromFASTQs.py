@@ -57,6 +57,8 @@ def paired_selector(in_file1, in_file2, rows, tag='tmp'):
     count_r3 = 0 # Matching pairs
     count_r4 = 0 # Reads that have been written
 
+    row_count = len(rows)
+
     file_loc_1 = fqr.fastq1.split("/")
     file_loc_1[-1] = file_loc_1[-1].replace(
         ".fastq",
@@ -73,7 +75,7 @@ def paired_selector(in_file1, in_file2, rows, tag='tmp'):
     current_milli_time = lambda: int(round(time.time() * 1000))
     time_1 = current_milli_time()
 
-    while fqr.eof(1) is False and fqr.eof(2) is False:
+    while fqr.eof(1) is False and fqr.eof(2) is False and count_r4 < row_count:
         r1_id = record1["id"].split(" ")
         r2_id = record2["id"].split(" ")
 
@@ -163,11 +165,11 @@ def single_selector(in_file1, rows, tag='tmp'):
             fqr.writeOutput(record1)
             counter += 1
 
-            if counter % 100000 == 0:
+            if counter % 1000 == 0:
                 time_2 = current_milli_time()
                 print(
                     "Extracted:", str(counter),
-                    "reads (avg per 100000: " + str(time_2-time_1) + ") ...")
+                    "reads (avg per 1000: " + str(time_2-time_1) + ") ...")
                 time_1 = time_2
 
         record1 = fqr.next()

@@ -302,11 +302,11 @@ def test_fastqc_wgbs_0():
     resource_path = os.path.join(os.path.dirname(__file__), "data/")
 
     input_files = {
-        "fastq": resource_path + "bsSeeker.Mouse.GRCm38_1.fastq"
+        "fastq": resource_path + "bsSeeker.Mouse.SRR892982_1.fastq.gz"
     }
 
     output_files = {
-        "report": resource_path + "bsSeeker.Mouse.GRCm38_1.report",
+        "report": resource_path + "bsSeeker.Mouse.SRR892982_1.fastq.report",
     }
 
     metadata = {
@@ -329,11 +329,11 @@ def test_fastqc_wgbs_1():
     resource_path = os.path.join(os.path.dirname(__file__), "data/")
 
     input_files = {
-        "fastq": resource_path + "bsSeeker.Mouse.GRCm38_2.fastq"
+        "fastq": resource_path + "bsSeeker.Mouse.SRR892982_2.fastq.gz"
     }
 
     output_files = {
-        "report": resource_path + "bsSeeker.Mouse.GRCm38_2.report",
+        "report": resource_path + "bsSeeker.Mouse.SRR892982_2.fastq.report",
     }
 
     metadata = {

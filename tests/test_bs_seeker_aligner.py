@@ -33,13 +33,13 @@ def test_bs_seeker_aligner():
     input_files = {
         "genome": resource_path + "bsSeeker.Mouse.GRCm38.fasta",
         "index": resource_path + "bsSeeker.Mouse.GRCm38.fasta.bt2.tar.gz",
-        "fastq1": resource_path + "bsSeeker.Mouse.GRCm38_1_filtered.fastq",
-        "fastq2": resource_path + "bsSeeker.Mouse.GRCm38_2_filtered.fastq",
+        "fastq1": resource_path + "bsSeeker.Mouse.SRR892982_1.filtered.fastq",
+        "fastq2": resource_path + "bsSeeker.Mouse.SRR892982_2.filtered.fastq",
     }
 
     output_files = {
-        "bam": resource_path + "bsSeeker.Mouse.GRCm38_1_filtered.bam",
-        "bai": resource_path + "bsSeeker.Mouse.GRCm38_1_filtered.bai"
+        "bam": resource_path + "bsSeeker.Mouse.SRR892982_1.filtered.bam",
+        "bai": resource_path + "bsSeeker.Mouse.SRR892982_1.filtered.bai"
     }
 
     metadata = {

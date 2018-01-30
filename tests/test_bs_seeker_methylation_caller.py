@@ -33,15 +33,15 @@ def test_bs_seeker_methylation_caller():
     input_files = {
         "genome": resource_path + "bsSeeker.Mouse.GRCm38.fasta",
         "index": resource_path + "bsSeeker.Mouse.GRCm38.fasta.bt2.tar.gz",
-        "fastq1": resource_path + "bsSeeker.Mouse.GRCm38_1_filtered.fastq",
-        "fastq2": resource_path + "bsSeeker.Mouse.GRCm38_2_filtered.fastq",
-        "bam": resource_path + "bsSeeker.Mouse.GRCm38_1_filtered.bam",
+        "fastq1": resource_path + "bsSeeker.Mouse.SRR892982_1.filtered.fastq",
+        "fastq2": resource_path + "bsSeeker.Mouse.SRR892982_2.filtered.fastq",
+        "bam": resource_path + "bsSeeker.Mouse.SRR892982_1.filtered.bam",
     }
 
     output_files = {
-        "wig_file": resource_path + "bsSeeker.Mouse.GRCm38_1.wig",
-        "cgmap_file": resource_path + "bsSeeker.Mouse.GRCm38_1.cgmap",
-        "atcgmap_file": resource_path + "bsSeeker.Mouse.GRCm38_1.atcgmap"
+        "wig_file": resource_path + "wgbs.Mouse.GRCm38_1.wig",
+        "cgmap_file": resource_path + "wgbs.Mouse.GRCm38_1.cgmap",
+        "atcgmap_file": resource_path + "wgbs.Mouse.GRCm38_1.atcgmap"
     }
 
     metadata = {

@@ -13,213 +13,113 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 
-Test Data for WGBS pipeline
-===============================
+Hi-C Test Data
+==============
 
-The following document is for the preparation of data set required for testing
-the WGBS pipeline. The document has been written with macOS Sierra in mind,
-although many of the commands are cross platform (\*nix) compliant.
+Test Data
+---------
 
-You would need to have the tools listed in "Prerequisites" installed on your system.
-For more details on installing the tools for this pipeline please refer to
+Dataset
+^^^^^^^
 
-http://multiscale-genomics.readthedocs.io/projects/mg-process-fastq/en/latest/full_installation.html
++-----------+----------------+
+| Stable ID | SRR892982      |
++-----------+----------------+
+| Citation  | Sun et al 2014 |
++-----------+----------------+
 
-If you already have certain packages installed feel free to skip over certain
-steps.
+Genome
+^^^^^^
 
-Prerequisites
--------------
++------------+---------------+
+| Assembly   | GRChm8, chr19 |
++------------+---------------+
+| Chromosome | 19            |
++------------+---------------+
+| Start      | 3000000       |
++------------+---------------+
+| End        | 4020000       |
++------------+---------------+
 
-   - BS Seeker
-   - Samtools
-   - Bowtie indexer
-
-
-Data set for genome file
-------------------------
-
-Filtering for required coverage
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-Download the genome file from
-
-.. code-block:: none
-
-     wget "http://www.ebi.ac.uk/ena/data/view/CM001012&display=fasta&download=fasta&filename=CM001012.fasta" -O Mouse.CM001012.2.fasta
-
-Download the fastq files from
+Method
+------
+The full dataset was downloaded from ENA aligned to the genome using GEM.
 
 .. code-block:: none
+   :linenos:
 
    wget ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR892/SRR892982/SRR892982_1.fastq.gz
    wget ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR892/SRR892982/SRR892982_2.fastq.gz
-
-Unzip these files.
-
-.. code-block:: none
-
    gunzip SRR892982_1.fastq.gz
    gunzip SRR892982_2.fastq.gz
 
+   wget "http://www.ebi.ac.uk/ena/data/view/CM001012&display=fasta&download=fasta&filename=entry.fasta" -O mouse.GRCm38.19.fasta
 
-Index the fasta file using the Bs seeker indexer. You can either do this by
-running a command for Bs Seeker, or simply change the path and file name in
-test_bs_seeker_indexer.py in the following lines
+   sed -n 40022200,41046060p GCA_000001635.6.fasta > mouse.GRCm38.19.fasta
 
-.. code-block:: none
+   bowtie2-build mouse.GRCm38.19.fasta mouse.GRCm38.19.idx
+   bowtie2 -x genome/mouse.GRCm38.19.idx -U data/SRR892982_1.fastq > SRR892982_1.sam
+   samtools view -h -o SRR892982_1.sam SRR892982_1.bam
 
-   # change to your file path
-   resource_path = os.path.join(os.path.dirname(__file__), "data/")
+   awk 'BEGIN { FS = "[[:space:]]+" } ; $3 ~ /CM001012/ {print $1}' SRR892982_1.sam > SRR892982_1.chr19.rows
 
-   # change to name of the fasta file
-   genomefa_file = resource_path + "bsSeeker.Mouse.GRCm38.fasta"
+   python scripts/ExtractRowsFromFASTQs.py --input_1 tests/data/SRR892982_1.fastq --input_2 tests/data/SRR892982_2.fastq --rows SRR892982_1.chr19.rows --output_tag profile
 
+   mv data/tmp/SRR892982_1.profile_0.fastq data/SRR892982_1.chr19.fastq
+   mv data/tmp/SRR892982_2.profile_0.fastq data/SRR892982_2.chr19.fastq
 
-Then run
+   bowtie2 -x genome/mouse.GRCm38.19.idx -1 data/SRR892982_1.chr19.fastq -2 data/SRR892982_2.chr19.fastq > SRR892982_1.chr19.sam
 
-.. code-block:: none
-
-   pytest test_bs_seeker_indexer.py
-
-
-Filter the fastq files. You can again do this by changing the following lines within test_bs_seeker_filter.py for fastq 1 in test_bs_seeker_filter_01():
+There are a range of positive and negative peaks between 3000000 and 4020000. Subselect the genome and matching FASTQ reads for the required subsection:
 
 .. code-block:: none
+   :linenos:
 
-   # change to your file path
-   resource_path = os.path.join(os.path.dirname(__file__), "data/")
+   head -n 1 mouse.GRCm38.19.fasta > 3M/mouse.GRCm38.19.3M.fasta
+   sed -n 50001,67001p mouse.GRCm38.19.fasta >> 3M/mouse.GRCm38.19.3M.fasta
 
-   # change to name of the fasta file
-   genomefa_file = resource_path + "bsSeeker.Mouse.GRCm38_1.fastq"
+   bowtie2-build 3M/mouse.GRCm38.19.3M.fasta 3M/mouse.GRCm38.19.3M.idx
+   bowtie2 -p 4 -x 3M/mouse.GRCm38.19.3M.idx -1 SRR892982_1.chr19.fastq -2 SRR892982_2.chr19.fastq > 3M/SRR892982.chr19.3M.sam
+   samtools view -h -o 3M/SRR892982.chr19.3M.sam 3M/SRR892982.chr19.3M.bam
 
+   python scripts/ExtractRowsFromFASTQs.py --input_1 SRR892982_1.chr19.fastq --input_2 SRR892982_2.chr19.fastq --rows 3M/SRR892982.chr19.3M.rows --output_tag subset
 
-You would need to repeat this for the 2nd fastq file within test_bs_seeker_filter_02():
+   mv tmp/SRR892982_1.chr19.subset_0.fastq 3M/SRR892982_1.chr19.3M.fastq
+   mv tmp/SRR892982_2.chr19.subset_0.fastq 3M/SRR892982_2.chr19.3M.fastq
 
-Then run
+This has enough load to test the system, while also generating results in the output files.
 
-.. code-block:: none
-
-   pytest test_bs_seeker_filter.py
-
-
-Split the filtered fastq.s. Alter the following lines in test_fastq_splitter.py:
-
-.. code-block:: none
-
-    # change to your file path
-    resource_path = os.path.join(os.path.dirname(__file__), "data/")
-
-    # change to your file path for the filtered file
-    fastq_1file = resource_path + "SRR892982_1.filtered.fastq"
-
-    # change to your file path for the filtered file
-    fastq_2file = resource_path + "SRR892982_2.filtered.fastq"
-
-Then run
+These files are then saved in the tests/data directory as:
 
 .. code-block:: none
+   :linenos:
 
-   pytest test_fastq_splitter.py
-
-
-Align the fastq files to the indexed fasta. Change the following lines in
-test_bs_seeker_aligner.py
-
-.. code-block:: none
-
-   # change to your file path
-   resource_path = os.path.join(os.path.dirname(__file__), "data/")
-
-   # change to name of the fasta file
-   genomefa_file = resource_path + "bsSeeker.Mouse.GRCm38.fasta"
-
-   # change to your file path for the indexed files
-   genomeidx_file = resource_path + "bsSeeker.Mouse.GRCm38.fasta_bowtie2.tar.gz"
-
-   # change to your file path for the filtered/splitted files
-   fastq_gz = resource_path + "bsSeeker.Mouse.GRCm38_1.fastq.filtered.fastq.tar.gz"
-
-   # change to your file path for the filtered file
-   fastq1_file = "bsSeeker.Mouse.GRCm38_1.fastq.filtered.fastq"
-
-   # change to your file path for the filtered file
-   fastq2_file = "bsSeeker.Mouse.GRCm38_2.fastq.filtered.fastq"
+   bsSeeker.Mouse.GRCm38.fasta
+   bsSeeker.Mouse.SRR892982_1.fastq.gz
+   bsSeeker.Mouse.SRR892982_2.fastq.gz
 
 
-Then run
+Test Scripts
+------------
+
+The following are the tests for checking that the tools in the WGBS pipeline are
+functioning correctly.
+
+The tests should be run in this order so that the required input files are
+generated at the correct stage.
 
 .. code-block:: none
+   :linenos:
 
-   pytest test_bs_seeker_aligner.py
+   pytest -m wgbs tests/test_fastqc_validation.py
+   pytest -m wgbs tests/test_bs_seeker_filter.py
+   pytest -m wgbs tests/test_bs_seeker_indexer.py
+   pytest -m wgbs tests/test_bs_seeker_aligner.py
+   pytest -m wgbs tests/test_bs_seeker_methylation_caller.py
 
-
-Aligning would give out the bam and bai files.
-
-Run the methylation caller. Alter the following lines within
-test_bs_seeker_methylation_caller.py
-
-.. code-block:: none
-
-   # change to your file path
-   resource_path = os.path.join(os.path.dirname(__file__), "data/")
-
-   # change to your file path for the indexed files
-   genome_fa_file = resource_path + "bsSeeker.Mouse.GRCm38.fasta_bowtie2.tar.gz"
-
-   # change to your file for an intermediate bam file
-   bam_file = resource_path + "bsSeeker.Mouse.GRCm38.bam"
-
-
-This would give the wig file. Traverse this wig file for a suitable region. Download the script:
+These can be called as part of a single tool chain with:
 
 .. code-block:: none
+   :linenos:
 
-   https://github.com/Multiscale-Genomics/mg-misc-scripts/blob/master/WGBS_Scripts/regionsFromWig.py
-
-Run it using:
-
-.. code-block:: none
-
-   python regionsFromWig.py /path/to/bsSeeker.Mouse.GRCm38.wig
-
-Select the following coordinates from the output 55844491 55847491
-
-Select chromosomal region corresponding to the above by getting the script at:
-
-.. code-block:: none
-
-   https://github.com/Multiscale-Genomics/mg-misc-scripts/blob/master/ChIPSeq_Scripts/extractChromosomalRegion.py
-
-And run it using
-
-.. code-block:: none
-
-   python extractChromosomalRegion.py /path/to/Mouse.CM001012.2.fasta /path/to/output/bsSeeker.Mouse.GRCm38.fasta 55844491 55847491
-
-
-Re run the pipeline with this fasta file and original fastq files till the
-alignment step. Take the .bam file and convert it to sam using:
-
-.. code-block:: none
-
-   samtools view -h -o /path/to/BS_seeker_tests/bsSeeker.Mouse.GRCm38.sam  /path/to/bsSeeker.Mouse.GRCm38.bam
-
-Use this sam file to extract the fastq entries from the larger fastq files using
-the script at:
-
-.. code-block:: none
-
-   https://github.com/Multiscale-Genomics/mg-misc-scripts/blob/master/WGBS_Scripts/regionsFromWig.py
-
-Run it using:
-
-.. code-block:: none
-
-   python makeFastQFiles.py --samfile /path/to/bsSeeker.Mouse.GRCm38.sam --fastQfile /path/to/SRR892982_1.fastq --pathToOutput /path/to/output/ --fastqOut bsSeeker.Mouse.GRCm38_1.fastq
-
-   python makeFastQFiles.py --samfile /path/to/bsSeeker.Mouse.GRCm38.sam --fastQfile /path/to/SRR892982_2.fastq --pathToOutput /path/to/output/ --fastqOut bsSeeker.Mouse.GRCm38_2.fastq
-
-
-The fastq files in the above steps along with the bsSeeker.Mouse.GRCm38.fasta
-make up the test data for the WGBS pipeline.
+   python tests/test_toolchains.py --pipeline wgbs

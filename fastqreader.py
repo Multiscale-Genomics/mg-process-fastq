@@ -125,7 +125,9 @@ class fastqreader(object):
                 read_seq = self.f1_file.readline()
                 read_addition = self.f1_file.readline()
                 read_score = self.f1_file.readline()
-            except IndexError:
+                if read_id == "":
+                    raise EOFError
+            except EOFError:
                 self.f1_eof = True
                 return False
 
@@ -135,7 +137,9 @@ class fastqreader(object):
                 read_seq = self.f2_file.readline()
                 read_addition = self.f2_file.readline()
                 read_score = self.f2_file.readline()
-            except IndexError:
+                if read_id == "":
+                    raise EOFError
+            except EOFError:
                 self.f2_eof = True
                 return False
         else:

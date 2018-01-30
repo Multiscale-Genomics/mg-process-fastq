@@ -44,6 +44,7 @@ from basic_modules.tool import Tool
 from basic_modules.metadata import Metadata
 
 from tool.fastq_splitter import fastq_splitter
+from tool.bam_utils import bamUtils
 from tool.bam_utils import bamUtilsTask
 
 # ------------------------------------------------------------------------------
@@ -183,8 +184,7 @@ class bssAlignerTool(Tool):
 
         return results
 
-    @staticmethod
-    def run_aligner(genome_idx, bam_out, script, params):
+    def run_aligner(self, genome_idx, bam_out, script, params):  # pylint: disable=no-self-use
         """
         Run the aligner
 
@@ -225,8 +225,9 @@ class bssAlignerTool(Tool):
         process = subprocess.Popen(args)
         process.wait()
 
-        pysam.sort("-o", bam_out + "_tmp.bam",
-                   "-T", bam_out + "_tmp.bam" + "_sort", bam_out + "_tmp.bam")
+        # Using the bamUtils directly as already insite of a @task
+        bam_handler = bamUtils()
+        bam_handler.bam_sort(bam_out + "_tmp.bam")
 
         try:
             with open(bam_out + "_tmp.bam", "rb") as f_in:

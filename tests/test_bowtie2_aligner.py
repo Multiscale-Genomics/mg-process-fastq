@@ -62,8 +62,6 @@ def test_bowtie2_aligner_single():
     bowtie2_handle = bowtie2AlignerTool()
     bowtie2_handle.run(input_files, metadata, output_files)
 
-    print(__file__)
-
     assert os.path.isfile(resource_path + "macs2.Human.DRR000150.22_bt2.bam") is True
     assert os.path.getsize(resource_path + "macs2.Human.DRR000150.22_bt2.bam") > 0
 

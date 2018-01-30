@@ -185,7 +185,20 @@ class tadbit_bin(Workflow):
                     "norm" : 'norm'
                 },
                 taxon_id=metadata['bamin'].taxon_id)
-
+        
+        m_results_files["tadkit_matrix"] = self.configuration['project']+"/"+os.path.basename(tb_files[-1])
+        os.rename(tb_files[-1], m_results_files["tadkit_matrix"])
+        m_results_meta["tadkit_matrix"] = Metadata(
+            data_type="chromatin_3dmodel_ensemble",
+            file_type="JSON",
+            file_path=m_results_files["tadkit_matrix"],
+            sources=in_files,
+            meta_data={
+                "description": "Ensemble of chromatin 3D structures",
+                "visible": True,
+                "assembly": input_metadata["assembly"]
+            },
+            taxon_id=metadata['bamin'].taxon_id)
         #cleaning
         clean_temps(self.configuration['workdir'])
 

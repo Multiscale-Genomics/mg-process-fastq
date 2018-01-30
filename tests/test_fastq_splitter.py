@@ -16,7 +16,9 @@
 """
 
 import os.path
-import pytest # pylint: disable=unused-import
+import pytest
+
+from basic_modules.metadata import Metadata
 
 from tool.fastq_splitter import fastq_splitter
 
@@ -30,12 +32,26 @@ def test_paired_splitter():
     fastq_2file = resource_path + "bsSeeker.Mouse.GRCm38_2.fastq"
 
     fqs_handle = fastq_splitter()
-    results = fqs_handle.run([fastq_1file, fastq_2file], [], {})
+    results = fqs_handle.run(
+        {
+            "fastq1" : fastq_1file,
+            "fastq2" : fastq_2file
+        },
+        {
+            "fastq1": Metadata(
+                "data_rnaseq", "fastq", [], None,
+                {'assembly' : 'test'}),
+            "fastq2": Metadata(
+                "data_rnaseq", "fastq", [], None,
+                {'assembly' : 'test'})
+        },
+        {"output" : fastq_1file + ".tar.gz"}
+    )
 
     print("WGBS - PAIRED RESULTS:", results)
 
-    assert os.path.isfile(results[0]) is True
-    assert os.path.getsize(results[0]) > 0
+    assert os.path.isfile(results[0]["output"]) is True
+    assert os.path.getsize(results[0]["output"]) > 0
 
 
 @pytest.mark.wgbs

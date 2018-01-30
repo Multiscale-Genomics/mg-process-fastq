@@ -219,7 +219,8 @@ class bssAlignerTool(Tool):
         command_line = (
             "python " + script + " " + " ".join(params)
         ).format()
-        print("command for aligner : ", command_line)
+        logger.info("command for aligner : ", command_line)
+
         args = shlex.split(command_line)
         process = subprocess.Popen(args)
         process.wait()

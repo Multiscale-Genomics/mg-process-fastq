@@ -278,10 +278,10 @@ class fastq_splitter(Tool):
 
         """
 
-        sources = [input_files["fastq1"].file_path]
+        sources = [input_files["fastq1"]]
 
         if "fastq2" in input_files:
-            sources.append(input_files["fastq2"].file_path)
+            sources.append(input_files["fastq2"])
             results = self.paired_splitter(
                 input_files["fastq1"], input_files["fastq2"],
                 input_files["fastq1"] + ".tar.gz"

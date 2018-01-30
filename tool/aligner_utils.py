@@ -182,6 +182,7 @@ class alignerUtils(object):
 
         cmd_aln = ' '.join([
             'bowtie2',
+            '-p 4',
             '-x', '/'.join(g_idx),
             ' '.join(params),
         ] + reads)

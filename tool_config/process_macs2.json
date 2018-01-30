@@ -1,0 +1,267 @@
+{
+    "_id": "process_macs2",
+    "name": "Process MACS2",
+    "title": "MACS2 Analysis",
+    "short_description": "Peak Calling using MACS2. For full details about all parameters please consult the MACS2 documentation at https://github.com/taoliu/MACS",
+    "owner": {
+        "institution": "EMBL-EBI",
+        "author": "Mark McDowall",
+        "contact": "mcdowall@ebi.ac.uk",
+        "user": "",
+        "url": "https://github.com/Multiscale-Genomics/mg-process-fastq"
+    },
+    "status": 0,
+    "external": true,
+    "has_custom_viewer": false,
+    "keywords": [
+        "dna","chromatin"
+    ],
+    "infrastructure": {
+        "memory": 12,
+        "cpus": 4,
+        "executable": "/home/pmes/code/mg-process-fastq/process_macs2.py",
+        "clouds": {
+            "mug-bsc": {
+                "launcher": "PMES",
+                "workflowType": "COMPSs",
+                "default_cloud": true
+            }
+        }
+      },
+    },
+    "input_files": [
+        {
+            "name": "bam",
+            "description": "Sequence read file",
+            "help": "path to a FASTQ sequence read file",
+            "file_type": ["BAM"],
+            "data_type": ["data_chip_seq"],
+            "required": true,
+            "allow_multiple": false
+        },
+        {
+            "name": "bam_bg",
+            "description": "Sequence read file",
+            "help": "path to a FASTQ sequence read file",
+            "file_type": ["BAM"],
+            "data_type": ["data_chip_seq"],
+            "required": false,
+            "allow_multiple": false
+        }
+    ],
+    "input_files_combinations": [
+        [
+            "bam"
+        ],
+        [
+            "bam",
+            "bam_bg"
+        ]
+    ],
+    "arguments": [
+        {
+            "name": "macs_gsize_param",
+            "description": "Mappable genome size",
+            "help": "Mappable genome size",
+            "type": "string",
+            "required": false,
+            "default": "0"
+        }, {
+            "name": "macs_tsize_param",
+            "description": "Size of sequencing tags",
+            "help": "Size of sequencing tags",
+            "type": "string",
+            "required": false,
+            "default": "0"
+        }, {
+            "name": "macs_bw_param",
+            "description": "Band width",
+            "help": "Band width for scanning the genome when model building",
+            "type": "string",
+            "required": false,
+            "default": "0"
+        }, {
+            "name": "macs_qvalue_param",
+            "description": "Minimum FDR",
+            "help": "Minimum FDR cutoff for calling significant regions",
+            "type": "string",
+            "required": false,
+            "default": "0"
+        }, {
+            "name": "macs_pvalue_param",
+            "description": "p-value cutoff",
+            "help": "p-value cutoff",
+            "type": "string",
+            "required": false,
+            "default": "0"
+        }, {
+            "name": "macs_mfold_param",
+            "description": "m-fold range",
+            "help": "Region to select within an m-fold range of high-confidence enrichment ratio against the background for model building",
+            "type": "string",
+            "required": false,
+            "default": "0"
+        }, {
+            "name": "macs_nolambda_param",
+            "description": "Use background lambda",
+            "help": "Use background lambda instead of local",
+            "type": "boolean",
+            "required": false,
+            "default": "0"
+        }, {
+            "name": "macs_slocal_param",
+            "description": "Small local regions",
+            "help": "Small local regions",
+            "type": "string",
+            "required": false,
+            "default": "0"
+        }, {
+            "name": "macs_llocal_param",
+            "description": "Large local regions",
+            "help": "Large local regions",
+            "type": "string",
+            "required": false,
+            "default": "0"
+        }, {
+            "name": "macs_fix-bimodal_param",
+            "description": "Fix Bimodal",
+            "help": "Turn on auto paired model process",
+            "type": "boolean",
+            "required": false,
+            "default": "0"
+        }, {
+            "name": "macs_nomodel_param",
+            "description": "No Model",
+            "help": "Negate building shifting models",
+            "type": "boolean",
+            "required": false,
+            "default": "0"
+        }, {
+            "name": "macs_extsize_param",
+            "description": "Extend Reads",
+            "help": "Used with nomodel to expand read size to fixed-size fragments",
+            "type": "string",
+            "required": false,
+            "default": "0"
+        }, {
+            "name": "macs_shift_param",
+            "description": "Arbitary bp shift",
+            "help": "When using nomodel this value is used to adjust the cutting ends before applying the extsize",
+            "type": "string",
+            "required": false,
+            "default": "0"
+        }, {
+            "name": "macs_keep-dups_param",
+            "description": "Control counting duplicate tags",
+            "help": "Controls for counting of duplicate tags",
+            "type": "string",
+            "required": false,
+            "default": "0"
+        }, {
+            "name": "macs_broad_param",
+            "description": "Enrichment region locations",
+            "help": "Control the placing highly enriched regions into a broad region with loose cutoffs",
+            "type": "boolean",
+            "required": false,
+            "default": "0"
+        }, {
+            "name": "macs_broad-cutoff_param",
+            "description": "Cutoff for broad region",
+            "help": "Cutoff for broad region, requires macs_keep-dups_param to be set",
+            "type": "string",
+            "required": false,
+            "default": "0"
+        }, {
+            "name": "macs_to-large_param",
+            "description": "Scale up small datasets",
+            "help": "Scale up small datasets",
+            "type": "boolean",
+            "required": false,
+            "default": "0"
+        }, {
+            "name": "macs_down-sample_param",
+            "description": "Downsize large datasets",
+            "help": "Random sampling to to downsize the dataset",
+            "type": "boolean",
+            "required": false,
+            "default": "0"
+        }, {
+            "name": "macs_bdg_param",
+            "description": "Store scores",
+            "help": "Store the fragment pileup and scores in bedGraph files",
+            "type": "string",
+            "required": false,
+            "default": "0"
+        }, {
+            "name": "macs_call-summits_param",
+            "description": "Call summits",
+            "help": "Reanalyse the shape of the profile to deconvolve subpeaks",
+            "type": "string",
+            "required": false,
+            "default": "0"
+        }
+    ],
+    "output_files": [
+        {
+            "required": false,
+            "allow_multiple": false,
+            "name": "narrow_peak",
+            "file": {
+                "file_type": "bed",
+                "meta_data": {
+                    "visible": true,
+                    "tool": "process_chipseq",
+                    "description": "Output"
+                },
+                "file_path": "macs2.filtered_peaks.narrowPeak",
+                "data_type": "data_chip_seq",
+                "compressed": "null"
+            }
+        }, {
+            "required": false,
+            "allow_multiple": false,
+            "name": "summits",
+            "file": {
+                "file_type": "bed",
+                "meta_data": {
+                    "visible": true,
+                    "tool": "process_chipseq",
+                    "description": "Output"
+                },
+                "file_path": "macs2.filtered_summits.bed",
+                "data_type": "data_chip_seq",
+                "compressed": "null"
+            }
+        }, {
+            "required": false,
+            "allow_multiple": false,
+            "name": "broad_peak",
+            "file": {
+                "file_type": "bed",
+                "meta_data": {
+                    "visible": true,
+                    "tool": "process_chipseq",
+                    "description": "Output"
+                },
+                "file_path": "macs2.filtered_peaks.broadPeak",
+                "data_type": "data_chip_seq",
+                "compressed": "null"
+            }
+        }, {
+            "required": false,
+            "allow_multiple": false,
+            "name": "gapped_peak",
+            "file": {
+                "file_type": "bed",
+                "meta_data": {
+                    "visible": true,
+                    "tool": "process_chipseq",
+                    "description": "Output"
+                },
+                "file_path": "macs2.filtered_peaks.gappedPeak",
+                "data_type": "data_chip_seq",
+                "compressed": "null"
+            }
+        }
+    ]
+}

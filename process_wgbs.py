@@ -165,10 +165,16 @@ class process_wgbs(Workflow):
         # Handles the alignment of all of the split packets then merges them
         # back together.
         bss_aligner = bssAlignerTool(self.configuration)
-        aligner_input_files = remap(input_files, "genome", "fastq1", "fastq2")
+        aligner_input_files = {
+            "genome" : input_files["genome"],
+            "fastq1" : fastq1f["fastq_filtered"],
+            "fastq2" : fastq2f["fastq_filtered"]
+        }
         aligner_input_files["index"] = genome_idx["index"]
 
         aligner_meta = remap(metadata, "genome")
+        aligner_meta["fastq1"] = output_metadata["fastq1_filtered"]
+        aligner_meta["fastq2"] = output_metadata["fastq2_filtered"]
         aligner_meta["index"] = output_metadata["index"]
         bam, bam_meta = bss_aligner.run(
             aligner_input_files,
@@ -195,12 +201,23 @@ class process_wgbs(Workflow):
 
         # Methylation peak caller
         peak_caller_handle = bssMethylationCallerTool(self.configuration)
-        mct_meta = remap(metadata, "genome", "fastq1", "fastq2")
+        mct_input_files = {
+            "genome" : input_files["genome"],
+            "index" : output_metadata["index"],
+            "fastq1" : output_metadata["fastq1"],
+            "fastq2" : output_metadata["fastq2"],
+            "bam" : output_metadata["bam"],
+            "bai" : output_metadata["bai"]
+        }
+
+        mct_meta = remap(metadata, "genome")
+        mct_meta["fastq1"] = output_metadata["fastq1"]
+        mct_meta["fastq2"] = output_metadata["fastq2"]
         mct_meta["bam"] = output_metadata["bam"]
         mct_meta["bai"] = output_metadata["bai"]
         mct_meta["index"] = output_metadata["index"]
         peak_files, peak_meta = peak_caller_handle.run(
-            remap(output_files, "bam", "bai", "index"),
+            mct_input_files,
             mct_meta,
             remap(output_files, "wig_file", "cgmap_file", "atcgmap_file")
         )

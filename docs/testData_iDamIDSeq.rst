@@ -13,8 +13,8 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 
-Hi-C Test Data
-==============
+iDamID-Seq Test Data
+====================
 
 Test Data
 ---------
@@ -22,11 +22,11 @@ Test Data
 Dataset
 ^^^^^^^
 
-+-----------+----------------+
-| Stable ID | SRR1658573     |
-+-----------+----------------+
-| Citation  | Rao et al 2014 |
-+-----------+----------------+
++-----------+-------------------------------------------------------------------+
+| Stable ID | SRR3714775                                                        |
++-----------+-------------------------------------------------------------------+
+| Citation  | `Franks et al 2016 <http://europepmc.org/abstract/MED/27198230>`_ |
++-----------+-------------------------------------------------------------------+
 
 Genome
 ^^^^^^

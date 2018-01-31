@@ -23,6 +23,21 @@ To ensure that the code written to process the data within the MuG VRE works it 
 
 For each tool within the mg-process-fastq repository there is an initial set of sample data and matching tests for each tool and pipeline.
 
+Sample Data
+-----------
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Contents:
+
+   testData_ChIPSeq
+   testData_iDamIDSeq
+   testData_MNaseSeq
+   testData_RNASeq
+   testData_WGBS
+   tests_hic
+
+
 Pipelines
 ---------
 There is a test for each of the tools. This uses the "process" scripts to run each of the tools. This is to ensure that the pipeline scripts are able to call out to each of the tools and the correct parameters are handed to each one.

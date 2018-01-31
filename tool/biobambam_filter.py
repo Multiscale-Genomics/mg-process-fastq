@@ -129,16 +129,18 @@ class biobambam(Tool):
         Parameters
         ----------
         input_files : dict
-            List of input bam file locations where 0 is the bam data file
+           List of input bam file locations where 0 is the bam data file
         metadata : dict
+           Matching meta data for the input files
         output_files : dict
+           List of output file locations
 
         Returns
         -------
         output_files : dict
-            Filtered bam fie.
+           Filtered bam fie.
         output_metadata : dict
-            List of matching metadata dict objects
+           List of matching metadata dict objects
         """
         logger.info("BIOBAMBAM FILTER: Ready to run")
 

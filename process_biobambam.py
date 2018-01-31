@@ -60,12 +60,15 @@ class process_biobambam(Workflow):  # pylint disable=too-few-public-methods, inv
         ----------
         input_files : dict
             Location of the initial input files required by the workflow
+
             bam : str
                 Location of BAM file
+
         metadata : dict
             Input file meta data associated with their roles
 
             bam : str
+
         output_files : dict
             Output file locations
 

@@ -62,14 +62,19 @@ class process_bwa_mem(Workflow):
         ----------
         input_files : dict
             Location of the initial input files required by the workflow
+
             genome : str
                 Genome FASTA file
+
             index : str
                 Location of the BWA archived index files
+
             loc : str
                 Location of the FASTQ reads files
+
             fastq2 : str
                 [OPTIONAL] Location of the FASTQ reads file for paired end data
+
         metadata : dict
             Input file meta data associated with their roles
 

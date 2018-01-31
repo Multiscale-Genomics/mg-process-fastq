@@ -68,16 +68,21 @@ class process_macs2(Workflow):
         ----------
         input_files : dict
             Location of the initial input files required by the workflow
+
             bam : str
                 Location of the aligned reads file
+
             bam_bg : str
                 Location of the background aligned FASTQ reads file [OPTIONAL]
+
         metadata : dict
             Input file meta data associated with their roles
 
             bam : str
+
             bam_bg : str
                 [OPTIONAL]
+
         output_files : dict
             Output file locations
 
@@ -93,12 +98,16 @@ class process_macs2(Workflow):
 
             narrow_peak : str
                 Results files in bed4+1 format
+
             summits : str
                 Results files in bed6+4 format
+
             broad_peak : str
                 Results files in bed6+3 format
+
             gapped_peak : str
                 Results files in bed12+3 format
+
         output_metadata : dict
             Output metadata for the associated files in output_files
 

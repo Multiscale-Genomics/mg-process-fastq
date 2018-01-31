@@ -77,7 +77,7 @@ Tools for processing FastQ files
 
    BWA - MEM
    ---------
-   .. autoclass:: tool.bwa_aligner.bwaAlignerMEMTool
+   .. autoclass:: tool.bwa_mem_aligner.bwaAlignerMEMTool
       :members:
 
    BS-Seeker2 Aligner
@@ -115,7 +115,7 @@ Tools for processing FastQ files
       :members:
 
    iDEAR
-   ----
+   -----
    .. autoclass:: tool.idear.idearTool
       :members:
 

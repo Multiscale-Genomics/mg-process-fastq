@@ -31,13 +31,8 @@ MuG - FASTQ Pipelines's documentation!
    tools
    common
    fastqfunctions
-   testing
    settingUpTravis
    docker
-   testData_ChIPSeq
-   testData_MNaseSeq
-   testData_RNASeq
-   testData_WGBS
    adr
    license
 
@@ -45,7 +40,13 @@ MuG - FASTQ Pipelines's documentation!
    :maxdepth: 2
    :caption: Test Datasets:
 
-   tests_hic
+   test_data/index
+   test_data/testData_ChIPSeq
+   test_data/testData_iDamIDSeq
+   test_data/testData_MNaseSeq
+   test_data/testData_RNASeq
+   test_data/testData_WGBS
+   test_data/tests_hic
 
 Indices and tables
 ==================

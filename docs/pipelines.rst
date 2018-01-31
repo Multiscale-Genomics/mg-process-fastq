@@ -274,7 +274,7 @@ BSgenome Builder
 
    Methods
    =======
-   .. autoclass:: process_idamidseq.process_idamidseq
+   .. autoclass:: process_bsgenome.process_bsgenome
       :members:
 
 
@@ -348,7 +348,7 @@ BWA Alignment - bwa aln
 
    Methods
    =======
-   .. autoclass:: process_bwa.process_bwa
+   .. autoclass:: process_align_bwa.process_bwa
       :members:
 
 
@@ -489,7 +489,7 @@ ChIP-Seq Analysis
 
 iDamID-Seq Analysis
 -------------------
-.. automodule:: process_idamidseq
+.. automodule:: process_damidseq
 
    This pipeline can process FASTQ to identify protein-DNA binding sites.
 
@@ -519,7 +519,7 @@ iDamID-Seq Analysis
    .. code-block:: none
       :linenos:
 
-      python process_idamidseq.py                            \
+      python process_damidseq.py                            \
          --config tests/json/config_idamidseq.json \
          --in_metadata tests/json/input_idamidseq.json \
          --out_metadata tests/json/output_idamidseq.json \
@@ -535,7 +535,7 @@ iDamID-Seq Analysis
          --library_path=${HOME}/bin \
          --pythonpath=/<pyenv_virtenv_dir>/lib/python2.7/site-packages/ \
          --log_level=debug          \
-         process_idamidseq.py         \
+         process_damidseq.py         \
             --config tests/json/config_idamidseq.json \
             --in_metadata tests/json/input_idamidseq.json \
             --out_metadata tests/json/output_idamidseq.json
@@ -543,7 +543,7 @@ iDamID-Seq Analysis
 
    Methods
    =======
-   .. autoclass:: process_idamidseq.process_idamidseq
+   .. autoclass:: process_damidseq.process_damidseq
       :members:
 
 
@@ -616,7 +616,7 @@ MACS2 Analysis
 
    Methods
    =======
-   .. autoclass:: process_bwa.process_bwa
+   .. autoclass:: process_macs2.process_macs2
       :members:
 
 

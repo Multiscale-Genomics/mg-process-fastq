@@ -70,21 +70,28 @@ class process_chipseq(Workflow):
         ----------
         input_files : dict
             Location of the initial input files required by the workflow
+
             genome : str
                 Genome FASTA file
+
             index : str
                 Location of the BWA archived index files
+
             loc : str
                 Location of the FASTQ reads files
+
             bg_loc : str
                 Location of the background FASTQ reads files [OPTIONAL]
+
         metadata : dict
             Input file meta data associated with their roles
 
             genome : str
             index : str
+
             bg_loc : str
                 [OPTIONAL]
+
         output_files : dict
             Output file locations
 

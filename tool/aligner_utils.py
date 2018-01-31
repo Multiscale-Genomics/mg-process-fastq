@@ -25,8 +25,8 @@ from utils import logger
 
 class alignerUtils(object):
     """
-    Functions for downloading and processing *-seq FastQ files. Functions
-    provided allow for the downloading andindexing of the genome assemblies.
+    Functions for downloading and processing N-seq FastQ files. Functions
+    provided allow for the downloading and indexing of the genome assemblies.
     """
 
     def __init__(self):
@@ -38,7 +38,7 @@ class alignerUtils(object):
     @staticmethod
     def replaceENAHeader(file_path, file_out):
         """
-        The ENA header has pipes in the header as part of teh stable_id. This
+        The ENA header has pipes in the header as part of the stable_id. This
         function removes the ENA stable_id and replaces it with the final
         section after splitting the stable ID on the pipe.
         """

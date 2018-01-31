@@ -24,7 +24,7 @@ Utility Functions
    The following functions are ones that have been used across multiple tools for
    transformations of the data when requried.
 
-   .. autoclass:: tool.common.common
+   .. autoclass:: tool.common.cd
       :members:
 
    Alignment Utilities

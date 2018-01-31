@@ -189,7 +189,7 @@ class tbBinTool(Tool):
             hic_contacts_matrix_norm_fig = workdir+"/genomic_maps_nrm.png"
             if by_chrom == 'all':
                 hic_contacts_matrix_norm_fig = workdir+"/genomic_maps_nrm"
-                hic_map(imx, resolution, savefig=hic_contacts_matrix_raw_fig+"/full_map.png", normalized=True, by_chrom=None, focus=focus)
+                hic_map(imx, resolution, savefig=hic_contacts_matrix_norm_fig+"/full_map.png", normalized=True, by_chrom=None, focus=focus)
             hic_map(imx, resolution, savefig=hic_contacts_matrix_norm_fig, normalized=True, by_chrom=by_chrom, focus=focus)
             output_files.append(hic_contacts_matrix_norm_fig)
 

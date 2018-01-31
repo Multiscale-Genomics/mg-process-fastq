@@ -28,8 +28,8 @@ def test_paired_splitter():
     Function to test paired splitter
     """
     resource_path = os.path.join(os.path.dirname(__file__), "data/")
-    fastq_1file = resource_path + "bsSeeker.Mouse.GRCm38_1.fastq"
-    fastq_2file = resource_path + "bsSeeker.Mouse.GRCm38_2.fastq"
+    fastq_1file = resource_path + "bsSeeker.Mouse.SRR892982_1.fastq"
+    fastq_2file = resource_path + "bsSeeker.Mouse.SRR892982_2.fastq"
 
     fqs_handle = fastq_splitter()
     results = fqs_handle.run(

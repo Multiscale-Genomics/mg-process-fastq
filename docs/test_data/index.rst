@@ -60,6 +60,26 @@ There is a test for each of the tools. This uses the "process" scripts to run ea
 
    Sample Data
    -----------
+   :doc:`testData_ChIPSeq`
+
+
+   iDamID-Seq
+   ==========
+   To run the pipeline test:
+
+   .. code-block:: none
+
+      pytest tests/test_pipeline_idamidseq.py
+
+
+   Methods
+   -------
+   .. automodule:: tests.test_pipeline_idamidseq
+      :members:
+
+   Sample Data
+   -----------
+   :doc:`testData_ChIPSeq`
 
 
    Genome Indexing
@@ -78,7 +98,7 @@ There is a test for each of the tools. This uses the "process" scripts to run ea
 
    Sample Data
    -----------
-
+   Uses the genome sequences required by all the tools and pipelines
 
    Hi-C
    ====
@@ -115,7 +135,7 @@ There is a test for each of the tools. This uses the "process" scripts to run ea
 
    Sample Data
    -----------
-
+   :doc:`testData_MNaseSeq`
 
    RNA-Seq
    =======
@@ -133,7 +153,7 @@ There is a test for each of the tools. This uses the "process" scripts to run ea
 
    Sample Data
    -----------
-
+   :doc:`testData_RNASeq`
 
    Whole Genome Bisulfate Sequencing (WGBS)
    ========================================
@@ -151,6 +171,7 @@ There is a test for each of the tools. This uses the "process" scripts to run ea
 
    Sample Data
    -----------
+   :doc:`testData_WGBS`
 
 
 Tools

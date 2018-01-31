@@ -1,6 +1,4 @@
 #!/usr/bin/env python
-#!/home/pmes/miniconda2/bin/python
-
 # -*- coding: utf-8 -*-
 
 from __future__ import print_function
@@ -110,10 +108,16 @@ class tadbit_normalize(Workflow):
         input_metadata = remap(self.configuration, "normalization", "resolution", "min_perc", "workdir", "max_perc", "ncpus")
 
         assembly = convert_from_unicode(metadata['bamin'].meta_data['assembly'])
-        if 'refGenomes_folder' in input_files and os.path.isfile(convert_from_unicode(input_files['refGenomes_folder'])+assembly+'/'+assembly+'.fa'):
-            input_metadata["fasta"] = convert_from_unicode(input_files['refGenomes_folder'])+assembly+'/'+assembly+'.fa'
-            input_metadata["mappability"] = convert_from_unicode(input_files['refGenomes_folder'])+assembly+'/'+assembly+'.bedGraph'
-            input_metadata["rest_enzyme"] = self.configuration["rest_enzyme"]
+        if self.configuration["normalization"] == 'oneD':
+            if 'refGenomes_folder' in input_files and os.path.isfile(convert_from_unicode(input_files['refGenomes_folder'])+assembly+'/'+assembly+'.fa'):
+                input_metadata["fasta"] = convert_from_unicode(input_files['refGenomes_folder'])+assembly+'/'+assembly+'.fa'
+                input_metadata["mappability"] = convert_from_unicode(input_files['refGenomes_folder'])+assembly+'/'+assembly+'.bedGraph'
+                if 'rest_enzyme' in metadata['bamin'].meta_data:
+                    input_metadata["rest_enzyme"] = convert_from_unicode(metadata['bamin'].meta_data['rest_enzyme'])
+            
+            if 'rest_enzyme' not in input_metadata or 'fasta' not in input_metadata or 'mappability' not in input_metadata:  
+                print('Error: missing parameters for oneD normalization. Please check that the BAM input file has been generated with the VRE tool.')
+                return
 
         bamfile = AlignmentFile(bamin, 'rb')
         if len(bamfile.references) == 1:
@@ -150,7 +154,8 @@ class tadbit_normalize(Workflow):
             meta_data={
                 "description": "HiC biases for normalization",
                 "visible": True,
-                "assembly": convert_from_unicode(metadata['bamin'].meta_data['assembly'])
+                "assembly": convert_from_unicode(metadata['bamin'].meta_data['assembly']),
+                "norm": self.configuration["normalization"]
             },
             taxon_id=metadata['bamin'].taxon_id)
         m_results_meta["normalize_stats"] = Metadata(

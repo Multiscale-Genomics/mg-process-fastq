@@ -1,6 +1,4 @@
 #!/usr/bin/env python
-#!/home/pmes/miniconda2/bin/python
-
 # -*- coding: utf-8 -*-
 
 from __future__ import print_function

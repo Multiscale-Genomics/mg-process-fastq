@@ -1,6 +1,4 @@
 #!/usr/bin/env python
-#!/home/pmes/miniconda2/bin/python
-
 # -*- coding: utf-8 -*-
 
 from __future__ import print_function
@@ -259,7 +257,8 @@ class tadbit_map_parse_filter(Workflow):
                 "associated_files": [
                     m_results_files["paired_reads"]+'.bai'
                 ],
-                "func" : tfm1_meta['func']
+                "func": tfm1_meta['func'],
+                "rest_enzyme": self.configuration["rest_enzyme"]
             },
             taxon_id=metadata['read1'].taxon_id)
 

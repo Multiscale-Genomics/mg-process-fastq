@@ -70,9 +70,9 @@ class bssIndexerTool(Tool):
         self.configuration.update(configuration)
 
     @task(
-        fasta_file=FILE_IN, aligner=IN, aligner_path=IN, bss_path=IN,
+        fasta_file=FILE_IN, aligner=IN, aligner_path=IN, bss_path=IN, params=IN
         idx_out=FILE_OUT)
-    def bss_build_index(self, fasta_file, aligner, aligner_path, bss_path, idx_out):  # pylint disable=no-self-use
+    def bss_build_index(self, fasta_file, aligner, aligner_path, bss_path, params, idx_out):  # pylint disable=no-self-use
         """
         Function to submit the FASTA file for the reference sequence and build
         the required index file used by the aligner.
@@ -101,6 +101,7 @@ class bssIndexerTool(Tool):
 
         command_line = (
             "python " + bss_path + "/bs_seeker2-build.py"
+            " " + " ".join(params)
             " -f " + fasta_file + ""
             " --aligner " + aligner + " --path " + aligner_path + ""
             " --db " + "/".join(ff_split[:-1])
@@ -139,6 +140,39 @@ class bssIndexerTool(Tool):
 
         return True
 
+    @staticmethod
+    def get_bss_index_params(params):
+        """
+        Function to handle to extraction of commandline parameters and formatting
+        them for use in the aligner for BWA ALN
+
+        Parameters
+        ----------
+        params : dict
+
+        Returns
+        -------
+        list
+        """
+        command_params = []
+
+        command_parameters = {
+            "bss_rrbs_param" : ["-r", False],
+            "bss_lower_bound_param" : ["-l", True],
+            "bss_upper_bound_param" : ["-u", True],
+            "bss_cut_format_param" : ["-c", True],
+        }
+
+        for param in params:
+            if param in command_parameters:
+                if command_parameters[param][1]:
+                    command_params = command_params + [command_parameters[param][0], params[param]]
+                else:
+                    if command_parameters[param][0]:
+                        command_params.append(command_parameters[param][0])
+
+        return command_params
+
     def run(self, input_files, input_metadata, output_files):
         """
         Tool for indexing the genome assembly using BS-Seeker2. In this case it
@@ -174,6 +208,7 @@ class bssIndexerTool(Tool):
         except KeyError:
             logger.fatal("WGBS - BS SEEKER2: Unassigned configuration variables")
 
+        command_params = self.get_bss_index_params(self.configuration)
 
         # handle error
         logger.info("FASTA: " + str(input_files["genome"]))
@@ -182,7 +217,7 @@ class bssIndexerTool(Tool):
         logger.info("BSS PATH: " + str(aligner))
         results = self.bss_build_index(
             input_files["genome"],
-            aligner, aligner_path, bss_path,
+            aligner, aligner_path, bss_path, command_params,
             output_files["index"])
         results = compss_wait_on(results)
 

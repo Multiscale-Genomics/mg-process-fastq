@@ -68,6 +68,38 @@
             "type": "string",
             "required": true,
             "default": "${HOME}/lib/BSseeker2"
+        },
+        {
+            "name": "bss_rrbs_param",
+            "description": "Index build required for Reduced Representation Bisulfite Sequencing",
+            "help": "Index build required for Reduced Representation Bisulfite Sequencing",
+            "type": "bool",
+            "required": true,
+            "default": false
+        },
+        {
+            "name": "bss_lower_bound_param",
+            "description": "Lower bound fragment length",
+            "help": "Lower bound fragment length",
+            "type": "string",
+            "required": true,
+            "default": "20"
+        },
+        {
+            "name": "bss_upper_bound_param",
+            "description": "Upper bound fragment length",
+            "help": "Upper bound fragment length",
+            "type": "string",
+            "required": true,
+            "default": "500"
+        },
+        {
+            "name": "bss_cut_format_param",
+            "description": "Cut site of restriction enzyme(s) eg 'C-CGG' or 'C-CGG,C-TAG' for double enzyme",
+            "help": "Cut site of restriction enzyme(s) eg 'C-CGG' or 'C-CGG,C-TAG' for double enzyme",
+            "type": "string",
+            "required": true,
+            "default": "C-CGG"
         }
     ],
     "output_files": [

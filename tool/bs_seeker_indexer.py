@@ -70,7 +70,7 @@ class bssIndexerTool(Tool):
         self.configuration.update(configuration)
 
     @task(
-        fasta_file=FILE_IN, aligner=IN, aligner_path=IN, bss_path=IN, params=IN
+        fasta_file=FILE_IN, aligner=IN, aligner_path=IN, bss_path=IN, params=IN,
         idx_out=FILE_OUT)
     def bss_build_index(self, fasta_file, aligner, aligner_path, bss_path, params, idx_out):  # pylint disable=no-self-use
         """
@@ -100,8 +100,8 @@ class bssIndexerTool(Tool):
         ff_split = fasta_file.split("/")
 
         command_line = (
-            "python " + bss_path + "/bs_seeker2-build.py"
-            " " + " ".join(params)
+            "python " + bss_path + "/bs_seeker2-build.py " + ""
+            " ".join(params) + ""
             " -f " + fasta_file + ""
             " --aligner " + aligner + " --path " + aligner_path + ""
             " --db " + "/".join(ff_split[:-1])

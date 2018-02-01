@@ -298,14 +298,8 @@ BS Seeker2 Indexer
 
    Returns
    -------
-   bsgenome : file
-      BSgenome index
-   genome_2bit : file
-      Compressed representation of the genome required for generating the index
-   chrom_size : file
-      Location of the chrom.size file
-   seed_file : file
-      Configuaration file for generating the BSgenome R package
+   index : file
+      BS Seeker2 index
 
    Example
    -------

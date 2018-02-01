@@ -62,6 +62,7 @@ def chipseq_pipeline(verbose=False):
 
     return pytest.main(params)
 
+
 def hic_pipeline(verbose=False):
     """
     Runs the tests for the Hi-C pipeline
@@ -101,7 +102,7 @@ def idamidseq_pipeline(verbose=False):
 
     params.append('tests/test_pipeline_genome.py')
     params.append('tests/test_fastqc_validation.py')
-    params.append('tests/test_pipeline_chipseq.py')
+    params.append('tests/test_pipeline_idamidseq.py')
 
     return pytest.main(params)
 

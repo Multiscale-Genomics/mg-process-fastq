@@ -28,6 +28,7 @@ from basic_modules.workflow import Workflow
 from utils import logger
 from utils import remap
 
+from tool.forge_bsgenome import bsgenomeTool
 from tool.bwa_aligner import bwaAlignerTool
 from tool.biobambam_filter import biobambam
 from tool.idear import idearTool
@@ -78,20 +79,27 @@ class process_damidseq(Workflow):
             index : str
                 Location of the BWA archived index files
 
-            loc : str
+            fastq_1 : str
                 Location of the FASTQ reads files
 
-            bg_loc : str
-                Location of the background FASTQ reads files [OPTIONAL]
+            fastq_2 : str
+                Location of the FASTQ repeat reads files
+
+            bg_fastq_1 : str
+                Location of the background FASTQ reads files
+
+            bg_fastq_2 : str
+                Location of the background FASTQ repeat reads files
 
         metadata : dict
             Input file meta data associated with their roles
 
             genome : str
             index : str
-
-            bg_loc : str
-                [OPTIONAL]
+            fastq_1 : str
+            fastq_2 : str
+            bg_fastq_1 : str
+            bg_fastq_2 : str
 
         output_files : dict
             Output file locations
@@ -121,6 +129,8 @@ class process_damidseq(Workflow):
         output_files_generated = {}
         output_metadata = {}
 
+        # Add in BSgenome section
+
         logger.info("PROCESS DAMIDSEQ - DEFINED OUTPUT:", output_files)
 
         alignment_set = [
@@ -130,6 +140,32 @@ class process_damidseq(Workflow):
             ["bg_fastq_2", "bg_bam_2", "bg_bam_2_filtered"],
         ]
 
+        # BSgenome
+        logger.info("Generating BSgenome")
+        bsg = bsgenomeTool(self.configuration)
+        bsgi, bsgm = bsg.run(
+            {"genome": input_files["genome"]},
+            {"genome": metadata["genome"]},
+            {
+                "bsgenome": output_files["bsgenome"],
+                "chrom_size": output_files["chrom_size"],
+                "genome_2bit": output_files["genome_2bit"],
+                "seed_file": output_files["seed_file"]
+            }
+        )
+
+        try:
+            for file_key in ["bsgenome", "chrom_size", "genome_2bit", "seed_file"]:
+                output_files_generated[file_key] = bsgi[file_key]
+                output_metadata[file_key] = bsgm[file_key]
+
+                tool_name = output_metadata[file_key].meta_data['tool']
+                output_metadata[file_key].meta_data['tool_description'] = tool_name
+                output_metadata[file_key].meta_data['tool'] = "process_damidseq"
+        except KeyError:
+            logger.fatal("BSgenome indexer failed")
+
+        # Align and filter reads
         for aln in alignment_set:
             bwa = bwaAlignerTool(self.configuration)
             bwa_files, bwa_meta = bwa.run(
@@ -159,8 +195,8 @@ class process_damidseq(Workflow):
             # Filter the bams
             b3f = biobambam(self.configuration)
             b3f_files, b3f_meta = b3f.run(
-                {"input": bwa_files['bam']},
-                {"input": bwa_meta['bam']},
+                {"input": bwa_files["bam"]},
+                {"input": bwa_meta["bam"]},
                 {"output": output_files[aln[2]]}
             )
 

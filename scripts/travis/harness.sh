@@ -23,6 +23,8 @@ tc=$?
 rc=$(($rc + $tc))
 bash tidy_data.sh
 
+
+# Not included for the moment due to installation issues with versions or R and python
 # python tests/test_toolchains.py --pipeline idamidseq
 # tc=$?
 # rc=$(($rc + $tc))
@@ -49,9 +51,19 @@ if [[ $pv == "2.7.12" ]]; then
     tc=$?
     rc=$(($rc + $tc))
     bash tidy_data.sh
+
+    python tests/test_pipelines.py --pipeline chipseq
+    tc=$?
+    rc=$(($rc + $tc))
+    bash tidy_data.sh
 fi
 
 python tests/test_toolchains.py --pipeline rnaseq
+tc=$?
+rc=$(($rc + $tc))
+bash tidy_data.sh
+
+python tests/test_pipelines.py --pipeline rnaseq
 tc=$?
 rc=$(($rc + $tc))
 bash tidy_data.sh
@@ -61,13 +73,38 @@ if [[ $pv == "2.7.12" ]]; then
     tc=$?
     rc=$(($rc + $tc))
     bash tidy_data.sh
+
+    python tests/test_pipelines.py --pipeline wgbs
+    tc=$?
+    rc=$(($rc + $tc))
+    bash tidy_data.sh
+
+    python tests/test_toolchains.py --pipeline bss2-index
+    tc=$?
+    rc=$(($rc + $tc))
+    # python tests/test_pipelines.py --pipeline bss2-filter
+    # tc=$?
+    # rc=$(($rc + $tc))
+    # python tests/test_pipelines.py --pipeline bss2-align
+    # tc=$?
+    # rc=$(($rc + $tc))
+    # python tests/test_pipelines.py --pipeline bss2-caller
+    # tc=$?
+    # rc=$(($rc + $tc))
+
+    bash tidy_data.sh
 fi
 
 # if [[ $python_version == *"3."* ]]; then
 #     python tests/test_toolchains.py --pipeline mnaseseq
 #     tc=$?
 #     rc=$(($rc + $tc))
-#     ls tests/data/
+#     bash tidy_data.sh
+#
+#     python tests/test_pipelines.py --pipeline mnaseseq
+#     tc=$?
+#     rc=$(($rc + $tc))
+#     bash tidy_data.sh
 # fi
 
 if [[ $rc != 0 ]]; then exit $rc; fi

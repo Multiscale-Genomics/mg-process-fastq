@@ -278,6 +278,71 @@ BSgenome Builder
       :members:
 
 
+BS Seeker2 Indexer
+------------------
+.. automodule:: process_bs_seeker_index.py
+
+   This pipeline can process FASTQ to identify protein-DNA binding sites.
+
+   Running from the command line
+   =============================
+
+   Parameters
+   ----------
+   config : str
+      Configuration JSON file
+   in_metadata : str
+      Location of input JSON metadata for files
+   out_metadata : str
+      Location of output JSON metadata for files
+
+   Returns
+   -------
+   bsgenome : file
+      BSgenome index
+   genome_2bit : file
+      Compressed representation of the genome required for generating the index
+   chrom_size : file
+      Location of the chrom.size file
+   seed_file : file
+      Configuaration file for generating the BSgenome R package
+
+   Example
+   -------
+
+   When running the pipeline on a local machine without COMPSs:
+
+   .. code-block:: none
+      :linenos:
+
+      python process_bs_seeker_index.py                            \
+         --config tests/json/config_wgbs_index.json \
+         --in_metadata tests/json/input_wgbs_index_metadata.json \
+         --out_metadata tests/json/output_wgbs_index.json \
+         --local
+
+   When using a local version of the [COMPS virtual machine](https://www.bsc.es/research-and-development/software-and-apps/software-list/comp-superscalar/):
+
+   .. code-block:: none
+      :linenos:
+
+      runcompss                     \
+         --lang=python              \
+         --library_path=${HOME}/bin \
+         --pythonpath=/<pyenv_virtenv_dir>/lib/python2.7/site-packages/ \
+         --log_level=debug          \
+         process_bs_seeker_index.py         \
+            --config tests/json/config_wgbs_index.json \
+            --in_metadata tests/json/input_wgbs_index_metadata.json \
+            --out_metadata tests/json/output_wgbs_index.json
+
+
+   Methods
+   =======
+   .. autoclass:: process_bsgenome.process_bsgenome
+      :members:
+
+
 BWA Alignment - bwa aln
 -----------------------
 .. automodule:: process_align_bwa

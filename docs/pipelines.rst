@@ -280,7 +280,7 @@ BSgenome Builder
 
 BS Seeker2 Indexer
 ------------------
-.. automodule:: process_bs_seeker_index.py
+.. automodule:: process_bs_seeker_index
 
    This pipeline can process FASTQ to identify protein-DNA binding sites.
 

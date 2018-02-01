@@ -1,0 +1,16 @@
+[
+    {
+        "_id": "59b7e020d9422a5969b65372",
+        "data_type": "sequence_dna",
+        "file_type": "FASTA",
+        "file_path": "tests/data/bsSeeker.Mouse.GRCm38.fasta",
+        "sources": [],
+        "taxon_id": 10090,
+        "meta_data": {
+            "visible": true,
+            "validated": 1,
+            "assembly": "GRCm38"
+        },
+        "compressed": 0
+    }
+]

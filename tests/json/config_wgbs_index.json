@@ -1,0 +1,68 @@
+{
+    "input_files": [
+        {
+            "required": true,
+            "allow_multiple": false,
+            "name": "genome",
+            "value": "59b7e020d9422a5969b65372"
+        }
+    ],
+    "arguments": [
+        {
+            "name": "project",
+            "value": "run001"
+        },
+        {
+            "name": "description",
+            "value": null
+        },
+        {
+            "name": "aligner",
+            "description": "Name of the aligner",
+            "help": "Name of the aligner",
+            "type": "string",
+            "required": true,
+            "default": "bowtie2",
+            "value": "bowtie2"
+        },
+        {
+            "name": "aligner_path",
+            "description": "Location of the aligner libraries",
+            "help": "Location of the aligner libraries",
+            "type": "string",
+            "required": true,
+            "default": "${HOME}/lib/bowtie2-2.3.2",
+            "value": "${HOME}/lib/bowtie2-2.3.2"
+        },
+        {
+            "name": "bss_path",
+            "description": "Location of the BS Seeker2 code libraries",
+            "help": "Location of the BS Seeker2 code libraries",
+            "type": "string",
+            "required": true,
+            "default": "${HOME}/lib/BSseeker2",
+            "value": "${HOME}/lib/BSseeker2"
+        }
+    ],
+    "output_files": [
+        {
+            "required": true,
+            "allow_multiple": false,
+            "name": "index",
+            "file": {
+                "file_type": "TAR",
+                "meta_data": {
+                    "visible": true,
+                    "tool": "process_wgbs",
+                    "description": "Output"
+                },
+                "file_path": "tests/data/wgbs.Mouse.GRCm38.fasta.bt2.tar.gz",
+                "data_type": "sequence_mapping_index_bowtie",
+                "compressed": "gzip"
+            }
+        }
+    ]
+}
+
+
+

@@ -72,8 +72,8 @@ def test_bowtie2_aligner_paired():
     """
     resource_path = os.path.join(os.path.dirname(__file__), "data/")
     genome_fa = resource_path + "bsSeeker.Mouse.GRCm38.fasta"
-    fastq_file_1 = resource_path + "bsSeeker.Mouse.GRCm38_1.fastq"
-    fastq_file_2 = resource_path + "bsSeeker.Mouse.GRCm38_2.fastq"
+    fastq_file_1 = resource_path + "bsSeeker.Mouse.SRR892982_1.fastq"
+    fastq_file_2 = resource_path + "bsSeeker.Mouse.SRR892982_2.fastq"
 
     input_files = {
         "genome": genome_fa,
@@ -112,5 +112,5 @@ def test_bowtie2_aligner_paired():
 
     print(__file__)
 
-    assert os.path.isfile(resource_path + "bsSeeker.Mouse.GRCm38_1_bt2.bam") is True
-    assert os.path.getsize(resource_path + "bsSeeker.Mouse.GRCm38_1_bt2.bam") > 0
+    assert os.path.isfile(resource_path + "bsSeeker.Mouse.SRR892982_1_bt2.bam") is True
+    assert os.path.getsize(resource_path + "bsSeeker.Mouse.SRR892982_1_bt2.bam") > 0

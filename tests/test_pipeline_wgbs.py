@@ -78,7 +78,7 @@ def test_wgbs_pipeline():
     }
 
     files_out = {
-        "index" : resource_path + "wgbs.Mouse.GRCm38.fasta.bt2.tar.gz",
+        "index" : resource_path + "bsSeeker.Mouse.GRCm38.fasta.bt2.tar.gz",
         "fastq1_filtered" : resource_path + 'bsSeeker.Mouse.GRCm38_1_filtered.fastq',
         "fastq2_filtered" : resource_path + 'bsSeeker.Mouse.GRCm38_2_filtered.fastq',
         "bam" : resource_path + "bsSeeker.Mouse.GRCm38_1_filtered.bam",

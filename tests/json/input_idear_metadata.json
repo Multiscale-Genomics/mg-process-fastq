@@ -1,0 +1,72 @@
+[
+    {
+        "compressed": 0,
+        "_id": "59b7e020d9422a5969b65375",
+        "data_type": "data_idamid_seq",
+        "file_type": "bam",
+        "file_path": "tests/data/idear.Human.SRR3714775_filtered.bam",
+        "sources": ["tests/data/idear.Human.SRR3714775.fastq"],
+        "taxon_id": 9606,
+        "meta_data": {
+            "visible": true,
+            "validated": 1,
+            "assembly": "GRCh38"
+        }
+    },
+    {
+        "compressed": 0,
+        "_id": "59b7e020d9422a5969b65376",
+        "data_type": "data_idamid_seq",
+        "file_type": "bam",
+        "file_path": "tests/data/idear.Human.SRR3714776_filtered.bam",
+        "sources": ["tests/data/idear.Human.SRR3714776.fastq"],
+        "taxon_id": 9606,
+        "meta_data": {
+            "visible": true,
+            "validated": 1,
+            "assembly": "GRCh38"
+        }
+    },
+    {
+        "compressed": 0,
+        "_id": "59b7e020d9422a5969b65377",
+        "data_type": "data_idamid_seq",
+        "file_type": "bam",
+        "file_path": "tests/data/idear.Human.SRR3714777_filtered.bam",
+        "sources": ["tests/data/idear.Human.SRR3714777.fastq"],
+        "taxon_id": 9606,
+        "meta_data": {
+            "visible": true,
+            "validated": 1,
+            "assembly": "GRCh38"
+        }
+    },
+    {
+        "compressed": 0,
+        "_id": "59b7e020d9422a5969b65378",
+        "data_type": "data_idamid_seq",
+        "file_type": "bam",
+        "file_path": "tests/data/idear.Human.SRR3714778_filtered.bam",
+        "sources": ["tests/data/idear.Human.SRR371477.fastq"],
+        "taxon_id": 9606,
+        "meta_data": {
+            "visible": true,
+            "validated": 1,
+            "assembly": "GRCh38"
+        }
+    },
+    {
+        "_id": "59b7e020d9422a5969b65374",
+        "data_type": "bsgenome",
+        "file_type": "TAR",
+        "file_path": "tests/data/idear.Human.GCA_000001405.22.22.bsgenome.tar.gz",
+        "sources": ["tests/data/idear.Human.GCA_000001405.22.fasta"],
+        "taxon_id": 9606,
+        "meta_data": {
+            "visible": true,
+            "validated": 1,
+            "tool": "forge_bsgenome",
+            "assembly": "GRCh38"
+        }
+    }
+]

@@ -17,11 +17,33 @@
 from __future__ import print_function
 
 import os.path
+import gzip
 import pytest
 
 from basic_modules.metadata import Metadata
 
 from tool.bowtie_aligner import bowtie2AlignerTool
+
+@pytest.mark.bowtie2
+def test_bowtie2_aligner_00():
+    """
+    Extract the compressed FASTQ files
+    """
+    resource_path = os.path.join(os.path.dirname(__file__), "data/")
+    fastq_file_1 = resource_path + "bsSeeker.Mouse.SRR892982_1.fastq"
+    fastq_file_2 = resource_path + "bsSeeker.Mouse.SRR892982_2.fastq"
+
+    files = [fastq_file_1, fastq_file_2]
+
+    for fastq_gz in files:
+        with gzip.open(fastq_gz + '.gz', 'rb') as fgz_in:
+            with open(fastq_gz, 'w') as f_out:
+                f_out.write(fgz_in.read())
+
+    assert os.path.isfile(fastq_file_1) is True
+    assert os.path.getsize(fastq_file_1) > 0
+    assert os.path.isfile(fastq_file_2) is True
+    assert os.path.getsize(fastq_file_2) > 0
 
 @pytest.mark.bowtie2
 def test_bowtie2_aligner_single():

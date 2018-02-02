@@ -115,6 +115,27 @@ def test_bwa_aligner_chipseq_mem():
     assert os.path.getsize(resource_path + "macs2.Human.DRR000150.22_mem.bam") > 0
 
 @pytest.mark.bwa
+def test_bwa_aligner_00():
+    """
+    Extract the compressed FASTQ files
+    """
+    resource_path = os.path.join(os.path.dirname(__file__), "data/")
+    fastq_file_1 = resource_path + "bsSeeker.Mouse.SRR892982_1.fastq"
+    fastq_file_2 = resource_path + "bsSeeker.Mouse.SRR892982_2.fastq"
+
+    files = [fastq_file_1, fastq_file_2]
+
+    for fastq_gz in files:
+        with gzip.open(fastq_gz + '.gz', 'rb') as fgz_in:
+            with open(fastq_gz, 'w') as f_out:
+                f_out.write(fgz_in.read())
+
+    assert os.path.isfile(fastq_file_1) is True
+    assert os.path.getsize(fastq_file_1) > 0
+    assert os.path.isfile(fastq_file_2) is True
+    assert os.path.getsize(fastq_file_2) > 0
+
+@pytest.mark.bwa
 def test_bwa_aligner_aln_paired():
     """
     Function to test BWA Aligner
@@ -215,7 +236,7 @@ def test_bwa_aligner_mem_paired():
     assert os.path.getsize(resource_path + "bsSeeker.Mouse.SRR892982_1_mem.bam") > 0
 
 @pytest.mark.idamidseq
-@pytest.mark.bwa
+#@pytest.mark.bwa
 def test_bwa_aligner_idamidseq():
     """
     Function to test BWA Aligner

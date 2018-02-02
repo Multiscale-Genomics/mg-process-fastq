@@ -52,7 +52,6 @@ addons:
     - tk-dev
     - mcl
     - libgtk2.0-dev
-    - python-rpy2
     - libcurl4-gnutls-dev
     - unzip
     - liblzma-dev
@@ -76,6 +75,7 @@ before_install:
     - echo "deb http://cran.r-project.org/bin/linux/ubuntu trusty/" | sudo tee -a /etc/apt/sources.list
     - sudo apt-get update -qq
     - sudo apt-get install r-base-core
+    - sudo apt-get install python-rpy2
 
 services:
     - docker

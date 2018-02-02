@@ -52,7 +52,7 @@ addons:
     - tk-dev
     - mcl
     - libgtk2.0-dev
-    - r-base-core
+    # - r-base-core
     - python-rpy2
     - libcurl4-gnutls-dev
     - unzip
@@ -71,6 +71,8 @@ before_install:
     - mkdir -p ${HOME}/code
     - mkdir -p ${HOME}/R
     - lsb_release -a
+    - deb http://cran.r-project.org/bin/linux/ubuntu trusty/
+    - apt update
 
 services:
     - docker
@@ -78,6 +80,12 @@ services:
 install:
     # libtbb-dev did not seem to be installing correctly without using sudo
     - sudo apt-get install libtbb-dev
+
+    # Install the latest version of R
+    - sudo deb http://cran.r-project.org/bin/linux/ubuntu trusty/
+    - sudo apt update
+    - sudo apt-get install r-base-core
+    - R --version
 
     # Install APIs and Pipelines
     - cd ${HOME}/build/Multiscale-Genomics/mg-process-fastq

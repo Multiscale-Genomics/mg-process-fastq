@@ -18,6 +18,7 @@
 from __future__ import print_function
 
 import os.path
+import gzip
 import pytest # pylint: disable=unused-import
 
 from process_wgbs import process_wgbs
@@ -25,7 +26,30 @@ from basic_modules.metadata import Metadata
 
 @pytest.mark.wgbs
 @pytest.mark.pipeline
-def test_wgbs_pipeline():
+def test_wgbs_pipeline_00():
+    """
+    Extract the compressed FASTQ files
+    """
+    resource_path = os.path.join(os.path.dirname(__file__), "data/")
+    fastq_file_1 = resource_path + "bsSeeker.Mouse.SRR892982_1.fastq"
+    fastq_file_2 = resource_path + "bsSeeker.Mouse.SRR892982_2.fastq"
+
+    with gzip.open(fastq_file_1 + '.gz', 'rb') as fgz_in:
+        with open(fastq_file_1, 'w') as f_out:
+            f_out.write(fgz_in.read())
+
+    with gzip.open(fastq_file_2 + '.gz', 'rb') as fgz_in:
+        with open(fastq_file_2, 'w') as f_out:
+            f_out.write(fgz_in.read())
+
+    assert os.path.isfile(fastq_file_1) is True
+    assert os.path.getsize(fastq_file_1) > 0
+    assert os.path.isfile(fastq_file_2) is True
+    assert os.path.getsize(fastq_file_2) > 0
+
+@pytest.mark.wgbs
+@pytest.mark.pipeline
+def test_wgbs_pipeline_01():
     """
     Test case to ensure that the RNA-seq pipeline code works.
 
@@ -53,8 +77,8 @@ def test_wgbs_pipeline():
     resource_path = os.path.join(os.path.dirname(__file__), "data/")
 
     genomefa_file = resource_path + "bsSeeker.Mouse.GRCm38.fasta"
-    fastq1_file = resource_path + "bsSeeker.Mouse.GRCm38_1.fastq"
-    fastq2_file = resource_path + "bsSeeker.Mouse.GRCm38_2.fastq"
+    fastq1_file = resource_path + "bsSeeker.Mouse.SRR892982_1.fastq"
+    fastq2_file = resource_path + "bsSeeker.Mouse.SRR892982_2.fastq"
 
     files = {
         "genome" : genomefa_file,
@@ -79,13 +103,13 @@ def test_wgbs_pipeline():
 
     files_out = {
         "index" : resource_path + "bsSeeker.Mouse.GRCm38.fasta.bt2.tar.gz",
-        "fastq1_filtered" : resource_path + 'bsSeeker.Mouse.GRCm38_1_filtered.fastq',
-        "fastq2_filtered" : resource_path + 'bsSeeker.Mouse.GRCm38_2_filtered.fastq',
-        "bam" : resource_path + "bsSeeker.Mouse.GRCm38_1_filtered.bam",
-        "bai" : resource_path + "bsSeeker.Mouse.GRCm38_1_filtered.bai",
-        "wig_file" : resource_path + "bsSeeker.Mouse.GRCm38_1.wig",
-        "cgmap_file" : resource_path + "bsSeeker.Mouse.GRCm38_1.cgmap",
-        "atcgmap_file" : resource_path + "bsSeeker.Mouse.GRCm38_1.atcgmap"
+        "fastq1_filtered" : resource_path + 'bsSeeker.Mouse.SRR892982_1_filtered.fastq',
+        "fastq2_filtered" : resource_path + 'bsSeeker.Mouse.SRR892982_2_filtered.fastq',
+        "bam" : resource_path + "bsSeeker.Mouse.SRR892982_1_filtered.bam",
+        "bai" : resource_path + "bsSeeker.Mouse.SRR892982_1_filtered.bai",
+        "wig_file" : resource_path + "bsSeeker.Mouse.SRR892982_1.wig",
+        "cgmap_file" : resource_path + "bsSeeker.Mouse.SRR892982_1.cgmap",
+        "atcgmap_file" : resource_path + "bsSeeker.Mouse.SRR892982_1.atcgmap"
     }
 
     print("WGBS TEST FILES:", files)

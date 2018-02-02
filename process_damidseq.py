@@ -118,12 +118,15 @@ class process_damidseq(Workflow):
                 locations
             filtered [, "filtered_bg"] : str
                 Filtered versions of the respective bam files
+            bigwig : str
+                Location of the bigwig peaks
 
         output_metadata : dict
             Output metadata for the associated files in output_files
 
             bam [, "bam_bg"] : Metadata
             filtered [, "filtered_bg"] : Metadata
+            bigwig : Metadata
 
         """
         output_files_generated = {}

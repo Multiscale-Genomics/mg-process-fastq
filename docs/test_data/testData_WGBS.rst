@@ -103,13 +103,14 @@ These files were too large for use within the Travis tst environment, so the num
 .. code-block:: none
    :linenos:
 
-   sed -n -e '0~9{N;N;N;N;p}' tests/data/bsSeeker.Mouse.SRR892982_1.fastq > tests/data/bsSeeker.Mouse.SRR892982_1.fastq
-   sed -n -e '0~9{N;N;N;N;p}' tests/data/bsSeeker.Mouse.SRR892982_2.fastq > tests/data/bsSeeker.Mouse.SRR892982_2.fastq
+   sed -n -e '0~9{N;N;N;N;p}' tests/data/bsSeeker.Mouse.SRR892982_1.fastq > tests/data/test_bsSeeker.Mouse.SRR892982_1.fastq
+   sed -n -e '0~9{N;N;N;N;p}' tests/data/bsSeeker.Mouse.SRR892982_2.fastq > tests/data/test_bsSeeker.Mouse.SRR892982_2.fastq
+
+   mv tests/data/test_bsSeeker.Mouse.SRR892982_1.fastq tests/data/bsSeeker.Mouse.SRR892982_1.fastq
+   mv tests/data/test_bsSeeker.Mouse.SRR892982_2.fastq tests/data/bsSeeker.Mouse.SRR892982_2.fastq
 
    gzip tests/data/bsSeeker.Mouse.SRR892982_1.fastq
    gzip tests/data/bsSeeker.Mouse.SRR892982_2.fastq
-
-
 
 Test Scripts
 ------------

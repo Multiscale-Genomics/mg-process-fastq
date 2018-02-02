@@ -218,7 +218,7 @@ class process_damidseq(Workflow):
 
         ## iDEAR to call peaks
         idear_caller = idearTool(self.configuration)
-        idear_caller.run(
+        idear_files, idear_meta = idear_caller.run(
             {
                 "bam_1" : output_files_generated["bam_1_filtered"],
                 "bam_2" : output_files_generated["bam_2_filtered"],
@@ -235,6 +235,19 @@ class process_damidseq(Workflow):
                 "bigwig" : output_files["bigwig"],
             }
         )
+
+        try:
+                output_files_generated[aln[2]] = idear_files["bigwig"]
+                output_metadata[aln[2]] = idear_meta["bigwig"]
+
+                tool_name = output_metadata[aln[2]].meta_data["tool"]
+                output_metadata[aln[2]].meta_data["tool_description"] = tool_name
+                output_metadata[aln[2]].meta_data["tool"] = "process_damidseq"
+            except KeyError as msg:
+                logger.fatal("KeyError error - iDEAR filtering failed: {0}\n{1}".format(
+                    msg, aln[2]))
+
+                return {}, {}
 
         print("DAMID-SEQ RESULTS:", output_metadata)
         return output_files_generated, output_metadata

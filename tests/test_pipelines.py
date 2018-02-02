@@ -57,7 +57,6 @@ def chipseq_pipeline(verbose=False):
         params.append('-s')
 
     params.append('tests/test_pipeline_genome.py')
-    params.append('tests/test_fastqc_validation.py')
     params.append('tests/test_pipeline_chipseq.py')
 
     return pytest.main(params)
@@ -79,7 +78,6 @@ def hic_pipeline(verbose=False):
     if verbose is True:
         params.append('-s')
 
-    params.append('tests/test_fastqc_validation.py')
     params.append('tests/test_pipeline_tb.py')
 
     return pytest.main(params)
@@ -100,9 +98,32 @@ def idamidseq_pipeline(verbose=False):
     if verbose is True:
         params.append('-s')
 
-    params.append('tests/test_pipeline_genome.py')
-    params.append('tests/test_fastqc_validation.py')
+    params.append('tests/test_bwa_indexer.py')
     params.append('tests/test_pipeline_idamidseq.py')
+
+    return pytest.main(params)
+
+def idear_pipeline(verbose=False):
+    """
+    Runs the tests for the ChIP-seq pipeline
+
+    Runs the following tests:
+
+    .. code-block:: none
+
+       pytest -m chipseq tests/test_pipeline_chipseq.py
+    """
+
+    params = ['-m idamidseq']
+
+    if verbose is True:
+        params.append('-s')
+
+    params.append('tests/test_bwa_indexer.py')
+    params.append('tests/test_bwa_aligner.py')
+    params.append('tests/test_biobambam.py')
+    params.append('tests/test_bsgenome.py')
+    params.append('tests/test_pipeline_idear.py')
 
     return pytest.main(params)
 
@@ -122,7 +143,6 @@ def mnaseseq_pipeline(verbose=False):
     if verbose is True:
         params.append('-s')
 
-    params.append('tests/test_fastqc_validation.py')
     params.append('tests/test_pipeline_mnaseseq.py')
 
     return pytest.main(params)
@@ -143,7 +163,6 @@ def rnaseq_pipeline(verbose=False):
     if verbose is True:
         params.append('-s')
 
-    params.append('tests/test_fastqc_validation.py')
     params.append('tests/test_pipeline_rnaseq.py')
 
     return pytest.main(params)
@@ -164,7 +183,6 @@ def wgbs_pipeline(verbose=False):
     if verbose is True:
         params.append('-s')
 
-    params.append('tests/test_fastqc_validation.py')
     params.append('tests/test_pipeline_wgbs.py')
 
     return pytest.main(params)
@@ -178,7 +196,10 @@ if __name__ == '__main__':
         "--pipeline",
         required=True,
         type=str,
-        choices=['genome', 'chipseq', 'hic', 'idamidseq', 'mnaseseq', 'rnaseq', 'wgbs', 'all'],
+        choices=[
+            'genome', 'chipseq', 'hic', 'idamidseq', 'idear', 'mnaseseq',
+            'rnaseq', 'wgbs', 'all'
+        ],
         help=""
     )
     PARSER.add_argument("--verbose", action='store_const', const=True, default=False)
@@ -218,6 +239,11 @@ if __name__ == '__main__':
     if 'idamidseq' in PIPELINES or 'all' in PIPELINES:
         print('IDAMIDSEQ')
         if idamidseq_pipeline(VERBOSE) > 0:
+            sys.exit(1)
+
+    if 'idear' in PIPELINES or 'all' in PIPELINES:
+        print('IDEAR')
+        if idear_pipeline(VERBOSE) > 0:
             sys.exit(1)
 
     if 'mnaseseq' in PIPELINES or 'all' in PIPELINES:

@@ -69,12 +69,12 @@ rc=$(($rc + $tc))
 bash tidy_data.sh
 
 if [[ $pv == "2.7.12" ]]; then
-    python tests/test_toolchains.py --pipeline wgbs --verbose
+    python tests/test_toolchains.py --pipeline wgbs
     tc=$?
     rc=$(($rc + $tc))
     bash tidy_data.sh
 
-    python tests/test_pipelines.py --pipeline wgbs --verbose
+    python tests/test_pipelines.py --pipeline wgbs
     tc=$?
     rc=$(($rc + $tc))
     bash tidy_data.sh

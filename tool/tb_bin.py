@@ -177,8 +177,11 @@ class tbBinTool(Tool):
         if start1 is not None:
             focus = ((start1/resolution) if start1 != 0 else 1, (end1/resolution))
         else:
-            by_chrom = 'all'
-            hic_contacts_matrix_raw_fig = workdir+"/genomic_maps_raw"
+            if region1 is not None:
+                focus = region1
+            else:
+                by_chrom = 'all'
+                hic_contacts_matrix_raw_fig = workdir+"/genomic_maps_raw"
         hic_map(imx, resolution, savefig=hic_contacts_matrix_raw_fig, normalized=False, by_chrom=by_chrom, focus=focus)
         if by_chrom == 'all':
             hic_map(imx, resolution, savefig=hic_contacts_matrix_raw_fig+"/full_map.png", normalized=False, by_chrom=None, focus=focus)
@@ -202,7 +205,7 @@ class tbBinTool(Tool):
 
         exp = json_chr.experiments[0]
         json_file_name = out_files['RAW'].replace(".abc", ".json")
-        if focus:
+        if start1 is not None:
             if focus[1]-focus[0] > 1200:
                 print("TADkit json too big, limiting to 1200 bins")
                 focus = (focus[0], focus[0]+1200)

@@ -187,7 +187,6 @@ This script automates the running of each of the tools that are required for a g
 
 Methods
 ^^^^^^^
-.. automodule:: tests
 
    .. automodule:: tests.test_toolchains
       :members:

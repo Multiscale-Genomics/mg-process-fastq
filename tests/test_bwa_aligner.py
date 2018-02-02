@@ -120,8 +120,8 @@ def test_bwa_aligner_00():
     Extract the compressed FASTQ files
     """
     resource_path = os.path.join(os.path.dirname(__file__), "data/")
-    fastq_file_1 = resource_path + "bsSeeker.Mouse.SRR892982_1.fastq"
-    fastq_file_2 = resource_path + "bsSeeker.Mouse.SRR892982_2.fastq"
+    fastq_file_1 = resource_path + "test_bsSeeker.Mouse.SRR892982_1.fastq"
+    fastq_file_2 = resource_path + "test_bsSeeker.Mouse.SRR892982_2.fastq"
 
     files = [fastq_file_1, fastq_file_2]
 
@@ -142,8 +142,8 @@ def test_bwa_aligner_aln_paired():
     """
     resource_path = os.path.join(os.path.dirname(__file__), "data/")
     genome_fa = resource_path + "bsSeeker.Mouse.GRCm38.fasta"
-    fastq_file_1 = resource_path + "bsSeeker.Mouse.SRR892982_1.fastq"
-    fastq_file_2 = resource_path + "bsSeeker.Mouse.SRR892982_2.fastq"
+    fastq_file_1 = resource_path + "test_bsSeeker.Mouse.SRR892982_1.fastq"
+    fastq_file_2 = resource_path + "test_bsSeeker.Mouse.SRR892982_2.fastq"
 
     input_files = {
         "genome": genome_fa,
@@ -182,8 +182,8 @@ def test_bwa_aligner_aln_paired():
 
     print(__file__)
 
-    assert os.path.isfile(resource_path + "bsSeeker.Mouse.SRR892982_1_aln.bam") is True
-    assert os.path.getsize(resource_path + "bsSeeker.Mouse.SRR892982_1_aln.bam") > 0
+    assert os.path.isfile(resource_path + "test_bsSeeker.Mouse.SRR892982_1_aln.bam") is True
+    assert os.path.getsize(resource_path + "test_bsSeeker.Mouse.SRR892982_1_aln.bam") > 0
 
 @pytest.mark.bwa
 def test_bwa_aligner_mem_paired():
@@ -192,8 +192,8 @@ def test_bwa_aligner_mem_paired():
     """
     resource_path = os.path.join(os.path.dirname(__file__), "data/")
     genome_fa = resource_path + "bsSeeker.Mouse.GRCm38.fasta"
-    fastq_file_1 = resource_path + "bsSeeker.Mouse.SRR892982_1.fastq"
-    fastq_file_2 = resource_path + "bsSeeker.Mouse.SRR892982_2.fastq"
+    fastq_file_1 = resource_path + "test_bsSeeker.Mouse.SRR892982_1.fastq"
+    fastq_file_2 = resource_path + "test_bsSeeker.Mouse.SRR892982_2.fastq"
 
     input_files = {
         "genome": genome_fa,
@@ -232,8 +232,8 @@ def test_bwa_aligner_mem_paired():
 
     print(__file__)
 
-    assert os.path.isfile(resource_path + "bsSeeker.Mouse.SRR892982_1_mem.bam") is True
-    assert os.path.getsize(resource_path + "bsSeeker.Mouse.SRR892982_1_mem.bam") > 0
+    assert os.path.isfile(resource_path + "test_bsSeeker.Mouse.SRR892982_1_mem.bam") is True
+    assert os.path.getsize(resource_path + "test_bsSeeker.Mouse.SRR892982_1_mem.bam") > 0
 
 @pytest.mark.idamidseq
 #@pytest.mark.bwa

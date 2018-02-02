@@ -29,8 +29,8 @@ def test_bs_seeker_filter_00():
     Extract the compressed FASTQ files
     """
     resource_path = os.path.join(os.path.dirname(__file__), "data/")
-    fastq_file_1 = resource_path + "bsSeeker.Mouse.SRR892982_1.fastq"
-    fastq_file_2 = resource_path + "bsSeeker.Mouse.SRR892982_2.fastq"
+    fastq_file_1 = resource_path + "test_bsSeeker.Mouse.SRR892982_1.fastq"
+    fastq_file_2 = resource_path + "test_bsSeeker.Mouse.SRR892982_2.fastq"
 
     with gzip.open(fastq_file_1 + '.gz', 'rb') as fgz_in:
         with open(fastq_file_1, 'w') as f_out:

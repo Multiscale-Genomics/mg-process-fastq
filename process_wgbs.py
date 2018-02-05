@@ -25,7 +25,6 @@ from basic_modules.workflow import Workflow
 from utils import logger
 from utils import remap
 
-from tool.fastq_splitter import fastq_splitter
 from tool.bs_seeker_aligner import bssAlignerTool
 from tool.bs_seeker_filter import filterReadsTool
 from tool.bs_seeker_indexer import bssIndexerTool

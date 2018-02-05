@@ -163,9 +163,9 @@ install:
     - ./scripts/travis/includeMAC2.sh
 
     # Install R packages required by iDEAR
-    - cd ${HOME}/build/Multiscale-Genomics/mg-process-fastq
-    - chmod +x scripts/travis/includeMAC2.sh
-    - sudo Rscript scripts/install_packages.R
+    # - cd ${HOME}/build/Multiscale-Genomics/mg-process-fastq
+    # - chmod +x scripts/travis/includeMAC2.sh
+    # - sudo Rscript scripts/install_packages.R
 
     # Install TADbit (only on Python 2.7)
     - cd ${HOME}/build/Multiscale-Genomics/mg-process-fastq

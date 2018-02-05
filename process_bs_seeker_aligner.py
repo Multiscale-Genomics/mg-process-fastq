@@ -100,8 +100,6 @@ class process_bs_seeker_aligner(Workflow):
         output_metadata = {}
 
         logger.info("BS-Seeker2 Aligner")
-        # Handles the alignment of all of the split packets then merges them
-        # back together.
         bss_aligner = bssAlignerTool(self.configuration)
         bam, bam_meta = bss_aligner.run(
             input_files,

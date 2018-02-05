@@ -31,37 +31,37 @@
     },
     "input_files": [
         {
-            "name": "fastq_1",
+            "name": "bam_1",
             "description": "Sequence read file",
-            "help": "path to a FASTQ sequence read file",
-            "file_type": ["FASTQ"],
+            "help": "path to a bam sequence read file",
+            "file_type": ["bam"],
             "data_type": ["data_idamid_seq"],
             "required": true,
             "allow_multiple": false
         },
         {
-            "name": "bg_fastq_1",
+            "name": "bg_bam_1",
             "description": "Sequence read file",
-            "help": "path to a FASTQ sequence read file",
-            "file_type": ["FASTQ"],
+            "help": "path to a bam sequence read file",
+            "file_type": ["bam"],
             "data_type": ["data_idamid_seq"],
             "required": false,
             "allow_multiple": false
         },
         {
-            "name": "fastq_2",
+            "name": "bam_2",
             "description": "Sequence read file",
-            "help": "path to a FASTQ sequence read file",
-            "file_type": ["FASTQ"],
+            "help": "path to a bam sequence read file",
+            "file_type": ["bam"],
             "data_type": ["data_idamid_seq"],
             "required": true,
             "allow_multiple": false
         },
         {
-            "name": "bg_fastq_2",
+            "name": "bg_bam_2",
             "description": "Sequence read file",
-            "help": "path to a FASTQ sequence read file",
-            "file_type": ["FASTQ"],
+            "help": "path to a bam sequence read file",
+            "file_type": ["bam"],
             "data_type": ["data_idamid_seq"],
             "required": false,
             "allow_multiple": false

@@ -288,7 +288,7 @@ def wgbs_toolchain(verbose=0):
 
 if __name__ == '__main__':
     import sys
-    sys._run_from_cmdl = True
+    sys._run_from_cmdl = True  # pylint: disable=protected-access
 
     PARSER = argparse.ArgumentParser(description="Test runner for tool chains")
     PARSER.add_argument(

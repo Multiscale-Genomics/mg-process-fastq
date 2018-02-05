@@ -65,12 +65,11 @@ class process_bs_seeker_peak_caller(Workflow):
             genome_fa : str
                 Genome assembly in FASTA
 
-            fastq1 : str
-                Location for the first filtered FASTQ file for single or paired
-                end reads
+            bam : str
+                Location for the FASTQ aligned reads bam file
 
-            fastq2 : str
-                Location for the second filtered FASTQ file if paired end reads
+            bai : str
+                Location for the FASTQ aligned reads bam index file
 
             index : str
                 Location of the index file
@@ -79,8 +78,6 @@ class process_bs_seeker_peak_caller(Workflow):
             Input file meta data associated with their roles
 
             genome_fa : dict
-            fastq1 : dict
-            fastq2 : dict
             index : dict
             bam : dict
             bai : dict
@@ -109,26 +106,9 @@ class process_bs_seeker_peak_caller(Workflow):
 
         # Methylation peak caller
         peak_caller_handle = bssMethylationCallerTool(self.configuration)
-        mct_input_files = {
-            "genome" : input_files["genome"],
-            "index" : output_results_files["index"],
-            "fastq1" : output_results_files["fastq1"],
-            "fastq2" : output_results_files["fastq2"],
-            "bam" : output_results_files["bam"],
-            "bai" : output_results_files["bai"]
-        }
-
-        mct_meta = {
-            "genome" : metadata["genome"],
-            "fastq1" : output_metadata["fastq1"],
-            "fastq2" : output_metadata["fastq2"],
-            "bam" : output_metadata["bam"],
-            "bai" : output_metadata["bai"],
-            "index" : output_metadata["index"]
-        }
         peak_files, peak_meta = peak_caller_handle.run(
-            mct_input_files,
-            mct_meta,
+            input_files,
+            metadata,
             output_files
         )
         # output_metadata["peak_calling"] = peak_meta

@@ -30,24 +30,6 @@
     },
     "input_files": [
         {
-            "name": "fastq1",
-            "description": "Sequence read file",
-            "help": "path to a FASTQ sequence read file",
-            "file_type": ["FASTQ"],
-            "data_type": ["data_wgbs"],
-            "required": true,
-            "allow_multiple": false
-        },
-        {
-            "name": "fastq2",
-            "description": "Sequence read file",
-            "help": "path to a FASTQ sequence read file",
-            "file_type": ["FASTQ"],
-            "data_type": ["data_wgbs"],
-            "required": true,
-            "allow_multiple": false
-        },
-        {
             "name": "genome",
             "description": "Genome sequence file",
             "help": "path to a assembly sequence file",

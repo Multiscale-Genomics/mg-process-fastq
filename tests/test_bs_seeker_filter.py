@@ -69,7 +69,7 @@ def test_bs_seeker_filter_01():
 
     config_param = {
         "aligner" : "bowtie2",
-        "aligner_path" : home + "/lib/bowtie2-2.3.2",
+        "aligner_path" : home + "/lib/bowtie2-2.3.4-linux-x86_64",
         "bss_path" : home + "/lib/BSseeker2"
     }
 

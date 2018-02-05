@@ -22,8 +22,6 @@ import subprocess
 import sys
 import tarfile
 
-import pysam
-
 from utils import logger
 
 try:
@@ -72,10 +70,10 @@ class bssMethylationCallerTool(Tool):
         self.configuration.update(configuration)
 
     @task(
-        bss_path=IN, bam_file=FILE_IN, genome_idx=FILE_IN,
+        bss_path=IN, bam_file=FILE_IN, genome_idx=FILE_IN, params=IN,
         wig_file=FILE_OUT, cgmap_file=FILE_OUT, atcgmap_file=FILE_OUT)
     def bss_methylation_caller(  # pylint disable=no-self-use
-            self, bss_path, bam_file, genome_idx, wig_file, cgmap_file, atcgmap_file):
+            self, bss_path, bam_file, genome_idx, params, wig_file, cgmap_file, atcgmap_file):
         """
         Takes the merged and sorted bam file and calls the methylation sites.
         Generates a wig file of the potential sites.
@@ -121,13 +119,49 @@ class bssMethylationCallerTool(Tool):
             "python " + bss_path + "/bs_seeker2-call_methylation.py "
             "--sorted --input " + str(bam_file) + " --wig " + str(wig_file) + " "
             "--CGmap " + str(cgmap_file) + " --ATCGmap " + str(atcgmap_file) + " "
-            "--db " + g_dir).format()
+            "--db " + g_dir + " ".join(params)).format()
         logger.info("command for methyl caller :", command_line)
         args = shlex.split(command_line)
         process = subprocess.Popen(args)
         process.wait()
 
         return True
+
+    @staticmethod
+    def get_params(params):
+        """
+        Function to handle to extraction of commandline parameters and formatting
+        them for use in the aligner for Bowtie2
+
+        Parameters
+        ----------
+        params : dict
+        paired : bool
+            Indicate if the parameters are paired-end specific. [DEFAULT=False]
+
+        Returns
+        -------
+        list
+        """
+        command_params = []
+
+        bss_pc_command_parameters = {
+            "bss_pc_rm_SX_param" : ["--rm-SX", False],
+            "bss_pc_rm_CCGG_param" : ["--rm-CCGG", False],
+            "bss_pc_rm_overlap_param" : ["--rn-overlap", False],
+            "bss_pc_read_no_param" : ["--read_no", True],
+        }
+
+        for param in params:
+            if param in bss_pc_command_parameters:
+                if bss_pc_command_parameters[param][1]:
+                    command_params = command_params + [
+                        bss_pc_command_parameters[param][0], params[param]]
+                else:
+                    if bss_pc_command_parameters[param][0]:
+                        command_params.append(bss_pc_command_parameters[param][0])
+
+        return command_params
 
     def run(self, input_files, input_metadata, output_files):
         """
@@ -167,6 +201,7 @@ class bssMethylationCallerTool(Tool):
             bss_path,
             input_files["bam"],
             input_files["index"],
+            self.get_params(self.configuration),
             output_files["wig_file"],
             output_files["cgmap_file"],
             output_files["atcgmap_file"]

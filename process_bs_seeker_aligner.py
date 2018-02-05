@@ -25,11 +25,7 @@ from basic_modules.workflow import Workflow
 from utils import logger
 from utils import remap
 
-from tool.fastq_splitter import fastq_splitter
 from tool.bs_seeker_aligner import bssAlignerTool
-from tool.bs_seeker_filter import filterReadsTool
-from tool.bs_seeker_indexer import bssIndexerTool
-from tool.bs_seeker_methylation_caller import bssMethylationCallerTool
 
 # ------------------------------------------------------------------------------
 
@@ -71,10 +67,11 @@ class process_bs_seeker_aligner(Workflow):
                 Genome assembly in FASTA
 
             fastq1 : str
-                Location for the first FASTQ file for single or paired end reads
+                Location for the first filtered FASTQ file for single or paired
+                end reads
 
             fastq2 : str
-                Location for the second FASTQ file if paired end reads
+                Location for the second filtered FASTQ file if paired end reads
 
             index : str
                 Location of the index file
@@ -93,9 +90,6 @@ class process_bs_seeker_aligner(Workflow):
 
         Returns
         -------
-
-        fastq1_filtered|fastq1_filtered : str
-            Locations of the filtered FASTQ files from which alignments were made
 
         bam|bai : str
             Location of the alignment bam file and the associated index

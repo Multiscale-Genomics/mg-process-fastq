@@ -132,8 +132,9 @@ class idearTool(Tool):
             '--local_lib', rlib]
         logger.info("iDEAR CMD: " + ' '.join(args))
 
-        process = subprocess.Popen(args)
+        process = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         process.wait()
+        proc_out, proc_err = process.communicate()
 
         try:
             with open(peak_bw + ".tmp", "rb") as f_in:
@@ -141,6 +142,8 @@ class idearTool(Tool):
                     f_out.write(f_in.read())
         except IOError:
             logger.fatal("iDEAR failed to generate peak file")
+            logger.fatal("iDEAR stdout" + proc_out)
+            logger.fatal("iDEAR stderr" + proc_err)
             return False
 
         return True
@@ -182,7 +185,7 @@ class idearTool(Tool):
             input_files["bam_1"], input_files["bam_2"],
             input_files["bg_bam_1"], input_files["bg_bam_2"],
             common_name,
-            input_metadata["bam_1"].meta_data["assembly"],
+            input_metadata["bsgenome"].meta_data["assembly"],
             input_files["bsgenome"],
             output_files["bigwig"]
         )

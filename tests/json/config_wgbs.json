@@ -81,7 +81,7 @@
                     "tool": "process_wgbs",
                     "description": "Filtered reads"
                 },
-                "file_path": "tests/data/wgbs.Mouse.GRCm38_1.filtered.fastq",
+                "file_path": "tests/data/bsSeeker.Mouse.SRR892982_1.filtered.fastq",
                 "data_type": "data_wgbs",
                 "compressed": "null"
             }
@@ -96,7 +96,7 @@
                     "tool": "process_wgbs",
                     "description": "Filtered reads"
                 },
-                "file_path": "tests/data/wgbs.Mouse.GRCm38_2.filtered.fastq",
+                "file_path": "tests/data/bsSeeker.Mouse.SRR892982_2.filtered.fastq",
                 "data_type": "data_wgbs",
                 "compressed": "null"
             }
@@ -111,7 +111,7 @@
                     "tool": "process_wgbs",
                     "description": "Aligned sequences"
                 },
-                "file_path": "tests/data/wgbs.Mouse.GRCm38.bam",
+                "file_path": "tests/data/bsSeeker.Mouse.SRR892982.bam",
                 "data_type": "data_wgbs",
                 "compressed": "null"
             }
@@ -126,7 +126,7 @@
                     "tool": "process_wgbs",
                     "description": "Aligned sequences index"
                 },
-                "file_path": "tests/data/wgbs.Mouse.GRCm38.bai",
+                "file_path": "tests/data/bsSeeker.Mouse.SRR892982.bai",
                 "data_type": "data_wgbs",
                 "compressed": "null"
             }
@@ -141,7 +141,7 @@
                     "tool": "process_wgbs",
                     "description": "WGBS peaks"
                 },
-                "file_path": "tests/data/wgbs.Mouse.GRCm38.wig",
+                "file_path": "tests/data/bsSeeker.Mouse.SRR892982.wig",
                 "data_type": "data_wgbs",
                 "compressed": "null"
             }
@@ -156,7 +156,7 @@
                     "tool": "process_wgbs",
                     "description": "CGmap file"
                 },
-                "file_path": "tests/data/wgbs.Mouse.GRCm38.cgmap.tsv",
+                "file_path": "tests/data/bsSeeker.Mouse.SRR892982.cgmap.tsv",
                 "data_type": "data_wgbs",
                 "compressed": "null"
             }
@@ -171,7 +171,7 @@
                     "tool": "process_wgbs",
                     "description": "ATCGmap file"
                 },
-                "file_path": "tests/data/wgbs.Mouse.GRCm38.atcgmap.tsv",
+                "file_path": "tests/data/bsSeeker.Mouse.SRR892982.atcgmap.tsv",
                 "data_type": "data_wgbs",
                 "compressed": "null"
             }

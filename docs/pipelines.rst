@@ -399,6 +399,71 @@ BS Seeker2 Aligner
       :members:
 
 
+BS Seeker2 Methylation Peak Caller
+----------------------------------
+.. automodule:: process_bs_seeker_peak_caller
+
+   This pipeline BS Seeker methylation peak caller
+
+   Running from the command line
+   =============================
+
+   Parameters
+   ----------
+   config : str
+      Configuration JSON file
+   in_metadata : str
+      Location of input JSON metadata for files
+   out_metadata : str
+      Location of output JSON metadata for files
+
+   Returns
+   -------
+   wig_file : file
+      Wig results file
+
+   cgmap_file : file
+      CGmap tsv results file
+
+   atcgmap_file : file
+      ATCGmap tsv results file
+
+   Example
+   -------
+
+   When running the pipeline on a local machine without COMPSs:
+
+   .. code-block:: none
+      :linenos:
+
+      python process_bs_seeker_peak_caller.py                            \
+         --config tests/json/config_wgbs_peak_caller.json \
+         --in_metadata tests/json/input_wgbs_peak_caller_metadata.json \
+         --out_metadata tests/json/output_wgbs_peak_caller.json \
+         --local
+
+   When using a local version of the [COMPS virtual machine](https://www.bsc.es/research-and-development/software-and-apps/software-list/comp-superscalar/):
+
+   .. code-block:: none
+      :linenos:
+
+      runcompss                     \
+         --lang=python              \
+         --library_path=${HOME}/bin \
+         --pythonpath=/<pyenv_virtenv_dir>/lib/python2.7/site-packages/ \
+         --log_level=debug          \
+         process_bs_seeker_peak_caller.py         \
+            --config tests/json/config_wgbs_peak_caller.json \
+            --in_metadata tests/json/input_wgbs_peak_caller_metadata.json \
+            --out_metadata tests/json/output_wgbs_peak_caller.json
+
+
+   Methods
+   =======
+   .. autoclass:: process_bs_seeker_peak_caller.process_bs_seeker_peak_caller
+      :members:
+
+
 BWA Alignment - bwa aln
 -----------------------
 .. automodule:: process_align_bwa

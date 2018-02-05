@@ -1,8 +1,8 @@
 {
-    "_id": "process_wgbs_index",
-    "name": "Process WGBS BS Seeker 2 Indexer",
+    "_id": "process_bs_seeker_peak_caller",
+    "name": "BS Seeker 2 Methylation Peak Caller",
     "title": "WGBS BS Seeker2 Indexer",
-    "short_description": "Create the custom Bowtie2 index required by BS Seeker2. For full details about all parameters please consult the BS Seeker2 aligner documentation at https://github.com/BSSeeker/BSseeker2#44-bs_seeker2-call_methylationpy",
+    "short_description": "BS Seeker2 methylation peak caller. For full details about all parameters please consult the BS Seeker2 aligner documentation at https://github.com/BSSeeker/BSseeker2#44-bs_seeker2-call_methylationpy",
     "owner": {
         "institution": "EMBL-EBI",
         "author": "Mark McDowall",
@@ -19,7 +19,7 @@
     "infrastructure": {
         "memory": 12,
         "cpus": 4,
-        "executable": "/home/pmes/code/mg-process-fastq/process_bs_seeker_index.py",
+        "executable": "/home/pmes/code/mg-process-fastq/process_bs_seeker_peak_caller.py",
         "clouds": {
             "mug-bsc": {
                 "launcher": "PMES",
@@ -154,19 +154,49 @@
     ],
     "output_files": [
         {
-            "name": "index",
-            "required": true,
+            "required": false,
             "allow_multiple": false,
+            "name": "wig_file",
             "file": {
-                "file_type": "TAR",
+                "file_type": "wig",
                 "meta_data": {
                     "visible": true,
-                    "tool": "process_wgbs",
-                    "description": "Output"
+                    "tool": "process_bs_seeker_peak_caller",
+                    "description": "WGBS peaks"
                 },
-                "file_path": "bt2.tar.gz",
-                "data_type": "sequence_mapping_index_bowtie",
-                "compressed": "gzip"
+                "file_path": "wgbs.wig",
+                "data_type": "data_wgbs",
+                "compressed": "null"
+            }
+        }, {
+            "required": false,
+            "allow_multiple": false,
+            "name": "cgmap_file",
+            "file": {
+                "file_type": "tsv",
+                "meta_data": {
+                    "visible": true,
+                    "tool": "process_bs_seeker_peak_caller",
+                    "description": "CGmap file"
+                },
+                "file_path": "cgmap.tsv",
+                "data_type": "data_wgbs",
+                "compressed": "null"
+            }
+        }, {
+            "required": false,
+            "allow_multiple": false,
+            "name": "atcgmap_file",
+            "file": {
+                "file_type": "tsv",
+                "meta_data": {
+                    "visible": true,
+                    "tool": "process_bs_seeker_peak_caller",
+                    "description": "ATCGmap file"
+                },
+                "file_path": "atcgmap.tsv",
+                "data_type": "data_wgbs",
+                "compressed": "null"
             }
         }
     ]

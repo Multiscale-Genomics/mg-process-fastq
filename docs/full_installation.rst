@@ -245,15 +245,15 @@ Setup the symlinks
 
    ln -s ${HOME}/lib/bwa/bwa bwa
 
-   ln -s ${HOME}/lib/bowtie2-2.3.2/bowtie2 bowtie2
-   ln -s ${HOME}/lib/bowtie2-2.3.2/bowtie2-align-s bowtie2-align-s
-   ln -s ${HOME}/lib/bowtie2-2.3.2/bowtie2-align-l bowtie2-align-l
-   ln -s ${HOME}/lib/bowtie2-2.3.2/bowtie2-build bowtie2-build
-   ln -s ${HOME}/lib/bowtie2-2.3.2/bowtie2-build-s bowtie2-build-s
-   ln -s ${HOME}/lib/bowtie2-2.3.2/bowtie2-build-l bowtie2-build-l
-   ln -s ${HOME}/lib/bowtie2-2.3.2/bowtie2-inspect bowtie2-inspect
-   ln -s ${HOME}/lib/bowtie2-2.3.2/bowtie2-inspect-s bowtie2-inspect-s
-   ln -s ${HOME}/lib/bowtie2-2.3.2/bowtie2-inspect-l bowtie2-inspect-l
+   ln -s ${HOME}/lib/bowtie2-2.3.4-linux-x86_64/bowtie2 bowtie2
+   ln -s ${HOME}/lib/bowtie2-2.3.4-linux-x86_64/bowtie2-align-s bowtie2-align-s
+   ln -s ${HOME}/lib/bowtie2-2.3.4-linux-x86_64/bowtie2-align-l bowtie2-align-l
+   ln -s ${HOME}/lib/bowtie2-2.3.4-linux-x86_64/bowtie2-build bowtie2-build
+   ln -s ${HOME}/lib/bowtie2-2.3.4-linux-x86_64/bowtie2-build-s bowtie2-build-s
+   ln -s ${HOME}/lib/bowtie2-2.3.4-linux-x86_64/bowtie2-build-l bowtie2-build-l
+   ln -s ${HOME}/lib/bowtie2-2.3.4-linux-x86_64/bowtie2-inspect bowtie2-inspect
+   ln -s ${HOME}/lib/bowtie2-2.3.4-linux-x86_64/bowtie2-inspect-s bowtie2-inspect-s
+   ln -s ${HOME}/lib/bowtie2-2.3.4-linux-x86_64/bowtie2-inspect-l bowtie2-inspect-l
 
    ln -s ${HOME}/lib/FastQC/fastqc
 

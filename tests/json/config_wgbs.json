@@ -41,8 +41,8 @@
             "help": "Location of the aligner libraries",
             "type": "string",
             "required": true,
-            "default": "${HOME}/lib/bowtie2-2.3.2",
-            "value": "${HOME}/lib/bowtie2-2.3.2"
+            "default": "${HOME}/lib/bowtie2-2.3.4-linux-x86_64",
+            "value": "${HOME}/lib/bowtie2-2.3.4-linux-x86_64"
         },
         {
             "name": "bss_path",

@@ -77,12 +77,12 @@ class bssAlignerTool(Tool):
     @task(
         returns=bool, isModifier=False,
         input_fastq_1=FILE_IN, input_fastq_2=FILE_IN,
-        aligner=IN, aligner_path=IN, bss_path=IN,
+        aligner=IN, aligner_path=IN, bss_path=IN, aln_params=IN,
         genome_fasta=FILE_IN, genome_idx=FILE_IN, bam_out=FILE_OUT
     )
     def bs_seeker_aligner(
             self, input_fastq_1, input_fastq_2, aligner, aligner_path, bss_path,
-            genome_fasta, genome_idx, bam_out):
+            aln_params, genome_fasta, genome_idx, bam_out):
         """
         Alignment of the paired ends to the reference genome
 
@@ -124,7 +124,7 @@ class bssAlignerTool(Tool):
             "--bt2-p", "4",
             "-o", bam_out + "_tmp.bam",
             "-f", "bam"
-        ]
+        ] + aln_params
 
         results = self.run_aligner(genome_idx, bam_out, script, params)
 
@@ -132,11 +132,11 @@ class bssAlignerTool(Tool):
 
     @task(
         returns=bool, isModifier=False,
-        input_fastq=FILE_IN, aligner=IN, aligner_path=IN, bss_path=IN,
+        input_fastq=FILE_IN, aligner=IN, aligner_path=IN, bss_path=IN, aln_params=IN,
         genome_fasta=FILE_IN, genome_idx=FILE_IN, bam_out=FILE_OUT
     )
     def bs_seeker_aligner_single(
-            self, input_fastq, aligner, aligner_path, bss_path,
+            self, input_fastq, aligner, aligner_path, bss_path, aln_params,
             genome_fasta, genome_idx, bam_out):
         """
         Alignment of the paired ends to the reference genome
@@ -178,11 +178,137 @@ class bssAlignerTool(Tool):
             "--bt2-p", "4",
             "-o", bam_out + "_tmp.bam",
             "-f", "bam"
-        ]
+        ] + aln_params
 
         results = self.run_aligner(genome_idx, bam_out, script, params)
 
         return results
+
+    @staticmethod
+    def get_aln_params(params, paired=False):
+        """
+        Function to handle to extraction of commandline parameters and formatting
+        them for use in the aligner for Bowtie2
+
+        Parameters
+        ----------
+        params : dict
+        paired : bool
+            Indicate if the parameters are paired-end specific. [DEFAULT=False]
+
+        Returns
+        -------
+        list
+        """
+        command_params = []
+
+        bss_aligner_command_parameters = {
+            # Reduced Representation Bisufite Sequencing
+            "bss_aligner_rrbs_param" : ["--rrbs", False],
+            "bss_aligner_rrbs_cutoff_site_param" : ["-c", True],
+            "bss_aligner_rrbs_lower_param" : ["-L", True],
+            "bss_aligner_rrbs_upper_param" : ["-U", True],
+            # General Options
+            "bss_aligner_tag_param" : ["-t", True],
+            "bss_aligner_start_base_param" : ["-s", True],
+            "bss_aligner_end_base_param" : ["-e", True],
+            # "bss_aligner_adapter_param" : ["-a", True],
+            # "bss_aligner_adapter_mismatch_param" : ["--am", True],
+            "bss_aligner_no_mismatches_param" : ["-m", True],
+            "bss_aligner_split_line_param" : ["-l", True],
+        }
+
+        for param in params:
+            if param in bss_aligner_command_parameters:
+                if bss_aligner_command_parameters[param][1]:
+                    command_params = command_params + [
+                        bss_aligner_command_parameters[param][0], params[param]]
+                else:
+                    if bss_aligner_command_parameters[param][0]:
+                        command_params.append(bss_aligner_command_parameters[param][0])
+
+        bowtie2_command_parameters = {
+            # Input Options - 11
+            "bowtie2_interleaved_param" : ["--bt2--interleaved", False],
+            "bowtie2_tab5_param" : ["--bt2--tab5", False],
+            "bowtie2_tab6_param" : ["--bt2--tab6", False],
+            # "bowtie2_qseq_param" : ["--bt2--qseq", False],
+            # "bowtie2_read_only_param" : ["--bt2-r", True],
+            "bowtie2_skip_1st_n_reads_param" : ["--bt2-s", True],
+            "bowtie2_aln_1st_n_reads_param" : ["--bt2-u", True],
+            "bowtie2_trim5_param" : ["--bt2-5", True],
+            "bowtie2_trim3_param" : ["--bt2-3", True],
+            "bowtie2_phred33_param" : ["--bt2--phred33", False],
+            "bowtie2_phre64_param" : ["--bt2--phred64", False],
+            # Alignment Options - 12
+            "bowtie2_num_mismatch_param" : ["--bt2-N", True],
+            "bowtie2_seed_len_param" : ["--bt2-L", True],
+            # "bowtie2_seed_func_param" : ["--bt2-i", True],
+            # "bowtie2_ambg_char_func_param" : ["--bt2--n-cell", True],
+            "bowtie2_dpads_param" : ["--bt2--dpad", True],
+            "bowtie2_gbar_param" : ["--bt2--gbar", True],
+            "bowtie2_ignore_quals_param" : ["--bt2--ignore-quals", False],
+            "bowtie2_nofw_param" : ["--bt2--nofw", False],
+            "bowtie2_norc_param" : ["--bt2--norc", False],
+            "bowtie2_no_1mm_upfront_param" : ["--bt2--no-1mm-upfront", False],
+            "bowtie2_end_to_end_param" : ["--bt2--end-to-end", False],
+            "bowtie2_local_param" : ["--bt2--local", False],
+            # Effort Options - 2
+            "bowtie2_seed_extension_attempts_param" : ["--bt2-D", True],
+            "bowtie2_reseed_param" : ["--bt2-R", True],
+            # SAM Options - 9
+            "bowtie2_no_unal_param" : ["--bt2--no-unal", False],
+            "bowtie2_no_hd_param" : ["--bt2--no-hd", False],
+            "bowtie2_no_sq_param" : ["--bt2--no-dq", False],
+            "bowtie2_rg_id_param" : ["--bt2--rg-id", True],
+            "bowtie2_rg_param" : ["--bt2--rg", True],
+            "bowtie2_omit_sec_seq_param" : ["--bt2--omit-sec-seq", False],
+            "bowtie2_soft_clipped_unmapped_tlen_param" : ["--bt2--soft-clipped-unmapped-tlen", False],
+            "bowtie2_sam_no_qname_trunc_param" : ["--bt2--sam-no-qname-trunc", False],
+            "bowtie2_xeq_param" : ["--bt2--xeq", False],
+        }
+
+        if paired:
+            # Paired-end Options - 10
+            bowtie2_command_parameters["bowtie2_min_frag_len_param"] = ["--bt2-I", True]
+            bowtie2_command_parameters["bowtie2_max_frag_len_param"] = ["--bt2-X", True]
+            bowtie2_command_parameters["bowtie2_frrfff_param"] = ["", True]
+            bowtie2_command_parameters["bowtie2_no_mixed_param"] = ["--bt2--no-mixed", False]
+            bowtie2_command_parameters["bowtie2_no_discordant_param"] = ["--bt2--no-discordant", False]
+            bowtie2_command_parameters["bowtie2_dovetail_param"] = ["--bt2--dovetail", False]
+            bowtie2_command_parameters["bowtie2_no_contain_param"] = ["--bt2--no-contain", False]
+            bowtie2_command_parameters["bowtie2_no_overlap_param"] = ["--bt2--no-overlap", False]
+
+        for param in params:
+            if param in bowtie2_command_parameters:
+                if bowtie2_command_parameters[param][1]:
+                    command_params = command_params + [
+                        bowtie2_command_parameters[param][0], params[param]]
+                else:
+                    if bowtie2_command_parameters[param][0]:
+                        command_params.append(bowtie2_command_parameters[param][0])
+
+        # Scoring Options - 8
+        if "bowtie2_ma_param" in params:
+            command_params = command_params + [
+                "--ma_", str(params["bowtie2_ma_param"])]
+        if "bowtie2_mp_mx_param" in params and "bowtie2_mp_mn_param" in params:
+            command_params = command_params + [
+                "--mp",
+                str(params["bowtie2_mp_mx_param"]) + "," + str(params["bowtie2_mp_mn_param"])]
+        if "bowtie2_np_param" in params:
+            command_params = command_params + [
+                "--np", str(params["bowtie2_np_param"])]
+        if "bowtie2_rdg_o_param" in params and "bowtie2_rdg_e_param" in params:
+            command_params = command_params + [
+                "--rdg",
+                str(params["bowtie2_rdg_o_param"]) + "," + str(params["bowtie2_rdg_e_param"])]
+        if "bowtie2_rfg_o_param" in params and "bowtie2_rfg_e_param" in params:
+            command_params = command_params + [
+                "--rfg",
+                str(params["bowtie2_rfg_o_param"]) + "," + str(params["bowtie2_rfg_e_param"])]
+
+        return command_params
 
     def run_aligner(self, genome_idx, bam_out, script, params):  # pylint: disable=no-self-use
         """
@@ -291,10 +417,12 @@ class bssAlignerTool(Tool):
             fastq_file_list = fqs.paired_splitter(
                 fastq1, fastq2, fastq_file_gz
             )
+            aln_params = self.get_aln_params(self.configuration, True)
         else:
             fastq_file_list = fqs.single_splitter(
                 fastq1, fastq_file_gz
             )
+            aln_params = self.get_aln_params(self.configuration)
 
         fastq_file_list = compss_wait_on(fastq_file_list)
         if not fastq_file_list:
@@ -335,7 +463,7 @@ class bssAlignerTool(Tool):
 
                 results = self.bs_seeker_aligner(
                     tmp_fq1, tmp_fq2,
-                    aligner, aligner_path, bss_path,
+                    aligner, aligner_path, bss_path, aln_params,
                     genome_fasta, genome_idx,
                     output_bam_file_tmp
                 )
@@ -346,7 +474,7 @@ class bssAlignerTool(Tool):
 
                 results = self.bs_seeker_aligner_single(
                     tmp_fq,
-                    aligner, aligner_path, bss_path,
+                    aligner, aligner_path, bss_path, aln_params,
                     genome_fasta, genome_idx,
                     output_bam_file_tmp
                 )

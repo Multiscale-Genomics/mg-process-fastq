@@ -2,7 +2,7 @@
     "_id": "process_bs_seeker_aligner",
     "name": "Process BS Seeker2 Aligner",
     "title": "BS Seeker2 Aligner",
-    "short_description": "Align WGBS data, uses BS Seeker2 and Bowtie2",
+    "short_description": "Align WGBS data, uses BS Seeker2 and Bowtie2. For full details about all parameters please consult the BS Seeker2 aligner documentation at https://github.com/BSSeeker/BSseeker2#43-bs_seeker2-alignpy",
     "owner": {
         "institution": "EMBL-EBI",
         "author": "Mark McDowall",
@@ -82,22 +82,413 @@
             "type": "string",
             "required": true,
             "default": "bowtie2"
-        },
-        {
+        }, {
             "name": "aligner_path",
             "description": "Location of the aligner libraries",
             "help": "Location of the aligner libraries",
             "type": "string",
             "required": true,
             "default": "${HOME}/lib/bowtie2-2.3.2"
-        },
-        {
+        }, {
             "name": "bss_path",
             "description": "Location of the BS Seeker2 code libraries",
             "help": "Location of the BS Seeker2 code libraries",
             "type": "string",
             "required": true,
             "default": "${HOME}/lib/BSseeker2"
+        },
+        {
+            "name": "bss_aligner_rrbs_param",
+            "description": "Reads are to be mapped to a reduced representation genome (RRBS)",
+            "help": "Reads are to be mapped to a reduced representation genome",
+            "type": "boolean",
+            "required": true,
+            "default": false
+        }, {
+            "name": "bss_aligner_rrbs_cutoff_site_param",
+            "description": "RRBS cut site",
+            "help": "Restrivtion enzyme cutting site",
+            "type": "string",
+            "required": true,
+            "default": "C-CGG"
+        }, {
+            "name": "bss_aligner_rrbs_lower_param",
+            "description": "RRBS Lower bound fragment length",
+            "help": "RRBS Lower bound fragment length",
+            "type": "integer",
+            "required": true,
+            "default": 20
+        }, {
+            "name": "bss_aligner_rrbs_upper_param",
+            "description": "RRBS Upper bound fragment length",
+            "help": "RRBS Upper bound fragment length",
+            "type": "integer",
+            "required": true,
+            "default": 500
+        }, {
+            "name": "bss_aligner_tag_param",
+            "description": "Unidirectional (Y), or Directional (N)",
+            "help": "",
+            "type": {
+                "type": "string",
+                "enum": ["Y", "N"]
+            },
+            "required": true,
+            "default": "N"
+        }, {
+            "name": "bss_aligner_start_base_param",
+            "description": "Start base",
+            "help": "Start base",
+            "type": "integer",
+            "required": true,
+            "default": 1
+        }, {
+            "name": "bss_aligner_end_base_param",
+            "description": "End base",
+            "help": "End base",
+            "type": "integer",
+            "required": true,
+            "default": 200
+        }, {
+            "name": "bss_aligner_no_mismatches_param",
+            "description": "",
+            "help": "",
+            "type": "string",
+            "required": true,
+            "default": ""
+        }, {
+            "name": "bss_aligner_split_line_param",
+            "description": "Number of allowed mismatches. Whole integers is equivalent to number of mismatches, Number less than or equal to 1 is equivalent to the percentage number of mismatches (eg 0.1 is 10%)",
+            "help": "",
+            "type": "string",
+            "required": true,
+            "default": "4"
+        },
+        {
+            "name": "bowtie2_interleaved_param",
+            "description": "Interleaved reads, where the first 2 reads represent a paired end",
+            "help": "Interleaved reads, where the first 2 reads represent a paired end",
+            "type": "bool",
+            "required": false,
+            "default": false
+        }, {
+            "name": "bowtie2_tab5_param",
+            "description": "All reads, or pairs of reads, are a single line",
+            "help": "",
+            "type": "bool",
+            "required": false,
+            "default": false
+        }, {
+            "name": "bowtie2_tab6_param",
+            "description": "Same as tab5 except the the second paired-end read can have a different name",
+            "help": "",
+            "type": "bool",
+            "required": false,
+            "default": false
+        }, {
+            "name": "bowtie2_skip_1st_n_reads_param",
+            "description": "Skip the first N reads in a FastQ file",
+            "help": "",
+            "type": "string",
+            "required": false,
+            "default": ""
+        }, {
+            "name": "bowtie2_aln_1st_n_reads_param",
+            "description": "Align only the first N reads from a FastQ file",
+            "help": "",
+            "type": "string",
+            "required": false,
+            "default": ""
+        }, {
+            "name": "bowtie2_trim5_param",
+            "description": "Trim the 5' end of all reads before alignment",
+            "help": "Trim the 5' end of all reads before alignment",
+            "type": "string",
+            "required": false,
+            "default": "0"
+        }, {
+            "name": "bowtie2_trim3_param",
+            "description": "Trim the 3' end of all reads before alignment",
+            "help": "Trim the 3' end of all reads before alignment",
+            "type": "string",
+            "required": false,
+            "default": "0"
+        }, {
+            "name": "bowtie2_phred33_param",
+            "description": "Input score are equivalent to Phred+33",
+            "help": "Input score are equivalent to Phred+33",
+            "type": "bool",
+            "required": false,
+            "default": false
+        }, {
+            "name": "bowtie2_phre64_param",
+            "description": "Input score are equivalent to Phred+64",
+            "help": "Input score are equivalent to Phred+64",
+            "type": "bool",
+            "required": false,
+            "default": false
+        }, {
+            "name": "bowtie2_num_mismatch_param",
+            "description": "Number of mismatches allowed in the seed in multiseed alignments",
+            "help": "Number of mismatches allowed in the seed in multiseed alignments",
+            "type": "string",
+            "required": false,
+            "default": "0"
+        }, {
+            "name": "bowtie2_seed_len_param",
+            "description": "Length of seed substring used in mutliseed alignments",
+            "help": "Length of seed substring used in mutliseed alignments",
+            "type": "string",
+            "required": false,
+            "default": ""
+        }, {
+            "name": "bowtie2_dpads_param",
+            "description": "Padding used in dynamic programming to allow for gaps",
+            "help": "Padding used in dynamic programming to allow for gaps",
+            "type": "string",
+            "required": false,
+            "default": "15"
+        }, {
+            "name": "bowtie2_gbar_param",
+            "description": "Don't allow gaps within N bases of an aligned read",
+            "help": "Don't allow gaps within N bases of an aligned read",
+            "type": "string",
+            "required": false,
+            "default": "4"
+        }, {
+            "name": "bowtie2_ignore_quals_param",
+            "description": "Use a high read quality in cases of gaps instead of the quality score",
+            "help": "Use a high read quality in cases of gaps instead of the quality score",
+            "type": "bool",
+            "required": false,
+            "default": false
+        }, {
+            "name": "bowtie2_nofw_param",
+            "description": "Do not align unpaired reads to the forward strand",
+            "help": "Do not align unpaired reads to the forward strand",
+            "type": "bool",
+            "required": false,
+            "default": false
+        }, {
+            "name": "bowtie2_norc_param",
+            "description": "Do not align unpaired reads to the reverse strand",
+            "help": "Do not align unpaired reads to the reverse strand",
+            "type": "bool",
+            "required": false,
+            "default": false
+        }, {
+            "name": "bowtie2_no_1mm_upfront_param",
+            "description": "Prevent Bowtie2 searching for alignments with 1 mismatch before using a multiseed approach to alignment",
+            "help": "Prevent Bowtie2 searching for alignments with 1 mismatch before using a multiseed approach to alignment",
+            "type": "bool",
+            "required": false,
+            "default": false
+        }, {
+            "name": "bowtie2_end_to_end_param",
+            "description": "The read should completely align to the reference genome",
+            "help": "The read should completely align to the reference genome",
+            "type": "bool",
+            "required": false,
+            "default": false
+        }, {
+            "name": "bowtie2_local_param",
+            "description": "Allow soft-clipping to get an alignment",
+            "help": "Allow soft-clipping to get an alignment",
+            "type": "bool",
+            "required": false,
+            "default": false
+        }, {
+            "name": "bowtie2_seed_extension_attempts_param",
+            "description": "Number of seed extension attempts allowed before moving on",
+            "help": "Number of seed extension attempts allowed before moving on",
+            "type": "string",
+            "required": false,
+            "default": "15"
+        }, , {
+            "name": "bowtie2_reseed_param",
+            "description": "Max number of re-seeds if a read has repetitive seeds",
+            "help": "Max number of re-seeds if a read has repetitive seeds",
+            "type": "string",
+            "required": false,
+            "default": "2"
+        }, {
+            "name": "bowtie2_min_frag_len_param",
+            "description": "Minimum fragment length for a valid pair alignment",
+            "help": "Minimum fragment length for a valid pair alignment",
+            "type": "string",
+            "required": false,
+            "default": "0"
+        }, {
+            "name": "bowtie2_max_frag_len_param",
+            "description": "Max fragment length for a valid pair alignment",
+            "help": "Max fragment length for a valid pair alignment",
+            "type": "string",
+            "required": false,
+            "default": "500"
+        }, {
+            "name": "bowtie2_frrfff_param",
+            "description": "Upstream/Downstream paired-end mate orientations:\n--fr : Mate 1 upstream of reversed mate 2\n--rf : Reversed mate 1 is upstream of mate 2\n--ff : Mate 1 upstream and mate 2 downstream bothin forward direction",
+            "help": "Upstream/Downstream paired-end mate orientations:\n--fr : Mate 1 upstream of reversed mate 2\n--rf : Reversed mate 1 is upstream of mate 2\n--ff : Mate 1 upstream and mate 2 downstream bothin forward direction",
+            "type": {
+                "type": "string",
+                "enum": ["--fr", "--rf", "--ff"]
+            },
+            "required": false,
+            "default": "--fr"
+        }, {
+            "name": "bowtie2_no_mixed_param",
+            "description": "Find only concordant/discordant alignments for pairs",
+            "help": "Find only concordant/discordant alignments for pairs",
+            "type": "bool",
+            "required": false,
+            "default": false
+        }, {
+            "name": "bowtie2_no_discordant_param",
+            "description": "If there are no concordant pair alignments, do not search for discordant pairs",
+            "help": "If there are no concordant pair alignments, do not search for discordant pairs",
+            "type": "bool",
+            "required": false,
+            "default": false
+        }, {
+            "name": "bowtie2_dovetail_param",
+            "description": "Allow mates to dovetail each other. For further details see http://bowtie-bio.sourceforge.net/bowtie2/manual.shtml#mates-can-overlap-contain-or-dovetail-each-other",
+            "help": "Allow mates to dovetail each other. For further details see http://bowtie-bio.sourceforge.net/bowtie2/manual.shtml#mates-can-overlap-contain-or-dovetail-each-other",
+            "type": "bool",
+            "required": false,
+            "default": false
+        }, {
+            "name": "bowtie2_no_contain_param",
+            "description": "Don't allow mates to contain its paired mate. For further details see http://bowtie-bio.sourceforge.net/bowtie2/manual.shtml#mates-can-overlap-contain-or-dovetail-each-other",
+            "help": "Don't allow mates to contain its paired mate. For further details see http://bowtie-bio.sourceforge.net/bowtie2/manual.shtml#mates-can-overlap-contain-or-dovetail-each-other",
+            "type": "bool",
+            "required": false,
+            "default": false
+        }, {
+            "name": "bowtie2_no_overlap_param",
+            "description": "Don't allow mates to overlap each other. For further details see http://bowtie-bio.sourceforge.net/bowtie2/manual.shtml#mates-can-overlap-contain-or-dovetail-each-other",
+            "help": "Don't allow mates to overlap each other. For further details see http://bowtie-bio.sourceforge.net/bowtie2/manual.shtml#mates-can-overlap-contain-or-dovetail-each-other",
+            "type": "bool",
+            "required": false,
+            "default": false
+        }, {
+            "name": "bowtie2_no_unal_param",
+            "description": "No SAM records for unaligned reads",
+            "help": "No SAM records for unaligned reads",
+            "type": "bool",
+            "required": false,
+            "default": false
+        }, {
+            "name": "bowtie2_no_hd_param",
+            "description": "No SAM header lines",
+            "help": "No SAM header lines",
+            "type": "bool",
+            "required": false,
+            "default": false
+        }, {
+            "name": "bowtie2_no_sq_param",
+            "description": "No @SQ SAM header lines",
+            "help": "No @SQ SAM header lines",
+            "type": "bool",
+            "required": false,
+            "default": false
+        }, {
+            "name": "bowtie2_rg_id_param",
+            "description": "Read group ID",
+            "help": "Read group ID",
+            "type": "string",
+            "required": false,
+            "default": ""
+        }, {
+            "name": "bowtie2_rg_param",
+            "description": "Extra text for @RG header line",
+            "help": "Extra text for @RG header line",
+            "type": "string",
+            "required": false,
+            "default": ""
+        }, {
+            "name": "bowtie2_omit_sec_seq_param",
+            "description": "Do not include sequence and quality lines when printing secondary alignments",
+            "help": "Do not include sequence and quality lines when printing secondary alignments",
+            "type": "bool",
+            "required": false,
+            "default": false
+        }, {
+            "name": "bowtie2_soft_clipped_unmapped_tlen_param",
+            "description": "Soft-clipped bases are assigned as unmapped when calculating TLEN",
+            "help": "Soft-clipped bases are assigned as unmapped when calculating TLEN",
+            "type": "bool",
+            "required": false,
+            "default": false
+        }, {
+            "name": "bowtie2_sam_no_qname_trunc_param",
+            "description": "Use full read name (including whitespace). This will generate non-standard format SAM files",
+            "help": "Use full read name (including whitespace). This will generate non-standard format SAM files",
+            "type": "bool",
+            "required": false,
+            "default": false
+        }, {
+            "name": "bowtie2_xeq_param",
+            "description": "To indicate matches/mis-matches use '='/'X' instead of 'M'",
+            "help": "To indicate matches/mis-matches use '='/'X' instead of 'M'",
+            "type": "bool",
+            "required": false,
+            "default": false
+        }, {
+            "name": "bowtie2_ma_param",
+            "description": "Match bonus",
+            "help": "Match bonus",
+            "type": "string",
+            "required": false,
+            "default": "2"
+        }, {
+            "name": "bowtie2_mp_mx_param",
+            "description": "Max mismatch penalty [Requires Min mismatch penalty to also be set]",
+            "help": "Max mismatch penalty [Requires Min mismatch penalty to also be set]",
+            "type": "string",
+            "required": false,
+            "default": "6"
+        }, {
+            "name": "bowtie2_mp_mn_param",
+            "description": "Min mismatch penalty [Requires Max mismatch penalty to also be set]",
+            "help": "Min mismatch penalty [Requires Max mismatch penalty to also be set]",
+            "type": "string",
+            "required": false,
+            "default": "2"
+        }, {
+            "name": "bowtie2_np_param",
+            "description": "Penalty for positions where the read or reference are ambiguous",
+            "help": "Penalty for positions where the read or reference are ambiguous",
+            "type": "string",
+            "required": false,
+            "default": "1"
+        }, {
+            "name": "bowtie2_rdg_o_param",
+            "description": "Read gap open penalty [Requires read gap extension penalty to also be set]",
+            "help": "Read gap open penalty [Requires read gap extension penalty to also be set]",
+            "type": "string",
+            "required": false,
+            "default": "5"
+        }, {
+            "name": "bowtie2_rdg_e_param",
+            "description": "Read gap extension penalty [Requires read gap open penalty to also be set]",
+            "help": "Read gap extension penalty [Requires read gap open penalty to also be set]",
+            "type": "string",
+            "required": false,
+            "default": "3"
+        }, {
+            "name": "bowtie2_rfg_o_param",
+            "description": "Reference gap open penalty [Requires reference gap extension penalty to also be set]",
+            "help": "Reference gap open penalty [Requires reference gap extension penalty to also be set]",
+            "type": "string",
+            "required": false,
+            "default": "5"
+        }, {
+            "name": "bowtie2_rfg_e_param",
+            "description": "Reference gap extension penalty [Requires reference gap open penalty to also be set]",
+            "help": "Reference gap extension penalty [Requires reference gap open penalty to also be set]",
+            "type": "string",
+            "required": false,
+            "default": "3"
         }
     ],
     "output_files": [

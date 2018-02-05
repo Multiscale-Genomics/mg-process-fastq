@@ -333,7 +333,69 @@ BS Seeker2 Indexer
 
    Methods
    =======
-   .. autoclass:: process_bsgenome.process_bsgenome
+   .. autoclass:: process_bs_seeker_index.process_bs_seeker_index
+      :members:
+
+
+BS Seeker2 Aligner
+------------------
+.. automodule:: process_bs_seeker_aligner
+
+   This pipeline aligns FASTQ paired end reads using BS Seeker2 and Bowtie2.
+
+   Running from the command line
+   =============================
+
+   Parameters
+   ----------
+   config : str
+      Configuration JSON file
+   in_metadata : str
+      Location of input JSON metadata for files
+   out_metadata : str
+      Location of output JSON metadata for files
+
+   Returns
+   -------
+   bam : file
+      Aligned Bam file
+
+   bai : file
+      Aligned Bam index file
+
+   Example
+   -------
+
+   When running the pipeline on a local machine without COMPSs:
+
+   .. code-block:: none
+      :linenos:
+
+      python process_bs_seeker_aligner.py                            \
+         --config tests/json/config_wgbs_align.json \
+         --in_metadata tests/json/input_wgbs_align_metadata.json \
+         --out_metadata tests/json/output_wgbs_align.json \
+         --local
+
+   When using a local version of the [COMPS virtual machine](https://www.bsc.es/research-and-development/software-and-apps/software-list/comp-superscalar/):
+
+   .. code-block:: none
+      :linenos:
+
+      runcompss                     \
+         --lang=python              \
+         --library_path=${HOME}/bin \
+         --pythonpath=/<pyenv_virtenv_dir>/lib/python2.7/site-packages/ \
+         --log_level=debug          \
+         process_bs_seeker_aligner.py         \
+            --config tests/json/config_wgbs_align.json \
+            --in_metadata tests/json/input_wgbs_align_metadata.json \
+            --out_metadata tests/json/output_wgbs_align.json
+
+
+   Methods
+   =======
+   .. autoclass:: process_bs_seeker_aligner.process_bs_seeker_aligner
       :members:
 
 

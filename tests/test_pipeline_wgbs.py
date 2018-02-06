@@ -117,7 +117,7 @@ def test_wgbs_pipeline_01():
         configuration={
             "bss_path" : home + "/lib/BSseeker2",
             "aligner" : "bowtie2",
-            "aligner_path" : home + "/lib/bowtie2-2.3.2"
+            "aligner_path" : home + "/lib/bowtie2-2.3.4-linux-x86_64"
         }
     )
     rs_files, rs_meta = rs_handle.run(files, metadata, files_out)

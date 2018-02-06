@@ -87,6 +87,7 @@ class bwaIndexerTool(Tool):
         -------
         bool
         """
+        command_line = ''
         try:
             au_handler = alignerUtils()
             amb_loc, ann_loc, bwt_loc, pac_loc, sa_loc = au_handler.bwa_index_genome(file_loc)

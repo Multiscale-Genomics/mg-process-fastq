@@ -21,6 +21,7 @@ import shlex
 import subprocess
 import sys
 import tarfile
+import os
 
 from utils import logger
 
@@ -106,24 +107,46 @@ class bssMethylationCallerTool(Tool):
 
         g_dir = genome_idx.split("/")
         g_dir = "/".join(g_dir[:-1])
+        gi_dir = "/".join(g_dir[:-1])
 
-        tar = tarfile.open(genome_idx)
-        for member in tar.getmembers():
-            if member.isdir():
-                g_dir = g_dir + "/" + member.name
-                break
-        tar.extractall(path=g_dir)
-        tar.close()
+        try:
+            tar = tarfile.open(genome_idx)
+            for member in tar.getmembers():
+                if member.isdir():
+                    gi_dir = g_dir + "/" + member.name
+                    break
+            logger.info("EXTRACTING " + genome_idx + " to " + g_dir)
+            tar.extractall(path=g_dir)
+            tar.close()
+        except (IOError, OSError) as msg:
+            logger.fatal("I/O error({0}): {1}\n{2}".format(
+                msg.errno, msg.strerror, g_dir))
+
+            return False
 
         command_line = (
             "python " + bss_path + "/bs_seeker2-call_methylation.py "
             "--sorted --input " + str(bam_file) + " --wig " + str(wig_file) + " "
             "--CGmap " + str(cgmap_file) + " --ATCGmap " + str(atcgmap_file) + " "
-            "--db " + g_dir + " ".join(params)).format()
-        logger.info("command for methyl caller :", command_line)
-        args = shlex.split(command_line)
-        process = subprocess.Popen(args)
-        process.wait()
+            "--db " + gi_dir + " ".join(params)).format()
+        logger.info("command for methyl caller: " + command_line)
+        try:
+            args = shlex.split(command_line)
+            process = subprocess.Popen(
+                args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            process.wait()
+
+            proc_out, proc_err = process.communicate()
+            logger.info("PEAK CALLER STDOUT:" + proc_out)
+            logger.fatal("PEAK CALLER STDERR:" + proc_err)
+        except (IOError, OSError) as msg:
+            logger.fatal("I/O error({0}): {1}\n{2}".format(
+                msg.errno, msg.strerror, command_line))
+
+            proc_out, proc_err = process.communicate()
+            logger.fatal("IO ERROR - PEAK CALLER STDOUT:" + proc_out)
+            logger.fatal("IO ERROR - PEAK CALLER STDERR:" + proc_err)
+            return False
 
         return True
 
@@ -188,7 +211,6 @@ class bssMethylationCallerTool(Tool):
             logger.fatal("WGBS - BS SEEKER2: Unassigned configuration variables")
 
         bam_handler = bamUtilsTask()
-
         results = bam_handler.check_header(input_files["bam"])
         results = compss_wait_on(results)
         if results is False:
@@ -216,11 +238,7 @@ class bssMethylationCallerTool(Tool):
                 data_type="data_wgbs",
                 file_type="wig",
                 file_path=output_files["wig_file"],
-                sources=[
-                    input_metadata["genome"].file_path,
-                    input_metadata["fastq1"].file_path,
-                    input_metadata["fastq2"].file_path
-                ],
+                sources=input_metadata["bam"].sources,
                 taxon_id=input_metadata["genome"].taxon_id,
                 meta_data={
                     "assembly": input_metadata["genome"].meta_data["assembly"],
@@ -231,11 +249,7 @@ class bssMethylationCallerTool(Tool):
                 data_type="data_wgbs",
                 file_type="tsv",
                 file_path=output_files["cgmap_file"],
-                sources=[
-                    input_metadata["genome"].file_path,
-                    input_metadata["fastq1"].file_path,
-                    input_metadata["fastq2"].file_path
-                ],
+                sources=input_metadata["bam"].sources,
                 taxon_id=input_metadata["genome"].taxon_id,
                 meta_data={
                     "assembly": input_metadata["genome"].meta_data["assembly"],
@@ -246,11 +260,7 @@ class bssMethylationCallerTool(Tool):
                 data_type="data_wgbs",
                 file_type="tsv",
                 file_path=output_files["atcgmap_file"],
-                sources=[
-                    input_metadata["genome"].file_path,
-                    input_metadata["fastq1"].file_path,
-                    input_metadata["fastq2"].file_path
-                ],
+                sources=input_metadata["bam"].sources,
                 taxon_id=input_metadata["genome"].taxon_id,
                 meta_data={
                     "assembly": input_metadata["genome"].meta_data["assembly"],

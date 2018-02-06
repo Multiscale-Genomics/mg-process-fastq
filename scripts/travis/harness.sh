@@ -76,24 +76,6 @@ if [[ $pv == "2.7.12" ]]; then
     tc=$?
     rc=$(($rc + $tc))
     bash tidy_data.sh
-
-    python tests/test_toolchains.py --pipeline bss2-index
-    tc=$?
-    rc=$(($rc + $tc))
-
-    # python tests/test_pipelines.py --pipeline bss2-filter
-    # tc=$?
-    # rc=$(($rc + $tc))
-
-    # python tests/test_pipelines.py --pipeline bss2-align
-    # tc=$?
-    # rc=$(($rc + $tc))
-
-    # python tests/test_pipelines.py --pipeline bss2-caller
-    # tc=$?
-    # rc=$(($rc + $tc))
-
-    bash tidy_data.sh
 fi
 
 # if [[ $python_version == *"3."* ]]; then

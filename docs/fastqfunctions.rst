@@ -27,7 +27,7 @@ files.
    The following functions are to provide easy access for iterating through entries
    within a FASTQ file(s) both single and paired.
 
-   .. autoclass:: fastqreader.fastqreader
+   .. autoclass:: tool.fastqreader.fastqreader
      :members:
 
    Splitting

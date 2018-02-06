@@ -43,7 +43,7 @@ except ImportError:
 from basic_modules.tool import Tool
 from basic_modules.metadata import Metadata
 
-from fastqreader import fastqreader
+from tool.fastqreader import fastqreader
 
 # ------------------------------------------------------------------------------
 

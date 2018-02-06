@@ -12,6 +12,8 @@ import multiprocessing
 import urllib2
 import collections
 import tarfile
+import matplotlib
+matplotlib.use('agg')
 
 from random import random
 from string import ascii_letters as letters

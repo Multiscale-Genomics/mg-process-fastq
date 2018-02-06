@@ -21,8 +21,6 @@ from sys import stdout
 from subprocess import PIPE, Popen
 import os
 from cPickle import load
-import matplotlib
-matplotlib.use('agg')
 
 from pytadbit.parsers.hic_bam_parser import write_matrix
 from pytadbit import Chromosome

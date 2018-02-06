@@ -18,7 +18,7 @@
         "data_type": "sequence_dna",
         "file_type": "TAR",
         "file_path": "tests/data/bsSeeker.Mouse.GRCm38.fasta.bt2.tar.gz",
-        "sources": [],
+        "sources": ["tests/data/bsSeeker.Mouse.GRCm38.fasta"],
         "taxon_id": 10090,
         "meta_data": {
             "visible": true,
@@ -33,7 +33,11 @@
         "data_type": "data_wgbs",
         "file_type": "bam",
         "file_path": "tests/data/bsSeeker.Mouse.SRR892982.bam",
-        "sources": [],
+        "sources": [
+            "tests/data/bsSeeker.Mouse.SRR892982_1.fastq",
+            "tests/data/bsSeeker.Mouse.SRR892982_2.fastq",
+            "tests/data/bsSeeker.Mouse.GRCm38.fasta"
+        ],
         "taxon_id": 10090,
         "meta_data": {
             "visible": true,
@@ -46,7 +50,7 @@
         "data_type": "data_wgbs",
         "file_type": "bai",
         "file_path": "tests/data/bsSeeker.Mouse.SRR892982.bai",
-        "sources": [],
+        "sources": ["tests/data/bsSeeker.Mouse.SRR892982.bam"],
         "taxon_id": 10090,
         "meta_data": {
             "visible": true,

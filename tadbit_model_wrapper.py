@@ -12,8 +12,6 @@ import json
 import urllib2
 import shutil
 import collections
-import matplotlib
-matplotlib.use('agg')
 
 from random import random
 from string import ascii_letters as letters

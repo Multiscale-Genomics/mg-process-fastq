@@ -12,8 +12,6 @@ import json
 from random import random
 from string import ascii_letters as letters
 import collections
-import matplotlib
-matplotlib.use('agg')
 # Required for ReadTheDocs
 from functools import wraps # pylint: disable=unused-import
 

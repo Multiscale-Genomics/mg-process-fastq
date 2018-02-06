@@ -237,17 +237,17 @@ class process_damidseq(Workflow):
         )
 
         try:
-                output_files_generated[aln[2]] = idear_files["bigwig"]
-                output_metadata[aln[2]] = idear_meta["bigwig"]
+            output_files_generated["bigwig"] = idear_files["bigwig"]
+            output_metadata["bigwig"] = idear_meta["bigwig"]
 
-                tool_name = output_metadata[aln[2]].meta_data["tool"]
-                output_metadata[aln[2]].meta_data["tool_description"] = tool_name
-                output_metadata[aln[2]].meta_data["tool"] = "process_damidseq"
-            except KeyError as msg:
-                logger.fatal("KeyError error - iDEAR filtering failed: {0}\n{1}".format(
-                    msg, aln[2]))
+            tool_name = output_metadata["bigwig"].meta_data["tool"]
+            output_metadata["bigwig"].meta_data["tool_description"] = tool_name
+            output_metadata["bigwig"].meta_data["tool"] = "process_damidseq"
+        except KeyError as msg:
+            logger.fatal("KeyError error - iDEAR filtering failed: {0}\n{1}".format(
+                msg, "bigwig"))
 
-                return {}, {}
+            return {}, {}
 
         print("DAMID-SEQ RESULTS:", output_metadata)
         return output_files_generated, output_metadata

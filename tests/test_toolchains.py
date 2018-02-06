@@ -21,6 +21,52 @@ import argparse
 import subprocess
 import pytest # pylint: disable=unused-import
 
+def all_toolchain(verbose=False):
+    """
+    Runs the tests for all of the tools from the Genome indexing pipeline
+
+    Runs the following tests:
+
+    .. code-block:: none
+
+       pytest -m genome tests/test_bowtie_indexer.py
+       pytest -m genome tests/test_bwa_indexer.py
+       pytest -m genome tests/test_gem_indexer.py
+    """
+
+    params = []
+
+    if verbose is True:
+        params.append('-s')
+
+    params.append('tests/test_bowtie_indexer.py')
+    params.append('tests/test_bwa_indexer.py')
+    params.append('tests/test_gem_indexer.py')
+
+    params.append('tests/test_fastqc_validation.py')
+
+    params.append('tests/test_bowtie2_aligner.py')
+    params.append('tests/test_bwa_aligner.py')
+
+    params.append('tests/test_biobambam.py')
+
+    params.append('tests/test_macs2.py')
+
+    # params.append('tests/test_bsgenome.py')
+    # params.append('tests/test_idear.py')
+
+    params.append('tests/test_inps.py')
+
+    params.append('tests/test_kallisto_indexer.py')
+    params.append('tests/test_kallisto_quant.py')
+
+    params.append('tests/test_bs_seeker_filter.py')
+    params.append('tests/test_bs_seeker_indexer.py')
+    params.append('tests/test_bs_seeker_aligner.py')
+    params.append('tests/test_bs_seeker_methylation_caller.py')
+
+    return pytest.main(params)
+
 def genome_toolchain(verbose=False):
     """
     Runs the tests for all of the tools from the Genome indexing pipeline
@@ -335,86 +381,95 @@ if __name__ == '__main__':
     VERBOSE = ARGS.verbose
     TIDY = ARGS.tidy
 
-    if 'genome' in PIPELINES or 'all' in PIPELINES:
+    if 'all' in PIPELINES:
+        print('ALL')
+
+        if all_toolchain(VERBOSE) > 0:
+            sys.exit(1)
+
+        if TIDY:
+            tidy_data()
+
+    if 'genome' in PIPELINES:
         print('GENOME')
 
-        if genome_toolchain(VERBOSE) > 0 and PIPELINES != 'all':
+        if genome_toolchain(VERBOSE) > 0:
             sys.exit(1)
 
         if TIDY:
             tidy_data()
 
 
-    if 'biobambam' in PIPELINES or 'all' in PIPELINES:
+    if 'biobambam' in PIPELINES:
         print('BIOBAMBAM')
 
-        if biobambam_toolchain(VERBOSE) > 0 and PIPELINES != 'all':
+        if biobambam_toolchain(VERBOSE) > 0:
             sys.exit(1)
 
         if TIDY:
             tidy_data()
 
-    if 'bowtie2' in PIPELINES or 'all' in PIPELINES:
+    if 'bowtie2' in PIPELINES:
         print('BOWTIE2')
 
-        if bowtie2_toolchain(VERBOSE) > 0 and PIPELINES != 'all':
+        if bowtie2_toolchain(VERBOSE) > 0:
             sys.exit(1)
 
         if TIDY:
             tidy_data()
 
-    if 'bwa' in PIPELINES or 'all' in PIPELINES:
+    if 'bwa' in PIPELINES:
         print('BWA')
 
-        if bwa_toolchain(VERBOSE) > 0 and PIPELINES != 'all':
+        if bwa_toolchain(VERBOSE) > 0:
             sys.exit(1)
 
         if TIDY:
             tidy_data()
 
-    if 'chipseq' in PIPELINES or 'all' in PIPELINES:
+    if 'chipseq' in PIPELINES:
         print('CHIPSEQ')
-        if chipseq_toolchain(VERBOSE) > 0 and PIPELINES != 'all':
+        if chipseq_toolchain(VERBOSE) > 0:
             sys.exit(1)
 
         if TIDY:
             tidy_data()
 
-    if 'hic' in PIPELINES: # or 'all' in PIPELINES:
+    if 'hic' in PIPELINES:
         print('HIC')
-        if hic_toolchain(VERBOSE) > 0 and PIPELINES != 'all':
+        if hic_toolchain(VERBOSE) > 0:
             sys.exit(1)
 
         if TIDY:
             tidy_data()
 
-    if 'idamidseq' in PIPELINES: # or 'all' in PIPELINES:
+    if 'idamidseq' in PIPELINES:
         print('IDAMIDSEQ')
-        if idamidseq_toolchain(VERBOSE) > 0 and PIPELINES != 'all':
+        if idamidseq_toolchain(VERBOSE) > 0:
             sys.exit(1)
 
         if TIDY:
             tidy_data()
 
-    if 'mnaseseq' in PIPELINES or 'all' in PIPELINES:
+    if 'mnaseseq' in PIPELINES:
         print('MNASESEQ')
-        if mnaseseq_toolchain(VERBOSE) > 0 and PIPELINES != 'all':
+        if mnaseseq_toolchain(VERBOSE) > 0:
             sys.exit(1)
 
         if TIDY:
             tidy_data()
 
-    if 'rnaseq' in PIPELINES or 'all' in PIPELINES:
+    if 'rnaseq' in PIPELINES:
         print('RNASEQ')
-        if rnaseq_toolchain(VERBOSE) > 0 and PIPELINES != 'all':
+        if rnaseq_toolchain(VERBOSE) > 0:
             sys.exit(1)
 
         if TIDY:
             tidy_data()
 
-    if 'wgbs' in PIPELINES or 'all' in PIPELINES:
+    if 'wgbs' in PIPELINES:
         print('WGBS')
-        if wgbs_toolchain(VERBOSE) > 0 and PIPELINES != 'all':
+        if wgbs_toolchain(VERBOSE) > 0:
             sys.exit(1)
 
         if TIDY:

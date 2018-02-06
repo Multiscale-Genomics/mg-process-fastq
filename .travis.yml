@@ -124,8 +124,8 @@ install:
 
     # Bowtie2 Aligner
     - cd ${HOME}/lib
-    - wget --max-redirect 1 https://downloads.sourceforge.net/project/bowtie-bio/bowtie2/2.3.2/bowtie2-2.3.2-linux-x86_64.zip
-    - unzip bowtie2-2.3.2-linux-x86_64.zip
+    - wget --max-redirect 1 https://downloads.sourceforge.net/project/bowtie-bio/bowtie2/2.3.4/bowtie2-2.3.4-linux-x86_64.zip
+    - unzip bowtie2-2.3.4-linux-x86_64.zip
 
     # BWA Sequence Aligner
     - cd ${HOME}/lib
@@ -201,15 +201,15 @@ before_script:
 
     - ln -s ${HOME}/lib/bwa/bwa bwa
 
-    - ln -s ${HOME}/lib/bowtie2-2.3.2/bowtie2 bowtie2
-    - ln -s ${HOME}/lib/bowtie2-2.3.2/bowtie2-align-s bowtie2-align-s
-    - ln -s ${HOME}/lib/bowtie2-2.3.2/bowtie2-align-l bowtie2-align-l
-    - ln -s ${HOME}/lib/bowtie2-2.3.2/bowtie2-build bowtie2-build
-    - ln -s ${HOME}/lib/bowtie2-2.3.2/bowtie2-build-s bowtie2-build-s
-    - ln -s ${HOME}/lib/bowtie2-2.3.2/bowtie2-build-l bowtie2-build-l
-    - ln -s ${HOME}/lib/bowtie2-2.3.2/bowtie2-inspect bowtie2-inspect
-    - ln -s ${HOME}/lib/bowtie2-2.3.2/bowtie2-inspect-s bowtie2-inspect-s
-    - ln -s ${HOME}/lib/bowtie2-2.3.2/bowtie2-inspect-l bowtie2-inspect-l
+    - ln -s ${HOME}/lib/bowtie2-2.3.4-linux-x86_64/bowtie2 bowtie2
+    - ln -s ${HOME}/lib/bowtie2-2.3.4-linux-x86_64/bowtie2-align-s bowtie2-align-s
+    - ln -s ${HOME}/lib/bowtie2-2.3.4-linux-x86_64/bowtie2-align-l bowtie2-align-l
+    - ln -s ${HOME}/lib/bowtie2-2.3.4-linux-x86_64/bowtie2-build bowtie2-build
+    - ln -s ${HOME}/lib/bowtie2-2.3.4-linux-x86_64/bowtie2-build-s bowtie2-build-s
+    - ln -s ${HOME}/lib/bowtie2-2.3.4-linux-x86_64/bowtie2-build-l bowtie2-build-l
+    - ln -s ${HOME}/lib/bowtie2-2.3.4-linux-x86_64/bowtie2-inspect bowtie2-inspect
+    - ln -s ${HOME}/lib/bowtie2-2.3.4-linux-x86_64/bowtie2-inspect-s bowtie2-inspect-s
+    - ln -s ${HOME}/lib/bowtie2-2.3.4-linux-x86_64/bowtie2-inspect-l bowtie2-inspect-l
 
     - ln -s ${HOME}/lib/gemtools-1.7.1-core2/bin/gem-2-bed gem-2-bed
     - ln -s ${HOME}/lib/gemtools-1.7.1-core2/bin/gem-2-gem gem-2-gem

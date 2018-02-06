@@ -18,6 +18,7 @@
 from __future__ import print_function
 
 import argparse
+import subprocess
 import pytest # pylint: disable=unused-import
 
 def genome_toolchain(verbose=False):
@@ -286,6 +287,19 @@ def wgbs_toolchain(verbose=0):
 
     return pytest.main(params)
 
+def tidy_data():
+    """
+    Runs the tidy_data.sh script
+    """
+    print("TIDY DATA")
+    try:
+        command_line = './tidy_data.sh'
+        process = subprocess.Popen(command_line, shell=True)
+        process.wait()
+    except (IOError, OSError) as msg:
+        print("I/O error({0}): {1}\n{2}".format(
+            msg.errno, msg.strerror, command_line))
+
 if __name__ == '__main__':
     import sys
     sys._run_from_cmdl = True  # pylint: disable=protected-access
@@ -302,6 +316,7 @@ if __name__ == '__main__':
         help=""
     )
     PARSER.add_argument("--verbose", action="store_const", const=True, default=False)
+    PARSER.add_argument("--tidy", action="store_const", const=True, default=False)
 
 
     # Get the matching parameters from the command line
@@ -318,57 +333,89 @@ if __name__ == '__main__':
     print(PIPELINES)
 
     VERBOSE = ARGS.verbose
+    TIDY = ARGS.tidy
 
     if 'genome' in PIPELINES or 'all' in PIPELINES:
         print('GENOME')
 
-        if genome_toolchain(VERBOSE) > 0:
+        if genome_toolchain(VERBOSE) > 0 and PIPELINES != 'all':
             sys.exit(1)
+
+        if TIDY:
+            tidy_data()
+
 
     if 'biobambam' in PIPELINES or 'all' in PIPELINES:
         print('BIOBAMBAM')
 
-        if biobambam_toolchain(VERBOSE) > 0:
+        if biobambam_toolchain(VERBOSE) > 0 and PIPELINES != 'all':
             sys.exit(1)
+
+        if TIDY:
+            tidy_data()
 
     if 'bowtie2' in PIPELINES or 'all' in PIPELINES:
         print('BOWTIE2')
 
-        if bowtie2_toolchain(VERBOSE) > 0:
+        if bowtie2_toolchain(VERBOSE) > 0 and PIPELINES != 'all':
             sys.exit(1)
+
+        if TIDY:
+            tidy_data()
 
     if 'bwa' in PIPELINES or 'all' in PIPELINES:
         print('BWA')
 
-        if bwa_toolchain(VERBOSE) > 0:
+        if bwa_toolchain(VERBOSE) > 0 and PIPELINES != 'all':
             sys.exit(1)
+
+        if TIDY:
+            tidy_data()
 
     if 'chipseq' in PIPELINES or 'all' in PIPELINES:
         print('CHIPSEQ')
-        if chipseq_toolchain(VERBOSE) > 0:
+        if chipseq_toolchain(VERBOSE) > 0 and PIPELINES != 'all':
             sys.exit(1)
 
-    if 'hic' in PIPELINES or 'all' in PIPELINES:
+        if TIDY:
+            tidy_data()
+
+    if 'hic' in PIPELINES: # or 'all' in PIPELINES:
         print('HIC')
-        if hic_toolchain(VERBOSE) > 0:
+        if hic_toolchain(VERBOSE) > 0 and PIPELINES != 'all':
             sys.exit(1)
 
-    if 'idamidseq' in PIPELINES or 'all' in PIPELINES:
+        if TIDY:
+            tidy_data()
+
+    if 'idamidseq' in PIPELINES: # or 'all' in PIPELINES:
         print('IDAMIDSEQ')
-        if idamidseq_toolchain(VERBOSE) > 0:
+        if idamidseq_toolchain(VERBOSE) > 0 and PIPELINES != 'all':
             sys.exit(1)
+
+        if TIDY:
+            tidy_data()
 
     if 'mnaseseq' in PIPELINES or 'all' in PIPELINES:
         print('MNASESEQ')
-        if mnaseseq_toolchain(VERBOSE) > 0:
+        if mnaseseq_toolchain(VERBOSE) > 0 and PIPELINES != 'all':
             sys.exit(1)
+
+        if TIDY:
+            tidy_data()
 
     if 'rnaseq' in PIPELINES or 'all' in PIPELINES:
         print('RNASEQ')
-        if rnaseq_toolchain(VERBOSE) > 0:
+        if rnaseq_toolchain(VERBOSE) > 0 and PIPELINES != 'all':
             sys.exit(1)
+
+        if TIDY:
+            tidy_data()
 
     if 'wgbs' in PIPELINES or 'all' in PIPELINES:
         print('WGBS')
-        if wgbs_toolchain(VERBOSE) > 0:
+        if wgbs_toolchain(VERBOSE) > 0 and PIPELINES != 'all':
             sys.exit(1)
+
+        if TIDY:
+            tidy_data()

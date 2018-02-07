@@ -105,6 +105,10 @@ class fastq_splitter(Tool):
         fqr.openFastQ(in_file1)
         fqr.createOutputFiles(tag)
 
+        fastq_chunk_size = 1000000
+        if "fastq_chunk_size" in self.configuration:
+            fastq_chunk_size = self.configuration["fastq_chunk_size"]
+
         record1 = fqr.next(1)
 
         count_r3 = 0
@@ -122,7 +126,7 @@ class fastq_splitter(Tool):
             record1 = fqr.next(1)
             count_r3 += 1
 
-            if count_r3 % 1000000 == 0:
+            if count_r3 % fastq_chunk_size == 0:
                 fqr.incrementOutputFiles()
                 file_loc_1 = fqr.fastq1.split("/")
                 new_suffix = "." + str(fqr.output_tag) + "_" + str(fqr.output_file_count) + ".fastq"
@@ -185,6 +189,10 @@ class fastq_splitter(Tool):
         fqr.openFastQ(in_file1, in_file2)
         fqr.createOutputFiles(tag)
 
+        fastq_chunk_size = 1000000
+        if "fastq_chunk_size" in self.configuration:
+            fastq_chunk_size = self.configuration["fastq_chunk_size"]
+
         record1 = fqr.next(1)
         record2 = fqr.next(2)
 
@@ -225,7 +233,7 @@ class fastq_splitter(Tool):
                 record2 = fqr.next(2)
                 count_r2 += 1
 
-            if count_r3 % 1000000 == 0:
+            if count_r3 % fastq_chunk_size == 0:
                 fqr.incrementOutputFiles()
                 file_loc_1 = fqr.fastq1.split("/")
                 new_suffix = "." + str(fqr.output_tag) + "_" + str(fqr.output_file_count) + ".fastq"

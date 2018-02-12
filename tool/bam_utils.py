@@ -104,6 +104,8 @@ class bamUtils(object):
         bam_out : str
             Location of the output bam file
         """
+        logger.info("Copying: " + bam_in + " - " + bam_out)
+
         try:
             with open(bam_in, "rb") as f_in:
                 with open(bam_out, "wb") as f_out:

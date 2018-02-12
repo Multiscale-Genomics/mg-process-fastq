@@ -146,10 +146,17 @@ class fastq_splitter(Tool):
         tar.add("/".join(file_loc_1[:-1]), arcname='tmp')
         tar.close()
 
-        command_line = 'pigz ' + output_file_pregz
-        args = shlex.split(command_line)
-        process = subprocess.Popen(args)
-        process.wait()
+        try:
+            command_line = 'pigz ' + output_file_pregz
+            args = shlex.split(command_line)
+            process = subprocess.Popen(args)
+            process.wait()
+        except OSError:
+            logger.warn("OSERROR: pigz not installed, using gzip")
+            command_line = 'gzip ' + output_file_pregz
+            args = shlex.split(command_line)
+            process = subprocess.Popen(args)
+            process.wait()
 
         return files_out
 
@@ -258,10 +265,17 @@ class fastq_splitter(Tool):
         tar.add("/".join(file_loc_1[:-1]), arcname='tmp')
         tar.close()
 
-        command_line = 'pigz ' + output_file_pregz
-        args = shlex.split(command_line)
-        process = subprocess.Popen(args)
-        process.wait()
+        try:
+            command_line = 'pigz ' + output_file_pregz
+            args = shlex.split(command_line)
+            process = subprocess.Popen(args)
+            process.wait()
+        except OSError:
+            logger.warn("OSERROR: pigz not installed, using gzip")
+            command_line = 'gzip ' + output_file_pregz
+            args = shlex.split(command_line)
+            process = subprocess.Popen(args)
+            process.wait()
 
         return files_out
 

@@ -255,12 +255,18 @@ class alignerUtils(object):
         # print("BWA COMMAND LINES:", command_lines)
         try:
             for command_line in command_lines:
-                logger.info("BWA MEM COMMAND: " + command_line)
-                process = subprocess.Popen(command_line, shell=True)
+                logger.info("BWA ALN COMMAND: " + command_line)
+                process = subprocess.Popen(command_line, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
                 process.wait()
+                proc_out, proc_err = process.communicate()
+                logger.info("BWA ALN stdout" + proc_out)
+                logger.info("BWA ALN stderr" + proc_err)
         except (IOError, OSError) as msg:
             logger.info("I/O error({0}): {1}\n{2}".format(
                 msg.errno, msg.strerror, command_line))
+            proc_out, proc_err = process.communicate()
+            logger.fatal("BWA ALN stdout" + proc_out)
+            logger.fatal("BWA ALN stderr" + proc_err)
             return False
 
         return True

@@ -98,7 +98,7 @@ class bwaAlignerTool(Tool):
         g_dir = genome_idx.split("/")
         g_dir = "/".join(g_dir[:-1])
 
-        if os.path.isfolder(g_dir) is False:
+        if os.path.isdir(g_dir) is False:
             try:
                 tar = tarfile.open(genome_idx)
                 tar.extractall(path=g_dir)

@@ -109,7 +109,7 @@ class bwaAlignerTool(Tool):
         gfl = genome_file_loc.split("/")
         genome_fa_ln = genome_idx.replace('.tar.gz', '/') + gfl[-1]
 
-        if os.path.isFile(genome_fa_ln) is False:
+        if os.path.isfile(genome_fa_ln) is False:
             shutil.copy(genome_file_loc, genome_fa_ln)
 
         if (

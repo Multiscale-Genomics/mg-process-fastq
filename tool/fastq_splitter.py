@@ -75,7 +75,7 @@ class fastq_splitter(Tool):
         in_file1=FILE_IN, tag=IN,
         out_file=FILE_OUT, files_out=OUT,
         returns=list)
-    def single_splitter(self, in_file1, out_file, tag='tmp'):  # pylint disable=no-self-use
+    def single_splitter(self, in_file1, out_file, tag='tmp'):  # pylint: disable=no-self-use
         """
         Function to divide the FastQ files into separate sub files of 1000000
         sequences so that the aligner can run in parallel.
@@ -164,7 +164,7 @@ class fastq_splitter(Tool):
         in_file1=FILE_IN, in_file2=FILE_IN, tag=IN,
         out_file=FILE_OUT, files_out=OUT,
         returns=list)
-    def paired_splitter(self, in_file1, in_file2, out_file, tag='tmp'):  # pylint disable=no-self-use
+    def paired_splitter(self, in_file1, in_file2, out_file, tag='tmp'):  # pylint: disable=no-self-use
         """
         Function to divide the FastQ files into separte sub files of 1000000
         sequences so that the aligner can run in parallel.

@@ -15,6 +15,7 @@
    limitations under the License.
 """
 from __future__ import print_function
+import os
 import sys
 import pysam
 
@@ -89,6 +90,8 @@ class bamUtils(object):
                     f_out.write(f_in.read())
         except IOError:
             return False
+
+        os.remove(bam_file_1 + "_merge.bam")
 
         return True
 

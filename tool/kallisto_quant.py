@@ -129,13 +129,14 @@ class kallistoQuantificationTool(Tool):
         ]
 
         for i in output_files:
-            if os.path.isfile(i["in"]) is True and os.path.getsize(i["in"]) > 0:
-                with open(i["out"], "wb") as f_out:
-                    with open(i["in"], "rb") as f_in:
-                        f_out.write(f_in.read())
-            else:
-                with open(i["out"], "w") as f_out:
-                    f_out.write("")
+            if i["in"] != i["out"]:
+                if os.path.isfile(i["in"]) is True and os.path.getsize(i["in"]) > 0:
+                    with open(i["out"], "wb") as f_out:
+                        with open(i["in"], "rb") as f_in:
+                            f_out.write(f_in.read())
+                else:
+                    with open(i["out"], "w") as f_out:
+                        f_out.write("")
 
         return True
 

@@ -98,13 +98,12 @@ class bwaAlignerTool(Tool):
         g_dir = genome_idx.split("/")
         g_dir = "/".join(g_dir[:-1])
 
-        if os.path.isdir(g_dir) is False:
-            try:
-                tar = tarfile.open(genome_idx)
-                tar.extractall(path=g_dir)
-                tar.close()
-            except IOError:
-                return False
+        try:
+            tar = tarfile.open(genome_idx)
+            tar.extractall(path=g_dir)
+            tar.close()
+        except IOError:
+            return False
 
         gfl = genome_file_loc.split("/")
         genome_fa_ln = genome_idx.replace('.tar.gz', '/') + gfl[-1]
@@ -351,7 +350,7 @@ class bwaAlignerTool(Tool):
                 output_bam_file_tmp = tmp_fq + ".bam"
                 output_bam_list.append(output_bam_file_tmp)
 
-                logger.info("BWAL ALN FILES:" + tmp_fq)
+                logger.info("BWA ALN FILES: " + tmp_fq)
                 results = self.bwa_aligner_single(
                     str(input_files["genome"]), tmp_fq, output_bam_file_tmp,
                     str(input_files["index"]), self.get_aln_params(self.configuration)

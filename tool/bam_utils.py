@@ -199,7 +199,7 @@ class bamUtilsTask(object):
         return bam_handle.bam_sort(bam_file)
 
     @task(bam_file_1=FILE_INOUT, bam_file_2=FILE_IN)
-    def bam_merge(self, bam_file_1, bam_file_2):  # pylint: disable=no-self-use
+    def bam_merge(self, *args):  # pylint: disable=no-self-use
         """
         Wrapper for the pysam SAMtools merge function
 
@@ -211,7 +211,7 @@ class bamUtilsTask(object):
             Location of the bam file that is to get merged into bam_file_1
         """
         bam_handle = bamUtils()
-        return bam_handle.bam_merge(bam_file_1, bam_file_2)
+        return bam_handle.bam_merge(*args)
 
     @task(bam_in=FILE_IN, bam_out=FILE_OUT)
     def bam_copy(self, bam_in, bam_out):  # pylint: disable=no-self-use

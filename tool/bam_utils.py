@@ -70,7 +70,7 @@ class bamUtils(object):
         return True
 
     @staticmethod
-    def bam_merge(bam_file_1, bam_file_2):
+    def bam_merge(*args):
         """
         Wrapper for the pysam SAMtools merge function
 
@@ -81,17 +81,25 @@ class bamUtils(object):
         bam_file_2 : str
             Location of the bam file that is to get merged into bam_file_1
         """
-        logger.info("Merging: " + bam_file_1 + " - " + bam_file_2)
-        pysam.merge("-f", bam_file_1 + "_merge.bam", bam_file_1, bam_file_2)
+        logger.info("Merging:")
+
+        if isinstance(args[0], list):
+            final_bam = args[0][0]
+            tmp_bam = final_bam + "_merge.bam"
+            pysam.merge("-f", tmp_bam, *args[0])
+        else:
+            final_bam = args[0]
+            tmp_bam = final_bam + "_merge.bam"
+            pysam.merge("-f", tmp_bam, *args)
 
         try:
-            with open(bam_file_1 + "_merge.bam", "rb") as f_in:
-                with open(bam_file_1, "wb") as f_out:
+            with open(tmp_bam, "rb") as f_in:
+                with open(final_bam, "wb") as f_out:
                     f_out.write(f_in.read())
         except IOError:
             return False
 
-        os.remove(bam_file_1 + "_merge.bam")
+        os.remove(tmp_bam)
 
         return True
 

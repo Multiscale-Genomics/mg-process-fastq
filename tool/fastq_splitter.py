@@ -138,25 +138,30 @@ class fastq_splitter(Tool):
         fqr.closeFastQ()
         fqr.closeOutputFiles()
 
-        output_file_pregz = out_file.replace('.tar.gz', '.tar')
+        untar_idx = True
+        if "no-untar" in self.configuration and self.configuration["no-untar"] is True:
+            untar_idx = False
 
-        if os.path.isfile(out_file):
-            os.remove(out_file)
-        tar = tarfile.open(output_file_pregz, "w")
-        tar.add("/".join(file_loc_1[:-1]), arcname='tmp')
-        tar.close()
+        if untar_idx is True:
+            output_file_pregz = out_file.replace('.tar.gz', '.tar')
 
-        try:
-            command_line = 'pigz ' + output_file_pregz
-            args = shlex.split(command_line)
-            process = subprocess.Popen(args)
-            process.wait()
-        except OSError:
-            logger.warn("OSERROR: pigz not installed, using gzip")
-            command_line = 'gzip ' + output_file_pregz
-            args = shlex.split(command_line)
-            process = subprocess.Popen(args)
-            process.wait()
+            if os.path.isfile(out_file):
+                os.remove(out_file)
+            tar = tarfile.open(output_file_pregz, "w")
+            tar.add("/".join(file_loc_1[:-1]), arcname='tmp')
+            tar.close()
+
+            try:
+                command_line = 'pigz ' + output_file_pregz
+                args = shlex.split(command_line)
+                process = subprocess.Popen(args)
+                process.wait()
+            except OSError:
+                logger.warn("OSERROR: pigz not installed, using gzip")
+                command_line = 'gzip ' + output_file_pregz
+                args = shlex.split(command_line)
+                process = subprocess.Popen(args)
+                process.wait()
 
         return files_out
 
@@ -259,23 +264,28 @@ class fastq_splitter(Tool):
 
         output_file_pregz = out_file.replace('.tar.gz', '.tar')
 
-        if os.path.isfile(out_file):
-            os.remove(out_file)
-        tar = tarfile.open(output_file_pregz, "w")
-        tar.add("/".join(file_loc_1[:-1]), arcname='tmp')
-        tar.close()
+        untar_idx = True
+        if "no-untar" in self.configuration and self.configuration["no-untar"] is True:
+            untar_idx = False
 
-        try:
-            command_line = 'pigz ' + output_file_pregz
-            args = shlex.split(command_line)
-            process = subprocess.Popen(args)
-            process.wait()
-        except OSError:
-            logger.warn("OSERROR: pigz not installed, using gzip")
-            command_line = 'gzip ' + output_file_pregz
-            args = shlex.split(command_line)
-            process = subprocess.Popen(args)
-            process.wait()
+        if untar_idx is True:
+            if os.path.isfile(out_file):
+                os.remove(out_file)
+            tar = tarfile.open(output_file_pregz, "w")
+            tar.add("/".join(file_loc_1[:-1]), arcname='tmp')
+            tar.close()
+
+            try:
+                command_line = 'pigz ' + output_file_pregz
+                args = shlex.split(command_line)
+                process = subprocess.Popen(args)
+                process.wait()
+            except OSError:
+                logger.warn("OSERROR: pigz not installed, using gzip")
+                command_line = 'gzip ' + output_file_pregz
+                args = shlex.split(command_line)
+                process = subprocess.Popen(args)
+                process.wait()
 
         return files_out
 

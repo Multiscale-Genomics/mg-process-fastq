@@ -98,12 +98,17 @@ class bwaAlignerTool(Tool):
         g_dir = genome_idx.split("/")
         g_dir = "/".join(g_dir[:-1])
 
-        try:
-            tar = tarfile.open(genome_idx)
-            tar.extractall(path=g_dir)
-            tar.close()
-        except IOError:
-            return False
+        untar_idx = True
+        if "no-untar" in self.configuration and self.configuration["no-untar"] is True:
+            untar_idx = False
+
+        if untar_idx is True:
+            try:
+                tar = tarfile.open(genome_idx)
+                tar.extractall(path=g_dir)
+                tar.close()
+            except IOError:
+                return False
 
         gfl = genome_file_loc.split("/")
         genome_fa_ln = genome_idx.replace('.tar.gz', '/') + gfl[-1]
@@ -135,6 +140,7 @@ class bwaAlignerTool(Tool):
         except IOError:
             return False
 
+        os.remove(out_bam)
         # shutil.rmtree(g_dir)
 
         return True
@@ -171,12 +177,17 @@ class bwaAlignerTool(Tool):
         g_dir = genome_idx.split("/")
         g_dir = "/".join(g_dir[:-1])
 
-        try:
-            tar = tarfile.open(genome_idx)
-            tar.extractall(path=g_dir)
-            tar.close()
-        except IOError:
-            return False
+        untar_idx = True
+        if "no-untar" in self.configuration and self.configuration["no-untar"] is True:
+            untar_idx = False
+
+        if untar_idx is True:
+            try:
+                tar = tarfile.open(genome_idx)
+                tar.extractall(path=g_dir)
+                tar.close()
+            except IOError:
+                return False
 
         gfl = genome_file_loc.split("/")
         genome_fa_ln = genome_idx.replace('.tar.gz', '/') + gfl[-1]
@@ -196,6 +207,7 @@ class bwaAlignerTool(Tool):
         except IOError:
             return False
 
+        os.remove(out_bam)
         # shutil.rmtree(g_dir)
 
         return True

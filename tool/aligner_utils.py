@@ -321,7 +321,7 @@ class alignerUtils(object):
 
         try:
             for command_line in command_lines:
-                logger.info("BWA MEM COMMAND: " + command_line)
+                logger.info("BWA ALN COMMAND: " + command_line)
                 process = subprocess.Popen(command_line, shell=True)
                 process.wait()
         except (IOError, OSError) as msg:

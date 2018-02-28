@@ -150,6 +150,34 @@ class bamUtils(object):
         return True
 
     @staticmethod
+    def bam_stats(bam_file):
+        """
+        Wrapper for the pysam SAMtools flagstat function
+
+        Parameters
+        ----------
+        bam_file : str
+            Location of the bam file
+
+        Returns
+        -------
+        list : dict
+            qc_passed : int
+            qc_failed : int
+            description : str
+        """
+        results = pysam.flagstat(bam_file)
+        separate_results = results.strip().split("\n")
+        return [
+            {
+                "qc_passed" : int(element[0]),
+                "qc_failed" : int(element[2]),
+                "description" : " ".join(element[3:])
+            } for element in [row.split(" ") for row in separate_results]
+        ]
+
+
+    @staticmethod
     def check_header(bam_file):
         """
         Wrapper for the pysam SAMtools merge function
@@ -242,6 +270,21 @@ class bamUtilsTask(object):
         """
         bam_handle = bamUtils()
         return bam_handle.bam_index(bam_file, bam_idx_file)
+
+    @task(bam_file=FILE_IN)
+    def bam_stats(self, bam_file):  # pylint: disable=no-self-use
+        """
+        Wrapper for the pysam SAMtools flagstat function
+
+        Parameters
+        ----------
+        bam_file : str
+            Location of the bam file that is to be indexed
+        bam_idx_file : str
+            Location of the bam index file (.bai)
+        """
+        bam_handle = bamUtils()
+        return bam_handle.bam_stats(bam_file)
 
     @task(bam_file=FILE_IN)
     def check_header(self, bam_file):  # pylint: disable=no-self-use

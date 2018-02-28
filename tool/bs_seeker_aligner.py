@@ -481,33 +481,30 @@ class bssAlignerTool(Tool):
 
         barrier()
 
-        bam_handler = bamUtilsTask()
+        bam_handle = bamUtilsTask()
 
-        results = bam_handler.bam_copy(output_bam_list.pop(0), output_bam_file)
+        results = bam_handle.bam_copy(output_bam_list.pop(0), output_bam_file)
         results = compss_wait_on(results)
+
+        bam_job_files = [output_bam_file]
+        for tmp_bam_file in output_bam_list:
+            bam_job_files.append(tmp_bam_file)
 
         if results is False:
             logger.fatal("BS SEEKER2 Aligner: Bam copy failed")
             return {}, {}
 
-        while True:
-            if len(output_bam_list) == 0:
-                break
-            results = bam_handler.bam_merge(output_bam_file, output_bam_list.pop(0))
-            results = compss_wait_on(results)
+        results = bam_handle.bam_merge(bam_job_files)
+        results = compss_wait_on(results)
 
-            if results is False:
-                logger.fatal("BS SEEKER2 Aligner: Bam merging failed")
-                return {}, {}
-
-        results = bam_handler.bam_sort(output_bam_file)
+        results = bam_handle.bam_sort(output_bam_file)
         results = compss_wait_on(results)
 
         if results is False:
             logger.fatal("BS SEEKER2 Aligner: Bam sorting failed")
             return {}, {}
 
-        results = bam_handler.bam_index(output_bam_file, output_bai_file)
+        results = bam_handle.bam_index(output_bam_file, output_bai_file)
         results = compss_wait_on(results)
 
         if results is False:

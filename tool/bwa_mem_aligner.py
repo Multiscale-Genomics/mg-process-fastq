@@ -375,20 +375,16 @@ class bwaAlignerMEMTool(Tool):
         results = bam_handle.bam_copy(output_bam_list.pop(0), output_bam_file)
         results = compss_wait_on(results)
 
+        bam_job_files = [output_bam_file]
+        for tmp_bam_file in output_bam_list:
+            bam_job_files.append(tmp_bam_file)
+
         if results is False:
             logger.fatal("BWA Aligner: Bam copy failed")
             return {}, {}
 
-        while True:
-            if output_bam_list:
-                results = bam_handle.bam_merge(output_bam_file, output_bam_list.pop(0))
-                results = compss_wait_on(results)
-
-                if results is False:
-                    logger.fatal("BWA Aligner: Bam merging failed")
-                    return {}, {}
-            else:
-                break
+        results = bam_handle.bam_merge(bam_job_files)
+        results = compss_wait_on(results)
 
         results = bam_handle.bam_sort(output_bam_file)
         results = compss_wait_on(results)

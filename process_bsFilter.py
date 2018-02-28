@@ -55,7 +55,7 @@ class process_bsFilter(Workflow):
 
     def run(self, input_files, metadata, output_files):
         """
-        This pipeline processes paired-end FASTQ files to identify
+        This pipeline processes paired-end FASTQ files to filter
         methylated regions within the genome.
 
         Parameters
@@ -120,13 +120,6 @@ class process_bsFilter(Workflow):
         logger.info("BS-Filter")
         # Filter the reads
         builder = process_bsFilter(self.configuration)
-        genome_idx, gidx_meta = builder.run(
-            remap(input_files, "genome"),
-            remap(metadata, "genome"),
-            remap(output_files, "atcgmap_file")
-        )
-        output_results_files["filter"] = genome_idx["filter"]
-        output_metadata["filter"] = gidx_meta["filter"]
 
         # Filter the FASTQ reads to remove duplicates
         logger.info("WGBS - Filter")

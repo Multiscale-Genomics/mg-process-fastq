@@ -334,13 +334,18 @@ class bssAlignerTool(Tool):
         g_dir = "/".join(g_dir[:-1])
         params += ["-d", g_dir]
 
-        try:
-            tar = tarfile.open(genome_idx)
-            tar.extractall(path=g_dir)
-            tar.close()
-        except IOError:
-            logger.fatal("WGBS - BS SEEKER2: Missing index archive")
-            return False
+        untar_idx = True
+        if "no-untar" in self.configuration and self.configuration["no-untar"] is True:
+            untar_idx = False
+
+        if untar_idx is True:
+            try:
+                tar = tarfile.open(genome_idx)
+                tar.extractall(path=g_dir)
+                tar.close()
+            except IOError:
+                logger.fatal("WGBS - BS SEEKER2: Missing index archive")
+                return False
 
         command_line = (
             "python " + script + " " + " ".join(params)

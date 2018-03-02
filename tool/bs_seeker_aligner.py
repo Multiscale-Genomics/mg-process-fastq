@@ -114,6 +114,7 @@ class bssAlignerTool(Tool):
         bam_out : file
             Location of the BAM file generated during the alignment.
         """
+        index_dir = genome_idx.split("/")
         script = bss_path + "/bs_seeker2-align.py"
         params = [
             "--input_1", input_fastq_1,
@@ -121,6 +122,7 @@ class bssAlignerTool(Tool):
             "--aligner", aligner,
             "--path", aligner_path,
             "--genome", genome_fasta,
+            "-d", "/".join(index_dir[:-1]),
             "--bt2-p", "4",
             "-o", bam_out + "_tmp.bam",
             "-f", "bam"
@@ -169,12 +171,14 @@ class bssAlignerTool(Tool):
         bam_out : file
             Location of the BAM file generated during the alignment.
         """
+        index_dir = genome_idx.split("/")
         script = bss_path + "/bs_seeker2-align.py"
         params = [
             "-i", input_fastq,
             "--aligner", aligner,
             "--path", aligner_path,
             "--genome", genome_fasta,
+            "-d", "/".join(index_dir[:-1]),
             "--bt2-p", "4",
             "-o", bam_out + "_tmp.bam",
             "-f", "bam"

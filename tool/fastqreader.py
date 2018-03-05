@@ -18,6 +18,7 @@
 """
 
 import os
+import errno
 import re
 from collections import deque
 
@@ -170,7 +171,11 @@ class fastqreader(object):
         fq1.insert(-1, "tmp")
 
         if os.path.isdir("/".join(fq1[0:-1])) is False:
-            os.mkdir("/".join(fq1[0:-1]))
+            try:
+                os.mkdir("/".join(fq1[0:-1]))
+            except OSError as oserror:
+                if oserror.errno != errno.EEXIST:
+                    raise OSError
 
         self.f1_output_file = open("/".join(fq1), "w")
 

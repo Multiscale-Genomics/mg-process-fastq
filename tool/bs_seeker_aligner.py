@@ -17,6 +17,7 @@
 
 from __future__ import print_function
 
+import os
 import shlex
 import subprocess
 import sys
@@ -368,6 +369,8 @@ class bssAlignerTool(Tool):
             with open(bam_out + "_tmp.bam", "rb") as f_in:
                 with open(bam_out, "wb") as f_out:
                     f_out.write(f_in.read())
+
+            os.remove(bam_out + "_tmp.bam")
         except IOError:
             logger.fatal("WGBS - BS SEEKER2: Failed sorting")
             return False

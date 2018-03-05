@@ -397,6 +397,68 @@ BS Seeker2 Aligner
    =======
    .. autoclass:: process_bs_seeker_aligner.process_bs_seeker_aligner
       :members:
+      
+
+BiSulphate Sequencing Filter
+----------------------------
+.. automodule:: process_bsFilter
+
+   This pipeline processes FASTQ files to filter out duplicate reads.
+
+   Running from the command line
+   =============================
+
+   Parameters
+   ----------
+   config : str
+      Configuration JSON file
+   in_metadata : str
+      Location of input JSON metadata for files
+   out_metadata : str
+      Location of output JSON metadata for files
+
+   Returns
+   -------
+   fastq1_filtered|fastq1_filtered : str
+               Locations of the filtered FASTQ files from which alignments were made
+
+   fastq2_filtered|fastq2_filtered : str
+               Locations of the filtered FASTQ files from which alignments were made
+
+
+   Example
+   -------
+   When running the pipeline on a local machine without COMPSs:
+
+   .. code-block:: none
+      :linenos:
+
+      python process_bs_seeker_filter.py                   \
+         --config tests/json/config_wgbs_filter.json \
+         --in_metadata tests/json/input_wgbs_filter_metadata.json \
+         --out_metadata tests/json/output_metadata.json \
+         --local
+
+   When using a local version of the [COMPS virtual machine](https://www.bsc.es/research-and-development/software-and-apps/software-list/comp-superscalar/):
+
+   .. code-block:: none
+      :linenos:
+
+      runcompss                                  \
+         --lang=python                           \
+         --library_path=${HOME}/bin              \
+         --pythonpath=/<pyenv_virtenv_dir>/lib/python2.7/site-packages/ \
+         --log_level=debug                       \
+         process_bs_seeker_filter.py                         \
+            --config tests/json/config_wgbs_filter.json \
+            --in_metadata tests/json/input_wgbs_filter_metadata.json \
+            --out_metadata tests/json/output_metadata.json
+
+
+   Methods
+   =======
+   .. autoclass:: process_bs_seeker_filter.process_bsFilter
+      :members:
 
 
 BS Seeker2 Methylation Peak Caller
@@ -1096,65 +1158,3 @@ Hi-C Analysis
       
       
       
-BiSulphate Sequencing Filter
-----------------------------
-.. automodule:: process_bsFilter
-
-   This pipeline can process FASTQ to identify methylation sites.
-
-   Running from the command line
-   =============================
-
-   Parameters
-   ----------
-   config : str
-      Configuration JSON file
-   in_metadata : str
-      Location of input JSON metadata for files
-   out_metadata : str
-      Location of output JSON metadata for files
-
-   Returns
-   -------
-   fastq1_filtered|fastq1_filtered : str
-               Locations of the filtered FASTQ files from which alignments were made
-
-   fastq2_filtered|fastq2_filtered : str
-               Locations of the filtered FASTQ files from which alignments were made
-
-
-   Example
-   -------
-   When running the pipeline on a local machine without COMPSs:
-
-   .. code-block:: none
-      :linenos:
-
-      python process_rnaseq.py                   \
-         --config tests/json/config_wgbs_filter.json \
-         --in_metadata tests/json/input_wgbs_filter_metadata.json \
-         --out_metadata tests/json/output_metadata.json \
-         --local
-
-   When using a local version of the [COMPS virtual machine](https://www.bsc.es/research-and-development/software-and-apps/software-list/comp-superscalar/):
-
-   .. code-block:: none
-      :linenos:
-
-      runcompss                                  \
-         --lang=python                           \
-         --library_path=${HOME}/bin              \
-         --pythonpath=/<pyenv_virtenv_dir>/lib/python2.7/site-packages/ \
-         --log_level=debug                       \
-         process_bsFilter.py                         \
-            --config tests/json/config_wgbs_filter.json \
-            --in_metadata tests/json/input_wgbs_filter_metadata.json \
-            --out_metadata tests/json/output_metadata.json
-
-
-   Methods
-   =======
-   .. autoclass:: process_wgbs.process_wgbs
-      :members:
-
-

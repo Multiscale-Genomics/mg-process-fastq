@@ -125,6 +125,7 @@ class fastqreader(object):
 
         if side == 1:
             try:
+                start_posn = self.f1_file.tell()
                 read_id = self.f1_file.readline()
                 read_seq = self.f1_file.readline()
                 read_addition = self.f1_file.readline()
@@ -153,7 +154,9 @@ class fastqreader(object):
             'id': read_id.rstrip(),
             'seq': read_seq,
             'add': read_addition,
-            'score': read_score
+            'score': read_score,
+            'start_posn': start_posn,
+            'end_posn': self.f1_file.tell()
         }
 
     def createOutputFiles(self, tag=''):

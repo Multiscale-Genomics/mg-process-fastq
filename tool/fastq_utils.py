@@ -92,7 +92,15 @@ class fastqUtils(object):
     @staticmethod
     def fastq_sort_file(fastq, output=None):
         """
-        In memory sorting of FastQ files
+        Sorting of a FastQ file
+
+        Parameters
+        ----------
+        fastq : str
+            Location of the FastQ file to sort
+        output : str
+            [OPTIONAL] Location of the output FastQ file. If left blank then the
+            sorted output is saved to the same location as `fastq`
         """
         fqr = fastqreader()
         fqr.openFastQ(fastq)
@@ -109,7 +117,7 @@ class fastqUtils(object):
 
         with open(fastq, "r") as fq_file:
             with open(fastq + ".sorted", "w") as tmp_fq_file:
-                for r_id in sorted(fq_tmp):
+                for r_id in sorted(fq_tmp.keys()):
                     fq_file.seek(fq_tmp[r_id][0])
                     tmp_fq_file.write(fq_file.read(fq_tmp[r_id][1]-fq_tmp[r_id][0]))
 
@@ -126,7 +134,15 @@ class fastqUtils(object):
     @staticmethod
     def fastq_randomise(fastq, output=None):
         """
-        In memory sorting of FastQ files
+        Randomising the order of reads withim a FastQ file
+
+        Parameters
+        ----------
+        fastq : str
+            Location of the FastQ file to randomise
+        output : str
+            [OPTIONAL] Location of the output FastQ file. If left blank then the
+            randomised output is saved to the same location as `fastq`
         """
         fqr = fastqreader()
         fqr.openFastQ(fastq)
@@ -143,7 +159,7 @@ class fastqUtils(object):
 
         with open(fastq, "r") as fq_file:
             with open(fastq.replace(".fastq", ".random"), "w") as tmp_fq_file:
-                for r_id in fq_tmp.keys():
+                for r_id in list(fq_tmp.keys()):
                     fq_file.seek(fq_tmp[r_id][0])
                     tmp_fq_file.write(fq_file.read(fq_tmp[r_id][1]-fq_tmp[r_id][0]))
 

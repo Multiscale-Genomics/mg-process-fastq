@@ -40,6 +40,9 @@ class fastqreader(object):
         self.f1_eof = False
         self.f2_eof = False
 
+        self.f1_output_file_loc = None
+        self.f2_output_file_loc = None
+
         self.f1_output_file = None
         self.f2_output_file = None
 
@@ -178,6 +181,7 @@ class fastqreader(object):
                     raise OSError
 
         self.f1_output_file = open("/".join(fq1), "w")
+        self.f1_output_file_loc = "/".join(fq1)
 
         if self.paired is True:
             fq2 = self.fastq2.split("/")
@@ -185,6 +189,7 @@ class fastqreader(object):
             fq2[-1] = re.sub('.fastq$', new_suffix, fq2[-1])
             fq2.insert(-1, "tmp")
             self.f2_output_file = open("/".join(fq2), "w")
+            self.f2_output_file_loc = "/".join(fq2)
 
     def writeOutput(self, read, side=1):
         """

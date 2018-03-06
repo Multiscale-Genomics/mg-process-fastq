@@ -39,3 +39,11 @@ files.
 
    .. autoclass:: tool.fastq_splitter.fastq_splitter
      :members:
+
+   Entry Functions
+   ---------------
+
+   The following functions allow for manipulating FASTQ files.
+
+   .. autoclass:: tool.fastq_utils.fastqUtils
+      :members:

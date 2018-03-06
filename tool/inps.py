@@ -88,6 +88,7 @@ class inps(Tool):
             Location of the collated bed file of nucleosome peak calls
         """
         bed_file = bam_file + ".bed"
+        print ("****bed file name with bam_file : ****" , bed_file)
         # pyenv3 = os.path.join(os.path.expanduser("~"), "bin/py3")
 
         command_line_1 = 'bedtools bamtobed -i ' + bam_file
@@ -145,11 +146,15 @@ class inps(Tool):
             command_params = command_params + [
                 "--pe_min", str(self.configuration["inps_pe_min_param"])]
 
+        print ("****output_files[\"bed\"]***",output_files["bed"])
+        
         results = self.inps_peak_calling(
             input_files["bam"],
             output_files["bed"],
             command_params
         )
+        
+        
         results = compss_wait_on(results)
 
         output_metadata = {

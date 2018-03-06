@@ -84,7 +84,7 @@
             "type": "string",
             "required": false,
             "default": "100"
-        }, {
+        }
     ],
     "output_files": [
         {

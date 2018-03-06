@@ -1,0 +1,16 @@
+[
+    {
+        "compressed": 0,
+        "_id": "59b7e020d9422a5969b65378",
+        "data_type": "data_iNPS",
+        "file_type": "bam",
+        "file_path": "tests/data/inps.Mouse.DRR000386.bam",
+        "sources": [],
+        "taxon_id": 10090,
+        "meta_data": {
+            "visible": true,
+            "validated": 1,
+            "assembly": "GRCm38"
+        }
+    }
+]

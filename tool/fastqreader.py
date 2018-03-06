@@ -130,6 +130,7 @@ class fastqreader(object):
                 read_seq = self.f1_file.readline()
                 read_addition = self.f1_file.readline()
                 read_score = self.f1_file.readline()
+                end_posn = self.f1_file.tell()
                 if read_id == "":
                     raise EOFError
             except EOFError:
@@ -138,10 +139,12 @@ class fastqreader(object):
 
         elif side == 2:
             try:
+                start_posn = self.f2_file.tell()
                 read_id = self.f2_file.readline()
                 read_seq = self.f2_file.readline()
                 read_addition = self.f2_file.readline()
                 read_score = self.f2_file.readline()
+                end_posn = self.f2_file.tell()
                 if read_id == "":
                     raise EOFError
             except EOFError:
@@ -156,7 +159,7 @@ class fastqreader(object):
             'add': read_addition,
             'score': read_score,
             'start_posn': start_posn,
-            'end_posn': self.f1_file.tell()
+            'end_posn': end_posn
         }
 
     def createOutputFiles(self, tag=''):

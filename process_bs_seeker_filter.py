@@ -53,18 +53,6 @@ class process_bsFilter(Workflow):
             configuration = {}
         self.configuration.update(configuration)
 
-    def get_configuration(self):
-        return self.__configuration
-
-
-    def set_configuration(self, value):
-        self.__configuration = value
-
-
-    def del_configuration(self):
-        del self.__configuration
-
-
     def run(self, input_files, metadata, output_files):
         """
         This pipeline processes FASTQ files to filter duplicate entries
@@ -148,8 +136,6 @@ class process_bsFilter(Workflow):
                 return {}, {}
 
         return (output_results_files, output_metadata)
-    configuration = property(get_configuration, set_configuration, del_configuration, 
-                             "configuration's docstring")
 
 # ------------------------------------------------------------------------------
 

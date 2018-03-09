@@ -133,10 +133,10 @@ class bwaIndexerTool(Tool):
 
         Parameters
         ----------
-        input_files : list
+        input_files : dict
             List containing the location of the genome assembly FASTA file
-        meta_data : list
-        output_files : list
+        meta_data : dict
+        output_files : dict
             List of outpout files generated
 
         Returns

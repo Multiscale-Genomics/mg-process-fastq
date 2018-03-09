@@ -68,14 +68,14 @@
             "help": "Location of the filter libraries",
             "type": "string",
             "required": true,
-            "default": "/Users/reham/lib/bowtie2-2.3.2"
+            "default": "${HOME}lib/bowtie2-2.3.2"
         }, {
             "name": "bss_path",
             "description": "Location of the BS Seeker2 code libraries",
             "help": "Location of the BS Seeker2 code libraries",
             "type": "string",
             "required": true,
-            "default": "/Users/reham/lib/BSseeker2"
+            "default": "${HOME}lib/BSseeker2"
         },
         {
             "name": "bss_filter_input_param",

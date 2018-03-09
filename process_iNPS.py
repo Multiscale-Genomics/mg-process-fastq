@@ -23,7 +23,6 @@ import argparse
 
 from basic_modules.workflow import Workflow
 from utils import logger
-from utils import remap
 
 from tool.inps import inps
 
@@ -54,8 +53,8 @@ class process_iNPS(Workflow):
 
     def run(self, input_files, metadata, output_files):
         """
-        This pipeline processes bam and bed files to identify
-        nucleosome regions within the genome.
+        This pipeline processes bam files to identify
+        nucleosome regions within the genome and generates bed files.
 
         Parameters
         ----------
@@ -79,8 +78,6 @@ class process_iNPS(Workflow):
         output_metadata = {}
 
         logger.info("iNPS")
-        # Process the reads
-        builder = process_iNPS(self.configuration)
 
         # Process the MNAse-seq reads to find nucleosome 
         logger.info("iNPS")
@@ -92,7 +89,7 @@ class process_iNPS(Workflow):
         )
 
         try:
-            output_results_files["bed"] = output_files["bed"]
+            output_results_files["bed"] = bamf["bed"]
             output_metadata["bed"] = bed_meta["bed"]
             tool_name = output_metadata["bed"].meta_data["tool"]
             output_metadata["bed"].meta_data["tool_description"] = tool_name
@@ -100,17 +97,6 @@ class process_iNPS(Workflow):
         except KeyError:
             logger.fatal("iNPS : Error while processing")
             return {}, {}
-
-            try:
-                output_results_files["bed"] = bed["bed"]
-                output_metadata["bed"] = bed_meta["bed"]
-
-                tool_name = output_metadata["bed"].meta_data["tool"]
-                output_metadata["bed"].meta_data["tool_description"] = tool_name
-                output_metadata["bed"].meta_data["tool"] = "process_iNPS"
-            except KeyError:
-                logger.fatal("iNPS (background): Error while processing")
-                return {}, {}
         
         return (output_results_files, output_metadata)
 

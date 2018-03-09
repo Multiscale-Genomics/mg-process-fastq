@@ -30,7 +30,7 @@
                     "description": "Output"
                 },
                 "file_path": "tests/data/inps.Mouse.DRR000386.bed",
-                "data_type": "data_iNPS",
+                "data_type": "data_mnase_seq",
                 "compressed": "null"
             }
         }

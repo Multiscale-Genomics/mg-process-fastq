@@ -16,7 +16,6 @@
 """
 from __future__ import print_function
 
-import os
 import shlex
 import subprocess
 import sys
@@ -42,7 +41,7 @@ from basic_modules.tool import Tool
 
 # ------------------------------------------------------------------------------
 
-class macs2(Tool):
+class trimgalore(Tool):
     """
     Tool for trimming FASTQ reads that are of low quality
     """
@@ -61,13 +60,10 @@ class macs2(Tool):
 
     @task(returns=bool, fastq_file_in=FILE_IN, fastq_file_out=FILE_OUT, params=IN,
           isModifier=False)
-    def trim_galore_single(self, fastq_file_in, fastq_file_out, params):  # pylint: disable=no-self-use
+    def trimgalore_single(self, fastq_file_in, fastq_file_out, params):  # pylint: disable=no-self-use
         """
-        Sorts and filters the bam file.
-
-        It is important that all duplicate alignments have been removed. This
-        can be run as an intermediate step, but should always be run as a check
-        to ensure that the files are sorted and duplicates have been removed.
+        Trimd and removes low quality subsections and reads from a singed-ended
+        FASTQ file
 
         Parameters
         ----------
@@ -88,7 +84,8 @@ class macs2(Tool):
         logger.info("TRIM GALORE: command_line: " + command_line)
 
         try:
-            process = subprocess.Popen(command_line)
+            args = shlex.split(command_line)
+            process = subprocess.Popen(args)
             process.wait()
         except (IOError, OSError) as msg:
             logger.fatal("I/O error({0}) - trim_galore: {1}\n{2}".format(
@@ -112,15 +109,12 @@ class macs2(Tool):
           fastq1_file_in=FILE_IN, fastq1_file_out=FILE_OUT,
           fastq2_file_in=FILE_IN, fastq2_file_out=FILE_OUT,
           params=IN, isModifier=False)
-    def trim_galore_paired(  # pylint: disable=too-many-arguments
+    def trimgalore_paired(  # pylint: disable=too-many-arguments
             self, fastq1_file_in, fastq1_file_out, fastq2_file_in, fastq2_file_out, params
         ):  # pylint: disable=no-self-use
         """
-        Sorts and filters the bam file.
-
-        It is important that all duplicate alignments have been removed. This
-        can be run as an intermediate step, but should always be run as a check
-        to ensure that the files are sorted and duplicates have been removed.
+        Trimd and removes low quality subsections and reads from paired-end
+        FASTQ files
 
         Parameters
         ----------
@@ -141,7 +135,8 @@ class macs2(Tool):
         logger.info("TRIM GALORE: command_line: " + command_line)
 
         try:
-            process = subprocess.Popen(command_line)
+            args = shlex.split(command_line)
+            process = subprocess.Popen(args)
             process.wait()
         except (IOError, OSError) as msg:
             logger.fatal("I/O error({0}) - trim_galore: {1}\n{2}".format(
@@ -171,10 +166,9 @@ class macs2(Tool):
         return True
 
     @staticmethod
-    def get_trim_galore_params(params):
+    def get_trimgalore_params(params):
         """
-        Function to handle to extraction of commandline parameters and formatting
-        them for use in the aligner for BWA ALN
+        Function to handle for extraction of commandline parameters
 
         Parameters
         ----------
@@ -239,33 +233,38 @@ class macs2(Tool):
 
     def run(self, input_files, input_metadata, output_files):
         """
-        The main function to run MACS 2 for peak calling over a given BAM file
-        and matching background BAM file.
+        The main function to run TrimGalore to remove low quality and very short
+        reads. TrimGalore uses CutAdapt and FASTQC for the analysis.
 
         Parameters
         ----------
-        input_files : list
-            List of input bam file locations where 0 is the bam data file and 1
-            is the matching background bam file
+        input_files : dict
+            fastq1 : string
+                Location of the FASTQ file
+            fastq2 : string
+                [OPTIONAL] Location of the paired end FASTQ file
         metadata : dict
-
+            Matching metadata for the inpit FASTQ files
 
         Returns
         -------
-        output_files : list
-            List of locations for the output files.
-        output_metadata : list
-            List of matching metadata dict objects
+        output_files : dict
+            fastq1_trimmed : str
+                Location of the trimmed FASTQ file
+            fastq2_trimmed : str
+                [OPTIONAL] Location of a trimmed paired end FASTQ file
+        output_metadata : dict
+            Matching metadata for the output files
 
         """
-        command_params = self.get_trim_galore_params(self.configuration)
+        command_params = self.get_trimgalore_params(self.configuration)
 
         if "fastq2" in input_files:
             pass
-            # results = self.trim_galore_paired(
+            # results = self.trimgalore_paired(
             #     input_files['input'], output_files['output'], command_params)
         else:
-            results = self.trim_galore_single(
+            results = self.trimgalore_single(
                 input_files['fastq1'], output_files["fastq1_trimmed"], command_params)
         results = compss_wait_on(results)
 

@@ -77,6 +77,7 @@ class tadbit_normalize(Workflow):
         self.configuration['workdir'] = self.configuration['project']+'/_tmp_tadbit_'+tmp_name
         if not os.path.exists(self.configuration['workdir']):
             os.makedirs(self.configuration['workdir'])
+            open(self.configuration['workdir']+'/trace.db', 'a').close()
         
         self.configuration.update(
             {(key.split(':'))[-1]: val for key, val in self.configuration.items()}
@@ -111,7 +112,7 @@ class tadbit_normalize(Workflow):
         if self.configuration["normalization"] == 'oneD':
             if 'refGenomes_folder' in input_files and os.path.isfile(convert_from_unicode(input_files['refGenomes_folder'])+assembly+'/'+assembly+'.fa'):
                 input_metadata["fasta"] = convert_from_unicode(input_files['refGenomes_folder'])+assembly+'/'+assembly+'.fa'
-                input_metadata["mappability"] = convert_from_unicode(input_files['refGenomes_folder'])+assembly+'/'+assembly+'.bedGraph'
+                input_metadata["mappability"] = convert_from_unicode(input_files['refGenomes_folder'])+assembly+'/MAPPABILITY/'+assembly+'.bedGraph'
                 if 'rest_enzyme' in metadata['bamin'].meta_data:
                     input_metadata["rest_enzyme"] = convert_from_unicode(metadata['bamin'].meta_data['rest_enzyme'])
             

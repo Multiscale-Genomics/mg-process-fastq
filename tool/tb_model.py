@@ -121,7 +121,8 @@ class tbModelTool(Tool):
         except TypeError:
             pass
 
-        name = '{0}_{1}_{2}'.format(gen_pos_chrom_name, beg, end)
+        name = '{0}_{1}_{2}'.format(gen_pos_chrom_name, gen_pos_begin, gen_pos_end)
+
         if not os.path.exists(os.path.join(workdir, name)):
             os.makedirs(os.path.join(workdir, name))
 

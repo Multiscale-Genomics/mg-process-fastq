@@ -80,7 +80,7 @@ class trimgalore(Tool):
             Location of the output bam file
         """
 
-        command_line = "trim_galore " + " ".join(params)
+        command_line = "trim_galore " + " ".join(params) + " " + fastq_file_in
         logger.info("TRIM GALORE: command_line: " + command_line)
 
         try:
@@ -131,7 +131,7 @@ class trimgalore(Tool):
             Location of the output bam file
         """
 
-        command_line = "trim_galore " + " ".join(params)
+        command_line = "trim_galore " + " ".join(params) + " " + fastq1_file_in + " " + fastq2_file_in
         logger.info("TRIM GALORE: command_line: " + command_line)
 
         try:

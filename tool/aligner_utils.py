@@ -303,7 +303,7 @@ class alignerUtils(object):
 
 
         cmd_samse = ' '.join([
-            'bwa samse',
+            'bwa sampe',
             '-f', reads_file_1 + '.sam',
             genome_file,
             reads_file_1 + '.sai', reads_file_2 + '.sai',

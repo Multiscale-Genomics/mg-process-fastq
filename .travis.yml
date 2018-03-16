@@ -82,7 +82,7 @@ before_install:
 
     - if [[ "$TESTENV" == "code" ]]; then sudo apt-get install r-base-core; fi
     - if [[ "$TESTENV" == "code" ]]; then sudo apt-get install python-rpy2; fi
-    - if [[ "$TESTENV" == "code" ]]; then ./scripts/travis/install_code_test_dependencies.sh; fi
+    - if [[ "$TESTENV" == "code" ]]; then sudo ./scripts/travis/install_code_test_dependencies.sh; fi
 
 services:
     - docker

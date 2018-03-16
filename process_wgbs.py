@@ -30,6 +30,7 @@ from tool.bs_seeker_filter import filterReadsTool
 from tool.bs_seeker_indexer import bssIndexerTool
 from tool.bs_seeker_methylation_caller import bssMethylationCallerTool
 
+
 # ------------------------------------------------------------------------------
 
 class process_wgbs(Workflow):
@@ -70,10 +71,13 @@ class process_wgbs(Workflow):
                 Genome assembly in FASTA
 
             fastq1 : str
-                Location for the first FASTQ file for single or paired end reads
+                Location for the first FASTQ file for single or paired end
+                reads
 
             fastq2 : str
-                Location for the second FASTQ file if paired end reads [OPTIONAL]
+                [OPTIONAL]Location for the second FASTQ file if paired end
+                reads
+
 
         metadata : dict
             Input file meta data associated with their roles
@@ -101,7 +105,8 @@ class process_wgbs(Workflow):
         -------
 
         fastq1_filtered|fastq1_filtered : str
-            Locations of the filtered FASTQ files from which alignments were made
+            Locations of the filtered FASTQ files from which alignments were
+            made
 
         bam|bai : str
             Location of the alignment bam file and the associated index
@@ -166,26 +171,26 @@ class process_wgbs(Workflow):
                 output_metadata["fastq2_filtered"].meta_data["tool_description"] = tool_name
                 output_metadata["fastq2_filtered"].meta_data["tool"] = "process_wgbs"
             except KeyError:
-                logger.fatal("WGBS - FILTER (background): Error while filtering")
+                logger.fatal(
+                    "WGBS - FILTER (background): Error while filtering")
                 return {}, {}
-
 
         logger.info("WGBS - BS-Seeker2 Aligner")
         # Handles the alignment of all of the split packets then merges them
         # back together.
         bss_aligner = bssAlignerTool(self.configuration)
         aligner_input_files = {
-            "genome" : input_files["genome"],
-            "fastq1" : fastq1f["fastq_filtered"],
-            "fastq2" : fastq2f["fastq_filtered"]
+            "genome": input_files["genome"],
+            "fastq1": fastq1f["fastq_filtered"],
+            "fastq2": fastq2f["fastq_filtered"]
         }
         aligner_input_files["index"] = genome_idx["index"]
 
         aligner_meta = {
-            "genome" : metadata["genome"],
-            "fastq1" : output_metadata["fastq1_filtered"],
-            "fastq2" : output_metadata["fastq2_filtered"],
-            "index" : output_metadata["index"]
+            "genome": metadata["genome"],
+            "fastq1": output_metadata["fastq1_filtered"],
+            "fastq2": output_metadata["fastq2_filtered"],
+            "index": output_metadata["index"]
         }
         bam, bam_meta = bss_aligner.run(
             aligner_input_files,
@@ -213,21 +218,21 @@ class process_wgbs(Workflow):
         # Methylation peak caller
         peak_caller_handle = bssMethylationCallerTool(self.configuration)
         mct_input_files = {
-            "genome" : input_files["genome"],
-            "index" : output_results_files["index"],
-            "fastq1" : output_results_files["fastq1_filtered"],
-            "fastq2" : output_results_files["fastq2_filtered"],
-            "bam" : output_results_files["bam"],
-            "bai" : output_results_files["bai"]
+            "genome": input_files["genome"],
+            "index": output_results_files["index"],
+            "fastq1": output_results_files["fastq1_filtered"],
+            "fastq2": output_results_files["fastq2_filtered"],
+            "bam": output_results_files["bam"],
+            "bai": output_results_files["bai"]
         }
 
         mct_meta = {
-            "genome" : metadata["genome"],
-            "fastq1" : output_metadata["fastq1_filtered"],
-            "fastq2" : output_metadata["fastq2_filtered"],
-            "bam" : output_metadata["bam"],
-            "bai" : output_metadata["bai"],
-            "index" : output_metadata["index"]
+            "genome": metadata["genome"],
+            "fastq1": output_metadata["fastq1_filtered"],
+            "fastq2": output_metadata["fastq2_filtered"],
+            "bam": output_metadata["bam"],
+            "bai": output_metadata["bai"],
+            "index": output_metadata["index"]
         }
         peak_files, peak_meta = peak_caller_handle.run(
             mct_input_files,
@@ -256,6 +261,7 @@ class process_wgbs(Workflow):
 
         return (output_results_files, output_metadata)
 
+
 # ------------------------------------------------------------------------------
 
 def main_json(config, in_metadata, out_metadata):
@@ -281,16 +287,21 @@ def main_json(config, in_metadata, out_metadata):
 
     return result
 
+
 # ------------------------------------------------------------------------------
 
 if __name__ == "__main__":
 
     # Set up the command line parameters
     PARSER = argparse.ArgumentParser(description="WGBS peak calling")
-    PARSER.add_argument("--config", help="Configuration file")
-    PARSER.add_argument("--in_metadata", help="Location of input metadata file")
-    PARSER.add_argument("--out_metadata", help="Location of output metadata file")
-    PARSER.add_argument("--local", action="store_const", const=True, default=False)
+    PARSER.add_argument(
+        "--config", help="Configuration file")
+    PARSER.add_argument(
+        "--in_metadata", help="Location of input metadata file")
+    PARSER.add_argument(
+        "--out_metadata", help="Location of output metadata file")
+    PARSER.add_argument(
+        "--local", action="store_const", const=True, default=False)
 
     # Get the matching parameters from the command line
     ARGS = PARSER.parse_args()

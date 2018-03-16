@@ -20,7 +20,7 @@
 from __future__ import print_function
 
 # Required for ReadTheDocs
-from functools import wraps # pylint: disable=unused-import
+from functools import wraps  # pylint: disable=unused-import
 
 import argparse
 
@@ -31,6 +31,7 @@ from utils import remap
 from tool.bwa_aligner import bwaAlignerTool
 from tool.biobambam_filter import biobambam
 from tool.macs2 import macs2
+
 
 # ------------------------------------------------------------------------------
 
@@ -176,8 +177,6 @@ class process_chipseq(Workflow):
             except KeyError:
                 logger.fatal("Background BWA aligner failed")
 
-        # For multiple files there will need to be merging into a single bam file
-
         # Filter the bams
         b3f = biobambam(self.configuration)
         b3f_files, b3f_meta = b3f.run(
@@ -227,7 +226,10 @@ class process_chipseq(Workflow):
             macs_inputs, macs_metadt,
             # Outputs of the final step may match workflow outputs;
             # Extra entries in output_files will be disregarded.
-            remap(output_files, 'narrow_peak', 'summits', 'broad_peak', 'gapped_peak'))
+            remap(
+                output_files,
+                'narrow_peak', 'summits', 'broad_peak', 'gapped_peak')
+        )
 
         if len(m_results_meta) == 0:
             logger.fatal("MACS2 peak calling failed")
@@ -289,16 +291,21 @@ def main_json(config, in_metadata, out_metadata):
 
     return result
 
+
 # ------------------------------------------------------------------------------
 
 if __name__ == "__main__":
 
     # Set up the command line parameters
     PARSER = argparse.ArgumentParser(description="ChIP-seq peak calling")
-    PARSER.add_argument("--config", help="Configuration file")
-    PARSER.add_argument("--in_metadata", help="Location of input metadata file")
-    PARSER.add_argument("--out_metadata", help="Location of output metadata file")
-    PARSER.add_argument("--local", action="store_const", const=True, default=False)
+    PARSER.add_argument(
+        "--config", help="Configuration file")
+    PARSER.add_argument(
+        "--in_metadata", help="Location of input metadata file")
+    PARSER.add_argument(
+        "--out_metadata", help="Location of output metadata file")
+    PARSER.add_argument(
+        "--local", action="store_const", const=True, default=False)
 
     # Get the matching parameters from the command line
     ARGS = PARSER.parse_args()

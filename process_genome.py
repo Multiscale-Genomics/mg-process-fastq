@@ -19,7 +19,7 @@
 from __future__ import print_function
 
 # Required for ReadTheDocs
-from functools import wraps # pylint: disable=unused-import
+from functools import wraps  # pylint: disable=unused-import
 
 import argparse
 
@@ -29,6 +29,7 @@ from utils import logger
 from tool.bowtie_indexer import bowtieIndexerTool
 from tool.bwa_indexer import bwaIndexerTool
 from tool.gem_indexer import gemIndexerTool
+
 
 # ------------------------------------------------------------------------------
 
@@ -75,7 +76,8 @@ class process_genome(Workflow):
             gem_index : str
                 Location of the GEM index file
             genome_gem : str
-                Location of a the FASTA file generated for the GEM indexing step
+                Location of a the FASTA file generated for the GEM indexing
+                step
 
         Returns
         -------
@@ -91,7 +93,11 @@ class process_genome(Workflow):
         # Bowtie2 Indexer
         logger.info("Generating indexes for Bowtie2")
         bowtie2 = bowtieIndexerTool()
-        bti, btm = bowtie2.run(input_files, metadata, {'index': output_files['bwt_index']})
+        bti, btm = bowtie2.run(
+            input_files,
+            metadata,
+            {'index': output_files['bwt_index']}
+        )
 
         try:
             output_files_generated['bwt_index'] = bti["index"]
@@ -106,7 +112,11 @@ class process_genome(Workflow):
         # BWA Indexer
         logger.info("Generating indexes for BWA")
         bwa = bwaIndexerTool()
-        bwai, bwam = bwa.run(input_files, metadata, {'index': output_files['bwa_index']})
+        bwai, bwam = bwa.run(
+            input_files,
+            metadata,
+            {'index': output_files['bwa_index']}
+        )
 
         try:
             output_files_generated['bwa_index'] = bwai['index']
@@ -148,6 +158,7 @@ class process_genome(Workflow):
 
         return (output_files_generated, output_metadata)
 
+
 # ------------------------------------------------------------------------------
 
 def main_json(config, in_metadata, out_metadata):
@@ -172,16 +183,21 @@ def main_json(config, in_metadata, out_metadata):
 
     return result
 
+
 # ------------------------------------------------------------------------------
 
 if __name__ == "__main__":
 
     # Set up the command line parameters
     PARSER = argparse.ArgumentParser(description="Index the genome file")
-    PARSER.add_argument("--config", help="Configuration file")
-    PARSER.add_argument("--in_metadata", help="Location of input metadata file")
-    PARSER.add_argument("--out_metadata", help="Location of output metadata file")
-    PARSER.add_argument("--local", action="store_const", const=True, default=False)
+    PARSER.add_argument(
+        "--config", help="Configuration file")
+    PARSER.add_argument(
+        "--in_metadata", help="Location of input metadata file")
+    PARSER.add_argument(
+        "--out_metadata", help="Location of output metadata file")
+    PARSER.add_argument(
+        "--local", action="store_const", const=True, default=False)
 
     # Get the matching parameters from the command line
     ARGS = PARSER.parse_args()

@@ -23,9 +23,9 @@ import argparse
 
 from basic_modules.workflow import Workflow
 from utils import logger
-from utils import remap
 
 from tool.bs_seeker_aligner import bssAlignerTool
+
 
 # ------------------------------------------------------------------------------
 
@@ -126,6 +126,7 @@ class process_bs_seeker_aligner(Workflow):
 
         return (output_results_files, output_metadata)
 
+
 # ------------------------------------------------------------------------------
 
 def main_json(config, in_metadata, out_metadata):
@@ -151,16 +152,21 @@ def main_json(config, in_metadata, out_metadata):
 
     return result
 
+
 # ------------------------------------------------------------------------------
 
 if __name__ == "__main__":
 
     # Set up the command line parameters
     PARSER = argparse.ArgumentParser(description="BS-Seeker 2 Aligner")
-    PARSER.add_argument("--config", help="Configuration file")
-    PARSER.add_argument("--in_metadata", help="Location of input metadata file")
-    PARSER.add_argument("--out_metadata", help="Location of output metadata file")
-    PARSER.add_argument("--local", action="store_const", const=True, default=False)
+    PARSER.add_argument(
+        "--config", help="Configuration file")
+    PARSER.add_argument(
+        "--in_metadata", help="Location of input metadata file")
+    PARSER.add_argument(
+        "--out_metadata", help="Location of output metadata file")
+    PARSER.add_argument(
+        "--local", action="store_const", const=True, default=False)
 
     # Get the matching parameters from the command line
     ARGS = PARSER.parse_args()

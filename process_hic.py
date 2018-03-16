@@ -36,7 +36,9 @@ from tool.tb_filter import tbFilterTool
 from tool.tb_generate_tads import tbGenerateTADsTool
 from tool.tb_save_hdf5_matrix import tbSaveAdjacencyHDF5Tool
 
+
 # ------------------------------------------------------------------------------
+
 class process_hic(Workflow):
     """
     Functions for downloading and processing Mnase-seq FastQ files. Files are
@@ -100,10 +102,10 @@ class process_hic(Workflow):
         print("HIC - metadata:", metadata)
 
         input_metadata_mapping1 = {
-            'windows' : windows1,
+            'windows': windows1,
         }
         input_metadata_mapping2 = {
-            'windows' : windows2,
+            'windows': windows2,
         }
 
         if window_type == 'frag':
@@ -123,9 +125,9 @@ class process_hic(Workflow):
         tpm = tbParseMappingTool()
         files = [genome_fa] + tfm1_files + tfm2_files
         input_metadata_parser = {
-            'enzyme_name' : enzyme_name,
-            'mapping' : [tfm1_meta['func'], tfm2_meta['func']],
-            'expt_name' : expt_name
+            'enzyme_name': enzyme_name,
+            'mapping': [tfm1_meta['func'], tfm2_meta['func']],
+            'expt_name': expt_name
         }
         print("TB MAPPED FILES:", files)
         print("TB PARSE METADATA:", input_metadata_parser)
@@ -134,9 +136,13 @@ class process_hic(Workflow):
         print("TB PARSED FILES:", tpm_files)
 
         tbf = tbFilterTool()
-        tf_files, tf_meta = tbf.run(tpm_files, [], {'conservative' : True, 'expt_name' : expt_name})
+        tf_files, tf_meta = tbf.run(
+            tpm_files,
+            [],
+            {'conservative': True, 'expt_name': expt_name}
+        )
 
-        #adjlist_loc = f2a.save_hic_data()
+        # adjlist_loc = f2a.save_hic_data()
 
         print("TB FILTER FILES:", tf_files[0])
 

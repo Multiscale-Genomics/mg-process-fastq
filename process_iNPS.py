@@ -61,11 +61,11 @@ class process_iNPS(Workflow):
         input_files : dict
             bam_file : str
             Location of the aligned sequences in bam format
-        peak_bed : str
+
+        output_files : dict            
+            peak_bed : str
             Location of the collated bed file of nucleosome peak calls
 
-        output_files : dict
-            
         Returns
         -------
 
@@ -79,7 +79,7 @@ class process_iNPS(Workflow):
 
         logger.info("iNPS")
 
-        # Process the MNAse-seq reads to find nucleosome 
+        # Process the MNAse-seq reads to find nucleosome
         logger.info("iNPS")
         inps_r = inps(self.configuration)
         bamf, bed_meta = inps_r.run(
@@ -97,7 +97,7 @@ class process_iNPS(Workflow):
         except KeyError:
             logger.fatal("iNPS : Error while processing")
             return {}, {}
-        
+
         return (output_results_files, output_metadata)
 
 # ------------------------------------------------------------------------------

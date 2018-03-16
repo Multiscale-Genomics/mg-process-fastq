@@ -397,11 +397,11 @@ BS Seeker2 Aligner
    =======
    .. autoclass:: process_bs_seeker_aligner.process_bs_seeker_aligner
       :members:
-      
+
 
 BiSulphate Sequencing Filter
 ----------------------------
-.. automodule:: process_bsFilter
+.. automodule:: process_bs_seeker_filter
 
    This pipeline processes FASTQ files to filter out duplicate reads.
 
@@ -1155,6 +1155,6 @@ Hi-C Analysis
    =======
    .. autoclass:: process_hic.process_hic
       :members:
-      
-      
-      
+
+
+

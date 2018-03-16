@@ -198,5 +198,6 @@ before_script:
 
 script:
     if [[ "$TESTENV" == "code" ]]; then ./scripts/travis/harness.sh; fi
+
     if [[ "$TESTENV" == "docs" ]]; then ./scripts/travis/docs_harness.sh; fi
 

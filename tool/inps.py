@@ -145,11 +145,15 @@ class inps(Tool):
             command_params = command_params + [
                 "--pe_min", str(self.configuration["inps_pe_min_param"])]
 
+        print ("****output_files[\"bed\"]***",output_files["bed"])
+        
         results = self.inps_peak_calling(
             input_files["bam"],
             output_files["bed"],
             command_params
         )
+
+
         results = compss_wait_on(results)
 
         output_metadata = {

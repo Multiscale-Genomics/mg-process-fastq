@@ -1,12 +1,12 @@
 {
-    "_id": "process_mnaseseq",
-    "name": "Process MNase-seq",
-    "title": "MNase-seq Analysis",
-    "short_description": "Align MNase-seq data and Peak Calling using iNPS.",
+    "_id": "process_iNPS",
+    "name": "Process iNPS",
+    "title": " Improved nucleosome-positioning",
+    "short_description": "Algorithm for accurate nucleosome poistioing form sequencing data.",
     "owner": {
         "institution": "EMBL-EBI",
-        "author": "Mark McDowall",
-        "contact": "mcdowall@ebi.ac.uk",
+        "author": "Reham Fatima",
+        "contact": "reham@ebi.ac.uk",
         "user": "",
         "url": "https://github.com/Multiscale-Genomics/mg-process-fastq"
     },
@@ -19,7 +19,7 @@
     "infrastructure": {
         "memory": 12.0,
         "cpus": 4,
-        "executable": "/home/pmes/code/mg-process-fastq/process_mnaseseq.py",
+        "executable": "/home/pmes/code/mg-process-fastq/process_iNPS.py",
         "clouds": {
             "mug-bsc": {
                 "launcher": "PMES",
@@ -31,26 +31,10 @@
     "input_files": [
         {
             "name": "loc",
-            "description": "Sequence read file",
-            "help": "path to a FASTQ sequence read file",
-            "file_type": ["FASTQ"],
+            "description": "Sequence bam file",
+            "help": "path to a bam file",
+            "file_type": ["bam"],
             "data_type": ["data_mnase_seq"],
-            "required": true,
-            "allow_multiple": false
-        }, {
-            "name": "genome",
-            "description": "Genome sequence file",
-            "help": "path to a assembly sequence file",
-            "file_type": ["FASTA"],
-            "data_type": ["sequence_genomic", "sequence_dna"],
-            "required": true,
-            "allow_multiple": false
-        }, {
-            "name": "index",
-            "description": "BWA index for matching species",
-            "help": "path to matching BWA index file",
-            "file_type": ["TAR"],
-            "data_type": ["sequence_mapping_index_bwa"],
             "required": true,
             "allow_multiple": false
         }
@@ -58,8 +42,7 @@
     "input_files_combinations": [
         [
             "loc",
-            "genome",
-            "index"
+            "bam"
         ]
     ],
     "arguments": [
@@ -88,21 +71,6 @@
     ],
     "output_files": [
         {
-            "required": true,
-            "allow_multiple": false,
-            "name": "bam",
-            "file": {
-                "file_type": "bam",
-                "meta_data": {
-                    "visible": true,
-                    "tool": "process_mnaseseq",
-                    "description": "Aligned sequences"
-                },
-                "file_path": "inps.bam",
-                "data_type": "data_mnase_seq",
-                "compressed": "null"
-            }
-        }, {
             "required": true,
             "allow_multiple": false,
             "name": "gapped_peak",

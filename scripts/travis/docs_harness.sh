@@ -20,6 +20,9 @@ rc=0
 cd docs
 make html 2> output.err
 
+grep -v "Cannot import \"pycompss\" API packages." output.err > output.tmp.err
+grep -v 'Using mock decorators.' output.tmp.err > output.err
+
 if [[ -s output.err ]]
 then
     cat output.err

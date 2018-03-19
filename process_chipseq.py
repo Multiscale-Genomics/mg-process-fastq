@@ -213,7 +213,7 @@ class process_chipseq(Workflow):
             except KeyError:
                 logger.fatal("Background BioBamBam filtering failed")
 
-        ## MACS2 to call peaks
+        # MACS2 to call peaks
         macs_caller = macs2(self.configuration)
         macs_inputs = {"input": output_files_generated["filtered"]}
         macs_metadt = {"input": output_metadata['filtered']}

@@ -40,6 +40,7 @@ except ImportError:
 from basic_modules.metadata import Metadata
 from basic_modules.tool import Tool
 
+
 # ------------------------------------------------------------------------------
 
 class macs2(Tool):
@@ -62,9 +63,9 @@ class macs2(Tool):
     @task(
         returns=int,
         name=IN,
-        macs_params=IN,
         bam_file=FILE_IN,
         bam_file_bgd=FILE_IN,
+        macs_params=IN,
         narrowpeak=FILE_OUT,
         summits_bed=FILE_OUT,
         broadpeak=FILE_OUT,
@@ -168,12 +169,12 @@ class macs2(Tool):
 
         return 0
 
-    @task(returns=int, name=IN, macs_params=IN, bam_file=FILE_IN,
+    @task(returns=int, name=IN, bam_file=FILE_IN, macs_params=IN,
           narrowpeak=FILE_OUT, summits_bed=FILE_OUT, broadpeak=FILE_OUT,
           gappedpeak=FILE_OUT, isModifier=False)
-    def macs2_peak_calling_nobgd( # pylint: disable=too-many-arguments, no-self-use
+    def macs2_peak_calling_nobgd(  # pylint: disable=too-many-arguments, no-self-use
             self, name, bam_file, macs_params,
-            narrowpeak, summits_bed, broadpeak, gappedpeak): # pylint: disable=unused-argument
+            narrowpeak, summits_bed, broadpeak, gappedpeak):  # pylint: disable=unused-argument
         """
         Function to run MACS2 for peak calling on aligned sequence files without
         a background dataset for normalisation.
@@ -281,32 +282,34 @@ class macs2(Tool):
         command_params = []
 
         command_parameters = {
-            "macs_gsize_param" : ["--gsize", True],
-            "macs_tsize_param" : ["--tsize", True],
-            "macs_bw_param" : ["--bw", True],
-            "macs_qvalue_param" : ["--qvalue", True],
-            "macs_pvalue_param" : ["--pvalue", True],
-            "macs_mfold_param" : ["--mfold", True],
-            "macs_nolambda_param" : ["--nolambda", False],
-            "macs_slocal_param" : ["--slocal", True],
-            "macs_llocal_param" : ["--llocal", True],
-            "macs_fix-bimodal_param" : ["--fix-bimodal", False],
-            "macs_nomodel_param" : ["--nomodel", False],
-            "macs_extsize_param" : ["--extsize", True],
-            "macs_shift_param" : ["--shift", True],
-            "macs_keep-dup_param" : ["--keep-dup", True],
-            "macs_broad_param" : ["--broad", False],
-            "macs_broad-cutoff_param" : ["--broad-cutoff", True],
-            "macs_to-large_param" : ["--to-large", False],
-            "macs_down-sample_param" : ["--down-sample", False],
-            "macs_bdg_param" : ["--bdg", True],
-            "macs_call-summits_param" : ["--call-summits", True],
+            "macs_gsize_param": ["--gsize", True],
+            "macs_tsize_param": ["--tsize", True],
+            "macs_bw_param": ["--bw", True],
+            "macs_qvalue_param": ["--qvalue", True],
+            "macs_pvalue_param": ["--pvalue", True],
+            "macs_mfold_param": ["--mfold", True],
+            "macs_nolambda_param": ["--nolambda", False],
+            "macs_slocal_param": ["--slocal", True],
+            "macs_llocal_param": ["--llocal", True],
+            "macs_fix-bimodal_param": ["--fix-bimodal", False],
+            "macs_nomodel_param": ["--nomodel", False],
+            "macs_extsize_param": ["--extsize", True],
+            "macs_shift_param": ["--shift", True],
+            "macs_keep-dup_param": ["--keep-dup", True],
+            "macs_broad_param": ["--broad", False],
+            "macs_broad-cutoff_param": ["--broad-cutoff", True],
+            "macs_to-large_param": ["--to-large", False],
+            "macs_down-sample_param": ["--down-sample", False],
+            "macs_bdg_param": ["--bdg", True],
+            "macs_call-summits_param": ["--call-summits", True],
         }
 
         for param in params:
             if param in command_parameters:
                 if command_parameters[param][1]:
-                    command_params = command_params + [command_parameters[param][0], params[param]]
+                    command_params = command_params + [
+                        command_parameters[param][0], params[param]
+                    ]
                 else:
                     if command_parameters[param][0]:
                         command_params.append(command_parameters[param][0])
@@ -338,7 +341,7 @@ class macs2(Tool):
         root_name[-1] = root_name[-1].replace('.bam', '')
         name = root_name[-1]
 
-       # input and output share most metadata
+        # input and output share most metadata
         output_bed_types = {
             'narrow_peak': "bed4+1",
             'summits': "bed6+4",
@@ -376,7 +379,7 @@ class macs2(Tool):
             if (
                     os.path.isfile(output_files[result_file]) is True
                     and os.path.getsize(output_files[result_file]) > 0
-                ):
+            ):
                 output_files_created[result_file] = output_files[result_file]
 
                 output_metadata[result_file] = Metadata(

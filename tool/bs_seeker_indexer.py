@@ -17,7 +17,6 @@
 
 from __future__ import print_function
 
-import os
 import shlex
 import subprocess
 import sys
@@ -35,12 +34,13 @@ except ImportError:
     logger.warn("[Warning] Cannot import \"pycompss\" API packages.")
     logger.warn("          Using mock decorators.")
 
-    from utils.dummy_pycompss import FILE_IN, FILE_OUT, IN # pylint: disable=ungrouped-imports
-    from utils.dummy_pycompss import task # pylint: disable=ungrouped-imports
-    from utils.dummy_pycompss import compss_wait_on # pylint: disable=ungrouped-imports
+    from utils.dummy_pycompss import FILE_IN, FILE_OUT, IN  # pylint: disable=ungrouped-imports
+    from utils.dummy_pycompss import task  # pylint: disable=ungrouped-imports
+    from utils.dummy_pycompss import compss_wait_on  # pylint: disable=ungrouped-imports
 
 from basic_modules.tool import Tool
 from basic_modules.metadata import Metadata
+
 
 # ------------------------------------------------------------------------------
 
@@ -72,7 +72,9 @@ class bssIndexerTool(Tool):
     @task(
         fasta_file=FILE_IN, aligner=IN, aligner_path=IN, bss_path=IN, params=IN,
         idx_out=FILE_OUT)
-    def bss_build_index(self, fasta_file, aligner, aligner_path, bss_path, params, idx_out):  # pylint disable=no-self-use
+    def bss_build_index(
+            self, fasta_file, aligner, aligner_path, bss_path, params, idx_out
+    ):  # pylint disable=no-self-use
         """
         Function to submit the FASTA file for the reference sequence and build
         the required index file used by the aligner.
@@ -157,10 +159,10 @@ class bssIndexerTool(Tool):
         command_params = []
 
         command_parameters = {
-            "bss_rrbs_param" : ["-r", False],
-            "bss_lower_bound_param" : ["-l", True],
-            "bss_upper_bound_param" : ["-u", True],
-            "bss_cut_format_param" : ["-c", True],
+            "bss_rrbs_param": ["-r", False],
+            "bss_lower_bound_param": ["-l", True],
+            "bss_upper_bound_param": ["-u", True],
+            "bss_cut_format_param": ["-c", True],
         }
 
         for param in params:

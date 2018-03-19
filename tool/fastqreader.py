@@ -20,7 +20,6 @@
 import os
 import errno
 import re
-from collections import deque
 
 
 class fastqreader(object):

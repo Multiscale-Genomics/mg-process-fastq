@@ -23,8 +23,6 @@ import subprocess
 import sys
 import tarfile
 
-import pysam
-
 from utils import logger
 
 try:
@@ -37,9 +35,9 @@ except ImportError:
     logger.warn("[Warning] Cannot import \"pycompss\" API packages.")
     logger.warn("          Using mock decorators.")
 
-    from utils.dummy_pycompss import FILE_IN, FILE_OUT, IN # pylint: disable=ungrouped-imports
-    from utils.dummy_pycompss import task # pylint: disable=ungrouped-imports
-    from utils.dummy_pycompss import compss_wait_on, compss_open, barrier # pylint: disable=ungrouped-imports
+    from utils.dummy_pycompss import FILE_IN, FILE_OUT, IN  # pylint: disable=ungrouped-imports
+    from utils.dummy_pycompss import task  # pylint: disable=ungrouped-imports
+    from utils.dummy_pycompss import compss_wait_on, compss_open, barrier  # pylint: disable=ungrouped-imports
 
 from basic_modules.tool import Tool
 from basic_modules.metadata import Metadata
@@ -47,6 +45,7 @@ from basic_modules.metadata import Metadata
 from tool.fastq_splitter import fastq_splitter
 from tool.bam_utils import bamUtils
 from tool.bam_utils import bamUtilsTask
+
 
 # ------------------------------------------------------------------------------
 
@@ -209,18 +208,18 @@ class bssAlignerTool(Tool):
 
         bss_aligner_command_parameters = {
             # Reduced Representation Bisufite Sequencing
-            "bss_aligner_rrbs_param" : ["--rrbs", False],
-            "bss_aligner_rrbs_cutoff_site_param" : ["-c", True],
-            "bss_aligner_rrbs_lower_param" : ["-L", True],
-            "bss_aligner_rrbs_upper_param" : ["-U", True],
+            "bss_aligner_rrbs_param": ["--rrbs", False],
+            "bss_aligner_rrbs_cutoff_site_param": ["-c", True],
+            "bss_aligner_rrbs_lower_param": ["-L", True],
+            "bss_aligner_rrbs_upper_param": ["-U", True],
             # General Options
-            "bss_aligner_tag_param" : ["-t", True],
-            "bss_aligner_start_base_param" : ["-s", True],
-            "bss_aligner_end_base_param" : ["-e", True],
-            # "bss_aligner_adapter_param" : ["-a", True],
-            # "bss_aligner_adapter_mismatch_param" : ["--am", True],
-            "bss_aligner_no_mismatches_param" : ["-m", True],
-            "bss_aligner_split_line_param" : ["-l", True],
+            "bss_aligner_tag_param": ["-t", True],
+            "bss_aligner_start_base_param": ["-s", True],
+            "bss_aligner_end_base_param": ["-e", True],
+            # "bss_aligner_adapter_param": ["-a", True],
+            # "bss_aligner_adapter_mismatch_param": ["--am", True],
+            "bss_aligner_no_mismatches_param": ["-m", True],
+            "bss_aligner_split_line_param": ["-l", True],
         }
 
         for param in params:
@@ -234,43 +233,43 @@ class bssAlignerTool(Tool):
 
         bowtie2_command_parameters = {
             # Input Options - 11
-            "bowtie2_interleaved_param" : ["--bt2--interleaved", False],
-            "bowtie2_tab5_param" : ["--bt2--tab5", False],
-            "bowtie2_tab6_param" : ["--bt2--tab6", False],
-            # "bowtie2_qseq_param" : ["--bt2--qseq", False],
-            # "bowtie2_read_only_param" : ["--bt2-r", True],
-            "bowtie2_skip_1st_n_reads_param" : ["--bt2-s", True],
-            "bowtie2_aln_1st_n_reads_param" : ["--bt2-u", True],
-            "bowtie2_trim5_param" : ["--bt2-5", True],
-            "bowtie2_trim3_param" : ["--bt2-3", True],
-            "bowtie2_phred33_param" : ["--bt2--phred33", False],
-            "bowtie2_phre64_param" : ["--bt2--phred64", False],
+            "bowtie2_interleaved_param": ["--bt2--interleaved", False],
+            "bowtie2_tab5_param": ["--bt2--tab5", False],
+            "bowtie2_tab6_param": ["--bt2--tab6", False],
+            # "bowtie2_qseq_param": ["--bt2--qseq", False],
+            # "bowtie2_read_only_param": ["--bt2-r", True],
+            "bowtie2_skip_1st_n_reads_param": ["--bt2-s", True],
+            "bowtie2_aln_1st_n_reads_param": ["--bt2-u", True],
+            "bowtie2_trim5_param": ["--bt2-5", True],
+            "bowtie2_trim3_param": ["--bt2-3", True],
+            "bowtie2_phred33_param": ["--bt2--phred33", False],
+            "bowtie2_phre64_param": ["--bt2--phred64", False],
             # Alignment Options - 12
-            "bowtie2_num_mismatch_param" : ["--bt2-N", True],
-            "bowtie2_seed_len_param" : ["--bt2-L", True],
-            # "bowtie2_seed_func_param" : ["--bt2-i", True],
-            # "bowtie2_ambg_char_func_param" : ["--bt2--n-cell", True],
-            "bowtie2_dpads_param" : ["--bt2--dpad", True],
-            "bowtie2_gbar_param" : ["--bt2--gbar", True],
-            "bowtie2_ignore_quals_param" : ["--bt2--ignore-quals", False],
-            "bowtie2_nofw_param" : ["--bt2--nofw", False],
-            "bowtie2_norc_param" : ["--bt2--norc", False],
-            "bowtie2_no_1mm_upfront_param" : ["--bt2--no-1mm-upfront", False],
-            "bowtie2_end_to_end_param" : ["--bt2--end-to-end", False],
-            "bowtie2_local_param" : ["--bt2--local", False],
+            "bowtie2_num_mismatch_param": ["--bt2-N", True],
+            "bowtie2_seed_len_param": ["--bt2-L", True],
+            # "bowtie2_seed_func_param": ["--bt2-i", True],
+            # "bowtie2_ambg_char_func_param": ["--bt2--n-cell", True],
+            "bowtie2_dpads_param": ["--bt2--dpad", True],
+            "bowtie2_gbar_param": ["--bt2--gbar", True],
+            "bowtie2_ignore_quals_param": ["--bt2--ignore-quals", False],
+            "bowtie2_nofw_param": ["--bt2--nofw", False],
+            "bowtie2_norc_param": ["--bt2--norc", False],
+            "bowtie2_no_1mm_upfront_param": ["--bt2--no-1mm-upfront", False],
+            "bowtie2_end_to_end_param": ["--bt2--end-to-end", False],
+            "bowtie2_local_param": ["--bt2--local", False],
             # Effort Options - 2
-            "bowtie2_seed_extension_attempts_param" : ["--bt2-D", True],
-            "bowtie2_reseed_param" : ["--bt2-R", True],
+            "bowtie2_seed_extension_attempts_param": ["--bt2-D", True],
+            "bowtie2_reseed_param": ["--bt2-R", True],
             # SAM Options - 9
-            "bowtie2_no_unal_param" : ["--bt2--no-unal", False],
-            "bowtie2_no_hd_param" : ["--bt2--no-hd", False],
-            "bowtie2_no_sq_param" : ["--bt2--no-dq", False],
-            "bowtie2_rg_id_param" : ["--bt2--rg-id", True],
-            "bowtie2_rg_param" : ["--bt2--rg", True],
-            "bowtie2_omit_sec_seq_param" : ["--bt2--omit-sec-seq", False],
-            "bowtie2_soft_clipped_unmapped_tlen_param" : ["--bt2--soft-clipped-unmapped-tlen", False],
-            "bowtie2_sam_no_qname_trunc_param" : ["--bt2--sam-no-qname-trunc", False],
-            "bowtie2_xeq_param" : ["--bt2--xeq", False],
+            "bowtie2_no_unal_param": ["--bt2--no-unal", False],
+            "bowtie2_no_hd_param": ["--bt2--no-hd", False],
+            "bowtie2_no_sq_param": ["--bt2--no-dq", False],
+            "bowtie2_rg_id_param": ["--bt2--rg-id", True],
+            "bowtie2_rg_param": ["--bt2--rg", True],
+            "bowtie2_omit_sec_seq_param": ["--bt2--omit-sec-seq", False],
+            "bowtie2_soft_clipped_unmapped_tlen_param": ["--bt2--soft-clipped-unmapped-tlen", False],
+            "bowtie2_sam_no_qname_trunc_param": ["--bt2--sam-no-qname-trunc", False],
+            "bowtie2_xeq_param": ["--bt2--xeq", False],
         }
 
         if paired:

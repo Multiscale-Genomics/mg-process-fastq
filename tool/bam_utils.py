@@ -31,9 +31,10 @@ except ImportError:
     logger.warn("[Warning] Cannot import \"pycompss\" API packages.")
     logger.warn("          Using mock decorators.")
 
-    from utils.dummy_pycompss import FILE_IN, FILE_OUT, FILE_INOUT # pylint: disable=ungrouped-imports
-    from utils.dummy_pycompss import task # pylint: disable=ungrouped-imports
-    from utils.dummy_pycompss import barrier # pylint: disable=ungrouped-imports
+    from utils.dummy_pycompss import FILE_IN, FILE_OUT, FILE_INOUT  # pylint: disable=ungrouped-imports
+    from utils.dummy_pycompss import task  # pylint: disable=ungrouped-imports
+    from utils.dummy_pycompss import barrier  # pylint: disable=ungrouped-imports
+
 
 # ------------------------------------------------------------------------------
 
@@ -66,7 +67,7 @@ class bamUtils(object):
             Location of the bam file to sort
         """
         try:
-            pysam.sort("-o", bam_file, "-T", bam_file + "_sort", bam_file)
+            pysam.sort("-o", bam_file, "-T", bam_file + "_sort", bam_file)  # pylint: disable=no-member
         except IOError:
             return False
         return True
@@ -88,11 +89,11 @@ class bamUtils(object):
         if isinstance(args[0], list):
             final_bam = args[0][0]
             tmp_bam = final_bam + "_merge.bam"
-            pysam.merge("-f", tmp_bam, *args[0])
+            pysam.merge("-f", tmp_bam, *args[0])  # pylint: disable=no-member
         else:
             final_bam = args[0]
             tmp_bam = final_bam + "_merge.bam"
-            pysam.merge("-f", tmp_bam, *args)
+            pysam.merge("-f", tmp_bam, *args)  # pylint: disable=no-member
 
         try:
             with open(tmp_bam, "rb") as f_in:
@@ -140,7 +141,7 @@ class bamUtils(object):
         bam_idx_file : str
             Location of the bam index file (.bai)
         """
-        pysam.index(bam_file, bam_file + "_tmp.bai")
+        pysam.index(bam_file, bam_file + "_tmp.bai")  # pylint: disable=no-member
 
         try:
             with open(bam_file + "_tmp.bai", "rb") as f_in:
@@ -168,16 +169,15 @@ class bamUtils(object):
             qc_failed : int
             description : str
         """
-        results = pysam.flagstat(bam_file)
+        results = pysam.flagstat(bam_file)  # pylint: disable=no-member
         separate_results = results.strip().split("\n")
         return [
             {
-                "qc_passed" : int(element[0]),
-                "qc_failed" : int(element[2]),
-                "description" : " ".join(element[3:])
+                "qc_passed": int(element[0]),
+                "qc_failed": int(element[2]),
+                "description": " ".join(element[3:])
             } for element in [row.split(" ") for row in separate_results]
         ]
-
 
     @staticmethod
     def check_header(bam_file):
@@ -193,7 +193,7 @@ class bamUtils(object):
         """
         output = True
 
-        bam_file_handle = pysam.AlignmentFile(bam_file, "rb")
+        bam_file_handle = pysam.AlignmentFile(bam_file, "rb")  # pylint: disable=no-member
         if ("SO" not in bam_file_handle.header["HD"] or
                 bam_file_handle.header["HD"]["SO"] == "unsorted"):
             output = False
@@ -292,7 +292,6 @@ class bamUtilsTask(object):
 
         return bam_job_files[0]
 
-
     @task(bam_file_1=FILE_INOUT, bam_file_2=FILE_IN)
     def bam_merge_2(self, bam_file_1, bam_file_2):  # pylint: disable=no-self-use
         """
@@ -351,11 +350,8 @@ class bamUtilsTask(object):
     @task(
         bam_file_1=FILE_INOUT, bam_file_2=FILE_IN, bam_file_3=FILE_IN,
         bam_file_4=FILE_IN, bam_file_5=FILE_IN
-    )
-    def bam_merge_5(self, *args):  # pylint: disable=no-self-use
-    # def bam_merge_5(
-    #         self, bam_file_1, bam_file_2, bam_file_3, bam_file_4, bam_file_5
-    #     ):  # pylint: disable=no-self-use
+    )  # pylint: disable=no-self-use
+    def bam_merge_5(self, *args):
         """
         Wrapper for the pysam SAMtools merge function
 
@@ -382,12 +378,8 @@ class bamUtilsTask(object):
         bam_file_4=FILE_IN, bam_file_5=FILE_IN, bam_file_6=FILE_IN,
         bam_file_7=FILE_IN, bam_file_8=FILE_IN, bam_file_9=FILE_IN,
         bam_file_10=FILE_IN
-    )
-    def bam_merge_10(self, *args):  # pylint: disable=no-self-use
-    # def bam_merge_10(
-    #         self, bam_file_1, bam_file_2, bam_file_3, bam_file_4, bam_file_5,
-    #         bam_file_6, bam_file_7, bam_file_8, bam_file_9, bam_file_10
-    #     ):  # pylint: disable=no-self-use
+    )  # pylint: disable=no-self-use
+    def bam_merge_10(self, *args):
         """
         Wrapper for the pysam SAMtools merge function
 

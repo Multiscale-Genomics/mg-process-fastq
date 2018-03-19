@@ -187,7 +187,7 @@ missing-member-hint-distance=1
 
 # The total number of similar names that should be taken in consideration when
 # showing a hint for a missing member.
-missing-member-max-choices=1
+missing-member-max-choices=10
 
 
 [SIMILARITIES]
@@ -202,7 +202,7 @@ ignore-docstrings=yes
 ignore-imports=no
 
 # Minimum lines number of a similarity.
-min-similarity-lines=4
+min-similarity-lines=10
 
 
 [BASIC]

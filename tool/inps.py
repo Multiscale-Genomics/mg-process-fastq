@@ -32,12 +32,13 @@ except ImportError:
     logger.warn("[Warning] Cannot import \"pycompss\" API packages.")
     logger.warn("          Using mock decorators.")
 
-    from utils.dummy_pycompss import FILE_IN, FILE_OUT, IN # pylint: disable=ungrouped-imports
-    from utils.dummy_pycompss import task # pylint: disable=ungrouped-imports
-    from utils.dummy_pycompss import compss_wait_on # pylint: disable=ungrouped-imports
+    from utils.dummy_pycompss import FILE_IN, FILE_OUT, IN  # pylint: disable=ungrouped-imports
+    from utils.dummy_pycompss import task  # pylint: disable=ungrouped-imports
+    from utils.dummy_pycompss import compss_wait_on  # pylint: disable=ungrouped-imports
 
 from basic_modules.tool import Tool
 from basic_modules.metadata import Metadata
+
 
 # ------------------------------------------------------------------------------
 
@@ -145,14 +146,11 @@ class inps(Tool):
             command_params = command_params + [
                 "--pe_min", str(self.configuration["inps_pe_min_param"])]
 
-        print ("****output_files[\"bed\"]***",output_files["bed"])
-        
         results = self.inps_peak_calling(
             input_files["bam"],
             output_files["bed"],
             command_params
         )
-
 
         results = compss_wait_on(results)
 

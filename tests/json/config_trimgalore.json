@@ -1,0 +1,140 @@
+{
+    "input_files": [
+        {
+            "required": true,
+            "allow_multiple": false,
+            "name": "fastq",
+            "value": "59b7e020d9422a5969b65378"
+        }
+    ],
+    "arguments": [
+        {
+            "name": "project",
+            "value": "run001"
+        },
+        {
+            "name": "description",
+            "value": null
+        },
+        {
+            "name": "quality",
+            "description": "Trim low quality reads in addition to adpater removal",
+            "help": "Trim low quality reads in addition to adpater removal",
+            "type": "int",
+            "required": true,
+            "default": "50",
+            "value": "50"
+        },
+        {
+            "name": "phred33",
+            "description": "Instructs Cutadapt to use ASCII+33 quality scores as Phred scores",
+            "help": "Instructs Cutadapt to use ASCII+33 quality scores as Phred scores",
+            "type": "string",
+            "required": true,
+            "default": "OFF",
+            "value": "OFF"
+        },
+        {
+            "name": "phred64",
+            "description": "Instructs Cutadapt to use ASCII+64 quality scores as Phred scores",
+            "help": "Instructs Cutadapt to use ASCII+64 quality scores as Phred scores",
+            "type": "string",
+            "required": true
+        },
+        {
+            "name": "fastqc",
+            "description": "Run FastQC in the default mode on the FastQ file once trimming is complete",
+            "help": "Run FastQC in the default mode on the FastQ file once trimming is complete",
+            "type": "string",
+            "required": true
+        },
+        {
+            "name": "fastqc_args",
+            "description": "Passes extra arguments to FastQC",
+            "help": "Passes extra arguments to FastQC",
+            "type": "string",
+            "required": true
+        },
+        {
+            "name": "adapter",
+            "description": "Adapter sequence to be trimmed",
+            "help": "Adapter sequence to be trimmed",
+            "type": "string",
+            "required": true
+        },
+        {
+            "name": "adapter2",
+            "description": "Optional adapter sequence to be trimmed off read 2 of paired-end files.",
+            "help": "Optional adapter sequence to be trimmed off read 2 of paired-end files.",
+            "type": "string",
+            "required": true
+        },
+        {
+            "name": "illumina",
+            "description": "Adapter sequence to be trimmed is the first 13bp of the Illumina universal adapter",
+            "help": "Adapter sequence to be trimmed is the first 13bp of the Illumina universal adapter",
+            "type": "string",
+            "required": true
+        },
+        {
+            "name": "nextera",
+            "description": "Adapter sequence to be trimmed is the first 12bp of the Nextera adapter",
+            "help": "Adapter sequence to be trimmed is the first 12bp of the Nextera adapter",
+            "type": "string",
+            "required": true
+        },
+        {
+            "name": "small_rna",
+            "description": "Adapter sequence to be trimmed is the first 12bp of the Illumina Small RNA 3' Adapter",
+            "help": "Adapter sequence to be trimmed is the first 12bp of the Illumina Small RNA 3' Adapter",
+            "type": "string",
+            "required": true
+        },
+        {
+            "name": "max_length",
+            "description": "Discard reads that are longer than bp after trimming",
+            "help": "Discard reads that are longer than bp after trimming",
+            "type": "int",
+            "required": true
+        },
+        {
+            "name": "stringency",
+            "description": "Overlap with adapter sequence required to trim a sequence",
+            "help": "Overlap with adapter sequence required to trim a sequence",
+            "type": "int",
+            "required": true,
+            "default": "1",
+            "value": "1"
+        },
+        {
+            "name": "length",
+            "description": "Discard reads that became shorter than length INT because of either quality or adapter trimming",
+            "help": "Discard reads that became shorter than length INT because of either quality or adapter trimming",
+            "type": "int",
+            "required": true,
+            "default": "20",
+            "value": "20"
+        }
+    ],
+    "output_files": [
+        {
+            "required": true,
+            "allow_multiple": false,
+            "name": "fastq_trimmed",
+            "file": {
+                "file_type": "fastq_trimmed",
+                "meta_data": {
+                    "visible": true,
+                    "tool": "process_trim_galore",
+                    "description": "Trimmed reads"
+                },
+                "file_path": "tests/data/macs2.Human.DRR000150.22.trimmed.fq",
+                "data_type": "data_rnaseq",
+                "compressed": "null"
+            }
+        } 
+    ]
+}
+
+
+

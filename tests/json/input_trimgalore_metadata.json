@@ -1,0 +1,14 @@
+[
+    {
+        "compressed": 0,
+        "_id": "59b7e020d9422a5969b65378",
+        "data_type": "data_wgbs",
+        "file_type": "fastq",
+        "file_path": "tests/data/bsSeeker.Mouse.SRR892982_1.fastq.gz",
+        "sources": [],
+        "taxon_id": 9606,
+        "meta_data": {
+            "visible": true
+        }
+    }
+]

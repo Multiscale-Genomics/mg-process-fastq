@@ -303,7 +303,7 @@ class alignerUtils(object):
 
 
         cmd_samse = ' '.join([
-            'bwa samse',
+            'bwa sampe',
             '-f', reads_file_1 + '.sam',
             genome_file,
             reads_file_1 + '.sai', reads_file_2 + '.sai',
@@ -321,7 +321,7 @@ class alignerUtils(object):
 
         try:
             for command_line in command_lines:
-                logger.info("BWA MEM COMMAND: " + command_line)
+                logger.info("BWA ALN COMMAND: " + command_line)
                 process = subprocess.Popen(command_line, shell=True)
                 process.wait()
         except (IOError, OSError) as msg:

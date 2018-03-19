@@ -33,12 +33,13 @@ except ImportError:
     logger.warn("[Warning] Cannot import \"pycompss\" API packages.")
     logger.warn("          Using mock decorators.")
 
-    from utils.dummy_pycompss import FILE_IN, FILE_OUT, IN # pylint: disable=ungrouped-imports
-    from utils.dummy_pycompss import task # pylint: disable=ungrouped-imports
-    from utils.dummy_pycompss import compss_wait_on # pylint: disable=ungrouped-imports
+    from utils.dummy_pycompss import FILE_IN, FILE_OUT, IN  # pylint: disable=ungrouped-imports
+    from utils.dummy_pycompss import task  # pylint: disable=ungrouped-imports
+    from utils.dummy_pycompss import compss_wait_on  # pylint: disable=ungrouped-imports
 
 from basic_modules.tool import Tool
 from basic_modules.metadata import Metadata
+
 
 # ------------------------------------------------------------------------------
 

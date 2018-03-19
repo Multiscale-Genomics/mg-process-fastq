@@ -20,7 +20,7 @@
 from __future__ import print_function
 
 # Required for ReadTheDocs
-from functools import wraps # pylint: disable=unused-import
+from functools import wraps  # pylint: disable=unused-import
 
 import argparse
 
@@ -121,23 +121,23 @@ class process_idear(Workflow):
 
         logger.info("PROCESS DAMIDSEQ - DEFINED OUTPUT:", output_files)
 
-        ## iDEAR to call peaks
+        # iDEAR to call peaks
         idear_caller = idearTool(self.configuration)
         idear_caller.run(
             {
-                "bam_1" : input_files["bam_1"],
-                "bam_2" : input_files["bam_2"],
-                "bg_bam_1" : input_files["bg_bam_1"],
-                "bg_bam_2" : input_files["bg_bam_2"],
-                "bsgenome" : input_files["bsgenome"]
+                "bam_1": input_files["bam_1"],
+                "bam_2": input_files["bam_2"],
+                "bg_bam_1": input_files["bg_bam_1"],
+                "bg_bam_2": input_files["bg_bam_2"],
+                "bsgenome": input_files["bsgenome"]
             }, {
-                "bam_1" : metadata["bam_1"],
-                "bam_2" : metadata["bam_2"],
-                "bg_bam_1" : metadata["bg_bam_1"],
-                "bg_bam_2" : metadata["bg_bam_2"],
-                "bsgenome" : metadata["bsgenome"]
+                "bam_1": metadata["bam_1"],
+                "bam_2": metadata["bam_2"],
+                "bg_bam_1": metadata["bg_bam_1"],
+                "bg_bam_2": metadata["bg_bam_2"],
+                "bsgenome": metadata["bsgenome"]
             }, {
-                "bigwig" : output_files["bigwig"],
+                "bigwig": output_files["bigwig"],
             }
         )
 
@@ -170,16 +170,21 @@ def main_json(config, in_metadata, out_metadata):
 
     return result
 
+
 # ------------------------------------------------------------------------------
 
 if __name__ == "__main__":
 
     # Set up the command line parameters
-    PARSER = argparse.ArgumentParser(description="iDEAR iDamID-seq peak calling")
+    PARSER = argparse.ArgumentParser(
+        description="iDEAR iDamID-seq peak calling")
     PARSER.add_argument("--config", help="Configuration file")
-    PARSER.add_argument("--in_metadata", help="Location of input metadata file")
-    PARSER.add_argument("--out_metadata", help="Location of output metadata file")
-    PARSER.add_argument("--local", action="store_const", const=True, default=False)
+    PARSER.add_argument(
+        "--in_metadata", help="Location of input metadata file")
+    PARSER.add_argument(
+        "--out_metadata", help="Location of output metadata file")
+    PARSER.add_argument(
+        "--local", action="store_const", const=True, default=False)
 
     # Get the matching parameters from the command line
     ARGS = PARSER.parse_args()

@@ -36,14 +36,15 @@ except ImportError:
     logger.warn("[Warning] Cannot import \"pycompss\" API packages.")
     logger.warn("          Using mock decorators.")
 
-    from utils.dummy_pycompss import FILE_IN, FILE_OUT, IN, OUT # pylint: disable=ungrouped-imports
-    from utils.dummy_pycompss import task # pylint: disable=ungrouped-imports
-    from utils.dummy_pycompss import compss_wait_on # pylint: disable=ungrouped-imports
+    from utils.dummy_pycompss import FILE_IN, FILE_OUT, IN, OUT  # pylint: disable=ungrouped-imports
+    from utils.dummy_pycompss import task  # pylint: disable=ungrouped-imports
+    from utils.dummy_pycompss import compss_wait_on  # pylint: disable=ungrouped-imports
 
 from basic_modules.tool import Tool
 from basic_modules.metadata import Metadata
 
 from tool.fastqreader import fastqreader
+
 
 # ------------------------------------------------------------------------------
 
@@ -171,8 +172,8 @@ class fastq_splitter(Tool):
         returns=list)
     def paired_splitter(self, in_file1, in_file2, out_file, tag='tmp'):  # pylint: disable=no-self-use
         """
-        Function to divide the FastQ files into separte sub files of 1000000
-        sequences so that the aligner can run in parallel.
+        Function to divide the paired-end FastQ files into separte sub files
+        of 1000000 sequences so that the aligner can run in parallel.
 
         Parameters
         ----------
@@ -291,8 +292,8 @@ class fastq_splitter(Tool):
 
     def run(self, input_files, input_metadata, output_files):
         """
-        The main function to run the splitting of FASTQ files (single or paired)
-        so that they can aligned in a distributed manner
+        The main function to run the splitting of FASTQ files (single or
+        paired) so that they can aligned in a distributed manner
 
         Parameters
         ----------

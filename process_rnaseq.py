@@ -28,6 +28,7 @@ from utils import remap
 from tool.kallisto_indexer import kallistoIndexerTool
 from tool.kallisto_quant import kallistoQuantificationTool
 
+
 # ------------------------------------------------------------------------------
 
 class process_rnaseq(Workflow):
@@ -123,7 +124,10 @@ class process_rnaseq(Workflow):
             kq_files, kq_meta = k_quant.run(
                 kq_input_files,
                 kq_input_meta,
-                remap(output_files, "abundance_h5_file", "abundance_tsv_file", "run_info_file")
+                remap(
+                    output_files,
+                    "abundance_h5_file", "abundance_tsv_file", "run_info_file"
+                )
             )
         elif "fastq2" in input_files:
             kq_input_files = {
@@ -169,6 +173,7 @@ class process_rnaseq(Workflow):
 
         return (kq_files, kq_meta)
 
+
 # -----------------------------------------------------------------------------
 
 def main_json(config, in_metadata, out_metadata):
@@ -194,16 +199,22 @@ def main_json(config, in_metadata, out_metadata):
 
     return result
 
+
 # ------------------------------------------------------------------------------
 
 if __name__ == "__main__":
 
     # Set up the command line parameters
-    PARSER = argparse.ArgumentParser(description="Parse RNA-seq for expression analysis")
-    PARSER.add_argument("--config", help="Configuration file")
-    PARSER.add_argument("--in_metadata", help="Location of input metadata file")
-    PARSER.add_argument("--out_metadata", help="Location of output metadata file")
-    PARSER.add_argument("--local", action="store_const", const=True, default=False)
+    PARSER = argparse.ArgumentParser(
+        description="Parse RNA-seq for expression analysis")
+    PARSER.add_argument(
+        "--config", help="Configuration file")
+    PARSER.add_argument(
+        "--in_metadata", help="Location of input metadata file")
+    PARSER.add_argument(
+        "--out_metadata", help="Location of output metadata file")
+    PARSER.add_argument(
+        "--local", action="store_const", const=True, default=False)
 
     # Get the matching parameters from the command line
     ARGS = PARSER.parse_args()

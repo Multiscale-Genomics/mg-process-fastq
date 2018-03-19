@@ -24,16 +24,15 @@ import argparse
 from basic_modules.workflow import Workflow
 from utils import logger
 
-from tool.bs_seeker_aligner import bssAlignerTool
-
+from tool.bs_seeker_filter import filterReadsTool
 
 # ------------------------------------------------------------------------------
 
-class process_bs_seeker_aligner(Workflow):
+class process_bsFilter(Workflow):
     """
-    Functions for downloading and processing whole genome bisulfate sequencings
-    (WGBS) files. Files are filtered, aligned and analysed for points of
-    methylation
+    Functions for filtering FASTQ files.
+    Files are filtered for removal of duplicate reads.
+    Low quality reads in qseq file can also be filtered.
     """
 
     configuration = {}
@@ -48,84 +47,94 @@ class process_bs_seeker_aligner(Workflow):
             a dictionary containing parameters that define how the operation
             should be carried out, which are specific to each Tool.
         """
-        logger.info("Processing BS SEEKER2 - Aligning Reads")
+        logger.info("Processing BS Filter")
         if configuration is None:
             configuration = {}
         self.configuration.update(configuration)
 
     def run(self, input_files, metadata, output_files):
         """
-        This pipeline processes paired-end FASTQ files to identify
-        methylated regions within the genome.
+        This pipeline processes FASTQ files to filter duplicate entries
 
         Parameters
         ----------
         input_files : dict
             List of strings for the locations of files. These should include:
 
-            genome_fa : str
-                Genome assembly in FASTA
-
             fastq1 : str
-                Location for the first filtered FASTQ file for single or paired
-                end reads
+                Location for the first FASTQ file for single or paired end reads
 
             fastq2 : str
-                Location for the second filtered FASTQ file if paired end reads
-
-            index : str
-                Location of the index file
+                Location for the second FASTQ file if paired end reads [OPTIONAL]
 
         metadata : dict
             Input file meta data associated with their roles
 
-            genome_fa : dict
-            fastq1 : dict
-            fastq2 : dict
-            index : dict
+            fastq1 : str
+
+            fastq2 : str
+                [OPTIONAL]
 
         output_files : dict
-            bam : str
-            bai : str
+
+            fastq1_filtered : str
+
+            fastq2_filtered : str
+                [OPTIONAL]
 
         Returns
         -------
 
-        bam|bai : str
-            Location of the alignment bam file and the associated index
+        fastq1_filtered|fastq1_filtered : str
+            Locations of the filtered FASTQ files from which alignments were made
+
+        fastq2_filtered|fastq2_filtered : str
+            Locations of the filtered FASTQ files from which alignments were made
 
         """
 
         output_results_files = {}
         output_metadata = {}
 
-        logger.info("BS-Seeker2 Aligner")
-        bss_aligner = bssAlignerTool(self.configuration)
-        bam, bam_meta = bss_aligner.run(
-            input_files,
-            metadata,
-            output_files
+        logger.info("BS-Filter")
+
+        frt = filterReadsTool(self.configuration)
+        fastq1f, filter1_meta = frt.run(
+            {"fastq": input_files["fastq1"]},
+            {"fastq": metadata["fastq1"]},
+            {"fastq_filtered": output_files["fastq1_filtered"]}
         )
 
         try:
-            output_results_files["bam"] = bam["bam"]
-            output_results_files["bai"] = bam["bai"]
-            output_metadata["bam"] = bam_meta["bam"]
-            output_metadata["bai"] = bam_meta["bai"]
-
-            tool_name = output_metadata["bam"].meta_data["tool"]
-            output_metadata["bam"].meta_data["tool_description"] = tool_name
-            output_metadata["bam"].meta_data["tool"] = "process_wgbs"
-
-            tool_name = output_metadata["bai"].meta_data["tool"]
-            output_metadata["bai"].meta_data["tool_description"] = tool_name
-            output_metadata["bai"].meta_data["tool"] = "process_bs_seeker_aligner"
+            output_results_files["fastq1_filtered"] = fastq1f["fastq_filtered"]
+            output_metadata["fastq1_filtered"] = filter1_meta["fastq_filtered"]
+            tool_name = output_metadata["fastq1_filtered"].meta_data["tool"]
+            output_metadata["fastq1_filtered"].meta_data["tool_description"] = tool_name
+            output_metadata["fastq1_filtered"].meta_data["tool"] = "process_wgbs"
         except KeyError:
-            logger.fatal("BS SEEKER2 - Aligner failed")
+            logger.fatal("WGBS - FILTER: Error while filtering")
             return {}, {}
 
-        return (output_results_files, output_metadata)
+        if "fastq2" in input_files:
+            logger.info("WGBS - Filter background")
+            fastq2f, filter2_meta = frt.run(
+                {"fastq": input_files["fastq2"]},
+                {"fastq": metadata["fastq2"]},
+                {"fastq_filtered": output_files["fastq2_filtered"]}
+            )
 
+            try:
+                output_results_files["fastq2_filtered"] = fastq2f["fastq_filtered"]
+                output_metadata["fastq2_filtered"] = filter2_meta["fastq_filtered"]
+
+                tool_name = output_metadata["fastq2_filtered"].meta_data["tool"]
+                output_metadata["fastq2_filtered"].meta_data["tool_description"] = tool_name
+                output_metadata["fastq2_filtered"].meta_data["tool"] = "process_wgbs"
+            except KeyError:
+                logger.fatal("WGBS - FILTER (background): Error while filtering")
+                return {}, {}
+
+        return (output_results_files, output_metadata)
 
 # ------------------------------------------------------------------------------
 
@@ -141,7 +150,7 @@ def main_json(config, in_metadata, out_metadata):
     print("1. Instantiate and launch the App")
     from apps.jsonapp import JSONApp
     app = JSONApp()
-    result = app.launch(process_bs_seeker_aligner,
+    result = app.launch(process_bsFilter,
                         config,
                         in_metadata,
                         out_metadata)
@@ -152,21 +161,16 @@ def main_json(config, in_metadata, out_metadata):
 
     return result
 
-
 # ------------------------------------------------------------------------------
 
 if __name__ == "__main__":
 
     # Set up the command line parameters
-    PARSER = argparse.ArgumentParser(description="BS-Seeker 2 Aligner")
-    PARSER.add_argument(
-        "--config", help="Configuration file")
-    PARSER.add_argument(
-        "--in_metadata", help="Location of input metadata file")
-    PARSER.add_argument(
-        "--out_metadata", help="Location of output metadata file")
-    PARSER.add_argument(
-        "--local", action="store_const", const=True, default=False)
+    PARSER = argparse.ArgumentParser(description="WGBS Filter")
+    PARSER.add_argument("--config", help="Configuration file")
+    PARSER.add_argument("--in_metadata", help="Location of input metadata file")
+    PARSER.add_argument("--out_metadata", help="Location of output metadata file")
+    PARSER.add_argument("--local", action="store_const", const=True, default=False)
 
     # Get the matching parameters from the command line
     ARGS = PARSER.parse_args()

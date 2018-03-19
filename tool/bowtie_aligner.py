@@ -98,16 +98,23 @@ class bowtie2AlignerTool(Tool):
         g_dir = genome_idx.split("/")
         g_dir = "/".join(g_dir[:-1])
 
-        try:
-            tar = tarfile.open(genome_idx)
-            tar.extractall(path=g_dir)
-            tar.close()
-        except IOError:
-            return False
+        untar_idx = True
+        if "no-untar" in self.configuration and self.configuration["no-untar"] is True:
+            untar_idx = False
+
+        if untar_idx is True:
+            try:
+                tar = tarfile.open(genome_idx)
+                tar.extractall(path=g_dir)
+                tar.close()
+            except IOError:
+                return False
 
         gfl = genome_file_loc.split("/")
         genome_fa_ln = genome_idx.replace('.tar.gz', '/') + gfl[-1]
-        shutil.copy(genome_file_loc, genome_fa_ln)
+
+        if os.path.isfile(genome_fa_ln) is False:
+            shutil.copy(genome_file_loc, genome_fa_ln)
 
         if (
                 os.path.isfile(genome_fa_ln) is False or
@@ -169,16 +176,23 @@ class bowtie2AlignerTool(Tool):
         g_dir = genome_idx.split("/")
         g_dir = "/".join(g_dir[:-1])
 
-        try:
-            tar = tarfile.open(genome_idx)
-            tar.extractall(path=g_dir)
-            tar.close()
-        except IOError:
-            return False
+        untar_idx = True
+        if "no-untar" in self.configuration and self.configuration["no-untar"] is True:
+            untar_idx = False
+
+        if untar_idx is True:
+            try:
+                tar = tarfile.open(genome_idx)
+                tar.extractall(path=g_dir)
+                tar.close()
+            except IOError:
+                return False
 
         gfl = genome_file_loc.split("/")
         genome_fa_ln = genome_idx.replace('.tar.gz', '/') + gfl[-1]
-        shutil.copy(genome_file_loc, genome_fa_ln)
+
+        if os.path.isfile(genome_fa_ln) is False:
+            shutil.copy(genome_file_loc, genome_fa_ln)
 
         out_bam = read_file_loc1 + '.out.bam'
         au_handle = alignerUtils()
@@ -408,20 +422,16 @@ class bowtie2AlignerTool(Tool):
         results = bam_handle.bam_copy(output_bam_list.pop(0), output_bam_file)
         results = compss_wait_on(results)
 
+        bam_job_files = [output_bam_file]
+        for tmp_bam_file in output_bam_list:
+            bam_job_files.append(tmp_bam_file)
+
         if results is False:
-            logger.fatal("BOWTIE2 Aligner: Bam copy failed")
+            logger.fatal("Bowtie2 Aligner: Bam copy failed")
             return {}, {}
 
-        while True:
-            if output_bam_list:
-                results = bam_handle.bam_merge(output_bam_file, output_bam_list.pop(0))
-                results = compss_wait_on(results)
-
-                if results is False:
-                    logger.fatal("BOWTIE2 Aligner: Bam merging failed")
-                    return {}, {}
-            else:
-                break
+        results = bam_handle.bam_merge(bam_job_files)
+        results = compss_wait_on(results)
 
         results = bam_handle.bam_sort(output_bam_file)
         results = compss_wait_on(results)

@@ -18,8 +18,10 @@
 """
 
 import os
+import errno
 import re
 from collections import deque
+
 
 class fastqreader(object):
     """
@@ -38,6 +40,9 @@ class fastqreader(object):
 
         self.f1_eof = False
         self.f2_eof = False
+
+        self.f1_output_file_loc = None
+        self.f2_output_file_loc = None
 
         self.f1_output_file = None
         self.f2_output_file = None
@@ -121,10 +126,12 @@ class fastqreader(object):
 
         if side == 1:
             try:
+                start_posn = self.f1_file.tell()
                 read_id = self.f1_file.readline()
                 read_seq = self.f1_file.readline()
                 read_addition = self.f1_file.readline()
                 read_score = self.f1_file.readline()
+                end_posn = self.f1_file.tell()
                 if read_id == "":
                     raise EOFError
             except EOFError:
@@ -133,10 +140,12 @@ class fastqreader(object):
 
         elif side == 2:
             try:
+                start_posn = self.f2_file.tell()
                 read_id = self.f2_file.readline()
                 read_seq = self.f2_file.readline()
                 read_addition = self.f2_file.readline()
                 read_score = self.f2_file.readline()
+                end_posn = self.f2_file.tell()
                 if read_id == "":
                     raise EOFError
             except EOFError:
@@ -149,7 +158,9 @@ class fastqreader(object):
             'id': read_id.rstrip(),
             'seq': read_seq,
             'add': read_addition,
-            'score': read_score
+            'score': read_score,
+            'start_posn': start_posn,
+            'end_posn': end_posn
         }
 
     def createOutputFiles(self, tag=''):
@@ -170,9 +181,14 @@ class fastqreader(object):
         fq1.insert(-1, "tmp")
 
         if os.path.isdir("/".join(fq1[0:-1])) is False:
-            os.mkdir("/".join(fq1[0:-1]))
+            try:
+                os.mkdir("/".join(fq1[0:-1]))
+            except OSError as oserror:
+                if oserror.errno != errno.EEXIST:
+                    raise OSError
 
         self.f1_output_file = open("/".join(fq1), "w")
+        self.f1_output_file_loc = "/".join(fq1)
 
         if self.paired is True:
             fq2 = self.fastq2.split("/")
@@ -180,6 +196,7 @@ class fastqreader(object):
             fq2[-1] = re.sub('.fastq$', new_suffix, fq2[-1])
             fq2.insert(-1, "tmp")
             self.f2_output_file = open("/".join(fq2), "w")
+            self.f2_output_file_loc = "/".join(fq2)
 
     def writeOutput(self, read, side=1):
         """

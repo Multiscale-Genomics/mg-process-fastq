@@ -30,7 +30,6 @@ MuG - FASTQ Pipelines's documentation!
    pipelines
    tools
    common
-   fastqfunctions
    settingUpTravis
    docker
    adr

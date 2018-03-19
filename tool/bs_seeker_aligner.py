@@ -17,6 +17,7 @@
 
 from __future__ import print_function
 
+import os
 import shlex
 import subprocess
 import sys
@@ -114,6 +115,7 @@ class bssAlignerTool(Tool):
         bam_out : file
             Location of the BAM file generated during the alignment.
         """
+        index_dir = genome_idx.split("/")
         script = bss_path + "/bs_seeker2-align.py"
         params = [
             "--input_1", input_fastq_1,
@@ -121,6 +123,7 @@ class bssAlignerTool(Tool):
             "--aligner", aligner,
             "--path", aligner_path,
             "--genome", genome_fasta,
+            "-d", "/".join(index_dir[:-1]),
             "--bt2-p", "4",
             "-o", bam_out + "_tmp.bam",
             "-f", "bam"
@@ -169,12 +172,14 @@ class bssAlignerTool(Tool):
         bam_out : file
             Location of the BAM file generated during the alignment.
         """
+        index_dir = genome_idx.split("/")
         script = bss_path + "/bs_seeker2-align.py"
         params = [
             "-i", input_fastq,
             "--aligner", aligner,
             "--path", aligner_path,
             "--genome", genome_fasta,
+            "-d", "/".join(index_dir[:-1]),
             "--bt2-p", "4",
             "-o", bam_out + "_tmp.bam",
             "-f", "bam"
@@ -334,13 +339,18 @@ class bssAlignerTool(Tool):
         g_dir = "/".join(g_dir[:-1])
         params += ["-d", g_dir]
 
-        try:
-            tar = tarfile.open(genome_idx)
-            tar.extractall(path=g_dir)
-            tar.close()
-        except IOError:
-            logger.fatal("WGBS - BS SEEKER2: Missing index archive")
-            return False
+        untar_idx = True
+        if "no-untar" in self.configuration and self.configuration["no-untar"] is True:
+            untar_idx = False
+
+        if untar_idx is True:
+            try:
+                tar = tarfile.open(genome_idx)
+                tar.extractall(path=g_dir)
+                tar.close()
+            except IOError:
+                logger.fatal("WGBS - BS SEEKER2: Missing index archive")
+                return False
 
         command_line = (
             "python " + script + " " + " ".join(params)
@@ -359,6 +369,8 @@ class bssAlignerTool(Tool):
             with open(bam_out + "_tmp.bam", "rb") as f_in:
                 with open(bam_out, "wb") as f_out:
                     f_out.write(f_in.read())
+
+            os.remove(bam_out + "_tmp.bam")
         except IOError:
             logger.fatal("WGBS - BS SEEKER2: Failed sorting")
             return False
@@ -481,33 +493,30 @@ class bssAlignerTool(Tool):
 
         barrier()
 
-        bam_handler = bamUtilsTask()
+        bam_handle = bamUtilsTask()
 
-        results = bam_handler.bam_copy(output_bam_list.pop(0), output_bam_file)
+        results = bam_handle.bam_copy(output_bam_list.pop(0), output_bam_file)
         results = compss_wait_on(results)
+
+        bam_job_files = [output_bam_file]
+        for tmp_bam_file in output_bam_list:
+            bam_job_files.append(tmp_bam_file)
 
         if results is False:
             logger.fatal("BS SEEKER2 Aligner: Bam copy failed")
             return {}, {}
 
-        while True:
-            if len(output_bam_list) == 0:
-                break
-            results = bam_handler.bam_merge(output_bam_file, output_bam_list.pop(0))
-            results = compss_wait_on(results)
+        results = bam_handle.bam_merge(bam_job_files)
+        results = compss_wait_on(results)
 
-            if results is False:
-                logger.fatal("BS SEEKER2 Aligner: Bam merging failed")
-                return {}, {}
-
-        results = bam_handler.bam_sort(output_bam_file)
+        results = bam_handle.bam_sort(output_bam_file)
         results = compss_wait_on(results)
 
         if results is False:
             logger.fatal("BS SEEKER2 Aligner: Bam sorting failed")
             return {}, {}
 
-        results = bam_handler.bam_index(output_bam_file, output_bai_file)
+        results = bam_handle.bam_index(output_bam_file, output_bai_file)
         results = compss_wait_on(results)
 
         if results is False:

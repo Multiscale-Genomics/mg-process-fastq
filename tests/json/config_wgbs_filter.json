@@ -1,0 +1,89 @@
+{
+    "input_files": [
+        {
+            "required": true,
+            "allow_multiple": false,
+            "name": "fastq1",
+            "value": "59b7e020d9422a5969b65378"
+        }, {
+            "required": false,
+            "allow_multiple": false,
+            "name": "fastq2",
+            "value": "59b7e020d9422a5969b65379"
+        }
+    ],
+    "arguments": [
+        {
+            "name": "project",
+            "value": "run001"
+        },
+        {
+            "name": "description",
+            "value": null
+        },
+        {
+            "name": "filter",
+            "description": "Name of the filter",
+            "help": "Name of the filter",
+            "type": "string",
+            "required": true,
+            "default": "bowtie2",
+            "value": "bowtie2"
+        },
+        {
+            "name": "filter_path",
+            "description": "Location of the filter libraries",
+            "help": "Location of the filter libraries",
+            "type": "string",
+            "required": true,
+            "default": "${HOME}/lib/bowtie2-2.3.4-linux-x86_64",
+            "value": "${HOME}/lib/bowtie2-2.3.4-linux-x86_64"
+        },
+        {
+            "name": "bss_path",
+            "description": "Location of the BS Seeker2 code libraries",
+            "help": "Location of the BS Seeker2 code libraries",
+            "type": "string",
+            "required": true,
+            "default": "${HOME}/lib/BSseeker2",
+            "value": "${HOME}/lib/BSseeker2"
+        }
+    ],
+    "output_files": [
+        {
+            "required": true,
+            "allow_multiple": false,
+            "name": "fastq1_filtered",
+            "file": {
+                "file_type": "fastq1_filtered",
+                "meta_data": {
+                    "visible": true,
+                    "tool": "process_bs_seeker_filter",
+                    "description": "Filtered reads"
+                },
+                "file_path": "tests/data/bsSeeker.Mouse.SRR892982_1.filtered.fastq",
+                "data_type": "data_wgbs",
+                "compressed": "null"
+            }
+        }, 
+        {
+            "required": true,
+            "allow_multiple": false,
+            "name": "fastq2_filtered",
+            "file": {
+                "file_type": "fastq2_filtered",
+                "meta_data": {
+                    "visible": true,
+                    "tool": "process_bs_seeker_filter",
+                    "description": "Filtered reads"
+                },
+                "file_path": "tests/data/bsSeeker.Mouse.SRR892982_2.filtered.fastq",
+                "data_type": "data_wgbs",
+                "compressed": "null"
+            }
+        } 
+    ]
+}
+
+
+

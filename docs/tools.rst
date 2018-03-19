@@ -90,8 +90,13 @@ Tools for processing FastQ files
    ==================
    .. autoclass:: tool.fastq_splitter.fastq_splitter
       :members:
-
-
+      
+   Trim Galore
+   -----------   
+   .. autoclass:: tool.trimgalore.trimgalore
+      :members:
+   
+   
    Filters
    =======
 

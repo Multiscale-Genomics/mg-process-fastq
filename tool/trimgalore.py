@@ -65,6 +65,7 @@ class trimgalore(Tool):
         """
         Trims and removes low quality subsections and reads from a singed-ended
         FASTQ file
+
         Parameters
         ----------
         fastq_file_in : str
@@ -73,6 +74,7 @@ class trimgalore(Tool):
             Location of the output fastq file
         params : dict
             Parameters to use in TrimGalore
+
         Returns
         -------
         bam_file_out : str
@@ -114,7 +116,7 @@ class trimgalore(Tool):
         """
         Trimd and removes low quality subsections and reads from paired-end
         FASTQ files
-        
+
         Parameters
         ----------
         fastq_file_in : str
@@ -168,9 +170,11 @@ class trimgalore(Tool):
     def get_trimgalore_params(params):
         """
         Function to handle for extraction of commandline parameters
+
         Parameters
         ----------
         params : dict
+
         Returns
         -------
         list
@@ -232,7 +236,7 @@ class trimgalore(Tool):
         """
         The main function to run TrimGalore to remove low quality and very short
         reads. TrimGalore uses CutAdapt and FASTQC for the analysis.
-       
+
         Parameters
         ----------
         input_files : dict
@@ -242,7 +246,7 @@ class trimgalore(Tool):
                 [OPTIONAL] Location of the paired end FASTQ file
         metadata : dict
             Matching metadata for the inpit FASTQ files
-       
+
         Returns
         -------
         output_files : dict
@@ -252,7 +256,7 @@ class trimgalore(Tool):
                 [OPTIONAL] Location of a trimmed paired end FASTQ file
         output_metadata : dict
             Matching metadata for the output files
-        
+
         """
         command_params = self.get_trimgalore_params(self.configuration)
 
@@ -262,7 +266,7 @@ class trimgalore(Tool):
             #     input_files['input'], output_files['output'], command_params)
         else:
             results = self.trimgalore_single(
-                input_files['fastq'], output_files["fastq_trimmed"], command_params)
+                input_files['fastq1'], output_files["fastq1_trimmed"], command_params)
         results = compss_wait_on(results)
 
         if results is False:

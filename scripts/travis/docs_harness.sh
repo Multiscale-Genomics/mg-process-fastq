@@ -20,4 +20,4 @@ rc=0
 cd docs
 make html 2> output.err
 
-if [ -s output.err] then exit 1; fi
+if [[ -s output.err]]; then exit 1; fi

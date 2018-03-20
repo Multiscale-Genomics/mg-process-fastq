@@ -81,6 +81,9 @@ before_install:
     - echo "deb http://cran.r-project.org/bin/linux/ubuntu trusty/" | sudo tee -a /etc/apt/sources.list
     - sudo apt-get update -qq
 
+    - sudo chmod +x scripts/travis/includeMACS2.sh
+    - sudo chmod +x scripts/travis/includeTADbit.sh
+
     - if [[ "$TESTENV" == "code" ]]; then sudo apt-get install r-base-core; fi
     - if [[ "$TESTENV" == "code" ]]; then sudo apt-get install python-rpy2; fi
     - if [[ "$TESTENV" == "code" ]]; then sudo ./scripts/travis/install_code_test_dependencies.sh; fi

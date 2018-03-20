@@ -226,50 +226,32 @@ class bwaAlignerTool(Tool):
         -------
         list
         """
+        command_parameters = {
+            "bwa_edit_dist_param": ["-n", True],
+            "bwa_max_gap_open_param": ["-o", True],
+            "bwa_max_gap_ext_param": ["-e", True],
+            "bwa_dis_long_del_range_param": ["-d", True],
+            "bwa_dis_indel_range_param": ["-i", True],
+            "bwa_n_subseq_seed_param": ["-l", True],
+            "bwa_max_edit_dist_param": ["-k", True],
+            "bwa_mismatch_penalty_param": ["-M", True],
+            "bwa_gap_open_penalty_param": ["-O", True],
+            "bwa_gap_ext_penalty_param": ["-E", True],
+            "bwa_use_subopt_threshold_param": ["-R", True],
+            "bwa_reverse_query_param": ["-c", False],
+            "bwa_dis_iter_search_param": ["-N", False],
+            "bwa_read_trim_param": ["-q", True],
+            "bwa_barcode_len_param": ["-B", True]
+        }
+
         command_params = []
-        if "bwa_edit_dist_param" in params:
-            command_params = command_params + [
-                "-n", str(params["bwa_edit_dist_param"])]
-        if "bwa_max_gap_open_param" in params:
-            command_params = command_params + [
-                "-o", str(params["bwa_max_gap_open_param"])]
-        if "bwa_max_gap_ext_param" in params:
-            command_params = command_params + [
-                "-e", str(params["bwa_max_gap_ext_param"])]
-        if "bwa_dis_long_del_range_param" in params:
-            command_params = command_params + [
-                "-d", str(params["bwa_dis_long_del_range_param"])]
-        if "bwa_dis_indel_range_param" in params:
-            command_params = command_params + [
-                "-i", str(params["bwa_dis_indel_range_param"])]
-        if "bwa_n_subseq_seed_param" in params:
-            command_params = command_params + [
-                "-l", str(params["bwa_n_subseq_seed_param"])]
-        if "bwa_max_edit_dist_param" in params:
-            command_params = command_params + [
-                "-k", str(params["bwa_max_edit_dist_param"])]
-        if "bwa_mismatch_penalty_param" in params:
-            command_params = command_params + [
-                "-M", str(params["bwa_mismatch_penalty_param"])]
-        if "bwa_gap_open_penalty_param" in params:
-            command_params = command_params + [
-                "-O", str(params["bwa_gap_open_penalty_param"])]
-        if "bwa_gap_ext_penalty_param" in params:
-            command_params = command_params + [
-                "-E", str(params["bwa_gap_ext_penalty_param"])]
-        if "bwa_use_subopt_threshold_param" in params:
-            command_params = command_params + [
-                "-R", str(params["bwa_use_subopt_threshold_param"])]
-        if "bwa_reverse_query_param" in params:
-            command_params = command_params + ["-c"]
-        if "bwa_dis_iter_search_param" in params:
-            command_params = command_params + ["-N"]
-        if "bwa_read_trim_param" in params:
-            command_params = command_params + [
-                "-q", str(params["bwa_read_trim_param"])]
-        if "bwa_barcode_len_param" in params:
-            command_params = command_params + [
-                "-B", str(params["bwa_barcode_len_param"])]
+        for param in params:
+            if param in command_parameters:
+                if command_parameters[param][1]:
+                    command_params = command_params + [command_parameters[param][0], params[param]]
+                else:
+                    if command_parameters[param][0]:
+                        command_params.append(command_parameters[param][0])
 
         return command_params
 

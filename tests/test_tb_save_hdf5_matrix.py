@@ -18,12 +18,13 @@
 from __future__ import print_function
 
 import os.path
-import pytest # pylint: disable=unused-import
+import pytest
 
 from tool.tb_save_hdf5_matrix import tbSaveAdjacencyHDF5Tool
 
+
 @pytest.mark.hic
-def test_tb_save_hdf5_matrix_frag_01():
+def test_tb_save_hdf5_mtrx_frag_01():
     """
     Test case to ensure that the BWA indexer works.
     """
@@ -32,25 +33,26 @@ def test_tb_save_hdf5_matrix_frag_01():
     genome_gem_fa = resource_path + "tb.Human.GCA_000001405.22_gem.fasta"
 
     metadata = {
-        'assembly' : 'test',
-        'expt_name' : 'tb.Human.SRR1658573_frag_01',
-        'enzyme_name' : 'MboI',
-        'windows' : ((1, 'end')),
-        'mapping' : ['frag', 'frag'],
-        'resolutions' : [10000, 100000],
-        'normalized' : False
+        'assembly': 'test',
+        'expt_name': 'tb.Human.SRR1658573_frag_01',
+        'enzyme_name': 'MboI',
+        'windows': ((1, 'end')),
+        'mapping': ['frag', 'frag'],
+        'resolutions': [10000, 100000],
+        'normalized': False
     }
 
     tgt_handle = tbSaveAdjacencyHDF5Tool()
-    tgt_files, tgt_meta = tgt_handle.run([reads_tsv, genome_gem_fa], [], metadata)
+    tgt_files, tgt_meta = tgt_handle.run([reads_tsv, genome_gem_fa], [], metadata)  # pylint: disable=unused-variable
 
     print(tgt_files)
 
     assert os.path.isfile(tgt_files[0]) is True
     assert os.path.getsize(tgt_files[0]) > 0
 
+
 @pytest.mark.hic
-def test_tb_save_hdf5_matrix_frag_02():
+def test_tb_save_hdf5_mtrx_frag_02():
     """
     Test case to ensure that the BWA indexer works.
     """
@@ -59,25 +61,26 @@ def test_tb_save_hdf5_matrix_frag_02():
     genome_gem_fa = resource_path + "tb.Human.GCA_000001405.22_gem.fasta"
 
     metadata = {
-        'assembly' : 'test',
-        'expt_name' : 'tb.Human.SRR1658573_frag_02',
-        'enzyme_name' : 'MboI',
-        'windows' : ((1, 'end')),
-        'mapping' : ['frag', 'frag'],
-        'resolutions' : [10000, 100000],
-        'normalized' : False
+        'assembly': 'test',
+        'expt_name': 'tb.Human.SRR1658573_frag_02',
+        'enzyme_name': 'MboI',
+        'windows': ((1, 'end')),
+        'mapping': ['frag', 'frag'],
+        'resolutions': [10000, 100000],
+        'normalized': False
     }
 
     tgt_handle = tbSaveAdjacencyHDF5Tool()
-    tgt_files, tgt_meta = tgt_handle.run([reads_tsv, genome_gem_fa], [], metadata)
+    tgt_files, tgt_meta = tgt_handle.run([reads_tsv, genome_gem_fa], [], metadata)  # pylint: disable=unused-variable
 
     print(tgt_files)
 
     assert os.path.isfile(tgt_files[0]) is True
     assert os.path.getsize(tgt_files[0]) > 0
 
+
 @pytest.mark.hic
-def test_tb_save_hdf5_matrix_iter_01():
+def test_tb_save_hdf5_mtrx_iter_01():
     """
     Test case to ensure that the BWA indexer works.
     """
@@ -86,25 +89,26 @@ def test_tb_save_hdf5_matrix_iter_01():
     genome_gem_fa = resource_path + "tb.Human.GCA_000001405.22_gem.fasta"
 
     metadata = {
-        'assembly' : 'test',
-        'expt_name' : 'tb.Human.SRR1658573_frag_01',
-        'enzyme_name' : 'MboI',
-        'windows' : ((1, 'end')),
-        'mapping' : ['iter', 'iter'],
-        'resolutions' : [10000, 100000],
-        'normalized' : False
+        'assembly': 'test',
+        'expt_name': 'tb.Human.SRR1658573_frag_01',
+        'enzyme_name': 'MboI',
+        'windows': ((1, 'end')),
+        'mapping': ['iter', 'iter'],
+        'resolutions': [10000, 100000],
+        'normalized': False
     }
 
     tgt_handle = tbSaveAdjacencyHDF5Tool()
-    tgt_files, tgt_meta = tgt_handle.run([reads_tsv, genome_gem_fa], [], metadata)
+    tgt_files, tgt_meta = tgt_handle.run([reads_tsv, genome_gem_fa], [], metadata)  # pylint: disable=unused-variable
 
     print(tgt_files)
 
     assert os.path.isfile(tgt_files[0]) is True
     assert os.path.getsize(tgt_files[0]) > 0
 
+
 @pytest.mark.hic
-def test_tb_save_hdf5_matrix_iter_02():
+def test_tb_save_hdf5_mtrx_iter_02():
     """
     Test case to ensure that the BWA indexer works.
     """
@@ -113,17 +117,17 @@ def test_tb_save_hdf5_matrix_iter_02():
     genome_gem_fa = resource_path + "tb.Human.GCA_000001405.22_gem.fasta"
 
     metadata = {
-        'assembly' : 'test',
-        'expt_name' : 'tb.Human.SRR1658573_iter_02',
-        'enzyme_name' : 'MboI',
-        'windows' : ((1, 'end')),
-        'mapping' : ['iter', 'iter'],
-        'resolutions' : [10000, 100000],
-        'normalized' : False
+        'assembly': 'test',
+        'expt_name': 'tb.Human.SRR1658573_iter_02',
+        'enzyme_name': 'MboI',
+        'windows': ((1, 'end')),
+        'mapping': ['iter', 'iter'],
+        'resolutions': [10000, 100000],
+        'normalized': False
     }
 
     tgt_handle = tbSaveAdjacencyHDF5Tool()
-    tgt_files, tgt_meta = tgt_handle.run([reads_tsv, genome_gem_fa], [], metadata)
+    tgt_files, tgt_meta = tgt_handle.run([reads_tsv, genome_gem_fa], [], metadata)  # pylint: disable=unused-variable
 
     print(tgt_files)
 

@@ -41,6 +41,7 @@ from basic_modules.metadata import Metadata
 
 from tool.common import cd
 
+
 # ------------------------------------------------------------------------------
 
 class bsgenomeTool(Tool):
@@ -167,7 +168,7 @@ class bsgenomeTool(Tool):
         genome=FILE_IN, circ_chrom=IN, seed_file_param=IN,
         genome_2bit=FILE_OUT, chrom_size=FILE_OUT, seed_file=FILE_OUT, bsgenome=FILE_OUT,
         isModifier=False)
-    def bsgenome_creater(  # pylint disable=no-self-use
+    def bsgenome_creater(  # pylint: disable=no-self-use,too-many-return-statements
             self, genome, circ_chrom, seed_file_param,
             genome_2bit, chrom_size, seed_file, bsgenome):
         """
@@ -199,7 +200,8 @@ class bsgenomeTool(Tool):
 
         genome_split = genome_2bit.split("/")
         seed_file_param["seqnames"] = 'c("' + '","'.join(chrom_seq_list) + '")'
-        if len(chrom_circ_list) > 0:
+        number_circ_chrs = len(chrom_circ_list)
+        if number_circ_chrs > 0:
             seed_file_param["circ_seqs"] = 'c("' + '","'.join(chrom_circ_list) + '")'
         seed_file_param["circ_seqs"] = ""
         seed_file_param["seqs_srcdir"] = "/".join(genome_split[0:-1])

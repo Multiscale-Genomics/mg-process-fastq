@@ -22,7 +22,7 @@ import errno
 import re
 
 
-class fastqreader(object):
+class fastqreader(object):  # pylint: disable=too-many-instance-attributes
     """
     Module for reading single end and paired end FASTQ files
     """

@@ -18,12 +18,12 @@
 from __future__ import print_function
 
 import os.path
-import gzip
-import pytest # pylint: disable=unused-import
+import pytest
 
 from basic_modules.metadata import Metadata
 
 from tool.kallisto_quant import kallistoQuantificationTool
+
 
 @pytest.mark.rnaseq
 def test_kallisto_quant_paired():
@@ -48,16 +48,16 @@ def test_kallisto_quant_paired():
     metadata = {
         "cdna": Metadata(
             "data_cdna", "fasta", [], None,
-            {'assembly' : 'test'}),
+            {'assembly': 'test'}),
         "index": Metadata(
             "data_cdna", "fasta", [], None,
-            {'assembly' : 'test'}),
+            {'assembly': 'test'}),
         "fastq1": Metadata(
             "data_rnaseq", "fastq", [], None,
-            {'assembly' : 'test'}),
+            {'assembly': 'test'}),
         "fastq2": Metadata(
             "data_rnaseq", "fastq", [], None,
-            {'assembly' : 'test'}),
+            {'assembly': 'test'}),
     }
 
     kqft = kallistoQuantificationTool()
@@ -69,6 +69,7 @@ def test_kallisto_quant_paired():
     assert os.path.getsize(output_files["abundance_tsv_file"]) > 0
     assert os.path.isfile(output_files["run_info_file"]) is True
     assert os.path.getsize(output_files["run_info_file"]) > 0
+
 
 @pytest.mark.rnaseq
 def test_kallisto_quant_single():
@@ -92,13 +93,13 @@ def test_kallisto_quant_single():
     metadata = {
         "cdna": Metadata(
             "data_cdna", "fasta", [], None,
-            {'assembly' : 'test'}),
+            {'assembly': 'test'}),
         "index": Metadata(
             "data_cdna", "fasta", [], None,
-            {'assembly' : 'test'}),
+            {'assembly': 'test'}),
         "fastq1": Metadata(
             "data_rnaseq", "fastq", [], None,
-            {'assembly' : 'test'}),
+            {'assembly': 'test'}),
     }
 
     kqft = kallistoQuantificationTool()

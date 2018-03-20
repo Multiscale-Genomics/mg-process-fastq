@@ -18,10 +18,11 @@
 from __future__ import print_function
 
 import os.path
-import pytest # pylint: disable=unused-import
+import pytest
 
-from process_chipseq import process_chipseq
 from basic_modules.metadata import Metadata
+from process_chipseq import process_chipseq
+
 
 @pytest.mark.chipseq
 @pytest.mark.pipeline
@@ -56,10 +57,10 @@ def test_chipseq_pipeline():
     metadata = {
         "genome": Metadata(
             "Assembly", "fasta", files['genome'], None,
-            {'assembly' : 'GCA_000001405.22'}),
+            {'assembly': 'GCA_000001405.22'}),
         "loc": Metadata(
             "data_chip_seq", "fastq", files['loc'], None,
-            {'assembly' : 'GCA_000001405.22'}
+            {'assembly': 'GCA_000001405.22'}
         ),
         "index": Metadata(
             "Index", "bwa_index", files['index'], files['genome'],
@@ -79,14 +80,14 @@ def test_chipseq_pipeline():
         'gapped_peak': '/'.join(root_name) + '_filtered_peaks.gappedPeak'
     }
 
-    chipseq_handle = process_chipseq({"macs_nomodel_param" : True})
-    chipseq_files, chipseq_meta = chipseq_handle.run(files, metadata, files_out)
+    chipseq_handle = process_chipseq({"macs_nomodel_param": True})
+    chipseq_files, chipseq_meta = chipseq_handle.run(files, metadata, files_out)  # pylint: disable=unused-variable
 
     print(chipseq_files)
 
     # Add tests for all files created
     for f_out in chipseq_files:
         print("CHIP-SEQ RESULTS FILE:", f_out)
-        #assert chipseq_files[f_out] == files_out[f_out]
+        # assert chipseq_files[f_out] == files_out[f_out]
         assert os.path.isfile(chipseq_files[f_out]) is True
         assert os.path.getsize(chipseq_files[f_out]) > 0

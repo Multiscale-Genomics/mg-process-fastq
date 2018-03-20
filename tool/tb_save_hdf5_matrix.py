@@ -115,7 +115,7 @@ class tbSaveAdjacencyHDF5Tool(Tool):
 
         return True
 
-    def run(self, input_files, output_files, metadata=None):
+    def run(self, input_files, output_files, metadata=None):  # pylint: disable=too-many-locals,arguments-differ
         """
         The main function save the adjacency list from Hi-C into an HDF5 index
         file at the defined resolutions.

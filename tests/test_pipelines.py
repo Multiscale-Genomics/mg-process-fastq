@@ -18,7 +18,8 @@
 from __future__ import print_function
 
 import argparse
-import pytest # pylint: disable=unused-import
+import pytest  # pylint: disable=unused-import
+
 
 def genome_pipeline(verbose=False):
     """
@@ -39,6 +40,7 @@ def genome_pipeline(verbose=False):
     params.append('tests/test_pipeline_genome.py')
 
     return pytest.main(params)
+
 
 def chipseq_pipeline(verbose=False):
     """
@@ -82,6 +84,7 @@ def hic_pipeline(verbose=False):
 
     return pytest.main(params)
 
+
 def idamidseq_pipeline(verbose=False):
     """
     Runs the tests for the ChIP-seq pipeline
@@ -102,6 +105,7 @@ def idamidseq_pipeline(verbose=False):
     params.append('tests/test_pipeline_idamidseq.py')
 
     return pytest.main(params)
+
 
 def idear_pipeline(verbose=False):
     """
@@ -127,6 +131,7 @@ def idear_pipeline(verbose=False):
 
     return pytest.main(params)
 
+
 def mnaseseq_pipeline(verbose=False):
     """
     Runs the tests for the MNase-seq pipeline
@@ -146,6 +151,7 @@ def mnaseseq_pipeline(verbose=False):
     params.append('tests/test_pipeline_mnaseseq.py')
 
     return pytest.main(params)
+
 
 def rnaseq_pipeline(verbose=False):
     """
@@ -167,6 +173,7 @@ def rnaseq_pipeline(verbose=False):
 
     return pytest.main(params)
 
+
 def wgbs_pipeline(verbose=False):
     """
     Runs the tests for the WGBS pipeline
@@ -187,9 +194,10 @@ def wgbs_pipeline(verbose=False):
 
     return pytest.main(params)
 
+
 if __name__ == '__main__':
     import sys
-    sys._run_from_cmdl = True
+    sys._run_from_cmdl = True  # pylint: disable=protected-access
 
     PARSER = argparse.ArgumentParser(description="Test runner for tool chains")
     PARSER.add_argument(
@@ -206,7 +214,6 @@ if __name__ == '__main__':
 
     # Get the matching parameters from the command line
     ARGS = PARSER.parse_args()
-    #print(ARGS)
 
     PIPELINES = ARGS.pipeline
 

@@ -21,7 +21,6 @@ import shlex
 import subprocess
 import sys
 import tarfile
-import os
 
 from utils import logger
 
@@ -35,14 +34,15 @@ except ImportError:
     logger.warn("[Warning] Cannot import \"pycompss\" API packages.")
     logger.warn("          Using mock decorators.")
 
-    from utils.dummy_pycompss import FILE_IN, FILE_OUT, IN # pylint: disable=ungrouped-imports
-    from utils.dummy_pycompss import task # pylint: disable=ungrouped-imports
-    from utils.dummy_pycompss import compss_wait_on # pylint: disable=ungrouped-imports
+    from utils.dummy_pycompss import FILE_IN, FILE_OUT, IN  # pylint: disable=ungrouped-imports
+    from utils.dummy_pycompss import task  # pylint: disable=ungrouped-imports
+    from utils.dummy_pycompss import compss_wait_on  # pylint: disable=ungrouped-imports
 
 from basic_modules.tool import Tool
 from basic_modules.metadata import Metadata
 
 from tool.bam_utils import bamUtilsTask
+
 
 # ------------------------------------------------------------------------------
 
@@ -169,10 +169,10 @@ class bssMethylationCallerTool(Tool):
         command_params = []
 
         bss_pc_command_parameters = {
-            "bss_pc_rm_SX_param" : ["--rm-SX", False],
-            "bss_pc_rm_CCGG_param" : ["--rm-CCGG", False],
-            "bss_pc_rm_overlap_param" : ["--rn-overlap", False],
-            "bss_pc_read_no_param" : ["--read_no", True],
+            "bss_pc_rm_SX_param": ["--rm-SX", False],
+            "bss_pc_rm_CCGG_param": ["--rm-CCGG", False],
+            "bss_pc_rm_overlap_param": ["--rn-overlap", False],
+            "bss_pc_read_no_param": ["--read_no", True],
         }
 
         for param in params:

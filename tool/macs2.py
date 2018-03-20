@@ -172,7 +172,7 @@ class macs2(Tool):
     @task(returns=int, name=IN, bam_file=FILE_IN, macs_params=IN,
           narrowpeak=FILE_OUT, summits_bed=FILE_OUT, broadpeak=FILE_OUT,
           gappedpeak=FILE_OUT, isModifier=False)
-    def macs2_peak_calling_nobgd(  # pylint: disable=too-many-arguments, no-self-use
+    def macs2_peak_calling_nobgd(  # pylint: disable=too-many-arguments,no-self-use,too-many-branches
             self, name, bam_file, macs_params,
             narrowpeak, summits_bed, broadpeak, gappedpeak):  # pylint: disable=unused-argument
         """

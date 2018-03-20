@@ -249,11 +249,11 @@ class process_wgbs(Workflow):
             output_metadata["cgmap_file"] = peak_meta["cgmap_file"]
             output_metadata["atcgmap_file"] = peak_meta["atcgmap_file"]
 
-            output_metadata["wig_file"].meta_data["tool_description"] = output_metadata["wig_file"].meta_data["tool"]
+            output_metadata["wig_file"].meta_data["tool_description"] = output_metadata["wig_file"].meta_data["tool"]  # pylint: disable=line-too-long
             output_metadata["wig_file"].meta_data["tool"] = "process_wgbs"
-            output_metadata["cgmap_file"].meta_data["tool_description"] = output_metadata["cgmap_file"].meta_data["tool"]
+            output_metadata["cgmap_file"].meta_data["tool_description"] = output_metadata["cgmap_file"].meta_data["tool"]  # pylint: disable=line-too-long
             output_metadata["cgmap_file"].meta_data["tool"] = "process_wgbs"
-            output_metadata["atcgmap_file"].meta_data["tool_description"] = output_metadata["atcgmap_file"].meta_data["tool"]
+            output_metadata["atcgmap_file"].meta_data["tool_description"] = output_metadata["atcgmap_file"].meta_data["tool"]  # pylint: disable=line-too-long
             output_metadata["atcgmap_file"].meta_data["tool"] = "process_wgbs"
         except KeyError:
             logger.fatal("WGBS - Peak caller failed")

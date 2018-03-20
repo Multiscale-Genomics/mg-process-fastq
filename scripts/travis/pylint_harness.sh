@@ -15,7 +15,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-pylint --disable=similarities,invalid-name,too-many-statements,too-many-arguments,too-many-locals,too-few-public-methods,relative-import,no-self-use --rcfile pylintrc *.py > output.err
+pylint --disable=similarities,invalid-name,too-many-statements,too-many-arguments,too-many-locals,too-few-public-methods,relative-import,no-self-use --rcfile pylintrc process*.py > output.err
 pylint --disable=similarities,invalid-name,too-many-statements,too-many-arguments,too-many-locals,too-few-public-methods,relative-import,no-self-use --rcfile pylintrc tool >> output.err
 pylint --disable=similarities,invalid-name,too-many-statements,too-many-arguments,too-many-locals,too-few-public-methods,relative-import,no-self-use --rcfile pylintrc tests >> output.err
 

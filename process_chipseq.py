@@ -231,7 +231,7 @@ class process_chipseq(Workflow):
                 'narrow_peak', 'summits', 'broad_peak', 'gapped_peak')
         )
 
-        if len(m_results_meta) == 0:
+        if not m_results_meta:
             logger.fatal("MACS2 peak calling failed")
 
         if 'narrow_peak' in m_results_meta:

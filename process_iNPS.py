@@ -62,7 +62,7 @@ class process_iNPS(Workflow):
             bam_file : str
             Location of the aligned sequences in bam format
 
-        output_files : dict            
+        output_files : dict
             peak_bed : str
             Location of the collated bed file of nucleosome peak calls
 

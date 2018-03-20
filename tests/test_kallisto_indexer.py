@@ -17,11 +17,11 @@
 from __future__ import print_function
 
 import os.path
-import pytest # pylint: disable=unused-import
+import pytest
 
 from basic_modules.metadata import Metadata
-
 from tool.kallisto_indexer import kallistoIndexerTool
+
 
 @pytest.mark.rnaseq
 def test_kallisto_indexer():
@@ -41,7 +41,7 @@ def test_kallisto_indexer():
     metadata = {
         "cdna": Metadata(
             "data_cdna", "fasta", [], None,
-            {'assembly' : 'test'}),
+            {'assembly': 'test'}),
     }
 
     ki_handle = kallistoIndexerTool()

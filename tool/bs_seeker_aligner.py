@@ -135,8 +135,7 @@ class bssAlignerTool(Tool):
     @task(
         returns=bool, isModifier=False,
         input_fastq=FILE_IN, aligner=IN, aligner_path=IN, bss_path=IN, aln_params=IN,
-        genome_fasta=FILE_IN, genome_idx=FILE_IN, bam_out=FILE_OUT
-    )
+        genome_fasta=FILE_IN, genome_idx=FILE_IN, bam_out=FILE_OUT)
     def bs_seeker_aligner_single(
             self, input_fastq, aligner, aligner_path, bss_path, aln_params,
             genome_fasta, genome_idx, bam_out):
@@ -189,7 +188,7 @@ class bssAlignerTool(Tool):
         return results
 
     @staticmethod
-    def get_aln_params(params, paired=False):
+    def get_aln_params(params, paired=False):  # pylint: disable=too-many-branches
         """
         Function to handle to extraction of commandline parameters and formatting
         them for use in the aligner for Bowtie2
@@ -267,7 +266,8 @@ class bssAlignerTool(Tool):
             "bowtie2_rg_id_param": ["--bt2--rg-id", True],
             "bowtie2_rg_param": ["--bt2--rg", True],
             "bowtie2_omit_sec_seq_param": ["--bt2--omit-sec-seq", False],
-            "bowtie2_soft_clipped_unmapped_tlen_param": ["--bt2--soft-clipped-unmapped-tlen", False],
+            "bowtie2_soft_clipped_unmapped_tlen_param": [
+                "--bt2--soft-clipped-unmapped-tlen", False],
             "bowtie2_sam_no_qname_trunc_param": ["--bt2--sam-no-qname-trunc", False],
             "bowtie2_xeq_param": ["--bt2--xeq", False],
         }
@@ -278,7 +278,8 @@ class bssAlignerTool(Tool):
             bowtie2_command_parameters["bowtie2_max_frag_len_param"] = ["--bt2-X", True]
             bowtie2_command_parameters["bowtie2_frrfff_param"] = ["", True]
             bowtie2_command_parameters["bowtie2_no_mixed_param"] = ["--bt2--no-mixed", False]
-            bowtie2_command_parameters["bowtie2_no_discordant_param"] = ["--bt2--no-discordant", False]
+            bowtie2_command_parameters["bowtie2_no_discordant_param"] = [
+                "--bt2--no-discordant", False]
             bowtie2_command_parameters["bowtie2_dovetail_param"] = ["--bt2--dovetail", False]
             bowtie2_command_parameters["bowtie2_no_contain_param"] = ["--bt2--no-contain", False]
             bowtie2_command_parameters["bowtie2_no_overlap_param"] = ["--bt2--no-overlap", False]
@@ -376,7 +377,7 @@ class bssAlignerTool(Tool):
 
         return True
 
-    def run(self, input_files, input_metadata, output_files):
+    def run(self, input_files, input_metadata, output_files):  # pylint: disable=too-many-branches
         """
         Tool for indexing the genome assembly using BS-Seeker2. In this case it
         is using Bowtie2

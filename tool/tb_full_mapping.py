@@ -31,12 +31,13 @@ except ImportError:
 
     from utils.dummy_pycompss import FILE_IN, FILE_OUT, IN
     from utils.dummy_pycompss import task
-    from utils.dummy_pycompss import constraint
+    # from utils.dummy_pycompss import constraint
     from utils.dummy_pycompss import compss_wait_on
 
 from basic_modules.tool import Tool
 
 from pytadbit.mapping.mapper import full_mapping
+
 
 # ------------------------------------------------------------------------------
 
@@ -58,7 +59,7 @@ class tbFullMappingTool(Tool):
     # @constraint(ProcessorCoreCount=32)
     def tb_full_mapping_iter(
             self, gem_file, fastq_file, windows,
-            window1, window2, window3, window4):
+            window1, window2, window3, window4):  # pylint: disable=unused-argument
         """
         Function to map the FASTQ files to the GEM file over different window
         sizes ready for alignment
@@ -97,7 +98,7 @@ class tbFullMappingTool(Tool):
         od_loc = fastq_file.split("/")
         output_dir = "/".join(od_loc[0:-1])
 
-        map_files = full_mapping(
+        full_mapping(
             gem_file, fastq_file, output_dir,
             windows=windows, frag_map=False, nthreads=32, clean=True,
             temp_dir='/tmp/'
@@ -151,7 +152,7 @@ class tbFullMappingTool(Tool):
             with open(fastq_file, "rb") as f_in:
                 f_out.write(f_in.read())
 
-        map_files = full_mapping(
+        full_mapping(
             gem_file, fastq_file_tmp + "_tmp.fastq", output_dir,
             r_enz=enzyme_name, windows=windows, frag_map=True, nthreads=32,
             clean=True, temp_dir='/tmp/'
@@ -167,7 +168,7 @@ class tbFullMappingTool(Tool):
 
         return True
 
-    def run(self, input_files, output_files, metadata=None):
+    def run(self, input_files, output_files, metadata=None):  # pylint: disable=too-many-locals,arguments-differ
         """
         The main function to map the FASTQ files to the GEM file over different
         window sizes ready for alignment

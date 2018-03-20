@@ -38,6 +38,7 @@ from basic_modules.tool import Tool
 from pytadbit.mapping.filter import apply_filter
 from pytadbit.mapping.filter import filter_reads
 
+
 # ------------------------------------------------------------------------------
 
 class tbFilterTool(Tool):
@@ -58,7 +59,7 @@ class tbFilterTool(Tool):
         output_ed=FILE_OUT, output_or=FILE_OUT, output_rb=FILE_OUT,
         output_sc=FILE_OUT, output_tc=FILE_OUT, output_tl=FILE_OUT,
         output_ts=FILE_OUT, returns=int)
-    def tb_filter(
+    def tb_filter(  # pylint: disable=too-many-branches
             self, reads, filter_reads_file, conservative, output_de, output_d,
             output_e, output_ed, output_or, output_rb, output_sc, output_tc,
             output_tl, output_ts):
@@ -102,16 +103,22 @@ class tbFilterTool(Tool):
 
         if conservative is True:
             # Ignore filter 5 (based on docs) as not very helpful
-            apply_filter(reads_tmp + "_tmp.tsv", filter_reads_file_tmp + "_tmp.tsv", masked, filters=[1, 2, 3, 4, 6, 7, 8, 9, 10])
+            apply_filter(
+                reads_tmp + "_tmp.tsv", filter_reads_file_tmp + "_tmp.tsv",
+                masked, filters=[1, 2, 3, 4, 6, 7, 8, 9, 10])
         else:
             # Less conservative option
-            apply_filter(reads_tmp + "_tmp.tsv", filter_reads_file_tmp + "_tmp.tsv", masked, filters=[1, 2, 3, 9, 10])
+            apply_filter(
+                reads_tmp + "_tmp.tsv", filter_reads_file_tmp + "_tmp.tsv",
+                masked, filters=[1, 2, 3, 9, 10])
 
         with open(filter_reads_file, "wb") as f_out:
             with open(filter_reads_file_tmp + "_tmp.tsv", "rb") as f_in:
                 f_out.write(f_in.read())
 
-        filters_suffixes = ['dangling-end', 'duplicated', 'error', 'extra_dangling-end', 'over-represented', 'random_breaks', 'self-circle', 'too_close_from_RES', 'too_large', 'too_short']
+        filters_suffixes = [
+            'dangling-end', 'duplicated', 'error', 'extra_dangling-end', 'over-represented',
+            'random_breaks', 'self-circle', 'too_close_from_RES', 'too_large', 'too_short']
         for i in filters_suffixes:
             report_file_loc = reads_tmp + '_tmp.tsv_' + i + '.tsv'
             print(report_file_loc)
@@ -161,7 +168,7 @@ class tbFilterTool(Tool):
 
         return True
 
-    def run(self, input_files, output_files, metadata=None):
+    def run(self, input_files, output_files, metadata=None):  # pylint: disable=too-many-locals,arguments-differ
         """
         The main function to filter the reads to remove experimental artifacts
 
@@ -191,7 +198,7 @@ class tbFilterTool(Tool):
             conservative = metadata['conservative_filtering']
 
         root_name = reads.split("/")
-        filtered_reads_file = "/".join(root_name[0:-1]) + '/' + metadata['expt_name'] + '_filtered_map.tsv'
+        filtered_reads_file = "/".join(root_name[0:-1]) + '/' + metadata['expt_name'] + '_filtered_map.tsv'  # pylint: disable=line-too-long
 
         output_de = filtered_reads_file + '_dangling-end.tsv'
         output_d = filtered_reads_file + '_duplicated.tsv'

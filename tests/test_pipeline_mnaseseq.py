@@ -18,10 +18,11 @@
 from __future__ import print_function
 
 import os.path
-import pytest # pylint: disable=unused-import
+import pytest
 
 from process_genome import process_genome
 from process_mnaseseq import process_mnaseseq
+
 
 @pytest.mark.mnaseseq
 @pytest.mark.pipeline
@@ -48,9 +49,9 @@ def test_mnaseseq_pipeline():
     resource_path = os.path.join(os.path.dirname(__file__), "data/")
 
     genome_handle = process_genome()
-    genome_files, genome_meta = genome_handle.run(
+    genome_files, genome_meta = genome_handle.run(  # pylint: disable=unused-variable
         [resource_path + 'inps.Mouse.GRCm38.fasta'],
-        {'assembly' : 'GRCm38'},
+        {'assembly': 'GRCm38'},
         []
     )
 
@@ -63,13 +64,13 @@ def test_mnaseseq_pipeline():
     ]
 
     metadata = {
-        'assembly' : 'GRCh38'
+        'assembly': 'GRCh38'
     }
 
     mnaseseq_handle = process_mnaseseq()
     mnaseseq_files, mnaseseq_meta = mnaseseq_handle.run(files, metadata, [])
 
-    print(mnaseseq_files)
+    print(mnaseseq_files, mnaseseq_meta)
 
     # Add tests for all files created
     for f_out in mnaseseq_files:

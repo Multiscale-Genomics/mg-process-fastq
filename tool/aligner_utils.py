@@ -23,6 +23,7 @@ import os.path
 from tool.common import cd
 from utils import logger
 
+
 class alignerUtils(object):
     """
     Functions for downloading and processing N-seq FastQ files. Functions
@@ -256,7 +257,8 @@ class alignerUtils(object):
         try:
             for command_line in command_lines:
                 logger.info("BWA ALN COMMAND: " + command_line)
-                process = subprocess.Popen(command_line, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+                process = subprocess.Popen(
+                    command_line, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
                 process.wait()
                 proc_out, proc_err = process.communicate()
                 logger.info("BWA ALN stdout" + proc_out)

@@ -18,10 +18,11 @@
 from __future__ import print_function
 
 import os.path
-import pytest # pylint: disable=unused-import
+import pytest
 
 from process_idear import process_idear
 from basic_modules.metadata import Metadata
+
 
 @pytest.mark.idamidseq
 @pytest.mark.pipeline
@@ -48,19 +49,19 @@ def test_idear_pipeline():
     metadata = {
         "bsgenome": Metadata(
             "data_damid_seq", "bsgenome", [], None,
-            {'assembly' : 'test'}, 9606),
+            {'assembly': 'test'}, 9606),
         "bam_1": Metadata(
             "data_damid_seq", "bam", [], None,
-            {'assembly' : 'test'}, 9606),
+            {'assembly': 'test'}, 9606),
         "bam_2": Metadata(
             "data_damid_seq", "bam", [], None,
-            {'assembly' : 'test'}, 9606),
+            {'assembly': 'test'}, 9606),
         "bg_bam_1": Metadata(
             "data_damid_seq", "bam", [], None,
-            {'assembly' : 'test'}, 9606),
+            {'assembly': 'test'}, 9606),
         "bg_bam_2": Metadata(
             "data_damid_seq", "bam", [], None,
-            {'assembly' : 'test'}, 9606),
+            {'assembly': 'test'}, 9606),
     }
 
     config_param = {
@@ -75,7 +76,7 @@ def test_idear_pipeline():
     }
 
     damidseq_handle = process_idear(config_param)
-    damidseq_files, damidseq_meta = damidseq_handle.run(files, metadata, output_files)
+    damidseq_files, damidseq_meta = damidseq_handle.run(files, metadata, output_files)  # pylint: disable=unused-variable
 
     print(damidseq_files)
 

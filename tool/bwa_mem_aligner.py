@@ -223,54 +223,35 @@ class bwaAlignerMEMTool(Tool):
         -------
         list
         """
+
+        command_parameters = {
+            "bwa_mem_min_seed_len_param": ["-k", True],
+            "bwa_mem_band_width_param": ["-w", True],
+            "bwa_mem_zdropoff_param": ["-d", True],
+            "bwa_mem_reseeding_param": ["-r", True],
+            "bwa_mem_insensitive_param": ["-c", True],
+            "bwa_mem_paried_rescue_mode_param": ["-P"],
+            "bwa_mem_matching_score_param": ["-A", True],
+            "bwa_mem_mismatch_penalty_param": ["-B", True],
+            "bwa_mem_gap_open_penalty_param": ["-O", True],
+            "bwa_mem_gap_ext_penalty_param": ["-E", True],
+            "bwa_mem_clipping_penalty_param": ["-L", True],
+            "bwa_mem_unpaired_penalty_param": ["-U", True],
+            "bwa_mem_reads_interleaved_param": ["-p", False],
+            "bwa_mem_complete_read_head_param": ["-R", True],
+            "bwa_mem_alignment_threshold_param": ["-T", True],
+            "bwa_mem_hard_clipping_param": ["-H", False],
+            "bwa_mem_short_split_secondary_param": ["-M", False]
+        }
+
         command_params = []
-        if "bwa_mem_min_seed_len_param" in params:
-            command_params = command_params + [
-                "-k", str(params["bwa_mem_min_seed_len_param"])]
-        if "bwa_mem_band_width_param" in params:
-            command_params = command_params + [
-                "-w", str(params["bwa_mem_band_width_param"])]
-        if "bwa_mem_zdropoff_param" in params:
-            command_params = command_params + [
-                "-d", str(params["bwa_mem_zdropoff_param"])]
-        if "bwa_mem_reseeding_param" in params:
-            command_params = command_params + [
-                "-r", str(params["bwa_mem_reseeding_param"])]
-        if "bwa_mem_insensitive_param" in params:
-            command_params = command_params + [
-                "-c", str(params["bwa_mem_insensitive_param"])]
-        if "bwa_mem_paried_rescue_mode_param" in params:
-            command_params = command_params + ["-P"]
-        if "bwa_mem_matching_score_param" in params:
-            command_params = command_params + [
-                "-A", str(params["bwa_mem_matching_score_param"])]
-        if "bwa_mem_mismatch_penalty_param" in params:
-            command_params = command_params + [
-                "-B", str(params["bwa_mem_mismatch_penalty_param"])]
-        if "bwa_mem_gap_open_penalty_param" in params:
-            command_params = command_params + [
-                "-O", str(params["bwa_mem_gap_open_penalty_param"])]
-        if "bwa_mem_gap_ext_penalty_param" in params:
-            command_params = command_params + [
-                "-E", str(params["bwa_mem_gap_ext_penalty_param"])]
-        if "bwa_mem_clipping_penalty_param" in params:
-            command_params = command_params + [
-                "-L", str(params["bwa_mem_clipping_penalty_param"])]
-        if "bwa_mem_unpaired_penalty_param" in params:
-            command_params = command_params + [
-                "-U", str(params["bwa_mem_unpaired_penalty_param"])]
-        if "bwa_mem_reads_interleaved_param" in params:
-            command_params = command_params + ["-p"]
-        if "bwa_mem_complete_read_head_param" in params:
-            command_params = command_params + [
-                "-R", str(params["bwa_mem_complete_read_head_param"])]
-        if "bwa_mem_alignment_threshold_param" in params:
-            command_params = command_params + [
-                "-T", str(params["bwa_mem_alignment_threshold_param"])]
-        if "bwa_mem_hard_clipping_param" in params:
-            command_params = command_params + ["-H"]
-        if "bwa_mem_short_split_secondary_param" in params:
-            command_params = command_params + ["-M"]
+        for param in params:
+            if param in command_parameters:
+                if command_parameters[param][1]:
+                    command_params = command_params + [command_parameters[param][0], params[param]]
+                else:
+                    if command_parameters[param][0]:
+                        command_params.append(command_parameters[param][0])
 
         return command_params
 

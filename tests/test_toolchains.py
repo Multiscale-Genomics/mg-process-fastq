@@ -19,7 +19,8 @@ from __future__ import print_function
 
 import argparse
 import subprocess
-import pytest # pylint: disable=unused-import
+import pytest  # pylint: disable=unused-import
+
 
 def all_toolchain(verbose=False):
     """
@@ -61,6 +62,7 @@ def all_toolchain(verbose=False):
 
     return pytest.main(params)
 
+
 def genome_toolchain(verbose=False):
     """
     Runs the tests for all of the tools from the Genome indexing pipeline
@@ -84,6 +86,7 @@ def genome_toolchain(verbose=False):
     params.append('tests/test_gem_indexer.py')
 
     return pytest.main(params)
+
 
 def biobambam_toolchain(verbose=False):
     """
@@ -111,6 +114,7 @@ def biobambam_toolchain(verbose=False):
 
     return pytest.main(params)
 
+
 def bowtie2_toolchain(verbose=False):
     """
     Runs the tests for all of the tools from the BWA pipeline
@@ -135,6 +139,7 @@ def bowtie2_toolchain(verbose=False):
 
     return pytest.main(params)
 
+
 def bwa_toolchain(verbose=False):
     """
     Runs the tests for all of the tools from the BWA pipeline
@@ -158,6 +163,7 @@ def bwa_toolchain(verbose=False):
     params.append('tests/test_bwa_aligner.py')
 
     return pytest.main(params)
+
 
 def chipseq_toolchain(verbose=False):
     """
@@ -186,6 +192,7 @@ def chipseq_toolchain(verbose=False):
     params.append('tests/test_macs2.py')
 
     return pytest.main(params)
+
 
 def idamidseq_toolchain(verbose=False):
     """
@@ -216,6 +223,7 @@ def idamidseq_toolchain(verbose=False):
     params.append('tests/test_idear.py')
 
     return pytest.main(params)
+
 
 def hic_toolchain(verbose=False):
     """
@@ -249,6 +257,7 @@ def hic_toolchain(verbose=False):
 
     return pytest.main(params)
 
+
 def mnaseseq_toolchain(verbose=False):
     """
     Runs the tests for all of the tools from the MNase-seq pipeline
@@ -275,6 +284,7 @@ def mnaseseq_toolchain(verbose=False):
 
     return pytest.main(params)
 
+
 def rnaseq_toolchain(verbose=False):
     """
     Runs the tests for all of the tools from the RNA-seq pipeline
@@ -298,6 +308,7 @@ def rnaseq_toolchain(verbose=False):
     params.append('tests/test_kallisto_quant.py')
 
     return pytest.main(params)
+
 
 def wgbs_toolchain(verbose=0):
     """
@@ -327,6 +338,7 @@ def wgbs_toolchain(verbose=0):
 
     return pytest.main(params)
 
+
 def tidy_data():
     """
     Runs the tidy_data.sh script
@@ -339,6 +351,7 @@ def tidy_data():
     except (IOError, OSError) as msg:
         print("I/O error({0}): {1}\n{2}".format(
             msg.errno, msg.strerror, command_line))
+
 
 if __name__ == '__main__':
     import sys
@@ -358,10 +371,8 @@ if __name__ == '__main__':
     PARSER.add_argument("--verbose", action="store_const", const=True, default=False)
     PARSER.add_argument("--tidy", action="store_const", const=True, default=False)
 
-
     # Get the matching parameters from the command line
     ARGS = PARSER.parse_args()
-    #print(ARGS)
 
     PIPELINES = ARGS.pipeline
 
@@ -392,7 +403,6 @@ if __name__ == '__main__':
 
         if TIDY:
             tidy_data()
-
 
     if 'biobambam' in PIPELINES:
         print('BIOBAMBAM')

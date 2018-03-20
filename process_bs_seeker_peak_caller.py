@@ -122,11 +122,11 @@ class process_bs_seeker_peak_caller(Workflow):
             output_metadata["cgmap_file"] = peak_meta["cgmap_file"]
             output_metadata["atcgmap_file"] = peak_meta["atcgmap_file"]
 
-            output_metadata["wig_file"].meta_data["tool_description"] = output_metadata["wig_file"].meta_data["tool"]
+            output_metadata["wig_file"].meta_data["tool_description"] = output_metadata["wig_file"].meta_data["tool"]  # pylint: disable=line-too-long
             output_metadata["wig_file"].meta_data["tool"] = "process_bs_seeker_peak_caller"
-            output_metadata["cgmap_file"].meta_data["tool_description"] = output_metadata["cgmap_file"].meta_data["tool"]
+            output_metadata["cgmap_file"].meta_data["tool_description"] = output_metadata["cgmap_file"].meta_data["tool"]  # pylint: disable=line-too-long
             output_metadata["cgmap_file"].meta_data["tool"] = "process_bs_seeker_peak_caller"
-            output_metadata["atcgmap_file"].meta_data["tool_description"] = output_metadata["atcgmap_file"].meta_data["tool"]
+            output_metadata["atcgmap_file"].meta_data["tool_description"] = output_metadata["atcgmap_file"].meta_data["tool"]  # pylint: disable=line-too-long
             output_metadata["atcgmap_file"].meta_data["tool"] = "process_bs_seeker_peak_caller"
         except KeyError:
             logger.fatal("BS Seeker2 - Peak caller failed")

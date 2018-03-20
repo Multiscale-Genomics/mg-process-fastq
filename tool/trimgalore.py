@@ -1,13 +1,13 @@
 """
 .. See the NOTICE file distributed with this work for additional information
    regarding copyright ownership.
-   
+
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
    You may obtain a copy of the License at
-   
+
        http://www.apache.org/licenses/LICENSE-2.0
-   
+
    Unless required by applicable law or agreed to in writing, software
    distributed under the License is distributed on an "AS IS" BASIS,
    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -40,6 +40,7 @@ except ImportError:
 from basic_modules.metadata import Metadata
 from basic_modules.tool import Tool
 
+
 # ------------------------------------------------------------------------------
 
 class trimgalore(Tool):
@@ -59,8 +60,8 @@ class trimgalore(Tool):
 
         self.configuration.update(configuration)
 
-    @task(returns=bool, fastq_file_in=FILE_IN, fastq_file_out=FILE_OUT, params=IN,
-          isModifier=False)
+    @task(returns=bool, fastq_file_in=FILE_IN, fastq_file_out=FILE_OUT,
+          params=IN, isModifier=False)
     def trimgalore_single(self, fastq_file_in, fastq_file_out, params):  # pylint: disable=no-self-use
         """
         Trims and removes low quality subsections and reads from a singed-ended
@@ -77,8 +78,8 @@ class trimgalore(Tool):
 
         Returns
         -------
-        bam_file_out : str
-            Location of the output bam file
+        bool
+            Indicator of the success of the function
         """
 
         command_line = "trim_galore " + " ".join(params) + " " + fastq_file_in
@@ -101,7 +102,8 @@ class trimgalore(Tool):
                 with open(tg_tmp_out, "rb") as f_in:
                     f_out.write(f_in.read())
         except IOError as error:
-            logger.fatal("I/O error({0}): {1}".format(error.errno, error.strerror))
+            logger.fatal(
+                "I/O error({0}): {1}".format(error.errno, error.strerror))
             return False
 
         return True
@@ -111,10 +113,10 @@ class trimgalore(Tool):
           fastq2_file_in=FILE_IN, fastq2_file_out=FILE_OUT,
           params=IN, isModifier=False)
     def trimgalore_paired(  # pylint: disable=too-many-arguments
-            self, fastq1_file_in, fastq1_file_out, fastq2_file_in, fastq2_file_out, params
-        ):  # pylint: disable=no-self-use
+            self, fastq1_file_in, fastq1_file_out,
+            fastq2_file_in, fastq2_file_out, params):  # pylint: disable=no-self-use
         """
-        Trimd and removes low quality subsections and reads from paired-end
+        Trims and removes low quality subsections and reads from paired-end
         FASTQ files
 
         Parameters
@@ -125,11 +127,11 @@ class trimgalore(Tool):
             Location of the output fastq file
         params : dict
             Parameters to use in TrimGalore
-        
+
         Returns
         -------
-        bam_file_out : str
-            Location of the output bam file
+        bool
+            Indicator of the success of the function
         """
 
         command_line = "trim_galore " + " ".join(params) + " " + fastq1_file_in + " " + fastq2_file_in
@@ -183,36 +185,36 @@ class trimgalore(Tool):
 
         command_parameters = {
             # General options
-            "tg_quality" : ["--quality", True],
-            "tg_fastqc" : ["--fastqc", False],
-            "tg_fastqc_args" : ["--fastqc_args", True],
-            "tg_adapter" : ["--adapter", True],
-            "tg_adapter2" : ["--adapter2", True],
-            "tg_illumina" : ["--illumina", False],
-            "tg_nextera" : ["--nextera", False],
-            "tg_small_rna" : ["--small_rna", False],
-            "tg_max_length" : ["--max_length", True],
-            "tg_stringency" : ["--stringency", True],
-            "tg_error_rate" : ["-e", True],
-            "tg_length" : ["--length", True],
-            "tg_max_n" : ["--max_n", True],
-            "tg_trim_n" : ["--trim-n", False],
-            "tg_output_dir" : ["--output_dir", True],
-            "tg_no_report_file" : ["--no_report_file", False],
-            "tg_clip_R1" : ["--clip_R1", True],
-            "tg_clip_R2" : ["--clip_R2", True],
-            "tg_three_prime_clip_R1" : ["--three_prime_clip_R1", True],
-            "tg_three_prime_clip_R2" : ["--three_prime_clip_R2", True],
+            "tg_quality": ["--quality", True],
+            "tg_fastqc": ["--fastqc", False],
+            "tg_fastqc_args": ["--fastqc_args", True],
+            "tg_adapter": ["--adapter", True],
+            "tg_adapter2": ["--adapter2", True],
+            "tg_illumina": ["--illumina", False],
+            "tg_nextera": ["--nextera", False],
+            "tg_small_rna": ["--small_rna", False],
+            "tg_max_length": ["--max_length", True],
+            "tg_stringency": ["--stringency", True],
+            "tg_error_rate": ["-e", True],
+            "tg_length": ["--length", True],
+            "tg_max_n": ["--max_n", True],
+            "tg_trim_n": ["--trim-n", False],
+            "tg_output_dir": ["--output_dir", True],
+            "tg_no_report_file": ["--no_report_file", False],
+            "tg_clip_R1": ["--clip_R1", True],
+            "tg_clip_R2": ["--clip_R2", True],
+            "tg_three_prime_clip_R1": ["--three_prime_clip_R1", True],
+            "tg_three_prime_clip_R2": ["--three_prime_clip_R2", True],
             # RRBS specific options
-            "tg_rrbs" : ["--rrbs", False],
-            "tg_non_directional" : ["--non_directional", False],
-            "tg_keep" : ["--keep", False],
+            "tg_rrbs": ["--rrbs", False],
+            "tg_non_directional": ["--non_directional", False],
+            "tg_keep": ["--keep", False],
             # Paired-end specific options
-            "tg_paired" : ["--paired", False],
-            "tg_trim1" : ["--trim1", False],
-            "tg_retain_unpaired" : ["--retain_unpaired", False],
-            "tg_length_1" : ["--length_1", True],
-            "tg_length_2" : ["--length_2", True],
+            "tg_paired": ["--paired", False],
+            "tg_trim1": ["--trim1", False],
+            "tg_retain_unpaired": ["--retain_unpaired", False],
+            "tg_length_1": ["--length_1", True],
+            "tg_length_2": ["--length_2", True],
         }
 
         for param in params:
@@ -223,12 +225,10 @@ class trimgalore(Tool):
                     if command_parameters[param][0]:
                         command_params.append(command_parameters[param][0])
 
-
         if "tg_phred33" in params and "tg_phred64" not in params:
             command_params.append(command_parameters["tg_phred33"][0])
         if "tg_phred64" in params and "tg_phred33" not in params:
             command_params.append(command_parameters["tg_phred64"][0])
-
 
         return command_params
 

@@ -986,6 +986,68 @@ RNA-Seq Analysis
       :members:
 
 
+Trim Galore 
+-----------
+.. automodule:: process_wgbs
+
+   This pipeline can process FASTQ to trim poor base quality or adapter contamination.
+
+   Running from the command line
+   =============================
+
+   Parameters
+   ----------
+   config : str
+      Configuration JSON file
+   in_metadata : str
+      Location of input JSON metadata for files
+   out_metadata : str
+      Location of output JSON metadata for files
+
+   Returns
+   -------
+   fastq_trimmed : file
+      Location of a fastq file containing the sequences after poor base qualities or contamination trimming
+      
+
+   A full description of the Trim Galore files can be found at
+   https://github.com/FelixKrueger/TrimGalore
+
+   Example
+   -------
+   When running the pipeline on a local machine without COMPSs:
+
+   .. code-block:: none
+      :linenos:
+
+      python process_trim_galore.py                   \
+         --config tests/json/config_trimgalore.json \
+         --in_metadata tests/json/input_trimgalore_metadata.json \
+         --out_metadata tests/json/output_trimgalore.json \
+         --local
+
+   When using a local version of the [COMPS virtual machine](https://www.bsc.es/research-and-development/software-and-apps/software-list/comp-superscalar/):
+
+   .. code-block:: none
+      :linenos:
+
+      runcompss                                  \
+         --lang=python                           \
+         --library_path=${HOME}/bin              \
+         --pythonpath=/<pyenv_virtenv_dir>/lib/python2.7/site-packages/ \
+         --log_level=debug                       \
+         process_trim_Galore.py                         \
+            --config tests/json/config_trimgalore.json \
+            --in_metadata tests/json/input_trimgalore_metadata.json \
+            --out_metadata tests/json/output_trimgalore.json
+
+
+   Methods
+   =======
+   .. autoclass:: process_trim_galore.process_trim_galore
+      :members:
+
+
 Whole Genome BiSulphate Sequencing Analysis
 -------------------------------------------
 .. automodule:: process_wgbs
@@ -1156,65 +1218,4 @@ Hi-C Analysis
    .. autoclass:: process_hic.process_hic
       :members:
       
-      
-Trim Galore 
------------
-.. automodule:: process_wgbs
-
-   This pipeline can process FASTQ to trim poor base quality or adapter contamination.
-
-   Running from the command line
-   =============================
-
-   Parameters
-   ----------
-   config : str
-      Configuration JSON file
-   in_metadata : str
-      Location of input JSON metadata for files
-   out_metadata : str
-      Location of output JSON metadata for files
-
-   Returns
-   -------
-   fastq_trimmed : file
-      Location of a fastq file containing the sequences after poor base qualities or contamination trimming
-      
-
-   A full description of the Trim Galore files can be found at
-   https://github.com/FelixKrueger/TrimGalore
-
-   Example
-   -------
-   When running the pipeline on a local machine without COMPSs:
-
-   .. code-block:: none
-      :linenos:
-
-      python process_trim_galore.py                   \
-         --config tests/json/config_trimgalore.json \
-         --in_metadata tests/json/input_trimgalore_metadata.json \
-         --out_metadata tests/json/output_trimgalore.json \
-         --local
-
-   When using a local version of the [COMPS virtual machine](https://www.bsc.es/research-and-development/software-and-apps/software-list/comp-superscalar/):
-
-   .. code-block:: none
-      :linenos:
-
-      runcompss                                  \
-         --lang=python                           \
-         --library_path=${HOME}/bin              \
-         --pythonpath=/<pyenv_virtenv_dir>/lib/python2.7/site-packages/ \
-         --log_level=debug                       \
-         process_trim_Galore.py                         \
-            --config tests/json/config_trimgalore.json \
-            --in_metadata tests/json/input_trimgalore_metadata.json \
-            --out_metadata tests/json/output_trimgalore.json
-
-
-   Methods
-   =======
-   .. autoclass:: process_trim_galore.process_trim_galore
-      :members:
       

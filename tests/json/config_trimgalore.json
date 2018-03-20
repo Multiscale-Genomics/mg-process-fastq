@@ -3,7 +3,7 @@
         {
             "required": true,
             "allow_multiple": false,
-            "name": "fastq",
+            "name": "fastq1",
             "value": "59b7e020d9422a5969b65378"
         }
     ],
@@ -57,7 +57,7 @@
         {
             "required": true,
             "allow_multiple": false,
-            "name": "fastq_trimmed",
+            "name": "fastq1_trimmed",
             "file": {
                 "file_type": "fastq_trimmed",
                 "meta_data": {
@@ -65,11 +65,27 @@
                     "tool": "process_trim_galore",
                     "description": "Trimmed reads"
                 },
-                "file_path": "tests/data/macs2.Human.DRR000150.22.trimmed.fq",
+                "file_path": "tests/data/bsSeeker.Mouse.SRR892982_1.trimmed.fq",
                 "data_type": "data_rnaseq",
                 "compressed": "null"
             }
-        } 
+        },
+        {
+            "required": true,
+            "allow_multiple": false,
+            "name": "fastq2_trimmed",
+            "file": {
+                "file_type": "fastq_trimmed",
+                "meta_data": {
+                    "visible": true,
+                    "tool": "process_trim_galore",
+                    "description": "Trimmed reads"
+                },
+                "file_path": "tests/data/bsSeeker.Mouse.SRR892982_2.trimmed.fq",
+                "data_type": "data_rnaseq",
+                "compressed": "null"
+            }
+        }  
     ]
 }
 

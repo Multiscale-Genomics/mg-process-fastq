@@ -88,9 +88,9 @@ class process_trim_galore(Workflow):
 
         trimg = trimgalore(self.configuration)
         fastq1f, trim1_meta = trimg.run(
-            {"fastq": input_files["fastq1"]},
-            {"fastq": metadata["fastq1"]},
-            {"fastq_trimmed": output_files["fastq1_trimmed"]}
+            {"fastq1": input_files["fastq1"]},
+            {"fastq1": metadata["fastq1"]},
+            {"fastq1_trimmed": output_files["fastq1_trimmed"]}
         )
 
         try:

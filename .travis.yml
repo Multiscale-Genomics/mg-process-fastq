@@ -27,6 +27,7 @@ env:
     matrix:
         - TESTENV=docs
         - TESTENV=code
+        - TESTENV=pylint
 
 addons:
   apt:
@@ -99,6 +100,7 @@ install:
     - pip install -e .
     - pip install -r requirements.txt
     - if [[ "$TESTENV" == "docs" ]]; then pip install sphinx;fi
+    - if [[ "$TESTENV" == "pylint" ]]; then pip install pylint;fi
 
     # Install BSseeker
     - cd ${HOME}/lib
@@ -201,4 +203,5 @@ before_script:
 script:
     - if [[ "$TESTENV" == "code" ]]; then ./scripts/travis/harness.sh; fi
     - if [[ "$TESTENV" == "docs" ]]; then ./scripts/travis/docs_harness.sh; fi
+    - if [[ "$TESTENV" == "pylint" ]]; then ./scripts/travis/pylint_harness.sh; fi
 

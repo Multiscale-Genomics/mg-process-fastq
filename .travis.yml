@@ -81,6 +81,7 @@ before_install:
     - echo "deb http://cran.r-project.org/bin/linux/ubuntu trusty/" | sudo tee -a /etc/apt/sources.list
     - sudo apt-get update -qq
 
+    - cd ${HOME}/build/Multiscale-Genomics/mg-process-fastq
     - sudo chmod +x scripts/travis/includeMACS2.sh
     - sudo chmod +x scripts/travis/includeTADbit.sh
 

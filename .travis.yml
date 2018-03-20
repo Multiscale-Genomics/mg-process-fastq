@@ -81,8 +81,17 @@ before_install:
     - echo "deb http://cran.r-project.org/bin/linux/ubuntu trusty/" | sudo tee -a /etc/apt/sources.list
     - sudo apt-get update -qq
 
+    - cd ${HOME}/build/Multiscale-Genomics/mg-process-fastq
+    - sudo chmod +x scripts/travis/includeMAC2.sh
+    - sudo chmod +x scripts/travis/includeTADbit.sh
+
     - if [[ "$TESTENV" == "code" ]]; then sudo apt-get install r-base-core; fi
     - if [[ "$TESTENV" == "code" ]]; then sudo apt-get install python-rpy2; fi
+    - if [[ "$TESTENV" == "code" ]]; then sudo ./scripts/travis/install_code_test_dependencies.sh; fi
+    - if [[ "$TESTENV" == "code" ]]; then ./scripts/travis/includeMAC2.sh; fi
+    - if [[ "$TESTENV" == "code" ]]; then ./scripts/travis/includeTADbit.sh; fi
+    - if [[ "$TESTENV" == "pylint" ]]; then ./scripts/travis/includeMAC2.sh; fi
+    - if [[ "$TESTENV" == "pylint" ]]; then ./scripts/travis/includeTADbit.sh; fi
 
 services:
     - docker
@@ -90,15 +99,6 @@ services:
 install:
     # libtbb-dev did not seem to be installing correctly without using sudo
     - sudo apt-get install libtbb-dev
-
-    - sudo chmod +x scripts/travis/includeMACS2.sh
-    - sudo chmod +x scripts/travis/includeTADbit.sh
-
-    - if [[ "$TESTENV" == "code" ]]; then sudo ./scripts/travis/install_code_test_dependencies.sh; fi
-    - if [[ "$TESTENV" == "code" ]]; then ./scripts/travis/includeMAC2.sh; fi
-    - if [[ "$TESTENV" == "code" ]]; then ./scripts/travis/includeTADbit.sh; fi
-    - if [[ "$TESTENV" == "pylint" ]]; then ./scripts/travis/includeMAC2.sh; fi
-    - if [[ "$TESTENV" == "pylint" ]]; then ./scripts/travis/includeTADbit.sh; fi
 
     # Install APIs and Pipelines
     - cd ${HOME}/build/Multiscale-Genomics/mg-process-fastq

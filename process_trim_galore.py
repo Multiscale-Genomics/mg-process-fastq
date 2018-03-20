@@ -24,7 +24,7 @@ import argparse
 from basic_modules.workflow import Workflow
 from utils import logger
 
-from tool.trim_galore import trimgalore
+from tool.trimgalore import trimgalore
 
 # ------------------------------------------------------------------------------
 
@@ -65,6 +65,7 @@ class process_trim_galore(Workflow):
             fastq : str
                 Location for the first FASTQ file for single or paired end reads
                 
+
         metadata : dict
             Input file meta data associated with their roles
 
@@ -85,22 +86,40 @@ class process_trim_galore(Workflow):
 
         logger.info("Trim_galore")
 
-        tg = trimgalore(self.configuration)
-        fastq1f, trim1_meta = tg.run(
-            {"fastq": input_files["fastq"]},
-            {"fastq": metadata["fastq"]},
-            {"fastq_trimmed": output_files["fastq_trimmed"]}
+        trimg = trimgalore(self.configuration)
+        fastq1f, trim1_meta = trimg.run(
+            {"fastq": input_files["fastq1"]},
+            {"fastq": metadata["fastq1"]},
+            {"fastq_trimmed": output_files["fastq1_trimmed"]}
         )
 
         try:
-            output_results_files["fastq_trimmed"] = fastq1f["fastq_trimmed"]
-            output_metadata["fastq_trimmed"] = filter1_meta["fastq_trimmed"]
-            tool_name = output_metadata["fastq_trimmed"].meta_data["tool"]
-            output_metadata["fastq_trimmed"].meta_data["tool_description"] = tool_name
-            output_metadata["fastq_trimmed"].meta_data["tool"] = "process_trim_galore"
+            output_results_files["fastq1_trimmed"] = fastq1f["fastq_trimmed"]
+            output_metadata["fastq1_trimmed"] = filter1_meta["fastq_trimmed"]
+            tool_name = output_metadata["fastq1_trimmed"].meta_data["tool"]
+            output_metadata["fastq1_trimmed"].meta_data["tool_description"] = tool_name
+            output_metadata["fastq1_trimmed"].meta_data["tool"] = "process_trim_galore"
         except KeyError:
             logger.fatal("Trim Galore : Error while trimming")
             return {}, {}
+        
+        if "fastq2" in input_files:
+            logger.info("Trim_galore")
+            fastq2f, filter2_meta = frt.run(
+                {"fastq": input_files["fastq2"]},
+                {"fastq": metadata["fastq2"]},
+                {"fastq_trimmed": output_files["fastq2_trimmed"]}
+            )
+
+            try:
+                output_results_files["fastq2_trimmed"] = fastq2f["fastq_trimmed"]
+                output_metadata["fastq2_trimmed"] = filter2_meta["fastq_trimmed"]
+                tool_name = output_metadata["fastq2_trimmed"].meta_data["tool"]
+                output_metadata["fastq2_trimmed"].meta_data["tool_description"] = tool_name
+                output_metadata["fastq2_trimmed"].meta_data["tool"] = "process_trim_galore"
+            except KeyError:
+                logger.fatal("Trim Galore : Error while filtering")
+                return {}, {}
 
         return (output_results_files, output_metadata)
 

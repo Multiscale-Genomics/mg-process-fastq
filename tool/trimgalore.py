@@ -277,11 +277,11 @@ class trimgalore(Tool):
 
         output_metadata = {
             "fastq1_out": Metadata(
-                data_type=input_metadata["input"].data_type,
+                data_type=input_metadata["fastq1"].data_type,
                 file_type="FASTQ",
-                file_path=output_files["output"],
-                sources=[input_metadata["input"].file_path],
-                taxon_id=input_metadata["input"].taxon_id,
+                file_path=output_files["fastq1_trimmed"],
+                sources=[input_metadata["fastq1"].file_path],
+                taxon_id=input_metadata["fastq1"].taxon_id,
                 meta_data={
                     "tool": "trim_galore"
                 }
@@ -292,11 +292,11 @@ class trimgalore(Tool):
             output_files_created["fastq2_trimmed"] = output_files["fastq2_trimmed"]
             output_metadata = {
                 "fastq2_out": Metadata(
-                    data_type=input_metadata["input"].data_type,
+                    data_type=input_metadata["fastq2"].data_type,
                     file_type="FASTQ",
-                    file_path=output_files["output"],
-                    sources=[input_metadata["input"].file_path],
-                    taxon_id=input_metadata["input"].taxon_id,
+                    file_path=output_files["fastq2_trimmed"],
+                    sources=[input_metadata["fastq2"].file_path],
+                    taxon_id=input_metadata["fastq2"].taxon_id,
                     meta_data={
                         "tool": "trim_galore"
                     }

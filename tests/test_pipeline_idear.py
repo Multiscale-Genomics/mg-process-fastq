@@ -20,8 +20,8 @@ from __future__ import print_function
 import os.path
 import pytest
 
-from process_idear import process_idear
 from basic_modules.metadata import Metadata
+from process_idear import process_idear
 
 
 @pytest.mark.idamidseq

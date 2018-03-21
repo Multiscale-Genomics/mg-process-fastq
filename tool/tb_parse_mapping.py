@@ -200,7 +200,7 @@ class tbParseMappingTool(Tool):  # pylint: disable=invalid-name
 
         return True
 
-    def run(self, input_files, output_files, metadata=None):  # pylint: disable=too-many-locals,arguments-differ
+    def run(self, input_files, output_files, metadata=None):  # pylint: disable=too-many-locals,arguments-differ,inconsistent-return-statements
         """
         The main function to map the aligned reads and return the matching
         pairs. Parsing of the mappings can be either iterative of fragment

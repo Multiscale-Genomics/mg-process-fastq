@@ -20,8 +20,8 @@ import shlex
 import subprocess
 import os.path
 
-from tool.common import cd
 from utils import logger
+from tool.common import cd
 
 
 class alignerUtils(object):

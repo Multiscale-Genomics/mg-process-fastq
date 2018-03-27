@@ -109,20 +109,25 @@ class bssMethylationCallerTool(Tool):
         g_dir = "/".join(g_dir[:-1])
         gi_dir = "/".join(g_dir[:-1])
 
-        try:
-            tar = tarfile.open(genome_idx)
-            for member in tar.getmembers():
-                if member.isdir():
-                    gi_dir = g_dir + "/" + member.name
-                    break
-            logger.info("EXTRACTING " + genome_idx + " to " + g_dir)
-            tar.extractall(path=g_dir)
-            tar.close()
-        except (IOError, OSError) as msg:
-            logger.fatal("I/O error({0}): {1}\n{2}".format(
-                msg.errno, msg.strerror, g_dir))
+        untar_idx = True
+        if "no-untar" in self.configuration and self.configuration["no-untar"] is True:
+            untar_idx = False
 
-            return False
+        if untar_idx is True:
+            try:
+                tar = tarfile.open(genome_idx)
+                for member in tar.getmembers():
+                    if member.isdir():
+                        gi_dir = g_dir + "/" + member.name
+                        break
+                logger.info("EXTRACTING " + genome_idx + " to " + g_dir)
+                tar.extractall(path=g_dir)
+                tar.close()
+            except (IOError, OSError) as msg:
+                logger.fatal("I/O error({0}): {1}\n{2}".format(
+                    msg.errno, msg.strerror, g_dir))
+
+                return False
 
         command_line = (
             "python " + bss_path + "/bs_seeker2-call_methylation.py "

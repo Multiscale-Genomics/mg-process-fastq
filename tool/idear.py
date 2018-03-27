@@ -189,7 +189,7 @@ class idearTool(Tool):
             input_files["bsgenome"],
             output_files["bigwig"]
         )
-        results = compss_wait_on(results)
+        #results = compss_wait_on(results)
 
         output_metadata = {
             "bigwig": Metadata(

@@ -121,11 +121,11 @@ class kallistoIndexerTool(Tool):
             input_files["cdna"],
             output_files["index"]
         )
-        results = compss_wait_on(results)
-
-        if results is False:
-            logger.fatal("Kallisto Indexer: run failed")
-            return {}, {}
+        #results = compss_wait_on(results)
+        #
+        #if results is False:
+        #    logger.fatal("Kallisto Indexer: run failed")
+        #    return {}, {}
 
         output_metadata = {
             "index": Metadata(

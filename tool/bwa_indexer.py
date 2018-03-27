@@ -152,11 +152,11 @@ class bwaIndexerTool(Tool):
             input_files["genome"],
             output_files["index"]
         )
-        results = compss_wait_on(results)
+        #results = compss_wait_on(results)
 
-        if results is False:
-            logger.fatal("BWA Indexer: run failed")
-            return {}, {}
+        #if results is False:
+        #    logger.fatal("BWA Indexer: run failed")
+        #    return {}, {}
 
         output_metadata = {
             "index": Metadata(

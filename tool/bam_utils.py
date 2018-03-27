@@ -282,7 +282,7 @@ class bamUtilsTask(object):
                             bam_out, bam_job_files.pop(0)
                         )
 
-                barrier()
+                # barrier()
 
                 bam_job_files = []
                 bam_job_files = [new_bam for new_bam in tmp_alignments]

@@ -66,7 +66,6 @@ class inps(Tool):
 
         self.configuration.update(configuration)
 
-    @staticmethod
     @task(
         returns=int,
         bam_file=FILE_IN, peak_bed=FILE_OUT, inps_params=IN,

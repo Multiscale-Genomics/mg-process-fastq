@@ -145,11 +145,11 @@ class biobambam(Tool):
         logger.info("BIOBAMBAM FILTER: Ready to run")
 
         results = self.biobambam_filter_alignments(input_files['input'], output_files['output'])
-        results = compss_wait_on(results)
-
-        if results is False:
-            logger.fatal("BIOBAMBAM: run failed")
-            return {}, {}
+        #results = compss_wait_on(results)
+        #
+        #if results is False:
+        #    logger.fatal("BIOBAMBAM: run failed")
+        #    return {}, {}
 
         logger.info("BIOBAMBAM FILTER: completed")
 

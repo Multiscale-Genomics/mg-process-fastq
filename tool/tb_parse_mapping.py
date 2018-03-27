@@ -348,7 +348,7 @@ class tbParseMappingTool(Tool):
                     window1_1, window1_2, window1_3, window1_4,
                     window2_1, window2_2, window2_3, window2_4,
                     read_iter)
-                results = compss_wait_on(results)
+                #results = compss_wait_on(results)
                 return ([read_iter], output_metadata)
 
             elif mapping_list[0] == 'frag':
@@ -366,7 +366,7 @@ class tbParseMappingTool(Tool):
                     window2_full, window2_frag,
                     read_frag)
 
-                results = compss_wait_on(results)
+                #results = compss_wait_on(results)
                 return ([read_frag], output_metadata)
 
             reads = None

@@ -366,7 +366,7 @@ class bsgenomeTool(Tool):
             output_files["seed_file"],
             output_files["bsgenome"]
         )
-        results = compss_wait_on(results)
+        # results = compss_wait_on(results)
 
         output_metadata = {
             "bsgenome": Metadata(

@@ -130,11 +130,11 @@ class fastqcTool(Tool):
             input_files['fastq'],
             output_files['report']
         )
-        results = compss_wait_on(results)
-
-        if results is False:
-            logger.fatal("FASTQC: run failed")
-            return {}, {}
+        #results = compss_wait_on(results)
+        #
+        #if results is False:
+        #    logger.fatal("FASTQC: run failed")
+        #    return {}, {}
 
         output_metadata = {
             "report": Metadata(

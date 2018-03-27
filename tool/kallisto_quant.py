@@ -271,7 +271,7 @@ class kallistoQuantificationTool(Tool):
                 output_files["abundance_h5_file"], output_files["abundance_tsv_file"],
                 output_files["run_info_file"]
             )
-            results = compss_wait_on(results)
+            #results = compss_wait_on(results)
         elif "fastq2" in input_files:
             # handle error
             results = self.kallisto_quant_paired(
@@ -279,7 +279,7 @@ class kallistoQuantificationTool(Tool):
                 output_files["abundance_h5_file"], output_files["abundance_tsv_file"],
                 output_files["run_info_file"]
             )
-            results = compss_wait_on(results)
+            #results = compss_wait_on(results)
         else:
             return ({}, {})
 

@@ -325,9 +325,9 @@ class fastq_splitter(Tool):
                 input_files["fastq1"] + ".tar.gz",
             )
 
-        results = compss_wait_on(results)
-
-        logger.info("FASTQ SPLITTER:", results)
+        #results = compss_wait_on(results)
+        #
+        #logger.info("FASTQ SPLITTER:", results)
 
         fastq_tar_meta = Metadata(
             data_type=input_metadata["fastq1"].data_type,

@@ -175,7 +175,7 @@ class tbSaveAdjacencyHDF5Tool(Tool):
 
             results = self.tb_matrix_hdf5(
                 adjlist_file, hdf5_file, normalized, resolution, chromosomes)
-            results = compss_wait_on(results)
+            #results = compss_wait_on(results)
 
         return ([hdf5_file], [output_metadata])
 

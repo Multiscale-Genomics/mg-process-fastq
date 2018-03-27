@@ -212,7 +212,7 @@ class tbFilterTool(Tool):
             reads, filtered_reads_file, conservative,
             output_de, output_d, output_e, output_ed, output_or, output_rb,
             output_sc, output_tc, output_tl, output_ts)
-        results = compss_wait_on(results)
+        # results = compss_wait_on(results)
 
         return ([filtered_reads_file], output_metadata)
 

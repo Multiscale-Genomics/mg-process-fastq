@@ -113,21 +113,21 @@ class bssMethylationCallerTool(Tool):
         if "no-untar" in self.configuration and self.configuration["no-untar"] is True:
             untar_idx = False
 
-        if untar_idx is True:
-            try:
-                tar = tarfile.open(genome_idx)
-                for member in tar.getmembers():
-                    if member.isdir():
-                        gi_dir = g_dir + "/" + member.name
-                        break
-                logger.info("EXTRACTING " + genome_idx + " to " + g_dir)
+        try:
+            tar = tarfile.open(genome_idx)
+            for member in tar.getmembers():
+                if member.isdir():
+                    gi_dir = g_dir + "/" + member.name
+                    break
+            logger.info("EXTRACTING " + genome_idx + " to " + g_dir)
+            if untar_idx is True:
                 tar.extractall(path=g_dir)
-                tar.close()
-            except (IOError, OSError) as msg:
-                logger.fatal("I/O error({0}): {1}\n{2}".format(
-                    msg.errno, msg.strerror, g_dir))
+            tar.close()
+        except (IOError, OSError) as msg:
+            logger.fatal("I/O error({0}): {1}\n{2}".format(
+                msg.errno, msg.strerror, g_dir))
 
-                return False
+            return False
 
         command_line = (
             "python " + bss_path + "/bs_seeker2-call_methylation.py "
@@ -217,12 +217,12 @@ class bssMethylationCallerTool(Tool):
 
         bam_handler = bamUtilsTask()
         results = bam_handler.check_header(input_files["bam"])
-        results = compss_wait_on(results)
-        if results is False:
-            logger.fatal(
-                "bss_methylation_caller: Could not process files {}, {}.".format(*input_files)
-            )
-            return (None, None)
+        #results = compss_wait_on(results)
+        #if results is False:
+        #    logger.fatal(
+        #        "bss_methylation_caller: Could not process files {}, {}.".format(*input_files)
+        #    )
+        #    return (None, None)
 
         results = self.bss_methylation_caller(
             bss_path,
@@ -233,10 +233,10 @@ class bssMethylationCallerTool(Tool):
             output_files["cgmap_file"],
             output_files["atcgmap_file"]
         )
-        results = compss_wait_on(results)
-
-        if results is False:
-            logger.fatal("WGBS - BS SEEKER2: Methylation caller failed")
+        #results = compss_wait_on(results)
+        #
+        #if results is False:
+        #    logger.fatal("WGBS - BS SEEKER2: Methylation caller failed")
 
         output_metadata = {
             "wig_file": Metadata(

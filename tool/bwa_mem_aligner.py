@@ -368,31 +368,32 @@ class bwaAlignerMEMTool(Tool):
                     str(input_files["genome"]), tmp_fq, output_bam_file_tmp,
                     str(input_files["index"]), self.get_mem_params(self.configuration)
                 )
-        barrier()
+        # barrier()
 
         bam_handle = bamUtilsTask()
 
         results = bam_handle.bam_copy(output_bam_list.pop(0), output_bam_file)
-        results = compss_wait_on(results)
+        #results = compss_wait_on(results)
 
         bam_job_files = [output_bam_file]
         for tmp_bam_file in output_bam_list:
             bam_job_files.append(tmp_bam_file)
 
-        if results is False:
-            logger.fatal("BWA Aligner: Bam copy failed")
-            return {}, {}
+        #if results is False:
+        #    logger.fatal("BWA Aligner: Bam copy failed")
+        #    return {}, {}
 
         results = bam_handle.bam_merge(bam_job_files)
-        results = compss_wait_on(results)
+        #results = compss_wait_on(results)
 
         results = bam_handle.bam_sort(output_bam_file)
-        results = compss_wait_on(results)
+        #results = compss_wait_on(results)
+        #
+        #if results is False:
+        #    logger.fatal("BWA Aligner: Bam sorting failed")
+        #    return {}, {}
 
-        if results is False:
-            logger.fatal("BWA Aligner: Bam sorting failed")
-            return {}, {}
-
+        # The next lines were already commented
         # results = bam_handle.bam_index(output_bam_file, output_bai_file)
         # results = compss_wait_on(results)
 

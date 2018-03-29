@@ -466,9 +466,12 @@ class bssAlignerTool(Tool):
 
         output_bam_list = []
         for fastq_file_pair in fastq_file_list:
+            logger.info("TMP DIR: " + gz_data_path + "/tmp/")
             if "fastq2" in input_files:
                 tmp_fq1 = gz_data_path + "/tmp/" + fastq_file_pair[0]
                 tmp_fq2 = gz_data_path + "/tmp/" + fastq_file_pair[1]
+                logger.info("TMP_FQ1: " + fastq_file_pair[0])
+                logger.info("TMP_FQ2: " + fastq_file_pair[1])
                 output_bam_file_tmp = tmp_fq1 + ".bam"
                 output_bam_list.append(output_bam_file_tmp)
 
@@ -480,6 +483,7 @@ class bssAlignerTool(Tool):
                 )
             else:
                 tmp_fq = gz_data_path + "/tmp/" + fastq_file_pair[0]
+                logger.info("TMP_FQ: " + fastq_file_pair[0])
                 output_bam_file_tmp = tmp_fq + ".bam"
                 output_bam_list.append(output_bam_file_tmp)
 

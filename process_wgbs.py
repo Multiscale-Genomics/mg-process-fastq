@@ -181,17 +181,19 @@ class process_wgbs(Workflow):
         bss_aligner = bssAlignerTool(self.configuration)
         aligner_input_files = {
             "genome": input_files["genome"],
-            "fastq1": fastq1f["fastq_filtered"],
-            "fastq2": fastq2f["fastq_filtered"]
+            "fastq1": fastq1f["fastq_filtered"]
         }
         aligner_input_files["index"] = genome_idx["index"]
 
         aligner_meta = {
             "genome": metadata["genome"],
             "fastq1": output_metadata["fastq1_filtered"],
-            "fastq2": output_metadata["fastq2_filtered"],
             "index": output_metadata["index"]
         }
+        if "fastq2" in input_files:
+            aligner_input_files["fastq2"] = fastq2f["fastq_filtered"]
+            aligner_meta["fastq2"] = output_metadata["fastq2_filtered"]
+
         bam, bam_meta = bss_aligner.run(
             aligner_input_files,
             aligner_meta,
@@ -221,7 +223,6 @@ class process_wgbs(Workflow):
             "genome": input_files["genome"],
             "index": output_results_files["index"],
             "fastq1": output_results_files["fastq1_filtered"],
-            "fastq2": output_results_files["fastq2_filtered"],
             "bam": output_results_files["bam"],
             "bai": output_results_files["bai"]
         }
@@ -229,11 +230,15 @@ class process_wgbs(Workflow):
         mct_meta = {
             "genome": metadata["genome"],
             "fastq1": output_metadata["fastq1_filtered"],
-            "fastq2": output_metadata["fastq2_filtered"],
             "bam": output_metadata["bam"],
             "bai": output_metadata["bai"],
             "index": output_metadata["index"]
         }
+
+        if "fastq2" in input_files:
+            mct_input_files["fastq2"] = output_results_files["fastq2_filtered"]
+            mct_meta["fastq2"] = output_metadata["fastq2_filtered"]
+
         peak_files, peak_meta = peak_caller_handle.run(
             mct_input_files,
             mct_meta,

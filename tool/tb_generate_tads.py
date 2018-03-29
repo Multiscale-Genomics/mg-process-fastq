@@ -204,7 +204,7 @@ class tbGenerateTADsTool(Tool):
                     )
                 )
 
-        results = compss_wait_on(results)
+        #results = compss_wait_on(results)
 
         # Step to merge all the TAD files into a single bed file
         tad_bed_file = "/".join(root_name[0:-1]) + '/' + metadata['expt_name'] + '_tads.tsv'
@@ -224,7 +224,7 @@ class tbGenerateTADsTool(Tool):
                     resolution,
                     tad_bed_file
                 )
-                results = compss_wait_on(results)
+                # results = compss_wait_on(results) # This one avoids all parallelism
 
         return ([tad_bed_file], output_metadata)
 

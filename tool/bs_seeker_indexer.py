@@ -221,11 +221,11 @@ class bssIndexerTool(Tool):
             input_files["genome"],
             aligner, aligner_path, bss_path, command_params,
             output_files["index"])
-        results = compss_wait_on(results)
-
-        if results is False:
-            logger.fatal("BS SEEKER2 Indexer: run failed")
-            return {}, {}
+        #results = compss_wait_on(results)
+        #
+        #if results is False:
+        #    logger.fatal("BS SEEKER2 Indexer: run failed")
+        #    return {}, {}
 
         output_metadata = {
             "index": Metadata(

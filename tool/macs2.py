@@ -365,13 +365,13 @@ class macs2(Tool):
                 name, str(input_files['input']), command_params,
                 str(output_files['narrow_peak']), str(output_files['summits']),
                 str(output_files['broad_peak']), str(output_files['gapped_peak']))
-        results = compss_wait_on(results)
-
-        if results > 0:
-            logger.fatal("MACS2 failed with error: {}", results)
-            return (
-                {}, {}
-            )
+        #results = compss_wait_on(results)
+        #
+        #if results > 0:
+        #    logger.fatal("MACS2 failed with error: {}", results)
+        #    return (
+        #        {}, {}
+        #    )
 
         output_files_created = {}
         output_metadata = {}

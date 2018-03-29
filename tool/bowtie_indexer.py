@@ -147,11 +147,11 @@ class bowtieIndexerTool(Tool):
             input_files["genome"],
             output_files["index"]
         )
-        results = compss_wait_on(results)
+        #results = compss_wait_on(results)
 
-        if results is False:
-            logger.fatal("Bowtie2 Indexer: run failed")
-            return {}, {}
+        #if results is False:
+        #    logger.fatal("Bowtie2 Indexer: run failed")
+        #    return {}, {}
 
         output_metadata = {
             "index": Metadata(

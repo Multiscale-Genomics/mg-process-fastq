@@ -219,7 +219,7 @@ class tbFullMappingTool(Tool):
                 gem_file, fastq_file, metadata['enzyme_name'], windows,
                 full_file, frag_file
             )
-            results = compss_wait_on(results)
+            # results = compss_wait_on(results)
 
             output_metadata['func'] = 'frag'
             return ([full_file, frag_file], output_metadata)
@@ -233,7 +233,7 @@ class tbFullMappingTool(Tool):
             gem_file, fastq_file, windows,
             window1, window2, window3, window4
         )
-        results = compss_wait_on(results)
+        #results = compss_wait_on(results)
 
         output_metadata['func'] = 'iter'
         return ([window1, window2, window3, window4], output_metadata)

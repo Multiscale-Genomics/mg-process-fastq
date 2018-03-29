@@ -143,11 +143,11 @@ class filterReadsTool(Tool):
             output_files["fastq_filtered"],
             self.configuration["bss_path"]
         )
-        results = compss_wait_on(results)
-
-        if results is False:
-            logger.fatal("BS SEEKER2 Filter: run failed")
-            return {}, {}
+        #results = compss_wait_on(results)
+        #
+        #if results is False:
+        #    logger.fatal("BS SEEKER2 Filter: run failed")
+        #    return {}, {}
 
         output_metadata = {
             "fastq_filtered": Metadata(

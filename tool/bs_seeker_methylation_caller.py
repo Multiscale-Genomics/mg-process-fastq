@@ -217,12 +217,6 @@ class bssMethylationCallerTool(Tool):
 
         bam_handler = bamUtilsTask()
         results = bam_handler.check_header(input_files["bam"])
-        #results = compss_wait_on(results)
-        #if results is False:
-        #    logger.fatal(
-        #        "bss_methylation_caller: Could not process files {}, {}.".format(*input_files)
-        #    )
-        #    return (None, None)
 
         results = self.bss_methylation_caller(
             bss_path,
@@ -233,10 +227,6 @@ class bssMethylationCallerTool(Tool):
             output_files["cgmap_file"],
             output_files["atcgmap_file"]
         )
-        #results = compss_wait_on(results)
-        #
-        #if results is False:
-        #    logger.fatal("WGBS - BS SEEKER2: Methylation caller failed")
 
         output_metadata = {
             "wig_file": Metadata(

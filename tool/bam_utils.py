@@ -245,44 +245,46 @@ class bamUtilsTask(object):
             if len(bam_job_files) > 1:
                 tmp_alignments = []
 
-                current_list_len = len(bam_job_files)
-                for i in range(0, current_list_len-9, 10):  # pylint: disable=unused-variable
-                    bam_out = bam_job_files.pop(0)
-                    tmp_alignments.append(bam_out)
-
-                    self.bam_merge_10(
-                        bam_out, bam_job_files.pop(0), bam_job_files.pop(0),
-                        bam_job_files.pop(0), bam_job_files.pop(0), bam_job_files.pop(0),
-                        bam_job_files.pop(0), bam_job_files.pop(0), bam_job_files.pop(0),
-                        bam_job_files.pop(0)
-                    )
-
                 if bam_job_files:
-                    bam_out = bam_job_files.pop(0)
+                    while len(bam_job_files) >= 10:
+                        current_list_len = len(bam_job_files)
+                        for i in range(0, current_list_len-9, 10):  # pylint: disable=unused-variable
+                            bam_out = bam_job_files[0] + "merge_" + str(merge_round) + ".bam"
+                            tmp_alignments.append(bam_out)
+
+                            self.bam_merge_10(
+                                bam_job_files.pop(0), bam_job_files.pop(0), bam_job_files.pop(0),
+                                bam_job_files.pop(0), bam_job_files.pop(0), bam_job_files.pop(0),
+                                bam_job_files.pop(0), bam_job_files.pop(0), bam_job_files.pop(0),
+                                bam_job_files.pop(0), bam_out
+                            )
+
+                    bam_out = bam_job_files[0] + "merge_" + str(merge_round) + ".bam"
                     tmp_alignments.append(bam_out)
                     if len(bam_job_files) >= 4:
                         self.bam_merge_5(
-                            bam_out, bam_job_files.pop(0), bam_job_files.pop(0),
-                            bam_job_files.pop(0), bam_job_files.pop(0)
+                            bam_job_files.pop(0), bam_job_files.pop(0), bam_job_files.pop(0),
+                            bam_job_files.pop(0), bam_job_files.pop(0), bam_out
                         )
 
-                    bam_out = bam_job_files.pop(0)
+                    bam_out = bam_job_files[0] + "merge_" + str(merge_round) + ".bam"
                     tmp_alignments.append(bam_out)
                     if len(bam_job_files) >= 3:
                         self.bam_merge_4(
-                            bam_out, bam_job_files.pop(0), bam_job_files.pop(0),
-                            bam_job_files.pop(0)
+                            bam_job_files.pop(0), bam_job_files.pop(0), bam_job_files.pop(0),
+                            bam_job_files.pop(0), bam_out
                         )
                     elif len(bam_job_files) == 2:
                         self.bam_merge_3(
-                            bam_out, bam_job_files.pop(0), bam_job_files.pop(0)
+                            bam_job_files.pop(0), bam_job_files.pop(0), bam_job_files.pop(0),
+                            bam_out
                         )
                     elif len(bam_job_files) == 1:
                         self.bam_merge_2(
-                            bam_out, bam_job_files.pop(0)
+                            bam_job_files.pop(0), bam_job_files.pop(0), bam_out
                         )
 
-                # barrier()
+                barrier()
 
                 bam_job_files = []
                 bam_job_files = [new_bam for new_bam in tmp_alignments]
@@ -292,8 +294,8 @@ class bamUtilsTask(object):
 
         return bam_job_files[0]
 
-    @task(bam_file_1=FILE_INOUT, bam_file_2=FILE_IN)
-    def bam_merge_2(self, bam_file_1, bam_file_2):  # pylint: disable=no-self-use
+    @task(bam_file_1=FILE_IN, bam_file_2=FILE_IN, bam_file_out=FILE_OUT)
+    def bam_merge_2(self, bam_file_1, bam_file_2, bam_file_out):  # pylint: disable=no-self-use
         """
         Wrapper for the pysam SAMtools merge function
 
@@ -305,10 +307,13 @@ class bamUtilsTask(object):
             Location of the bam file that is to get merged into bam_file_1
         """
         bam_handle = bamUtils()
-        return bam_handle.bam_merge(bam_file_1, bam_file_2)
+        bam_handle.bam_merge(bam_file_1, bam_file_2)
+        bam_handle.bam_copy(bam_file_1, bam_file_out)
 
-    @task(bam_file_1=FILE_INOUT, bam_file_2=FILE_IN, bam_file_3=FILE_IN)
-    def bam_merge_3(self, bam_file_1, bam_file_2, bam_file_3):  # pylint: disable=no-self-use
+    @task(
+        bam_file_1=FILE_IN, bam_file_2=FILE_IN, bam_file_3=FILE_IN,
+        bam_file_out=FILE_OUT)
+    def bam_merge_3(self, bam_file_1, bam_file_2, bam_file_3, bam_file_out):  # pylint: disable=no-self-use
         """
         Wrapper for the pysam SAMtools merge function
 
@@ -322,12 +327,15 @@ class bamUtilsTask(object):
             Location of the bam file that is to get merged into bam_file_1
         """
         bam_handle = bamUtils()
-        return bam_handle.bam_merge([
+        bam_handle.bam_merge([
             bam_file_1, bam_file_2, bam_file_3
         ])
+        return bam_handle.bam_copy(bam_file_1, bam_file_out)
 
-    @task(bam_file_1=FILE_INOUT, bam_file_2=FILE_IN, bam_file_3=FILE_IN, bam_file_4=FILE_IN)
-    def bam_merge_4(self, bam_file_1, bam_file_2, bam_file_3, bam_file_4):  # pylint: disable=no-self-use
+    @task(
+        bam_file_1=FILE_IN, bam_file_2=FILE_IN, bam_file_3=FILE_IN,
+        bam_file_4=FILE_IN, bam_file_out=FILE_OUT)
+    def bam_merge_4(self, bam_file_1, bam_file_2, bam_file_3, bam_file_4, bam_file_out):  # pylint: disable=no-self-use
         """
         Wrapper for the pysam SAMtools merge function
 
@@ -343,15 +351,16 @@ class bamUtilsTask(object):
             Location of the bam file that is to get merged into bam_file_1
         """
         bam_handle = bamUtils()
-        return bam_handle.bam_merge([
+        bam_handle.bam_merge([
             bam_file_1, bam_file_2, bam_file_3, bam_file_4
         ])
+        return bam_handle.bam_copy(bam_file_1, bam_file_out)
 
     @task(
-        bam_file_1=FILE_INOUT, bam_file_2=FILE_IN, bam_file_3=FILE_IN,
-        bam_file_4=FILE_IN, bam_file_5=FILE_IN
+        bam_file_1=FILE_IN, bam_file_2=FILE_IN, bam_file_3=FILE_IN,
+        bam_file_4=FILE_IN, bam_file_5=FILE_IN, bam_file_out=FILE_OUT
     )  # pylint: disable=no-self-use,too-many-arguments
-    def bam_merge_5(self, bam_file_1, bam_file_2, bam_file_3, bam_file_4, bam_file_5):
+    def bam_merge_5(self, bam_file_1, bam_file_2, bam_file_3, bam_file_4, bam_file_5, bam_file_out):
         """
         Wrapper for the pysam SAMtools merge function
 
@@ -369,19 +378,21 @@ class bamUtilsTask(object):
             Location of the bam file that is to get merged into bam_file_1
         """
         bam_handle = bamUtils()
-        return bam_handle.bam_merge([
+        bam_handle.bam_merge([
             bam_file_1, bam_file_2, bam_file_3, bam_file_4, bam_file_5
         ])
+        return bam_handle.bam_copy(bam_file_1, bam_file_out)
 
     @task(
-        bam_file_1=FILE_INOUT, bam_file_2=FILE_IN, bam_file_3=FILE_IN,
+        bam_file_1=FILE_IN, bam_file_2=FILE_IN, bam_file_3=FILE_IN,
         bam_file_4=FILE_IN, bam_file_5=FILE_IN, bam_file_6=FILE_IN,
         bam_file_7=FILE_IN, bam_file_8=FILE_IN, bam_file_9=FILE_IN,
-        bam_file_10=FILE_IN
+        bam_file_10=FILE_IN, bam_file_out=FILE_OUT
     )  # pylint: disable=no-self-use,too-many-arguments
     def bam_merge_10(self,
                      bam_file_1, bam_file_2, bam_file_3, bam_file_4, bam_file_5,
-                     bam_file_6, bam_file_7, bam_file_8, bam_file_9, bam_file_10):
+                     bam_file_6, bam_file_7, bam_file_8, bam_file_9, bam_file_10,
+                     bam_file_out):
         """
         Wrapper for the pysam SAMtools merge function
 
@@ -409,10 +420,11 @@ class bamUtilsTask(object):
             Location of the bam file that is to get merged into bam_file_1
         """
         bam_handle = bamUtils()
-        return bam_handle.bam_merge([
+        bam_handle.bam_merge([
             bam_file_1, bam_file_2, bam_file_3, bam_file_4, bam_file_5,
             bam_file_6, bam_file_7, bam_file_8, bam_file_9, bam_file_10
         ])
+        return bam_handle.bam_copy(bam_file_1, bam_file_out)
 
     @task(bam_in=FILE_IN, bam_out=FILE_OUT)
     def bam_copy(self, bam_in, bam_out):  # pylint: disable=no-self-use

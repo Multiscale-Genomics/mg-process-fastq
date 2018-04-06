@@ -475,7 +475,7 @@ class bssAlignerTool(Tool):
                 output_bam_file_tmp = tmp_fq1 + ".bam"
                 output_bam_list.append(output_bam_file_tmp)
 
-                results = self.bs_seeker_aligner(
+                self.bs_seeker_aligner(
                     tmp_fq1, tmp_fq2,
                     aligner, aligner_path, bss_path, aln_params,
                     genome_fasta, genome_idx,
@@ -487,44 +487,24 @@ class bssAlignerTool(Tool):
                 output_bam_file_tmp = tmp_fq + ".bam"
                 output_bam_list.append(output_bam_file_tmp)
 
-                results = self.bs_seeker_aligner_single(
+                self.bs_seeker_aligner_single(
                     tmp_fq,
                     aligner, aligner_path, bss_path, aln_params,
                     genome_fasta, genome_idx,
                     output_bam_file_tmp
                 )
 
-        #barrier()
+        barrier()
 
         bam_handle = bamUtilsTask()
 
-        results = bam_handle.bam_copy(output_bam_list.pop(0), output_bam_file)
-        #results = compss_wait_on(results)
+        results = bam_handle.bam_merge(output_bam_list)
 
-        bam_job_files = [output_bam_file]
-        for tmp_bam_file in output_bam_list:
-            bam_job_files.append(tmp_bam_file)
+        results = bam_handle.bam_sort(output_bam_list[0])
 
-        #if results is False:
-        #    logger.fatal("BS SEEKER2 Aligner: Bam copy failed")
-        #    return {}, {}
-
-        results = bam_handle.bam_merge(bam_job_files)
-        #results = compss_wait_on(results)
-
-        results = bam_handle.bam_sort(output_bam_file)
-        #results = compss_wait_on(results)
-
-        #if results is False:
-        #    logger.fatal("BS SEEKER2 Aligner: Bam sorting failed")
-        #    return {}, {}
+        results = bam_handle.bam_copy(output_bam_list[0], output_bam_file)
 
         results = bam_handle.bam_index(output_bam_file, output_bai_file)
-        #results = compss_wait_on(results)
-
-        #if results is False:
-        #    logger.fatal("BS SEEKER2 Aligner: Bam indexing failed")
-        #    return {}, {}
 
         output_metadata = {
             "bam": Metadata(

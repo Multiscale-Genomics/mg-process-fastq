@@ -187,12 +187,12 @@ class process_wgbs(Workflow):
 
         aligner_meta = {
             "genome": metadata["genome"],
-            "fastq1": output_metadata["fastq1_filtered"],
+            "fastq1": filter1_meta["fastq_filtered"],
             "index": output_metadata["index"]
         }
         if "fastq2" in input_files:
             aligner_input_files["fastq2"] = fastq2f["fastq_filtered"]
-            aligner_meta["fastq2"] = output_metadata["fastq2_filtered"]
+            aligner_meta["fastq2"] = filter2_meta["fastq2_filtered"]
 
         bam, bam_meta = bss_aligner.run(
             aligner_input_files,
@@ -221,23 +221,23 @@ class process_wgbs(Workflow):
         peak_caller_handle = bssMethylationCallerTool(self.configuration)
         mct_input_files = {
             "genome": input_files["genome"],
-            "index": output_results_files["index"],
-            "fastq1": output_results_files["fastq1_filtered"],
-            "bam": output_results_files["bam"],
-            "bai": output_results_files["bai"]
+            "index": genome_idx["index"],
+            "fastq1": fastq1f["fastq_filtered"],
+            "bam": bam["bam"],
+            "bai": bam["bai"]
         }
 
         mct_meta = {
             "genome": metadata["genome"],
-            "fastq1": output_metadata["fastq1_filtered"],
+            "fastq1": filter1_meta["fastq1_filtered"],
             "bam": output_metadata["bam"],
-            "bai": output_metadata["bai"],
-            "index": output_metadata["index"]
+            "bai": bam_meta["bai"],
+            "index": bam_meta["index"]
         }
 
         if "fastq2" in input_files:
-            mct_input_files["fastq2"] = output_results_files["fastq2_filtered"]
-            mct_meta["fastq2"] = output_metadata["fastq2_filtered"]
+            mct_input_files["fastq2"] = fastq2f["fastq2_filtered"]
+            mct_meta["fastq2"] = filter2_meta["fastq2_filtered"]
 
         peak_files, peak_meta = peak_caller_handle.run(
             mct_input_files,

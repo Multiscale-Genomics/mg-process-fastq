@@ -113,10 +113,17 @@ class bwaIndexerTool(Tool):
             tar.add(index_dir, arcname=index_folder)
             tar.close()
 
-            command_line = 'pigz ' + idx_out_pregz
-            args = shlex.split(command_line)
-            process = subprocess.Popen(args)
-            process.wait()
+            try:
+                command_line = 'pigz ' + idx_out_pregz
+                args = shlex.split(command_line)
+                process = subprocess.Popen(args)
+                process.wait()
+            except OSError:
+                logger.warn("OSERROR: pigz not installed, using gzip")
+                command_line = 'gzip ' + idx_out_pregz
+                args = shlex.split(command_line)
+                process = subprocess.Popen(args)
+                process.wait()
 
             shutil.rmtree(index_dir)
 

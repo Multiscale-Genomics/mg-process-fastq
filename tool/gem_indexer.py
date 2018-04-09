@@ -89,10 +89,18 @@ class gemIndexerTool(Tool):
             au_handle.gem_index_genome(new_genome_file, new_genome_file)
 
             idx_out_pregz = index_loc.replace('.gem.gz', '.gem')
-            command_line = 'pigz ' + idx_out_pregz
-            args = shlex.split(command_line)
-            process = subprocess.Popen(args)
-            process.wait()
+
+            try:
+                command_line = 'pigz ' + idx_out_pregz
+                args = shlex.split(command_line)
+                process = subprocess.Popen(args)
+                process.wait()
+            except OSError:
+                logger.warn("OSERROR: pigz not installed, using gzip")
+                command_line = 'gzip ' + idx_out_pregz
+                args = shlex.split(command_line)
+                process = subprocess.Popen(args)
+                process.wait()
 
             return True
         except IOError:

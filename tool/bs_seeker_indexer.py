@@ -131,10 +131,17 @@ class bssIndexerTool(Tool):
             tar.add(fasta_file + "_" + aligner, arcname=ff_split[-1] + "_" + aligner)
             tar.close()
 
-            command_line = 'pigz ' + idx_out_pregz
-            args = shlex.split(command_line)
-            process = subprocess.Popen(args)
-            process.wait()
+            try:
+                command_line = 'pigz ' + idx_out_pregz
+                args = shlex.split(command_line)
+                process = subprocess.Popen(args)
+                process.wait()
+            except OSError:
+                logger.warn("OSERROR: pigz not installed, using gzip")
+                command_line = 'gzip ' + idx_out_pregz
+                args = shlex.split(command_line)
+                process = subprocess.Popen(args)
+                process.wait()
         except (IOError, OSError) as msg:
             logger.fatal("I/O error({0}): {1}\n{2}".format(
                 msg.errno, msg.strerror, command_line))

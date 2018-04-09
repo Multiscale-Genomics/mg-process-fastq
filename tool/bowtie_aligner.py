@@ -362,6 +362,7 @@ class bowtie2AlignerTool(Tool):
                 fastq1, fastq_file_gz
             )
 
+        # Required to prevent iterating over the future objects
         fastq_file_list = compss_wait_on(fastq_file_list)
         if not fastq_file_list:
             logger.fatal("FASTQ SPLITTER: run failed")

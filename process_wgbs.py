@@ -229,15 +229,15 @@ class process_wgbs(Workflow):
 
         mct_meta = {
             "genome": metadata["genome"],
-            "fastq1": filter1_meta["fastq1_filtered"],
+            "index": gidx_meta["index"],
+            "fastq1": filter1_meta["fastq_filtered"],
             "bam": output_metadata["bam"],
-            "bai": bam_meta["bai"],
-            "index": bam_meta["index"]
+            "bai": bam_meta["bai"]
         }
 
         if "fastq2" in input_files:
-            mct_input_files["fastq2"] = fastq2f["fastq2_filtered"]
-            mct_meta["fastq2"] = filter2_meta["fastq2_filtered"]
+            mct_input_files["fastq2"] = fastq2f["fastq_filtered"]
+            mct_meta["fastq2"] = filter2_meta["fastq_filtered"]
 
         peak_files, peak_meta = peak_caller_handle.run(
             mct_input_files,

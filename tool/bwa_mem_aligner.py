@@ -369,7 +369,6 @@ class bwaAlignerMEMTool(Tool):
                     str(input_files["genome"]), tmp_fq, output_bam_file_tmp,
                     str(input_files["index"]), self.get_mem_params(self.configuration)
                 )
-        # barrier()
 
         bam_handle = bamUtilsTask()
 

@@ -495,8 +495,6 @@ class bssAlignerTool(Tool):
                     output_bam_file_tmp
                 )
 
-        barrier()
-
         bam_handle = bamUtilsTask()
 
         logger.info("Merging bam files")

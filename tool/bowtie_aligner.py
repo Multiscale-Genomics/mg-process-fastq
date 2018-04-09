@@ -415,7 +415,6 @@ class bowtie2AlignerTool(Tool):
                     str(input_files["genome"]), tmp_fq, output_bam_file_tmp,
                     str(input_files["index"]), self.get_aln_params(self.configuration)
                 )
-        #barrier()
 
         bam_handle = bamUtilsTask()
 

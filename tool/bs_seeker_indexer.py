@@ -130,22 +130,22 @@ class bssIndexerTool(Tool):
             tar = tarfile.open(idx_out_pregz, "w")
             tar.add(fasta_file + "_" + aligner, arcname=ff_split[-1] + "_" + aligner)
             tar.close()
-
-            try:
-                command_line = 'pigz ' + idx_out_pregz
-                args = shlex.split(command_line)
-                process = subprocess.Popen(args)
-                process.wait()
-            except OSError:
-                logger.warn("OSERROR: pigz not installed, using gzip")
-                command_line = 'gzip ' + idx_out_pregz
-                args = shlex.split(command_line)
-                process = subprocess.Popen(args)
-                process.wait()
         except (IOError, OSError) as msg:
             logger.fatal("I/O error({0}): {1}\n{2}".format(
                 msg.errno, msg.strerror, command_line))
             return False
+
+        try:
+            command_line = 'pigz ' + idx_out_pregz
+            args = shlex.split(command_line)
+            process = subprocess.Popen(args)
+            process.wait()
+        except OSError:
+            logger.warn("OSERROR: pigz not installed, using gzip")
+            command_line = 'gzip ' + idx_out_pregz
+            args = shlex.split(command_line)
+            process = subprocess.Popen(args)
+            process.wait()
 
         return True
 
@@ -224,15 +224,10 @@ class bssIndexerTool(Tool):
         logger.info("ALIGNER: " + str(aligner))
         logger.info("ALIGNER PATH: " + str(aligner))
         logger.info("BSS PATH: " + str(aligner))
-        results = self.bss_build_index(
+        self.bss_build_index(
             input_files["genome"],
             aligner, aligner_path, bss_path, command_params,
             output_files["index"])
-        #results = compss_wait_on(results)
-        #
-        #if results is False:
-        #    logger.fatal("BS SEEKER2 Indexer: run failed")
-        #    return {}, {}
 
         output_metadata = {
             "index": Metadata(

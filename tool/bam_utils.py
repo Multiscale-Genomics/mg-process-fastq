@@ -249,7 +249,7 @@ class bamUtilsTask(object):
                     while len(bam_job_files) >= 10:
                         current_list_len = len(bam_job_files)
                         for i in range(0, current_list_len-9, 10):  # pylint: disable=unused-variable
-                            bam_out = bam_job_files[0] + "merge_" + str(merge_round) + ".bam"
+                            bam_out = bam_job_files[0] + "_merge_" + str(merge_round) + ".bam"
                             tmp_alignments.append(bam_out)
 
                             self.bam_merge_10(
@@ -259,16 +259,16 @@ class bamUtilsTask(object):
                                 bam_job_files.pop(0), bam_out
                             )
 
-                    bam_out = bam_job_files[0] + "merge_" + str(merge_round) + ".bam"
-                    tmp_alignments.append(bam_out)
+                    bam_out = bam_job_files[0] + "_merge_" + str(merge_round) + ".bam"
                     if len(bam_job_files) >= 5:
+                        tmp_alignments.append(bam_out)
                         self.bam_merge_5(
                             bam_job_files.pop(0), bam_job_files.pop(0), bam_job_files.pop(0),
                             bam_job_files.pop(0), bam_job_files.pop(0), bam_out
                         )
+                        bam_out = bam_job_files[0] + "_merge_" + str(merge_round) + ".bam"
 
-                    bam_out = bam_job_files[0] + "merge_" + str(merge_round) + ".bam"
-                    if len(bam_job_files) >= 4:
+                    if len(bam_job_files) == 4:
                         tmp_alignments.append(bam_out)
                         self.bam_merge_4(
                             bam_job_files.pop(0), bam_job_files.pop(0), bam_job_files.pop(0),

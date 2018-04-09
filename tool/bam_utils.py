@@ -228,7 +228,7 @@ class bamUtilsTask(object):
         bam_handle = bamUtils()
         return bam_handle.bam_sort(bam_file)
 
-    def bam_merge(self, bam_job_files):
+    def bam_merge(self, in_bam_job_files):
         """
         Wrapper task taking any number of bam files and merging them into a
         single bam file.
@@ -240,6 +240,8 @@ class bamUtilsTask(object):
             The first file in the list will be taken as the output file name
         """
         merge_round = -1
+
+        bam_job_files = [i for i in in_bam_job_files]
         while True:
             merge_round += 1
             if len(bam_job_files) > 1:

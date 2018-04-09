@@ -435,6 +435,7 @@ class bssAlignerTool(Tool):
             )
             aln_params = self.get_aln_params(self.configuration)
 
+        # Required to prevent iterating over the future objects
         fastq_file_list = compss_wait_on(fastq_file_list)
         if not fastq_file_list:
             logger.fatal("FASTQ SPLITTER: run failed")
@@ -498,13 +499,17 @@ class bssAlignerTool(Tool):
 
         bam_handle = bamUtilsTask()
 
-        results = bam_handle.bam_merge(output_bam_list)
+        logger.info("Merging bam files")
+        bam_handle.bam_merge(output_bam_list)
 
-        results = bam_handle.bam_sort(output_bam_list[0])
+        logger.info("Sorting merged bam file")
+        bam_handle.bam_sort(output_bam_list[0])
 
-        results = bam_handle.bam_copy(output_bam_list[0], output_bam_file)
+        logger.info("Copying bam file into the output file")
+        bam_handle.bam_copy(output_bam_list[0], output_bam_file)
 
-        results = bam_handle.bam_index(output_bam_file, output_bai_file)
+        logger.info("Creating output bam index file")
+        bam_handle.bam_index(output_bam_file, output_bai_file)
 
         output_metadata = {
             "bam": Metadata(

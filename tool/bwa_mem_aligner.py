@@ -27,14 +27,14 @@ try:
         raise ImportError
     from pycompss.api.parameter import IN, FILE_IN, FILE_OUT
     from pycompss.api.task import task
-    from pycompss.api.api import compss_wait_on, compss_open, barrier
+    from pycompss.api.api import compss_wait_on, compss_open
 except ImportError:
     logger.warn("[Warning] Cannot import \"pycompss\" API packages.")
     logger.warn("          Using mock decorators.")
 
     from utils.dummy_pycompss import IN, FILE_IN, FILE_OUT # pylint: disable=ungrouped-imports
     from utils.dummy_pycompss import task # pylint: disable=ungrouped-imports
-    from utils.dummy_pycompss import compss_wait_on, compss_open, barrier # pylint: disable=ungrouped-imports
+    from utils.dummy_pycompss import compss_wait_on, compss_open  # pylint: disable=ungrouped-imports
 
 from basic_modules.tool import Tool
 from basic_modules.metadata import Metadata
@@ -336,7 +336,7 @@ class bwaAlignerMEMTool(Tool):
 
                 # print("FILES:", tmp_fq1, tmp_fq2, output_bam_file_tmp)
 
-                results = self.bwa_aligner_paired(
+                self.bwa_aligner_paired(
                     str(input_files["genome"]), tmp_fq1, tmp_fq2, output_bam_file_tmp,
                     str(input_files["index"]), self.get_mem_params(self.configuration)
                 )
@@ -346,7 +346,7 @@ class bwaAlignerMEMTool(Tool):
                 output_bam_list.append(output_bam_file_tmp)
 
                 logger.info("BWAL ALN FILES:" + tmp_fq)
-                results = self.bwa_aligner_single(
+                self.bwa_aligner_single(
                     str(input_files["genome"]), tmp_fq, output_bam_file_tmp,
                     str(input_files["index"]), self.get_mem_params(self.configuration)
                 )

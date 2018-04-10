@@ -320,8 +320,6 @@ class bowtie2AlignerTool(Tool):
         # if "bowtie2_reporting-a_param" in params:
         #     command_params = command_params.append("-a")
 
-
-
         return command_params
 
     def run(self, input_files, input_metadata, output_files):
@@ -402,7 +400,7 @@ class bowtie2AlignerTool(Tool):
                 output_bam_file_tmp = tmp_fq1 + ".bam"
                 output_bam_list.append(output_bam_file_tmp)
 
-                results = self.bowtie2_aligner_paired(
+                self.bowtie2_aligner_paired(
                     str(input_files["genome"]), tmp_fq1, tmp_fq2, output_bam_file_tmp,
                     str(input_files["index"]), self.get_aln_params(self.configuration, True)
                 )
@@ -412,7 +410,7 @@ class bowtie2AlignerTool(Tool):
                 output_bam_list.append(output_bam_file_tmp)
 
                 logger.info("BOWTIE2 ALN FILES:" + tmp_fq)
-                results = self.bowtie2_aligner_single(
+                self.bowtie2_aligner_single(
                     str(input_files["genome"]), tmp_fq, output_bam_file_tmp,
                     str(input_files["index"]), self.get_aln_params(self.configuration)
                 )

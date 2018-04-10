@@ -236,7 +236,7 @@ class kallistoQuantificationTool(Tool):
         length_sd = std(total_len)
         length_mean = mean(total_len)
 
-        return {'mean' : length_mean, 'std' : length_sd}
+        return {'mean': length_mean, 'std': length_sd}
 
     def run(self, input_files, input_metadata, output_files):
         """
@@ -267,20 +267,20 @@ class kallistoQuantificationTool(Tool):
         # run_info_file = output_dir + "/run_info.json"
 
         if "fastq2" not in input_files:
-            results = self.kallisto_quant_single(
+            self.kallisto_quant_single(
                 input_files["index"], input_files["fastq1"],
                 output_files["abundance_h5_file"], output_files["abundance_tsv_file"],
                 output_files["run_info_file"]
             )
-            #results = compss_wait_on(results)
+            # results = compss_wait_on(results)
         elif "fastq2" in input_files:
             # handle error
-            results = self.kallisto_quant_paired(
+            self.kallisto_quant_paired(
                 input_files["index"], input_files["fastq1"], input_files["fastq2"],
                 output_files["abundance_h5_file"], output_files["abundance_tsv_file"],
                 output_files["run_info_file"]
             )
-            #results = compss_wait_on(results)
+            # results = compss_wait_on(results)
         else:
             return ({}, {})
 

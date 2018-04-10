@@ -359,7 +359,7 @@ class bsgenomeTool(Tool):
         if "idear_circ_chrom" in self.configuration:
             circ_chroms = str(self.configuration["idear_circ_chrom"]).split(",")
 
-        results = self.bsgenome_creater(
+        self.bsgenome_creater(
             input_files["genome"],
             circ_chroms,
             seed_param,

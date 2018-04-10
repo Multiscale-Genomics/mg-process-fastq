@@ -15,9 +15,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-pylint --disable=similarities,invalid-name,too-many-statements,too-many-arguments,too-many-locals,too-few-public-methods,relative-import,no-self-use --rcfile pylintrc process*.py > output.err
-pylint --disable=similarities,invalid-name,too-many-statements,too-many-arguments,too-many-locals,too-few-public-methods,relative-import,no-self-use --rcfile pylintrc tool >> output.err
-pylint --disable=similarities,invalid-name,too-many-statements,too-many-arguments,too-many-locals,too-few-public-methods,relative-import,no-self-use --rcfile pylintrc tests >> output.err
+disabled="--disable=similarities,invalid-name,too-many-statements,too-many-arguments,too-many-locals,too-few-public-methods,relative-import,no-self-use"
+
+pylint ${disabled} --rcfile pylintrc process*.py > output.err
+pylint ${disabled} --rcfile pylintrc tool >> output.err
+pylint ${disabled} --rcfile pylintrc tests >> output.err
 
 grep -v "\-\-\-\-\-\-\-\-\-" output.err | grep -v "Your code has been rated" | grep -v "\n\n" | sed '/^$/d' > pylint.err
 
@@ -25,5 +27,6 @@ grep -v "\-\-\-\-\-\-\-\-\-" output.err | grep -v "Your code has been rated" | g
 if [ -s pylint.err ]
 then
     cat pylint.err
+    rm pylint.err
     exit 1
 fi

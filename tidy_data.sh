@@ -26,7 +26,8 @@ c=$(git rev-parse --abbrev-ref HEAD)
 a=$(git ls-tree -r $c --name-only | sort)
 
 # All files in test/data
-b=$(tree -aifF --noreport | grep -v /$ | sed 's/^\.\///' | sed 's/^\.$//' | sort)
+#b=$(tree -aifF --noreport | grep -v /$ | sed 's/^\.\///' | sed 's/^\.$//' | sort)
+b=$(ls | sort)
 
 for i in $b; do
     skip=0

@@ -87,13 +87,12 @@ class bwaIndexerTool(Tool):
         -------
         bool
         """
-        command_line = ''
-        try:
-            au_handler = alignerUtils()
-            amb_loc, ann_loc, bwt_loc, pac_loc, sa_loc = au_handler.bwa_index_genome(file_loc)
 
+        au_handler = alignerUtils()
+        amb_loc, ann_loc, bwt_loc, pac_loc, sa_loc = au_handler.bwa_index_genome(file_loc)
+        try:
             # tar.gz the index
-            print("BS - idx_out", idx_out, idx_out.replace('.tar.gz', ''))
+            logger.info("BWA - idx_out", idx_out, idx_out.replace('.tar.gz', ''))
             idx_out_pregz = idx_out.replace('.tar.gz', '.tar')
 
             index_dir = idx_out.replace('.tar.gz', '')
@@ -113,18 +112,26 @@ class bwaIndexerTool(Tool):
             tar.add(index_dir, arcname=index_folder)
             tar.close()
 
+        except (IOError, OSError) as msg:
+            logger.fatal("I/O error({0}) - BWA INDEXER: {1}".format(
+                msg.errno, msg.strerror))
+            return False
+
+        try:
             command_line = 'pigz ' + idx_out_pregz
             args = shlex.split(command_line)
             process = subprocess.Popen(args)
             process.wait()
+        except OSError:
+            logger.warn("OSERROR: pigz not installed, using gzip")
+            command_line = 'gzip ' + idx_out_pregz
+            args = shlex.split(command_line)
+            process = subprocess.Popen(args)
+            process.wait()
 
-            shutil.rmtree(index_dir)
+        shutil.rmtree(index_dir)
 
-            return True
-        except (IOError, OSError) as msg:
-            logger.fatal("I/O error({0}) - BWA INDEXER: {1}\n{2}".format(
-                msg.errno, msg.strerror, command_line))
-            return False
+        return True
 
     def run(self, input_files, input_metadata, output_files):
         """

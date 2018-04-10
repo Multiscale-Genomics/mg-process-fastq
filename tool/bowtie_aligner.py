@@ -362,6 +362,7 @@ class bowtie2AlignerTool(Tool):
                 fastq1, fastq_file_gz
             )
 
+        # Required to prevent iterating over the future objects
         fastq_file_list = compss_wait_on(fastq_file_list)
         if not fastq_file_list:
             logger.fatal("FASTQ SPLITTER: run failed")
@@ -415,38 +416,17 @@ class bowtie2AlignerTool(Tool):
                     str(input_files["genome"]), tmp_fq, output_bam_file_tmp,
                     str(input_files["index"]), self.get_aln_params(self.configuration)
                 )
-        #barrier()
 
         bam_handle = bamUtilsTask()
 
-        results = bam_handle.bam_copy(output_bam_list.pop(0), output_bam_file)
-        #results = compss_wait_on(results)
+        logger.info("Merging bam files")
+        bam_handle.bam_merge(output_bam_list)
 
-        bam_job_files = [output_bam_file]
-        for tmp_bam_file in output_bam_list:
-            bam_job_files.append(tmp_bam_file)
+        logger.info("Sorting merged bam file")
+        bam_handle.bam_sort(output_bam_list[0])
 
-        #if results is False:
-        #    logger.fatal("Bowtie2 Aligner: Bam copy failed")
-        #    return {}, {}
-
-        results = bam_handle.bam_merge(bam_job_files)
-        #results = compss_wait_on(results)
-
-        results = bam_handle.bam_sort(output_bam_file)
-        #results = compss_wait_on(results)
-        #
-        #if results is False:
-        #    logger.fatal("BOWTIE2 Aligner: Bam sorting failed")
-        #    return {}, {}
-
-        # The following lines were already commented
-        # results = bam_handle.bam_index(output_bam_file, output_bai_file)
-        # results = compss_wait_on(results)
-
-        # if results is False:
-        #     logger.fatal("BOWTIE2 Aligner: Bam indexing failed")
-        #     return {}, {}
+        logger.info("Copying bam file into the output file")
+        bam_handle.bam_copy(output_bam_list[0], output_bam_file)
 
         logger.info("BOWTIE2 ALIGNER: Alignments complete")
 

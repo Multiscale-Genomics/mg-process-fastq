@@ -192,7 +192,7 @@ class process_wgbs(Workflow):
         }
         if "fastq2" in input_files:
             aligner_input_files["fastq2"] = fastq2f["fastq_filtered"]
-            aligner_meta["fastq2"] = filter2_meta["fastq2_filtered"]
+            aligner_meta["fastq2"] = filter2_meta["fastq_filtered"]
 
         bam, bam_meta = bss_aligner.run(
             aligner_input_files,

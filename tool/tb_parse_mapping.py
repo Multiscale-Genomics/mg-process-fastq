@@ -24,8 +24,8 @@ try:
         raise ImportError
     from pycompss.api.parameter import FILE_IN, FILE_OUT, IN
     from pycompss.api.task import task
-    #from pycompss.api.constraint import constraint
-    from pycompss.api.api import compss_wait_on
+    # from pycompss.api.constraint import constraint
+    # from pycompss.api.api import compss_wait_on
 except ImportError:
     print("[Warning] Cannot import \"pycompss\" API packages.")
     print("          Using mock decorators.")
@@ -33,7 +33,7 @@ except ImportError:
     from utils.dummy_pycompss import FILE_IN, FILE_OUT, IN
     from utils.dummy_pycompss import task
     # from utils.dummy_pycompss import constraint
-    from utils.dummy_pycompss import compss_wait_on
+    # from utils.dummy_pycompss import compss_wait_on
 
 from basic_modules.tool import Tool
 
@@ -42,6 +42,7 @@ from pytadbit.parsers.map_parser import parse_map
 from pytadbit.mapping import get_intersection
 
 # ------------------------------------------------------------------------------
+
 
 class tbParseMappingTool(Tool):
     """
@@ -61,7 +62,7 @@ class tbParseMappingTool(Tool):
         window1_1=FILE_IN, window1_2=FILE_IN, window1_3=FILE_IN, window1_4=FILE_IN,
         window2_1=FILE_IN, window2_2=FILE_IN, window2_3=FILE_IN, window2_4=FILE_IN,
         reads=FILE_OUT)
-    # @constraint(ProcessorCoreCount=32)
+    # @constraint(ProcessorCoreCount=32)  # pylint: disable=too-many-arguments,no-self-use,too-many-locals
     def tb_parse_mapping_iter(
             self, genome_seq, enzyme_name,
             window1_1, window1_2, window1_3, window1_4,
@@ -120,7 +121,7 @@ class tbParseMappingTool(Tool):
             #ncpus=32
         )
 
-        intersections = get_intersection(reads1, reads2, reads_both, verbose=True)
+        get_intersection(reads1, reads2, reads_both, verbose=True)
 
         with open(reads, "wb") as f_out:
             with open(reads_both, "rb") as f_in:
@@ -133,7 +134,7 @@ class tbParseMappingTool(Tool):
         window1_full=FILE_IN, window1_frag=FILE_IN,
         window2_full=FILE_IN, window2_frag=FILE_IN,
         reads=FILE_OUT)
-    # @constraint(ProcessorCoreCount=32)
+    # @constraint(ProcessorCoreCount=32)  # pylint: disable=too-many-arguments,no-self-use
     def tb_parse_mapping_frag(
             self, genome_seq, enzyme_name,
             window1_full, window1_frag, window2_full, window2_frag,
@@ -173,10 +174,10 @@ class tbParseMappingTool(Tool):
         print("TB WINDOWS - full 2", window2_full)
         print("TB WINDOWS - frag 2", window2_frag)
 
-        #root_name = reads.split("/")
+        # root_name = reads.split("/")
 
-        #reads1 = "/".join(root_name) + '/reads_1.tsv'
-        #reads2 = "/".join(root_name) + '/reads_2.tsv'
+        # reads1 = "/".join(root_name) + '/reads_1.tsv'
+        # reads2 = "/".join(root_name) + '/reads_2.tsv'
         reads1 = reads + '_reads_1.tsv'
         reads2 = reads + '_reads_2.tsv'
         reads_both = reads + '_reads_both.tsv'
@@ -191,7 +192,7 @@ class tbParseMappingTool(Tool):
             verbose=True
         )
 
-        intersections = get_intersection(reads1, reads2, reads_both, verbose=True)
+        get_intersection(reads1, reads2, reads_both, verbose=True)
 
         with open(reads, "wb") as f_out:
             with open(reads_both, "rb") as f_in:
@@ -343,12 +344,12 @@ class tbParseMappingTool(Tool):
 
                 read_iter = reads + expt_name + '_iter.tsv'
 
-                results = self.tb_parse_mapping_iter(
+                self.tb_parse_mapping_iter(
                     genome_seq, enzyme_name,
                     window1_1, window1_2, window1_3, window1_4,
                     window2_1, window2_2, window2_3, window2_4,
                     read_iter)
-                #results = compss_wait_on(results)
+                # results = compss_wait_on(results)
                 return ([read_iter], output_metadata)
 
             elif mapping_list[0] == 'frag':
@@ -360,13 +361,13 @@ class tbParseMappingTool(Tool):
 
                 read_frag = reads + expt_name + '_frag.tsv'
 
-                results = self.tb_parse_mapping_frag(
+                self.tb_parse_mapping_frag(
                     genome_seq, enzyme_name,
                     window1_full, window1_frag,
                     window2_full, window2_frag,
                     read_frag)
 
-                #results = compss_wait_on(results)
+                # results = compss_wait_on(results)
                 return ([read_frag], output_metadata)
 
             reads = None

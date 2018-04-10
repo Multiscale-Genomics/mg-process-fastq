@@ -28,14 +28,14 @@ try:
         raise ImportError
     from pycompss.api.parameter import FILE_IN, FILE_OUT, IN
     from pycompss.api.task import task
-    from pycompss.api.api import compss_wait_on
+    # from pycompss.api.api import compss_wait_on
 except ImportError:
     logger.warn("[Warning] Cannot import \"pycompss\" API packages.")
     logger.warn("          Using mock decorators.")
 
     from utils.dummy_pycompss import FILE_IN, FILE_OUT, IN  # pylint: disable=ungrouped-imports
     from utils.dummy_pycompss import task  # pylint: disable=ungrouped-imports
-    from utils.dummy_pycompss import compss_wait_on  # pylint: disable=ungrouped-imports
+    # from utils.dummy_pycompss import compss_wait_on  # pylint: disable=ungrouped-imports
 
 from basic_modules.metadata import Metadata
 from basic_modules.tool import Tool
@@ -355,23 +355,23 @@ class macs2(Tool):
 
         # handle error
         if 'background' in input_files:
-            results = self.macs2_peak_calling(
+            self.macs2_peak_calling(
                 name, str(input_files['input']), str(input_files['background']),
                 command_params,
                 str(output_files['narrow_peak']), str(output_files['summits']),
                 str(output_files['broad_peak']), str(output_files['gapped_peak']))
         else:
-            results = self.macs2_peak_calling_nobgd(
+            self.macs2_peak_calling_nobgd(
                 name, str(input_files['input']), command_params,
                 str(output_files['narrow_peak']), str(output_files['summits']),
                 str(output_files['broad_peak']), str(output_files['gapped_peak']))
-        #results = compss_wait_on(results)
-        #
-        #if results > 0:
-        #    logger.fatal("MACS2 failed with error: {}", results)
-        #    return (
-        #        {}, {}
-        #    )
+        # results = compss_wait_on(results)
+
+        # if results > 0:
+        #     logger.fatal("MACS2 failed with error: {}", results)
+        #     return (
+        #         {}, {}
+        #     )
 
         output_files_created = {}
         output_metadata = {}

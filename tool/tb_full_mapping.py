@@ -24,15 +24,15 @@ try:
     from pycompss.api.parameter import FILE_IN, FILE_OUT, IN
     from pycompss.api.task import task
     # from pycompss.api.constraint import constraint
-    from pycompss.api.api import compss_wait_on
+    # from pycompss.api.api import compss_wait_on
 except ImportError:
     print("[Warning] Cannot import \"pycompss\" API packages.")
     print("          Using mock decorators.")
 
     from utils.dummy_pycompss import FILE_IN, FILE_OUT, IN
     from utils.dummy_pycompss import task
-    from utils.dummy_pycompss import constraint
-    from utils.dummy_pycompss import compss_wait_on
+    # from utils.dummy_pycompss import constraint
+    # from utils.dummy_pycompss import compss_wait_on
 
 from basic_modules.tool import Tool
 
@@ -97,7 +97,7 @@ class tbFullMappingTool(Tool):
         od_loc = fastq_file.split("/")
         output_dir = "/".join(od_loc[0:-1])
 
-        map_files = full_mapping(
+        full_mapping(
             gem_file, fastq_file, output_dir,
             windows=windows, frag_map=False, nthreads=32, clean=True,
             temp_dir='/tmp/'
@@ -151,7 +151,7 @@ class tbFullMappingTool(Tool):
             with open(fastq_file, "rb") as f_in:
                 f_out.write(f_in.read())
 
-        map_files = full_mapping(
+        full_mapping(
             gem_file, fastq_file_tmp + "_tmp.fastq", output_dir,
             r_enz=enzyme_name, windows=windows, frag_map=True, nthreads=32,
             clean=True, temp_dir='/tmp/'
@@ -203,7 +203,7 @@ class tbFullMappingTool(Tool):
         root_name[-1] = root_name[-1].replace('.fastq', '')
         root_name[-1] = root_name[-1].replace('.fq', '')
 
-        #name = root_name[-1]
+        # name = root_name[-1]
 
         # input and output share most metadata
         output_metadata = {}
@@ -214,7 +214,7 @@ class tbFullMappingTool(Tool):
             full_file = root_path + "_full.map"
             frag_file = root_path + "_frag.map"
 
-            results = self.tb_full_mapping_frag(
+            self.tb_full_mapping_frag(
                 gem_file, fastq_file, metadata['enzyme_name'], windows,
                 full_file, frag_file
             )
@@ -228,11 +228,11 @@ class tbFullMappingTool(Tool):
         window3 = root_path + "_full_" + str(windows[2][0]) + "-" + str(windows[2][1]) + ".map"
         window4 = root_path + "_full_" + str(windows[3][0]) + "-" + str(windows[3][1]) + ".map"
 
-        results = self.tb_full_mapping_iter(
+        self.tb_full_mapping_iter(
             gem_file, fastq_file, windows,
             window1, window2, window3, window4
         )
-        #results = compss_wait_on(results)
+        # results = compss_wait_on(results)
 
         output_metadata['func'] = 'iter'
         return ([window1, window2, window3, window4], output_metadata)

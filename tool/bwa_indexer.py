@@ -31,14 +31,14 @@ try:
         raise ImportError
     from pycompss.api.parameter import FILE_IN, FILE_OUT
     from pycompss.api.task import task
-    from pycompss.api.api import compss_wait_on
+    # from pycompss.api.api import compss_wait_on
 except ImportError:
     logger.warn("[Warning] Cannot import \"pycompss\" API packages.")
     logger.warn("          Using mock decorators.")
 
-    from utils.dummy_pycompss import FILE_IN, FILE_OUT # pylint: disable=ungrouped-imports
-    from utils.dummy_pycompss import task # pylint: disable=ungrouped-imports
-    from utils.dummy_pycompss import compss_wait_on # pylint: disable=ungrouped-imports
+    from utils.dummy_pycompss import FILE_IN, FILE_OUT  # pylint: disable=ungrouped-imports
+    from utils.dummy_pycompss import task  # pylint: disable=ungrouped-imports
+    # from utils.dummy_pycompss import compss_wait_on  # pylint: disable=ungrouped-imports
 
 from basic_modules.tool import Tool
 from basic_modules.metadata import Metadata
@@ -46,6 +46,7 @@ from basic_modules.metadata import Metadata
 from tool.aligner_utils import alignerUtils
 
 # ------------------------------------------------------------------------------
+
 
 class bwaIndexerTool(Tool):
     """
@@ -155,15 +156,15 @@ class bwaIndexerTool(Tool):
             index : Metadata
                 Metadata relating to the index file
         """
-        results = self.bwa_indexer(
+        self.bwa_indexer(
             input_files["genome"],
             output_files["index"]
         )
-        #results = compss_wait_on(results)
+        # results = compss_wait_on(results)
 
-        #if results is False:
-        #    logger.fatal("BWA Indexer: run failed")
-        #    return {}, {}
+        # if results is False:
+        #     logger.fatal("BWA Indexer: run failed")
+        #     return {}, {}
 
         output_metadata = {
             "index": Metadata(

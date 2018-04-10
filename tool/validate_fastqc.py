@@ -28,19 +28,20 @@ try:
         raise ImportError
     from pycompss.api.parameter import FILE_IN, FILE_OUT
     from pycompss.api.task import task
-    from pycompss.api.api import compss_wait_on
+    # from pycompss.api.api import compss_wait_on
 except ImportError:
     logger.warn("[Warning] Cannot import \"pycompss\" API packages.")
     logger.warn("          Using mock decorators.")
 
-    from utils.dummy_pycompss import FILE_IN, FILE_OUT # pylint: disable=ungrouped-imports
-    from utils.dummy_pycompss import task # pylint: disable=ungrouped-imports
-    from utils.dummy_pycompss import compss_wait_on # pylint: disable=ungrouped-imports
+    from utils.dummy_pycompss import FILE_IN, FILE_OUT  # pylint: disable=ungrouped-imports
+    from utils.dummy_pycompss import task  # pylint: disable=ungrouped-imports
+    # from utils.dummy_pycompss import compss_wait_on
 
 from basic_modules.metadata import Metadata
 from basic_modules.tool import Tool
 
 # ------------------------------------------------------------------------------
+
 
 class fastqcTool(Tool):
     """
@@ -126,15 +127,15 @@ class fastqcTool(Tool):
         """
 
         # input and output share most metadata
-        results = self.validate(
+        self.validate(
             input_files['fastq'],
             output_files['report']
         )
-        #results = compss_wait_on(results)
-        #
-        #if results is False:
-        #    logger.fatal("FASTQC: run failed")
-        #    return {}, {}
+        # results = compss_wait_on(results)
+
+        # if results is False:
+        #     logger.fatal("FASTQC: run failed")
+        #     return {}, {}
 
         output_metadata = {
             "report": Metadata(

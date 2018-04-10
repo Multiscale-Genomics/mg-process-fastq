@@ -24,14 +24,14 @@ try:
         raise ImportError
     from pycompss.api.parameter import FILE_IN, FILE_OUT, IN
     from pycompss.api.task import task
-    from pycompss.api.api import compss_wait_on
+    # from pycompss.api.api import compss_wait_on
 except ImportError:
     print("[Warning] Cannot import \"pycompss\" API packages.")
     print("          Using mock decorators.")
 
     from utils.dummy_pycompss import FILE_IN, FILE_OUT, IN
     from utils.dummy_pycompss import task
-    from utils.dummy_pycompss import compss_wait_on
+    # from utils.dummy_pycompss import compss_wait_on
 
 from basic_modules.tool import Tool
 
@@ -215,7 +215,7 @@ class tbFilterTool(Tool):
         output_metadata = {}
 
         # handle error
-        results = self.tb_filter(
+        self.tb_filter(
             reads, filtered_reads_file, conservative,
             output_de, output_d, output_e, output_ed, output_or, output_rb,
             output_sc, output_tc, output_tl, output_ts)

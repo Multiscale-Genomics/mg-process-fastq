@@ -25,7 +25,7 @@ try:
     from pycompss.api.parameter import FILE_IN, FILE_OUT, IN
     from pycompss.api.task import task
     # from pycompss.api.constraint import constraint
-    from pycompss.api.api import compss_wait_on
+    # from pycompss.api.api import compss_wait_on
 except ImportError:
     print("[Warning] Cannot import \"pycompss\" API packages.")
     print("          Using mock decorators.")
@@ -33,7 +33,7 @@ except ImportError:
     from utils.dummy_pycompss import FILE_IN, FILE_OUT, IN
     from utils.dummy_pycompss import task
     # from utils.dummy_pycompss import constraint
-    from utils.dummy_pycompss import compss_wait_on
+    # from utils.dummy_pycompss import compss_wait_on
 
 from basic_modules.tool import Tool
 
@@ -44,7 +44,8 @@ from pytadbit.mapping import get_intersection
 
 # ------------------------------------------------------------------------------
 
-class tbParseMappingTool(Tool):  # pylint: disable=invalid-name
+
+class tbParseMappingTool(Tool):
     """
     Tool for parsing the mapped reads and generating the list of paired ends
     that have a match at both ends.
@@ -62,7 +63,7 @@ class tbParseMappingTool(Tool):  # pylint: disable=invalid-name
         window1_1=FILE_IN, window1_2=FILE_IN, window1_3=FILE_IN, window1_4=FILE_IN,
         window2_1=FILE_IN, window2_2=FILE_IN, window2_3=FILE_IN, window2_4=FILE_IN,
         reads=FILE_OUT)
-    # @constraint(ProcessorCoreCount=32)  # pylint: disable=too-many-arguments,too-many-locals,no-self-use
+    # @constraint(ProcessorCoreCount=32)  # pylint: disable=too-many-arguments,no-self-use,too-many-locals
     def tb_parse_mapping_iter(
             self, genome_seq, enzyme_name,
             window1_1, window1_2, window1_3, window1_4,
@@ -134,7 +135,7 @@ class tbParseMappingTool(Tool):  # pylint: disable=invalid-name
         window1_full=FILE_IN, window1_frag=FILE_IN,
         window2_full=FILE_IN, window2_frag=FILE_IN,
         reads=FILE_OUT)
-    # @constraint(ProcessorCoreCount=32)  # pylint: disable=too-many-arguments,too-many-locals,no-self-use
+    # @constraint(ProcessorCoreCount=32)  # pylint: disable=too-many-arguments,no-self-use
     def tb_parse_mapping_frag(
             self, genome_seq, enzyme_name,
             window1_full, window1_frag, window2_full, window2_frag,
@@ -344,12 +345,12 @@ class tbParseMappingTool(Tool):  # pylint: disable=invalid-name
 
                 read_iter = reads + expt_name + '_iter.tsv'
 
-                results = self.tb_parse_mapping_iter(
+                self.tb_parse_mapping_iter(
                     genome_seq, enzyme_name,
                     window1_1, window1_2, window1_3, window1_4,
                     window2_1, window2_2, window2_3, window2_4,
                     read_iter)
-                #results = compss_wait_on(results)
+                # results = compss_wait_on(results)
                 return ([read_iter], output_metadata)
 
             elif mapping_list[0] == 'frag':
@@ -361,13 +362,13 @@ class tbParseMappingTool(Tool):  # pylint: disable=invalid-name
 
                 read_frag = reads + expt_name + '_frag.tsv'
 
-                results = self.tb_parse_mapping_frag(
+                self.tb_parse_mapping_frag(
                     genome_seq, enzyme_name,
                     window1_full, window1_frag,
                     window2_full, window2_frag,
                     read_frag)
 
-                #results = compss_wait_on(results)
+                # results = compss_wait_on(results)
                 return ([read_frag], output_metadata)
 
             reads = None

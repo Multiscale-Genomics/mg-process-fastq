@@ -24,7 +24,7 @@ try:
     from pycompss.api.parameter import FILE_IN, FILE_OUT, IN
     from pycompss.api.task import task
     # from pycompss.api.constraint import constraint
-    from pycompss.api.api import compss_wait_on
+    # from pycompss.api.api import compss_wait_on
 except ImportError:
     print("[Warning] Cannot import \"pycompss\" API packages.")
     print("          Using mock decorators.")
@@ -32,7 +32,7 @@ except ImportError:
     from utils.dummy_pycompss import FILE_IN, FILE_OUT, IN
     from utils.dummy_pycompss import task
     # from utils.dummy_pycompss import constraint
-    from utils.dummy_pycompss import compss_wait_on
+    # from utils.dummy_pycompss import compss_wait_on
 
 from basic_modules.tool import Tool
 
@@ -204,7 +204,7 @@ class tbFullMappingTool(Tool):
         root_name[-1] = root_name[-1].replace('.fastq', '')
         root_name[-1] = root_name[-1].replace('.fq', '')
 
-        #name = root_name[-1]
+        # name = root_name[-1]
 
         # input and output share most metadata
         output_metadata = {}
@@ -215,7 +215,7 @@ class tbFullMappingTool(Tool):
             full_file = root_path + "_full.map"
             frag_file = root_path + "_frag.map"
 
-            results = self.tb_full_mapping_frag(
+            self.tb_full_mapping_frag(
                 gem_file, fastq_file, metadata['enzyme_name'], windows,
                 full_file, frag_file
             )
@@ -229,11 +229,11 @@ class tbFullMappingTool(Tool):
         window3 = root_path + "_full_" + str(windows[2][0]) + "-" + str(windows[2][1]) + ".map"
         window4 = root_path + "_full_" + str(windows[3][0]) + "-" + str(windows[3][1]) + ".map"
 
-        results = self.tb_full_mapping_iter(
+        self.tb_full_mapping_iter(
             gem_file, fastq_file, windows,
             window1, window2, window3, window4
         )
-        #results = compss_wait_on(results)
+        # results = compss_wait_on(results)
 
         output_metadata['func'] = 'iter'
         return ([window1, window2, window3, window4], output_metadata)

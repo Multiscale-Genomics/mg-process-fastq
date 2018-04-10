@@ -31,14 +31,14 @@ try:
         raise ImportError
     from pycompss.api.parameter import FILE_IN, FILE_OUT
     from pycompss.api.task import task
-    from pycompss.api.api import compss_wait_on
+    # from pycompss.api.api import compss_wait_on
 except ImportError:
     logger.warn("[Warning] Cannot import \"pycompss\" API packages.")
     logger.warn("          Using mock decorators.")
 
-    from utils.dummy_pycompss import FILE_IN, FILE_OUT # pylint: disable=ungrouped-imports
-    from utils.dummy_pycompss import task # pylint: disable=ungrouped-imports
-    from utils.dummy_pycompss import compss_wait_on # pylint: disable=ungrouped-imports
+    from utils.dummy_pycompss import FILE_IN, FILE_OUT  # pylint: disable=ungrouped-imports
+    from utils.dummy_pycompss import task  # pylint: disable=ungrouped-imports
+    # from utils.dummy_pycompss import compss_wait_on  # pylint: disable=ungrouped-imports
 
 from basic_modules.tool import Tool
 from basic_modules.metadata import Metadata
@@ -46,6 +46,7 @@ from basic_modules.metadata import Metadata
 from tool.aligner_utils import alignerUtils
 
 # ------------------------------------------------------------------------------
+
 
 class bowtieIndexerTool(Tool):
     """
@@ -72,7 +73,7 @@ class bowtieIndexerTool(Tool):
         self.configuration.update(configuration)
 
     @task(file_loc=FILE_IN, index_loc=FILE_OUT)
-    def bowtie2_indexer(self, file_loc, index_loc): # pylint: disable=unused-argument, no-self-use
+    def bowtie2_indexer(self, file_loc, index_loc):  # pylint: disable=unused-argument, no-self-use
         """
         Bowtie2 Indexer
 

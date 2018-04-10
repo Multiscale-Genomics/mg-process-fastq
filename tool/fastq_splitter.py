@@ -31,14 +31,14 @@ try:
         raise ImportError
     from pycompss.api.parameter import FILE_IN, FILE_OUT, IN, OUT
     from pycompss.api.task import task
-    from pycompss.api.api import compss_wait_on
+    # from pycompss.api.api import compss_wait_on
 except ImportError:
     logger.warn("[Warning] Cannot import \"pycompss\" API packages.")
     logger.warn("          Using mock decorators.")
 
     from utils.dummy_pycompss import FILE_IN, FILE_OUT, IN, OUT  # pylint: disable=ungrouped-imports
     from utils.dummy_pycompss import task  # pylint: disable=ungrouped-imports
-    from utils.dummy_pycompss import compss_wait_on  # pylint: disable=ungrouped-imports
+    # from utils.dummy_pycompss import compss_wait_on  # pylint: disable=ungrouped-imports
 
 from basic_modules.tool import Tool
 from basic_modules.metadata import Metadata
@@ -315,19 +315,17 @@ class fastq_splitter(Tool):
 
         if "fastq2" in input_files:
             sources.append(input_files["fastq2"])
-            results = self.paired_splitter(
+            self.paired_splitter(
                 input_files["fastq1"], input_files["fastq2"],
                 input_files["fastq1"] + ".tar.gz"
             )
         else:
-            results = self.single_splitter(
+            self.single_splitter(
                 input_files["fastq1"],
                 input_files["fastq1"] + ".tar.gz",
             )
 
-        #results = compss_wait_on(results)
-        #
-        #logger.info("FASTQ SPLITTER:", results)
+        # results = compss_wait_on(results)
 
         fastq_tar_meta = Metadata(
             data_type=input_metadata["fastq1"].data_type,

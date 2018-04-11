@@ -40,7 +40,7 @@ for i in $b; do
     fi
 done
 
-# Remove all empt dirs in tests/data
+# Remove all empty dirs in tests/data
 b=$(find . -type d -empty)
 for i in $b; do
     skip=0

@@ -72,7 +72,7 @@ class bssIndexerTool(Tool):
     @task(
         fasta_file=FILE_IN, aligner=IN, aligner_path=IN, bss_path=IN, params=IN,
         idx_out=FILE_OUT)
-    def bss_build_index(
+    def bss_build_index(  # pylint: disable=no-self-use,too-many-arguments
             self, fasta_file, aligner, aligner_path, bss_path, params, idx_out
     ):  # pylint disable=no-self-use
         """

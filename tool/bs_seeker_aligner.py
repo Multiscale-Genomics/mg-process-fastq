@@ -19,6 +19,7 @@ from __future__ import print_function
 
 import os
 import shlex
+import shutil
 import subprocess
 import sys
 import tarfile
@@ -509,6 +510,8 @@ class bssAlignerTool(Tool):
 
         logger.info("Creating output bam index file")
         bam_handle.bam_index(output_bam_file, output_bai_file)
+
+        shutil.rmtree(gz_data_path + "/tmp/")
 
         output_metadata = {
             "bam": Metadata(

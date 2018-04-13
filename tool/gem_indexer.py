@@ -84,10 +84,7 @@ class gemIndexerTool(Tool):
         """
         try:
             au_handle = alignerUtils()
-            au_handle.replaceENAHeader(genome_file, new_genome_file)
-
             au_handle.gem_index_genome(new_genome_file, new_genome_file)
-
             idx_out_pregz = index_loc.replace('.gem.gz', '.gem')
         except (IOError, OSError) as msg:
             logger.fatal("I/O error({0}): {1}".format(

@@ -33,22 +33,19 @@ def test_gem_indexer():
     """
     resource_path = os.path.join(os.path.dirname(__file__), "data/")
     genome_fa = resource_path + "tb.Human.GCA_000001405.22.fasta"
-    genome_gem_fa = resource_path + "tb.Human.GCA_000001405.22_gem.fasta"
-
     with gzip.open(genome_fa + '.gz', 'rb') as fgz_in:
         with open(genome_fa, 'wb') as f_out:
             f_out.write(fgz_in.read())
 
 
-    genome_gem_idx = resource_path + "tb.Human.GCA_000001405.22_gem.fasta.gem.gz"
+    genome_gem_idx = resource_path + "tb.Human.GCA_000001405.22.fasta.gem.gz"
 
     input_files = {
         "genome": genome_fa
     }
 
     output_files = {
-        "index": genome_gem_idx,
-        "genome_gem": genome_gem_fa
+        "index": genome_gem_idx
     }
 
     metadata = {
@@ -62,7 +59,5 @@ def test_gem_indexer():
     gem_it = gemIndexerTool()
     gem_it.run(input_files, metadata, output_files)
 
-    assert os.path.isfile(genome_gem_fa) is True
-    assert os.path.getsize(genome_gem_fa) > 0
     assert os.path.isfile(genome_gem_idx) is True
     assert os.path.getsize(genome_gem_idx) > 0

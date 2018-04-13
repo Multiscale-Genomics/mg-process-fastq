@@ -69,7 +69,7 @@ class gemIndexerTool(Tool):
         self.configuration.update(configuration)
 
     @task(genome_file=FILE_IN, new_genome_file=FILE_OUT, index_loc=FILE_OUT)
-    def gem_indexer(self, genome_file, new_genome_file, index_loc): # pylint: disable=unused-argument, no-self-use
+    def gem_indexer(self, genome_file, index_loc): # pylint: disable=unused-argument, no-self-use
         """
         GEM Indexer
 
@@ -77,14 +77,12 @@ class gemIndexerTool(Tool):
         ----------
         genome_file : str
             Location of the genome assembly FASTA file
-        new_genome_file : str
-            Location of the genome assembly formated for GEM indexing
         idx_loc : str
             Location of the output index file
         """
         try:
             au_handle = alignerUtils()
-            au_handle.gem_index_genome(new_genome_file, new_genome_file)
+            au_handle.gem_index_genome(genome_file, genome_file)
             idx_out_pregz = index_loc.replace('.gem.gz', '.gem')
         except (IOError, OSError) as msg:
             logger.fatal("I/O error({0}): {1}".format(
@@ -127,7 +125,6 @@ class gemIndexerTool(Tool):
         # input and output share most metadata
         results = self.gem_indexer(
             input_files['genome'],
-            output_files['genome_gem'],
             output_files['index']
         )
         results = compss_wait_on(results)
@@ -137,22 +134,11 @@ class gemIndexerTool(Tool):
             return {}, {}
 
         output_metadata = {
-            "genome_gem": Metadata(
-                data_type="sequence_dna",
-                file_type="FASTA",
-                file_path=output_files['genome_gem'],
-                sources=[input_metadata["genome"].file_path],
-                taxon_id=input_metadata["genome"].taxon_id,
-                meta_data={
-                    "assembly": input_metadata["genome"].meta_data["assembly"],
-                    "tool": "gem_indexer"
-                }
-            ),
             "index": Metadata(
                 data_type="sequence_mapping_index_gem",
                 file_type="GEM",
                 file_path=output_files['index'],
-                sources=[output_files['genome_gem']],
+                sources=[input_files['genome']],
                 taxon_id=input_metadata["genome"].taxon_id,
                 meta_data={
                     "assembly": input_metadata["genome"].meta_data["assembly"],

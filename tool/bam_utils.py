@@ -24,14 +24,14 @@ from utils import logger
 try:
     if hasattr(sys, '_run_from_cmdl') is True:
         raise ImportError
-    from pycompss.api.parameter import FILE_IN, FILE_OUT, FILE_INOUT
+    from pycompss.api.parameter import FILE_IN, FILE_OUT, FILE_INOUT, OUT
     from pycompss.api.task import task
     from pycompss.api.api import barrier
 except ImportError:
     logger.warn("[Warning] Cannot import \"pycompss\" API packages.")
     logger.warn("          Using mock decorators.")
 
-    from utils.dummy_pycompss import FILE_IN, FILE_OUT, FILE_INOUT  # pylint: disable=ungrouped-imports
+    from utils.dummy_pycompss import FILE_IN, FILE_OUT, FILE_INOUT, OUT  # pylint: disable=ungrouped-imports
     from utils.dummy_pycompss import task  # pylint: disable=ungrouped-imports
     from utils.dummy_pycompss import barrier  # pylint: disable=ungrouped-imports
 
@@ -67,7 +67,8 @@ class bamUtils(object):
             Location of the bam file to sort
         """
         try:
-            pysam.sort("-o", bam_file, "-T", bam_file + "_sort", bam_file)  # pylint: disable=no-member
+            pysam.sort(  # pylint: disable=no-member
+                "-o", bam_file, "-T", bam_file + "_sort", bam_file)
         except IOError:
             return False
         return True
@@ -153,6 +154,54 @@ class bamUtils(object):
         return True
 
     @staticmethod
+    def bam_list_chromosomes(bam_file):
+        """
+        Wrapper to list the chromosome names that are present within the bam file
+
+        Parameters
+        ----------
+        bam_file : str
+            Location of the bam file
+
+        Returns
+        -------
+        list
+            List of the names of the chromosomes that are present in the bam file
+        """
+        bam_file_handle = pysam.AlignmentFile(bam_file, "rb")  # pylint: disable=no-member
+        if "SN" not in bam_file_handle.header:
+            return []
+        return [
+            chromosome["SN"] for chromosome in bam_file_handle(bam_file, "rb").header["SQ"]
+        ]
+
+    @staticmethod
+    def bam_split(bam_file_in, chromosome, bam_file_out):
+        """
+        Wrapper to extract a single chromosomes worth of reading into a new bam
+        file
+
+        Parameters
+        ----------
+        bam_file_in : str
+            Location of the input bam file
+        chromosome : str
+            Name of the chromosome whose alignments are to be extracted
+        bam_file_out : str
+            Location of the output bam file
+        """
+        bam_file_handle = pysam.AlignmentFile(bam_file_in, "rb")  # pylint: disable=no-member
+        new_header = bam_file_handle.header
+        new_header_sq = [chrom for chrom in new_header["SQ"] if chrom["SN"] == chromosome]
+        new_header["SQ"] = new_header_sq
+
+        with pysam.AlignmentFile(bam_file_out, "wb", header=new_header) as out_bam_f:  # pylint: disable=no-member
+            for read in bam_file_handle.fetch(reference=chromosome):
+                out_bam_f.write(read)
+
+        return True
+
+    @staticmethod
     def bam_stats(bam_file):
         """
         Wrapper for the pysam SAMtools flagstat function
@@ -214,6 +263,25 @@ class bamUtilsTask(object):
         Init function
         """
         logger.info("BAM @task Utils")
+
+    @task(bam_file=FILE_IN, chromosome_list=OUT)
+    def bam_list_chromosomes(self, bam_file):  # pylint: disable=no-self-use
+        """
+        Wrapper to get the list of chromosomes in a given bam file
+
+        Parameters
+        ----------
+        bam_file : str
+            Location of the bam file
+
+        Returns
+        -------
+        chromosome_list : list
+            List of the chromosomes in the bam file
+        """
+        bam_handle = bamUtils()
+        chromosome_list = bam_handle.bam_list_chromosomes(bam_file)
+        return chromosome_list
 
     @task(bam_file=FILE_INOUT)
     def bam_sort(self, bam_file):  # pylint: disable=no-self-use

@@ -81,8 +81,14 @@ class process_chipseq(Workflow):
             loc : str
                 Location of the FASTQ reads files
 
+            fastq2 : str
+                Location of the paired end FASTQ file [OPTIONAL]
+
             bg_loc : str
                 Location of the background FASTQ reads files [OPTIONAL]
+
+            fastq2_bg : str
+                Location of the paired end background FASTQ reads files [OPTIONAL]
 
         metadata : dict
             Input file meta data associated with their roles
@@ -136,13 +142,17 @@ class process_chipseq(Workflow):
 
         logger.info("PROCESS CHIPSEQ - DEFINED OUTPUT:", output_files["bam"])
 
+        align_input_files = remap(input_files, "genome", "loc", "index")
+        align_input_file_meta = remap(metadata, "genome", "loc", "index")
+
+        if "fastq2" in input_files:
+            align_input_files["fastq2"] = input_files["fastq2"]
+            align_input_file_meta["fastq2"] = metadata["fastq2"]
+
         bwa = bwaAlignerTool(self.configuration)
         bwa_files, bwa_meta = bwa.run(
-            # ideally parameter "roles" don't change
-            remap(input_files,
-                  "genome", "loc", "index"),
-            remap(metadata,
-                  "genome", "loc", "index"),
+            align_input_files,
+            align_input_file_meta,
             {"output": output_files["bam"]}
         )
         try:
@@ -157,13 +167,16 @@ class process_chipseq(Workflow):
 
         if "bg_loc" in input_files:
             # Align background files
+            align_input_files_bg = remap(input_files, "genome", "index", loc="bg_loc")
+            align_input_file_meta_bg = remap(metadata, "genome", "index", loc="bg_loc")
+
+            if "fastq2" in input_files:
+                align_input_files_bg["fastq2"] = input_files["fastq2_bg"]
+                align_input_file_meta_bg["fastq2"] = metadata["fastq2_bg"]
+
             bwa_bg_files, bwa_bg_meta = bwa.run(
-                # Small changes can be handled easily using "remap"
-                remap(input_files,
-                      "genome", "index", loc="bg_loc"),
-                remap(metadata,
-                      "genome", "index", loc="bg_loc"),
-                # Intermediate outputs should be created via tempfile?
+                align_input_files_bg,
+                align_input_file_meta_bg,
                 {"output": output_files["bam_bg"]}
             )
 

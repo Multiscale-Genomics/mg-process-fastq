@@ -61,8 +61,7 @@ def test_genome_pipeline():
     files_out = {
         "bwa_index": resource_path + 'macs2.Human.GCA_000001405.22.fasta.bwa.tar.gz',
         "bwt_index": resource_path + 'macs2.Human.GCA_000001405.22.fasta.bt2.tar.gz',
-        "gem_index": resource_path + 'macs2.Human.GCA_000001405.22.gem.fasta.gem.gz',
-        "genome_gem": resource_path + 'macs2.Human.GCA_000001405.22.gem.fasta'
+        "gem_index": resource_path + 'macs2.Human.GCA_000001405.22.fasta.gem.gz'
     }
 
     genome_handle = process_genome()

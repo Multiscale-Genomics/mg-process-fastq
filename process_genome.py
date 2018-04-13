@@ -134,25 +134,17 @@ class process_genome(Workflow):
         gemi, gemm = gem.run(
             input_files, metadata,
             {
-                'index': output_files['gem_index'],
-                'genome_gem': output_files['genome_gem']
+                'index': output_files['gem_index']
             }
         )
 
         try:
             output_files_generated['gem_index'] = gemi['index']
-            output_files_generated['genome_gem'] = gemi['genome_gem']
-
             output_metadata['gem_index'] = gemm['index']
-            output_metadata['genome_gem'] = gemm['genome_gem']
 
             tool_name = output_metadata['gem_index'].meta_data['tool']
             output_metadata['gem_index'].meta_data['tool_description'] = tool_name
             output_metadata['gem_index'].meta_data['tool'] = "process_genome"
-
-            tool_name = output_metadata['genome_gem'].meta_data['tool']
-            output_metadata['genome_gem'].meta_data['tool_description'] = tool_name
-            output_metadata['genome_gem'].meta_data['tool'] = "process_genome"
         except KeyError:
             logger.fatal("GEM indexer failed")
 

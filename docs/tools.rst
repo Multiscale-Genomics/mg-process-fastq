@@ -96,7 +96,7 @@ Tools for processing FastQ files
    .. autoclass:: tool.trimgalore.trimgalore
       :members:
    
-   
+
    Filters
    =======
 

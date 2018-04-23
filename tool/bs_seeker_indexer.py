@@ -17,7 +17,6 @@
 
 from __future__ import print_function
 
-import os
 import shlex
 import subprocess
 import sys
@@ -30,17 +29,18 @@ try:
         raise ImportError
     from pycompss.api.parameter import FILE_IN, FILE_OUT, IN
     from pycompss.api.task import task
-    from pycompss.api.api import compss_wait_on
+    # from pycompss.api.api import compss_wait_on
 except ImportError:
     logger.warn("[Warning] Cannot import \"pycompss\" API packages.")
     logger.warn("          Using mock decorators.")
 
-    from utils.dummy_pycompss import FILE_IN, FILE_OUT, IN # pylint: disable=ungrouped-imports
-    from utils.dummy_pycompss import task # pylint: disable=ungrouped-imports
-    from utils.dummy_pycompss import compss_wait_on # pylint: disable=ungrouped-imports
+    from utils.dummy_pycompss import FILE_IN, FILE_OUT, IN  # pylint: disable=ungrouped-imports
+    from utils.dummy_pycompss import task  # pylint: disable=ungrouped-imports
+    # from utils.dummy_pycompss import compss_wait_on  # pylint: disable=ungrouped-imports
 
 from basic_modules.tool import Tool
 from basic_modules.metadata import Metadata
+
 
 # ------------------------------------------------------------------------------
 
@@ -72,7 +72,9 @@ class bssIndexerTool(Tool):
     @task(
         fasta_file=FILE_IN, aligner=IN, aligner_path=IN, bss_path=IN, params=IN,
         idx_out=FILE_OUT)
-    def bss_build_index(self, fasta_file, aligner, aligner_path, bss_path, params, idx_out):  # pylint disable=no-self-use
+    def bss_build_index(  # pylint: disable=no-self-use,too-many-arguments
+            self, fasta_file, aligner, aligner_path, bss_path, params, idx_out
+    ):  # pylint disable=no-self-use
         """
         Function to submit the FASTA file for the reference sequence and build
         the required index file used by the aligner.
@@ -128,15 +130,22 @@ class bssIndexerTool(Tool):
             tar = tarfile.open(idx_out_pregz, "w")
             tar.add(fasta_file + "_" + aligner, arcname=ff_split[-1] + "_" + aligner)
             tar.close()
-
-            command_line = 'pigz ' + idx_out_pregz
-            args = shlex.split(command_line)
-            process = subprocess.Popen(args)
-            process.wait()
         except (IOError, OSError) as msg:
             logger.fatal("I/O error({0}): {1}\n{2}".format(
                 msg.errno, msg.strerror, command_line))
             return False
+
+        try:
+            command_line = 'pigz ' + idx_out_pregz
+            args = shlex.split(command_line)
+            process = subprocess.Popen(args)
+            process.wait()
+        except OSError:
+            logger.warn("OSERROR: pigz not installed, using gzip")
+            command_line = 'gzip ' + idx_out_pregz
+            args = shlex.split(command_line)
+            process = subprocess.Popen(args)
+            process.wait()
 
         return True
 
@@ -157,10 +166,10 @@ class bssIndexerTool(Tool):
         command_params = []
 
         command_parameters = {
-            "bss_rrbs_param" : ["-r", False],
-            "bss_lower_bound_param" : ["-l", True],
-            "bss_upper_bound_param" : ["-u", True],
-            "bss_cut_format_param" : ["-c", True],
+            "bss_rrbs_param": ["-r", False],
+            "bss_lower_bound_param": ["-l", True],
+            "bss_upper_bound_param": ["-u", True],
+            "bss_cut_format_param": ["-c", True],
         }
 
         for param in params:
@@ -215,15 +224,10 @@ class bssIndexerTool(Tool):
         logger.info("ALIGNER: " + str(aligner))
         logger.info("ALIGNER PATH: " + str(aligner))
         logger.info("BSS PATH: " + str(aligner))
-        results = self.bss_build_index(
+        self.bss_build_index(
             input_files["genome"],
             aligner, aligner_path, bss_path, command_params,
             output_files["index"])
-        results = compss_wait_on(results)
-
-        if results is False:
-            logger.fatal("BS SEEKER2 Indexer: run failed")
-            return {}, {}
 
         output_metadata = {
             "index": Metadata(

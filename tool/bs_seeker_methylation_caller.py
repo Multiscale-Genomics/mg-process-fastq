@@ -21,7 +21,6 @@ import shlex
 import subprocess
 import sys
 import tarfile
-import os
 
 from utils import logger
 
@@ -30,21 +29,23 @@ try:
         raise ImportError
     from pycompss.api.parameter import FILE_IN, FILE_OUT, IN
     from pycompss.api.task import task
-    from pycompss.api.api import compss_wait_on
+    # from pycompss.api.api import compss_wait_on
 except ImportError:
     logger.warn("[Warning] Cannot import \"pycompss\" API packages.")
     logger.warn("          Using mock decorators.")
 
-    from utils.dummy_pycompss import FILE_IN, FILE_OUT, IN # pylint: disable=ungrouped-imports
-    from utils.dummy_pycompss import task # pylint: disable=ungrouped-imports
-    from utils.dummy_pycompss import compss_wait_on # pylint: disable=ungrouped-imports
+    from utils.dummy_pycompss import FILE_IN, FILE_OUT, IN  # pylint: disable=ungrouped-imports
+    from utils.dummy_pycompss import task  # pylint: disable=ungrouped-imports
+    # from utils.dummy_pycompss import compss_wait_on  # pylint: disable=ungrouped-imports
 
 from basic_modules.tool import Tool
 from basic_modules.metadata import Metadata
 
 from tool.bam_utils import bamUtilsTask
 
+
 # ------------------------------------------------------------------------------
+
 
 class bssMethylationCallerTool(Tool):
     """
@@ -109,6 +110,10 @@ class bssMethylationCallerTool(Tool):
         g_dir = "/".join(g_dir[:-1])
         gi_dir = "/".join(g_dir[:-1])
 
+        untar_idx = True
+        if "no-untar" in self.configuration and self.configuration["no-untar"] is True:
+            untar_idx = False
+
         try:
             tar = tarfile.open(genome_idx)
             for member in tar.getmembers():
@@ -116,7 +121,8 @@ class bssMethylationCallerTool(Tool):
                     gi_dir = g_dir + "/" + member.name
                     break
             logger.info("EXTRACTING " + genome_idx + " to " + g_dir)
-            tar.extractall(path=g_dir)
+            if untar_idx is True:
+                tar.extractall(path=g_dir)
             tar.close()
         except (IOError, OSError) as msg:
             logger.fatal("I/O error({0}): {1}\n{2}".format(
@@ -169,10 +175,10 @@ class bssMethylationCallerTool(Tool):
         command_params = []
 
         bss_pc_command_parameters = {
-            "bss_pc_rm_SX_param" : ["--rm-SX", False],
-            "bss_pc_rm_CCGG_param" : ["--rm-CCGG", False],
-            "bss_pc_rm_overlap_param" : ["--rn-overlap", False],
-            "bss_pc_read_no_param" : ["--read_no", True],
+            "bss_pc_rm_SX_param": ["--rm-SX", False],
+            "bss_pc_rm_CCGG_param": ["--rm-CCGG", False],
+            "bss_pc_rm_overlap_param": ["--rn-overlap", False],
+            "bss_pc_read_no_param": ["--read_no", True],
         }
 
         for param in params:
@@ -211,15 +217,9 @@ class bssMethylationCallerTool(Tool):
             logger.fatal("WGBS - BS SEEKER2: Unassigned configuration variables")
 
         bam_handler = bamUtilsTask()
-        results = bam_handler.check_header(input_files["bam"])
-        results = compss_wait_on(results)
-        if results is False:
-            logger.fatal(
-                "bss_methylation_caller: Could not process files {}, {}.".format(*input_files)
-            )
-            return (None, None)
+        bam_handler.check_header(input_files["bam"])
 
-        results = self.bss_methylation_caller(
+        self.bss_methylation_caller(
             bss_path,
             input_files["bam"],
             input_files["index"],
@@ -228,10 +228,6 @@ class bssMethylationCallerTool(Tool):
             output_files["cgmap_file"],
             output_files["atcgmap_file"]
         )
-        results = compss_wait_on(results)
-
-        if results is False:
-            logger.fatal("WGBS - BS SEEKER2: Methylation caller failed")
 
         output_metadata = {
             "wig_file": Metadata(

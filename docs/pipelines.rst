@@ -397,11 +397,11 @@ BS Seeker2 Aligner
    =======
    .. autoclass:: process_bs_seeker_aligner.process_bs_seeker_aligner
       :members:
-      
+
 
 BiSulphate Sequencing Filter
 ----------------------------
-.. automodule:: process_bsFilter
+.. automodule:: process_bs_seeker_filter
 
    This pipeline processes FASTQ files to filter out duplicate reads.
 
@@ -792,6 +792,65 @@ iDamID-Seq Analysis
    Methods
    =======
    .. autoclass:: process_damidseq.process_damidseq
+      :members:
+
+iNPS
+----
+.. automodule:: process_iNPS
+
+   This pipeline can process bam file to identify nucleosome positions.
+
+   Running from the command line
+   =============================
+
+   Parameters
+   ----------
+   config : str
+      Configuration JSON file
+   in_metadata : str
+      Location of input JSON metadata for files
+   out_metadata : str
+      Location of output JSON metadata for files
+
+   Returns
+   -------
+   bed : file
+      Bed files with the locations of nucleosome binding sites within the genome
+
+   Example
+   -------
+   REQUIREMENT - Needs the indexing step to be run first
+
+   When running the pipeline on a local machine without COMPSs:
+
+   .. code-block:: none
+      :linenos:
+
+      python process_iNPS.py                           \
+         --config tests/json/config_inps.json \
+         --in_metadata tests/json/input_iNPS_metadata.json \
+         --out_metadata tests/json/output_iNPS.json \
+         --local
+
+   When using a local version of the [COMPS virtual machine](https://www.bsc.es/research-and-development/software-and-apps/software-list/comp-superscalar/):
+
+   .. code-block:: none
+      :linenos:
+
+      runcompss                                        \
+         --lang=python                                 \
+         --library_path=${HOME}/bin                    \
+         --pythonpath=/<pyenv_virtenv_dir>/lib/python2.7/site-packages/ \
+         --log_level=debug                             \
+         process_iNPS.py                           \
+             --config tests/json/config_inps.json \
+             --in_metadata tests/json/input_iNPS_metadata.json \
+             --out_metadata tests/json/output_iNPS.json
+
+
+   Methods
+   =======
+   .. autoclass:: process_iNPS.process_iNPS
       :members:
 
 
@@ -1217,5 +1276,3 @@ Hi-C Analysis
    =======
    .. autoclass:: process_hic.process_hic
       :members:
-      
-      

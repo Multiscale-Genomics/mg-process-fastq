@@ -27,14 +27,14 @@ try:
         raise ImportError
     from pycompss.api.parameter import IN, FILE_IN, FILE_OUT
     from pycompss.api.task import task
-    from pycompss.api.api import compss_wait_on, compss_open, barrier
+    from pycompss.api.api import compss_wait_on, compss_open
 except ImportError:
     logger.warn("[Warning] Cannot import \"pycompss\" API packages.")
     logger.warn("          Using mock decorators.")
 
     from utils.dummy_pycompss import IN, FILE_IN, FILE_OUT # pylint: disable=ungrouped-imports
     from utils.dummy_pycompss import task # pylint: disable=ungrouped-imports
-    from utils.dummy_pycompss import compss_wait_on, compss_open, barrier # pylint: disable=ungrouped-imports
+    from utils.dummy_pycompss import compss_wait_on, compss_open  # pylint: disable=ungrouped-imports
 
 from basic_modules.tool import Tool
 from basic_modules.metadata import Metadata
@@ -223,54 +223,35 @@ class bwaAlignerMEMTool(Tool):
         -------
         list
         """
+
+        command_parameters = {
+            "bwa_mem_min_seed_len_param": ["-k", True],
+            "bwa_mem_band_width_param": ["-w", True],
+            "bwa_mem_zdropoff_param": ["-d", True],
+            "bwa_mem_reseeding_param": ["-r", True],
+            "bwa_mem_insensitive_param": ["-c", True],
+            "bwa_mem_paried_rescue_mode_param": ["-P"],
+            "bwa_mem_matching_score_param": ["-A", True],
+            "bwa_mem_mismatch_penalty_param": ["-B", True],
+            "bwa_mem_gap_open_penalty_param": ["-O", True],
+            "bwa_mem_gap_ext_penalty_param": ["-E", True],
+            "bwa_mem_clipping_penalty_param": ["-L", True],
+            "bwa_mem_unpaired_penalty_param": ["-U", True],
+            "bwa_mem_reads_interleaved_param": ["-p", False],
+            "bwa_mem_complete_read_head_param": ["-R", True],
+            "bwa_mem_alignment_threshold_param": ["-T", True],
+            "bwa_mem_hard_clipping_param": ["-H", False],
+            "bwa_mem_short_split_secondary_param": ["-M", False]
+        }
+
         command_params = []
-        if "bwa_mem_min_seed_len_param" in params:
-            command_params = command_params + [
-                "-k", str(params["bwa_mem_min_seed_len_param"])]
-        if "bwa_mem_band_width_param" in params:
-            command_params = command_params + [
-                "-w", str(params["bwa_mem_band_width_param"])]
-        if "bwa_mem_zdropoff_param" in params:
-            command_params = command_params + [
-                "-d", str(params["bwa_mem_zdropoff_param"])]
-        if "bwa_mem_reseeding_param" in params:
-            command_params = command_params + [
-                "-r", str(params["bwa_mem_reseeding_param"])]
-        if "bwa_mem_insensitive_param" in params:
-            command_params = command_params + [
-                "-c", str(params["bwa_mem_insensitive_param"])]
-        if "bwa_mem_paried_rescue_mode_param" in params:
-            command_params = command_params + ["-P"]
-        if "bwa_mem_matching_score_param" in params:
-            command_params = command_params + [
-                "-A", str(params["bwa_mem_matching_score_param"])]
-        if "bwa_mem_mismatch_penalty_param" in params:
-            command_params = command_params + [
-                "-B", str(params["bwa_mem_mismatch_penalty_param"])]
-        if "bwa_mem_gap_open_penalty_param" in params:
-            command_params = command_params + [
-                "-O", str(params["bwa_mem_gap_open_penalty_param"])]
-        if "bwa_mem_gap_ext_penalty_param" in params:
-            command_params = command_params + [
-                "-E", str(params["bwa_mem_gap_ext_penalty_param"])]
-        if "bwa_mem_clipping_penalty_param" in params:
-            command_params = command_params + [
-                "-L", str(params["bwa_mem_clipping_penalty_param"])]
-        if "bwa_mem_unpaired_penalty_param" in params:
-            command_params = command_params + [
-                "-U", str(params["bwa_mem_unpaired_penalty_param"])]
-        if "bwa_mem_reads_interleaved_param" in params:
-            command_params = command_params + ["-p"]
-        if "bwa_mem_complete_read_head_param" in params:
-            command_params = command_params + [
-                "-R", str(params["bwa_mem_complete_read_head_param"])]
-        if "bwa_mem_alignment_threshold_param" in params:
-            command_params = command_params + [
-                "-T", str(params["bwa_mem_alignment_threshold_param"])]
-        if "bwa_mem_hard_clipping_param" in params:
-            command_params = command_params + ["-H"]
-        if "bwa_mem_short_split_secondary_param" in params:
-            command_params = command_params + ["-M"]
+        for param in params:
+            if param in command_parameters:
+                if command_parameters[param][1]:
+                    command_params = command_params + [command_parameters[param][0], params[param]]
+                else:
+                    if command_parameters[param][0]:
+                        command_params.append(command_parameters[param][0])
 
         return command_params
 
@@ -312,6 +293,7 @@ class bwaAlignerMEMTool(Tool):
                 fastq1, fastq_file_gz
             )
 
+        # Required to prevent iterating over the future objects
         fastq_file_list = compss_wait_on(fastq_file_list)
         if not fastq_file_list:
             logger.fatal("FASTQ SPLITTER: run failed")
@@ -354,7 +336,7 @@ class bwaAlignerMEMTool(Tool):
 
                 # print("FILES:", tmp_fq1, tmp_fq2, output_bam_file_tmp)
 
-                results = self.bwa_aligner_paired(
+                self.bwa_aligner_paired(
                     str(input_files["genome"]), tmp_fq1, tmp_fq2, output_bam_file_tmp,
                     str(input_files["index"]), self.get_mem_params(self.configuration)
                 )
@@ -364,41 +346,21 @@ class bwaAlignerMEMTool(Tool):
                 output_bam_list.append(output_bam_file_tmp)
 
                 logger.info("BWAL ALN FILES:" + tmp_fq)
-                results = self.bwa_aligner_single(
+                self.bwa_aligner_single(
                     str(input_files["genome"]), tmp_fq, output_bam_file_tmp,
                     str(input_files["index"]), self.get_mem_params(self.configuration)
                 )
-        barrier()
 
         bam_handle = bamUtilsTask()
 
-        results = bam_handle.bam_copy(output_bam_list.pop(0), output_bam_file)
-        results = compss_wait_on(results)
+        logger.info("Merging bam files")
+        bam_handle.bam_merge(output_bam_list)
 
-        bam_job_files = [output_bam_file]
-        for tmp_bam_file in output_bam_list:
-            bam_job_files.append(tmp_bam_file)
+        logger.info("Sorting merged bam file")
+        bam_handle.bam_sort(output_bam_list[0])
 
-        if results is False:
-            logger.fatal("BWA Aligner: Bam copy failed")
-            return {}, {}
-
-        results = bam_handle.bam_merge(bam_job_files)
-        results = compss_wait_on(results)
-
-        results = bam_handle.bam_sort(output_bam_file)
-        results = compss_wait_on(results)
-
-        if results is False:
-            logger.fatal("BWA Aligner: Bam sorting failed")
-            return {}, {}
-
-        # results = bam_handle.bam_index(output_bam_file, output_bai_file)
-        # results = compss_wait_on(results)
-
-        # if results is False:
-        #     logger.fatal("BWA Aligner: Bam indexing failed")
-        #     return {}, {}
+        logger.info("Copying bam file into the output file")
+        bam_handle.bam_copy(output_bam_list[0], output_bam_file)
 
         logger.info("BWA ALIGNER: Alignments complete")
 

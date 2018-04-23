@@ -27,19 +27,20 @@ try:
         raise ImportError
     from pycompss.api.parameter import FILE_IN, FILE_OUT
     from pycompss.api.task import task
-    from pycompss.api.api import compss_wait_on
+    # from pycompss.api.api import compss_wait_on
 except ImportError:
     logger.warn("[Warning] Cannot import \"pycompss\" API packages.")
     logger.warn("          Using mock decorators.")
 
-    from utils.dummy_pycompss import FILE_IN, FILE_OUT # pylint: disable=ungrouped-imports
-    from utils.dummy_pycompss import task # pylint: disable=ungrouped-imports
-    from utils.dummy_pycompss import compss_wait_on # pylint: disable=ungrouped-imports
+    from utils.dummy_pycompss import FILE_IN, FILE_OUT  # pylint: disable=ungrouped-imports
+    from utils.dummy_pycompss import task  # pylint: disable=ungrouped-imports
+    # from utils.dummy_pycompss import compss_wait_on # pylint: disable=ungrouped-imports
 
 from basic_modules.metadata import Metadata
 from basic_modules.tool import Tool
 
 # ------------------------------------------------------------------------------
+
 
 class biobambam(Tool):
     """
@@ -144,12 +145,12 @@ class biobambam(Tool):
         """
         logger.info("BIOBAMBAM FILTER: Ready to run")
 
-        results = self.biobambam_filter_alignments(input_files['input'], output_files['output'])
-        results = compss_wait_on(results)
+        self.biobambam_filter_alignments(input_files['input'], output_files['output'])
+        # results = compss_wait_on(results)
 
-        if results is False:
-            logger.fatal("BIOBAMBAM: run failed")
-            return {}, {}
+        # if results is False:
+        #     logger.fatal("BIOBAMBAM: run failed")
+        #     return {}, {}
 
         logger.info("BIOBAMBAM FILTER: completed")
 

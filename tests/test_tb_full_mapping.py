@@ -19,9 +19,10 @@ from __future__ import print_function
 
 import os.path
 import gzip
-import pytest # pylint: disable=unused-import
+import pytest
 
 from tool.tb_full_mapping import tbFullMappingTool
+
 
 @pytest.mark.hic
 def test_tb_extract_fastq():
@@ -45,6 +46,7 @@ def test_tb_extract_fastq():
     assert os.path.isfile(fastq_file_2) is True
     assert os.path.getsize(fastq_file_2) > 0
 
+
 @pytest.mark.hic
 def test_tb_full_mapping_frag_01():
     """
@@ -62,9 +64,9 @@ def test_tb_full_mapping_frag_01():
     ]
 
     metadata = {
-        'assembly' : 'test',
-        'enzyme_name' : 'MboI',
-        'windows' : None
+        'assembly': 'test',
+        'enzyme_name': 'MboI',
+        'windows': None
     }
 
     gem_file = files[1]
@@ -72,7 +74,7 @@ def test_tb_full_mapping_frag_01():
     print(gem_file)
 
     tfm1 = tbFullMappingTool()
-    tfm1_files, tfm1_meta = tfm1.run(files, [], metadata)
+    tfm1_files, tfm1_meta = tfm1.run(files, [], metadata)  # pylint: disable=unused-variable
 
     map_frag = resource_path + "tb.Human.SRR1658573_1_frag.map"
     map_full = resource_path + "tb.Human.SRR1658573_1_full.map"
@@ -81,6 +83,7 @@ def test_tb_full_mapping_frag_01():
     assert os.path.getsize(map_frag) > 0
     assert os.path.isfile(map_full) is True
     assert os.path.getsize(map_full) > 0
+
 
 @pytest.mark.hic
 def test_tb_full_mapping_frag_02():
@@ -99,9 +102,9 @@ def test_tb_full_mapping_frag_02():
     ]
 
     metadata = {
-        'assembly' : 'test',
-        'enzyme_name' : 'MboI',
-        'windows' : None
+        'assembly': 'test',
+        'enzyme_name': 'MboI',
+        'windows': None
     }
 
     gem_file = files[1]
@@ -109,7 +112,7 @@ def test_tb_full_mapping_frag_02():
     print(gem_file)
 
     tfm2 = tbFullMappingTool()
-    tfm2_files, tfm2_meta = tfm2.run(files, [], metadata)
+    tfm2_files, tfm2_meta = tfm2.run(files, [], metadata)  # pylint: disable=unused-variable
 
     map_frag = resource_path + "tb.Human.SRR1658573_2_frag.map"
     map_full = resource_path + "tb.Human.SRR1658573_2_full.map"
@@ -118,6 +121,7 @@ def test_tb_full_mapping_frag_02():
     assert os.path.getsize(map_frag) > 0
     assert os.path.isfile(map_full) is True
     assert os.path.getsize(map_full) > 0
+
 
 @pytest.mark.hic
 def test_tb_full_mapping_iter_01():
@@ -136,9 +140,9 @@ def test_tb_full_mapping_iter_01():
     ]
 
     metadata = {
-        'assembly' : 'test',
-        # 'enzyme_name' : 'MboI',
-        'windows' : ((1, 25), (1, 50), (1, 75), (1, 100))
+        'assembly': 'test',
+        # 'enzyme_name': 'MboI',
+        'windows': ((1, 25), (1, 50), (1, 75), (1, 100))
     }
 
     gem_file = files[1]
@@ -146,7 +150,7 @@ def test_tb_full_mapping_iter_01():
     print(gem_file)
 
     tfm1 = tbFullMappingTool()
-    tfm1_files, tfm1_meta = tfm1.run(files, [], metadata)
+    tfm1_files, tfm1_meta = tfm1.run(files, [], metadata)  # pylint: disable=unused-variable
 
     map25 = resource_path + "tb.Human.SRR1658573_1_full_1-25.map"
     map50 = resource_path + "tb.Human.SRR1658573_1_full_1-50.map"
@@ -161,6 +165,7 @@ def test_tb_full_mapping_iter_01():
     assert os.path.getsize(map75) > 0
     assert os.path.isfile(map100) is True
     assert os.path.getsize(map100) > 0
+
 
 @pytest.mark.hic
 def test_tb_full_mapping_iter_02():
@@ -179,9 +184,9 @@ def test_tb_full_mapping_iter_02():
     ]
 
     metadata = {
-        'assembly' : 'test',
-        # 'enzyme_name' : 'MboI',
-        'windows' : ((1, 25), (1, 50), (1, 75), (1, 100))
+        'assembly': 'test',
+        # 'enzyme_name': 'MboI',
+        'windows': ((1, 25), (1, 50), (1, 75), (1, 100))
     }
 
     gem_file = files[1]
@@ -189,7 +194,7 @@ def test_tb_full_mapping_iter_02():
     print(gem_file)
 
     tfm2 = tbFullMappingTool()
-    tfm2_files, tfm2_meta = tfm2.run(files, [], metadata)
+    tfm2_files, tfm2_meta = tfm2.run(files, [], metadata)  # pylint: disable=unused-variable
 
     map25 = resource_path + "tb.Human.SRR1658573_2_full_1-25.map"
     map50 = resource_path + "tb.Human.SRR1658573_2_full_1-50.map"

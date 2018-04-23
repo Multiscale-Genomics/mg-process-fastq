@@ -19,8 +19,8 @@ import os
 import pytest
 
 from basic_modules.metadata import Metadata
-
 from tool import inps
+
 
 @pytest.mark.py3
 @pytest.mark.mnaseseq
@@ -58,7 +58,7 @@ def test_inps():
     }
 
     inps_obj = inps.inps()
-    inps_files, inps_meta = inps_obj.run(
+    inps_files, inps_meta = inps_obj.run(  # pylint: disable=unused-variable
         input_files,
         metadata,
         output_files

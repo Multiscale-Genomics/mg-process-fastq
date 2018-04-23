@@ -25,7 +25,7 @@ import argparse
 import sys
 
 # Required for ReadTheDocs
-from functools import wraps # pylint: disable=unused-import
+from functools import wraps  # pylint: disable=unused-import
 
 from basic_modules.workflow import Workflow
 from dmp import dmp
@@ -36,7 +36,9 @@ from tool.tb_filter import tbFilterTool
 from tool.tb_generate_tads import tbGenerateTADsTool
 from tool.tb_save_hdf5_matrix import tbSaveAdjacencyHDF5Tool
 
+
 # ------------------------------------------------------------------------------
+
 class process_hic(Workflow):
     """
     Functions for downloading and processing Mnase-seq FastQ files. Files are
@@ -100,10 +102,10 @@ class process_hic(Workflow):
         print("HIC - metadata:", metadata)
 
         input_metadata_mapping1 = {
-            'windows' : windows1,
+            'windows': windows1,
         }
         input_metadata_mapping2 = {
-            'windows' : windows2,
+            'windows': windows2,
         }
 
         if window_type == 'frag':
@@ -123,9 +125,9 @@ class process_hic(Workflow):
         tpm = tbParseMappingTool()
         files = [genome_fa] + tfm1_files + tfm2_files
         input_metadata_parser = {
-            'enzyme_name' : enzyme_name,
-            'mapping' : [tfm1_meta['func'], tfm2_meta['func']],
-            'expt_name' : expt_name
+            'enzyme_name': enzyme_name,
+            'mapping': [tfm1_meta['func'], tfm2_meta['func']],
+            'expt_name': expt_name
         }
         print("TB MAPPED FILES:", files)
         print("TB PARSE METADATA:", input_metadata_parser)
@@ -134,19 +136,23 @@ class process_hic(Workflow):
         print("TB PARSED FILES:", tpm_files)
 
         tbf = tbFilterTool()
-        tf_files, tf_meta = tbf.run(tpm_files, [], {'conservative' : True, 'expt_name' : expt_name})
+        tf_files, tf_meta = tbf.run(  # pylint: disable=unused-variable
+            tpm_files,
+            [],
+            {'conservative': True, 'expt_name': expt_name}
+        )
 
-        #adjlist_loc = f2a.save_hic_data()
+        # adjlist_loc = f2a.save_hic_data()
 
         print("TB FILTER FILES:", tf_files[0])
 
         tgt = tbGenerateTADsTool()
         tgt_meta_in = {
-            'resolutions' : resolutions,
-            'normalized' : False,
-            'expt_name' : expt_name
+            'resolutions': resolutions,
+            'normalized': False,
+            'expt_name': expt_name
         }
-        tgt_files, tgt_meta = tgt.run([tf_files[0]], [], tgt_meta_in)
+        tgt_files, tgt_meta = tgt.run([tf_files[0]], [], tgt_meta_in)  # pylint: disable=unused-variable
 
         # Generate the HDF5 and meta data required for the RESTful API.
         # - Chromosome meta is from the tb_parse_mapping step
@@ -156,16 +162,17 @@ class process_hic(Workflow):
             th5 = tbSaveAdjacencyHDF5Tool()
             th5_files_in = [tf_files[0], genome_fa]
             th5_meta_in = {
-                'assembly' : assembly,
-                'resolutions' : resolutions,
-                'normalized' : normalized,
-                'chromosomes_meta' : tpm_meta['chromosomes']
+                'assembly': assembly,
+                'resolutions': resolutions,
+                'normalized': normalized,
+                'chromosomes_meta': tpm_meta['chromosomes']
             }
-            th5_files, th5_meta = th5.run(th5_files_in, [], th5_meta_in)
+            th5_files, th5_meta = th5.run(th5_files_in, [], th5_meta_in)  # pylint: disable=unused-variable
             hdf5_file = th5_files[0]
 
         # List of files to get saved
         return ([tfm1_files[0], tfm2_files[0], tpm_files[0], tf_files[0], hdf5_file], [])
+
 
 # ------------------------------------------------------------------------------
 
@@ -191,10 +198,11 @@ def main(input_files, output_files, input_metadata):
     print(result)
     return result
 
+
 # ------------------------------------------------------------------------------
 
 if __name__ == "__main__":
-    sys._run_from_cmdl = True
+    sys._run_from_cmdl = True  # pylint: disable=protected-access
 
     # Set up the command line parameters
     PARSER = argparse.ArgumentParser(description="Generate adjacency files")
@@ -220,14 +228,13 @@ if __name__ == "__main__":
     PARSER.add_argument("--normalized", help="Normalize the alignments", default=False)
     PARSER.add_argument("--tag", help="tag", default='test_name')
 
-
     # Get the matching parameters from the command line
     ARGS = PARSER.parse_args()
 
     # Assumes that there are 2 fastq files for the paired ends
-    #windows1 = ((1,25), (1,50), (1,75),(1,100))
-    #windows2 = ((1,25), (1,50), (1,75),(1,100))
-    #windows2 = ((101,125), (101,150), (101,175),(101,200))
+    # windows1 = ((1,25), (1,50), (1,75),(1,100))
+    # windows2 = ((1,25), (1,50), (1,75),(1,100))
+    # windows2 = ((101,125), (101,150), (101,175),(101,200))
 
     GENOME_FA = ARGS.genome
     GENOME_GEM = ARGS.genome_gem
@@ -264,16 +271,16 @@ if __name__ == "__main__":
         RESOLUTIONS = RESOLUTIONS.split(',')
 
     METADATA = {
-        'user_id' : 'test',
-        'assembly' : ASSEMBLY,
-        'resolutions' : RESOLUTIONS,
-        'enzyme_name' : ENZYME_NAME,
-        'windows1' : WINDOWS1,
-        'windows2' : WINDOWS2,
-        'normalized' : NORMALIZED,
-        'hdf5' : True,
-        'expt_name' : EXPT_NAME,
-        'window_type' : WINDOW_TYPE
+        'user_id': 'test',
+        'assembly': ASSEMBLY,
+        'resolutions': RESOLUTIONS,
+        'enzyme_name': ENZYME_NAME,
+        'windows1': WINDOWS1,
+        'windows2': WINDOWS2,
+        'normalized': NORMALIZED,
+        'hdf5': True,
+        'expt_name': EXPT_NAME,
+        'window_type': WINDOW_TYPE
     }
 
     #
@@ -286,10 +293,10 @@ if __name__ == "__main__":
     #2. Register the data with the DMP
     genome_file = DM_HANDLER.set_file(
         "test", GENOME_FA, "fasta", "Assembly", TAXON_ID,
-        meta_data={'assembly' : ASSEMBLY})
+        meta_data={'assembly': ASSEMBLY})
     genome_idx = DM_HANDLER.set_file(
         "test", GENOME_GEM, "gem", "Assembly Index", TAXON_ID,
-        meta_data={'assembly' : ASSEMBLY})
+        meta_data={'assembly': ASSEMBLY})
     fastq_01_file_in = DM_HANDLER.set_file(
         "test", FASTQ_01_FILE, "fastq", "Hi-C", TAXON_ID,
         meta_data=METADATA)

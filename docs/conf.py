@@ -35,6 +35,10 @@
 
 import os, sys
 sys.path.insert(0, os.path.abspath('..'))
+
+# Required to us the dummy_pycompss calls
+sys._run_from_cmdl = True
+
 import tool
 
 from mock import Mock as MagicMock

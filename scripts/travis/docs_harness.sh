@@ -15,15 +15,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-python_version=$(python --version 2>&1)
-echo $python_version
-if [[ $python_version != *"3."* ]]; then
-    cd ${HOME}/lib
-    wget https://github.com/3DGenomes/tadbit/archive/master.zip -O tadbit.zip
-    unzip tadbit.zip
-    cd TADbit-master
-    pip install scipy
-    pip install matplotlib
-    yes | python setup.py install --install-scripts=${HOME}/bin
+rc=0
 
+cd docs
+make html 2> output.err
+
+grep -v "Cannot import \"pycompss\" API packages." output.err > output.tmp.err
+grep -v 'Using mock decorators.' output.tmp.err > output.err
+
+if [[ -s output.err ]]
+then
+    cat output.err
+    exit 1
 fi

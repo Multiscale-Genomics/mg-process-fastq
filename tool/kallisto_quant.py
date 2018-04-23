@@ -30,19 +30,20 @@ try:
         raise ImportError
     from pycompss.api.parameter import FILE_IN, FILE_OUT
     from pycompss.api.task import task
-    from pycompss.api.api import compss_wait_on
+    # from pycompss.api.api import compss_wait_on
 except ImportError:
     logger.warn("[Warning] Cannot import \"pycompss\" API packages.")
     logger.warn("          Using mock decorators.")
 
-    from utils.dummy_pycompss import FILE_IN, FILE_OUT # pylint: disable=ungrouped-imports
-    from utils.dummy_pycompss import task # pylint: disable=ungrouped-imports
-    from utils.dummy_pycompss import compss_wait_on # pylint: disable=ungrouped-imports
+    from utils.dummy_pycompss import FILE_IN, FILE_OUT  # pylint: disable=ungrouped-imports
+    from utils.dummy_pycompss import task  # pylint: disable=ungrouped-imports
+    # from utils.dummy_pycompss import compss_wait_on  # pylint: disable=ungrouped-imports
 
 from basic_modules.tool import Tool
 from basic_modules.metadata import Metadata
 
 # ------------------------------------------------------------------------------
+
 
 class kallistoQuantificationTool(Tool):
     """
@@ -75,7 +76,7 @@ class kallistoQuantificationTool(Tool):
         abundance_h5_file=FILE_OUT,
         abundance_tsv_file=FILE_OUT,
         run_info_file=FILE_OUT)
-    def kallisto_quant_single(
+    def kallisto_quant_single(  # pylint: disable=too-many-arguments, too-many-locals
             self, cdna_idx_file, fastq_file_loc,
             abundance_h5_file, abundance_tsv_file, run_info_file):
         """
@@ -235,7 +236,7 @@ class kallistoQuantificationTool(Tool):
         length_sd = std(total_len)
         length_mean = mean(total_len)
 
-        return {'mean' : length_mean, 'std' : length_sd}
+        return {'mean': length_mean, 'std': length_sd}
 
     def run(self, input_files, input_metadata, output_files):
         """
@@ -266,20 +267,20 @@ class kallistoQuantificationTool(Tool):
         # run_info_file = output_dir + "/run_info.json"
 
         if "fastq2" not in input_files:
-            results = self.kallisto_quant_single(
+            self.kallisto_quant_single(
                 input_files["index"], input_files["fastq1"],
                 output_files["abundance_h5_file"], output_files["abundance_tsv_file"],
                 output_files["run_info_file"]
             )
-            results = compss_wait_on(results)
+            # results = compss_wait_on(results)
         elif "fastq2" in input_files:
             # handle error
-            results = self.kallisto_quant_paired(
+            self.kallisto_quant_paired(
                 input_files["index"], input_files["fastq1"], input_files["fastq2"],
                 output_files["abundance_h5_file"], output_files["abundance_tsv_file"],
                 output_files["run_info_file"]
             )
-            results = compss_wait_on(results)
+            # results = compss_wait_on(results)
         else:
             return ({}, {})
 

@@ -18,10 +18,11 @@
 from __future__ import print_function
 
 import os.path
-import pytest # pylint: disable=unused-import
+import pytest
 
-from process_damidseq import process_damidseq
 from basic_modules.metadata import Metadata
+from process_damidseq import process_damidseq
+
 
 @pytest.mark.idamidseq
 @pytest.mark.pipeline
@@ -59,25 +60,25 @@ def test_idamidseq_pipeline():
     metadata = {
         "genome": Metadata(
             "Assembly", "fasta", files['genome'], None,
-            {'assembly' : 'GCA_000001405.22'}),
+            {'assembly': 'GCA_000001405.22'}),
         "index": Metadata(
             "Index", "bwa_index", files['index'], files['genome'],
             {'assembly': 'GCA_000001405.22', "tool": "bwa_indexer"}),
         "fastq_1": Metadata(
             "data_idamid_seq", "fastq", files['fastq_1'], None,
-            {'assembly' : 'GCA_000001405.22'}
+            {'assembly': 'GCA_000001405.22'}
         ),
         "fastq_2": Metadata(
             "data_idamid_seq", "fastq", files['fastq_2'], None,
-            {'assembly' : 'GCA_000001405.22'}
+            {'assembly': 'GCA_000001405.22'}
         ),
         "bg_fastq_1": Metadata(
             "data_idamid_seq", "fastq", files['bg_fastq_1'], None,
-            {'assembly' : 'GCA_000001405.22'}
+            {'assembly': 'GCA_000001405.22'}
         ),
         "bg_fastq_2": Metadata(
             "data_idamid_seq", "fastq", files['bg_fastq_2'], None,
-            {'assembly' : 'GCA_000001405.22'}
+            {'assembly': 'GCA_000001405.22'}
         ),
     }
 
@@ -109,13 +110,13 @@ def test_idamidseq_pipeline():
     }
 
     damidseq_handle = process_damidseq(config_param)
-    damidseq_files, damidseq_meta = damidseq_handle.run(files, metadata, files_out)
+    damidseq_files, damidseq_meta = damidseq_handle.run(files, metadata, files_out)  # pylint: disable=unused-variable
 
     print(damidseq_files)
 
     # Add tests for all files created
     for f_out in damidseq_files:
         print("iDamID-SEQ RESULTS FILE:", f_out)
-        #assert damidseq_files[f_out] == files_out[f_out]
+        # assert damidseq_files[f_out] == files_out[f_out]
         assert os.path.isfile(damidseq_files[f_out]) is True
         assert os.path.getsize(damidseq_files[f_out]) > 0

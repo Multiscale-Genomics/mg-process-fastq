@@ -84,8 +84,10 @@ The full dataset was downloaded from ENA aligned to the genome using GEM.
 
 The alignments were then filtered with BioBamBam and peak calling was performed with iDEAR and a suitable region with a number of peaks was identified. The chromosomal region was extract and the matching reads to this region were identified. To reduce the number of reads that matched so that it could be used as a test set for the code base every other read was selected so that a reasonable number of reads we present. This mean that there are results when running the test, but generating the alignments does not take too long to compute.
 
+
 .. code-block:: none
    :linenos:
+
    sed -n 539916,556583p GCA_000001405.chr22.fasta > GCA_000001405.chr22ss.fasta
    sed -n 5002,11669p idear.Human.GCA_000001405.22.fasta >> idear.Human.GCA_000001405.22.subset.fasta
 

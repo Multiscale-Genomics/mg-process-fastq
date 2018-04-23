@@ -23,8 +23,6 @@ import subprocess
 import sys
 import tarfile
 
-import pysam
-
 from utils import logger
 
 try:
@@ -32,14 +30,14 @@ try:
         raise ImportError
     from pycompss.api.parameter import FILE_IN, FILE_OUT, IN
     from pycompss.api.task import task
-    from pycompss.api.api import compss_wait_on, compss_open, barrier
+    from pycompss.api.api import compss_wait_on, compss_open
 except ImportError:
     logger.warn("[Warning] Cannot import \"pycompss\" API packages.")
     logger.warn("          Using mock decorators.")
 
-    from utils.dummy_pycompss import FILE_IN, FILE_OUT, IN # pylint: disable=ungrouped-imports
-    from utils.dummy_pycompss import task # pylint: disable=ungrouped-imports
-    from utils.dummy_pycompss import compss_wait_on, compss_open, barrier # pylint: disable=ungrouped-imports
+    from utils.dummy_pycompss import FILE_IN, FILE_OUT, IN  # pylint: disable=ungrouped-imports
+    from utils.dummy_pycompss import task  # pylint: disable=ungrouped-imports
+    from utils.dummy_pycompss import compss_wait_on, compss_open  # pylint: disable=ungrouped-imports
 
 from basic_modules.tool import Tool
 from basic_modules.metadata import Metadata
@@ -47,6 +45,7 @@ from basic_modules.metadata import Metadata
 from tool.fastq_splitter import fastq_splitter
 from tool.bam_utils import bamUtils
 from tool.bam_utils import bamUtilsTask
+
 
 # ------------------------------------------------------------------------------
 
@@ -136,8 +135,7 @@ class bssAlignerTool(Tool):
     @task(
         returns=bool, isModifier=False,
         input_fastq=FILE_IN, aligner=IN, aligner_path=IN, bss_path=IN, aln_params=IN,
-        genome_fasta=FILE_IN, genome_idx=FILE_IN, bam_out=FILE_OUT
-    )
+        genome_fasta=FILE_IN, genome_idx=FILE_IN, bam_out=FILE_OUT)
     def bs_seeker_aligner_single(
             self, input_fastq, aligner, aligner_path, bss_path, aln_params,
             genome_fasta, genome_idx, bam_out):
@@ -190,7 +188,7 @@ class bssAlignerTool(Tool):
         return results
 
     @staticmethod
-    def get_aln_params(params, paired=False):
+    def get_aln_params(params, paired=False):  # pylint: disable=too-many-branches
         """
         Function to handle to extraction of commandline parameters and formatting
         them for use in the aligner for Bowtie2
@@ -209,18 +207,18 @@ class bssAlignerTool(Tool):
 
         bss_aligner_command_parameters = {
             # Reduced Representation Bisufite Sequencing
-            "bss_aligner_rrbs_param" : ["--rrbs", False],
-            "bss_aligner_rrbs_cutoff_site_param" : ["-c", True],
-            "bss_aligner_rrbs_lower_param" : ["-L", True],
-            "bss_aligner_rrbs_upper_param" : ["-U", True],
+            "bss_aligner_rrbs_param": ["--rrbs", False],
+            "bss_aligner_rrbs_cutoff_site_param": ["-c", True],
+            "bss_aligner_rrbs_lower_param": ["-L", True],
+            "bss_aligner_rrbs_upper_param": ["-U", True],
             # General Options
-            "bss_aligner_tag_param" : ["-t", True],
-            "bss_aligner_start_base_param" : ["-s", True],
-            "bss_aligner_end_base_param" : ["-e", True],
-            # "bss_aligner_adapter_param" : ["-a", True],
-            # "bss_aligner_adapter_mismatch_param" : ["--am", True],
-            "bss_aligner_no_mismatches_param" : ["-m", True],
-            "bss_aligner_split_line_param" : ["-l", True],
+            "bss_aligner_tag_param": ["-t", True],
+            "bss_aligner_start_base_param": ["-s", True],
+            "bss_aligner_end_base_param": ["-e", True],
+            # "bss_aligner_adapter_param": ["-a", True],
+            # "bss_aligner_adapter_mismatch_param": ["--am", True],
+            "bss_aligner_no_mismatches_param": ["-m", True],
+            "bss_aligner_split_line_param": ["-l", True],
         }
 
         for param in params:
@@ -234,43 +232,44 @@ class bssAlignerTool(Tool):
 
         bowtie2_command_parameters = {
             # Input Options - 11
-            "bowtie2_interleaved_param" : ["--bt2--interleaved", False],
-            "bowtie2_tab5_param" : ["--bt2--tab5", False],
-            "bowtie2_tab6_param" : ["--bt2--tab6", False],
-            # "bowtie2_qseq_param" : ["--bt2--qseq", False],
-            # "bowtie2_read_only_param" : ["--bt2-r", True],
-            "bowtie2_skip_1st_n_reads_param" : ["--bt2-s", True],
-            "bowtie2_aln_1st_n_reads_param" : ["--bt2-u", True],
-            "bowtie2_trim5_param" : ["--bt2-5", True],
-            "bowtie2_trim3_param" : ["--bt2-3", True],
-            "bowtie2_phred33_param" : ["--bt2--phred33", False],
-            "bowtie2_phre64_param" : ["--bt2--phred64", False],
+            "bowtie2_interleaved_param": ["--bt2--interleaved", False],
+            "bowtie2_tab5_param": ["--bt2--tab5", False],
+            "bowtie2_tab6_param": ["--bt2--tab6", False],
+            # "bowtie2_qseq_param": ["--bt2--qseq", False],
+            # "bowtie2_read_only_param": ["--bt2-r", True],
+            "bowtie2_skip_1st_n_reads_param": ["--bt2-s", True],
+            "bowtie2_aln_1st_n_reads_param": ["--bt2-u", True],
+            "bowtie2_trim5_param": ["--bt2-5", True],
+            "bowtie2_trim3_param": ["--bt2-3", True],
+            "bowtie2_phred33_param": ["--bt2--phred33", False],
+            "bowtie2_phre64_param": ["--bt2--phred64", False],
             # Alignment Options - 12
-            "bowtie2_num_mismatch_param" : ["--bt2-N", True],
-            "bowtie2_seed_len_param" : ["--bt2-L", True],
-            # "bowtie2_seed_func_param" : ["--bt2-i", True],
-            # "bowtie2_ambg_char_func_param" : ["--bt2--n-cell", True],
-            "bowtie2_dpads_param" : ["--bt2--dpad", True],
-            "bowtie2_gbar_param" : ["--bt2--gbar", True],
-            "bowtie2_ignore_quals_param" : ["--bt2--ignore-quals", False],
-            "bowtie2_nofw_param" : ["--bt2--nofw", False],
-            "bowtie2_norc_param" : ["--bt2--norc", False],
-            "bowtie2_no_1mm_upfront_param" : ["--bt2--no-1mm-upfront", False],
-            "bowtie2_end_to_end_param" : ["--bt2--end-to-end", False],
-            "bowtie2_local_param" : ["--bt2--local", False],
+            "bowtie2_num_mismatch_param": ["--bt2-N", True],
+            "bowtie2_seed_len_param": ["--bt2-L", True],
+            # "bowtie2_seed_func_param": ["--bt2-i", True],
+            # "bowtie2_ambg_char_func_param": ["--bt2--n-cell", True],
+            "bowtie2_dpads_param": ["--bt2--dpad", True],
+            "bowtie2_gbar_param": ["--bt2--gbar", True],
+            "bowtie2_ignore_quals_param": ["--bt2--ignore-quals", False],
+            "bowtie2_nofw_param": ["--bt2--nofw", False],
+            "bowtie2_norc_param": ["--bt2--norc", False],
+            "bowtie2_no_1mm_upfront_param": ["--bt2--no-1mm-upfront", False],
+            "bowtie2_end_to_end_param": ["--bt2--end-to-end", False],
+            "bowtie2_local_param": ["--bt2--local", False],
             # Effort Options - 2
-            "bowtie2_seed_extension_attempts_param" : ["--bt2-D", True],
-            "bowtie2_reseed_param" : ["--bt2-R", True],
+            "bowtie2_seed_extension_attempts_param": ["--bt2-D", True],
+            "bowtie2_reseed_param": ["--bt2-R", True],
             # SAM Options - 9
-            "bowtie2_no_unal_param" : ["--bt2--no-unal", False],
-            "bowtie2_no_hd_param" : ["--bt2--no-hd", False],
-            "bowtie2_no_sq_param" : ["--bt2--no-dq", False],
-            "bowtie2_rg_id_param" : ["--bt2--rg-id", True],
-            "bowtie2_rg_param" : ["--bt2--rg", True],
-            "bowtie2_omit_sec_seq_param" : ["--bt2--omit-sec-seq", False],
-            "bowtie2_soft_clipped_unmapped_tlen_param" : ["--bt2--soft-clipped-unmapped-tlen", False],
-            "bowtie2_sam_no_qname_trunc_param" : ["--bt2--sam-no-qname-trunc", False],
-            "bowtie2_xeq_param" : ["--bt2--xeq", False],
+            "bowtie2_no_unal_param": ["--bt2--no-unal", False],
+            "bowtie2_no_hd_param": ["--bt2--no-hd", False],
+            "bowtie2_no_sq_param": ["--bt2--no-dq", False],
+            "bowtie2_rg_id_param": ["--bt2--rg-id", True],
+            "bowtie2_rg_param": ["--bt2--rg", True],
+            "bowtie2_omit_sec_seq_param": ["--bt2--omit-sec-seq", False],
+            "bowtie2_soft_clipped_unmapped_tlen_param": [
+                "--bt2--soft-clipped-unmapped-tlen", False],
+            "bowtie2_sam_no_qname_trunc_param": ["--bt2--sam-no-qname-trunc", False],
+            "bowtie2_xeq_param": ["--bt2--xeq", False],
         }
 
         if paired:
@@ -279,7 +278,8 @@ class bssAlignerTool(Tool):
             bowtie2_command_parameters["bowtie2_max_frag_len_param"] = ["--bt2-X", True]
             bowtie2_command_parameters["bowtie2_frrfff_param"] = ["", True]
             bowtie2_command_parameters["bowtie2_no_mixed_param"] = ["--bt2--no-mixed", False]
-            bowtie2_command_parameters["bowtie2_no_discordant_param"] = ["--bt2--no-discordant", False]
+            bowtie2_command_parameters["bowtie2_no_discordant_param"] = [
+                "--bt2--no-discordant", False]
             bowtie2_command_parameters["bowtie2_dovetail_param"] = ["--bt2--dovetail", False]
             bowtie2_command_parameters["bowtie2_no_contain_param"] = ["--bt2--no-contain", False]
             bowtie2_command_parameters["bowtie2_no_overlap_param"] = ["--bt2--no-overlap", False]
@@ -377,7 +377,7 @@ class bssAlignerTool(Tool):
 
         return True
 
-    def run(self, input_files, input_metadata, output_files):
+    def run(self, input_files, input_metadata, output_files):  # pylint: disable=too-many-locals,too-many-branches,too-many-statements
         """
         Tool for indexing the genome assembly using BS-Seeker2. In this case it
         is using Bowtie2
@@ -436,6 +436,7 @@ class bssAlignerTool(Tool):
             )
             aln_params = self.get_aln_params(self.configuration)
 
+        # Required to prevent iterating over the future objects
         fastq_file_list = compss_wait_on(fastq_file_list)
         if not fastq_file_list:
             logger.fatal("FASTQ SPLITTER: run failed")
@@ -467,13 +468,16 @@ class bssAlignerTool(Tool):
 
         output_bam_list = []
         for fastq_file_pair in fastq_file_list:
+            logger.info("TMP DIR: " + gz_data_path + "/tmp/")
             if "fastq2" in input_files:
                 tmp_fq1 = gz_data_path + "/tmp/" + fastq_file_pair[0]
                 tmp_fq2 = gz_data_path + "/tmp/" + fastq_file_pair[1]
+                logger.info("TMP_FQ1: " + fastq_file_pair[0])
+                logger.info("TMP_FQ2: " + fastq_file_pair[1])
                 output_bam_file_tmp = tmp_fq1 + ".bam"
                 output_bam_list.append(output_bam_file_tmp)
 
-                results = self.bs_seeker_aligner(
+                self.bs_seeker_aligner(
                     tmp_fq1, tmp_fq2,
                     aligner, aligner_path, bss_path, aln_params,
                     genome_fasta, genome_idx,
@@ -481,47 +485,30 @@ class bssAlignerTool(Tool):
                 )
             else:
                 tmp_fq = gz_data_path + "/tmp/" + fastq_file_pair[0]
+                logger.info("TMP_FQ: " + fastq_file_pair[0])
                 output_bam_file_tmp = tmp_fq + ".bam"
                 output_bam_list.append(output_bam_file_tmp)
 
-                results = self.bs_seeker_aligner_single(
+                self.bs_seeker_aligner_single(
                     tmp_fq,
                     aligner, aligner_path, bss_path, aln_params,
                     genome_fasta, genome_idx,
                     output_bam_file_tmp
                 )
 
-        barrier()
-
         bam_handle = bamUtilsTask()
 
-        results = bam_handle.bam_copy(output_bam_list.pop(0), output_bam_file)
-        results = compss_wait_on(results)
+        logger.info("Merging bam files")
+        bam_handle.bam_merge(output_bam_list)
 
-        bam_job_files = [output_bam_file]
-        for tmp_bam_file in output_bam_list:
-            bam_job_files.append(tmp_bam_file)
+        logger.info("Sorting merged bam file")
+        bam_handle.bam_sort(output_bam_list[0])
 
-        if results is False:
-            logger.fatal("BS SEEKER2 Aligner: Bam copy failed")
-            return {}, {}
+        logger.info("Copying bam file into the output file")
+        bam_handle.bam_copy(output_bam_list[0], output_bam_file)
 
-        results = bam_handle.bam_merge(bam_job_files)
-        results = compss_wait_on(results)
-
-        results = bam_handle.bam_sort(output_bam_file)
-        results = compss_wait_on(results)
-
-        if results is False:
-            logger.fatal("BS SEEKER2 Aligner: Bam sorting failed")
-            return {}, {}
-
-        results = bam_handle.bam_index(output_bam_file, output_bai_file)
-        results = compss_wait_on(results)
-
-        if results is False:
-            logger.fatal("BS SEEKER2 Aligner: Bam indexing failed")
-            return {}, {}
+        logger.info("Creating output bam index file")
+        bam_handle.bam_index(output_bam_file, output_bai_file)
 
         output_metadata = {
             "bam": Metadata(
@@ -532,7 +519,7 @@ class bssAlignerTool(Tool):
                 taxon_id=input_metadata["genome"].taxon_id,
                 meta_data={
                     "assembly": input_metadata["genome"].meta_data["assembly"],
-                    "tool": "bwa_indexer"
+                    "tool": "bs_seeker_aligner"
                 }
             ),
             "bai": Metadata(
@@ -543,7 +530,7 @@ class bssAlignerTool(Tool):
                 taxon_id=input_metadata["genome"].taxon_id,
                 meta_data={
                     "assembly": input_metadata["genome"].meta_data["assembly"],
-                    "tool": "bwa_indexer"
+                    "tool": "bs_seeker_aligner"
                 }
             )
         }

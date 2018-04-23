@@ -27,14 +27,14 @@ try:
         raise ImportError
     from pycompss.api.parameter import IN, FILE_IN, FILE_OUT
     from pycompss.api.task import task
-    from pycompss.api.api import compss_wait_on, compss_open, barrier
+    from pycompss.api.api import compss_wait_on, compss_open
 except ImportError:
     logger.warn("[Warning] Cannot import \"pycompss\" API packages.")
     logger.warn("          Using mock decorators.")
 
-    from utils.dummy_pycompss import IN, FILE_IN, FILE_OUT # pylint: disable=ungrouped-imports
-    from utils.dummy_pycompss import task # pylint: disable=ungrouped-imports
-    from utils.dummy_pycompss import compss_wait_on, compss_open, barrier # pylint: disable=ungrouped-imports
+    from utils.dummy_pycompss import IN, FILE_IN, FILE_OUT  # pylint: disable=ungrouped-imports
+    from utils.dummy_pycompss import task  # pylint: disable=ungrouped-imports
+    from utils.dummy_pycompss import compss_wait_on, compss_open  # pylint: disable=ungrouped-imports
 
 from basic_modules.tool import Tool
 from basic_modules.metadata import Metadata
@@ -226,50 +226,32 @@ class bwaAlignerTool(Tool):
         -------
         list
         """
+        command_parameters = {
+            "bwa_edit_dist_param": ["-n", True],
+            "bwa_max_gap_open_param": ["-o", True],
+            "bwa_max_gap_ext_param": ["-e", True],
+            "bwa_dis_long_del_range_param": ["-d", True],
+            "bwa_dis_indel_range_param": ["-i", True],
+            "bwa_n_subseq_seed_param": ["-l", True],
+            "bwa_max_edit_dist_param": ["-k", True],
+            "bwa_mismatch_penalty_param": ["-M", True],
+            "bwa_gap_open_penalty_param": ["-O", True],
+            "bwa_gap_ext_penalty_param": ["-E", True],
+            "bwa_use_subopt_threshold_param": ["-R", True],
+            "bwa_reverse_query_param": ["-c", False],
+            "bwa_dis_iter_search_param": ["-N", False],
+            "bwa_read_trim_param": ["-q", True],
+            "bwa_barcode_len_param": ["-B", True]
+        }
+
         command_params = []
-        if "bwa_edit_dist_param" in params:
-            command_params = command_params + [
-                "-n", str(params["bwa_edit_dist_param"])]
-        if "bwa_max_gap_open_param" in params:
-            command_params = command_params + [
-                "-o", str(params["bwa_max_gap_open_param"])]
-        if "bwa_max_gap_ext_param" in params:
-            command_params = command_params + [
-                "-e", str(params["bwa_max_gap_ext_param"])]
-        if "bwa_dis_long_del_range_param" in params:
-            command_params = command_params + [
-                "-d", str(params["bwa_dis_long_del_range_param"])]
-        if "bwa_dis_indel_range_param" in params:
-            command_params = command_params + [
-                "-i", str(params["bwa_dis_indel_range_param"])]
-        if "bwa_n_subseq_seed_param" in params:
-            command_params = command_params + [
-                "-l", str(params["bwa_n_subseq_seed_param"])]
-        if "bwa_max_edit_dist_param" in params:
-            command_params = command_params + [
-                "-k", str(params["bwa_max_edit_dist_param"])]
-        if "bwa_mismatch_penalty_param" in params:
-            command_params = command_params + [
-                "-M", str(params["bwa_mismatch_penalty_param"])]
-        if "bwa_gap_open_penalty_param" in params:
-            command_params = command_params + [
-                "-O", str(params["bwa_gap_open_penalty_param"])]
-        if "bwa_gap_ext_penalty_param" in params:
-            command_params = command_params + [
-                "-E", str(params["bwa_gap_ext_penalty_param"])]
-        if "bwa_use_subopt_threshold_param" in params:
-            command_params = command_params + [
-                "-R", str(params["bwa_use_subopt_threshold_param"])]
-        if "bwa_reverse_query_param" in params:
-            command_params = command_params + ["-c"]
-        if "bwa_dis_iter_search_param" in params:
-            command_params = command_params + ["-N"]
-        if "bwa_read_trim_param" in params:
-            command_params = command_params + [
-                "-q", str(params["bwa_read_trim_param"])]
-        if "bwa_barcode_len_param" in params:
-            command_params = command_params + [
-                "-B", str(params["bwa_barcode_len_param"])]
+        for param in params:
+            if param in command_parameters:
+                if command_parameters[param][1]:
+                    command_params = command_params + [command_parameters[param][0], params[param]]
+                else:
+                    if command_parameters[param][0]:
+                        command_params.append(command_parameters[param][0])
 
         return command_params
 
@@ -311,6 +293,7 @@ class bwaAlignerTool(Tool):
                 fastq1, fastq_file_gz
             )
 
+        # Required to prevent iterating over the future objects
         fastq_file_list = compss_wait_on(fastq_file_list)
         if not fastq_file_list:
             logger.fatal("FASTQ SPLITTER: run failed")
@@ -339,7 +322,7 @@ class bwaAlignerTool(Tool):
         output_metadata = {}
 
         output_bam_file = output_files["output"]
-        #output_bai_file = output_files["bai"]
+        # output_bai_file = output_files["bai"]
 
         logger.info("BWA ALIGNER: Aligning sequence reads to the genome")
 
@@ -353,7 +336,7 @@ class bwaAlignerTool(Tool):
 
                 # print("FILES:", tmp_fq1, tmp_fq2, output_bam_file_tmp)
 
-                results = self.bwa_aligner_paired(
+                self.bwa_aligner_paired(
                     str(input_files["genome"]), tmp_fq1, tmp_fq2, output_bam_file_tmp,
                     str(input_files["index"]), self.get_aln_params(self.configuration)
                 )
@@ -363,41 +346,21 @@ class bwaAlignerTool(Tool):
                 output_bam_list.append(output_bam_file_tmp)
 
                 logger.info("BWA ALN FILES: " + tmp_fq)
-                results = self.bwa_aligner_single(
+                self.bwa_aligner_single(
                     str(input_files["genome"]), tmp_fq, output_bam_file_tmp,
                     str(input_files["index"]), self.get_aln_params(self.configuration)
                 )
-        barrier()
 
         bam_handle = bamUtilsTask()
 
-        results = bam_handle.bam_copy(output_bam_list.pop(0), output_bam_file)
-        results = compss_wait_on(results)
+        logger.info("Merging bam files")
+        bam_handle.bam_merge(output_bam_list)
 
-        bam_job_files = [output_bam_file]
-        for tmp_bam_file in output_bam_list:
-            bam_job_files.append(tmp_bam_file)
+        logger.info("Sorting merged bam file")
+        bam_handle.bam_sort(output_bam_list[0])
 
-        if results is False:
-            logger.fatal("BWA Aligner: Bam copy failed")
-            return {}, {}
-
-        results = bam_handle.bam_merge(bam_job_files)
-        results = compss_wait_on(results)
-
-        results = bam_handle.bam_sort(output_bam_file)
-        results = compss_wait_on(results)
-
-        if results is False:
-            logger.fatal("BWA Aligner: Bam sorting failed")
-            return {}, {}
-
-        # results = bam_handle.bam_index(output_bam_file, output_bai_file)
-        # results = compss_wait_on(results)
-
-        # if results is False:
-        #     logger.fatal("BWA Aligner: Bam indexing failed")
-        #     return {}, {}
+        logger.info("Copying bam file into the output file")
+        bam_handle.bam_copy(output_bam_list[0], output_bam_file)
 
         logger.info("BWA ALIGNER: Alignments complete")
 

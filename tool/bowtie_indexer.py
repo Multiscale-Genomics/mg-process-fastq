@@ -31,14 +31,14 @@ try:
         raise ImportError
     from pycompss.api.parameter import FILE_IN, FILE_OUT
     from pycompss.api.task import task
-    from pycompss.api.api import compss_wait_on
+    # from pycompss.api.api import compss_wait_on
 except ImportError:
     logger.warn("[Warning] Cannot import \"pycompss\" API packages.")
     logger.warn("          Using mock decorators.")
 
-    from utils.dummy_pycompss import FILE_IN, FILE_OUT # pylint: disable=ungrouped-imports
-    from utils.dummy_pycompss import task # pylint: disable=ungrouped-imports
-    from utils.dummy_pycompss import compss_wait_on # pylint: disable=ungrouped-imports
+    from utils.dummy_pycompss import FILE_IN, FILE_OUT  # pylint: disable=ungrouped-imports
+    from utils.dummy_pycompss import task  # pylint: disable=ungrouped-imports
+    # from utils.dummy_pycompss import compss_wait_on  # pylint: disable=ungrouped-imports
 
 from basic_modules.tool import Tool
 from basic_modules.metadata import Metadata
@@ -46,6 +46,7 @@ from basic_modules.metadata import Metadata
 from tool.aligner_utils import alignerUtils
 
 # ------------------------------------------------------------------------------
+
 
 class bowtieIndexerTool(Tool):
     """
@@ -72,7 +73,7 @@ class bowtieIndexerTool(Tool):
         self.configuration.update(configuration)
 
     @task(file_loc=FILE_IN, index_loc=FILE_OUT)
-    def bowtie2_indexer(self, file_loc, index_loc): # pylint: disable=unused-argument, no-self-use
+    def bowtie2_indexer(self, file_loc, index_loc):  # pylint: disable=unused-argument, no-self-use
         """
         Bowtie2 Indexer
 
@@ -83,17 +84,18 @@ class bowtieIndexerTool(Tool):
         idx_loc : str
             Location of the output index file
         """
+
+        file_name = file_loc.split('/')
+        file_name[-1] = file_name[-1].replace('.fasta', '')
+        file_name[-1].replace('.fa', '')
+        file_name = "/".join(file_name)
+
+        au_handle = alignerUtils()
+        au_handle.bowtie_index_genome(file_loc, file_name)
+
         try:
-            file_name = file_loc.split('/')
-            file_name[-1] = file_name[-1].replace('.fasta', '')
-            file_name[-1].replace('.fa', '')
-            file_name = "/".join(file_name)
-
-            au_handle = alignerUtils()
-            au_handle.bowtie_index_genome(file_loc, file_name)
-
             # tar.gz the index
-            print("BT - index_loc", index_loc, index_loc.replace('.tar.gz', ''))
+            logger.info("BOWTIE2 - index_loc", index_loc, index_loc.replace('.tar.gz', ''))
             idx_out_pregz = index_loc.replace('.tar.gz', '.tar')
 
             index_dir = index_loc.replace('.tar.gz', '')
@@ -114,15 +116,23 @@ class bowtieIndexerTool(Tool):
             tar.add(index_dir, arcname=index_folder)
             tar.close()
 
+        except IOError as error:
+            logger.fatal("I/O error({0}): {1}".format(error.errno, error.strerror))
+            return False
+
+        try:
             command_line = 'pigz ' + idx_out_pregz
             args = shlex.split(command_line)
             process = subprocess.Popen(args)
             process.wait()
+        except OSError:
+            logger.warn("OSERROR: pigz not installed, using gzip")
+            command_line = 'gzip ' + idx_out_pregz
+            args = shlex.split(command_line)
+            process = subprocess.Popen(args)
+            process.wait()
 
-            return True
-        except IOError as error:
-            logger.fatal("I/O error({0}): {1}".format(error.errno, error.strerror))
-            return False
+        return True
 
     def run(self, input_files, input_metadata, output_files):
         """
@@ -143,15 +153,10 @@ class bowtieIndexerTool(Tool):
             list of the matching metadata
         """
 
-        results = self.bowtie2_indexer(
+        self.bowtie2_indexer(
             input_files["genome"],
             output_files["index"]
         )
-        results = compss_wait_on(results)
-
-        if results is False:
-            logger.fatal("Bowtie2 Indexer: run failed")
-            return {}, {}
 
         output_metadata = {
             "index": Metadata(

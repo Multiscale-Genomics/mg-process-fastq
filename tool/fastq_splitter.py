@@ -31,19 +31,20 @@ try:
         raise ImportError
     from pycompss.api.parameter import FILE_IN, FILE_OUT, IN, OUT
     from pycompss.api.task import task
-    from pycompss.api.api import compss_wait_on
+    # from pycompss.api.api import compss_wait_on
 except ImportError:
     logger.warn("[Warning] Cannot import \"pycompss\" API packages.")
     logger.warn("          Using mock decorators.")
 
-    from utils.dummy_pycompss import FILE_IN, FILE_OUT, IN, OUT # pylint: disable=ungrouped-imports
-    from utils.dummy_pycompss import task # pylint: disable=ungrouped-imports
-    from utils.dummy_pycompss import compss_wait_on # pylint: disable=ungrouped-imports
+    from utils.dummy_pycompss import FILE_IN, FILE_OUT, IN, OUT  # pylint: disable=ungrouped-imports
+    from utils.dummy_pycompss import task  # pylint: disable=ungrouped-imports
+    # from utils.dummy_pycompss import compss_wait_on  # pylint: disable=ungrouped-imports
 
 from basic_modules.tool import Tool
 from basic_modules.metadata import Metadata
 
 from tool.fastqreader import fastqreader
+
 
 # ------------------------------------------------------------------------------
 
@@ -171,8 +172,8 @@ class fastq_splitter(Tool):
         returns=list)
     def paired_splitter(self, in_file1, in_file2, out_file, tag='tmp'):  # pylint: disable=no-self-use
         """
-        Function to divide the FastQ files into separte sub files of 1000000
-        sequences so that the aligner can run in parallel.
+        Function to divide the paired-end FastQ files into separte sub files
+        of 1000000 sequences so that the aligner can run in parallel.
 
         Parameters
         ----------
@@ -291,8 +292,8 @@ class fastq_splitter(Tool):
 
     def run(self, input_files, input_metadata, output_files):
         """
-        The main function to run the splitting of FASTQ files (single or paired)
-        so that they can aligned in a distributed manner
+        The main function to run the splitting of FASTQ files (single or
+        paired) so that they can aligned in a distributed manner
 
         Parameters
         ----------
@@ -314,19 +315,17 @@ class fastq_splitter(Tool):
 
         if "fastq2" in input_files:
             sources.append(input_files["fastq2"])
-            results = self.paired_splitter(
+            self.paired_splitter(
                 input_files["fastq1"], input_files["fastq2"],
                 input_files["fastq1"] + ".tar.gz"
             )
         else:
-            results = self.single_splitter(
+            self.single_splitter(
                 input_files["fastq1"],
                 input_files["fastq1"] + ".tar.gz",
             )
 
-        results = compss_wait_on(results)
-
-        logger.info("FASTQ SPLITTER:", results)
+        # results = compss_wait_on(results)
 
         fastq_tar_meta = Metadata(
             data_type=input_metadata["fastq1"].data_type,

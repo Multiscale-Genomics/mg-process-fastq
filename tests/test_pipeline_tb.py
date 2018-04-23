@@ -18,9 +18,10 @@
 from __future__ import print_function
 
 import os.path
-import pytest # pylint: disable=unused-import
+import pytest
 
 from process_hic import process_hic
+
 
 @pytest.mark.hic
 @pytest.mark.pipeline
@@ -64,19 +65,19 @@ def test_tb_pipeline():
     ]
 
     metadata = {
-        'assembly' : 'GRCh38',
-        'expt_name' : 'tb.Human.SRR1658573',
-        'enzyme_name' : 'MboI',
-        'windows1' : ((1, '100')),
-        'windows2' : ((1, '100')),
-        'window_type' :  'frag',
-        'resolutions' : [10000, 100000],
-        'normalized' : False,
-        'hdf5' : True,
+        'assembly': 'GRCh38',
+        'expt_name': 'tb.Human.SRR1658573',
+        'enzyme_name': 'MboI',
+        'windows1': ((1, '100')),
+        'windows2': ((1, '100')),
+        'window_type':  'frag',
+        'resolutions': [10000, 100000],
+        'normalized': False,
+        'hdf5': True,
     }
 
     hic_handle = process_hic()
-    hic_files, hic_meta = hic_handle.run(files, metadata, [])
+    hic_files, hic_meta = hic_handle.run(files, metadata, [])  # pylint: disable=unused-variable
 
     print(hic_files)
 

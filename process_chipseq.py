@@ -20,7 +20,7 @@
 from __future__ import print_function
 
 # Required for ReadTheDocs
-from functools import wraps # pylint: disable=unused-import
+from functools import wraps  # pylint: disable=unused-import
 
 import argparse
 
@@ -31,6 +31,7 @@ from utils import remap
 from tool.bwa_aligner import bwaAlignerTool
 from tool.biobambam_filter import biobambam
 from tool.macs2 import macs2
+
 
 # ------------------------------------------------------------------------------
 
@@ -56,7 +57,7 @@ class process_chipseq(Workflow):
 
         self.configuration.update(configuration)
 
-    def run(self, input_files, metadata, output_files):
+    def run(self, input_files, metadata, output_files):  # pylint: disable=too-many-branches
         """
         Main run function for processing ChIP-seq FastQ data. Pipeline aligns
         the FASTQ files to the genome using BWA. MACS 2 is then used for peak
@@ -80,8 +81,14 @@ class process_chipseq(Workflow):
             loc : str
                 Location of the FASTQ reads files
 
+            fastq2 : str
+                Location of the paired end FASTQ file [OPTIONAL]
+
             bg_loc : str
                 Location of the background FASTQ reads files [OPTIONAL]
+
+            fastq2_bg : str
+                Location of the paired end background FASTQ reads files [OPTIONAL]
 
         metadata : dict
             Input file meta data associated with their roles
@@ -135,13 +142,17 @@ class process_chipseq(Workflow):
 
         logger.info("PROCESS CHIPSEQ - DEFINED OUTPUT:", output_files["bam"])
 
+        align_input_files = remap(input_files, "genome", "loc", "index")
+        align_input_file_meta = remap(metadata, "genome", "loc", "index")
+
+        if "fastq2" in input_files:
+            align_input_files["fastq2"] = input_files["fastq2"]
+            align_input_file_meta["fastq2"] = metadata["fastq2"]
+
         bwa = bwaAlignerTool(self.configuration)
         bwa_files, bwa_meta = bwa.run(
-            # ideally parameter "roles" don't change
-            remap(input_files,
-                  "genome", "loc", "index"),
-            remap(metadata,
-                  "genome", "loc", "index"),
+            align_input_files,
+            align_input_file_meta,
             {"output": output_files["bam"]}
         )
         try:
@@ -156,13 +167,16 @@ class process_chipseq(Workflow):
 
         if "bg_loc" in input_files:
             # Align background files
+            align_input_files_bg = remap(input_files, "genome", "index", loc="bg_loc")
+            align_input_file_meta_bg = remap(metadata, "genome", "index", loc="bg_loc")
+
+            if "fastq2" in input_files:
+                align_input_files_bg["fastq2"] = input_files["fastq2_bg"]
+                align_input_file_meta_bg["fastq2"] = metadata["fastq2_bg"]
+
             bwa_bg_files, bwa_bg_meta = bwa.run(
-                # Small changes can be handled easily using "remap"
-                remap(input_files,
-                      "genome", "index", loc="bg_loc"),
-                remap(metadata,
-                      "genome", "index", loc="bg_loc"),
-                # Intermediate outputs should be created via tempfile?
+                align_input_files_bg,
+                align_input_file_meta_bg,
                 {"output": output_files["bam_bg"]}
             )
 
@@ -175,8 +189,6 @@ class process_chipseq(Workflow):
                 output_metadata['bam_bg'].meta_data['tool'] = "process_chipseq"
             except KeyError:
                 logger.fatal("Background BWA aligner failed")
-
-        # For multiple files there will need to be merging into a single bam file
 
         # Filter the bams
         b3f = biobambam(self.configuration)
@@ -214,7 +226,7 @@ class process_chipseq(Workflow):
             except KeyError:
                 logger.fatal("Background BioBamBam filtering failed")
 
-        ## MACS2 to call peaks
+        # MACS2 to call peaks
         macs_caller = macs2(self.configuration)
         macs_inputs = {"input": output_files_generated["filtered"]}
         macs_metadt = {"input": output_metadata['filtered']}
@@ -227,9 +239,12 @@ class process_chipseq(Workflow):
             macs_inputs, macs_metadt,
             # Outputs of the final step may match workflow outputs;
             # Extra entries in output_files will be disregarded.
-            remap(output_files, 'narrow_peak', 'summits', 'broad_peak', 'gapped_peak'))
+            remap(
+                output_files,
+                'narrow_peak', 'summits', 'broad_peak', 'gapped_peak')
+        )
 
-        if len(m_results_meta) == 0:
+        if not m_results_meta:
             logger.fatal("MACS2 peak calling failed")
 
         if 'narrow_peak' in m_results_meta:
@@ -289,16 +304,21 @@ def main_json(config, in_metadata, out_metadata):
 
     return result
 
+
 # ------------------------------------------------------------------------------
 
 if __name__ == "__main__":
 
     # Set up the command line parameters
     PARSER = argparse.ArgumentParser(description="ChIP-seq peak calling")
-    PARSER.add_argument("--config", help="Configuration file")
-    PARSER.add_argument("--in_metadata", help="Location of input metadata file")
-    PARSER.add_argument("--out_metadata", help="Location of output metadata file")
-    PARSER.add_argument("--local", action="store_const", const=True, default=False)
+    PARSER.add_argument(
+        "--config", help="Configuration file")
+    PARSER.add_argument(
+        "--in_metadata", help="Location of input metadata file")
+    PARSER.add_argument(
+        "--out_metadata", help="Location of output metadata file")
+    PARSER.add_argument(
+        "--local", action="store_const", const=True, default=False)
 
     # Get the matching parameters from the command line
     ARGS = PARSER.parse_args()

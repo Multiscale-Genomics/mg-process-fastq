@@ -28,6 +28,7 @@ from utils import remap
 from tool.bwa_aligner import bwaAlignerTool
 from tool.inps import inps
 
+
 # ------------------------------------------------------------------------------
 
 class process_mnaseseq(Workflow):
@@ -113,6 +114,7 @@ class process_mnaseseq(Workflow):
         print("MNASESEQ RESULTS:", output_metadata)
         return output_files, output_metadata
 
+
 # ------------------------------------------------------------------------------
 
 def main_json(config, in_metadata, out_metadata):
@@ -145,10 +147,14 @@ if __name__ == "__main__":
 
     # Set up the command line parameters
     PARSER = argparse.ArgumentParser(description="MNase-seq peak calling")
-    PARSER.add_argument("--config", help="Configuration file")
-    PARSER.add_argument("--in_metadata", help="Location of input metadata file")
-    PARSER.add_argument("--out_metadata", help="Location of output metadata file")
-    PARSER.add_argument("--local", action="store_const", const=True, default=False)
+    PARSER.add_argument(
+        "--config", help="Configuration file")
+    PARSER.add_argument(
+        "--in_metadata", help="Location of input metadata file")
+    PARSER.add_argument(
+        "--out_metadata", help="Location of output metadata file")
+    PARSER.add_argument(
+        "--local", action="store_const", const=True, default=False)
 
     # Get the matching parameters from the command line
     ARGS = PARSER.parse_args()

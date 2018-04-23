@@ -32,12 +32,13 @@ except ImportError:
     logger.warn("[Warning] Cannot import \"pycompss\" API packages.")
     logger.warn("          Using mock decorators.")
 
-    from utils.dummy_pycompss import FILE_IN, FILE_OUT, IN # pylint: disable=ungrouped-imports
-    from utils.dummy_pycompss import task # pylint: disable=ungrouped-imports
-    from utils.dummy_pycompss import compss_wait_on # pylint: disable=ungrouped-imports
+    from utils.dummy_pycompss import FILE_IN, FILE_OUT, IN  # pylint: disable=ungrouped-imports
+    from utils.dummy_pycompss import task  # pylint: disable=ungrouped-imports
+    from utils.dummy_pycompss import compss_wait_on  # pylint: disable=ungrouped-imports
 
 from basic_modules.tool import Tool
 from basic_modules.metadata import Metadata
+
 
 # ------------------------------------------------------------------------------
 
@@ -65,12 +66,11 @@ class inps(Tool):
 
         self.configuration.update(configuration)
 
-    @staticmethod
     @task(
         returns=int,
         bam_file=FILE_IN, peak_bed=FILE_OUT, inps_params=IN,
         isModifier=False)
-    def inps_peak_calling(bam_file, peak_bed, inps_params):
+    def inps_peak_calling(self, bam_file, peak_bed, inps_params):  # pylint: disable=no-self-use
         """
         Convert Bam to Bed then make Nucleosome peak calls. These are saved as
         bed files That can then get displayed on genome browsers.
@@ -150,6 +150,7 @@ class inps(Tool):
             output_files["bed"],
             command_params
         )
+
         results = compss_wait_on(results)
 
         output_metadata = {

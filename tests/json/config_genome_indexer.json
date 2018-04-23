@@ -59,24 +59,9 @@
                     "tool": "gem_indexer",
                     "description": "Compressed GEM file"
                 },
-                "file_path": "tests/data/macs2.Human.GCA_000001405.22_gem.fasta.gem.gz",
+                "file_path": "tests/data/macs2.Human.GCA_000001405.22.fasta.gem.gz",
                 "data_type": "sequence_mapping_index_gem",
                 "compressed": "gzip"
-            }
-        }, {
-            "required": false,
-            "allow_multiple": false,
-            "name": "genome_gem",
-            "file": {
-                "file_type": "FASTA",
-                "meta_data": {
-                    "visible": true,
-                    "tool": "gem_indexer",
-                    "description": "Genome file modified for use with the GEM indexer and aligner"
-                },
-                "file_path": "tests/data/macs2.Human.GCA_000001405.22_gem.fasta",
-                "data_type": "genome_gem",
-                "compressed": "null"
             }
         }
     ]

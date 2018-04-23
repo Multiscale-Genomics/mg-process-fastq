@@ -25,9 +25,23 @@ cd tests/data
 c=$(git rev-parse --abbrev-ref HEAD)
 a=$(git ls-tree -r $c --name-only | sort)
 
-# All files in test/data
-b=$(ls | sort)
+# Remove all files in tests/data/* that are not in the git repo
+b=$(tree -aifF --noreport | grep -v /$ | sed 's/^\.\///' | sed 's/^\.$//' | sort)
+for i in $b; do
+    skip=0
+    for j in $a; do
+        if [ "${i}" = "${j}" ]; then
+            skip=1
+            break
+        fi
+    done
+    if [ $skip != 1 ]; then
+        rm -r $i
+    fi
+done
 
+# Remove all empty dirs in tests/data
+b=$(find . -type d -empty)
 for i in $b; do
     skip=0
     for j in $a; do

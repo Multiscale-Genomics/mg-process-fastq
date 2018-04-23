@@ -19,24 +19,22 @@
 
 from __future__ import print_function
 
-# Required for ReadTheDocs
-from functools import wraps  # pylint: disable=unused-import
-
 import argparse
 
 from basic_modules.workflow import Workflow
 from utils import logger
-from utils import remap
 
-from tool.bowtie_aligner import bowtie2AlignerTool
-
+from tool.inps import inps
 
 # ------------------------------------------------------------------------------
 
-class process_bowtie(Workflow):
+class process_iNPS(Workflow):
     """
-    Functions for aligning FastQ files with Bowtie2
+    Functions for improved nucleosome positioning algorithm
+    (iNPS).  Bam Files are analysed for peaks for nucleosome positioning
     """
+
+    configuration = {}
 
     def __init__(self, configuration=None):
         """
@@ -48,88 +46,59 @@ class process_bowtie(Workflow):
             a dictionary containing parameters that define how the operation
             should be carried out, which are specific to each Tool.
         """
-        logger.info("Processing Bowtie2 Aligner")
+        logger.info("Processing iNPS")
         if configuration is None:
             configuration = {}
-
         self.configuration.update(configuration)
 
     def run(self, input_files, metadata, output_files):
         """
-        Main run function for aligning FastQ reads with Bowtie2.
-
-        Currently this can only handle a single data file and a single
-        background file.
+        This pipeline processes bam files to identify
+        nucleosome regions within the genome and generates bed files.
 
         Parameters
         ----------
         input_files : dict
-            Location of the initial input files required by the workflow
+            bam_file : str
+            Location of the aligned sequences in bam format
 
-            genome : str
-                Genome FASTA file
-
-            index : str
-                Location of the BWA archived index files
-
-            loc : str
-                Location of the FASTQ reads files
-
-            fastq2 : str
-                [OPTIONAL] Location of the FASTQ reads file for paired end data
-
-        metadata : dict
-            Input file meta data associated with their roles
-
-            genome : str
-            index : str
-            loc : str
-            fastq2 : str
         output_files : dict
-            Output file locations
-
-            bam : str
-                Output bam file location
+            peak_bed : str
+            Location of the collated bed file of nucleosome peak calls
 
         Returns
         -------
-        output_files : dict
-            Output file locations associated with their roles, for the output
 
-            bam : str
-                Aligned FASTQ short read file locations
-        output_metadata : dict
-            Output metadata for the associated files in output_files
+        peak_bed : str
+            Location of the collated bed file of nucleosome peak calls
 
-            bam : Metadata
         """
-        output_files_generated = {}
+
+        output_results_files = {}
         output_metadata = {}
 
-        logger.info("PROCESS ALIGNMENT - DEFINED OUTPUT:", output_files["bam"])
+        logger.info("iNPS")
 
-        bowtie2_handle = bowtie2AlignerTool(self.configuration)
-        bowtie2_files, bowtie2_meta = bowtie2_handle.run(
-            # ideally parameter "roles" don't change
-            remap(input_files,
-                  "genome", "loc", "index"),
-            remap(metadata,
-                  "genome", "loc", "index"),
-            {"output": output_files["bam"]}
+        # Process the MNAse-seq reads to find nucleosome
+        logger.info("iNPS")
+        inps_r = inps(self.configuration)
+        bamf, bed_meta = inps_r.run(
+            {"bam": input_files["bam"]},
+            {"bam": metadata["bam"]},
+            {"bed": output_files["bed"]}
         )
 
         try:
-            output_files_generated["bam"] = bowtie2_files["bam"]
-            output_metadata["bam"] = bowtie2_meta["bam"]
-
-            tool_name = output_metadata['bam'].meta_data['tool']
-            output_metadata['bam'].meta_data['tool_description'] = tool_name
-            output_metadata['bam'].meta_data['tool'] = "process_bwa"
+            output_results_files["bed"] = bamf["bed"]
+            output_metadata["bed"] = bed_meta["bed"]
+            tool_name = output_metadata["bed"].meta_data["tool"]
+            output_metadata["bed"].meta_data["tool_description"] = tool_name
+            output_metadata["bed"].meta_data["tool"] = "process_iNPS"
         except KeyError:
-            logger.fatal("BWA aligner failed")
+            logger.fatal("iNPS : Error while processing")
+            return {}, {}
 
-        return output_files_generated, output_metadata
-
+        return (output_results_files, output_metadata)
 
 # ------------------------------------------------------------------------------
 
@@ -145,31 +114,27 @@ def main_json(config, in_metadata, out_metadata):
     print("1. Instantiate and launch the App")
     from apps.jsonapp import JSONApp
     app = JSONApp()
-    result = app.launch(process_bowtie,
+    result = app.launch(process_iNPS,
                         config,
                         in_metadata,
                         out_metadata)
 
     # 2. The App has finished
     print("2. Execution finished; see " + out_metadata)
+    print(result)
 
     return result
-
 
 # ------------------------------------------------------------------------------
 
 if __name__ == "__main__":
 
     # Set up the command line parameters
-    PARSER = argparse.ArgumentParser(description="Bowtie2 Alignment")
-    PARSER.add_argument(
-        "--config", help="Configuration file")
-    PARSER.add_argument(
-        "--in_metadata", help="Location of input metadata file")
-    PARSER.add_argument(
-        "--out_metadata", help="Location of output metadata file")
-    PARSER.add_argument(
-        "--local", action="store_const", const=True, default=False)
+    PARSER = argparse.ArgumentParser(description="iNPS peak calling")
+    PARSER.add_argument("--config", help="Configuration file")
+    PARSER.add_argument("--in_metadata", help="Location of input metadata file")
+    PARSER.add_argument("--out_metadata", help="Location of output metadata file")
+    PARSER.add_argument("--local", action="store_const", const=True, default=False)
 
     # Get the matching parameters from the command line
     ARGS = PARSER.parse_args()

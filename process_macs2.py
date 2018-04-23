@@ -20,7 +20,7 @@
 from __future__ import print_function
 
 # Required for ReadTheDocs
-from functools import wraps # pylint: disable=unused-import
+from functools import wraps  # pylint: disable=unused-import
 
 import argparse
 
@@ -29,6 +29,7 @@ from utils import logger
 from utils import remap
 
 from tool.macs2 import macs2
+
 
 # ------------------------------------------------------------------------------
 
@@ -119,7 +120,7 @@ class process_macs2(Workflow):
         output_files_generated = {}
         output_metadata = {}
 
-        ## MACS2 to call peaks
+        # MACS2 to call peaks
         macs_caller = macs2(self.configuration)
         macs_inputs = {"input": input_files["bam"]}
         macs_metadt = {"input": metadata['bam']}
@@ -132,7 +133,10 @@ class process_macs2(Workflow):
             macs_inputs, macs_metadt,
             # Outputs of the final step may match workflow outputs;
             # Extra entries in output_files will be disregarded.
-            remap(output_files, 'narrow_peak', 'summits', 'broad_peak', 'gapped_peak'))
+            remap(
+                output_files,
+                'narrow_peak', 'summits', 'broad_peak', 'gapped_peak')
+        )
 
         if 'narrow_peak' in m_results_meta:
             output_files_generated['narrow_peak'] = m_results_files['narrow_peak']

@@ -15,15 +15,18 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-python_version=$(python --version 2>&1)
-echo $python_version
-if [[ $python_version != *"3."* ]]; then
-    cd ${HOME}/lib
-    wget https://github.com/3DGenomes/tadbit/archive/master.zip -O tadbit.zip
-    unzip tadbit.zip
-    cd TADbit-master
-    pip install scipy
-    pip install matplotlib
-    yes | python setup.py install --install-scripts=${HOME}/bin
+disabled="--disable=similarities,invalid-name,too-many-statements,too-many-arguments,too-many-locals,too-few-public-methods,relative-import,no-self-use"
 
+pylint ${disabled} --rcfile pylintrc process*.py > output.err
+pylint ${disabled} --rcfile pylintrc tool >> output.err
+pylint ${disabled} --rcfile pylintrc tests >> output.err
+
+grep -v "\-\-\-\-\-\-\-\-\-" output.err | grep -v "Your code has been rated" | grep -v "\n\n" | sed '/^$/d' > pylint.err
+
+
+if [ -s pylint.err ]
+then
+    cat pylint.err
+    rm pylint.err
+    exit 1
 fi

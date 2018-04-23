@@ -27,14 +27,14 @@ try:
         raise ImportError
     from pycompss.api.parameter import IN, FILE_IN, FILE_OUT
     from pycompss.api.task import task
-    from pycompss.api.api import compss_wait_on, compss_open, barrier
+    from pycompss.api.api import compss_wait_on, compss_open
 except ImportError:
     logger.warn("[Warning] Cannot import \"pycompss\" API packages.")
     logger.warn("          Using mock decorators.")
 
-    from utils.dummy_pycompss import IN, FILE_IN, FILE_OUT # pylint: disable=ungrouped-imports
-    from utils.dummy_pycompss import task # pylint: disable=ungrouped-imports
-    from utils.dummy_pycompss import compss_wait_on, compss_open, barrier # pylint: disable=ungrouped-imports
+    from utils.dummy_pycompss import IN, FILE_IN, FILE_OUT  # pylint: disable=ungrouped-imports
+    from utils.dummy_pycompss import task  # pylint: disable=ungrouped-imports
+    from utils.dummy_pycompss import compss_wait_on, compss_open  # pylint: disable=ungrouped-imports
 
 from basic_modules.tool import Tool
 from basic_modules.metadata import Metadata
@@ -232,43 +232,43 @@ class bowtie2AlignerTool(Tool):
 
         command_parameters = {
             # Input Options - 11
-            "bowtie2_interleaved_param" : ["--interleaved", False],
-            "bowtie2_tab5_param" : ["--tab5", False],
-            "bowtie2_tab6_param" : ["--tab6", False],
-            # "bowtie2_qseq_param" : ["--qseq", False],
-            # "bowtie2_read_only_param" : ["-r", True],
-            "bowtie2_skip_1st_n_reads_param" : ["-s", True],
-            "bowtie2_aln_1st_n_reads_param" : ["-u", True],
-            "bowtie2_trim5_param" : ["-5", True],
-            "bowtie2_trim3_param" : ["-3", True],
-            "bowtie2_phred33_param" : ["--phred33", False],
-            "bowtie2_phre64_param" : ["--phred64", False],
+            "bowtie2_interleaved_param": ["--interleaved", False],
+            "bowtie2_tab5_param": ["--tab5", False],
+            "bowtie2_tab6_param": ["--tab6", False],
+            # "bowtie2_qseq_param": ["--qseq", False],
+            # "bowtie2_read_only_param": ["-r", True],
+            "bowtie2_skip_1st_n_reads_param": ["-s", True],
+            "bowtie2_aln_1st_n_reads_param": ["-u", True],
+            "bowtie2_trim5_param": ["-5", True],
+            "bowtie2_trim3_param": ["-3", True],
+            "bowtie2_phred33_param": ["--phred33", False],
+            "bowtie2_phre64_param": ["--phred64", False],
             # Alignment Options - 12
-            "bowtie2_num_mismatch_param" : ["-N", True],
-            "bowtie2_seed_len_param" : ["-L", True],
-            # "bowtie2_seed_func_param" : ["-i", True],
-            # "bowtie2_ambg_char_func_param" : ["--n-cell", True],
-            "bowtie2_dpads_param" : ["--dpad", True],
-            "bowtie2_gbar_param" : ["--gbar", True],
-            "bowtie2_ignore_quals_param" : ["--ignore-quals", False],
-            "bowtie2_nofw_param" : ["--nofw", False],
-            "bowtie2_norc_param" : ["--norc", False],
-            "bowtie2_no_1mm_upfront_param" : ["--no-1mm-upfront", False],
-            "bowtie2_end_to_end_param" : ["--end-to-end", False],
-            "bowtie2_local_param" : ["--local", False],
+            "bowtie2_num_mismatch_param": ["-N", True],
+            "bowtie2_seed_len_param": ["-L", True],
+            # "bowtie2_seed_func_param": ["-i", True],
+            # "bowtie2_ambg_char_func_param": ["--n-cell", True],
+            "bowtie2_dpads_param": ["--dpad", True],
+            "bowtie2_gbar_param": ["--gbar", True],
+            "bowtie2_ignore_quals_param": ["--ignore-quals", False],
+            "bowtie2_nofw_param": ["--nofw", False],
+            "bowtie2_norc_param": ["--norc", False],
+            "bowtie2_no_1mm_upfront_param": ["--no-1mm-upfront", False],
+            "bowtie2_end_to_end_param": ["--end-to-end", False],
+            "bowtie2_local_param": ["--local", False],
             # Effort Options - 2
-            "bowtie2_seed_extension_attempts_param" : ["-D", True],
-            "bowtie2_reseed_param" : ["-R", True],
+            "bowtie2_seed_extension_attempts_param": ["-D", True],
+            "bowtie2_reseed_param": ["-R", True],
             # SAM Options - 9
-            "bowtie2_no_unal_param" : ["--no-unal", False],
-            "bowtie2_no_hd_param" : ["--no-hd", False],
-            "bowtie2_no_sq_param" : ["--no-dq", False],
-            "bowtie2_rg_id_param" : ["--rg-id", True],
-            "bowtie2_rg_param" : ["--rg", True],
-            "bowtie2_omit_sec_seq_param" : ["--omit-sec-seq", False],
-            "bowtie2_soft_clipped_unmapped_tlen_param" : ["--soft-clipped-unmapped-tlen", False],
-            "bowtie2_sam_no_qname_trunc_param" : ["--sam-no-qname-trunc", False],
-            "bowtie2_xeq_param" : ["--xeq", False],
+            "bowtie2_no_unal_param": ["--no-unal", False],
+            "bowtie2_no_hd_param": ["--no-hd", False],
+            "bowtie2_no_sq_param": ["--no-dq", False],
+            "bowtie2_rg_id_param": ["--rg-id", True],
+            "bowtie2_rg_param": ["--rg", True],
+            "bowtie2_omit_sec_seq_param": ["--omit-sec-seq", False],
+            "bowtie2_soft_clipped_unmapped_tlen_param": ["--soft-clipped-unmapped-tlen", False],
+            "bowtie2_sam_no_qname_trunc_param": ["--sam-no-qname-trunc", False],
+            "bowtie2_xeq_param": ["--xeq", False],
         }
 
         if paired:
@@ -320,8 +320,6 @@ class bowtie2AlignerTool(Tool):
         # if "bowtie2_reporting-a_param" in params:
         #     command_params = command_params.append("-a")
 
-
-
         return command_params
 
     def run(self, input_files, input_metadata, output_files):
@@ -362,6 +360,7 @@ class bowtie2AlignerTool(Tool):
                 fastq1, fastq_file_gz
             )
 
+        # Required to prevent iterating over the future objects
         fastq_file_list = compss_wait_on(fastq_file_list)
         if not fastq_file_list:
             logger.fatal("FASTQ SPLITTER: run failed")
@@ -401,7 +400,7 @@ class bowtie2AlignerTool(Tool):
                 output_bam_file_tmp = tmp_fq1 + ".bam"
                 output_bam_list.append(output_bam_file_tmp)
 
-                results = self.bowtie2_aligner_paired(
+                self.bowtie2_aligner_paired(
                     str(input_files["genome"]), tmp_fq1, tmp_fq2, output_bam_file_tmp,
                     str(input_files["index"]), self.get_aln_params(self.configuration, True)
                 )
@@ -411,41 +410,21 @@ class bowtie2AlignerTool(Tool):
                 output_bam_list.append(output_bam_file_tmp)
 
                 logger.info("BOWTIE2 ALN FILES:" + tmp_fq)
-                results = self.bowtie2_aligner_single(
+                self.bowtie2_aligner_single(
                     str(input_files["genome"]), tmp_fq, output_bam_file_tmp,
                     str(input_files["index"]), self.get_aln_params(self.configuration)
                 )
-        barrier()
 
         bam_handle = bamUtilsTask()
 
-        results = bam_handle.bam_copy(output_bam_list.pop(0), output_bam_file)
-        results = compss_wait_on(results)
+        logger.info("Merging bam files")
+        bam_handle.bam_merge(output_bam_list)
 
-        bam_job_files = [output_bam_file]
-        for tmp_bam_file in output_bam_list:
-            bam_job_files.append(tmp_bam_file)
+        logger.info("Sorting merged bam file")
+        bam_handle.bam_sort(output_bam_list[0])
 
-        if results is False:
-            logger.fatal("Bowtie2 Aligner: Bam copy failed")
-            return {}, {}
-
-        results = bam_handle.bam_merge(bam_job_files)
-        results = compss_wait_on(results)
-
-        results = bam_handle.bam_sort(output_bam_file)
-        results = compss_wait_on(results)
-
-        if results is False:
-            logger.fatal("BOWTIE2 Aligner: Bam sorting failed")
-            return {}, {}
-
-        # results = bam_handle.bam_index(output_bam_file, output_bai_file)
-        # results = compss_wait_on(results)
-
-        # if results is False:
-        #     logger.fatal("BOWTIE2 Aligner: Bam indexing failed")
-        #     return {}, {}
+        logger.info("Copying bam file into the output file")
+        bam_handle.bam_copy(output_bam_list[0], output_bam_file)
 
         logger.info("BOWTIE2 ALIGNER: Alignments complete")
 

@@ -27,19 +27,20 @@ try:
         raise ImportError
     from pycompss.api.parameter import FILE_IN, FILE_OUT, IN
     from pycompss.api.task import task
-    from pycompss.api.api import compss_wait_on
+    # from pycompss.api.api import compss_wait_on
 except ImportError:
     logger.warn("[Warning] Cannot import \"pycompss\" API packages.")
     logger.warn("          Using mock decorators.")
 
     from utils.dummy_pycompss import FILE_IN, FILE_OUT, IN  # pylint: disable=ungrouped-imports
     from utils.dummy_pycompss import task  # pylint: disable=ungrouped-imports
-    from utils.dummy_pycompss import compss_wait_on  # pylint: disable=ungrouped-imports
+    # from utils.dummy_pycompss import compss_wait_on  # pylint: disable=ungrouped-imports
 
 from basic_modules.tool import Tool
 from basic_modules.metadata import Metadata
 
 from tool.common import cd
+
 
 # ------------------------------------------------------------------------------
 
@@ -167,7 +168,7 @@ class bsgenomeTool(Tool):
         genome=FILE_IN, circ_chrom=IN, seed_file_param=IN,
         genome_2bit=FILE_OUT, chrom_size=FILE_OUT, seed_file=FILE_OUT, bsgenome=FILE_OUT,
         isModifier=False)
-    def bsgenome_creater(  # pylint disable=no-self-use
+    def bsgenome_creater(  # pylint: disable=no-self-use,too-many-return-statements
             self, genome, circ_chrom, seed_file_param,
             genome_2bit, chrom_size, seed_file, bsgenome):
         """
@@ -199,7 +200,8 @@ class bsgenomeTool(Tool):
 
         genome_split = genome_2bit.split("/")
         seed_file_param["seqnames"] = 'c("' + '","'.join(chrom_seq_list) + '")'
-        if len(chrom_circ_list) > 0:
+        number_circ_chrs = len(chrom_circ_list)
+        if number_circ_chrs > 0:
             seed_file_param["circ_seqs"] = 'c("' + '","'.join(chrom_circ_list) + '")'
         seed_file_param["circ_seqs"] = ""
         seed_file_param["seqs_srcdir"] = "/".join(genome_split[0:-1])
@@ -357,7 +359,7 @@ class bsgenomeTool(Tool):
         if "idear_circ_chrom" in self.configuration:
             circ_chroms = str(self.configuration["idear_circ_chrom"]).split(",")
 
-        results = self.bsgenome_creater(
+        self.bsgenome_creater(
             input_files["genome"],
             circ_chroms,
             seed_param,
@@ -366,7 +368,7 @@ class bsgenomeTool(Tool):
             output_files["seed_file"],
             output_files["bsgenome"]
         )
-        results = compss_wait_on(results)
+        # results = compss_wait_on(results)
 
         output_metadata = {
             "bsgenome": Metadata(

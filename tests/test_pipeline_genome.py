@@ -18,11 +18,11 @@
 from __future__ import print_function
 
 import os.path
-import pytest # pylint: disable=unused-import
+import pytest
 
 from basic_modules.metadata import Metadata
-
 from process_genome import process_genome
+
 
 @pytest.mark.genome
 @pytest.mark.chipseq
@@ -55,18 +55,17 @@ def test_genome_pipeline():
     metadata = {
         "genome": Metadata(
             "Assembly", "fasta", files['genome'], None,
-            {'assembly' : 'GCA_000001405.22'}),
+            {'assembly': 'GCA_000001405.22'}),
     }
 
     files_out = {
         "bwa_index": resource_path + 'macs2.Human.GCA_000001405.22.fasta.bwa.tar.gz',
         "bwt_index": resource_path + 'macs2.Human.GCA_000001405.22.fasta.bt2.tar.gz',
-        "gem_index": resource_path + 'macs2.Human.GCA_000001405.22.gem.fasta.gem.gz',
-        "genome_gem": resource_path + 'macs2.Human.GCA_000001405.22.gem.fasta'
+        "gem_index": resource_path + 'macs2.Human.GCA_000001405.22.fasta.gem.gz'
     }
 
     genome_handle = process_genome()
-    genome_files, genome_meta = genome_handle.run(files, metadata, files_out)
+    genome_files, genome_meta = genome_handle.run(files, metadata, files_out)  # pylint: disable=unused-variable
 
     print(genome_files)
 

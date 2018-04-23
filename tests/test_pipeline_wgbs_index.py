@@ -18,10 +18,11 @@
 from __future__ import print_function
 
 import os.path
-import pytest # pylint: disable=unused-import
+import pytest
 
-from process_bs_seeker_index import process_bs_seeker_index
 from basic_modules.metadata import Metadata
+from process_bs_seeker_index import process_bs_seeker_index
+
 
 @pytest.mark.wgbs
 @pytest.mark.pipeline
@@ -37,29 +38,29 @@ def test_wgbs_pipeline_index():
     genomefa_file = resource_path + "bsSeeker.Mouse.GRCm38.fasta"
 
     files = {
-        "genome" : genomefa_file
+        "genome": genomefa_file
     }
 
     metadata = {
         "genome": Metadata(
             "Assembly", "fasta", files['genome'], None,
-            {'assembly' : 'GRCm38'}
+            {'assembly': 'GRCm38'}
         )
     }
 
     files_out = {
-        "index" : resource_path + "bsSeeker.Mouse.GRCm38.fasta.bt2.tar.gz"
+        "index": resource_path + "bsSeeker.Mouse.GRCm38.fasta.bt2.tar.gz"
     }
 
     print("WGBS TEST FILES:", files)
     rs_handle = process_bs_seeker_index(
         configuration={
-            "bss_path" : home + "/lib/BSseeker2",
-            "aligner" : "bowtie2",
-            "aligner_path" : home + "/lib/bowtie2-2.3.4-linux-x86_64"
+            "bss_path": home + "/lib/BSseeker2",
+            "aligner": "bowtie2",
+            "aligner_path": home + "/lib/bowtie2-2.3.4-linux-x86_64"
         }
     )
-    rs_files, rs_meta = rs_handle.run(files, metadata, files_out)
+    rs_files, rs_meta = rs_handle.run(files, metadata, files_out)  # pylint: disable=unused-variable
 
     assert len(rs_files) == 1
 

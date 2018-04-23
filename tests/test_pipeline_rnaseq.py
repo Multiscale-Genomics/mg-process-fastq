@@ -77,6 +77,7 @@ def test_rnaseq_pipeline():
 
     rs_handle = process_rnaseq()
     rs_files, rs_meta = rs_handle.run(files, metadata, files_out)
+    print ("**** rs files : *****", rs_files )
 
     # Checks that the returned files matches the expected set of results
     assert len(rs_files) == 4

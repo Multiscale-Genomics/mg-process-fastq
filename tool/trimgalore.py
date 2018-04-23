@@ -20,6 +20,7 @@ from __future__ import print_function
 import shlex
 import subprocess
 import sys
+import os.path
 
 from utils import logger
 
@@ -82,7 +83,7 @@ class trimgalore(Tool):
             Indicator of the success of the function
         """
 
-        command_line = "trim_galore " + " ".join(params) + " " + fastq_file_in
+        command_line = "trim_galore " + " ".join(params) + " " + fastq_file_in + " -o " + "tests/data/"
         logger.info("TRIM GALORE: command_line: " + command_line)
 
         try:
@@ -93,19 +94,24 @@ class trimgalore(Tool):
             logger.fatal("I/O error({0}) - trim_galore: {1}\n{2}".format(
                 msg.errno, msg.strerror, command_line))
             return False
+        print ("fastq_out", fastq_file_out )
+        print ("fastq_in", fastq_file_in )
+        print (os.path.getsize(fastq_file_out))
 
         # Output file name used by TrimGalore
         tg_tmp_out = fastq_file_in.replace(".fastq", "_trimmed.fq")
 
-        try:
-            with open(fastq_file_out, "wb") as f_out:
-                with open(tg_tmp_out, "rb") as f_in:
-                    f_out.write(f_in.read())
-        except IOError as error:
-            logger.fatal(
-                "I/O error({0}): {1}".format(error.errno, error.strerror))
-            return False
+        #try:   
+        #    with open(fastq_file_out, "wb") as f_out:
+        #        with open(tg_tmp_out, "rb") as f_in:
+                    #f_out.write(f_in.read())
+        #except IOError as error:
+        #    logger.fatal(
+         #       "I/O error({0}): {1}".format(error.errno, error.strerror))
+          #  return False
 
+        print ("after try", fastq_file_out )
+        print (os.path.getsize(fastq_file_out))
         return True
 
     @task(returns=bool,
@@ -262,21 +268,25 @@ class trimgalore(Tool):
 
         if "fastq2" in input_files:
             pass
-            # results = self.trimgalore_paired(
-            #     input_files['input'], output_files['output'], command_params)
+            #results = self.trimgalore_paired(
+            #  input_files['input'], output_files['output'], command_params)
         else:
             results = self.trimgalore_single(
                 input_files['fastq1'], output_files["fastq1_trimmed"], command_params)
         results = compss_wait_on(results)
+        print ("input files", input_files['fastq1'])
+        print ("output files1", output_files['fastq1_trimmed'])
+        #print ("results", results)
 
         if results is False:
-            logger.fatal("TrimGalore: run failed with error: {}", results)
+            logger.fatal("Error in Trim Galore py: TrimGalore: run failed with error: {}", results)
             return ({}, {})
 
+        #print ("output files2", output_files['fastq_trimmed'])
         output_files_created = {"fastq1_trimmed" : output_files["fastq1_trimmed"]}
 
         output_metadata = {
-            "fastq1_out": Metadata(
+            "fastq1_trimmed": Metadata(
                 data_type=input_metadata["fastq1"].data_type,
                 file_type="FASTQ",
                 file_path=output_files["fastq1_trimmed"],
@@ -287,11 +297,13 @@ class trimgalore(Tool):
                 }
             )
         }
+        print ("Metadata** : ",output_metadata)
 
+       # print ("output files3", output_files['fastq_trimmed1'])
         if "fastq2" in input_files:
             output_files_created["fastq2_trimmed"] = output_files["fastq2_trimmed"]
             output_metadata = {
-                "fastq2_out": Metadata(
+                "fastq2_trimmed": Metadata(
                     data_type=input_metadata["fastq2"].data_type,
                     file_type="FASTQ",
                     file_path=output_files["fastq2_trimmed"],
@@ -303,7 +315,7 @@ class trimgalore(Tool):
                 )
             }
 
-        logger.info("TRIM GALORE: GENERATED FILES:", output_files)
+        logger.info("TRIM GALORE: GENERATED FILES:", output_files['fastq1_trimmed'])
 
         return (output_files_created, output_metadata)
 

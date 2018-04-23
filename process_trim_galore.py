@@ -35,8 +35,6 @@ class process_trim_galore(Workflow):
     Low quality reads in qseq file can also be filtered.
     """
 
-    configuration = {}
-
     def __init__(self, configuration=None):
         """
         Initialise the class
@@ -50,6 +48,7 @@ class process_trim_galore(Workflow):
         logger.info("Processing trim galore")
         if configuration is None:
             configuration = {}
+
         self.configuration.update(configuration)
 
     def run(self, input_files, metadata, output_files):
@@ -64,7 +63,7 @@ class process_trim_galore(Workflow):
 
             fastq : str
                 Location for the first FASTQ file for single or paired end reads
-                
+
 
         metadata : dict
             Input file meta data associated with their roles
@@ -84,7 +83,8 @@ class process_trim_galore(Workflow):
         output_results_files = {}
         output_metadata = {}
 
-        logger.info("Trim_galore")
+        logger.info("trim_galore")
+        print ("****OUTPUT FILES ****",output_files)
 
         trimg = trimgalore(self.configuration)
         fastq1f, trim1_meta = trimg.run(
@@ -93,22 +93,21 @@ class process_trim_galore(Workflow):
             {"fastq1_trimmed": output_files["fastq1_trimmed"]}
         )
 
-        try:
-            output_results_files["fastq1_trimmed"] = fastq1f["fastq_trimmed"]
-            output_metadata["fastq1_trimmed"] = filter1_meta["fastq_trimmed"]
-            tool_name = output_metadata["fastq1_trimmed"].meta_data["tool"]
-            output_metadata["fastq1_trimmed"].meta_data["tool_description"] = tool_name
-            output_metadata["fastq1_trimmed"].meta_data["tool"] = "process_trim_galore"
-        except KeyError:
-            logger.fatal("Trim Galore : Error while trimming")
-            return {}, {}
-        
         if "fastq2" in input_files:
-            logger.info("Trim_galore")
-            fastq2f, filter2_meta = frt.run(
-                {"fastq": input_files["fastq2"]},
-                {"fastq": metadata["fastq2"]},
-                {"fastq_trimmed": output_files["fastq2_trimmed"]}
+            logger.info("trim_galore")
+            fastq2f, trim2_meta = trimg.run(
+                {
+                    "fastq1": input_files["fastq1"],
+                    "fastq2": input_files["fastq2"]
+                }, 
+                {
+                    "fastq1": metadata["fastq1"],
+                    "fastq2": metadata["fastq2"]
+                },
+                {
+                    "fastq_trimmed1": output_files["fastq1_trimmed"],
+                    "fastq_trimmed2": output_files["fastq2_trimmed"]
+                }
             )
 
             try:
@@ -118,8 +117,20 @@ class process_trim_galore(Workflow):
                 output_metadata["fastq2_trimmed"].meta_data["tool_description"] = tool_name
                 output_metadata["fastq2_trimmed"].meta_data["tool"] = "process_trim_galore"
             except KeyError:
-                logger.fatal("Trim Galore : Error while filtering")
+                logger.fatal("Trim Galore : Error while trimming")
                 return {}, {}
+        print ("trim1_meta* ",trim1_meta)
+        print ("fastq1f :", fastq1f)
+
+        try:
+            output_results_files["fastq1_trimmed"] = fastq1f["fastq1_trimmed"]
+            output_metadata["fastq1_trimmed"] = trim1_meta["fastq1_trimmed"]
+            tool_name = output_metadata["fastq1_trimmed"].meta_data["tool"]
+            output_metadata["fastq1_trimmed"].meta_data["tool_description"] = tool_name
+            output_metadata["fastq1_trimmed"].meta_data["tool"] = "process_trim_galore"
+        except KeyError:
+            logger.fatal("Trim Galore : Error while trimming")
+            return {}, {}
 
         return (output_results_files, output_metadata)
 

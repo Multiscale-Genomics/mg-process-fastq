@@ -2,7 +2,7 @@
     "_id": "process_trimgalore",
     "name": "Process Trim Galore",
     "title": "Fastq trimming",
-    "short_description": "Trim fastq data calling Trim Galore",
+    "short_description": "Trim fastq reads calling Trim Galore",
     "owner": {
         "institution": "EMBL-EBI",
         "author": "Reham Fatima",
@@ -14,7 +14,7 @@
     "external": true,
     "has_custom_viewer": false,
     "keywords": [
-        "dna", "chromatin"
+        "dna"
     ],
     "infrastructure": {
         "memory": 12,
@@ -55,107 +55,116 @@
     ],
     "input_files_combinations": [
         [
+            "fastq1"
+        ],
+        [
             "fastq1",
             "fastq2"
         ]
     ],
     "arguments": [
         {
-            "name": "quality",
+            "name": "tg_quality",
             "description": "Trim low quality reads in addition to adpater removal",
             "help": "Trim low quality reads in addition to adpater removal",
             "type": "int",
-            "required": true,
+            "required": false,
             "default": "50",
             "value": "50"
         },
         {
-            "name": "phred33",
+            "name": "tg_phred33",
             "description": "Instructs Cutadapt to use ASCII+33 quality scores as Phred scores",
             "help": "Instructs Cutadapt to use ASCII+33 quality scores as Phred scores",
-            "type": "string",
-            "required": true,
-            "default": "OFF",
-            "value": "OFF"
+            "type": "boolean",
+            "required": false,
+            "default": "true",
+            "value": "true"
         },
         {
-            "name": "phred64",
+            "name": "tg_phred64",
             "description": "Instructs Cutadapt to use ASCII+64 quality scores as Phred scores",
             "help": "Instructs Cutadapt to use ASCII+64 quality scores as Phred scores",
             "type": "string",
-            "required": true
+            "required": false
         },
         {
-            "name": "fastqc",
+            "name": "tg_fastqc",
             "description": "Run FastQC in the default mode on the FastQ file once trimming is complete",
             "help": "Run FastQC in the default mode on the FastQ file once trimming is complete",
             "type": "string",
-            "required": true
+            "required": false
         },
         {
-            "name": "fastqc_args",
+            "name": "tg_fastqc_args",
             "description": "Passes extra arguments to FastQC",
             "help": "Passes extra arguments to FastQC",
             "type": "string",
-            "required": true
+            "required": false
         },
         {
-            "name": "adapter",
+            "name": "tg_adapter",
             "description": "Adapter sequence to be trimmed",
             "help": "Adapter sequence to be trimmed",
             "type": "string",
-            "required": true
+            "required": false
         },
         {
-            "name": "adapter2",
+            "name": "tg_adapter2",
             "description": "Optional adapter sequence to be trimmed off read 2 of paired-end files.",
             "help": "Optional adapter sequence to be trimmed off read 2 of paired-end files.",
             "type": "string",
-            "required": true
+            "required": false
         },
         {
-            "name": "illumina",
+            "name": "tg_illumina",
             "description": "Adapter sequence to be trimmed is the first 13bp of the Illumina universal adapter",
             "help": "Adapter sequence to be trimmed is the first 13bp of the Illumina universal adapter",
             "type": "string",
-            "required": true
+            "required": false,
+            "default" : "AGATCGGAAGAGC",
+            "value" : "AGATCGGAAGAGC"
         },
         {
-            "name": "nextera",
+            "name": "tg_nextera",
             "description": "Adapter sequence to be trimmed is the first 12bp of the Nextera adapter",
             "help": "Adapter sequence to be trimmed is the first 12bp of the Nextera adapter",
             "type": "string",
-            "required": true
+            "required": false,
+            "default" : "CTGTCTCTTATA",
+            "value" : "CTGTCTCTTATA"
         },
         {
-            "name": "small_rna",
+            "name": "tg_small_rna",
             "description": "Adapter sequence to be trimmed is the first 12bp of the Illumina Small RNA 3' Adapter",
             "help": "Adapter sequence to be trimmed is the first 12bp of the Illumina Small RNA 3' Adapter",
             "type": "string",
-            "required": true
+            "required": false,
+            "default" : "TGGAATTCTCGG",
+            "value" : "TGGAATTCTCGG" 
         },
         {
-            "name": "max_length",
+            "name": "tg_max_length",
             "description": "Discard reads that are longer than bp after trimming",
             "help": "Discard reads that are longer than bp after trimming",
             "type": "int",
-            "required": true
+            "required": false
         },
         {
-            "name": "stringency",
+            "name": "tg_stringency",
             "description": "Overlap with adapter sequence required to trim a sequence",
             "help": "Overlap with adapter sequence required to trim a sequence",
             "type": "int",
-            "required": true,
+            "required": false,
             "default": "1",
             "value": "1"
         },
         {
-            "name": "length",
+            "name": "tg_length",
             "description": "Discard reads that became shorter than length INT because of either quality or adapter trimming",
             "help": "Discard reads that became shorter than length INT because of either quality or adapter trimming",
             "type": "int",
-            "required": true,
+            "required": false,
             "default": "20",
             "value": "20"
         }
@@ -178,7 +187,7 @@
                 "compressed": "null"
             }
         }, {
-            "required": true,
+            "required": false,
             "allow_multiple": false,
             "name": "fastq2_trimmed",
             "file": {

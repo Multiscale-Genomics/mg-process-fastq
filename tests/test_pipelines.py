@@ -167,6 +167,26 @@ def rnaseq_pipeline(verbose=False):
 
     return pytest.main(params)
 
+def trimgalore_pipeline(verbose=False):
+    """
+    Runs the tests for the trimgalore pipeline
+
+    Runs the following tests:
+
+    .. code-block:: none
+
+       pytest -m trimgalore tests/test_pipeline_trimgalore.py
+    """
+
+    params = ['-m trimgalore']
+
+    if verbose is True:
+        params.append('-s')
+
+    params.append('tests/test_pipeline_trimgalore.py')
+
+    return pytest.main(params)
+
 def wgbs_pipeline(verbose=False):
     """
     Runs the tests for the WGBS pipeline
@@ -197,7 +217,7 @@ if __name__ == '__main__':
         required=True,
         type=str,
         choices=[
-            'genome', 'chipseq', 'hic', 'idamidseq', 'idear', 'mnaseseq',
+            'genome', 'chipseq', 'hic', 'idamidseq', 'idear', 'trimgalore','mnaseseq',
             'rnaseq', 'wgbs', 'all'
         ],
         help=""
@@ -244,6 +264,11 @@ if __name__ == '__main__':
     if 'idear' in PIPELINES or 'all' in PIPELINES:
         print('IDEAR')
         if idear_pipeline(VERBOSE) > 0:
+            sys.exit(1)
+
+    if 'trimgalore' in PIPELINES or 'all' in PIPELINES:
+        print('TRIMGALORE')
+        if trimgalore_pipeline(VERBOSE) > 0:
             sys.exit(1)
 
     if 'mnaseseq' in PIPELINES or 'all' in PIPELINES:

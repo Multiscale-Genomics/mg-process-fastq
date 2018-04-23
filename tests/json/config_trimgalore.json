@@ -21,30 +21,6 @@
             "value": "OFF"
         },
         {
-            "name": "fastqc"
-        },
-        {
-            "name": "fastqc_args"
-        },
-        {
-            "name": "adapter"
-        },
-        {
-            "name": "adapter2"
-        },
-        {
-            "name": "illumina"
-        },
-        {
-            "name": "nextera"
-        },
-        {
-            "name": "small_rna"
-        },
-        {
-            "name": "max_length"
-        },
-        {
             "name": "stringency",
             "value": "1"
         },
@@ -65,8 +41,8 @@
                     "tool": "process_trim_galore",
                     "description": "Trimmed reads"
                 },
-                "file_path": "tests/data/bsSeeker.Mouse.SRR892982_1.trimmed.fq",
-                "data_type": "data_rnaseq",
+                "file_path": "tests/data/bsSeeker.Mouse.SRR892982_1_trimmed.fq",
+                "data_type": "data_wgbs",
                 "compressed": "null"
             }
         },
@@ -81,8 +57,8 @@
                     "tool": "process_trim_galore",
                     "description": "Trimmed reads"
                 },
-                "file_path": "tests/data/bsSeeker.Mouse.SRR892982_2.trimmed.fq",
-                "data_type": "data_rnaseq",
+                "file_path": "tests/data/bsSeeker.Mouse.SRR892982_2_trimmed.fq",
+                "data_type": "data_wgbs",
                 "compressed": "null"
             }
         }  

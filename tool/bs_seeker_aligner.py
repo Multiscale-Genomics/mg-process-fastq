@@ -522,7 +522,7 @@ class bssAlignerTool(Tool):
                 taxon_id=input_metadata["genome"].taxon_id,
                 meta_data={
                     "assembly": input_metadata["genome"].meta_data["assembly"],
-                    "tool": "bwa_indexer"
+                    "tool": "bs_seeker_aligner"
                 }
             ),
             "bai": Metadata(
@@ -533,7 +533,7 @@ class bssAlignerTool(Tool):
                 taxon_id=input_metadata["genome"].taxon_id,
                 meta_data={
                     "assembly": input_metadata["genome"].meta_data["assembly"],
-                    "tool": "bwa_indexer"
+                    "tool": "bs_seeker_aligner"
                 }
             )
         }

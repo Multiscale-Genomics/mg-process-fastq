@@ -322,7 +322,7 @@ class bwaAlignerMEMTool(Tool):
         output_metadata = {}
 
         output_bam_file = output_files["output"]
-        #output_bai_file = output_files["bai"]
+        # output_bai_file = output_files["bai"]
 
         logger.info("BWA ALIGNER: Aligning sequence reads to the genome")
 
@@ -334,8 +334,7 @@ class bwaAlignerMEMTool(Tool):
                 output_bam_file_tmp = tmp_fq1 + ".bam"
                 output_bam_list.append(output_bam_file_tmp)
 
-                # print("FILES:", tmp_fq1, tmp_fq2, output_bam_file_tmp)
-
+                logger.info("BWA MEM FILES: " + tmp_fq1 + " - " + tmp_fq2)
                 self.bwa_aligner_paired(
                     str(input_files["genome"]), tmp_fq1, tmp_fq2, output_bam_file_tmp,
                     str(input_files["index"]), self.get_mem_params(self.configuration)
@@ -345,7 +344,7 @@ class bwaAlignerMEMTool(Tool):
                 output_bam_file_tmp = tmp_fq + ".bam"
                 output_bam_list.append(output_bam_file_tmp)
 
-                logger.info("BWAL ALN FILES:" + tmp_fq)
+                logger.info("BWA MEM FILES: " + tmp_fq)
                 self.bwa_aligner_single(
                     str(input_files["genome"]), tmp_fq, output_bam_file_tmp,
                     str(input_files["index"]), self.get_mem_params(self.configuration)

@@ -351,7 +351,7 @@ class macs2(Tool):
 
         command_params = self.get_macs2_params(self.configuration)
 
-        logger.info("MACS2 COMMAND PARAMS:" + ", ".join(command_params))
+        logger.info("MACS2 COMMAND PARAMS: " + ", ".join(command_params))
 
         # handle error
         if 'background' in input_files:

@@ -195,6 +195,7 @@ def main_json(config, in_metadata, out_metadata):
 
     return result
 
+
 # ------------------------------------------------------------------------------
 
 if __name__ == "__main__":

@@ -148,8 +148,6 @@ FastQC
    cd FastQC/
    chmod 755 fastqc
 
-
-
 GEM Sequence Aligner
 ^^^^^^^^^^^^^^^^^^^^
 
@@ -446,6 +444,20 @@ Install BSseeker
    ln -s ${HOME}/lib/BSseeker2/bs_align bs_align
    ln -s ${HOME}/lib/BSseeker2/bs_index bs_index
    ln -s ${HOME}/lib/BSseeker2/bs_utils bs_utils
+
+
+Trim Galore
+^^^^^^^^^^^
+
+.. code-block:: none
+   :linenos:
+
+   cd ${HOME}/lib
+   pip install --user --upgrade cutadapt 
+   curl -fsSL https://github.com/FelixKrueger/TrimGalore/archive/0.4.3.tar.gz -o trim_galore.tar.gz
+   tar xvzf trim_galore.tar.gz
+   mv TrimGalore-0.4.3/trim_galore /usr/bin
+
 
 Post Installation Tidyup
 ------------------------

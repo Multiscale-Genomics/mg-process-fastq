@@ -1047,7 +1047,7 @@ RNA-Seq Analysis
 
 Trim Galore 
 -----------
-.. automodule:: process_wgbs
+.. automodule:: process_trim_galore
 
    This pipeline can process FASTQ to trim poor base quality or adapter contamination.
 
@@ -1095,7 +1095,7 @@ Trim Galore
          --library_path=${HOME}/bin              \
          --pythonpath=/<pyenv_virtenv_dir>/lib/python2.7/site-packages/ \
          --log_level=debug                       \
-         process_trim_Galore.py                         \
+         process_trim_galore.py                         \
             --config tests/json/config_trimgalore.json \
             --in_metadata tests/json/input_trimgalore_metadata.json \
             --out_metadata tests/json/output_trimgalore.json

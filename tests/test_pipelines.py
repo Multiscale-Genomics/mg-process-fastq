@@ -226,7 +226,7 @@ if __name__ == '__main__':
         required=True,
         type=str,
         choices=[
-            'genome', 'chipseq', 'hic', 'idamidseq', 'idear', 'trimgalore','mnaseseq',
+            'genome', 'chipseq', 'hic', 'idamidseq', 'idear', 'trimgalore', 'mnaseseq',
             'rnaseq', 'wgbs', 'all'
         ],
         help=""

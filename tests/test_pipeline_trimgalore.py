@@ -21,8 +21,8 @@ import os.path
 import gzip
 import pytest # pylint: disable=unused-import
 
-from process_trim_galore import process_trim_galore
 from basic_modules.metadata import Metadata
+from process_trim_galore import process_trim_galore
 
 @pytest.mark.trimgalore
 @pytest.mark.pipeline
@@ -74,10 +74,6 @@ def test_trim_galore_pipeline():
     tg_handle = process_trim_galore()
     #print ("****files_out : *****", files_out )
     tg_files, tg_meta = tg_handle.run(files, metadata, files_out)
-    print ("****files : *****", files )
-    print ("****metadata : *****", metadata )
-    print ("****files_out : *****", files_out )
-    print ("****tg_files : *****", tg_files )
 
     # Checks that the returned files matches the expected set of results
     assert len(tg_files) == 1
@@ -91,7 +87,7 @@ def test_trim_galore_pipeline():
 
 def test_trim_galore_pipeline_02():
     """
-    Test case to ensure that the trimgalore pipeline code works 
+    Test case to ensure that the trimgalore pipeline code works
     for paired end data.
 
     Running the pipeline with the test data from the command line:

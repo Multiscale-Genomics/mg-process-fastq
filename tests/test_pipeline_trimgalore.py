@@ -72,7 +72,6 @@ def test_trim_galore_pipeline():
     }
 
     tg_handle = process_trim_galore()
-    #print ("****files_out : *****", files_out )
     tg_files, tg_meta = tg_handle.run(files, metadata, files_out)
 
     # Checks that the returned files matches the expected set of results
@@ -82,6 +81,7 @@ def test_trim_galore_pipeline():
     for f_out in tg_files:
         print("TRIM GALORE RESULTS FILE:", f_out)
         assert tg_files[f_out] == files_out[f_out]
+        #assert tg_files[f_out] == files_out[f_out]
         assert os.path.isfile(tg_files[f_out]) is True
         assert os.path.getsize(tg_files[f_out]) > 0
 

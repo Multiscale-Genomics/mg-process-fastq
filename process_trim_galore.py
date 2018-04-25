@@ -84,7 +84,6 @@ class process_trim_galore(Workflow):
         output_metadata = {}
 
         logger.info("trim_galore")
-        print ("****OUTPUT FILES ****",output_files)
 
         trimg = trimgalore(self.configuration)
         fastq1f, trim1_meta = trimg.run(
@@ -99,7 +98,7 @@ class process_trim_galore(Workflow):
                 {
                     "fastq1": input_files["fastq1"],
                     "fastq2": input_files["fastq2"]
-                }, 
+                },
                 {
                     "fastq1": metadata["fastq1"],
                     "fastq2": metadata["fastq2"]
@@ -111,16 +110,14 @@ class process_trim_galore(Workflow):
             )
 
             try:
-                output_results_files["fastq2_trimmed"] = fastq2f["fastq_trimmed"]
-                output_metadata["fastq2_trimmed"] = filter2_meta["fastq_trimmed"]
+                output_results_files["fastq2_trimmed"] = fastq2f["fastq2_trimmed"]
+                output_metadata["fastq2_trimmed"] = trim2_meta["fastq2_trimmed"]
                 tool_name = output_metadata["fastq2_trimmed"].meta_data["tool"]
                 output_metadata["fastq2_trimmed"].meta_data["tool_description"] = tool_name
                 output_metadata["fastq2_trimmed"].meta_data["tool"] = "process_trim_galore"
             except KeyError:
                 logger.fatal("Trim Galore : Error while trimming")
                 return {}, {}
-        print ("trim1_meta* ",trim1_meta)
-        print ("fastq1f :", fastq1f)
 
         try:
             output_results_files["fastq1_trimmed"] = fastq1f["fastq1_trimmed"]

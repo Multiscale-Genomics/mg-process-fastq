@@ -83,7 +83,9 @@ class trimgalore(Tool):
             Indicator of the success of the function
         """
 
-        command_line = "trim_galore " + " ".join(params) + " " + fastq_file_in + " -o " + "tests/data/"
+        command_line = "trim_galore " + " ".join(params) \
+        + " " + fastq_file_in + " -o " + "tests/data/"
+        
         logger.info("TRIM GALORE: command_line: " + command_line)
 
         try:
@@ -94,14 +96,12 @@ class trimgalore(Tool):
             logger.fatal("I/O error({0}) - trim_galore: {1}\n{2}".format(
                 msg.errno, msg.strerror, command_line))
             return False
-        print ("fastq_out", fastq_file_out )
-        print ("fastq_in", fastq_file_in )
         print (os.path.getsize(fastq_file_out))
 
         # Output file name used by TrimGalore
         tg_tmp_out = fastq_file_in.replace(".fastq", "_trimmed.fq")
 
-        #try:   
+        #try:
         #    with open(fastq_file_out, "wb") as f_out:
         #        with open(tg_tmp_out, "rb") as f_in:
                     #f_out.write(f_in.read())
@@ -110,7 +110,7 @@ class trimgalore(Tool):
          #       "I/O error({0}): {1}".format(error.errno, error.strerror))
           #  return False
 
-        print ("after try", fastq_file_out )
+        print ("after try", fastq_file_out)
         print (os.path.getsize(fastq_file_out))
         return True
 
@@ -297,7 +297,6 @@ class trimgalore(Tool):
                 }
             )
         }
-        print ("Metadata** : ",output_metadata)
 
        # print ("output files3", output_files['fastq_trimmed1'])
         if "fastq2" in input_files:

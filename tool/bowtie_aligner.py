@@ -322,7 +322,7 @@ class bowtie2AlignerTool(Tool):
 
         return command_params
 
-    def run(self, input_files, input_metadata, output_files):
+    def run(self, input_files, input_metadata, output_files):  # pylint: disable=too-many-locals,too-many-statements
         """
         The main function to align bam files to a genome using Bowtie2
 
@@ -426,9 +426,6 @@ class bowtie2AlignerTool(Tool):
 
         logger.info("Copying bam file into the output file")
         bam_handle.bam_copy(output_bam_list[0], output_bam_file)
-
-        logger.info("Creating output bam index file")
-        bam_handle.bam_index(output_bam_file, output_bai_file)
 
         logger.info("BOWTIE2 ALIGNER: Alignments complete")
 

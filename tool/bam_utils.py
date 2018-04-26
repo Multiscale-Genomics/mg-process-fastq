@@ -195,7 +195,9 @@ class bamUtils(object):
         new_header_sq = [chrom for chrom in new_header["SQ"] if chrom["SN"] == chromosome]
         new_header["SQ"] = new_header_sq
 
-        with pysam.AlignmentFile(bam_file_out, "wb", header=new_header) as out_bam_f:  # pylint: disable=no-member
+        with pysam.AlignmentFile(  # pylint: disable=no-member
+            bam_file_out, "wb", header=new_header, index_filename=bai_file
+        ) as out_bam_f:
             for read in bam_file_handle.fetch(reference=chromosome):
                 out_bam_f.write(read)
 

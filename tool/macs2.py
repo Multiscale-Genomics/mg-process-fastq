@@ -379,12 +379,12 @@ class macs2(Tool):
         command_params = self.get_macs2_params(self.configuration)
 
         bam_utils_handle = bamUtilsTask()
-        bai_file = bam_utils_handle.bam_index(
+        bam_utils_handle.bam_index(
             input_files['bam'],
             input_files['bam'] + '.bai'
         )
         if 'bam_bg' in input_files:
-            bai_file_bg = bam_utils_handle.bam_index(
+            bam_utils_handle.bam_index(
                 input_files['bam_bg'],
                 input_files['bam_bg'] + '.bai'
             )

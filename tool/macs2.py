@@ -28,14 +28,14 @@ try:
         raise ImportError
     from pycompss.api.parameter import FILE_IN, FILE_OUT, IN
     from pycompss.api.task import task
-    from pycompss.api.api import compss_open
+    from pycompss.api.api import compss_wait_on, compss_open
 except ImportError:
     logger.warn("[Warning] Cannot import \"pycompss\" API packages.")
     logger.warn("          Using mock decorators.")
 
     from utils.dummy_pycompss import FILE_IN, FILE_OUT, IN  # pylint: disable=ungrouped-imports
     from utils.dummy_pycompss import task  # pylint: disable=ungrouped-imports
-    from utils.dummy_pycompss import compss_open  # pylint: disable=ungrouped-imports
+    from utils.dummy_pycompss import compss_wait_on, compss_open  # pylint: disable=ungrouped-imports
 
 from basic_modules.metadata import Metadata
 from basic_modules.tool import Tool
@@ -114,8 +114,8 @@ class macs2(Tool):
 
         from tool.bam_utils import bamUtils
 
-        bam_tmp_file = bam_file + "." + str(chromosome) + ".bam"
-        bam_bgd_tmp_file = bam_file_bgd + "." + str(chromosome) + ".bam"
+        bam_tmp_file = bam_file.replace(".bam", "." + str(chromosome) + ".bam")
+        bam_bgd_tmp_file = bam_file_bgd.replace(".bam", "." + str(chromosome) + ".bam")
         bam_utils_handle = bamUtils()
         bam_utils_handle.bam_split(bam_file, bai_file, chromosome, bam_tmp_file)
         bam_utils_handle.bam_split(bam_file_bgd, bai_file_bgd, chromosome, bam_bgd_tmp_file)
@@ -228,7 +228,7 @@ class macs2(Tool):
 
         from tool.bam_utils import bamUtils
 
-        bam_tmp_file = bam_file + "." + str(chromosome) + ".bam"
+        bam_tmp_file = bam_file.replace(".bam", "." + str(chromosome) + ".bam")
         bam_utils_handle = bamUtils()
         bam_utils_handle.bam_split(bam_file, bai_file, chromosome, bam_tmp_file)
 
@@ -236,7 +236,10 @@ class macs2(Tool):
         command_line = command_line + ' -n ' + name + '_out --outdir ' + output_dir
 
         logger.info("MACS2 - NAME: " + name)
-        logger.info("Output Files: " + narrowpeak, summits_bed, broadpeak, gappedpeak)
+        logger.info("Output Files: " + narrowpeak)
+        logger.info("Output Files: " + summits_bed)
+        logger.info("Output Files: " + broadpeak)
+        logger.info("Output Files: " + gappedpeak)
         logger.info("MACS2 COMMAND LINE: " + command_line)
 
         if os.path.isfile(bam_tmp_file) is False or os.path.getsize(bam_tmp_file) == 0:
@@ -390,6 +393,7 @@ class macs2(Tool):
             )
 
         chr_list = bam_utils_handle.bam_list_chromosomes(input_files['bam'])
+        chr_list = compss_wait_on(chr_list)
 
         logger.info("MACS2 COMMAND PARAMS: " + ", ".join(command_params))
 

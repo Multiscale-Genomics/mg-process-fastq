@@ -389,7 +389,6 @@ class bowtie2AlignerTool(Tool):
         output_metadata = {}
 
         output_bam_file = output_files["output"]
-        output_bam_file = output_files["bai"]
 
         logger.info("BOWTIE2 ALIGNER: Aligning sequence reads to the genome")
 

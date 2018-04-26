@@ -190,14 +190,12 @@ class bamUtils(object):
         bam_file_out : str
             Location of the output bam file
         """
-        bam_file_handle = pysam.AlignmentFile(bam_file_in, "rb")  # pylint: disable=no-member
+        bam_file_handle = pysam.AlignmentFile(bam_file_in, "rb", index_filename=bai_file)  # pylint: disable=no-member
         new_header = bam_file_handle.header
         new_header_sq = [chrom for chrom in new_header["SQ"] if chrom["SN"] == chromosome]
         new_header["SQ"] = new_header_sq
 
-        with pysam.AlignmentFile(  # pylint: disable=no-member
-            bam_file_out, "wb", header=new_header, index_filename=bai_file
-        ) as out_bam_f:
+        with pysam.AlignmentFile(bam_file_out, "wb", header=new_header) as out_bam_f:  # pylint: disable=no-member
             for read in bam_file_handle.fetch(reference=chromosome):
                 out_bam_f.write(read)
 

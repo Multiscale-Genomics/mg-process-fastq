@@ -228,12 +228,12 @@ class process_chipseq(Workflow):
 
         # MACS2 to call peaks
         macs_caller = macs2(self.configuration)
-        macs_inputs = {"input": output_files_generated["filtered"]}
-        macs_metadt = {"input": output_metadata['filtered']}
+        macs_inputs = {"bam": output_files_generated["filtered"]}
+        macs_metadt = {"bam": output_metadata['filtered']}
 
         if "bg_loc" in input_files:
-            macs_inputs["background"] = output_files_generated["filtered_bg"]
-            macs_metadt["background"] = output_metadata['filtered_bg']
+            macs_inputs["bam_bg"] = output_files_generated["filtered_bg"]
+            macs_metadt["bam_bg"] = output_metadata['filtered_bg']
 
         m_results_files, m_results_meta = macs_caller.run(
             macs_inputs, macs_metadt,

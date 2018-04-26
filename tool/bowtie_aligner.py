@@ -389,6 +389,7 @@ class bowtie2AlignerTool(Tool):
         output_metadata = {}
 
         output_bam_file = output_files["output"]
+        output_bam_file = output_files["bai"]
 
         logger.info("BOWTIE2 ALIGNER: Aligning sequence reads to the genome")
 
@@ -425,6 +426,9 @@ class bowtie2AlignerTool(Tool):
 
         logger.info("Copying bam file into the output file")
         bam_handle.bam_copy(output_bam_list[0], output_bam_file)
+
+        logger.info("Creating output bam index file")
+        bam_handle.bam_index(output_bam_file, output_bai_file)
 
         logger.info("BOWTIE2 ALIGNER: Alignments complete")
 

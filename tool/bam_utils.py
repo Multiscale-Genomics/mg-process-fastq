@@ -176,7 +176,7 @@ class bamUtils(object):
         ]
 
     @staticmethod
-    def bam_split(bam_file_in, chromosome, bam_file_out):
+    def bam_split(bam_file_in, bai_file, chromosome, bam_file_out):
         """
         Wrapper to extract a single chromosomes worth of reading into a new bam
         file

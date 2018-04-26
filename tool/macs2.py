@@ -65,7 +65,9 @@ class macs2(Tool):
         returns=int,
         name=IN,
         bam_file=FILE_IN,
+        bai_file=FILE_IN,
         bam_file_bgd=FILE_IN,
+        bai_file_bgd=FILE_IN,
         macs_params=IN,
         narrowpeak=FILE_OUT,
         summits_bed=FILE_OUT,
@@ -74,7 +76,7 @@ class macs2(Tool):
         chromosome=IN,
         isModifier=False)
     def macs2_peak_calling(  # pylint: disable=no-self-use
-            self, name, bam_file, bam_file_bgd, macs_params,
+            self, name, bam_file, bai_file, bam_file_bgd, bai_file_bgd, macs_params,
             narrowpeak, summits_bed, broadpeak, gappedpeak, chromosome): # pylint: disable=unused-argument
         """
         Function to run MACS2 for peak calling on aligned sequence files and
@@ -110,7 +112,15 @@ class macs2(Tool):
         od_list = bam_file.split("/")
         output_dir = "/".join(od_list[0:-1])
 
-        bgd_command = '-c ' + bam_file_bgd
+        from tool.bam_utils import bamUtils
+
+        bam_tmp_file = bam_file + "." + str(chromosome) + ".bam"
+        bam_bgd_tmp_file = bam_file_bgd + "." + str(chromosome) + ".bam"
+        bam_utils_handle = bamUtils()
+        bam_utils_handle.bam_split(bam_file, bai_file, chromosome, bam_tmp_file)
+        bam_utils_handle.bam_split(bam_file_bgd, bai_file_bgd, chromosome, bam_bgd_tmp_file)
+
+        bgd_command = '-c ' + bam_bgd_tmp_file
 
         command_param = [
             'macs2 callpeak', " ".join(macs_params), '-t', bam_file, '-n', name, bgd_command,
@@ -175,6 +185,7 @@ class macs2(Tool):
         returns=int,
         name=IN,
         bam_file=FILE_IN,
+        bai_file=FILE_IN,
         macs_params=IN,
         narrowpeak=FILE_OUT,
         summits_bed=FILE_OUT,
@@ -183,7 +194,7 @@ class macs2(Tool):
         chromosome=IN,
         isModifier=False)
     def macs2_peak_calling_nobgd(  # pylint: disable=too-many-arguments,no-self-use,too-many-branches
-            self, name, bam_file, macs_params,
+            self, name, bam_file, bai_file, macs_params,
             narrowpeak, summits_bed, broadpeak, gappedpeak, chromosome):  # pylint: disable=unused-argument
         """
         Function to run MACS2 for peak calling on aligned sequence files without
@@ -215,18 +226,21 @@ class macs2(Tool):
         od_list = bam_file.split("/")
         output_dir = "/".join(od_list[0:-1])
 
-        bam_utils_handle = bamUtilsTask()
-        bam_utils_handle.bam_list_chromosomes(bam_file)
+        from tool.bam_utils import bamUtils
 
-        command_line = "macs2 callpeak " + " ".join(macs_params) + " -t " + bam_file
+        bam_tmp_file = bam_file + "." + str(chromosome) + ".bam"
+        bam_utils_handle = bamUtils()
+        bam_utils_handle.bam_split(bam_file, bai_file, chromosome, bam_tmp_file)
+
+        command_line = "macs2 callpeak " + " ".join(macs_params) + " -t " + bam_tmp_file
         command_line = command_line + ' -n ' + name + '_out --outdir ' + output_dir
 
         logger.info("MACS2 - NAME: " + name)
         logger.info("Output Files: " + narrowpeak, summits_bed, broadpeak, gappedpeak)
         logger.info("MACS2 COMMAND LINE: " + command_line)
 
-        if os.path.isfile(bam_file) is False or os.path.getsize(bam_file) == 0:
-            logger.fatal("MISSING FILE: " + bam_file)
+        if os.path.isfile(bam_tmp_file) is False or os.path.getsize(bam_tmp_file) == 0:
+            logger.fatal("MISSING FILE: " + bam_tmp_file)
 
         try:
             args = shlex.split(command_line)
@@ -350,7 +364,7 @@ class macs2(Tool):
             List of matching metadata dict objects
 
         """
-        root_name = input_files['input'].split("/")
+        root_name = input_files['bam'].split("/")
         root_name[-1] = root_name[-1].replace('.bam', '')
         name = root_name[-1]
 
@@ -365,14 +379,26 @@ class macs2(Tool):
         command_params = self.get_macs2_params(self.configuration)
 
         bam_utils_handle = bamUtilsTask()
-        chr_list = bam_utils_handle.bam_list_chromosomes(input_files['input'])
+        bai_file = bam_utils_handle.bam_index(
+            input_files['bam'],
+            input_files['bam'] + '.bai'
+        )
+        if 'bam_bg' in input_files:
+            bai_file_bg = bam_utils_handle.bam_index(
+                input_files['bam_bg'],
+                input_files['bam_bg'] + '.bai'
+            )
+
+        chr_list = bam_utils_handle.bam_list_chromosomes(input_files['bam'])
 
         logger.info("MACS2 COMMAND PARAMS: " + ", ".join(command_params))
 
         for chromosome in chr_list:
-            if 'background' in input_files:
+            if 'bam_bg' in input_files:
                 self.macs2_peak_calling(
-                    name, str(input_files['input']), str(input_files['background']),
+                    name,
+                    str(input_files['bam']), str(input_files['bam']) + '.bai',
+                    str(input_files['bam_bg']), str(input_files['bam_bg']) + '.bai',
                     command_params,
                     str(output_files['narrow_peak']) + "." + str(chromosome),
                     str(output_files['summits']) + "." + str(chromosome),
@@ -381,7 +407,9 @@ class macs2(Tool):
                     chromosome)
             else:
                 self.macs2_peak_calling_nobgd(
-                    name, str(input_files['input']), command_params,
+                    name,
+                    str(input_files['bam']), str(input_files['bam']) + '.bai',
+                    command_params,
                     str(output_files['narrow_peak']) + "." + str(chromosome),
                     str(output_files['summits']) + "." + str(chromosome),
                     str(output_files['broad_peak']) + "." + str(chromosome),
@@ -438,14 +466,17 @@ class macs2(Tool):
             ):
                 output_files_created[result_file] = output_files[result_file]
 
+                sources = [input_metadata["bam"].file_path]
+                if 'bam_bg' in input_files:
+                    sources.append(input_metadata["bam_bg"].file_path)
                 output_metadata[result_file] = Metadata(
                     data_type="data_chip_seq",
                     file_type="BED",
                     file_path=output_files[result_file],
-                    sources=[input_metadata['input'].file_path],
-                    taxon_id=input_metadata["input"].taxon_id,
+                    sources=sources,
+                    taxon_id=input_metadata["bam"].taxon_id,
                     meta_data={
-                        "assembly": input_metadata["input"].meta_data["assembly"],
+                        "assembly": input_metadata["bam"].meta_data["assembly"],
                         "tool": "macs2",
                         "bed_type": output_bed_types[result_file]
                     }

@@ -39,6 +39,7 @@ except ImportError:
 
 from basic_modules.metadata import Metadata
 from basic_modules.tool import Tool
+from tool.bam_utils import bamUtilsTask
 
 
 # ------------------------------------------------------------------------------
@@ -70,10 +71,11 @@ class macs2(Tool):
         summits_bed=FILE_OUT,
         broadpeak=FILE_OUT,
         gappedpeak=FILE_OUT,
+        chromosome=IN,
         isModifier=False)
     def macs2_peak_calling(  # pylint: disable=no-self-use
             self, name, bam_file, bam_file_bgd, macs_params,
-            narrowpeak, summits_bed, broadpeak, gappedpeak): # pylint: disable=unused-argument
+            narrowpeak, summits_bed, broadpeak, gappedpeak, chromosome): # pylint: disable=unused-argument
         """
         Function to run MACS2 for peak calling on aligned sequence files and
         normalised against a provided background set of alignments.
@@ -169,12 +171,20 @@ class macs2(Tool):
 
         return 0
 
-    @task(returns=int, name=IN, bam_file=FILE_IN, macs_params=IN,
-          narrowpeak=FILE_OUT, summits_bed=FILE_OUT, broadpeak=FILE_OUT,
-          gappedpeak=FILE_OUT, isModifier=False)
+    @task(
+        returns=int,
+        name=IN,
+        bam_file=FILE_IN,
+        macs_params=IN,
+        narrowpeak=FILE_OUT,
+        summits_bed=FILE_OUT,
+        broadpeak=FILE_OUT,
+        gappedpeak=FILE_OUT,
+        chromosome=IN,
+        isModifier=False)
     def macs2_peak_calling_nobgd(  # pylint: disable=too-many-arguments,no-self-use,too-many-branches
             self, name, bam_file, macs_params,
-            narrowpeak, summits_bed, broadpeak, gappedpeak):  # pylint: disable=unused-argument
+            narrowpeak, summits_bed, broadpeak, gappedpeak, chromosome):  # pylint: disable=unused-argument
         """
         Function to run MACS2 for peak calling on aligned sequence files without
         a background dataset for normalisation.
@@ -204,6 +214,9 @@ class macs2(Tool):
         """
         od_list = bam_file.split("/")
         output_dir = "/".join(od_list[0:-1])
+
+        bam_utils_handle = bamUtilsTask()
+        bam_utils_handle.bam_list_chromosomes(bam_file)
 
         command_line = "macs2 callpeak " + " ".join(macs_params) + " -t " + bam_file
         command_line = command_line + ' -n ' + name + '_out --outdir ' + output_dir
@@ -351,6 +364,11 @@ class macs2(Tool):
 
         command_params = self.get_macs2_params(self.configuration)
 
+        bam_utils_handle = bamUtilsTask()
+        logger.info("BAM FILE: " + input_files['input'])
+        chr_list = bam_utils_handle.bam_list_chromosomes(input_files['input'])
+        logger.info("BAM CHROMOSOMES: " + ", ".join(chr_list))
+
         logger.info("MACS2 COMMAND PARAMS: " + ", ".join(command_params))
 
         # handle error
@@ -359,12 +377,14 @@ class macs2(Tool):
                 name, str(input_files['input']), str(input_files['background']),
                 command_params,
                 str(output_files['narrow_peak']), str(output_files['summits']),
-                str(output_files['broad_peak']), str(output_files['gapped_peak']))
+                str(output_files['broad_peak']), str(output_files['gapped_peak']),
+                None)
         else:
             self.macs2_peak_calling_nobgd(
                 name, str(input_files['input']), command_params,
                 str(output_files['narrow_peak']), str(output_files['summits']),
-                str(output_files['broad_peak']), str(output_files['gapped_peak']))
+                str(output_files['broad_peak']), str(output_files['gapped_peak']),
+                None)
         # results = compss_wait_on(results)
 
         # if results > 0:

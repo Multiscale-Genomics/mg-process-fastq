@@ -169,10 +169,10 @@ class bamUtils(object):
             List of the names of the chromosomes that are present in the bam file
         """
         bam_file_handle = pysam.AlignmentFile(bam_file, "rb")  # pylint: disable=no-member
-        if "SN" not in bam_file_handle.header:
+        if "SQ" not in bam_file_handle.header:
             return []
         return [
-            chromosome["SN"] for chromosome in bam_file_handle(bam_file, "rb").header["SQ"]
+            chromosome["SN"] for chromosome in bam_file_handle.header["SQ"]
         ]
 
     @staticmethod
@@ -264,7 +264,7 @@ class bamUtilsTask(object):
         """
         logger.info("BAM @task Utils")
 
-    @task(bam_file=FILE_IN, chromosome_list=OUT)
+    @task(returns=list, bam_file=FILE_IN)
     def bam_list_chromosomes(self, bam_file):  # pylint: disable=no-self-use
         """
         Wrapper to get the list of chromosomes in a given bam file
@@ -280,8 +280,7 @@ class bamUtilsTask(object):
             List of the chromosomes in the bam file
         """
         bam_handle = bamUtils()
-        chromosome_list = bam_handle.bam_list_chromosomes(bam_file)
-        return chromosome_list
+        return bam_handle.bam_list_chromosomes(bam_file)
 
     @task(bam_file=FILE_INOUT)
     def bam_sort(self, bam_file):  # pylint: disable=no-self-use

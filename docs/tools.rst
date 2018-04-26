@@ -86,17 +86,6 @@ Tools for processing FastQ files
       :members:
 
 
-   File Manipultation
-   ==================
-   .. autoclass:: tool.fastq_splitter.fastq_splitter
-      :members:
-      
-   Trim Galore
-   -----------   
-   .. autoclass:: tool.trimgalore.trimgalore
-      :members:
-   
-
    Filters
    =======
 
@@ -110,7 +99,12 @@ Tools for processing FastQ files
    .. autoclass:: tool.bs_seeker_filter.filterReadsTool
       :members:
 
+   Trim Galore
+   -----------   
+   .. autoclass:: tool.trimgalore.trimgalore
+      :members:
 
+   
    Peak Calling
    ============
 

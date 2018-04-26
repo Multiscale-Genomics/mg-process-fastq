@@ -99,7 +99,7 @@ class trimgalore(Tool):
         print (os.path.getsize(fastq_file_out))
 
         # Output file name used by TrimGalore
-        tg_tmp_out = fastq_file_in.replace(".fastq", "_trimmed.fq")
+        #tg_tmp_out = fastq_file_in.replace(".fastq", "_trimmed.fq")
 
         #try:
         #    with open(fastq_file_out, "wb") as f_out:

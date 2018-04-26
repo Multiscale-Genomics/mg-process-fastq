@@ -134,10 +134,12 @@ def test_trim_galore_pipeline_02():
 
     # Checks that the returned files matches the expected set of results
     assert len(tg_files) == 2
+    print (tg_meta)
 
     # Add tests for all files created
     for f_out in tg_files:
         print("TRIM GALORE RESULTS FILE:", f_out)
         assert tg_files[f_out] == files_out[f_out]
+        assert f_out in tg_meta
         assert os.path.isfile(tg_files[f_out]) is True
         assert os.path.getsize(tg_files[f_out]) > 0

@@ -85,7 +85,7 @@ class trimgalore(Tool):
 
         command_line = "trim_galore " + " ".join(params) \
         + " " + fastq_file_in + " -o " + "tests/data/"
-        
+
         logger.info("TRIM GALORE: command_line: " + command_line)
 
         try:
@@ -140,7 +140,8 @@ class trimgalore(Tool):
             Indicator of the success of the function
         """
 
-        command_line = "trim_galore " + " ".join(params) + " " + fastq1_file_in + " " + fastq2_file_in
+        command_line = "trim_galore " + " ".join(params) \
+        + " " + fastq1_file_in + " " + fastq2_file_in
         logger.info("TRIM GALORE: command_line: " + command_line)
 
         try:

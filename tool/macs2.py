@@ -371,27 +371,27 @@ class macs2(Tool):
 
         logger.info("MACS2 COMMAND PARAMS: " + ", ".join(command_params))
 
-        # handle error
-        if 'background' in input_files:
-            self.macs2_peak_calling(
-                name, str(input_files['input']), str(input_files['background']),
-                command_params,
-                str(output_files['narrow_peak']), str(output_files['summits']),
-                str(output_files['broad_peak']), str(output_files['gapped_peak']),
-                None)
-        else:
-            self.macs2_peak_calling_nobgd(
-                name, str(input_files['input']), command_params,
-                str(output_files['narrow_peak']), str(output_files['summits']),
-                str(output_files['broad_peak']), str(output_files['gapped_peak']),
-                None)
-        # results = compss_wait_on(results)
+        for chromosome in chr_list:
+            if 'background' in input_files:
+                self.macs2_peak_calling(
+                    name, str(input_files['input']), str(input_files['background']),
+                    command_params,
+                    str(output_files['narrow_peak']) + "." + str(chromosome),
+                    str(output_files['summits']) + "." + str(chromosome),
+                    str(output_files['broad_peak']) + "." + str(chromosome),
+                    str(output_files['gapped_peak']) + "." + str(chromosome),
+                    chromosome)
+            else:
+                self.macs2_peak_calling_nobgd(
+                    name, str(input_files['input']), command_params,
+                    str(output_files['narrow_peak']) + "." + str(chromosome),
+                    str(output_files['summits']) + "." + str(chromosome),
+                    str(output_files['broad_peak']) + "." + str(chromosome),
+                    str(output_files['gapped_peak']) + "." + str(chromosome),
+                    chromosome)
 
-        # if results > 0:
-        #     logger.fatal("MACS2 failed with error: {}", results)
-        #     return (
-        #         {}, {}
-        #     )
+        # Merge the results files into single files.
+
 
         output_files_created = {}
         output_metadata = {}

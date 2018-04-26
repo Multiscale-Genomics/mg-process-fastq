@@ -28,14 +28,14 @@ try:
         raise ImportError
     from pycompss.api.parameter import FILE_IN, FILE_OUT, IN
     from pycompss.api.task import task
-    # from pycompss.api.api import compss_wait_on
+    from pycompss.api.api import compss_open
 except ImportError:
     logger.warn("[Warning] Cannot import \"pycompss\" API packages.")
     logger.warn("          Using mock decorators.")
 
     from utils.dummy_pycompss import FILE_IN, FILE_OUT, IN  # pylint: disable=ungrouped-imports
     from utils.dummy_pycompss import task  # pylint: disable=ungrouped-imports
-    # from utils.dummy_pycompss import compss_wait_on  # pylint: disable=ungrouped-imports
+    from utils.dummy_pycompss import compss_open  # pylint: disable=ungrouped-imports
 
 from basic_modules.metadata import Metadata
 from basic_modules.tool import Tool
@@ -391,7 +391,45 @@ class macs2(Tool):
                     chromosome)
 
         # Merge the results files into single files.
-
+        with open(output_files['narrow_peak'], 'w') as file_np_handle:
+            with open(output_files['summits'], 'w') as file_s_handle:
+                with open(output_files['broad_peak'], 'w') as file_bp_handle:
+                    with open(output_files['gapped_peak'], 'w') as file_gp_handle:
+                        for chromosome in chr_list:
+                            if hasattr(sys, '_run_from_cmdl') is True:
+                                with open(
+                                    output_files['narrow_peak'] + "." + str(chromosome), 'rb'
+                                ) as file_in_handle:
+                                    file_np_handle.write(file_in_handle.read())
+                                with open(
+                                    output_files['summits'] + "." + str(chromosome), 'rb'
+                                ) as file_in_handle:
+                                    file_s_handle.write(file_in_handle.read())
+                                with open(
+                                    output_files['broad_peak'] + "." + str(chromosome), 'rb'
+                                ) as file_in_handle:
+                                    file_bp_handle.write(file_in_handle.read())
+                                with open(
+                                    output_files['gapped_peak'] + "." + str(chromosome), 'rb'
+                                ) as file_in_handle:
+                                    file_gp_handle.write(file_in_handle.read())
+                            else:
+                                with compss_open(
+                                    output_files['narrow_peak'] + "." + str(chromosome), 'rb'
+                                ) as file_in_handle:
+                                    file_np_handle.write(file_in_handle.read())
+                                with compss_open(
+                                    output_files['summits'] + "." + str(chromosome), 'rb'
+                                ) as file_in_handle:
+                                    file_s_handle.write(file_in_handle.read())
+                                with compss_open(
+                                    output_files['broad_peak'] + "." + str(chromosome), 'rb'
+                                ) as file_in_handle:
+                                    file_bp_handle.write(file_in_handle.read())
+                                with compss_open(
+                                    output_files['gapped_peak'] + "." + str(chromosome), 'rb'
+                                ) as file_in_handle:
+                                    file_gp_handle.write(file_in_handle.read())
 
         output_files_created = {}
         output_metadata = {}

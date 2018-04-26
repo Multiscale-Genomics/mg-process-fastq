@@ -24,7 +24,7 @@ from utils import logger
 try:
     if hasattr(sys, '_run_from_cmdl') is True:
         raise ImportError
-    from pycompss.api.parameter import FILE_IN, FILE_OUT, FILE_INOUT, OUT
+    from pycompss.api.parameter import FILE_IN, FILE_OUT, FILE_INOUT
     from pycompss.api.task import task
     from pycompss.api.api import barrier
 except ImportError:

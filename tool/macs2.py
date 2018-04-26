@@ -365,9 +365,7 @@ class macs2(Tool):
         command_params = self.get_macs2_params(self.configuration)
 
         bam_utils_handle = bamUtilsTask()
-        logger.info("BAM FILE: " + input_files['input'])
         chr_list = bam_utils_handle.bam_list_chromosomes(input_files['input'])
-        logger.info("BAM CHROMOSOMES: " + ", ".join(chr_list))
 
         logger.info("MACS2 COMMAND PARAMS: " + ", ".join(command_params))
 

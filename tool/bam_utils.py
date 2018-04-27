@@ -18,6 +18,7 @@ from __future__ import print_function
 import os
 import sys
 import pysam
+import subprocess
 
 from utils import logger
 
@@ -176,7 +177,7 @@ class bamUtils(object):
         ]
 
     @staticmethod
-    def bam_split(bam_file_in, bai_file, chromosome, bam_file_out):
+    def bam_split(bam_file_in, bai_file, chromosome, bam_file_out):  # pylint: disable=unused-argument
         """
         Wrapper to extract a single chromosomes worth of reading into a new bam
         file
@@ -185,19 +186,49 @@ class bamUtils(object):
         ----------
         bam_file_in : str
             Location of the input bam file
+        bai_file : str
+            Location of the bam index file. This needs to be in the same directory
+            as the bam_file_in
         chromosome : str
             Name of the chromosome whose alignments are to be extracted
         bam_file_out : str
             Location of the output bam file
         """
-        bam_file_handle = pysam.AlignmentFile(bam_file_in, "rb", index_filename=bai_file)  # pylint: disable=no-member
-        new_header = bam_file_handle.header
-        new_header_sq = [chrom for chrom in new_header["SQ"] if chrom["SN"] == chromosome]
-        new_header["SQ"] = new_header_sq
 
-        with pysam.AlignmentFile(bam_file_out, "wb", header=new_header) as out_bam_f:  # pylint: disable=no-member
-            for read in bam_file_handle.fetch(reference=chromosome):
-                out_bam_f.write(read)
+        # Extract the subsection from the bam file using samtools
+        cmd_view_1 = ' '.join([
+            'samtools view',
+            '-h',
+            '-o', bam_file_in + ".sam",
+            bam_file_in,
+            chromosome
+        ])
+
+        #
+        cmd_view_2 = ' '.join([
+            'samtools view',
+            '-b',
+            '-o', bam_file_out,
+            bam_file_in + ".sam"
+        ])
+
+        try:
+            logger.info("EXTRACT SAM COMMAND: " + cmd_view_1)
+            process = subprocess.Popen(cmd_view_1, shell=True)
+            process.wait()
+        except (IOError, OSError) as msg:
+            logger.info("I/O error({0}): {1}\n{2}".format(
+                msg.errno, msg.strerror, cmd_view_1))
+            return False
+
+        try:
+            logger.info("CREATE BAM COMMAND: " + cmd_view_2)
+            process = subprocess.Popen(cmd_view_2, shell=True)
+            process.wait()
+        except (IOError, OSError) as msg:
+            logger.info("I/O error({0}): {1}\n{2}".format(
+                msg.errno, msg.strerror, cmd_view_2))
+            return False
 
         return True
 

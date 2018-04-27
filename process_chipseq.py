@@ -217,8 +217,8 @@ class process_chipseq(Workflow):
             )
 
             try:
-                output_files_generated["filtered_bg"] = b3f_bg_files["filtered_bg"]
-                output_metadata["filtered_bg"] = b3f_bg_meta["filtered_bg"]
+                output_files_generated["filtered_bg"] = b3f_bg_files["bam"]
+                output_metadata["filtered_bg"] = b3f_bg_meta["bam"]
 
                 tool_name = output_metadata['filtered_bg'].meta_data['tool']
                 output_metadata['filtered_bg'].meta_data['tool_description'] = tool_name

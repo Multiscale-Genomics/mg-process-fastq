@@ -143,7 +143,22 @@ class bamUtils(object):
         bam_idx_file : str
             Location of the bam index file (.bai)
         """
-        pysam.index(bam_file, bam_file + "_tmp.bai")  # pylint: disable=no-member
+
+        cmd_view = ' '.join([
+            'samtools index',
+            '-b',
+            bam_file,
+            bam_file + "_tmp.bai"
+        ])
+
+        try:
+            logger.info("INDEX BAM COMMAND: " + cmd_view)
+            process = subprocess.Popen(cmd_view, shell=True)
+            process.wait()
+        except (IOError, OSError) as msg:
+            logger.info("I/O error({0}): {1}\n{2}".format(
+                msg.errno, msg.strerror, cmd_view))
+            return False
 
         try:
             with open(bam_file + "_tmp.bai", "rb") as f_in:

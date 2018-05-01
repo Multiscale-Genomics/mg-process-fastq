@@ -139,6 +139,14 @@ class fastq_splitter(Tool):
         fqr.closeFastQ()
         fqr.closeOutputFiles()
 
+        fqgz_files = []
+        for fq_file in files_out:
+            command_line = 'pigz ' + "/".join(file_loc_1[:-1]) + '/' + fq_file[0]
+            args = shlex.split(command_line)
+            process = subprocess.Popen(args)
+            process.wait()
+            fqgz_files.append([fq_file[0] + ".gz"])
+
         untar_idx = True
         if "no-untar" in self.configuration and self.configuration["no-untar"] is True:
             untar_idx = False
@@ -148,6 +156,8 @@ class fastq_splitter(Tool):
 
             if os.path.isfile(out_file):
                 os.remove(out_file)
+
+            print("FILE ADDED TO TAR:", "/".join(file_loc_1[:-1]))
             tar = tarfile.open(output_file_pregz, "w")
             tar.add("/".join(file_loc_1[:-1]), arcname='tmp')
             tar.close()
@@ -164,7 +174,7 @@ class fastq_splitter(Tool):
                 process = subprocess.Popen(args)
                 process.wait()
 
-        return files_out
+        return fqgz_files
 
     @task(
         in_file1=FILE_IN, in_file2=FILE_IN, tag=IN,
@@ -262,6 +272,18 @@ class fastq_splitter(Tool):
 
         fqr.closeFastQ()
         fqr.closeOutputFiles()
+
+        fqgz_files = []
+        for fq_file in files_out:
+            command_line = 'pigz ' + "/".join(file_loc_1[:-1]) + '/' + fq_file[0]
+            args = shlex.split(command_line)
+            process = subprocess.Popen(args)
+            process.wait()
+            command_line = 'pigz ' + "/".join(file_loc_1[:-1]) + '/' + fq_file[1]
+            args = shlex.split(command_line)
+            process = subprocess.Popen(args)
+            process.wait()
+            fqgz_files.append([fq_file[0] + ".gz", fq_file[1] + ".gz"])
 
         output_file_pregz = out_file.replace('.tar.gz', '.tar')
 

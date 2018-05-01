@@ -22,6 +22,7 @@ import os.path
 
 from utils import logger
 from tool.common import cd
+from tool.bam_utils import bamUtils
 
 
 class alignerUtils(object):
@@ -189,8 +190,8 @@ class alignerUtils(object):
         ] + reads)
 
         cmd_view = ' '.join([
-            'samtools view',
-            '-b',
+            'samtools sort',
+            '-O bam',
             '-o', bam_loc,
             reads_file_1 + '.sam'
         ])
@@ -245,8 +246,8 @@ class alignerUtils(object):
         ])
 
         cmd_view = ' '.join([
-            'samtools view',
-            '-b',
+            'samtools sort',
+            '-O bam',
             '-o', bam_loc,
             reads_file + '.sam'
         ])
@@ -303,7 +304,6 @@ class alignerUtils(object):
             genome_file, reads_file_2
         ])
 
-
         cmd_samse = ' '.join([
             'bwa sampe',
             '-f', reads_file_1 + '.sam',
@@ -313,8 +313,8 @@ class alignerUtils(object):
         ])
 
         cmd_view = ' '.join([
-            'samtools view',
-            '-b',
+            'samtools sort',
+            '-O bam',
             '-o', bam_loc,
             reads_file_1 + '.sam'
         ])
@@ -360,8 +360,8 @@ class alignerUtils(object):
         ] + reads)
 
         cmd_view = ' '.join([
-            'samtools view',
-            '-b',
+            'samtools sort',
+            '-O bam',
             '-o', bam_loc,
             reads_file_1 + '.sam'
         ])

@@ -23,6 +23,7 @@ import subprocess
 import sys
 import re
 import tarfile
+import multiprocessing
 
 from utils import logger
 
@@ -71,6 +72,28 @@ class fastq_splitter(Tool):
             configuration = {}
 
         self.configuration.update(configuration)
+
+    def _compress_file_mp(self, file_in):
+        """
+        Function to compress a given file using pigz. If pigz is not installed
+        then gzip is used.
+
+        Parameters
+        ----------
+        file_in : str
+            Input file
+        """
+        try:
+            command_line = 'pigz ' + file_in
+            args = shlex.split(command_line)
+            process = subprocess.Popen(args)
+            process.wait()
+        except OSError:
+            logger.warn("OSERROR: pigz not installed, using gzip")
+            command_line = 'gzip ' + file_in
+            args = shlex.split(command_line)
+            process = subprocess.Popen(args)
+            process.wait()
 
     @task(
         in_file1=FILE_IN, tag=IN,
@@ -143,10 +166,7 @@ class fastq_splitter(Tool):
 
         fqgz_files = []
         for fq_file in files_out:
-            command_line = 'pigz ' + "/".join(file_loc_1[:-1]) + '/' + fq_file[0]
-            args = shlex.split(command_line)
-            process = subprocess.Popen(args)
-            process.wait()
+            self._compress_file_mp("/".join(file_loc_1[:-1]) + '/' + fq_file[0])
             fqgz_files.append([fq_file[0] + ".gz"])
 
         untar_idx = True
@@ -163,17 +183,7 @@ class fastq_splitter(Tool):
             tar.add("/".join(file_loc_1[:-1]), arcname=tag)
             tar.close()
 
-            try:
-                command_line = 'pigz ' + output_file_pregz
-                args = shlex.split(command_line)
-                process = subprocess.Popen(args)
-                process.wait()
-            except OSError:
-                logger.warn("OSERROR: pigz not installed, using gzip")
-                command_line = 'gzip ' + output_file_pregz
-                args = shlex.split(command_line)
-                process = subprocess.Popen(args)
-                process.wait()
+            self._compress_file_mp(output_file_pregz)
 
         return fqgz_files
 
@@ -278,14 +288,24 @@ class fastq_splitter(Tool):
 
         fqgz_files = []
         for fq_file in files_out:
-            command_line = 'pigz ' + "/".join(file_loc_1[:-1]) + '/' + fq_file[0]
-            args = shlex.split(command_line)
-            process = subprocess.Popen(args)
-            process.wait()
-            command_line = 'pigz ' + "/".join(file_loc_1[:-1]) + '/' + fq_file[1]
-            args = shlex.split(command_line)
-            process = subprocess.Popen(args)
-            process.wait()
+            fq_file_1 = "/".join(file_loc_1[:-1]) + '/' + fq_file[0]
+            fq_file_2 = "/".join(file_loc_1[:-1]) + '/' + fq_file[1]
+
+            f1_proc = multiprocessing.Process(
+                name='fastq_1', target=self._compress_file_mp,
+                args=(fq_file_1,)
+            )
+            f2_proc = multiprocessing.Process(
+                name='fastq_2', target=self._compress_file_mp,
+                args=(fq_file_2,)
+            )
+
+            f1_proc.start()
+            f2_proc.start()
+
+            f1_proc.join()
+            f2_proc.join()
+
             fqgz_files.append([fq_file[0] + ".gz", fq_file[1] + ".gz"])
 
         output_file_pregz = out_file.replace('.tar.gz', '.tar')
@@ -301,17 +321,7 @@ class fastq_splitter(Tool):
             tar.add("/".join(file_loc_1[:-1]), arcname=tag)
             tar.close()
 
-            try:
-                command_line = 'pigz ' + output_file_pregz
-                args = shlex.split(command_line)
-                process = subprocess.Popen(args)
-                process.wait()
-            except OSError:
-                logger.warn("OSERROR: pigz not installed, using gzip")
-                command_line = 'gzip ' + output_file_pregz
-                args = shlex.split(command_line)
-                process = subprocess.Popen(args)
-                process.wait()
+            self._compress_file_mp(output_file_pregz)
 
         return fqgz_files
 

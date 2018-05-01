@@ -118,13 +118,14 @@ def test_bwa_aligner_aln():
 
     try:
         os.remove(resource_path + "macs2.Human.DRR000150.22_mem.bam")
-    except OSError, e:
-        print("Error: %s - %s." % (e.filename, e.strerror))
+    except OSError, ose:
+        print("Error: %s - %s." % (ose.filename, ose.strerror))
 
     try:
         shutil.rmtree(resource_path + "tmp")
-    except OSError, e:
-        print("Error: %s - %s." % (e.filename, e.strerror))
+    except OSError, ose:
+        print("Error: %s - %s." % (ose.filename, ose.strerror))
+
 
 @pytest.mark.bwa
 def test_bwa_aligner_mem():
@@ -172,13 +173,14 @@ def test_bwa_aligner_mem():
 
     try:
         os.remove(resource_path + "macs2.Human.DRR000150.22_mem.bam")
-    except OSError, e:
-        print("Error: %s - %s." % (e.filename, e.strerror))
+    except OSError, ose:
+        print("Error: %s - %s." % (ose.filename, ose.strerror))
 
     try:
         shutil.rmtree(resource_path + "tmp")
-    except OSError, e:
-        print("Error: %s - %s." % (e.filename, e.strerror))
+    except OSError, ose:
+        print("Error: %s - %s." % (ose.filename, ose.strerror))
+
 
 @pytest.mark.bwa
 def test_bwa_aligner_00():
@@ -200,6 +202,7 @@ def test_bwa_aligner_00():
     assert os.path.getsize(fastq_file_1) > 0
     assert os.path.isfile(fastq_file_2) is True
     assert os.path.getsize(fastq_file_2) > 0
+
 
 @pytest.mark.bwa
 def test_bwa_aligner_aln_paired():
@@ -253,13 +256,14 @@ def test_bwa_aligner_aln_paired():
 
     try:
         os.remove(resource_path + "bsSeeker.Mouse.SRR892982_1_aln.bam")
-    except OSError, e:
-        print("Error: %s - %s." % (e.filename, e.strerror))
+    except OSError, ose:
+        print("Error: %s - %s." % (ose.filename, ose.strerror))
 
     try:
         shutil.rmtree(resource_path + "tmp")
-    except OSError, e:
-        print("Error: %s - %s." % (e.filename, e.strerror))
+    except OSError, ose:
+        print("Error: %s - %s." % (ose.filename, ose.strerror))
+
 
 @pytest.mark.bwa
 def test_bwa_aligner_mem_paired():
@@ -313,16 +317,17 @@ def test_bwa_aligner_mem_paired():
 
     try:
         os.remove(resource_path + "bsSeeker.Mouse.SRR892982_1_mem.bam")
-    except OSError, e:
-        print("Error: %s - %s." % (e.filename, e.strerror))
+    except OSError, ose:
+        print("Error: %s - %s." % (ose.filename, ose.strerror))
 
     try:
         shutil.rmtree(resource_path + "tmp")
-    except OSError, e:
-        print("Error: %s - %s." % (e.filename, e.strerror))
+    except OSError, ose:
+        print("Error: %s - %s." % (ose.filename, ose.strerror))
+
 
 @pytest.mark.idamidseq
-#@pytest.mark.bwa
+# @pytest.mark.bwa
 def test_bwa_aligner_idamidseq():
     """
     Function to test BWA Aligner
@@ -379,6 +384,7 @@ def test_bwa_aligner_idamidseq():
 
         assert os.path.isfile(fastq_file.replace(".fastq", ".bam")) is True
         assert os.path.getsize(fastq_file.replace(".fastq", ".bam")) > 0
+
 
 @pytest.mark.mnaseseq
 @pytest.mark.bwa

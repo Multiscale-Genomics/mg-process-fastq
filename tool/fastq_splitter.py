@@ -157,7 +157,6 @@ class fastq_splitter(Tool):
             if os.path.isfile(out_file):
                 os.remove(out_file)
 
-            print("FILE ADDED TO TAR:", "/".join(file_loc_1[:-1]))
             tar = tarfile.open(output_file_pregz, "w")
             tar.add("/".join(file_loc_1[:-1]), arcname='tmp')
             tar.close()
@@ -310,7 +309,7 @@ class fastq_splitter(Tool):
                 process = subprocess.Popen(args)
                 process.wait()
 
-        return files_out
+        return fqgz_files
 
     def run(self, input_files, input_metadata, output_files):
         """

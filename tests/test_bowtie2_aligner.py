@@ -87,6 +87,16 @@ def test_bowtie2_aligner_single():
     assert os.path.isfile(resource_path + "macs2.Human.DRR000150.22_bt2.bam") is True
     assert os.path.getsize(resource_path + "macs2.Human.DRR000150.22_bt2.bam") > 0
 
+    try:
+        os.remove(resource_path + "macs2.Human.DRR000150.22_bt2.bam")
+    except OSError, ose:
+        print("Error: %s - %s." % (ose.filename, ose.strerror))
+
+    try:
+        shutil.rmtree(resource_path + "tmp")
+    except OSError, ose:
+        print("Error: %s - %s." % (ose.filename, ose.strerror))
+
 @pytest.mark.bowtie2
 def test_bowtie2_aligner_paired():
     """
@@ -136,3 +146,13 @@ def test_bowtie2_aligner_paired():
 
     assert os.path.isfile(resource_path + "bsSeeker.Mouse.SRR892982_1_bt2.bam") is True
     assert os.path.getsize(resource_path + "bsSeeker.Mouse.SRR892982_1_bt2.bam") > 0
+
+    try:
+        os.remove(resource_path + "bsSeeker.Mouse.SRR892982_1_bt2.bam")
+    except OSError, ose:
+        print("Error: %s - %s." % (ose.filename, ose.strerror))
+
+    try:
+        shutil.rmtree(resource_path + "tmp")
+    except OSError, ose:
+        print("Error: %s - %s." % (ose.filename, ose.strerror))

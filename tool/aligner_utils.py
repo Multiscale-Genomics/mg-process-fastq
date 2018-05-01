@@ -22,7 +22,6 @@ import os.path
 
 from utils import logger
 from tool.common import cd
-from tool.bam_utils import bamUtils
 
 
 class alignerUtils(object):

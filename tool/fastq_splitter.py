@@ -20,6 +20,7 @@ from __future__ import print_function
 import os
 import shlex
 import subprocess
+import shutil
 import sys
 import re
 import tarfile
@@ -185,6 +186,8 @@ class fastq_splitter(Tool):
 
             self._compress_file_mp(output_file_pregz)
 
+            shutil.rmtree("/".join(file_loc_1[:-1]))
+
         return fqgz_files
 
     @task(
@@ -322,6 +325,8 @@ class fastq_splitter(Tool):
             tar.close()
 
             self._compress_file_mp(output_file_pregz)
+
+            shutil.rmtree("/".join(file_loc_1[:-1]))
 
         return fqgz_files
 

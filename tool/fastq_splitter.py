@@ -89,7 +89,9 @@ class fastq_splitter(Tool):
             DEFAULT = tmp
             Tag used to identify the files. Useful if this is getting run
             manually on a single machine multiple times to prevent collisions of
-            file names
+            file names. It is also the temporary directory used within the
+            compressed out_file containing the separated and compressed FASTQ
+            files.
 
 
         Returns
@@ -158,7 +160,7 @@ class fastq_splitter(Tool):
                 os.remove(out_file)
 
             tar = tarfile.open(output_file_pregz, "w")
-            tar.add("/".join(file_loc_1[:-1]), arcname='tmp')
+            tar.add("/".join(file_loc_1[:-1]), arcname=tag)
             tar.close()
 
             try:
@@ -194,7 +196,9 @@ class fastq_splitter(Tool):
             DEFAULT = tmp
             Tag used to identify the files. Useful if this is getting run
             manually on a single machine multiple times to prevent collisions of
-            file names
+            file names. It is also the temporary directory used within the
+            compressed out_file containing the separated and compressed FASTQ
+            files.
 
 
         Returns
@@ -260,12 +264,12 @@ class fastq_splitter(Tool):
                 file_loc_1 = fqr.fastq1.split("/")
                 new_suffix = "." + str(fqr.output_tag) + "_" + str(fqr.output_file_count) + ".fastq"
                 file_loc_1[-1] = re.sub('.fastq$', new_suffix, file_loc_1[-1])
-                file_loc_1.insert(-1, "tmp")
+                file_loc_1.insert(-1, tag)
 
                 file_loc_2 = fqr.fastq2.split("/")
                 new_suffix = "." + str(fqr.output_tag) + "_" + str(fqr.output_file_count) + ".fastq"
                 file_loc_2[-1] = re.sub('.fastq$', new_suffix, file_loc_2[-1])
-                file_loc_2.insert(-1, "tmp")
+                file_loc_2.insert(-1, tag)
 
                 files_out.append([file_loc_1[-1], file_loc_2[-1]])
 
@@ -294,7 +298,7 @@ class fastq_splitter(Tool):
             if os.path.isfile(out_file):
                 os.remove(out_file)
             tar = tarfile.open(output_file_pregz, "w")
-            tar.add("/".join(file_loc_1[:-1]), arcname='tmp')
+            tar.add("/".join(file_loc_1[:-1]), arcname=tag)
             tar.close()
 
             try:

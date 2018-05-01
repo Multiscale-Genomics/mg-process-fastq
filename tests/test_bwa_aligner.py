@@ -16,17 +16,18 @@
 """
 from __future__ import print_function
 
-import os.path
+import os
+import shutil
 import gzip
-import pytest # pylint: disable=unused-import
+import pytest  # pylint: disable=unused-import
 
 from basic_modules.metadata import Metadata
 
 from tool.bwa_aligner import bwaAlignerTool
 from tool.bwa_mem_aligner import bwaAlignerMEMTool
 
+
 @pytest.mark.chipseq
-@pytest.mark.bwa
 def test_bwa_aligner_chipseq_aln():
     """
     Function to test BWA Aligner
@@ -70,8 +71,63 @@ def test_bwa_aligner_chipseq_aln():
     assert os.path.isfile(resource_path + "macs2.Human.DRR000150.22_aln.bam") is True
     assert os.path.getsize(resource_path + "macs2.Human.DRR000150.22_aln.bam") > 0
 
+
 @pytest.mark.bwa
-def test_bwa_aligner_chipseq_mem():
+def test_bwa_aligner_aln():
+    """
+    Function to test BWA Aligner
+    """
+    resource_path = os.path.join(os.path.dirname(__file__), "data/")
+    genome_fa = resource_path + "macs2.Human.GCA_000001405.22.fasta"
+    fastq_file = resource_path + "macs2.Human.DRR000150.22.fastq"
+
+    input_files = {
+        "genome": genome_fa,
+        "index": genome_fa + ".bwa.tar.gz",
+        "loc": fastq_file
+    }
+
+    output_files = {
+        "output": fastq_file.replace(".fastq", "_aln.bam")
+    }
+
+    metadata = {
+        "genome": Metadata(
+            "Assembly", "fasta", genome_fa, None,
+            {"assembly": "test"}),
+        "index": Metadata(
+            "index_bwa", "", [genome_fa],
+            {
+                "assembly": "test",
+                "tool": "bwa_indexer"
+            }
+        ),
+        "loc": Metadata(
+            "data_chip_seq", "fastq", fastq_file, None,
+            {"assembly": "test"}
+        )
+    }
+
+    bwa_t = bwaAlignerTool()
+    bwa_t.run(input_files, metadata, output_files)
+
+    print(__file__)
+
+    assert os.path.isfile(resource_path + "macs2.Human.DRR000150.22_aln.bam") is True
+    assert os.path.getsize(resource_path + "macs2.Human.DRR000150.22_aln.bam") > 0
+
+    try:
+        os.remove(resource_path + "macs2.Human.DRR000150.22_mem.bam")
+    except OSError, e:
+        print("Error: %s - %s." % (e.filename, e.strerror))
+
+    try:
+        shutil.rmtree(resource_path + "tmp")
+    except OSError, e:
+        print("Error: %s - %s." % (e.filename, e.strerror))
+
+@pytest.mark.bwa
+def test_bwa_aligner_mem():
     """
     Function to test BWA Aligner
     """
@@ -113,6 +169,16 @@ def test_bwa_aligner_chipseq_mem():
 
     assert os.path.isfile(resource_path + "macs2.Human.DRR000150.22_mem.bam") is True
     assert os.path.getsize(resource_path + "macs2.Human.DRR000150.22_mem.bam") > 0
+
+    try:
+        os.remove(resource_path + "macs2.Human.DRR000150.22_mem.bam")
+    except OSError, e:
+        print("Error: %s - %s." % (e.filename, e.strerror))
+
+    try:
+        shutil.rmtree(resource_path + "tmp")
+    except OSError, e:
+        print("Error: %s - %s." % (e.filename, e.strerror))
 
 @pytest.mark.bwa
 def test_bwa_aligner_00():
@@ -185,6 +251,16 @@ def test_bwa_aligner_aln_paired():
     assert os.path.isfile(resource_path + "bsSeeker.Mouse.SRR892982_1_aln.bam") is True
     assert os.path.getsize(resource_path + "bsSeeker.Mouse.SRR892982_1_aln.bam") > 0
 
+    try:
+        os.remove(resource_path + "bsSeeker.Mouse.SRR892982_1_aln.bam")
+    except OSError, e:
+        print("Error: %s - %s." % (e.filename, e.strerror))
+
+    try:
+        shutil.rmtree(resource_path + "tmp")
+    except OSError, e:
+        print("Error: %s - %s." % (e.filename, e.strerror))
+
 @pytest.mark.bwa
 def test_bwa_aligner_mem_paired():
     """
@@ -234,6 +310,16 @@ def test_bwa_aligner_mem_paired():
 
     assert os.path.isfile(resource_path + "bsSeeker.Mouse.SRR892982_1_mem.bam") is True
     assert os.path.getsize(resource_path + "bsSeeker.Mouse.SRR892982_1_mem.bam") > 0
+
+    try:
+        os.remove(resource_path + "bsSeeker.Mouse.SRR892982_1_mem.bam")
+    except OSError, e:
+        print("Error: %s - %s." % (e.filename, e.strerror))
+
+    try:
+        shutil.rmtree(resource_path + "tmp")
+    except OSError, e:
+        print("Error: %s - %s." % (e.filename, e.strerror))
 
 @pytest.mark.idamidseq
 #@pytest.mark.bwa

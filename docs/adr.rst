@@ -36,3 +36,8 @@ The disabling of pylint test for determining if a function should be a static me
 -------------------------------
 
 Based on benchmarking of the pipeline the procedure for merging of bam files has been modified to get an optimal balance between running as much as possible in parallel vs the cost of spinning up new jobs to perform the merging. It was found that running each job merging 10 files provided the break even point between the cost of creating a new job and getting the maximum throughput through the system. It also reduces the number of iterative merge procedures which is beneficial when there are alignments that are difficult to merge.
+
+2018-05-01 - Compression of FASTQ
+---------------------------------
+
+Added compression of the split FASTQ files to reduce the amount of space required when processing the data.

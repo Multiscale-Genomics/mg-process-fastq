@@ -57,7 +57,7 @@
             "allow_multiple": false
         },
         {
-            "name": "index",
+            "name": "bai",
             "description": "BS Seeker2 Bowtie2 aligned reads index",
             "help": "path to a assembly sequence file",
             "file_type": ["bai"],

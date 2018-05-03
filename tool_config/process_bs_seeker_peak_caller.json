@@ -55,15 +55,6 @@
             "data_type": ["data_wgbs"],
             "required": true,
             "allow_multiple": false
-        },
-        {
-            "name": "bai",
-            "description": "BS Seeker2 Bowtie2 aligned reads index",
-            "help": "path to a assembly sequence file",
-            "file_type": ["bai"],
-            "data_type": ["data_wgbs"],
-            "required": true,
-            "allow_multiple": false
         }
     ],
     "input_files_combinations": [
@@ -72,8 +63,7 @@
             "fastq1",
             "fastq2",
             "index",
-            "bam",
-            "bai"
+            "bam"
         ]
     ],
     "arguments": [

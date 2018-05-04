@@ -19,6 +19,7 @@ from __future__ import print_function
 
 import os
 import shlex
+import shutil
 import subprocess
 import sys
 import tarfile
@@ -374,6 +375,9 @@ class bssAlignerTool(Tool):
         except IOError:
             logger.fatal("WGBS - BS SEEKER2: Failed sorting")
             return False
+
+        if untar_idx is True:
+            shutil.rmtree(g_dir)
 
         return True
 

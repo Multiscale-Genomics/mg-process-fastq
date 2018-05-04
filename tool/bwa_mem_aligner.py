@@ -32,8 +32,8 @@ except ImportError:
     logger.warn("[Warning] Cannot import \"pycompss\" API packages.")
     logger.warn("          Using mock decorators.")
 
-    from utils.dummy_pycompss import IN, FILE_IN, FILE_OUT # pylint: disable=ungrouped-imports
-    from utils.dummy_pycompss import task # pylint: disable=ungrouped-imports
+    from utils.dummy_pycompss import IN, FILE_IN, FILE_OUT  # pylint: disable=ungrouped-imports
+    from utils.dummy_pycompss import task  # pylint: disable=ungrouped-imports
     from utils.dummy_pycompss import compss_wait_on, compss_open  # pylint: disable=ungrouped-imports
 
 from basic_modules.tool import Tool
@@ -69,6 +69,24 @@ class bwaAlignerMEMTool(Tool):
             configuration = {}
 
         self.configuration.update(configuration)
+
+    def untar_index(self, genome_idx):
+        """
+        """
+        g_dir = genome_idx.split("/")
+        g_dir = "/".join(g_dir[:-1])
+
+        untar_idx = True
+        if "no-untar" in self.configuration and self.configuration["no-untar"] is True:
+            untar_idx = False
+
+        if untar_idx is True:
+            try:
+                tar = tarfile.open(genome_idx)
+                tar.extractall(path=g_dir)
+                tar.close()
+            except IOError:
+                return False
 
     @task(returns=bool, genome_file_loc=FILE_IN, read_file_loc=FILE_IN,
           bam_loc=FILE_OUT, genome_idx=FILE_IN, mem_params=IN, isModifier=False)
@@ -139,7 +157,8 @@ class bwaAlignerMEMTool(Tool):
             return False
 
         os.remove(out_bam)
-        #shutil.rmtree(g_dir)
+        if untar_idx is True:
+            shutil.rmtree(g_dir)
 
         return True
 
@@ -205,7 +224,8 @@ class bwaAlignerMEMTool(Tool):
         except IOError:
             return False
 
-        #shutil.rmtree(g_dir)
+        if untar_idx is True:
+            shutil.rmtree(g_dir)
 
         return True
 

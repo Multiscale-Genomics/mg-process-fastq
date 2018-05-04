@@ -14,7 +14,9 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 """
+
 from __future__ import print_function
+
 import os
 import sys
 import shutil
@@ -102,35 +104,35 @@ class bwaAlignerMEMTool(Tool):
         bool
             Boolena indicating if the task was successful
         """
-        g_dir = genome_idx.split("/")
-        g_dir = "/".join(g_dir[:-1])
-
-        untar_idx = True
         if "no-untar" in self.configuration and self.configuration["no-untar"] is True:
-            untar_idx = False
+            return True
 
-        if untar_idx is True:
-            try:
-                tar = tarfile.open(genome_idx)
-                tar.extractall(path=g_dir)
-                tar.close()
-            except IOError:
-                return False
+        try:
+            g_dir = genome_idx.split("/")
+            g_dir = "/".join(g_dir[:-1])
 
-        index_files = {
-            "amb": amb_file,
-            "ann": ann_file,
-            "bwt": bwt_file,
-            "pac": pac_file,
-            "sa": sa_file
-        }
+            tar = tarfile.open(genome_idx)
+            tar.extractall(path=g_dir)
+            tar.close()
 
-        gfl = genome_file_name.split("/")
-        gidx_folder = genome_idx.replace('.tar.gz', '/') + gfl[-1]
-        for suffix, output_file in index_files:
-            with open(output_file, "wb") as f_out:
-                with open(gidx_folder + suffix, "rb") as f_in:
-                    f_out.write(f_in.read())
+            index_files = {
+                "amb": amb_file,
+                "ann": ann_file,
+                "bwt": bwt_file,
+                "pac": pac_file,
+                "sa": sa_file
+            }
+
+            gfl = genome_file_name.split("/")
+            gidx_folder = genome_idx.replace('.tar.gz', '/') + gfl[-1]
+            for suffix in list(index_files.keys()):
+                with open(index_files[suffix], "wb") as f_out:
+                    with open(gidx_folder + "." + suffix, "rb") as f_in:
+                        f_out.write(f_in.read())
+
+            shutil.rmtree(genome_idx.replace('.tar.gz', ''))
+        except IOError:
+            return False
 
         return True
 
@@ -141,8 +143,8 @@ class bwaAlignerMEMTool(Tool):
           pac_file=FILE_OUT, sa_file=FILE_OUT, mem_params=IN, isModifier=False)
     def bwa_aligner_single(  # pylint: disable=too-many-arguments, no-self-use
             self, genome_file_loc, read_file_loc, bam_loc,
-            amb_file, ann_file, bwt_file, pac_file, sa_file,
-            mem_params):  # pylint: disable=unused-argument
+            amb_file, ann_file, bwt_file, pac_file, sa_file,  # pylint: disable=unused-argument
+            mem_params):
         """
         BWA MEM Aligner - Single Ended
 
@@ -352,8 +354,6 @@ class bwaAlignerMEMTool(Tool):
             untar_idx = False
 
         if untar_idx:
-            gfl = input_files["genome"].split("/")
-            gidx_folder = input_files["index"].replace('.tar.gz', '/') + gfl[-1]
             self.untar_index(
                 input_files["genome"],
                 input_files["index"],

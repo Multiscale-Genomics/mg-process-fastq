@@ -70,6 +70,47 @@ class bwaAlignerTool(Tool):
 
         self.configuration.update(configuration)
 
+    @task(returns=bool, genome_file_name=IN, genome_idx=FILE_IN,
+          amb_file=FILE_OUT, ann_file=FILE_OUT, bwt_file=FILE_OUT,
+          pac_file=FILE_OUT, sa_file=FILE_OUT)
+    def untar_index(  # pylint: disable=too-many-locals,too-many-arguments
+            self, genome_file_name, genome_idx,
+            amb_file, ann_file, bwt_file, pac_file, sa_file):
+        """
+        Extracts the BWA index files from the genome index tar file.
+
+        Parameters
+        ----------
+        genome_file_name : str
+            Location string of the genome fasta file
+        genome_idx : str
+            Location of the BWA index file
+        amb_file : str
+            Location of the amb index file
+        ann_file : str
+            Location of the ann index file
+        bwt_file : str
+            Location of the bwt index file
+        pac_file : str
+            Location of the pac index file
+        sa_file : str
+            Location of the sa index file
+
+        Returns
+        -------
+        bool
+            Boolean indicating if the task was successful
+        """
+        if "no-untar" in self.configuration and self.configuration["no-untar"] is True:
+            return True
+
+        gfl = genome_file_name.split("/")
+        au_handle = alignerUtils()
+        au_handle.bwa_untar_index(
+            gfl[-1], genome_idx, amb_file, ann_file, bwt_file, pac_file, sa_file)
+
+        return True
+
     @task(returns=bool, genome_file_loc=FILE_IN, read_file_loc=FILE_IN,
           bam_loc=FILE_OUT, genome_idx=FILE_IN, aln_params=IN, isModifier=False)
     def bwa_aligner_single(  # pylint: disable=too-many-arguments, no-self-use

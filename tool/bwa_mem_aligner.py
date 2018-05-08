@@ -107,33 +107,10 @@ class bwaAlignerMEMTool(Tool):
         if "no-untar" in self.configuration and self.configuration["no-untar"] is True:
             return True
 
-        try:
-            g_dir = genome_idx.split("/")
-            g_dir = "/".join(g_dir[:-1])
-
-            tar = tarfile.open(genome_idx)
-            tar.extractall(path=g_dir)
-            tar.close()
-
-            index_files = {
-                "amb": amb_file,
-                "ann": ann_file,
-                "bwt": bwt_file,
-                "pac": pac_file,
-                "sa": sa_file
-            }
-
-            gfl = genome_file_name.split("/")
-            gidx_folder = genome_idx.replace('.tar.gz', '/') + gfl[-1]
-            for suffix in list(index_files.keys()):
-                with open(index_files[suffix], "wb") as f_out:
-                    with open(gidx_folder + "." + suffix, "rb") as f_in:
-                        f_out.write(f_in.read())
-
-            shutil.rmtree(genome_idx.replace('.tar.gz', ''))
-        except IOError as error:
-            logger.fatal("UNTAR: I/O error({0}): {1}".format(error.errno, error.strerror))
-            return False
+        gfl = genome_file_name.split("/")
+        au_handle = alignerUtils()
+        au_handle.bwa_untar_index(
+            gfl[-1], genome_idx, amb_file, ann_file, bwt_file, pac_file, sa_file)
 
         return True
 

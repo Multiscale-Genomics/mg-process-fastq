@@ -30,14 +30,14 @@ try:
     from pycompss.api.parameter import IN, FILE_IN, FILE_OUT
     from pycompss.api.task import task
     from pycompss.api.constraint import constraint
-    from pycompss.api.api import compss_wait_on, compss_open
+    from pycompss.api.api import barrier, compss_wait_on, compss_open
 except ImportError:
     logger.warn("[Warning] Cannot import \"pycompss\" API packages.")
     logger.warn("          Using mock decorators.")
 
     from utils.dummy_pycompss import IN, FILE_IN, FILE_OUT  # pylint: disable=ungrouped-imports
     from utils.dummy_pycompss import task, constraint  # pylint: disable=ungrouped-imports
-    from utils.dummy_pycompss import compss_wait_on, compss_open  # pylint: disable=ungrouped-imports
+    from utils.dummy_pycompss import barrier, compss_wait_on, compss_open  # pylint: disable=ungrouped-imports
 
 from basic_modules.tool import Tool
 from basic_modules.metadata import Metadata
@@ -75,7 +75,7 @@ class bwaAlignerMEMTool(Tool):
 
     @task(returns=bool, genome_file_name=IN, genome_idx=FILE_IN,
           amb_file=FILE_OUT, ann_file=FILE_OUT, bwt_file=FILE_OUT,
-          pac_file=FILE_OUT, sa_file=FILE_OUT, isModifier=False)
+          pac_file=FILE_OUT, sa_file=FILE_OUT)
     def untar_index(
             self, genome_file_name, genome_idx,
             amb_file, ann_file, bwt_file, pac_file, sa_file):
@@ -102,7 +102,7 @@ class bwaAlignerMEMTool(Tool):
         Returns
         -------
         bool
-            Boolena indicating if the task was successful
+            Boolean indicating if the task was successful
         """
         if "no-untar" in self.configuration and self.configuration["no-untar"] is True:
             return True
@@ -131,7 +131,8 @@ class bwaAlignerMEMTool(Tool):
                         f_out.write(f_in.read())
 
             shutil.rmtree(genome_idx.replace('.tar.gz', ''))
-        except IOError:
+        except IOError as error:
+            logger.fatal("UNTAR: I/O error({0}): {1}".format(error.errno, error.strerror))
             return False
 
         return True
@@ -139,8 +140,8 @@ class bwaAlignerMEMTool(Tool):
     @constraint(ComputingUnits="2")
     @task(returns=bool, genome_file_loc=FILE_IN, read_file_loc=FILE_IN,
           bam_loc=FILE_OUT, genome_idx=FILE_IN,
-          amb_file=FILE_OUT, ann_file=FILE_OUT, bwt_file=FILE_OUT,
-          pac_file=FILE_OUT, sa_file=FILE_OUT, mem_params=IN, isModifier=False)
+          amb_file=FILE_IN, ann_file=FILE_IN, bwt_file=FILE_IN,
+          pac_file=FILE_IN, sa_file=FILE_IN, mem_params=IN, isModifier=False)
     def bwa_aligner_single(  # pylint: disable=too-many-arguments, no-self-use
             self, genome_file_loc, read_file_loc, bam_loc,
             amb_file, ann_file, bwt_file, pac_file, sa_file,  # pylint: disable=unused-argument
@@ -166,29 +167,6 @@ class bwaAlignerMEMTool(Tool):
         bam_loc : str
             Location of the output file
         """
-        # g_dir = genome_idx.split("/")
-        # g_dir = "/".join(g_dir[:-1])
-
-        # untar_idx = True
-        # if "no-untar" in self.configuration and self.configuration["no-untar"] is True:
-        #     untar_idx = False
-
-        # if untar_idx is True:
-        #     try:
-        #         tar = tarfile.open(genome_idx)
-        #         tar.extractall(path=g_dir)
-        #         tar.close()
-        #     except IOError:
-        #         return False
-
-        # gfl = genome_file_loc.split("/")
-        # genome_fa_ln = genome_idx.replace('.tar.gz', '/') + gfl[-1]
-        # shutil.copy(genome_file_loc, genome_fa_ln)
-
-        # if (
-        #         os.path.isfile(genome_fa_ln) is False or
-        #         os.path.getsize(genome_fa_ln) == 0):
-        #     return False
         if (
                 os.path.isfile(read_file_loc) is False or
                 os.path.getsize(read_file_loc) == 0):
@@ -206,20 +184,19 @@ class bwaAlignerMEMTool(Tool):
             with open(bam_loc, "wb") as f_out:
                 with open(out_bam, "rb") as f_in:
                     f_out.write(f_in.read())
-        except IOError:
+        except IOError as error:
+            logger.fatal("SINGLE ALIGNER: I/O error({0}): {1}".format(error.errno, error.strerror))
             return False
 
-        # os.remove(out_bam)
-        # if untar_idx is True:
-        #     shutil.rmtree(g_dir)
+        os.remove(out_bam)
 
         return True
 
     @constraint(ComputingUnits="2")
     @task(returns=bool, genome_file_loc=FILE_IN, read_file_loc1=FILE_IN,
           read_file_loc2=FILE_IN, bam_loc=FILE_OUT, genome_idx=FILE_IN,
-          amb_file=FILE_OUT, ann_file=FILE_OUT, bwt_file=FILE_OUT,
-          pac_file=FILE_OUT, sa_file=FILE_OUT, mem_params=IN, isModifier=False)
+          amb_file=FILE_IN, ann_file=FILE_IN, bwt_file=FILE_IN,
+          pac_file=FILE_IN, sa_file=FILE_IN, mem_params=IN, isModifier=False)
     def bwa_aligner_paired(  # pylint: disable=too-many-arguments, no-self-use
             self, genome_file_loc, read_file_loc1, read_file_loc2, bam_loc,
             amb_file, ann_file, bwt_file, pac_file, sa_file, mem_params):  # pylint: disable=unused-argument
@@ -246,25 +223,6 @@ class bwaAlignerMEMTool(Tool):
         bam_loc : str
             Location of the output file
         """
-        # g_dir = genome_idx.split("/")
-        # g_dir = "/".join(g_dir[:-1])
-
-        # untar_idx = True
-        # if "no-untar" in self.configuration and self.configuration["no-untar"] is True:
-        #     untar_idx = False
-
-        # if untar_idx is True:
-        #     try:
-        #         tar = tarfile.open(genome_idx)
-        #         tar.extractall(path=g_dir)
-        #         tar.close()
-        #     except IOError:
-        #         return False
-
-        # gfl = genome_file_loc.split("/")
-        # genome_fa_ln = genome_idx.replace('.tar.gz', '/') + gfl[-1]
-        # shutil.copy(genome_file_loc, genome_fa_ln)
-
         out_bam = read_file_loc1 + '.out.bam'
         au_handle = alignerUtils()
         logger.info(
@@ -276,11 +234,11 @@ class bwaAlignerMEMTool(Tool):
             with open(bam_loc, "wb") as f_out:
                 with open(out_bam, "rb") as f_in:
                     f_out.write(f_in.read())
-        except IOError:
+        except IOError as error:
+            logger.fatal("PARIED ALIGNER: I/O error({0}): {1}".format(error.errno, error.strerror))
             return False
 
-        # if untar_idx is True:
-        #     shutil.rmtree(genome_fa_ln)
+        os.remove(out_bam)
 
         return True
 
@@ -353,15 +311,21 @@ class bwaAlignerMEMTool(Tool):
         if "no-untar" in self.configuration and self.configuration["no-untar"] is True:
             untar_idx = False
 
+        amb_file = input_files["genome"] + ".amb"
+        ann_file = input_files["genome"] + ".ann"
+        bwt_file = input_files["genome"] + ".bwt"
+        pac_file = input_files["genome"] + ".pac"
+        sa_file = input_files["genome"] + ".sa"
+
         if untar_idx:
             self.untar_index(
                 input_files["genome"],
                 input_files["index"],
-                input_files["genome"] + ".amb",
-                input_files["genome"] + ".ann",
-                input_files["genome"] + ".bwt",
-                input_files["genome"] + ".pac",
-                input_files["genome"] + ".sa"
+                amb_file,
+                ann_file,
+                bwt_file,
+                pac_file,
+                sa_file
             )
 
         sources = [input_files["genome"]]
@@ -385,6 +349,7 @@ class bwaAlignerMEMTool(Tool):
 
         # Required to prevent iterating over the future objects
         fastq_file_list = compss_wait_on(fastq_file_list)
+
         if not fastq_file_list:
             logger.fatal("FASTQ SPLITTER: run failed")
             return {}, {}
@@ -427,11 +392,11 @@ class bwaAlignerMEMTool(Tool):
                 logger.info("BWA MEM FILES: " + tmp_fq1 + " - " + tmp_fq2)
                 self.bwa_aligner_paired(
                     str(input_files["genome"]), tmp_fq1, tmp_fq2, output_bam_file_tmp,
-                    input_files["genome"] + ".amb",
-                    input_files["genome"] + ".ann",
-                    input_files["genome"] + ".bwt",
-                    input_files["genome"] + ".pac",
-                    input_files["genome"] + ".sa",
+                    amb_file,
+                    ann_file,
+                    bwt_file,
+                    pac_file,
+                    sa_file,
                     self.get_mem_params(self.configuration)
                 )
             else:
@@ -442,11 +407,11 @@ class bwaAlignerMEMTool(Tool):
                 logger.info("BWA MEM FILES: " + tmp_fq)
                 self.bwa_aligner_single(
                     str(input_files["genome"]), tmp_fq, output_bam_file_tmp,
-                    input_files["genome"] + ".amb",
-                    input_files["genome"] + ".ann",
-                    input_files["genome"] + ".bwt",
-                    input_files["genome"] + ".pac",
-                    input_files["genome"] + ".sa",
+                    amb_file,
+                    ann_file,
+                    bwt_file,
+                    pac_file,
+                    sa_file,
                     self.get_mem_params(self.configuration)
                 )
 

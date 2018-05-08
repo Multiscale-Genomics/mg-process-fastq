@@ -30,14 +30,14 @@ try:
     from pycompss.api.parameter import IN, FILE_IN, FILE_OUT
     from pycompss.api.task import task
     from pycompss.api.constraint import constraint
-    from pycompss.api.api import barrier, compss_wait_on, compss_open
+    from pycompss.api.api import compss_wait_on, compss_open
 except ImportError:
     logger.warn("[Warning] Cannot import \"pycompss\" API packages.")
     logger.warn("          Using mock decorators.")
 
     from utils.dummy_pycompss import IN, FILE_IN, FILE_OUT  # pylint: disable=ungrouped-imports
     from utils.dummy_pycompss import task, constraint  # pylint: disable=ungrouped-imports
-    from utils.dummy_pycompss import barrier, compss_wait_on, compss_open  # pylint: disable=ungrouped-imports
+    from utils.dummy_pycompss import compss_wait_on, compss_open  # pylint: disable=ungrouped-imports
 
 from basic_modules.tool import Tool
 from basic_modules.metadata import Metadata
@@ -76,7 +76,7 @@ class bwaAlignerMEMTool(Tool):
     @task(returns=bool, genome_file_name=IN, genome_idx=FILE_IN,
           amb_file=FILE_OUT, ann_file=FILE_OUT, bwt_file=FILE_OUT,
           pac_file=FILE_OUT, sa_file=FILE_OUT)
-    def untar_index(
+    def untar_index(  # pylint: disable=too-many-locals,too-many-arguments
             self, genome_file_name, genome_idx,
             amb_file, ann_file, bwt_file, pac_file, sa_file):
         """
@@ -197,7 +197,7 @@ class bwaAlignerMEMTool(Tool):
           read_file_loc2=FILE_IN, bam_loc=FILE_OUT, genome_idx=FILE_IN,
           amb_file=FILE_IN, ann_file=FILE_IN, bwt_file=FILE_IN,
           pac_file=FILE_IN, sa_file=FILE_IN, mem_params=IN, isModifier=False)
-    def bwa_aligner_paired(  # pylint: disable=too-many-arguments, no-self-use
+    def bwa_aligner_paired(  # pylint: disable=too-many-arguments, no-self-use, too-many-locals
             self, genome_file_loc, read_file_loc1, read_file_loc2, bam_loc,
             amb_file, ann_file, bwt_file, pac_file, sa_file, mem_params):  # pylint: disable=unused-argument
         """
@@ -311,21 +311,23 @@ class bwaAlignerMEMTool(Tool):
         if "no-untar" in self.configuration and self.configuration["no-untar"] is True:
             untar_idx = False
 
-        amb_file = input_files["genome"] + ".amb"
-        ann_file = input_files["genome"] + ".ann"
-        bwt_file = input_files["genome"] + ".bwt"
-        pac_file = input_files["genome"] + ".pac"
-        sa_file = input_files["genome"] + ".sa"
+        index_files = {
+            "amb": input_files["genome"] + ".amb",
+            "ann": input_files["genome"] + ".ann",
+            "bwt": input_files["genome"] + ".bwt",
+            "pac": input_files["genome"] + ".pac",
+            "sa": input_files["genome"] + ".sa"
+        }
 
         if untar_idx:
             self.untar_index(
                 input_files["genome"],
                 input_files["index"],
-                amb_file,
-                ann_file,
-                bwt_file,
-                pac_file,
-                sa_file
+                index_files["amb"],
+                index_files["ann"],
+                index_files["bwt"],
+                index_files["pac"],
+                index_files["sa"]
             )
 
         sources = [input_files["genome"]]
@@ -392,11 +394,11 @@ class bwaAlignerMEMTool(Tool):
                 logger.info("BWA MEM FILES: " + tmp_fq1 + " - " + tmp_fq2)
                 self.bwa_aligner_paired(
                     str(input_files["genome"]), tmp_fq1, tmp_fq2, output_bam_file_tmp,
-                    amb_file,
-                    ann_file,
-                    bwt_file,
-                    pac_file,
-                    sa_file,
+                    index_files["amb"],
+                    index_files["ann"],
+                    index_files["bwt"],
+                    index_files["pac"],
+                    index_files["sa"],
                     self.get_mem_params(self.configuration)
                 )
             else:
@@ -407,11 +409,11 @@ class bwaAlignerMEMTool(Tool):
                 logger.info("BWA MEM FILES: " + tmp_fq)
                 self.bwa_aligner_single(
                     str(input_files["genome"]), tmp_fq, output_bam_file_tmp,
-                    amb_file,
-                    ann_file,
-                    bwt_file,
-                    pac_file,
-                    sa_file,
+                    index_files["amb"],
+                    index_files["ann"],
+                    index_files["bwt"],
+                    index_files["pac"],
+                    index_files["sa"],
                     self.get_mem_params(self.configuration)
                 )
 

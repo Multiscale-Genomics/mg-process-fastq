@@ -308,7 +308,6 @@ class alignerUtils(object):
             genome_file, reads_file_2
         ])
 
-
         cmd_samse = ' '.join([
             'bwa sampe',
             '-f', reads_file_1 + '.sam',
@@ -392,6 +391,6 @@ class alignerUtils(object):
                 msg.errno, msg.strerror, cmd_view))
             return False
 
-        os.remove(reads_file + '.sam')
+        os.remove(reads_file_1 + '.sam')
 
         return True

@@ -116,8 +116,7 @@ class bwaAlignerMEMTool(Tool):
 
     @constraint(ComputingUnits="2")
     @task(returns=bool, genome_file_loc=FILE_IN, read_file_loc=FILE_IN,
-          bam_loc=FILE_OUT, genome_idx=FILE_IN,
-          amb_file=FILE_IN, ann_file=FILE_IN, bwt_file=FILE_IN,
+          bam_loc=FILE_OUT, amb_file=FILE_IN, ann_file=FILE_IN, bwt_file=FILE_IN,
           pac_file=FILE_IN, sa_file=FILE_IN, mem_params=IN, isModifier=False)
     def bwa_aligner_single(  # pylint: disable=too-many-arguments, no-self-use
             self, genome_file_loc, read_file_loc, bam_loc,
@@ -171,7 +170,7 @@ class bwaAlignerMEMTool(Tool):
 
     @constraint(ComputingUnits="2")
     @task(returns=bool, genome_file_loc=FILE_IN, read_file_loc1=FILE_IN,
-          read_file_loc2=FILE_IN, bam_loc=FILE_OUT, genome_idx=FILE_IN,
+          read_file_loc2=FILE_IN, bam_loc=FILE_OUT,
           amb_file=FILE_IN, ann_file=FILE_IN, bwt_file=FILE_IN,
           pac_file=FILE_IN, sa_file=FILE_IN, mem_params=IN, isModifier=False)
     def bwa_aligner_paired(  # pylint: disable=too-many-arguments, no-self-use, too-many-locals

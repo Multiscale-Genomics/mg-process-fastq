@@ -18,6 +18,7 @@ from __future__ import print_function
 
 import shlex
 import subprocess
+import os
 import os.path
 
 from utils import logger
@@ -214,6 +215,8 @@ class alignerUtils(object):
                 msg.errno, msg.strerror, cmd_view))
             return False
 
+        os.remove(reads_file_1 + '.sam')
+
         return True
 
     @staticmethod
@@ -270,6 +273,8 @@ class alignerUtils(object):
             logger.fatal("BWA ALN stdout" + proc_out)
             logger.fatal("BWA ALN stderr" + proc_err)
             return False
+
+        os.remove(reads_file + '.sam')
 
         return True
 
@@ -331,6 +336,8 @@ class alignerUtils(object):
                 msg.errno, msg.strerror, command_line))
             return False
 
+        os.remove(reads_file_1 + '.sam')
+
         return True
 
     @staticmethod
@@ -384,5 +391,7 @@ class alignerUtils(object):
             logger.info("I/O error({0}): {1}\n{2}".format(
                 msg.errno, msg.strerror, cmd_view))
             return False
+
+        os.remove(reads_file + '.sam')
 
         return True

@@ -18,6 +18,7 @@
 from __future__ import print_function
 
 import os
+import shutil
 import shlex
 import subprocess
 import sys
@@ -119,6 +120,7 @@ class fastq_splitter(Tool):
             ".fastq",
             "." + str(fqr.output_tag) + "_" + str(fqr.output_file_count) + ".fastq")
         file_loc_1.insert(-1, tag)
+        tmp_dir = "/".join(file_loc_1[:-1])
 
         files_out = [[file_loc_1[-1]]]
 
@@ -163,6 +165,9 @@ class fastq_splitter(Tool):
                 args = shlex.split(command_line)
                 process = subprocess.Popen(args)
                 process.wait()
+
+
+            shutil.rmtree(tmp_dir)
 
         return files_out
 
@@ -217,6 +222,8 @@ class fastq_splitter(Tool):
         new_suffix = "." + str(fqr.output_tag) + "_" + str(fqr.output_file_count) + ".fastq"
         file_loc_1[-1] = re.sub('.fastq$', new_suffix, file_loc_1[-1])
         file_loc_1.insert(-1, tag)
+
+        tmp_dir = "/".join(file_loc_1[:-1])
 
         file_loc_2 = fqr.fastq2.split("/")
         new_suffix = "." + str(fqr.output_tag) + "_" + str(fqr.output_file_count) + ".fastq"
@@ -287,6 +294,8 @@ class fastq_splitter(Tool):
                 args = shlex.split(command_line)
                 process = subprocess.Popen(args)
                 process.wait()
+
+            shutil.rmtree(tmp_dir)
 
         return files_out
 

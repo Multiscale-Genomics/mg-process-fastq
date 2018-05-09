@@ -103,6 +103,67 @@ class alignerUtils(object):
         return True
 
     @staticmethod
+    def bowtie2_untar_index(
+            genome_name, tar_file, bt2_1_file, bt2_2_file, bt2_3_file, bt2_4_file,
+            bt2_rev1_file, bt2_rev2_file):
+        """
+        Extracts the BWA index files from the genome index tar file.
+
+        Parameters
+        ----------
+        genome_file_name : str
+            Location string of the genome fasta file
+        tar_file : str
+            Location of the Bowtie2 index file
+        bt2_1_file : str
+            Location of the amb index file
+        bt2_2_file : str
+            Location of the ann index file
+        bt2_3_file : str
+            Location of the bwt index file
+        bt2_4_file : str
+            Location of the pac index file
+        bt2_rev1_file : str
+            Location of the sa index file
+        bt2_rev2_file : str
+            Location of the sa index file
+
+        Returns
+        -------
+        bool
+            Boolean indicating if the task was successful
+        """
+        try:
+            g_dir = tar_file.split("/")
+            g_dir = "/".join(g_dir[:-1])
+
+            tar = tarfile.open(tar_file)
+            tar.extractall(path=g_dir)
+            tar.close()
+
+            index_files = {
+                "1.bt2": bt2_1_file,
+                "2.bt2": bt2_2_file,
+                "3.bt2": bt2_3_file,
+                "4.bt2": bt2_4_file,
+                "rev.1.bt2": bt2_rev1_file,
+                "rev.2.bt2": bt2_rev2_file,
+            }
+
+            gidx_folder = tar_file.replace('.tar.gz', '/') + genome_name
+            for suffix in list(index_files.keys()):
+                with open(index_files[suffix], "wb") as f_out:
+                    with open(gidx_folder + "." + suffix, "rb") as f_in:
+                        f_out.write(f_in.read())
+
+            shutil.rmtree(tar_file.replace('.tar.gz', ''))
+        except IOError as error:
+            logger.fatal("UNTAR: I/O error({0}): {1}".format(error.errno, error.strerror))
+            return False
+
+        return True
+
+    @staticmethod
     def bwa_index_genome(genome_file):
         """
         Create an index of the genome FASTA file with BWA. These are saved

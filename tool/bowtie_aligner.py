@@ -70,10 +70,57 @@ class bowtie2AlignerTool(Tool):
 
         self.configuration.update(configuration)
 
+    @task(returns=bool, genome_file_name=IN, genome_idx=FILE_IN,
+          bt2_1_file=FILE_OUT, bt2_2_file=FILE_OUT, bt2_3_file=FILE_OUT,
+          bt2_4_file=FILE_OUT, bt2_rev1_file=FILE_OUT, bt2_rev2_file=FILE_OUT)
+    def untar_index(  # pylint: disable=too-many-locals,too-many-arguments
+            self, genome_file_name, genome_idx,
+            bt2_1_file, bt2_2_file, bt2_3_file, bt2_4_file, bt2_rev1_file, bt2_rev2_file):
+        """
+        Extracts the BWA index files from the genome index tar file.
+
+        Parameters
+        ----------
+        genome_file_name : str
+            Location string of the genome fasta file
+        genome_idx : str
+            Location of the BWA index file
+        bt2_1_file : str
+            Location of the <genome>.1.bt2 index file
+        bt2_2_file : str
+            Location of the <genome>.2.bt2 index file
+        bt2_3_file : str
+            Location of the <genome>.3.bt2 index file
+        bt2_4_file : str
+            Location of the <genome>.4.bt2 index file
+        bt2_rev1_file : str
+            Location of the <genome>.rev.1.bt2 index file
+        bt2_rev2_file : str
+            Location of the <genome>.rev.2.bt2 index file
+
+        Returns
+        -------
+        bool
+            Boolean indicating if the task was successful
+        """
+        if "no-untar" in self.configuration and self.configuration["no-untar"] is True:
+            return True
+
+        gfl = genome_file_name.split("/")
+        au_handle = alignerUtils()
+        au_handle.bowtie2_untar_index(
+            gfl[-1], genome_idx,
+            bt2_1_file, bt2_2_file, bt2_3_file, bt2_4_file,
+            bt2_rev1_file, bt2_rev2_file)
+
+        return True
+
     @task(returns=bool, genome_file_loc=FILE_IN, read_file_loc=FILE_IN,
           bam_loc=FILE_OUT, genome_idx=FILE_IN, aln_params=IN, isModifier=False)
     def bowtie2_aligner_single(  # pylint: disable=too-many-arguments, no-self-use
-            self, genome_file_loc, read_file_loc, bam_loc, genome_idx, aln_params):  # pylint: disable=unused-argument
+            self, genome_file_loc, read_file_loc, bam_loc,
+            bt2_1_file, bt2_2_file, bt2_3_file, bt2_4_file,  # pylint: disable=unused-argument
+            bt2_rev1_file, bt2_rev2_file, aln_params):  # pylint: disable=unused-argument
         """
         Bowtie2 Aligner - Single End
 
@@ -85,8 +132,18 @@ class bowtie2AlignerTool(Tool):
             Location of the FASTQ file
         bam_loc : str
             Location of the output aligned bam file
-        genome_idx : idx
-            Location of the Bowtie2 index file
+        bt2_1_file : str
+            Location of the <genome>.1.bt2 index file
+        bt2_2_file : str
+            Location of the <genome>.2.bt2 index file
+        bt2_3_file : str
+            Location of the <genome>.3.bt2 index file
+        bt2_4_file : str
+            Location of the <genome>.4.bt2 index file
+        bt2_rev1_file : str
+            Location of the <genome>.rev.1.bt2 index file
+        bt2_rev2_file : str
+            Location of the <genome>.rev.2.bt2 index file
         aln_params : dict
             Alignment parameters
 
@@ -95,42 +152,12 @@ class bowtie2AlignerTool(Tool):
         bam_loc : str
             Location of the output file
         """
-        g_dir = genome_idx.split("/")
-        g_dir = "/".join(g_dir[:-1])
-
-        untar_idx = True
-        if "no-untar" in self.configuration and self.configuration["no-untar"] is True:
-            untar_idx = False
-
-        if untar_idx is True:
-            try:
-                tar = tarfile.open(genome_idx)
-                tar.extractall(path=g_dir)
-                tar.close()
-            except IOError:
-                return False
-
-        gfl = genome_file_loc.split("/")
-        genome_fa_ln = genome_idx.replace('.tar.gz', '/') + gfl[-1]
-
-        if os.path.isfile(genome_fa_ln) is False:
-            shutil.copy(genome_file_loc, genome_fa_ln)
-
-        if (
-                os.path.isfile(genome_fa_ln) is False or
-                os.path.getsize(genome_fa_ln) == 0):
-            return False
-        if (
-                os.path.isfile(read_file_loc) is False or
-                os.path.getsize(read_file_loc) == 0):
-            return False
-
         out_bam = read_file_loc + '.out.bam'
 
         au_handle = alignerUtils()
         logger.info(
             "BOWTIE2 FINISHED: " + str(au_handle.bowtie2_align_reads(
-                genome_fa_ln, out_bam, aln_params, read_file_loc))
+                genome_file_loc, out_bam, aln_params, read_file_loc))
         )
 
         try:
@@ -140,7 +167,7 @@ class bowtie2AlignerTool(Tool):
         except IOError:
             return False
 
-        # shutil.rmtree(g_dir)
+        os.remove(out_bam)
 
         return True
 
@@ -149,7 +176,8 @@ class bowtie2AlignerTool(Tool):
           aln_params=IN, isModifier=False)
     def bowtie2_aligner_paired(  # pylint: disable=too-many-arguments, no-self-use
             self, genome_file_loc, read_file_loc1, read_file_loc2, bam_loc,
-            genome_idx, aln_params):  # pylint: disable=unused-argument
+            bt2_1_file, bt2_2_file, bt2_3_file, bt2_4_file,  # pylint: disable=unused-argument
+            bt2_rev1_file, bt2_rev2_file, aln_params):  # pylint: disable=unused-argument
         """
         Bowtie2 Aligner - Paired End
 
@@ -163,8 +191,18 @@ class bowtie2AlignerTool(Tool):
             Location of the FASTQ file
         bam_loc : str
             Location of the output aligned bam file
-        genome_idx : idx
-            Location of the Bowtie2 index file
+        bt2_1_file : str
+            Location of the <genome>.1.bt2 index file
+        bt2_2_file : str
+            Location of the <genome>.2.bt2 index file
+        bt2_3_file : str
+            Location of the <genome>.3.bt2 index file
+        bt2_4_file : str
+            Location of the <genome>.4.bt2 index file
+        bt2_rev1_file : str
+            Location of the <genome>.rev.1.bt2 index file
+        bt2_rev2_file : str
+            Location of the <genome>.rev.2.bt2 index file
         aln_params : dict
             Alignment parameters
 
@@ -173,32 +211,11 @@ class bowtie2AlignerTool(Tool):
         bam_loc : str
             Location of the output file
         """
-        g_dir = genome_idx.split("/")
-        g_dir = "/".join(g_dir[:-1])
-
-        untar_idx = True
-        if "no-untar" in self.configuration and self.configuration["no-untar"] is True:
-            untar_idx = False
-
-        if untar_idx is True:
-            try:
-                tar = tarfile.open(genome_idx)
-                tar.extractall(path=g_dir)
-                tar.close()
-            except IOError:
-                return False
-
-        gfl = genome_file_loc.split("/")
-        genome_fa_ln = genome_idx.replace('.tar.gz', '/') + gfl[-1]
-
-        if os.path.isfile(genome_fa_ln) is False:
-            shutil.copy(genome_file_loc, genome_fa_ln)
-
         out_bam = read_file_loc1 + '.out.bam'
         au_handle = alignerUtils()
         logger.info(
             "BOWTIE2 FINISHED: " + str(au_handle.bowtie2_align_reads(
-                genome_fa_ln, out_bam, aln_params, read_file_loc1, read_file_loc2))
+                genome_file_loc, out_bam, aln_params, read_file_loc1, read_file_loc2))
         )
 
         try:
@@ -208,7 +225,7 @@ class bowtie2AlignerTool(Tool):
         except IOError:
             return False
 
-        # shutil.rmtree(g_dir)
+        os.remove(out_bam)
 
         return True
 
@@ -341,6 +358,30 @@ class bowtie2AlignerTool(Tool):
         output_metadata : dict
         """
 
+        untar_idx = True
+        if "no-untar" in self.configuration and self.configuration["no-untar"] is True:
+            untar_idx = False
+
+        index_files = {
+            "1.bt2": input_files["genome"] + ".1.bt2",
+            "2.bt2": input_files["genome"] + ".2.bt2",
+            "3.bt2": input_files["genome"] + ".3.bt2",
+            "4.bt2": input_files["genome"] + ".4.bt2",
+            "rev.1.bt2": input_files["genome"] + ".rev.1.bt2",
+            "rev.2.bt2": input_files["genome"] + ".rev.2.bt2"
+        }
+
+        if untar_idx:
+            self.untar_index(
+                input_files["genome"],
+                input_files["index"],
+                index_files["1.bt2"],
+                index_files["2.bt2"],
+                index_files["3.bt2"],
+                index_files["4.bt2"],
+                index_files["rev.1.bt2"],
+                index_files["rev.2.bt2"]
+            )
         sources = [input_files["genome"]]
 
         fqs = fastq_splitter()
@@ -401,8 +442,15 @@ class bowtie2AlignerTool(Tool):
                 output_bam_list.append(output_bam_file_tmp)
 
                 self.bowtie2_aligner_paired(
-                    str(input_files["genome"]), tmp_fq1, tmp_fq2, output_bam_file_tmp,
-                    str(input_files["index"]), self.get_aln_params(self.configuration, True)
+                    str(input_files["genome"]), tmp_fq1, tmp_fq2,
+                    output_bam_file_tmp,
+                    index_files["1.bt2"],
+                    index_files["2.bt2"],
+                    index_files["3.bt2"],
+                    index_files["4.bt2"],
+                    index_files["rev.1.bt2"],
+                    index_files["rev.2.bt2"],
+                    self.get_aln_params(self.configuration, True)
                 )
             else:
                 tmp_fq = gz_data_path + "/tmp/" + fastq_file_pair[0]
@@ -412,7 +460,13 @@ class bowtie2AlignerTool(Tool):
                 logger.info("BOWTIE2 ALN FILES:" + tmp_fq)
                 self.bowtie2_aligner_single(
                     str(input_files["genome"]), tmp_fq, output_bam_file_tmp,
-                    str(input_files["index"]), self.get_aln_params(self.configuration)
+                    index_files["1.bt2"],
+                    index_files["2.bt2"],
+                    index_files["3.bt2"],
+                    index_files["4.bt2"],
+                    index_files["rev.1.bt2"],
+                    index_files["rev.2.bt2"],
+                    self.get_aln_params(self.configuration)
                 )
 
         bam_handle = bamUtilsTask()

@@ -376,9 +376,6 @@ class bssAlignerTool(Tool):
             logger.fatal("WGBS - BS SEEKER2: Failed sorting")
             return False
 
-        if untar_idx is True:
-            shutil.rmtree(g_dir)
-
         return True
 
     def run(self, input_files, input_metadata, output_files):  # pylint: disable=too-many-locals,too-many-branches,too-many-statements

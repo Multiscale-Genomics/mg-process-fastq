@@ -41,19 +41,12 @@ except ImportError:
 
 class bamUtils(object):
     """
-    Tool for aligning sequence reads to a genome using BWA
+    Tool for handloing bam files
     """
 
     def __init__(self):
         """
         Initialise the tool with its configuration.
-
-
-        Parameters
-        ----------
-        configuration : dict
-            a dictionary containing parameters that define how the operation
-            should be carried out, which are specific to each Tool.
         """
         logger.info("BAM Utils")
 
@@ -134,7 +127,7 @@ class bamUtils(object):
     @staticmethod
     def bam_index(bam_file, bam_idx_file):
         """
-        Wrapper for the pysam SAMtools merge function
+        Wrapper for the pysam SAMtools index function
 
         Parameters
         ----------
@@ -187,9 +180,11 @@ class bamUtils(object):
         bam_file_handle = pysam.AlignmentFile(bam_file, "rb")  # pylint: disable=no-member
         if "SQ" not in bam_file_handle.header:
             return []
-        return [
-            chromosome["SN"] for chromosome in bam_file_handle.header["SQ"]
-        ]
+
+        chromosome_list = [chromosome["SN"] for chromosome in bam_file_handle.header["SQ"]]
+        bam_file_handle.close()
+
+        return chromosome_list
 
     @staticmethod
     def bam_split(bam_file_in, bai_file, chromosome, bam_file_out):  # pylint: disable=unused-argument
@@ -277,14 +272,12 @@ class bamUtils(object):
     @staticmethod
     def check_header(bam_file):
         """
-        Wrapper for the pysam SAMtools merge function
+        Wrapper for the pysam SAMtools for checking if a bam file is sorted
 
         Parameters
         ----------
-        bam_file_1 : str
-            Location of the bam file to merge into
-        bam_file_2 : str
-            Location of the bam file that is to get merged into bam_file_1
+        bool
+            True if the file has been sorted
         """
         output = True
 
@@ -300,7 +293,7 @@ class bamUtils(object):
 class bamUtilsTask(object):
     """
     Wrappers so that the function above can be used as part of a @task within
-    COMPSs avoiding the files being copied around the infrstructure too many
+    COMPSs avoiding the files being copied around the infrastructure too many
     times
     """
 
@@ -528,7 +521,7 @@ class bamUtilsTask(object):
         bam_file_5 : str
             Location of the bam file that is to get merged into bam_file_1
         bam_file_6 : str
-            Location of the bam file to merge into
+            Location of the bam file that is to get merged into bam_file_1
         bam_file_7 : str
             Location of the bam file that is to get merged into bam_file_1
         bam_file_8 : str

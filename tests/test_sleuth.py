@@ -23,7 +23,7 @@ from basic_modules.metadata import Metadata
 from tool.sleuth import sleuthTool
 
 
-@pytest.mark.rnaseq
+@pytest.mark.sleuth
 def test_sleuth():
     """
     Function to test the sleuth analysis tool

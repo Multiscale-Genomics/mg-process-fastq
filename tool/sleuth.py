@@ -17,9 +17,9 @@
 from __future__ import print_function
 
 import os
-import shlex
 import subprocess
 import sys
+import tarfile
 
 from utils import logger
 
@@ -28,14 +28,12 @@ try:
         raise ImportError
     from pycompss.api.parameter import FILE_IN, FILE_OUT, IN
     from pycompss.api.task import task
-    # from pycompss.api.api import compss_wait_on
 except ImportError:
     logger.warn("[Warning] Cannot import \"pycompss\" API packages.")
     logger.warn("          Using mock decorators.")
 
     from utils.dummy_pycompss import FILE_IN, FILE_OUT, IN  # pylint: disable=ungrouped-imports
     from utils.dummy_pycompss import task  # pylint: disable=ungrouped-imports
-    # from utils.dummy_pycompss import compss_wait_on # pylint: disable=ungrouped-imports
 
 from basic_modules.tool import Tool
 from basic_modules.metadata import Metadata
@@ -68,37 +66,23 @@ class sleuthTool(Tool):
         self.configuration.update(configuration)
 
     @task(
-        returns=int,
-        sample_name=IN, bg_name=IN, sample_bam_file_1=FILE_IN, sample_bam_file_2=FILE_IN,
-        bg_bam_file_1=FILE_IN, bg_bam_file_2=FILE_IN, species=IN, assembly=IN, bsgenome=FILE_IN,
-        peak_bw=FILE_OUT, isModifier=False)
+        returns=bool,
+        sleuth_config=IN, kallisto_tar=FILE_IN,
+        save_file=FILE_OUT, isModifier=False)
     def sleuth_analysis(  # pylint: disable=no-self-use
-            self, sample_name, bg_name, sample_bam_file_1, sample_bam_file_2,
-            bg_bam_file_1, bg_bam_file_2, common_species_name, assembly,
-            bsgenome, peak_bw):
+            self, sleuth_config, kallisto_tar, save_file):
         """
-        Make iDamID-seq peak calls. These are saved as bed files That can then
-        get displayed on genome browsers. Uses an R script that wraps teh iDEAR
-        protocol.
+        Differential analysis of kallisto peak calls.
 
         Parameters
         ----------
-        sample_name : str
-        bg_name : str
-        sample_bam_file_1 : str
-            Location of the aligned sequences in bam format
-        sample_bam_file_2 : str
-            Location of the aligned sequences in bam format
-        bg_bam_file_1 : str
-            Location of the aligned background sequences in bam format
-        bg_bam_file_2 : str
-            Location of the aligned background sequences in bam format
-        species : str
-            Species name for the alignments
-        assembly : str
-            Assembly used for teh aligned sequences
-        peak_bed : str
-            Location of the peak bed file
+        sleuth_config : dict
+            Data structure describing each of the experiments and the conditions
+        kallisto_tar : str
+            Location of the tar file containing each of the processed Kallisto
+            outputs
+        save_file : str
+            Location of the Sleuth R object representing the processed data
 
         Returns
         -------
@@ -106,53 +90,39 @@ class sleuthTool(Tool):
             Location of the collated bed file
         """
 
-        # mkdir tmp_R_lib
-        # R CMD INSTALL -l ${PWD}/tmp_R_lib BSgenome.human.grch38_1.4.2.tar.gz
+        with open("ht_config.txt", "w") as cf_handle:
+            cf_handle.write("sample\tcondition")
+            for row in sleuth_config:
+                cf_handle.write(row + "\t" + sleuth_config[row] + "\n")
 
         rscript = os.path.join(os.path.dirname(__file__), "../scripts/sleuth.R")
-        rlib = os.path.join(os.getcwd(), "tmp_R_lib")
 
-        if not os.path.exists(rlib):
-            os.makedirs(rlib)
+        data_tmp_dir = kallisto_tar.split("/")
+        data_tmp_dir = "/".join(data_tmp_dir[:-1])
 
-        args = shlex.split("R CMD INSTALL -l tmp_R_lib " + bsgenome)
-        process = subprocess.Popen(args)
-        process.wait()
+        try:
+            tar = tarfile.open(kallisto_tar)
+            tar.extractall(path=data_tmp_dir)
+            tar.close()
+        except IOError:
+            return False
 
         args = [
             'Rscript', rscript,
-            '--sample_name', sample_name,
-            '--background_name', bg_name,
-            '--file1', sample_bam_file_1,
-            '--file2', sample_bam_file_2,
-            '--file3', bg_bam_file_1,
-            '--file4', bg_bam_file_2,
-            '--species', str(common_species_name),
-            '--assembly', assembly,
-            '--output', peak_bw + '.tmp',
-            '--local_lib', rlib]
-        logger.info("iDEAR CMD: " + ' '.join(args))
+            '--config', "ht_config.txt",
+            '--data_dir', kallisto_tar,
+            '--save', save_file]
+        logger.info("SLEUTH CMD: " + ' '.join(args))
 
-        process = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        process = subprocess.Popen(args)
         process.wait()
-        proc_out, proc_err = process.communicate()
-
-        try:
-            with open(peak_bw + ".tmp", "rb") as f_in:
-                with open(peak_bw, "wb") as f_out:
-                    f_out.write(f_in.read())
-        except IOError:
-            logger.fatal("iDEAR failed to generate peak file")
-            logger.fatal("iDEAR stdout" + proc_out)
-            logger.fatal("iDEAR stderr" + proc_err)
-            return False
 
         return True
 
     def run(self, input_files, input_metadata, output_files):
         """
-        The main function to run iNPS for peak calling over a given BAM file
-        and matching background BAM file.
+        The main function to run Sleuth over a set of RNA-seq experiments
+        nalysed using Kallisto to identify differentially expressed genes.
 
         Parameters
         ----------
@@ -170,44 +140,22 @@ class sleuthTool(Tool):
 
         """
 
-        sample_name = None
-        background_name = None
-        common_name = None
-
-        if "idear_sample_param" in self.configuration:
-            sample_name = str(self.configuration["idear_sample_param"])
-        if "idear_background_param" in self.configuration:
-            background_name = str(self.configuration["idear_background_param"])
-        if "idear_common_name" in self.configuration:
-            common_name = str(self.configuration["idear_common_name"])
-
-        self.idear_peak_calling(
-            sample_name, background_name,
-            input_files["bam_1"], input_files["bam_2"],
-            input_files["bg_bam_1"], input_files["bg_bam_2"],
-            common_name,
-            input_metadata["bsgenome"].meta_data["assembly"],
-            input_files["bsgenome"],
-            output_files["bigwig"]
+        self.sleuth_analysis(
+            input_files["config_file"],
+            input_files["kallisto_tar"],
+            output_files["sleuth_object"]
         )
-        #results = compss_wait_on(results)
 
         output_metadata = {
-            "bigwig": Metadata(
-                data_type=input_metadata['bam_1'].data_type,
-                file_type="BIGWIG",
-                file_path=output_files["bigwig"],
-                sources=[
-                    input_metadata["bam_1"].file_path,
-                    input_metadata["bam_2"].file_path,
-                    input_metadata["bg_bam_1"].file_path,
-                    input_metadata["bg_bam_2"].file_path,
-                    input_metadata["bsgenome"].file_path
-                ],
-                taxon_id=input_metadata["bam_1"].taxon_id,
+            "sleuth_object": Metadata(
+                data_type=input_metadata['kallisto_tar'].data_type,
+                file_type="BIN",
+                file_path=output_files["sleuth_object"],
+                sources=input_metadata["kallisto_tar"].sources,
+                taxon_id=input_metadata["kallisto_tar"].taxon_id,
                 meta_data={
-                    "assembly": input_metadata["bam_1"].meta_data["assembly"],
-                    "tool": "idear"
+                    "assembly": input_metadata["kallisto_tar"].meta_data["assembly"],
+                    "tool": "sleuth"
                 }
             )
         }

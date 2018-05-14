@@ -24,13 +24,13 @@ option_list = list(
     make_option(c("-o", "--save"), type="character", default=NULL,
                 help="Location to save the sleuth object to", metavar="character"),
     make_option(c("-d", "--data_dir"), type="character", default=NULL,
-                help="Data directory for the samples and kallisto results", metavar="character"),
+                help="Data directory for the samples and kallisto results", metavar="character")
 );
 
 opt_parser = OptionParser(option_list=option_list);
 opt = parse_args(opt_parser);
 
-sample_id <- dir(opt$data_dir)
+sample_id <- dir(file.path(opt$data_dir))
 kal_dirs <- file.path(opt$data_dir, sample_id, "kallisto")
 
 s2c <- read.table(opt$config, header = TRUE, stringsAsFactors=FALSE)

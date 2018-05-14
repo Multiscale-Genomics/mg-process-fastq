@@ -91,7 +91,7 @@ class sleuthTool(Tool):
         """
 
         with open("ht_config.txt", "w") as cf_handle:
-            cf_handle.write("sample\tcondition")
+            cf_handle.write("sample\tcondition\n")
             for row in sleuth_config:
                 cf_handle.write(row + "\t" + sleuth_config[row] + "\n")
 
@@ -110,7 +110,7 @@ class sleuthTool(Tool):
         args = [
             'Rscript', rscript,
             '--config', "ht_config.txt",
-            '--data_dir', kallisto_tar,
+            '--data_dir', kallisto_tar.replace(".tar.gz", ""),
             '--save', save_file]
         logger.info("SLEUTH CMD: " + ' '.join(args))
 

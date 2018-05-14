@@ -46,7 +46,7 @@ def test_sleuth():
     }
 
     config = {
-        "self.configuration": {
+        "kallisto_tar_config": {
             "ERR030856": "mixture",
             "ERR030857": "mixture",
             "ERR030858": "mixture",

@@ -17,6 +17,14 @@ from tool.fastqreader import fastqreader
 
 # grep -Fx -f SRR1658573_1_chr21_1-100.row SRR1658573_2_chr21_1-100.row > SRR1658573_chr21.row
 
+
+def current_milli_time():
+    """
+    Returns int of tim in milliseconds
+    """
+    return int(round(time.time() * 1000))
+
+
 def paired_selector(in_file1, in_file2, rows, tag='tmp'):
     """
     Function to divide the FastQ files into separate sub files of 1000000
@@ -52,10 +60,10 @@ def paired_selector(in_file1, in_file2, rows, tag='tmp'):
     record1 = fqr.next(1)
     record2 = fqr.next(2)
 
-    count_r1 = 0 # Reads read from FASTQ 1
-    count_r2 = 0 # Reads read from FASTQ 2
-    count_r3 = 0 # Matching pairs
-    count_r4 = 0 # Reads that have been written
+    count_r1 = 0  # Reads read from FASTQ 1
+    count_r2 = 0  # Reads read from FASTQ 2
+    count_r3 = 0  # Matching pairs
+    count_r4 = 0  # Reads that have been written
 
     row_count = len(rows)
 
@@ -72,7 +80,6 @@ def paired_selector(in_file1, in_file2, rows, tag='tmp'):
     file_loc_2.insert(-1, tag)
     files_out = [["/".join(file_loc_1), "/".join(file_loc_2)]]
 
-    current_milli_time = lambda: int(round(time.time() * 1000))
     time_1 = current_milli_time()
 
     while fqr.eof(1) is False and fqr.eof(2) is False and count_r4 < row_count:
@@ -110,6 +117,7 @@ def paired_selector(in_file1, in_file2, rows, tag='tmp'):
 
     return files_out
 
+
 def single_selector(in_file1, rows, tag='tmp'):
     """
     Function to divide the FastQ files into separate sub files of 1000000
@@ -141,8 +149,6 @@ def single_selector(in_file1, rows, tag='tmp'):
     fqr = fastqreader()
     fqr.openFastQ(in_file1)
     fqr.createOutputFiles(tag)
-
-    current_milli_time = lambda: int(round(time.time() * 1000))
 
     time_1 = current_milli_time()
 
@@ -179,18 +185,15 @@ def single_selector(in_file1, rows, tag='tmp'):
 
     return files_out
 
+
 def get_if_list(row_file):
     """
     Get the IDs from the specified file
     """
-    fid = open(row_file, 'r')
-
-    id_list = fid.readlines()
-    id_list = [i.rstrip() for i in id_list]
-
-    id_set = Set(id_list)
-
-    fid.close()
+    with open(row_file, 'r') as fid:
+        id_list = fid.readlines()
+        id_list = [i.rstrip() for i in id_list]
+        id_set = Set(id_list)
 
     return id_set
 

@@ -292,32 +292,10 @@ class kallistoQuantificationTool(Tool):
             return ({}, {})
 
         output_metadata = {
-            "abundance_h5_file": Metadata(
+            "kallisto_tar_file": Metadata(
                 data_type="data_ranseq",
-                file_type="hdf5",
-                file_path=output_files["abundance_h5_file"],
-                sources=[input_metadata["cdna"].file_path, input_metadata["fastq1"].file_path],
-                taxon_id=input_metadata["cdna"].taxon_id,
-                meta_data={
-                    "assembly": input_metadata["cdna"].meta_data["assembly"],
-                    "tool": "kallisto_quant"
-                }
-            ),
-            "abundance_tsv_file": Metadata(
-                data_type="data_ranseq",
-                file_type="tsv",
-                file_path=output_files["abundance_tsv_file"],
-                sources=[input_metadata["cdna"].file_path, input_metadata["fastq1"].file_path],
-                taxon_id=input_metadata["cdna"].taxon_id,
-                meta_data={
-                    "assembly": input_metadata["cdna"].meta_data["assembly"],
-                    "tool": "kallisto_quant"
-                }
-            ),
-            "run_info_file": Metadata(
-                data_type="data_ranseq",
-                file_type="tsv",
-                file_path=output_files["run_info_file"],
+                file_type="TAR",
+                file_path=output_files["kallisto_tar_file"],
                 sources=[input_metadata["cdna"].file_path, input_metadata["fastq1"].file_path],
                 taxon_id=input_metadata["cdna"].taxon_id,
                 meta_data={

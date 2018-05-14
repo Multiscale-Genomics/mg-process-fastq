@@ -40,9 +40,7 @@ def test_kallisto_quant_paired():
     }
 
     output_files = {
-        "abundance_h5_file": resource_path + "kallisto.Human.ERR030872.paired.abundance.h5",
-        "abundance_tsv_file": resource_path + "kallisto.Human.ERR030872.paired.abundance.tsv",
-        "run_info_file": resource_path + "kallisto.Human.ERR030872.paired.run_info.json"
+        "kallisto_tar_file": resource_path + "kallisto.Human.ERR030872.paired.tar.gz"
     }
 
     metadata = {
@@ -63,12 +61,8 @@ def test_kallisto_quant_paired():
     kqft = kallistoQuantificationTool()
     kqft.run(input_files, metadata, output_files)
 
-    assert os.path.isfile(output_files["abundance_h5_file"]) is True
-    assert os.path.getsize(output_files["abundance_h5_file"]) > 0
-    assert os.path.isfile(output_files["abundance_tsv_file"]) is True
-    assert os.path.getsize(output_files["abundance_tsv_file"]) > 0
-    assert os.path.isfile(output_files["run_info_file"]) is True
-    assert os.path.getsize(output_files["run_info_file"]) > 0
+    assert os.path.isfile(output_files["kallisto_tar_file"]) is True
+    assert os.path.getsize(output_files["kallisto_tar_file"]) > 0
 
 
 @pytest.mark.rnaseq
@@ -85,9 +79,7 @@ def test_kallisto_quant_single():
     }
 
     output_files = {
-        "abundance_h5_file": resource_path + "kallisto.Human.ERR030872.single.abundance.h5",
-        "abundance_tsv_file": resource_path + "kallisto.Human.ERR030872.single.abundance.tsv",
-        "run_info_file": resource_path + "kallisto.Human.ERR030872.single.run_info.json"
+        "abundance_h5_file": resource_path + "kallisto.Human.ERR030872.single.tar.gz"
     }
 
     metadata = {
@@ -105,9 +97,5 @@ def test_kallisto_quant_single():
     kqft = kallistoQuantificationTool()
     kqft.run(input_files, metadata, output_files)
 
-    assert os.path.isfile(output_files["abundance_h5_file"]) is True
-    assert os.path.getsize(output_files["abundance_h5_file"]) > 0
-    assert os.path.isfile(output_files["abundance_tsv_file"]) is True
-    assert os.path.getsize(output_files["abundance_tsv_file"]) > 0
-    assert os.path.isfile(output_files["run_info_file"]) is True
-    assert os.path.getsize(output_files["run_info_file"]) > 0
+    assert os.path.isfile(output_files["kallisto_tar_file"]) is True
+    assert os.path.getsize(output_files["kallisto_tar_file"]) > 0

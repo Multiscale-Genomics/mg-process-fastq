@@ -141,7 +141,7 @@ class sleuthTool(Tool):
         """
 
         self.sleuth_analysis(
-            input_files["config_file"],
+            self.configuration["kallisto_tar_config"],
             input_files["kallisto_tar"],
             output_files["sleuth_object"]
         )
@@ -149,7 +149,7 @@ class sleuthTool(Tool):
         output_metadata = {
             "sleuth_object": Metadata(
                 data_type=input_metadata['kallisto_tar'].data_type,
-                file_type="BIN",
+                file_type="RBIN",
                 file_path=output_files["sleuth_object"],
                 sources=input_metadata["kallisto_tar"].sources,
                 taxon_id=input_metadata["kallisto_tar"].taxon_id,

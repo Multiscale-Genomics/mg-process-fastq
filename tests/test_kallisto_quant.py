@@ -134,7 +134,7 @@ def test_kallisto_sleuth_paired_00():
             {'assembly': 'test'}),
     }
 
-    kqft = kallistoQuantificationTool({"kallisto_bootstrap_param" : 10})
+    kqft = kallistoQuantificationTool({"kallisto_bootstrap_param": 10})
     kqft.run(input_files, metadata, output_files)
 
     assert os.path.isfile(output_files["kallisto_tar_file"]) is True
@@ -170,7 +170,7 @@ def test_kallisto_sleuth_single_01():
             {'assembly': 'test'}),
     }
 
-    kqft = kallistoQuantificationTool({"kallisto_bootstrap_param" : 10})
+    kqft = kallistoQuantificationTool({"kallisto_bootstrap_param": 10})
     kqft.run(input_files, metadata, output_files)
 
     assert os.path.isfile(output_files["kallisto_tar_file"]) is True
@@ -206,7 +206,7 @@ def test_kallisto_sleuth_single_02():
             {'assembly': 'test'}),
     }
 
-    kqft = kallistoQuantificationTool({"kallisto_bootstrap_param" : 10})
+    kqft = kallistoQuantificationTool({"kallisto_bootstrap_param": 10})
     kqft.run(input_files, metadata, output_files)
 
     assert os.path.isfile(output_files["kallisto_tar_file"]) is True
@@ -242,7 +242,7 @@ def test_kallisto_sleuth_single_03():
             {'assembly': 'test'}),
     }
 
-    kqft = kallistoQuantificationTool({"kallisto_bootstrap_param" : 10})
+    kqft = kallistoQuantificationTool({"kallisto_bootstrap_param": 10})
     kqft.run(input_files, metadata, output_files)
 
     assert os.path.isfile(output_files["kallisto_tar_file"]) is True
@@ -278,7 +278,7 @@ def test_kallisto_sleuth_single_04():
             {'assembly': 'test'}),
     }
 
-    kqft = kallistoQuantificationTool({"kallisto_bootstrap_param" : 10})
+    kqft = kallistoQuantificationTool({"kallisto_bootstrap_param": 10})
     kqft.run(input_files, metadata, output_files)
 
     assert os.path.isfile(output_files["kallisto_tar_file"]) is True

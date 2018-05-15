@@ -6,6 +6,7 @@ FASTQ IDs.
 """
 
 import argparse
+import random
 import time
 
 from sets import Set
@@ -25,7 +26,21 @@ def current_milli_time():
     return int(round(time.time() * 1000))
 
 
-def paired_selector(in_file1, in_file2, rows, tag='tmp'):
+def keep_read(proportion):
+    """
+    Function to return if the reads should be saved.
+    """
+
+    if proportion is None:
+        return True
+
+    if random.random() <= proportion:
+        return True
+
+    return False
+
+
+def paired_selector(in_file1, in_file2, rows, tag='tmp', proportion=None):
     """
     Function to divide the FastQ files into separate sub files of 1000000
     sequences so that the aligner can run in parallel.
@@ -88,16 +103,17 @@ def paired_selector(in_file1, in_file2, rows, tag='tmp'):
 
         if r1_id[0] == r2_id[0]:
             if r1_id[0][1:] in rows:
-                fqr.writeOutput(record1, 1)
-                fqr.writeOutput(record2, 2)
-                count_r4 += 1
+                if keep_read(proportion):
+                    fqr.writeOutput(record1, 1)
+                    fqr.writeOutput(record2, 2)
+                    count_r4 += 1
 
-                if count_r4 > 0 and count_r4 % 1000 == 0:
-                    time_2 = current_milli_time()
-                    print(
-                        "Extracted:", str(count_r4),
-                        "reads (avg time per 1000: " + str(time_2-time_1) + ") ...")
-                    time_1 = time_2
+                    if count_r4 > 0 and count_r4 % 1000 == 0:
+                        time_2 = current_milli_time()
+                        print(
+                            "Extracted:", str(count_r4),
+                            "reads (avg time per 1000: " + str(time_2-time_1) + ") ...")
+                        time_1 = time_2
 
             record1 = fqr.next(1)
             record2 = fqr.next(2)
@@ -118,7 +134,7 @@ def paired_selector(in_file1, in_file2, rows, tag='tmp'):
     return files_out
 
 
-def single_selector(in_file1, rows, tag='tmp'):
+def single_selector(in_file1, rows, tag='tmp', proportion=None):
     """
     Function to divide the FastQ files into separate sub files of 1000000
     sequences so that the aligner can run in parallel.
@@ -168,15 +184,16 @@ def single_selector(in_file1, rows, tag='tmp'):
         r1_id = record1["id"].split(" ")
 
         if r1_id[0][1:] in rows:
-            fqr.writeOutput(record1)
-            counter += 1
+            if keep_read(proportion):
+                fqr.writeOutput(record1)
+                counter += 1
 
-            if counter % 1000 == 0:
-                time_2 = current_milli_time()
-                print(
-                    "Extracted:", str(counter),
-                    "reads (avg per 1000: " + str(time_2-time_1) + ") ...")
-                time_1 = time_2
+                if counter % 1000 == 0:
+                    time_2 = current_milli_time()
+                    print(
+                        "Extracted:", str(counter),
+                        "reads (avg per 1000: " + str(time_2-time_1) + ") ...")
+                    time_1 = time_2
 
         record1 = fqr.next()
 
@@ -205,12 +222,14 @@ if __name__ == "__main__":
     PARSER.add_argument("--input_1", help="File 1")
     PARSER.add_argument("--input_2", required=False, default=None, help="File 2")
     PARSER.add_argument("--rows", help="Row File")
+    PARSER.add_argument("--prop", required=False, default=None, help="Proportion of reads to keep")
     PARSER.add_argument("--output_tag", help="Inserted before the file descriptor and after the file name: e.g. 'matching' would convert file_id-1.fastq to file_id-1.matching.fastq")
 
     ARGS = PARSER.parse_args()
     FILE_01 = ARGS.input_1
     FILE_02 = ARGS.input_2
     ROW_FILE = ARGS.rows
+    PROPORTION = ARGS.prop
     TAG = ARGS.output_tag
 
     VALID_IDS = get_if_list(ROW_FILE)

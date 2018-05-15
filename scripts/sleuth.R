@@ -37,7 +37,7 @@ s2c <- read.table(opt$config, header = TRUE, stringsAsFactors=FALSE)
 s2c <- dplyr::select(s2c, sample, condition)
 s2c <- dplyr::mutate(s2c, path = kal_dirs)
 
-so <- sleuth_prep(s2c, extra_bootstrap_summary = TRUE, num_cores = 4)
+so <- sleuth_prep(s2c, extra_bootstrap_summary = TRUE, num_cores = 1)
 so <- sleuth_fit(so, ~condition, 'full')
 so <- sleuth_fit(so, ~1, 'reduced')
 so <- sleuth_lrt(so, 'reduced', 'full')

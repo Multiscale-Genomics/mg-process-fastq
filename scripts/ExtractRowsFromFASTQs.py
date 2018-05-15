@@ -229,7 +229,7 @@ if __name__ == "__main__":
     FILE_01 = ARGS.input_1
     FILE_02 = ARGS.input_2
     ROW_FILE = ARGS.rows
-    PROPORTION = ARGS.prop
+    PROPORTION = float(ARGS.prop)
     TAG = ARGS.output_tag
 
     VALID_IDS = get_if_list(ROW_FILE)
@@ -237,6 +237,6 @@ if __name__ == "__main__":
     print(FILE_01, FILE_02, ROW_FILE, TAG)
 
     if FILE_02 is not None:
-        paired_selector(FILE_01, FILE_02, VALID_IDS, TAG)
+        paired_selector(FILE_01, FILE_02, VALID_IDS, TAG, PROPORTION)
     else:
-        single_selector(FILE_01, VALID_IDS, TAG)
+        single_selector(FILE_01, VALID_IDS, TAG, PROPORTION)

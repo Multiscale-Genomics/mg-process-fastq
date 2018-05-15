@@ -111,8 +111,8 @@ def test_kallisto_sleuth_paired_00():
     input_files = {
         "cdna": resource_path + "sleuth.Human.GRCh38.cdna.fasta",
         "index": resource_path + "sleuth.Human.GRCh38.cdna.idx",
-        "fastq1": resource_path + "sleuth.Human.ERR030872_1.fastq",
-        "fastq2": resource_path + "sleuth.Human.ERR030872_2.fastq"
+        "fastq1": resource_path + "sleuth.Human.ERR030872_1.fastq.gz",
+        "fastq2": resource_path + "sleuth.Human.ERR030872_2.fastq.gz"
     }
 
     output_files = {
@@ -151,7 +151,7 @@ def test_kallisto_sleuth_single_01():
     input_files = {
         "cdna": resource_path + "sleuth.Human.GRCh38.cdna.fasta",
         "index": resource_path + "sleuth.Human.GRCh38.cdna.idx",
-        "fastq1": resource_path + "sleuth.Human.ERR030856.fastq"
+        "fastq1": resource_path + "sleuth.Human.ERR030856.fastq.gz"
     }
 
     output_files = {
@@ -187,7 +187,7 @@ def test_kallisto_sleuth_single_02():
     input_files = {
         "cdna": resource_path + "sleuth.Human.GRCh38.cdna.fasta",
         "index": resource_path + "sleuth.Human.GRCh38.cdna.idx",
-        "fastq1": resource_path + "sleuth.Human.ERR030857.fastq"
+        "fastq1": resource_path + "sleuth.Human.ERR030857.fastq.gz"
     }
 
     output_files = {
@@ -223,7 +223,7 @@ def test_kallisto_sleuth_single_03():
     input_files = {
         "cdna": resource_path + "sleuth.Human.GRCh38.cdna.fasta",
         "index": resource_path + "sleuth.Human.GRCh38.cdna.idx",
-        "fastq1": resource_path + "sleuth.Human.ERR030858.fastq"
+        "fastq1": resource_path + "sleuth.Human.ERR030858.fastq.gz"
     }
 
     output_files = {
@@ -259,7 +259,7 @@ def test_kallisto_sleuth_single_04():
     input_files = {
         "cdna": resource_path + "sleuth.Human.GRCh38.cdna.fasta",
         "index": resource_path + "sleuth.Human.GRCh38.cdna.idx",
-        "fastq1": resource_path + "sleuth.Human.ERR030903.fastq"
+        "fastq1": resource_path + "sleuth.Human.ERR030903.fastq.gz"
     }
 
     output_files = {

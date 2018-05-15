@@ -29,23 +29,6 @@ from process_rnaseq import process_rnaseq
 def test_rnaseq_pipeline():
     """
     Test case to ensure that the RNA-seq pipeline code works.
-
-    Running the pipeline with the test data from the command line:
-
-    .. code-block:: none
-
-       runcompss                                                         \\
-          --lang=python                                                  \\
-          --library_path=${HOME}/bin                                     \\
-          --pythonpath=/<pyenv_virtenv_dir>/lib/python2.7/site-packages/ \\
-          --log_level=debug                                              \\
-          process_rnaseq.py                                              \\
-             --taxon_id 9606                                             \\
-             --genome /<dataset_dir>/Human.GRCh38.fasta                  \\
-             --assembly GRCh38                                           \\
-             --file /<dataset_dir>/ERR030872_1.fastq                     \\
-             --file2 /<dataset_dir>/ERR030872_2.fastq
-
     """
     resource_path = os.path.join(os.path.dirname(__file__), "data/")
 
@@ -71,7 +54,7 @@ def test_rnaseq_pipeline():
 
     files_out = {
         "index": 'tests/data/kallisto.idx',
-        "abundance_h5_file": 'tests/data/kallisto.tar.gz'
+        "kallisto_tar": 'tests/data/kallisto.tar.gz'
     }
 
     rs_handle = process_rnaseq()

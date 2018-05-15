@@ -43,8 +43,11 @@ Method
 ------
 The full dataset was downloaded from ENA aligned to the cDNA using kallisto producing a pseudo alignment bam file. Sleuth was used to calculate the most significant hits of which the top 1000 were picked. These were used to select the matching FASTQ reads from the pseudo alignment files
 
+
+hiseq_info.txt file:
+
 .. code-block:: none
-   # hiseq_info.txt file:
+   :linenos:
 
    ERR030856\tcontrol
    ERR030857\tcontrol

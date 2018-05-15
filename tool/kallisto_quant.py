@@ -164,7 +164,7 @@ class kallistoQuantificationTool(Tool):
         if bootstrap:
             command_line += "--bootstrap-samples=" + str(bootstrap) + " "
         command_line += "-t 4"
-        command_line += '-o ' + '/'.join(output_dir[0:-1]) + "/ "
+        command_line += " -o " + "/".join(output_dir[0:-1]) + "/ "
         command_line += fastq_file_loc_01 + ' ' + fastq_file_loc_02
 
         args = shlex.split(command_line)
@@ -225,9 +225,9 @@ class kallistoQuantificationTool(Tool):
             os.remove(kallisto_tar_file)
 
         tar = tarfile.open(output_file_pregz, "w")
-        tar.add(abundance_h5_file, arcname='kallisto')
-        tar.add(abundance_tsv_file, arcname='kallisto')
-        tar.add(run_info_file, arcname='kallisto')
+        tar.add(abundance_h5_file, arcname='kallisto/abundance.h5')
+        tar.add(abundance_tsv_file, arcname='kallisto/abundance.tsv')
+        tar.add(run_info_file, arcname='kallisto/run_info.json')
         tar.close()
 
         try:

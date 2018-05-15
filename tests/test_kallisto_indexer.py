@@ -24,7 +24,7 @@ from tool.kallisto_indexer import kallistoIndexerTool
 
 
 @pytest.mark.rnaseq
-def test_kallisto_indexer():
+def test_kallisto_indexer_00():
     """
     Function to test Kallisto indexer
     """
@@ -51,3 +51,33 @@ def test_kallisto_indexer():
 
     assert os.path.isfile(resource_path + "kallisto.Human.GRCh38.idx") is True
     assert os.path.getsize(resource_path + "kallisto.Human.GRCh38.idx") > 0
+
+
+@pytest.mark.sleuth
+def test_kallisto_indexer_01():
+    """
+    Function to test Kallisto indexer
+    """
+    resource_path = os.path.join(os.path.dirname(__file__), "data/sleuth/")
+
+    input_files = {
+        "cdna": resource_path + "sleuth.Human.GRCh38.cdna.fasta"
+    }
+
+    output_files = {
+        "index": resource_path + "sleuth.Human.GRCh38.cdna.idx"
+    }
+
+    metadata = {
+        "cdna": Metadata(
+            "data_cdna", "fasta", [], None,
+            {'assembly': 'test'}),
+    }
+
+    ki_handle = kallistoIndexerTool()
+    ki_handle.run(input_files, metadata, output_files)
+
+    print(__file__)
+
+    assert os.path.isfile(resource_path + "sleuth.Human.GRCh38.cdna.idx") is True
+    assert os.path.getsize(resource_path + "sleuth.Human.GRCh38.cdna.idx") > 0

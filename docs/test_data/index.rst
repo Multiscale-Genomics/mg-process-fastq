@@ -34,6 +34,7 @@ Sample Data
    testData_iDamIDSeq
    testData_MNaseSeq
    testData_RNASeq
+   testData_Sleuth
    testData_WGBS
    tests_hic
 
@@ -154,6 +155,24 @@ There is a test for each of the tools. This uses the "process" scripts to run ea
    Sample Data
    -----------
    :doc:`testData_RNASeq`
+
+   Sleuth
+   =======
+   To run the pipeline test:
+
+   .. code-block:: none
+
+      pytest tests/test_pipeline_sleuth.py
+
+
+   Methods
+   -------
+   .. automodule:: tests.test_pipeline_sleuth
+      :members:
+
+   Sample Data
+   -----------
+   :doc:`testData_Sleuth`
 
    Whole Genome Bisulfate Sequencing (WGBS)
    ========================================

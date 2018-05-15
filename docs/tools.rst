@@ -129,6 +129,15 @@ Tools for processing FastQ files
       :members:
 
 
+   Analysis
+   ========
+
+   Sleuth
+   ------
+   .. autoclass:: tool.sleuth.sleuthTool
+      :members:
+
+
    Hi-C Parsing
    ============
 

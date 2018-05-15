@@ -18,6 +18,7 @@
 from __future__ import print_function
 
 import os.path
+import tarfile
 import pytest
 
 from basic_modules.metadata import Metadata
@@ -31,6 +32,24 @@ def test_sleuth_pipeline():
     Test case to ensure that the Sleuth pipeline code works.
     """
     resource_path = os.path.join(os.path.dirname(__file__), "data/")
+
+    tar = tarfile.open(resource_path + "results.tar.gz", "w")
+    tar.add(
+        resource_path + "sleuth.Human.ERR030856.tar.gz",
+        arcname="results/ERR030856/sleuth.Human.ERR030856.tar.gz")
+    tar.add(
+        resource_path + "sleuth.Human.ERR030857.tar.gz",
+        arcname="results/ERR030857/sleuth.Human.ERR030857.tar.gz")
+    tar.add(
+        resource_path + "sleuth.Human.ERR030858.tar.gz",
+        arcname="results/ERR030858/sleuth.Human.ERR030858.tar.gz")
+    tar.add(
+        resource_path + "sleuth.Human.ERR030872.tar.gz",
+        arcname="results/ERR030872/sleuth.Human.ERR030872.tar.gz")
+    tar.add(
+        resource_path + "sleuth.Human.ERR030903.tar.gz",
+        arcname="results/ERR030903/sleuth.Human.ERR030903.tar.gz")
+    tar.close()
 
     files = {
         'kallisto_tar': resource_path + 'results.tar.gz'

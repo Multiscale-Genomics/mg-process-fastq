@@ -174,6 +174,29 @@ def rnaseq_pipeline(verbose=False):
     return pytest.main(params)
 
 
+def sleuth_pipeline(verbose=False):
+    """
+    Runs the tests for the RNA-seq pipeline
+
+    Runs the following tests:
+
+    .. code-block:: none
+
+       pytest -m sleuth tests/test_pipeline_rnaseq.py
+       pytest -m sleuth tests/test_pipeline_sleuth.py
+    """
+
+    params = ['-m sleuth']
+
+    if verbose is True:
+        params.append('-s')
+
+    params.append('tests/test_pipeline_rnaseq.py')
+    params.append('tests/test_pipeline_sleuth.py')
+
+    return pytest.main(params)
+
+
 def wgbs_pipeline(verbose=False):
     """
     Runs the tests for the WGBS pipeline

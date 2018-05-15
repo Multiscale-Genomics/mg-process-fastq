@@ -90,26 +90,39 @@ class sleuthTool(Tool):
             Location of the collated bed file
         """
 
-        with open("ht_config.txt", "w") as cf_handle:
-            cf_handle.write("sample\tcondition\n")
-            for row in sleuth_config:
-                cf_handle.write(row + "\t" + sleuth_config[row] + "\n")
-
-        rscript = os.path.join(os.path.dirname(__file__), "../scripts/sleuth.R")
-
         data_tmp_dir = kallisto_tar.split("/")
         data_tmp_dir = "/".join(data_tmp_dir[:-1])
 
         try:
             tar = tarfile.open(kallisto_tar)
             tar.extractall(path=data_tmp_dir)
+
+            for member in tar.getmembers():
+                member_dir = member.name.split("/")
+                member_dir = data_tmp_dir + "/" + "/".join(member_dir[:-1])
+                tar_sub = tarfile.open(data_tmp_dir + "/" + member.name)
+                tar_sub.extractall(path=member_dir)
+                tar_sub.close()
+
             tar.close()
-        except IOError:
+        except IOError as error:
+            logger.fatal(
+                "IO ERROR {0}: Failed to extract all files:\n{1}".format(
+                    error.errno, error.strerror
+                )
+            )
             return False
+
+        with open(data_tmp_dir + "/ht_config.txt", "w") as cf_handle:
+            cf_handle.write("sample\tcondition\n")
+            for row in sleuth_config:
+                cf_handle.write(row + "\t" + sleuth_config[row] + "\n")
+
+        rscript = os.path.join(os.path.dirname(__file__), "../scripts/sleuth.R")
 
         args = [
             'Rscript', rscript,
-            '--config', "ht_config.txt",
+            '--config', data_tmp_dir + "/ht_config.txt",
             '--data_dir', kallisto_tar.replace(".tar.gz", ""),
             '--save', save_file]
         logger.info("SLEUTH CMD: " + ' '.join(args))

@@ -411,12 +411,18 @@ Install iDEAR
 .. code-block:: none
    :linenos:
 
-   cd ${HOME}/lib
-   source("https://bioconductor.org/biocLite.R")
-   biocLite("BSgenome")
-   biocLite("DESeq2")
-   if(!require("devtools")) install.packages("devtools")
-   devtools::install_bitbucket("juanlmateo/idear")
+   cd ${HOME}/code/mg-process-fastq
+   Rscript scripts/install_packages.R
+
+
+Install Sleuth
+^^^^^^^^^^^^^^
+
+.. code-block:: none
+   :linenos:
+
+   cd ${HOME}/code/mg-process-fastq
+   Rscript scripts/install_sleuth.R
 
 Install TADbit
 ^^^^^^^^^^^^^^

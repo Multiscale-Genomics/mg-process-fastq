@@ -35,12 +35,15 @@ Software
 - HDF5
 - iNPS
 - Kallisto
+- Sleuth
 - libmaus2
 - pyenv
 - R 2.9.1+
 - SAMtools
 - MCL
 - pigz
+- iDEAR
+
 
 Python Modules
 ^^^^^^^^^^^^^^

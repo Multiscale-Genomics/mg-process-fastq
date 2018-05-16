@@ -71,6 +71,9 @@ class kallistoQuantificationTool(Tool):
                 "kallisto_bootstrap_param": 0
             }
 
+        if "kallisto_bootstrap_param" not in configuration:
+            configuration["kallisto_bootstrap_param"] = 0
+
         self.configuration.update(configuration)
 
     @task(

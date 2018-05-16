@@ -66,6 +66,16 @@ tc=$?
 rc=$(($rc + $tc))
 bash tidy_data.sh
 
+python tests/test_toolchains.py --pipeline sleuth
+tc=$?
+rc=$(($rc + $tc))
+bash tidy_data.sh
+
+python tests/test_pipelines.py --pipeline sleuth
+tc=$?
+rc=$(($rc + $tc))
+bash tidy_data.sh
+
 if [[ $pv == "2.7.12" ]]; then
     python tests/test_toolchains.py --pipeline wgbs
     tc=$?

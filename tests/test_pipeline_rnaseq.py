@@ -54,7 +54,7 @@ def test_rnaseq_pipeline():
 
     files_out = {
         "index": 'tests/data/kallisto.idx',
-        "kallisto_tar": 'tests/data/kallisto.tar.gz'
+        "kallisto_tar_file": 'tests/data/kallisto.tar.gz'
     }
 
     rs_handle = process_rnaseq()
@@ -77,12 +77,12 @@ def test_rnaseq_pipeline_sleuth_00():
     """
     Test case to ensure that the Sleuth pipeline code works.
     """
-    resource_path = os.path.join(os.path.dirname(__file__), "data/")
+    resource_path = os.path.join(os.path.dirname(__file__), "data/sleuth/")
 
     files = {
         'cdna': resource_path + 'sleuth.Human.GRCh38.cdna.fasta',
-        'fastq1': resource_path + 'sleuth.Human.ERR030872_1.fastq',
-        'fastq2': resource_path + 'sleuth.Human.ERR030872_2.fastq'
+        'fastq1': resource_path + 'sleuth.Human.ERR030872_1.fastq.gz',
+        'fastq2': resource_path + 'sleuth.Human.ERR030872_2.fastq.gz'
     }
 
     metadata = {
@@ -100,15 +100,15 @@ def test_rnaseq_pipeline_sleuth_00():
     }
 
     files_out = {
-        "index": 'tests/data/kallisto.idx',
-        "kallisto_tar": 'tests/data/ERR030872.tar.gz'
+        "index": resource_path + 'kallisto.idx',
+        "kallisto_tar_file": resource_path + 'sleuth.Human.ERR030872.tar.gz'
     }
 
-    rs_handle = process_rnaseq()
+    rs_handle = process_rnaseq({"kallisto_bootstrap_param": 10})
     rs_files, rs_meta = rs_handle.run(files, metadata, files_out)  # pylint: disable=unused-variable
 
     # Checks that the returned files matches the expected set of results
-    assert len(rs_files) == 4
+    assert len(rs_files) == 2
 
     # Add tests for all files created
     for f_out in rs_files:
@@ -124,11 +124,11 @@ def test_rnaseq_pipeline_sleuth_01():
     """
     Test case to ensure that the Sleuth pipeline code works.
     """
-    resource_path = os.path.join(os.path.dirname(__file__), "data/")
+    resource_path = os.path.join(os.path.dirname(__file__), "data/sleuth/")
 
     files = {
         'cdna': resource_path + 'sleuth.Human.GRCh38.cdna.fasta',
-        'fastq1': resource_path + 'sleuth.Human.ERR030856.fastq',
+        'fastq1': resource_path + 'sleuth.Human.ERR030856.fastq.gz',
     }
 
     metadata = {
@@ -142,15 +142,15 @@ def test_rnaseq_pipeline_sleuth_01():
     }
 
     files_out = {
-        "index": 'tests/data/kallisto.idx',
-        "kallisto_tar": 'tests/data/ERR030856.tar.gz'
+        "index": resource_path + 'kallisto.idx',
+        "kallisto_tar_file": resource_path + 'sleuth.Human.ERR030856.tar.gz'
     }
 
-    rs_handle = process_rnaseq()
+    rs_handle = process_rnaseq({"kallisto_bootstrap_param": 10})
     rs_files, rs_meta = rs_handle.run(files, metadata, files_out)  # pylint: disable=unused-variable
 
     # Checks that the returned files matches the expected set of results
-    assert len(rs_files) == 4
+    assert len(rs_files) == 2
 
     # Add tests for all files created
     for f_out in rs_files:
@@ -162,15 +162,15 @@ def test_rnaseq_pipeline_sleuth_01():
 
 @pytest.mark.sleuth
 @pytest.mark.pipeline
-def test_rnaseq_pipeline_sleuth_01():
+def test_rnaseq_pipeline_sleuth_02():
     """
     Test case to ensure that the Sleuth pipeline code works.
     """
-    resource_path = os.path.join(os.path.dirname(__file__), "data/")
+    resource_path = os.path.join(os.path.dirname(__file__), "data/sleuth/")
 
     files = {
         'cdna': resource_path + 'sleuth.Human.GRCh38.cdna.fasta',
-        'fastq1': resource_path + 'sleuth.Human.ERR030857.fastq',
+        'fastq1': resource_path + 'sleuth.Human.ERR030857.fastq.gz',
     }
 
     metadata = {
@@ -184,15 +184,15 @@ def test_rnaseq_pipeline_sleuth_01():
     }
 
     files_out = {
-        "index": 'tests/data/kallisto.idx',
-        "kallisto_tar": 'tests/data/ERR030857.tar.gz'
+        "index": resource_path + 'kallisto.idx',
+        "kallisto_tar_file": resource_path + 'sleuth.Human.ERR030857.tar.gz'
     }
 
-    rs_handle = process_rnaseq()
+    rs_handle = process_rnaseq({"kallisto_bootstrap_param": 10})
     rs_files, rs_meta = rs_handle.run(files, metadata, files_out)  # pylint: disable=unused-variable
 
     # Checks that the returned files matches the expected set of results
-    assert len(rs_files) == 4
+    assert len(rs_files) == 2
 
     # Add tests for all files created
     for f_out in rs_files:
@@ -204,15 +204,15 @@ def test_rnaseq_pipeline_sleuth_01():
 
 @pytest.mark.sleuth
 @pytest.mark.pipeline
-def test_rnaseq_pipeline_sleuth_01():
+def test_rnaseq_pipeline_sleuth_03():
     """
     Test case to ensure that the Sleuth pipeline code works.
     """
-    resource_path = os.path.join(os.path.dirname(__file__), "data/")
+    resource_path = os.path.join(os.path.dirname(__file__), "data/sleuth/")
 
     files = {
         'cdna': resource_path + 'sleuth.Human.GRCh38.cdna.fasta',
-        'fastq1': resource_path + 'sleuth.Human.ERR030858.fastq',
+        'fastq1': resource_path + 'sleuth.Human.ERR030858.fastq.gz',
     }
 
     metadata = {
@@ -226,15 +226,15 @@ def test_rnaseq_pipeline_sleuth_01():
     }
 
     files_out = {
-        "index": 'tests/data/kallisto.idx',
-        "kallisto_tar": 'tests/data/ERR030858.tar.gz'
+        "index": resource_path + 'kallisto.idx',
+        "kallisto_tar_file": resource_path + 'sleuth.Human.ERR030858.tar.gz'
     }
 
-    rs_handle = process_rnaseq()
+    rs_handle = process_rnaseq({"kallisto_bootstrap_param": 10})
     rs_files, rs_meta = rs_handle.run(files, metadata, files_out)  # pylint: disable=unused-variable
 
     # Checks that the returned files matches the expected set of results
-    assert len(rs_files) == 4
+    assert len(rs_files) == 2
 
     # Add tests for all files created
     for f_out in rs_files:
@@ -246,15 +246,15 @@ def test_rnaseq_pipeline_sleuth_01():
 
 @pytest.mark.sleuth
 @pytest.mark.pipeline
-def test_rnaseq_pipeline_sleuth_01():
+def test_rnaseq_pipeline_sleuth_04():
     """
     Test case to ensure that the Sleuth pipeline code works.
     """
-    resource_path = os.path.join(os.path.dirname(__file__), "data/")
+    resource_path = os.path.join(os.path.dirname(__file__), "data/sleuth/")
 
     files = {
         'cdna': resource_path + 'sleuth.Human.GRCh38.cdna.fasta',
-        'fastq1': resource_path + 'sleuth.Human.ERR030903.fastq',
+        'fastq1': resource_path + 'sleuth.Human.ERR030903.fastq.gz',
     }
 
     metadata = {
@@ -268,15 +268,15 @@ def test_rnaseq_pipeline_sleuth_01():
     }
 
     files_out = {
-        "index": 'tests/data/kallisto.idx',
-        "kallisto_tar": 'tests/data/ERR030903.tar.gz'
+        "index": resource_path + 'kallisto.idx',
+        "kallisto_tar_file": resource_path + 'sleuth.Human.ERR030903.tar.gz'
     }
 
-    rs_handle = process_rnaseq()
+    rs_handle = process_rnaseq({"kallisto_bootstrap_param": 10})
     rs_files, rs_meta = rs_handle.run(files, metadata, files_out)  # pylint: disable=unused-variable
 
     # Checks that the returned files matches the expected set of results
-    assert len(rs_files) == 4
+    assert len(rs_files) == 2
 
     # Add tests for all files created
     for f_out in rs_files:

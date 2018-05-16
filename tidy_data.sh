@@ -54,3 +54,6 @@ for i in $b; do
         rm -r $i
     fi
 done
+
+# Added to remove the Sleuth results folder due to nexted structure
+rm -rf sleuth/results

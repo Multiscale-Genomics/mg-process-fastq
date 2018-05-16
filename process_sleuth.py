@@ -96,11 +96,8 @@ class process_sleuth(Workflow):
             sleuth_object : Metadata
 
         """
-        output_files_generated = {}
-        output_metadata = {}
-
         sleuth_handle = sleuthTool(self.configuration)
-        sleuth_handle.run(
+        s_files, s_meta = sleuth_handle.run(
             {
                 "kallisto_tar": input_files["kallisto_tar"],
             }, {
@@ -110,8 +107,8 @@ class process_sleuth(Workflow):
             }
         )
 
-        logger.info("Sleuth RESULTS:", output_metadata)
-        return output_files_generated, output_metadata
+        logger.info("Sleuth RESULTS:", s_meta)
+        return s_files, s_meta
 
 
 # ------------------------------------------------------------------------------

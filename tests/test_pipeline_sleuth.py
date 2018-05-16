@@ -31,7 +31,7 @@ def test_sleuth_pipeline():
     """
     Test case to ensure that the Sleuth pipeline code works.
     """
-    resource_path = os.path.join(os.path.dirname(__file__), "data/")
+    resource_path = os.path.join(os.path.dirname(__file__), "data/sleuth/")
 
     tar = tarfile.open(resource_path + "results.tar.gz", "w")
     tar.add(
@@ -86,7 +86,7 @@ def test_sleuth_pipeline():
         files, metadata, files_out)
 
     # Checks that the returned files matches the expected set of results
-    assert len(sleuth_files) == 4
+    assert len(sleuth_files) == 1
 
     # Add tests for all files created
     for f_out in sleuth_files:

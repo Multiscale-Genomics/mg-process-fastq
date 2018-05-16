@@ -500,7 +500,7 @@ if __name__ == '__main__':
 
     if 'sleuth' in PIPELINES:
         print('SLEUTH')
-        if rnaseq_toolchain(VERBOSE) > 0:
+        if sleuth_toolchain(VERBOSE) > 0:
             sys.exit(1)
 
         if TIDY:

@@ -18,6 +18,7 @@
 from __future__ import print_function
 
 import argparse
+import subprocess
 import pytest  # pylint: disable=unused-import
 
 
@@ -218,6 +219,20 @@ def wgbs_pipeline(verbose=False):
     return pytest.main(params)
 
 
+def tidy_data():
+    """
+    Runs the tidy_data.sh script
+    """
+    print("TIDY DATA")
+    try:
+        command_line = './tidy_data.sh'
+        process = subprocess.Popen(command_line, shell=True)
+        process.wait()
+    except (IOError, OSError) as msg:
+        print("I/O error({0}): {1}\n{2}".format(
+            msg.errno, msg.strerror, command_line))
+
+
 if __name__ == '__main__':
     import sys
     sys._run_from_cmdl = True  # pylint: disable=protected-access
@@ -229,11 +244,12 @@ if __name__ == '__main__':
         type=str,
         choices=[
             'genome', 'chipseq', 'hic', 'idamidseq', 'idear', 'mnaseseq',
-            'rnaseq', 'wgbs', 'all'
+            'rnaseq', 'sleuth', 'wgbs', 'all'
         ],
         help=""
     )
     PARSER.add_argument("--verbose", action='store_const', const=True, default=False)
+    PARSER.add_argument("--tidy", action="store_const", const=True, default=False)
 
     # Get the matching parameters from the command line
     ARGS = PARSER.parse_args()
@@ -247,46 +263,77 @@ if __name__ == '__main__':
     PIPELINES = PIPELINES.split(",")
     print("PIPELINES:", PIPELINES)
 
-    VERBOSE = 0
-    if ARGS.verbose is True:
-        VERBOSE = 1
+    VERBOSE = ARGS.verbose
+    TIDY = ARGS.tidy
 
     if 'genome' in PIPELINES or 'all' in PIPELINES:
         print('GENOME')
         if genome_pipeline(VERBOSE) > 0:
             sys.exit(1)
 
+        if TIDY:
+            tidy_data()
+
     if 'chipseq' in PIPELINES or 'all' in PIPELINES:
         print('CHIPSEQ')
         if chipseq_pipeline(VERBOSE) > 0:
             sys.exit(1)
+
+        if TIDY:
+            tidy_data()
 
     if 'hic' in PIPELINES or 'all' in PIPELINES:
         print('HIC')
         if hic_pipeline(VERBOSE) > 0:
             sys.exit(1)
 
+        if TIDY:
+            tidy_data()
+
     if 'idamidseq' in PIPELINES or 'all' in PIPELINES:
         print('IDAMIDSEQ')
         if idamidseq_pipeline(VERBOSE) > 0:
             sys.exit(1)
+
+        if TIDY:
+            tidy_data()
 
     if 'idear' in PIPELINES or 'all' in PIPELINES:
         print('IDEAR')
         if idear_pipeline(VERBOSE) > 0:
             sys.exit(1)
 
+        if TIDY:
+            tidy_data()
+
     if 'mnaseseq' in PIPELINES or 'all' in PIPELINES:
         print('MNASESEQ')
         if mnaseseq_pipeline(VERBOSE) > 0:
             sys.exit(1)
+
+        if TIDY:
+            tidy_data()
 
     if 'rnaseq' in PIPELINES or 'all' in PIPELINES:
         print('RNASEQ')
         if rnaseq_pipeline(VERBOSE) > 0:
             sys.exit(1)
 
+        if TIDY:
+            tidy_data()
+
+    if 'sleuth' in PIPELINES or 'all' in PIPELINES:
+        print('SLEUTH')
+        if sleuth_pipeline(VERBOSE) > 0:
+            sys.exit(1)
+
+        if TIDY:
+            tidy_data()
+
     if 'wgbs' in PIPELINES or 'all' in PIPELINES:
         print('WGBS')
         if wgbs_pipeline(VERBOSE) > 0:
             sys.exit(1)
+
+        if TIDY:
+            tidy_data()

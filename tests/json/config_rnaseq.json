@@ -46,45 +46,15 @@
         }, {
             "required": true,
             "allow_multiple": false,
-            "name": "abundance_h5_file",
+            "name": "kallisto_tar_file",
             "file": {
-                "file_type": "hdf5",
+                "file_type": "TAR",
                 "meta_data": {
                     "visible": true,
                     "tool": "process_rnaseq",
                     "description": "Output"
                 },
-                "file_path": "tests/data/kallisto.abundance.h5",
-                "data_type": "data_rna_seq",
-                "compressed": "null"
-            }
-        }, {
-            "required": true,
-            "allow_multiple": false,
-            "name": "abundance_tsv_file",
-            "file": {
-                "file_type": "tsv",
-                "meta_data": {
-                    "visible": true,
-                    "tool": "process_rnaseq",
-                    "description": "Output"
-                },
-                "file_path": "tests/data/kallisto.abundance.tsv",
-                "data_type": "data_rna_seq",
-                "compressed": "null"
-            }
-        }, {
-            "required": true,
-            "allow_multiple": false,
-            "name": "run_info_file",
-            "file": {
-                "file_type": "json",
-                "meta_data": {
-                    "visible": true,
-                    "tool": "process_rnaseq",
-                    "description": "Output"
-                },
-                "file_path": "tests/data/kallisto.run_info.json",
+                "file_path": "tests/data/kallisto.Human.ERR030872.tar.gz",
                 "data_type": "data_rna_seq",
                 "compressed": "null"
             }

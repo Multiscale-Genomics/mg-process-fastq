@@ -79,8 +79,8 @@ wget https://github.com/pachterlab/kallisto/releases/download/v0.43.1/kallisto_l
 tar -xzf kallisto_linux-v0.43.1.tar.gz
 
 # bedTools
-wget https://github.com/arq5x/bedtools2/releases/download/v2.26.0/bedtools-2.26.0.tar.gz
-tar -zxvf bedtools-2.26.0.tar.gz
+wget https://github.com/arq5x/bedtools2/releases/download/v2.27.1/bedtools-2.27.1.tar.gz
+tar -zxvf bedtools-2.27.1.tar.gz
 cd bedtools2
 make
 # cd ${HOME}/build/Multiscale-Genomics/mg-process-fastq

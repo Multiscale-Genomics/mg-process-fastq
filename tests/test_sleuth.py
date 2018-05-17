@@ -72,11 +72,11 @@ def test_sleuth():
 
     config = {
         "kallisto_tar_config": {
-            "ERR030856": "mixture",
-            "ERR030857": "mixture",
-            "ERR030858": "mixture",
-            "ERR030872": "thyroid",
-            "ERR030903": "thyroid"
+            "ERR030856": {"tissue": "mixture"},
+            "ERR030857": {"tissue": "mixture"},
+            "ERR030858": {"tissue": "mixture"},
+            "ERR030872": {"tissue": "thyroid"},
+            "ERR030903": {"tissue": "thyroid"}
         }
     }
 

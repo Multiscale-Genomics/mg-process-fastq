@@ -46,7 +46,7 @@ from basic_modules.metadata import Metadata
 # ------------------------------------------------------------------------------
 
 
-class kallistoQuantificationTool(Tool):
+class kallistoQuantificationTool(Tool):  # pylint: disable=invalid-name
     """
     Tool for quantifying RNA-seq alignments to calculate expression levels of
     genes within a genome.

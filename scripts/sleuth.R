@@ -34,11 +34,11 @@ sample_id <- dir(file.path(opt$data_dir))
 kal_dirs <- file.path(opt$data_dir, sample_id, "kallisto")
 
 s2c <- read.table(opt$config, header = TRUE, stringsAsFactors=FALSE)
-s2c <- dplyr::select(s2c, sample, condition)
 s2c <- dplyr::mutate(s2c, path = kal_dirs)
 
-so <- sleuth_prep(s2c, extra_bootstrap_summary = TRUE, num_cores = 1)
-so <- sleuth_fit(so, ~condition, 'full')
+factors <- colnames(s2c)[2:(length(s2c)-1)]
+so <- sleuth_prep(s2c, full_model=as.formula(paste("~", paste(factors, collapse="+"))), extra_bootstrap_summary = TRUE, num_cores = 1)
+so <- sleuth_fit(so)
 so <- sleuth_fit(so, ~1, 'reduced')
 so <- sleuth_lrt(so, 'reduced', 'full')
 

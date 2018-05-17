@@ -61,7 +61,7 @@ def test_rnaseq_pipeline():
     rs_files, rs_meta = rs_handle.run(files, metadata, files_out)  # pylint: disable=unused-variable
 
     # Checks that the returned files matches the expected set of results
-    assert len(rs_files) == 4
+    assert len(rs_files) == 2
 
     # Add tests for all files created
     for f_out in rs_files:

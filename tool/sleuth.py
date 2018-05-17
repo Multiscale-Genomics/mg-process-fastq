@@ -41,7 +41,7 @@ from basic_modules.metadata import Metadata
 # ------------------------------------------------------------------------------
 
 
-class sleuthTool(Tool):
+class sleuthTool(Tool):  # pylint: disable=invalid-name
     """
     Tool for peak calling for iDamID-seq data
     """
@@ -65,11 +65,60 @@ class sleuthTool(Tool):
 
         self.configuration.update(configuration)
 
+    @staticmethod
+    def extract_kallisto_tar(data_tmp_dir, kallisto_tar):
+        """
+        Function to extract the kallisto tar file
+        """
+        try:
+            tar = tarfile.open(kallisto_tar)
+            tar.extractall(path=data_tmp_dir)
+
+            for member in tar.getmembers():
+                member_dir = member.name.split("/")
+                member_dir = data_tmp_dir + "/" + "/".join(member_dir[:-1])
+                tar_sub = tarfile.open(data_tmp_dir + "/" + member.name)
+                tar_sub.extractall(path=member_dir)
+                tar_sub.close()
+
+            tar.close()
+        except IOError as error:
+            logger.fatal(
+                "IO ERROR {0}: Failed to extract all files:\n{1}".format(
+                    error.errno, error.strerror
+                )
+            )
+            return False
+
+        return True
+
+    @staticmethod
+    def write_config_file(loc, sleuth_config):
+        """
+        Function to create the Sleuth configuration file descibing the
+        experiments
+        """
+        with open(loc, "w") as cf_handle:
+            dataset = next(iter(sleuth_config))
+            column_keys = []
+            for column in list(sleuth_config[dataset].keys()):
+                if column != "sample":
+                    column_keys.append(column)
+            cf_handle.write("sample\t" + "\t".join(column_keys) + "\n")
+            for row in sleuth_config:
+                row_string = row
+                for column in column_keys:
+                    row_string += "\t" + sleuth_config[row][column]
+
+                cf_handle.write(row_string + "\n")
+
+        return True
+
     @task(
         returns=bool,
         sleuth_config=IN, kallisto_tar=FILE_IN,
         save_file=FILE_OUT, isModifier=False)
-    def sleuth_analysis(  # pylint: disable=no-self-use
+    def sleuth_analysis(
             self, sleuth_config, kallisto_tar, save_file):
         """
         Differential analysis of kallisto peak calls.
@@ -93,30 +142,8 @@ class sleuthTool(Tool):
         data_tmp_dir = kallisto_tar.split("/")
         data_tmp_dir = "/".join(data_tmp_dir[:-1])
 
-        try:
-            tar = tarfile.open(kallisto_tar)
-            tar.extractall(path=data_tmp_dir)
-
-            for member in tar.getmembers():
-                member_dir = member.name.split("/")
-                member_dir = data_tmp_dir + "/" + "/".join(member_dir[:-1])
-                tar_sub = tarfile.open(data_tmp_dir + "/" + member.name)
-                tar_sub.extractall(path=member_dir)
-                tar_sub.close()
-
-            tar.close()
-        except IOError as error:
-            logger.fatal(
-                "IO ERROR {0}: Failed to extract all files:\n{1}".format(
-                    error.errno, error.strerror
-                )
-            )
-            return False
-
-        with open(data_tmp_dir + "/ht_config.txt", "w") as cf_handle:
-            cf_handle.write("sample\tcondition\n")
-            for row in sleuth_config:
-                cf_handle.write(row + "\t" + sleuth_config[row] + "\n")
+        self.extract_kallisto_tar(data_tmp_dir, kallisto_tar)
+        self.write_config_file(data_tmp_dir + "/ht_config.txt", sleuth_config)
 
         rscript = os.path.join(os.path.dirname(__file__), "../scripts/sleuth.R")
 

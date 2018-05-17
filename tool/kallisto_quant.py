@@ -79,9 +79,7 @@ class kallistoQuantificationTool(Tool):  # pylint: disable=invalid-name
     @task(
         cdna_idx_file=FILE_IN,
         fastq_file_loc=FILE_IN,
-        abundance_h5_file=FILE_OUT,
-        abundance_tsv_file=FILE_OUT,
-        run_info_file=FILE_OUT,
+        kallisto_tar_file=FILE_OUT,
         bootstrap=IN)
     def kallisto_quant_single(
             self, cdna_idx_file, fastq_file_loc, kallisto_tar_file, bootstrap=0):
@@ -136,9 +134,7 @@ class kallistoQuantificationTool(Tool):  # pylint: disable=invalid-name
         fastq_file_loc_01=FILE_IN,
         fastq_file_loc_02=FILE_IN,
         cdna_idx_file=FILE_IN,
-        abundance_h5_file=FILE_OUT,
-        abundance_tsv_file=FILE_OUT,
-        run_info_file=FILE_OUT,
+        kallisto_tar_file=FILE_OUT,
         bootstrap=IN)
     def kallisto_quant_paired(
             self, cdna_idx_file, fastq_file_loc_01, fastq_file_loc_02,
@@ -173,6 +169,8 @@ class kallistoQuantificationTool(Tool):  # pylint: disable=invalid-name
         args = shlex.split(command_line)
         process = subprocess.Popen(args)
         process.wait()
+
+        logger.info("OUTPUT DIR: " + '/'.join(output_dir[0:-1]))
 
         self.compress_results(
             kallisto_tar_file,

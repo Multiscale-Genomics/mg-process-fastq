@@ -81,22 +81,22 @@ class gemIndexerTool(Tool):
             Location of the output index file
         """
         try:
+            idx_out_pregz = index_loc.replace('.gem.gz', '')
             au_handle = alignerUtils()
-            au_handle.gem_index_genome(genome_file, genome_file)
-            idx_out_pregz = index_loc.replace('.gem.gz', '.gem')
+            au_handle.gem_index_genome(genome_file, idx_out_pregz)
         except (IOError, OSError) as msg:
             logger.fatal("I/O error({0}): {1}".format(
                 msg.errno, msg.strerror))
             return False
 
         try:
-            command_line = 'pigz ' + idx_out_pregz
-            args = shlex.split(command_line)
-            process = subprocess.Popen(args)
+            command_line = ['pigz ', idx_out_pregz+".gem"]
+            logger.info("args for pigz:"+ " ".join(command_line))
+            process = subprocess.Popen(" ".join(command_line), shell=True)
             process.wait()
         except OSError:
             logger.warn("OSERROR: pigz not installed, using gzip")
-            command_line = 'gzip ' + idx_out_pregz
+            command_line = 'gzip ' + idx_out_pregz +".gem"
             args = shlex.split(command_line)
             process = subprocess.Popen(args)
             process.wait()

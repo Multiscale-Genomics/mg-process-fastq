@@ -25,6 +25,10 @@
         {
             "name": "description",
             "value": null
+        },
+        {
+            "name": "kallisto_bootstrap_param",
+            "value": 10
         }
     ],
     "output_files": [

@@ -271,6 +271,8 @@ class kallistoQuantificationTool(Tool):  # pylint: disable=invalid-name
         # abundance_tsv_file = output_dir + "/abundance.tsv"
         # run_info_file = output_dir + "/run_info.json"
 
+        sources = [input_metadata["cdna"].file_path]
+
         if "fastq2" not in input_files:
             self.kallisto_quant_single(
                 input_files["index"],
@@ -278,6 +280,7 @@ class kallistoQuantificationTool(Tool):  # pylint: disable=invalid-name
                 output_files["kallisto_tar_file"],
                 self.configuration["kallisto_bootstrap_param"]
             )
+            sources.append(input_metadata["fastq1"].file_path)
             # results = compss_wait_on(results)
         elif "fastq2" in input_files:
             # handle error
@@ -288,6 +291,8 @@ class kallistoQuantificationTool(Tool):  # pylint: disable=invalid-name
                 output_files["kallisto_tar_file"],
                 self.configuration["kallisto_bootstrap_param"]
             )
+            sources.append(input_metadata["fastq1"].file_path)
+            sources.append(input_metadata["fastq2"].file_path)
             # results = compss_wait_on(results)
         else:
             return ({}, {})
@@ -297,7 +302,7 @@ class kallistoQuantificationTool(Tool):  # pylint: disable=invalid-name
                 data_type="data_ranseq",
                 file_type="TAR",
                 file_path=output_files["kallisto_tar_file"],
-                sources=[input_metadata["cdna"].file_path, input_metadata["fastq1"].file_path],
+                sources=sources,
                 taxon_id=input_metadata["cdna"].taxon_id,
                 meta_data={
                     "assembly": input_metadata["cdna"].meta_data["assembly"],

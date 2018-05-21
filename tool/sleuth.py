@@ -75,11 +75,14 @@ class sleuthTool(Tool):  # pylint: disable=invalid-name
             tar.extractall(path=data_tmp_dir)
 
             for member in tar.getmembers():
-                member_dir = member.name.split("/")
-                member_dir = data_tmp_dir + "/" + "/".join(member_dir[:-1])
-                tar_sub = tarfile.open(data_tmp_dir + "/" + member.name)
-                tar_sub.extractall(path=member_dir)
-                tar_sub.close()
+                if member.isfile():
+                    member_dir = member.name.split("/")
+                    member_dir = data_tmp_dir + "/" + "/".join(member_dir[:-1])
+                    logger.fatal("data_tmp_dir: " + data_tmp_dir)
+                    logger.fatal("Member: " + member.name)
+                    tar_sub = tarfile.open(data_tmp_dir + "/" + member.name)
+                    tar_sub.extractall(path=member_dir)
+                    tar_sub.close()
 
             tar.close()
         except IOError as error:

@@ -255,7 +255,7 @@ class bwaAlignerTool(Tool):
 
         return command_params
 
-    def run(self, input_files, input_metadata, output_files):
+    def run(self, input_files, input_metadata, output_files):  # pylint: disable=too-many-locals,too-many-statements
         """
         The main function to align bam files to a genome using BWA
 
@@ -334,8 +334,7 @@ class bwaAlignerTool(Tool):
                 output_bam_file_tmp = tmp_fq1 + ".bam"
                 output_bam_list.append(output_bam_file_tmp)
 
-                # print("FILES:", tmp_fq1, tmp_fq2, output_bam_file_tmp)
-
+                logger.info("BWA ALN FILES: " + tmp_fq1 + " - " + tmp_fq2)
                 self.bwa_aligner_paired(
                     str(input_files["genome"]), tmp_fq1, tmp_fq2, output_bam_file_tmp,
                     str(input_files["index"]), self.get_aln_params(self.configuration)

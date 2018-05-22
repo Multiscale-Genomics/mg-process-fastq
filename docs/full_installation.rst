@@ -453,10 +453,12 @@ Trim Galore
    :linenos:
 
    cd ${HOME}/lib
-   pip install --user --upgrade cutadapt 
-   curl -fsSL https://github.com/FelixKrueger/TrimGalore/archive/0.4.3.tar.gz -o trim_galore.tar.gz
-   tar xvzf trim_galore.tar.gz
-   mv TrimGalore-0.4.3/trim_galore /usr/bin
+   pip install cutadapt
+   wget -O trim_galore.tar.gz https://github.com/FelixKrueger/TrimGalore/archive/0.4.3.tar.gz
+   tar -xzf trim_galore.tar.gz
+
+   cd ${HOME}/bin
+   ln -s ${HOME}/lib/TrimGalore-0.4.3/trim_galore trim_galore
 
 
 Post Installation Tidyup

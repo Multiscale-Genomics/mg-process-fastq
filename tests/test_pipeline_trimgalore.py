@@ -24,8 +24,8 @@ import pytest # pylint: disable=unused-import
 from basic_modules.metadata import Metadata
 from process_trim_galore import process_trim_galore
 
-@pytest.mark.trimgalore
-@pytest.mark.pipeline
+# @pytest.mark.trimgalore
+# @pytest.mark.pipeline
 def test_trim_galore_pipeline():
     """
     Test case to ensure that the trimgalore pipeline code works.
@@ -46,8 +46,8 @@ def test_trim_galore_pipeline():
     """
 
     resource_path = os.path.join(os.path.dirname(__file__), "data/")
-    fastq_file_1 = resource_path + "bsSeeker.Mouse.SRR892982_1.fastq"
-    fastq_file_2 = resource_path + "bsSeeker.Mouse.SRR892982_2.fastq"
+    fastq_file_1 = resource_path + "bsSeeker.Mouse.SRR892982_1.fastq.gz"
+    fastq_file_2 = resource_path + "bsSeeker.Mouse.SRR892982_2.fastq.gz"
 
     with gzip.open(fastq_file_1 + '.gz', 'rb') as fgz_in:
         with open(fastq_file_1, 'w') as f_out:
@@ -68,7 +68,7 @@ def test_trim_galore_pipeline():
     }
 
     files_out = {
-        "fastq1_trimmed": 'tests/data/bsSeeker.Mouse.SRR892982_1_trimmed.fq'
+        "fastq1_trimmed": 'tests/data/bsSeeker.Mouse.SRR892982_1_trimmed.fastq'
     }
 
     tg_handle = process_trim_galore()
@@ -87,6 +87,8 @@ def test_trim_galore_pipeline():
         assert os.path.isfile(tg_files[f_out]) is True
         assert os.path.getsize(tg_files[f_out]) > 0
 
+@pytest.mark.trimgalore
+@pytest.mark.pipeline
 def test_trim_galore_pipeline_02():
     """
     Test case to ensure that the trimgalore pipeline code works
@@ -110,8 +112,8 @@ def test_trim_galore_pipeline_02():
     resource_path = os.path.join(os.path.dirname(__file__), "data/")
 
     files = {
-        'fastq1': resource_path + 'bsSeeker.Mouse.SRR892982_1.fastq',
-        'fastq2': resource_path + 'bsSeeker.Mouse.SRR892982_2.fastq'
+        'fastq1': resource_path + 'bsSeeker.Mouse.SRR892982_1.fastq.gz',
+        'fastq2': resource_path + 'bsSeeker.Mouse.SRR892982_2.fastq.gz'
     }
 
     metadata = {
@@ -125,8 +127,8 @@ def test_trim_galore_pipeline_02():
     }
 
     files_out = {
-        "fastq1_trimmed": 'tests/data/bsSeeker.Mouse.SRR892982_1.trimmed.fq',
-        "fastq2_trimmed": 'tests/data/bsSeeker.Mouse.SRR892982_2.trimmed.fq'
+        "fastq1_trimmed": 'tests/data/bsSeeker.Mouse.SRR892982_1.trimmed.fastq.gz',
+        "fastq2_trimmed": 'tests/data/bsSeeker.Mouse.SRR892982_2.trimmed.fastq.gz'
     }
 
     tg_handle = process_trim_galore()

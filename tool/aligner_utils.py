@@ -55,7 +55,7 @@ class alignerUtils(object):
         return True
 
     @staticmethod
-    def gem_index_genome(genome_file, gem_file):
+    def gem_index_genome(genome_file):
         """
         Create an index of the genome FASTA file with GEM. These are saved
         alongside the assembly file.
@@ -66,7 +66,7 @@ class alignerUtils(object):
             Location of the assembly file in the file system
 
         """
-        command_line = 'gem-indexer -i ' + genome_file + ' -o ' + gem_file
+        command_line = 'gem-indexer -i ' + genome_file + ' -o ' + genome_file
 
         args = shlex.split(command_line)
         process = subprocess.Popen(args)

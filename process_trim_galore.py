@@ -26,9 +26,10 @@ from utils import logger
 
 from tool.trimgalore import trimgalore
 
+
 # ------------------------------------------------------------------------------
 
-class process_trim_galore(Workflow):
+class process_trim_galore(Workflow):  # pylint: disable=invalid-name,too-few-public-methods
     """
     Functions for filtering FASTQ files.
     Files are filtered for removal of duplicate reads.
@@ -112,9 +113,8 @@ class process_trim_galore(Workflow):
                 tool_name = output_metadata["fastq2_trimmed"].meta_data["tool"]
                 output_metadata["fastq2_trimmed"].meta_data["tool_description"] = tool_name
                 output_metadata["fastq2_trimmed"].meta_data["tool"] = "process_trim_galore"
-            except KeyError as msg:
+            except KeyError:
                 logger.fatal("Trim Galore fastq2: Error while trimming")
-                print(msg)
                 return {}, {}
         else:
             trim_files, trim_meta = trimg.run(
@@ -132,11 +132,12 @@ class process_trim_galore(Workflow):
             tool_name = output_metadata["fastq1_trimmed"].meta_data["tool"]
             output_metadata["fastq1_trimmed"].meta_data["tool_description"] = tool_name
             output_metadata["fastq1_trimmed"].meta_data["tool"] = "process_trim_galore"
-        except KeyError as msg:
+        except KeyError:
             logger.fatal("Trim Galore fastq1: Error while trimming")
             return {}, {}
 
         return (output_results_files, output_metadata)
+
 
 # ------------------------------------------------------------------------------
 
@@ -162,6 +163,7 @@ def main_json(config, in_metadata, out_metadata):
     print(result)
 
     return result
+
 
 # ------------------------------------------------------------------------------
 

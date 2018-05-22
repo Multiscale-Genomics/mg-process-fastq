@@ -19,13 +19,14 @@ from __future__ import print_function
 
 import os.path
 import gzip
-import pytest # pylint: disable=unused-import
+import pytest
 
 from basic_modules.metadata import Metadata
 from process_trim_galore import process_trim_galore
 
-# @pytest.mark.trimgalore
-# @pytest.mark.pipeline
+
+@pytest.mark.trimgalore
+@pytest.mark.pipeline
 def test_trim_galore_pipeline():
     """
     Test case to ensure that the trimgalore pipeline code works.
@@ -47,14 +48,9 @@ def test_trim_galore_pipeline():
 
     resource_path = os.path.join(os.path.dirname(__file__), "data/")
     fastq_file_1 = resource_path + "bsSeeker.Mouse.SRR892982_1.fastq.gz"
-    fastq_file_2 = resource_path + "bsSeeker.Mouse.SRR892982_2.fastq.gz"
 
     with gzip.open(fastq_file_1 + '.gz', 'rb') as fgz_in:
         with open(fastq_file_1, 'w') as f_out:
-            f_out.write(fgz_in.read())
-
-    with gzip.open(fastq_file_2 + '.gz', 'rb') as fgz_in:
-        with open(fastq_file_2, 'w') as f_out:
             f_out.write(fgz_in.read())
 
     files = {
@@ -83,9 +79,9 @@ def test_trim_galore_pipeline():
         print("TRIM GALORE RESULTS FILE:", f_out)
         assert tg_files[f_out] == files_out[f_out]
         assert f_out in tg_meta
-        #assert len(tg_meta) > 0
         assert os.path.isfile(tg_files[f_out]) is True
         assert os.path.getsize(tg_files[f_out]) > 0
+
 
 @pytest.mark.trimgalore
 @pytest.mark.pipeline

@@ -460,6 +460,13 @@ Trim Galore
    cd ${HOME}/bin
    ln -s ${HOME}/lib/TrimGalore-0.4.3/trim_galore trim_galore
 
+Running on a COMPSs VM the symlink will need to be created in a system accessible area:
+
+.. code-block:: none
+   :linenos:
+
+   sudo ln -s ${HOME}/lib/TrimGalore-0.4.3/trim_galore /usr/local/bin/trim_galore
+
 
 Post Installation Tidyup
 ------------------------

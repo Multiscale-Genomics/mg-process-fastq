@@ -28,6 +28,11 @@ Tools for processing FastQ files
    .. autoclass:: tool.validate_fastqc.fastqcTool
       :members:
 
+   TrimGalore
+   ----------
+   .. autoclass:: tool.trimgalore.trimgalore
+      :members:
+
    Indexers
    ========
 
@@ -100,11 +105,11 @@ Tools for processing FastQ files
       :members:
 
    Trim Galore
-   -----------   
+   -----------
    .. autoclass:: tool.trimgalore.trimgalore
       :members:
 
-   
+
    Peak Calling
    ============
 

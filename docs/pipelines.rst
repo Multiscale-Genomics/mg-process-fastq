@@ -1045,8 +1045,8 @@ RNA-Seq Analysis
       :members:
 
 
-Trim Galore 
------------
+TrimGalore
+----------
 .. automodule:: process_trim_galore
 
    This pipeline can process FASTQ to trim poor base quality or adapter contamination.
@@ -1067,7 +1067,7 @@ Trim Galore
    -------
    fastq_trimmed : file
       Location of a fastq file containing the sequences after poor base qualities or contamination trimming
-      
+
 
    A full description of the Trim Galore files can be found at
    https://github.com/FelixKrueger/TrimGalore

@@ -49,12 +49,8 @@ def test_trim_galore_pipeline():
     resource_path = os.path.join(os.path.dirname(__file__), "data/")
     fastq_file_1 = resource_path + "bsSeeker.Mouse.SRR892982_1.fastq.gz"
 
-    with gzip.open(fastq_file_1 + '.gz', 'rb') as fgz_in:
-        with open(fastq_file_1, 'w') as f_out:
-            f_out.write(fgz_in.read())
-
     files = {
-        'fastq1': resource_path + 'bsSeeker.Mouse.SRR892982_1.fastq'
+        'fastq1': resource_path + 'bsSeeker.Mouse.SRR892982_1.fastq.gz'
     }
 
     metadata = {
@@ -64,7 +60,8 @@ def test_trim_galore_pipeline():
     }
 
     files_out = {
-        "fastq1_trimmed": 'tests/data/bsSeeker.Mouse.SRR892982_1_trimmed.fastq'
+        "fastq1_trimmed": 'tests/data/bsSeeker.Mouse.SRR892982_1_trimmed.single.fastq.gz',
+        "fastq1_report": 'tests/data/bsSeeker.Mouse.SRR892982_1.trimmed.single.report.txt'
     }
 
     tg_handle = process_trim_galore()
@@ -124,7 +121,9 @@ def test_trim_galore_pipeline_02():
 
     files_out = {
         "fastq1_trimmed": 'tests/data/bsSeeker.Mouse.SRR892982_1.trimmed.fastq.gz',
-        "fastq2_trimmed": 'tests/data/bsSeeker.Mouse.SRR892982_2.trimmed.fastq.gz'
+        "fastq2_trimmed": 'tests/data/bsSeeker.Mouse.SRR892982_2.trimmed.fastq.gz',
+        "fastq1_report": 'tests/data/bsSeeker.Mouse.SRR892982_1.trimmed.report.txt',
+        "fastq2_report": 'tests/data/bsSeeker.Mouse.SRR892982_2.trimmed.report.txt'
     }
 
     tg_handle = process_trim_galore()

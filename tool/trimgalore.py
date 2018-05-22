@@ -491,8 +491,11 @@ class trimgalore(Tool):
                 }
             )
 
-        logger.info("TRIM GALORE: GENERATED FILES:\n\t{0}\n\t{1}".format(
-            output_files["fastq1_trimmed"], output_files["fastq2_trimmed"]))
+            logger.info("TRIM GALORE: GENERATED FILES:\n\t{0}\n\t{1}".format(
+                output_files["fastq1_trimmed"], output_files["fastq2_trimmed"]))
+        else:
+            logger.info("TRIM GALORE: GENERATED FILES:\n\t{0}".format(
+                output_files["fastq1_trimmed"]))
 
         return (output_files_created, output_metadata)
 

@@ -18,7 +18,6 @@
 from __future__ import print_function
 
 import os.path
-import gzip
 import pytest
 
 from basic_modules.metadata import Metadata
@@ -47,7 +46,6 @@ def test_trim_galore_pipeline():
     """
 
     resource_path = os.path.join(os.path.dirname(__file__), "data/")
-    fastq_file_1 = resource_path + "bsSeeker.Mouse.SRR892982_1.fastq.gz"
 
     files = {
         'fastq1': resource_path + 'bsSeeker.Mouse.SRR892982_1.fastq.gz'

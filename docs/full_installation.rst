@@ -466,6 +466,7 @@ Running on a COMPSs VM the symlink will need to be created in a system accessibl
    :linenos:
 
    sudo ln -s ${HOME}/lib/TrimGalore-0.4.3/trim_galore /usr/local/bin/trim_galore
+   pip install cutadapt
 
 
 Post Installation Tidyup

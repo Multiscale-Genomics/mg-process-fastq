@@ -5,43 +5,28 @@
             "allow_multiple": false,
             "name": "fastq1",
             "value": "59b7e020d9422a5969b65378"
+        },
+        {
+            "required": true,
+            "allow_multiple": false,
+            "name": "fastq2",
+            "value": "59b7e020d9422a5969b65379"
         }
     ],
-    "arguments": [
-        {
-            "name": "quality",
-            "value": "50"
-        },
-        {
-            "name": "phred33",
-            "value": "ON"
-        },
-        {
-            "name": "phred64",
-            "value": "OFF"
-        },
-        {
-            "name": "stringency",
-            "value": "1"
-        },
-        {
-            "name": "length",
-            "value": "20"
-        }
-    ],
+    "arguments": [],
     "output_files": [
         {
             "required": true,
             "allow_multiple": false,
             "name": "fastq1_trimmed",
             "file": {
-                "file_type": "fastq_trimmed",
+                "file_type": "FASTQ",
                 "meta_data": {
                     "visible": true,
                     "tool": "process_trim_galore",
                     "description": "Trimmed reads"
                 },
-                "file_path": "tests/data/bsSeeker.Mouse.SRR892982_1_trimmed.fq",
+                "file_path": "tests/data/bsSeeker.Mouse.SRR892982_1_trimmed.fastq.gz",
                 "data_type": "data_wgbs",
                 "compressed": "null"
             }
@@ -51,17 +36,49 @@
             "allow_multiple": false,
             "name": "fastq2_trimmed",
             "file": {
-                "file_type": "fastq_trimmed",
+                "file_type": "FASTQ",
                 "meta_data": {
                     "visible": true,
                     "tool": "process_trim_galore",
                     "description": "Trimmed reads"
                 },
-                "file_path": "tests/data/bsSeeker.Mouse.SRR892982_2_trimmed.fq",
+                "file_path": "tests/data/bsSeeker.Mouse.SRR892982_2_trimmed.fastq.gz",
                 "data_type": "data_wgbs",
                 "compressed": "null"
             }
-        }  
+        },
+        {
+            "required": true,
+            "allow_multiple": false,
+            "name": "fastq1_report",
+            "file": {
+                "file_type": "TXT",
+                "meta_data": {
+                    "visible": true,
+                    "tool": "process_trim_galore",
+                    "description": "Trim Galore report about what was trimmed"
+                },
+                "file_path": "tests/data/bsSeeker.Mouse.SRR892982_1_trimmed.report.txt",
+                "data_type": "data_wgbs",
+                "compressed": "null"
+            }
+        },
+        {
+            "required": true,
+            "allow_multiple": false,
+            "name": "fastq2_report",
+            "file": {
+                "file_type": "TXT",
+                "meta_data": {
+                    "visible": true,
+                    "tool": "process_trim_galore",
+                    "description": "Trim Galore report about what was trimmed"
+                },
+                "file_path": "tests/data/bsSeeker.Mouse.SRR892982_2_trimmed.report.txt",
+                "data_type": "data_wgbs",
+                "compressed": "null"
+            }
+        }
     ]
 }
 

@@ -27,14 +27,14 @@ from utils import logger
 try:
     if hasattr(sys, "_run_from_cmdl") is True:
         raise ImportError
-    from pycompss.api.parameter import FILE_IN, FILE_OUT, IN
+    from pycompss.api.parameter import FILE_IN, FILE_OUT, IN, OUT
     from pycompss.api.task import task
     from pycompss.api.api import compss_wait_on
 except ImportError:
     logger.warn("[Warning] Cannot import \"pycompss\" API packages.")
     logger.warn("          Using mock decorators.")
 
-    from utils.dummy_pycompss import FILE_IN, FILE_OUT, IN  # pylint: disable=ungrouped-imports
+    from utils.dummy_pycompss import FILE_IN, FILE_OUT, IN, OUT  # pylint: disable=ungrouped-imports
     from utils.dummy_pycompss import task  # pylint: disable=ungrouped-imports
     from utils.dummy_pycompss import compss_wait_on  # pylint: disable=ungrouped-imports
 
@@ -61,9 +61,8 @@ class trimgalore(Tool):
 
         self.configuration.update(configuration)
 
-    @task(returns=bool, fastq_file_in=FILE_IN, fastq_file_out=FILE_OUT,
-          params=IN, isModifier=False)
-    def trimgalore_single(self, fastq_file_in, fastq_file_out, params):  # pylint: disable=no-self-use
+    @task(returns=str, version=OUT, isModifier=False)
+    def trimgalore_version(self):  # pylint: disable=no-self-use
         """
         Trims and removes low quality subsections and reads from a singed-ended
         FASTQ file
@@ -83,6 +82,84 @@ class trimgalore(Tool):
             Indicator of the success of the function
         """
 
+        command_line = "trim_galore --version"
+
+        logger.info("TRIM GALORE: command_line: " + command_line)
+
+        try:
+            args = shlex.split(command_line)
+            process = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            version, proc_err = process.communicate()
+            logger.info("TRIM GALORE stdout" + version)
+            logger.info("TRIM GALORE stderr" + proc_err)
+
+        except (IOError, OSError) as msg:
+            logger.fatal("I/O error({0}) - trim_galore: {1}\n{2}".format(
+                msg.errno, msg.strerror, command_line))
+            return ""
+
+        return version
+
+    @task(returns=bool,
+          fastq_file_in=FILE_IN, fastq_file_out=FILE_OUT, fastq_report=FILE_OUT,
+          params=IN, isModifier=False)
+    def trimgalore_single(self, fastq_file_in, fastq_file_out, fastq_report, params):  # pylint: disable=no-self-use
+        """
+        Trims and removes low quality subsections and reads from a singed-ended
+        FASTQ file
+
+        Parameters
+        ----------
+        fastq_file_in : str
+            Location of the input fastq file
+        fastq_file_out : str
+            Location of the output fastq file
+        params : dict
+            Parameters to use in TrimGalore
+
+        Returns
+        -------
+        bool
+            Indicator of the success of the function
+        """
+
+        if os.path.isfile(fastq_file_in) is False or os.path.getsize(fastq_file_in) <= 4096:
+            logger.fatal("FILE NOT FOUND: " + fastq_file_in)
+            return False
+
+        # Output file name used by TrimGalore
+        fastq_trimmed = fastq_file_in.split("/")
+        fastq_trimmed.insert(-1, "tmp")
+
+        tail_substring = "fastq"
+        if ".fq" in fastq_trimmed[-1]:
+            tail_substring = "fq"
+
+        gzipped = False
+        if fastq_trimmed[-1][-3:] == ".gz":
+            gzipped = True
+
+        tmp_dir = "/".join(fastq_trimmed[0:len(fastq_trimmed) - 1])
+
+        if gzipped:
+            tg_tmp_out = "/".join(fastq_trimmed)
+            tg_tmp_out = tg_tmp_out.replace(
+                "." + tail_substring + ".gz",
+                "_trimmed.fq.gz"
+            )
+        else:
+            tg_tmp_out = "/".join(fastq_trimmed)
+            tg_tmp_out = tg_tmp_out.replace(
+                "." + tail_substring,
+                "_trimmed.fq.gz"
+            )
+
+        try:
+            os.mkdir(tmp_dir)
+        except (IOError, OSError) as msg:
+            logger.warn("I/O error({0}) - tmp folder already exists: {1}".format(
+                msg.errno, msg.strerror))
+
         command_line = "trim_galore " + " ".join(params) \
         + " " + fastq_file_in + " -o " + "tests/data/"
 
@@ -96,31 +173,35 @@ class trimgalore(Tool):
             logger.fatal("I/O error({0}) - trim_galore: {1}\n{2}".format(
                 msg.errno, msg.strerror, command_line))
             return False
-        print (os.path.getsize(fastq_file_out))
 
-        # Output file name used by TrimGalore
-        #tg_tmp_out = fastq_file_in.replace(".fastq", "_trimmed.fq")
+        try:
+            with open(fastq_file_out, "wb") as f_out:
+                with open(tg_tmp_out, "rb") as f_in:
+                    f_out.write(f_in.read())
+        except IOError as error:
+            logger.fatal(
+                "I/O error({0}): {1}".format(error.errno, error.strerror))
+            return False
 
-        #try:
-        #    with open(fastq_file_out, "wb") as f_out:
-        #        with open(tg_tmp_out, "rb") as f_in:
-                    #f_out.write(f_in.read())
-        #except IOError as error:
-        #    logger.fatal(
-         #       "I/O error({0}): {1}".format(error.errno, error.strerror))
-          #  return False
+        try:
+            with open(fastq_report, "wb") as f_out:
+                with open("/".join(fastq_trimmed) + "_trimming_report.txt", "rb") as f_in:
+                    f_out.write(f_in.read())
+        except IOError as error:
+            logger.fatal("I/O error({0}) - TRIMMING REPORT FASTQ 1: {1}\n{2}\n{3}".format(
+                error.errno, error.strerror,
+                fastq_report, "/".join(fastq_trimmed) + "_trimming_report.txt"))
+            return False
 
-        print ("after try", fastq_file_out)
-        print (os.path.getsize(fastq_file_out))
         return True
 
     @task(returns=bool,
-          fastq1_file_in=FILE_IN, fastq1_file_out=FILE_OUT,
-          fastq2_file_in=FILE_IN, fastq2_file_out=FILE_OUT,
+          fastq1_file_in=FILE_IN, fastq1_file_out=FILE_OUT, fastq1_report=FILE_OUT,
+          fastq2_file_in=FILE_IN, fastq2_file_out=FILE_OUT, fastq2_report=FILE_OUT,
           params=IN, isModifier=False)
     def trimgalore_paired(  # pylint: disable=too-many-arguments
-            self, fastq1_file_in, fastq1_file_out,
-            fastq2_file_in, fastq2_file_out, params):  # pylint: disable=no-self-use
+            self, fastq1_file_in, fastq1_file_out, fastq1_report,
+            fastq2_file_in, fastq2_file_out, fastq2_report, params):  # pylint: disable=no-self-use
         """
         Trims and removes low quality subsections and reads from paired-end
         FASTQ files
@@ -140,8 +221,66 @@ class trimgalore(Tool):
             Indicator of the success of the function
         """
 
-        command_line = "trim_galore " + " ".join(params) \
-        + " " + fastq1_file_in + " " + fastq2_file_in
+        if os.path.isfile(fastq1_file_in) is False or os.path.getsize(fastq1_file_in) <= 4096:
+            logger.fatal("FILE NOT FOUND: " + fastq1_file_in)
+            return False
+        if os.path.isfile(fastq2_file_in) is False or os.path.getsize(fastq1_file_in) <= 4096:
+            logger.fatal("FILE NOT FOUND: " + fastq2_file_in)
+            return False
+
+        # Output file name used by TrimGalore
+        fastq1_trimmed = fastq1_file_in.split("/")
+        fastq1_trimmed.insert(-1, "tmp")
+
+        tail_substring = "fastq"
+        if ".fq" in fastq1_trimmed[-1]:
+            tail_substring = "fq"
+
+        gzipped = False
+        if fastq1_trimmed[-1][-3:] == ".gz":
+            gzipped = True
+
+        tmp_dir = "/".join(fastq1_trimmed[0:len(fastq1_trimmed) - 1])
+
+        if gzipped:
+            tg_tmp_out_1 = "/".join(fastq1_trimmed)
+            tg_tmp_out_1 = tg_tmp_out_1.replace(
+                "." + tail_substring + ".gz",
+                "_trimmed.fq.gz"
+            )
+        else:
+            tg_tmp_out_1 = "/".join(fastq1_trimmed)
+            tg_tmp_out_1 = tg_tmp_out_1.replace(
+                "." + tail_substring,
+                "_trimmed.fq.gz"
+            )
+
+
+        fastq2_trimmed = fastq2_file_in.split("/")
+        fastq2_trimmed.insert(-1, "tmp")
+
+        if gzipped:
+            tg_tmp_out_2 = "/".join(fastq2_trimmed)
+            tg_tmp_out_2 = tg_tmp_out_2.replace(
+                "." + tail_substring + ".gz",
+                "_trimmed.fq.gz"
+            )
+        else:
+            tg_tmp_out_2 = "/".join(fastq2_trimmed)
+            tg_tmp_out_2 = tg_tmp_out_2.replace(
+                "." + tail_substring,
+                "_trimmed.fq.gz"
+            )
+
+        try:
+            os.mkdir(tmp_dir)
+        except (IOError, OSError) as msg:
+            logger.warn("I/O error({0}) - tmp folder already exists: {1}".format(
+                msg.errno, msg.strerror))
+
+        command_line = "trim_galore " + " ".join(params) + " "
+        command_line += "-o " + tmp_dir + " "
+        command_line += fastq1_file_in + " " + fastq2_file_in
         logger.info("TRIM GALORE: command_line: " + command_line)
 
         try:
@@ -153,16 +292,13 @@ class trimgalore(Tool):
                 msg.errno, msg.strerror, command_line))
             return False
 
-        # Output file name used by TrimGalore
-        tg_tmp_out_1 = fastq1_file_in.replace(".fastq", "_trimmed.fq")
-        tg_tmp_out_2 = fastq2_file_in.replace(".fastq", "_trimmed.fq")
-
         try:
             with open(fastq1_file_out, "wb") as f_out:
                 with open(tg_tmp_out_1, "rb") as f_in:
                     f_out.write(f_in.read())
         except IOError as error:
-            logger.fatal("I/O error({0}): {1}".format(error.errno, error.strerror))
+            logger.fatal("I/O error({0}) - Copying FASTQ 1: {1}\n{2}\n{3}".format(
+                error.errno, error.strerror, fastq1_file_out, tg_tmp_out_1))
             return False
 
         try:
@@ -170,7 +306,28 @@ class trimgalore(Tool):
                 with open(tg_tmp_out_2, "rb") as f_in:
                     f_out.write(f_in.read())
         except IOError as error:
-            logger.fatal("I/O error({0}): {1}".format(error.errno, error.strerror))
+            logger.fatal("I/O error({0}) - Copying FASTQ 2: {1}\n{2}\n{3}".format(
+                error.errno, error.strerror, fastq2_file_out, tg_tmp_out_2))
+            return False
+
+        try:
+            with open(fastq1_report, "wb") as f_out:
+                with open("/".join(fastq1_trimmed) + "_trimming_report.txt", "rb") as f_in:
+                    f_out.write(f_in.read())
+        except IOError as error:
+            logger.fatal("I/O error({0}) - TRIMMING REPORT FASTQ 1: {1}\n{2}\n{3}".format(
+                error.errno, error.strerror,
+                fastq1_report, "/".join(fastq1_trimmed) + "_trimming_report.txt"))
+            return False
+
+        try:
+            with open(fastq2_report, "wb") as f_out:
+                with open("/".join(fastq2_trimmed) + "_trimming_report.txt", "rb") as f_in:
+                    f_out.write(f_in.read())
+        except IOError as error:
+            logger.fatal("I/O error({0}) - TRIMMING REPORT FASTQ 2: {1}\n{2}\n{3}".format(
+                error.errno, error.strerror,
+                fastq2_report, "/".join(fastq2_trimmed) + "_trimming_report.txt"))
             return False
 
         return True
@@ -206,7 +363,7 @@ class trimgalore(Tool):
             "tg_length": ["--length", True],
             "tg_max_n": ["--max_n", True],
             "tg_trim_n": ["--trim-n", False],
-            "tg_output_dir": ["--output_dir", True],
+            # "tg_output_dir": ["--output_dir", True],
             "tg_no_report_file": ["--no_report_file", False],
             "tg_clip_R1": ["--clip_R1", True],
             "tg_clip_R2": ["--clip_R2", True],
@@ -265,25 +422,39 @@ class trimgalore(Tool):
             Matching metadata for the output files
 
         """
+        if "tg_version" in self.configuration:
+            version = self.trimgalore_version()
+            version = compss_wait_on(version)
+            logger.info("TRIM GALORE VERSION: " + version)
+
         command_params = self.get_trimgalore_params(self.configuration)
 
         if "fastq2" in input_files:
-            pass
-            #results = self.trimgalore_paired(
-            #  input_files['input'], output_files['output'], command_params)
+            logger.info("PAIRED END")
+            results = self.trimgalore_paired(
+                input_files["fastq1"],
+                output_files["fastq1_trimmed"],
+                output_files["fastq1_report"],
+                input_files["fastq2"],
+                output_files["fastq2_trimmed"],
+                output_files["fastq2_report"],
+                command_params
+            )
         else:
+            logger.info("SINGLE END")
             results = self.trimgalore_single(
-                input_files['fastq1'], output_files["fastq1_trimmed"], command_params)
+                input_files['fastq1'],
+                output_files["fastq1_trimmed"],
+                output_files["fastq1_report"],
+                command_params
+            )
+
         results = compss_wait_on(results)
-        print ("input files", input_files['fastq1'])
-        print ("output files1", output_files['fastq1_trimmed'])
-        #print ("results", results)
 
         if results is False:
             logger.fatal("Error in Trim Galore py: TrimGalore: run failed with error: {}", results)
             return ({}, {})
 
-        #print ("output files2", output_files['fastq_trimmed'])
         output_files_created = {"fastq1_trimmed" : output_files["fastq1_trimmed"]}
 
         output_metadata = {
@@ -299,23 +470,21 @@ class trimgalore(Tool):
             )
         }
 
-       # print ("output files3", output_files['fastq_trimmed1'])
         if "fastq2" in input_files:
             output_files_created["fastq2_trimmed"] = output_files["fastq2_trimmed"]
-            output_metadata = {
-                "fastq2_trimmed": Metadata(
-                    data_type=input_metadata["fastq2"].data_type,
-                    file_type="FASTQ",
-                    file_path=output_files["fastq2_trimmed"],
-                    sources=[input_metadata["fastq2"].file_path],
-                    taxon_id=input_metadata["fastq2"].taxon_id,
-                    meta_data={
-                        "tool": "trim_galore"
-                    }
-                )
-            }
+            output_metadata["fastq2_trimmed"] = Metadata(
+                data_type=input_metadata["fastq2"].data_type,
+                file_type="FASTQ",
+                file_path=output_files["fastq2_trimmed"],
+                sources=[input_metadata["fastq2"].file_path],
+                taxon_id=input_metadata["fastq2"].taxon_id,
+                meta_data={
+                    "tool": "trim_galore"
+                }
+            )
 
-        logger.info("TRIM GALORE: GENERATED FILES:", output_files['fastq1_trimmed'])
+        logger.info("TRIM GALORE: GENERATED FILES:\n\t{0}\n\t{1}".format(
+            output_files["fastq1_trimmed"], output_files["fastq2_trimmed"]))
 
         return (output_files_created, output_metadata)
 

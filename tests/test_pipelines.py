@@ -245,9 +245,7 @@ if __name__ == '__main__':
     PIPELINES = PIPELINES.split(",")
     print("PIPELINES:", PIPELINES)
 
-    VERBOSE = 0
-    if ARGS.verbose is True:
-        VERBOSE = 1
+    VERBOSE = ARGS.verbose
 
     if 'genome' in PIPELINES or 'all' in PIPELINES:
         print('GENOME')

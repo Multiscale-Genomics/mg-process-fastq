@@ -76,14 +76,14 @@ class bowtie2AlignerTool(Tool):
             self, genome_file_name, genome_idx,
             bt2_1_file, bt2_2_file, bt2_3_file, bt2_4_file, bt2_rev1_file, bt2_rev2_file):
         """
-        Extracts the BWA index files from the genome index tar file.
+        Extracts the Bowtie2 index files from the genome index tar file.
 
         Parameters
         ----------
         genome_file_name : str
             Location string of the genome fasta file
         genome_idx : str
-            Location of the BWA index file
+            Location of the Bowtie2 index file
         bt2_1_file : str
             Location of the <genome>.1.bt2 index file
         bt2_2_file : str

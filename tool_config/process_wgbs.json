@@ -162,7 +162,7 @@
                     "tool": "process_wgbs",
                     "description": "Bam index file"
                 },
-                "file_path": "wgbs.bai",
+                "file_path": "wgbs.bam.bai",
                 "data_type": "data_wgbs",
                 "compressed": "null"
             }

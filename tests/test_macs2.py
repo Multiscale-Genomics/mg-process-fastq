@@ -31,7 +31,7 @@ def test_macs2():
     resource_path = os.path.join(os.path.dirname(__file__), "data/")
 
     input_files = {
-        "input": resource_path + "macs2.Human.DRR000150.22_aln_filtered.bam"
+        "bam": resource_path + "macs2.Human.DRR000150.22_aln_filtered.bam"
     }
 
     output_files = {
@@ -42,7 +42,7 @@ def test_macs2():
     }
 
     metadata = {
-        "input": Metadata(
+        "bam": Metadata(
             "data_chipseq", "fastq", [], None,
             {'assembly' : 'test'}),
     }
@@ -64,8 +64,8 @@ def test_macs2_background():
     resource_path = os.path.join(os.path.dirname(__file__), "data/")
 
     input_files = {
-        "input": resource_path + "macs2.Human.DRR000150.22_aln_filtered.bam",
-        "background": resource_path + "macs2.Human.DRR000150.22_aln_filtered.bam"
+        "bam": resource_path + "macs2.Human.DRR000150.22_aln_filtered.bam",
+        "bam_bg": resource_path + "macs2.Human.DRR000150.22_aln_filtered.bam"
     }
 
     output_files = {
@@ -76,7 +76,10 @@ def test_macs2_background():
     }
 
     metadata = {
-        "input": Metadata(
+        "bam": Metadata(
+            "data_chipseq", "fastq", [], None,
+            {'assembly' : 'test'}),
+        "bam_bg": Metadata(
             "data_chipseq", "fastq", [], None,
             {'assembly' : 'test'}),
     }

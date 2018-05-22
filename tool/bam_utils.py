@@ -17,6 +17,7 @@
 from __future__ import print_function
 import os
 import sys
+import subprocess
 import pysam
 
 from utils import logger
@@ -24,14 +25,14 @@ from utils import logger
 try:
     if hasattr(sys, '_run_from_cmdl') is True:
         raise ImportError
-    from pycompss.api.parameter import FILE_IN, FILE_OUT, FILE_INOUT, OUT
+    from pycompss.api.parameter import FILE_IN, FILE_OUT, FILE_INOUT
     from pycompss.api.task import task
     from pycompss.api.api import barrier
 except ImportError:
     logger.warn("[Warning] Cannot import \"pycompss\" API packages.")
     logger.warn("          Using mock decorators.")
 
-    from utils.dummy_pycompss import FILE_IN, FILE_OUT, FILE_INOUT, OUT  # pylint: disable=ungrouped-imports
+    from utils.dummy_pycompss import FILE_IN, FILE_OUT, FILE_INOUT  # pylint: disable=ungrouped-imports
     from utils.dummy_pycompss import task  # pylint: disable=ungrouped-imports
     from utils.dummy_pycompss import barrier  # pylint: disable=ungrouped-imports
 
@@ -40,19 +41,12 @@ except ImportError:
 
 class bamUtils(object):
     """
-    Tool for aligning sequence reads to a genome using BWA
+    Tool for handloing bam files
     """
 
     def __init__(self):
         """
         Initialise the tool with its configuration.
-
-
-        Parameters
-        ----------
-        configuration : dict
-            a dictionary containing parameters that define how the operation
-            should be carried out, which are specific to each Tool.
         """
         logger.info("BAM Utils")
 
@@ -133,7 +127,7 @@ class bamUtils(object):
     @staticmethod
     def bam_index(bam_file, bam_idx_file):
         """
-        Wrapper for the pysam SAMtools merge function
+        Wrapper for the pysam SAMtools index function
 
         Parameters
         ----------
@@ -142,7 +136,22 @@ class bamUtils(object):
         bam_idx_file : str
             Location of the bam index file (.bai)
         """
-        pysam.index(bam_file, bam_file + "_tmp.bai")  # pylint: disable=no-member
+
+        cmd_view = ' '.join([
+            'samtools index',
+            '-b',
+            bam_file,
+            bam_file + "_tmp.bai"
+        ])
+
+        try:
+            logger.info("INDEX BAM COMMAND: " + cmd_view)
+            process = subprocess.Popen(cmd_view, shell=True)
+            process.wait()
+        except (IOError, OSError) as msg:
+            logger.info("I/O error({0}): {1}\n{2}".format(
+                msg.errno, msg.strerror, cmd_view))
+            return False
 
         try:
             with open(bam_file + "_tmp.bai", "rb") as f_in:
@@ -169,14 +178,16 @@ class bamUtils(object):
             List of the names of the chromosomes that are present in the bam file
         """
         bam_file_handle = pysam.AlignmentFile(bam_file, "rb")  # pylint: disable=no-member
-        if "SN" not in bam_file_handle.header:
+        if "SQ" not in bam_file_handle.header:
             return []
-        return [
-            chromosome["SN"] for chromosome in bam_file_handle(bam_file, "rb").header["SQ"]
-        ]
+
+        chromosome_list = [chromosome["SN"] for chromosome in bam_file_handle.header["SQ"]]
+        bam_file_handle.close()
+
+        return chromosome_list
 
     @staticmethod
-    def bam_split(bam_file_in, chromosome, bam_file_out):
+    def bam_split(bam_file_in, bai_file, chromosome, bam_file_out):  # pylint: disable=unused-argument
         """
         Wrapper to extract a single chromosomes worth of reading into a new bam
         file
@@ -185,19 +196,49 @@ class bamUtils(object):
         ----------
         bam_file_in : str
             Location of the input bam file
+        bai_file : str
+            Location of the bam index file. This needs to be in the same directory
+            as the bam_file_in
         chromosome : str
             Name of the chromosome whose alignments are to be extracted
         bam_file_out : str
             Location of the output bam file
         """
-        bam_file_handle = pysam.AlignmentFile(bam_file_in, "rb")  # pylint: disable=no-member
-        new_header = bam_file_handle.header
-        new_header_sq = [chrom for chrom in new_header["SQ"] if chrom["SN"] == chromosome]
-        new_header["SQ"] = new_header_sq
 
-        with pysam.AlignmentFile(bam_file_out, "wb", header=new_header) as out_bam_f:  # pylint: disable=no-member
-            for read in bam_file_handle.fetch(reference=chromosome):
-                out_bam_f.write(read)
+        # Extract the subsection from the bam file using samtools
+        cmd_view_1 = ' '.join([
+            'samtools view',
+            '-h',
+            '-o', bam_file_in + ".sam",
+            bam_file_in,
+            chromosome
+        ])
+
+        #
+        cmd_view_2 = ' '.join([
+            'samtools view',
+            '-b',
+            '-o', bam_file_out,
+            bam_file_in + ".sam"
+        ])
+
+        try:
+            logger.info("EXTRACT SAM COMMAND: " + cmd_view_1)
+            process = subprocess.Popen(cmd_view_1, shell=True)
+            process.wait()
+        except (IOError, OSError) as msg:
+            logger.info("I/O error({0}): {1}\n{2}".format(
+                msg.errno, msg.strerror, cmd_view_1))
+            return False
+
+        try:
+            logger.info("CREATE BAM COMMAND: " + cmd_view_2)
+            process = subprocess.Popen(cmd_view_2, shell=True)
+            process.wait()
+        except (IOError, OSError) as msg:
+            logger.info("I/O error({0}): {1}\n{2}".format(
+                msg.errno, msg.strerror, cmd_view_2))
+            return False
 
         return True
 
@@ -231,14 +272,12 @@ class bamUtils(object):
     @staticmethod
     def check_header(bam_file):
         """
-        Wrapper for the pysam SAMtools merge function
+        Wrapper for the pysam SAMtools for checking if a bam file is sorted
 
         Parameters
         ----------
-        bam_file_1 : str
-            Location of the bam file to merge into
-        bam_file_2 : str
-            Location of the bam file that is to get merged into bam_file_1
+        bool
+            True if the file has been sorted
         """
         output = True
 
@@ -254,7 +293,7 @@ class bamUtils(object):
 class bamUtilsTask(object):
     """
     Wrappers so that the function above can be used as part of a @task within
-    COMPSs avoiding the files being copied around the infrstructure too many
+    COMPSs avoiding the files being copied around the infrastructure too many
     times
     """
 
@@ -264,7 +303,7 @@ class bamUtilsTask(object):
         """
         logger.info("BAM @task Utils")
 
-    @task(bam_file=FILE_IN, chromosome_list=OUT)
+    @task(returns=list, bam_file=FILE_IN)
     def bam_list_chromosomes(self, bam_file):  # pylint: disable=no-self-use
         """
         Wrapper to get the list of chromosomes in a given bam file
@@ -280,8 +319,7 @@ class bamUtilsTask(object):
             List of the chromosomes in the bam file
         """
         bam_handle = bamUtils()
-        chromosome_list = bam_handle.bam_list_chromosomes(bam_file)
-        return chromosome_list
+        return bam_handle.bam_list_chromosomes(bam_file)
 
     @task(bam_file=FILE_INOUT)
     def bam_sort(self, bam_file):  # pylint: disable=no-self-use
@@ -483,7 +521,7 @@ class bamUtilsTask(object):
         bam_file_5 : str
             Location of the bam file that is to get merged into bam_file_1
         bam_file_6 : str
-            Location of the bam file to merge into
+            Location of the bam file that is to get merged into bam_file_1
         bam_file_7 : str
             Location of the bam file that is to get merged into bam_file_1
         bam_file_8 : str

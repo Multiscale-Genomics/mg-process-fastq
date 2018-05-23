@@ -27,8 +27,8 @@ option_list = list(
                 help="Data directory for the samples and kallisto results", metavar="character")
 );
 
-opt_parser = OptionParser(option_list=option_list);
-opt = parse_args(opt_parser);
+opt_parser = OptionParser(option_list=option_list)
+opt = parse_args(opt_parser)
 
 sample_id <- dir(file.path(opt$data_dir))
 kal_dirs <- file.path(opt$data_dir, sample_id, "kallisto")

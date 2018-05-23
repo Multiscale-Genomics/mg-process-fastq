@@ -21,7 +21,9 @@ library("sleuth")
 option_list = list(
     make_option(c("-f", "--file"), type="character", default=NULL,
                 help="Sleuth R object", metavar="character"),
-    make_option(c("-o", "--save"), type="character", default=NULL,
+    make_option(c("-t", "--tag"), type="character", default=NULL,
+                help="Location to save the PCA image to", metavar="character"),
+    make_option(c("-v", "--covariant"), type="character", default=NULL,
                 help="Location to save the PCA image to", metavar="character"),
 );
 
@@ -30,6 +32,10 @@ opt = parse_args(opt_parser)
 
 sleuth_load(file.path(opt$file))
 
-png(file.path(opt$save))
-plot_pca(so, color_by = 'genotype')
+png(file.path(opt$file + "_pca_" + opt$save + ".png"))
+plot_pca(so, color_by = opt$covariant)
+dev.off()
+
+png(file.path(opt$file + "_pca1_" + opt$save + ".png"))
+plot_loadings(so, pc_input = 1)
 dev.off()

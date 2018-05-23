@@ -24,7 +24,11 @@ option_list = list(
     make_option(c("-o", "--save"), type="character", default=NULL,
                 help="Location to save the sleuth object to", metavar="character"),
     make_option(c("-d", "--data_dir"), type="character", default=NULL,
-                help="Data directory for the samples and kallisto results", metavar="character")
+                help="Data directory for the samples and kallisto results", metavar="character"),
+    make_option(c("-e", "--deg"), type="character", default=NULL,
+                help="File containing differentially expressed genes", metavar="character"),
+    make_option(c("-l", "--degl"), type="character", default=0.05,
+                help="Cutoff for differentially expressed genes", metavar="character")
 );
 
 opt_parser = OptionParser(option_list=option_list)
@@ -45,6 +49,7 @@ so <- sleuth_lrt(so, 'reduced', 'full')
 models(so)
 
 sleuth_table <- sleuth_results(so, 'reduced:full', 'lrt', show_all = FALSE)
-sleuth_significant <- dplyr::filter(sleuth_table, qval <= 0.05)
+sleuth_significant <- dplyr::filter(sleuth_table, qval <= opt$degl)
+write.table(sleuth_significant, opt$deg, row.names=FALSE, sep="\t", quote=FALSE)
 
 sleuth_save(so, opt$save)

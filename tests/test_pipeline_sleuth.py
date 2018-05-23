@@ -68,7 +68,8 @@ def test_sleuth_pipeline():
     }
 
     files_out = {
-        "sleuth_object": resource_path + "sleuth.Rbin"
+        "sleuth_object": resource_path + "sleuth.Rbin",
+        "sleuth_sig_genes_table": resource_path + "sleuth_sig_genes.tsv"
     }
 
     sleuth_config = {
@@ -78,7 +79,8 @@ def test_sleuth_pipeline():
             "ERR030858": {"tissue": "mixture"},
             "ERR030872": {"tissue": "thyroid"},
             "ERR030903": {"tissue": "thyroid"}
-        }
+        },
+        "sleuth_sig_level": 1.0
     }
 
     sleuth_handle = process_sleuth(sleuth_config)
@@ -86,7 +88,7 @@ def test_sleuth_pipeline():
         files, metadata, files_out)
 
     # Checks that the returned files matches the expected set of results
-    assert len(sleuth_files) == 1
+    assert len(sleuth_files) == 2
 
     # Add tests for all files created
     for f_out in sleuth_files:

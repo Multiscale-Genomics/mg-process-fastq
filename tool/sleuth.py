@@ -78,8 +78,8 @@ class sleuthTool(Tool):  # pylint: disable=invalid-name
                 if member.isfile():
                     member_dir = member.name.split("/")
                     member_dir = data_tmp_dir + "/" + "/".join(member_dir[:-1])
-                    logger.fatal("data_tmp_dir: " + data_tmp_dir)
-                    logger.fatal("Member: " + member.name)
+                    logger.info("data_tmp_dir: " + data_tmp_dir)
+                    logger.info("Member: " + member.name)
                     tar_sub = tarfile.open(data_tmp_dir + "/" + member.name)
                     tar_sub.extractall(path=member_dir)
                     tar_sub.close()
@@ -120,9 +120,9 @@ class sleuthTool(Tool):  # pylint: disable=invalid-name
     @task(
         returns=bool,
         sleuth_config=IN, kallisto_tar=FILE_IN,
-        save_file=FILE_OUT, isModifier=False)
+        save_file=FILE_OUT, save_table=FILE_OUT, level=IN, isModifier=False)
     def sleuth_analysis(
-            self, sleuth_config, kallisto_tar, save_file):
+            self, sleuth_config, kallisto_tar, save_file, save_table, level):
         """
         Differential analysis of kallisto peak calls.
 
@@ -154,7 +154,9 @@ class sleuthTool(Tool):  # pylint: disable=invalid-name
             'Rscript', rscript,
             '--config', data_tmp_dir + "/ht_config.txt",
             '--data_dir', kallisto_tar.replace(".tar.gz", ""),
-            '--save', save_file]
+            '--save', save_file,
+            '--deg', save_table,
+            '--degl', level]
         logger.info("SLEUTH CMD: " + ' '.join(args))
 
         process = subprocess.Popen(args)
@@ -186,7 +188,9 @@ class sleuthTool(Tool):  # pylint: disable=invalid-name
         self.sleuth_analysis(
             self.configuration["kallisto_tar_config"],
             input_files["kallisto_tar"],
-            output_files["sleuth_object"]
+            output_files["sleuth_object"],
+            output_files["sleuth_sig_genes_table"],
+            str(self.configuration["sleuth_sig_level"])
         )
 
         output_metadata = {

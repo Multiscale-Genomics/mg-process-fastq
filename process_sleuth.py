@@ -104,6 +104,7 @@ class process_sleuth(Workflow):
                 "kallisto_tar": metadata["kallisto_tar"],
             }, {
                 "sleuth_object": output_files["sleuth_object"],
+                "sleuth_sig_genes_table": output_files["sleuth_sig_genes_table"],
             }
         )
 

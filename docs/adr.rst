@@ -50,3 +50,9 @@ In the future the creation of the bai file could be done at alignment time, but 
 ---------------------------------
 
 Added compression of the split FASTQ files to reduce the amount of space required when processing the data. There is also the removal of the tmp directory after the completion of the splitter to save on space.
+
+
+2018-05-22 - GEM Naming
+-----------------------
+
+Update so that the gem files are name <genome-file>.gem.gz inline with requests from WP7 partners so that the name of the index is picked up correctly

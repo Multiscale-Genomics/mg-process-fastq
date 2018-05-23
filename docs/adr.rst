@@ -46,6 +46,18 @@ Added the required functions for tools to be able to split a bam by the number o
 In the future the creation of the bai file could be done at alignment time, but in the case of MACS2 there is a filtering step on the aligned bam file, so a new index would be required.
 
 
+2018-05-01 - Compression of FASTQ
+---------------------------------
+
+Added compression of the split FASTQ files to reduce the amount of space required when processing the data. There is also the removal of the tmp directory after the completion of the splitter to save on space.
+
+
+2018-05-22 - GEM Naming
+-----------------------
+
+Update so that the gem files are name <genome-file>.gem.gz inline with requests from WP7 partners so that the name of the index is picked up correctly
+
+
 2018-05-22 - TrimGalore
 -----------------------
 

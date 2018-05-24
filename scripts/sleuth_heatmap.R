@@ -30,10 +30,10 @@ opt = parse_args(opt_parser)
 
 so = sleuth_load(file.path(opt$file))
 
-png(file.path(opt$file + "_sample_heatmap_" + opt$tag + ".png"))
+png(file.path(paste(opt$file, "_sample_heatmap_", opt$tag, ".png", sep="")))
 plot_sample_heatmap(so)
 dev.off()
 
-png(file.path(opt$file + "_transcript_heatmap_" + opt$tag + ".png"), width=1000, height=2000)
+png(file.path(paste(opt$file, "_transcript_heatmap_", opt$tag, ".png", sep="")), width=1000, height=2000)
 plot_transcript_heatmap(so, sleuth_significant$target_id[0:100], 'est_counts')
 dev.off()

@@ -222,7 +222,7 @@ class sleuthTool(Tool):  # pylint: disable=invalid-name
             images_to_save.append(sleuth_object + "_pca1_" + covar + ".png")
 
         for cmd in r_cmds:
-            logger.info(cmd)
+            logger.info(" ".join(cmd))
             process = subprocess.Popen(cmd)
             process.wait()
 
@@ -278,10 +278,13 @@ class sleuthTool(Tool):  # pylint: disable=invalid-name
             str(self.configuration["sleuth_sig_level"])
         )
 
+        logger.info("COVARIANTS: " + ", ".join(covariants))
+
         self.sleuth_visualise(
             output_files["sleuth_object"],
             output_files["sleuth_image_tar"],
-            covariants
+            covariants,
+            str(self.configuration["sleuth_tag"])
         )
 
         output_metadata = {

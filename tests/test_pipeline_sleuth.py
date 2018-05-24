@@ -81,7 +81,8 @@ def test_sleuth_pipeline():
             "ERR030872": {"tissue": "thyroid"},
             "ERR030903": {"tissue": "thyroid"}
         },
-        "sleuth_sig_level": 1.0
+        "sleuth_sig_level": 1.0,
+        "sleuth_tag": "test"
     }
 
     sleuth_handle = process_sleuth(sleuth_config)

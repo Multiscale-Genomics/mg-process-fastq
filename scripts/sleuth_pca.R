@@ -32,10 +32,10 @@ opt = parse_args(opt_parser)
 
 so = sleuth_load(file.path(opt$file))
 
-png(file.path(opt$file + "_pca_" + opt$tag + ".png"))
+png(file.path(paste(opt$file, "_pca_", opt$tag, ".png", sep="")))
 plot_pca(so, color_by = opt$covariant)
 dev.off()
 
-png(file.path(opt$file + "_pca1_" + opt$tag + ".png"))
+png(file.path(paste(opt$file, "_pca1_", opt$tag, ".png", sep=""))
 plot_loadings(so, pc_input = 1)
 dev.off()

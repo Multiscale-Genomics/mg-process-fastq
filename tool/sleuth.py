@@ -164,6 +164,22 @@ class sleuthTool(Tool):  # pylint: disable=invalid-name
 
         return True
 
+    @task()
+    def sleuth_visualise(self, sleuth_object, image_tar):
+        """
+
+        """
+        rscript = os.path.join(os.path.dirname(__file__), "../scripts/sleuth.R")
+
+        args = [
+            'Rscript', rscript,
+            '--file', sleuth_object
+        ]
+        logger.info("SLEUTH VIS CMD: " + ' '.join(args))
+
+        process = subprocess.Popen(args)
+        process.wait()
+
     def run(self, input_files, input_metadata, output_files):
         """
         The main function to run Sleuth over a set of RNA-seq experiments

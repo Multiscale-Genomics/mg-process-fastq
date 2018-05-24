@@ -89,7 +89,6 @@ class process_trim_galore(Workflow):  # pylint: disable=invalid-name,too-few-pub
         trimg = trimgalore(self.configuration)
 
         if "fastq2" in input_files:
-            logger.info("trim_galore")
             trim_files, trim_meta = trimg.run(
                 {
                     "fastq1": input_files["fastq1"],

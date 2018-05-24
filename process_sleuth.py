@@ -105,6 +105,7 @@ class process_sleuth(Workflow):
             }, {
                 "sleuth_object": output_files["sleuth_object"],
                 "sleuth_sig_genes_table": output_files["sleuth_sig_genes_table"],
+                "sleuth_image_tar": output_files["sleuth_image_tar"]
             }
         )
 

@@ -69,7 +69,8 @@ def test_sleuth_pipeline():
 
     files_out = {
         "sleuth_object": resource_path + "sleuth.Rbin",
-        "sleuth_sig_genes_table": resource_path + "sleuth_sig_genes.tsv"
+        "sleuth_sig_genes_table": resource_path + "sleuth_sig_genes.tsv",
+        "sleuth_image_tar": resource_path + "sleuth_images.tar.gz"
     }
 
     sleuth_config = {

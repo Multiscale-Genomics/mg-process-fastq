@@ -19,18 +19,18 @@ library("optparse")
 library("sleuth")
 
 option_list = list(
-    make_option(c("-f", "--file"), type="character", default=NULL,
+    make_option(c("-f", "--file"), type="character", default="",
                 help="Sleuth R object", metavar="character"),
-    make_option(c("-t", "--tag"), type="character", default=NULL,
+    make_option(c("-t", "--tag"), type="character", default="",
                 help="Tag to save the images with", metavar="character"),
-    make_option(c("-v", "--covariant"), type="character", default=NULL,
+    make_option(c("-v", "--covariant"), type="character", default="",
                 help="Specific covariant to plot images for", metavar="character"),
 );
 
 opt_parser = OptionParser(option_list=option_list)
 opt = parse_args(opt_parser)
 
-sleuth_load(file.path(opt$file))
+so = sleuth_load(file.path(opt$file))
 
 png(file.path(opt$file + "_pca_" + opt$tag + ".png"))
 plot_pca(so, color_by = opt$covariant)

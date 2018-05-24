@@ -115,6 +115,13 @@ install:
     # Install BSseeker
     - cd ${HOME}/lib
     - git clone https://github.com/BSSeeker/BSseeker2.git
+    
+    - pip install cutadapt
+    - wget -O trim_galore.tar.gz https://github.com/FelixKrueger/TrimGalore/archive/0.4.3.tar.gz
+    - tar -xzf trim_galore.tar.gz
+
+    - cd ${HOME}/bin
+    - ln -s ${HOME}/lib/TrimGalore-0.4.3/trim_galore trim_galore
 
     - cd ${HOME}/build/Multiscale-Genomics/mg-process-fastq
     - ln -s ${HOME}/lib/BSseeker2/bs_align bs_align

@@ -122,12 +122,12 @@ class process_macs2(Workflow):
 
         # MACS2 to call peaks
         macs_caller = macs2(self.configuration)
-        macs_inputs = {"input": input_files["bam"]}
-        macs_metadt = {"input": metadata['bam']}
+        macs_inputs = {"bam": input_files["bam"]}
+        macs_metadt = {"bam": metadata['bam']}
 
         if "bg_loc" in input_files:
-            macs_inputs["background"] = input_files["bam_bg"]
-            macs_metadt["background"] = output_metadata['bam_bg']
+            macs_inputs["bam"] = input_files["bam_bg"]
+            macs_metadt["bam"] = output_metadata['bam_bg']
 
         m_results_files, m_results_meta = macs_caller.run(
             macs_inputs, macs_metadt,

@@ -22,13 +22,17 @@ option_list = list(
     make_option(c("-f", "--file"), type="character", default="",
                 help="Sleuth R object", metavar="character"),
     make_option(c("-t", "--tag"), type="character", default="",
-                help="Tag to save the images with", metavar="character")
+                help="Tag to save the images with", metavar="character"),
+    make_option(c("-l", "--degl"), type="character", default=0.05,
+                help="Cutoff for differentially expressed genes", metavar="character")
 );
 
 opt_parser = OptionParser(option_list=option_list)
 opt = parse_args(opt_parser)
 
 so = sleuth_load(file.path(opt$file))
+sleuth_table <- sleuth_results(so, 'reduced:full', 'lrt', show_all = FALSE)
+sleuth_significant <- dplyr::filter(sleuth_table, qval <= opt$degl)
 
 png(file.path(paste(opt$file, "_sample_heatmap_", opt$tag, ".png", sep="")))
 plot_sample_heatmap(so)

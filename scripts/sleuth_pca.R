@@ -25,17 +25,21 @@ option_list = list(
                 help="Tag to save the images with", metavar="character"),
     make_option(c("-v", "--covariant"), type="character", default="",
                 help="Specific covariant to plot images for", metavar="character"),
+    make_option(c("-l", "--degl"), type="character", default=0.05,
+                help="Cutoff for differentially expressed genes", metavar="character")
 );
 
 opt_parser = OptionParser(option_list=option_list)
 opt = parse_args(opt_parser)
 
 so = sleuth_load(file.path(opt$file))
+sleuth_table <- sleuth_results(so, 'reduced:full', 'lrt', show_all = FALSE)
+sleuth_significant <- dplyr::filter(sleuth_table, qval <= opt$degl)
 
 png(file.path(paste(opt$file, "_pca_", opt$tag, ".png", sep="")))
 plot_pca(so, color_by = opt$covariant)
 dev.off()
 
-png(file.path(paste(opt$file, "_pca1_", opt$tag, ".png", sep=""))
+png(file.path(paste(opt$file, "_pca1_", opt$tag, ".png", sep="")))
 plot_loadings(so, pc_input = 1)
 dev.off()

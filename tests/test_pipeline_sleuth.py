@@ -90,7 +90,7 @@ def test_sleuth_pipeline():
         files, metadata, files_out)
 
     # Checks that the returned files matches the expected set of results
-    assert len(sleuth_files) == 2
+    assert len(sleuth_files) == 3
 
     # Add tests for all files created
     for f_out in sleuth_files:

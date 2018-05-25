@@ -170,8 +170,10 @@ class sleuthTool(Tool):  # pylint: disable=invalid-name
 
         return True
 
-    @task(returns=bool, covariants=IN, tag=IN, sleuth_object=FILE_IN, image_tar=FILE_OUT)
-    def sleuth_visualise(self, sleuth_object, image_tar, covariants=None, tag=None):
+    @task(returns=bool,
+          covariants=IN, tag=IN, sig_level=IN,
+          sleuth_object=FILE_IN, image_tar=FILE_OUT)
+    def sleuth_visualise(self, sleuth_object, image_tar, sig_level=None, covariants=None, tag=None):
         """
         Running each of the visualisation scripts to generate plots related to
         set of expression datasets
@@ -206,6 +208,7 @@ class sleuthTool(Tool):  # pylint: disable=invalid-name
                 "Rscript", os.path.join(os.path.dirname(__file__), "../scripts/sleuth_heatmap.R"),
                 "--file", sleuth_object,
                 "--tag", tag,
+                "--degl", sig_level
             ],
         ]
 
@@ -283,6 +286,7 @@ class sleuthTool(Tool):  # pylint: disable=invalid-name
         self.sleuth_visualise(
             output_files["sleuth_object"],
             output_files["sleuth_image_tar"],
+            str(self.configuration["sleuth_sig_level"]),
             covariants,
             str(self.configuration["sleuth_tag"])
         )

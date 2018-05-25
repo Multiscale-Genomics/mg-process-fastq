@@ -397,7 +397,6 @@ class alignerUtils(object):
         os.remove(reads_file + '.sam')
         os.remove(reads_file + '.sai')
 
-
         return True
 
     @staticmethod
@@ -458,7 +457,6 @@ class alignerUtils(object):
             return False
 
         os.remove(reads_file_1 + '.sam')
-        os.remove(reads_file_2 + '.sam')
         os.remove(reads_file_1 + '.sai')
         os.remove(reads_file_2 + '.sai')
 

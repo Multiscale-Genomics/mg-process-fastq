@@ -55,7 +55,7 @@ class alignerUtils(object):
         return True
 
     @staticmethod
-    def gem_index_genome(genome_file, gem_file):
+    def gem_index_genome(genome_file):
         """
         Create an index of the genome FASTA file with GEM. These are saved
         alongside the assembly file.
@@ -66,7 +66,7 @@ class alignerUtils(object):
             Location of the assembly file in the file system
 
         """
-        command_line = 'gem-indexer -i ' + genome_file + ' -o ' + gem_file
+        command_line = 'gem-indexer -i ' + genome_file + ' -o ' + genome_file
 
         args = shlex.split(command_line)
         process = subprocess.Popen(args)
@@ -188,9 +188,9 @@ class alignerUtils(object):
             ' '.join(params),
         ] + reads)
 
-        cmd_view = ' '.join([
-            'samtools view',
-            '-b',
+        cmd_sort = ' '.join([
+            'samtools sort',
+            '-O bam',
             '-o', bam_loc,
             reads_file_1 + '.sam'
         ])
@@ -206,13 +206,15 @@ class alignerUtils(object):
             return False
 
         try:
-            logger.info("BOWTIE2 COMMAND: " + cmd_view)
-            process = subprocess.Popen(cmd_view, shell=True)
+            logger.info("BOWTIE2 COMMAND: " + cmd_sort)
+            process = subprocess.Popen(cmd_sort, shell=True)
             process.wait()
         except (IOError, OSError) as msg:
             logger.info("I/O error({0}): {1}\n{2}".format(
-                msg.errno, msg.strerror, cmd_view))
+                msg.errno, msg.strerror, cmd_sort))
             return False
+
+        os.remove(reads_file_1 + '.sam')
 
         return True
 
@@ -244,14 +246,14 @@ class alignerUtils(object):
             genome_file, reads_file + '.sai', reads_file
         ])
 
-        cmd_view = ' '.join([
-            'samtools view',
-            '-b',
+        cmd_sort = ' '.join([
+            'samtools sort',
+            '-O bam',
             '-o', bam_loc,
             reads_file + '.sam'
         ])
 
-        command_lines = [cmd_aln, cmd_samse, cmd_view]
+        command_lines = [cmd_aln, cmd_samse, cmd_sort]
 
         # print("BWA COMMAND LINES:", command_lines)
         try:
@@ -270,6 +272,9 @@ class alignerUtils(object):
             logger.fatal("BWA ALN stdout" + proc_out)
             logger.fatal("BWA ALN stderr" + proc_err)
             return False
+
+        os.remove(reads_file + '.sam')
+        os.remove(reads_file + '.sai')
 
         return True
 
@@ -303,7 +308,6 @@ class alignerUtils(object):
             genome_file, reads_file_2
         ])
 
-
         cmd_samse = ' '.join([
             'bwa sampe',
             '-f', reads_file_1 + '.sam',
@@ -312,14 +316,14 @@ class alignerUtils(object):
             reads_file_1, reads_file_2
         ])
 
-        cmd_view = ' '.join([
-            'samtools view',
-            '-b',
+        cmd_sort = ' '.join([
+            'samtools sort',
+            '-O bam',
             '-o', bam_loc,
             reads_file_1 + '.sam'
         ])
 
-        command_lines = [cmd_aln_1, cmd_aln_2, cmd_samse, cmd_view]
+        command_lines = [cmd_aln_1, cmd_aln_2, cmd_samse, cmd_sort]
 
         try:
             for command_line in command_lines:
@@ -331,6 +335,9 @@ class alignerUtils(object):
                 msg.errno, msg.strerror, command_line))
             return False
 
+        os.remove(reads_file_1 + '.sam')
+        os.remove(reads_file_1 + '.sai')
+        os.remove(reads_file_2 + '.sai')
         return True
 
     @staticmethod
@@ -359,9 +366,9 @@ class alignerUtils(object):
             genome_file
         ] + reads)
 
-        cmd_view = ' '.join([
-            'samtools view',
-            '-b',
+        cmd_sort = ' '.join([
+            'samtools sort',
+            '-O bam',
             '-o', bam_loc,
             reads_file_1 + '.sam'
         ])
@@ -377,12 +384,14 @@ class alignerUtils(object):
             return False
 
         try:
-            logger.info("BWA MEM COMMAND: " + cmd_view)
-            process = subprocess.Popen(cmd_view, shell=True)
+            logger.info("BWA MEM COMMAND: " + cmd_sort)
+            process = subprocess.Popen(cmd_sort, shell=True)
             process.wait()
         except (IOError, OSError) as msg:
             logger.info("I/O error({0}): {1}\n{2}".format(
-                msg.errno, msg.strerror, cmd_view))
+                msg.errno, msg.strerror, cmd_sort))
             return False
+
+        os.remove(reads_file_1 + '.sam')
 
         return True

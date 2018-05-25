@@ -46,7 +46,25 @@ Added the required functions for tools to be able to split a bam by the number o
 In the future the creation of the bai file could be done at alignment time, but in the case of MACS2 there is a filtering step on the aligned bam file, so a new index would be required.
 
 
+2018-05-01 - Compression of FASTQ
+---------------------------------
+
+Added compression of the split FASTQ files to reduce the amount of space required when processing the data. There is also the removal of the tmp directory after the completion of the splitter to save on space.
+
+
 2018-05-09 - Handling aligner index decompression
 -------------------------------------------------
 
 The code has been modified so that there is a single decompression of the BWA and Bowtie2 common indexes. The index files are then explicitly handed to the alignment task rather than handing over the compressed index. The decompression is performed as a @task so that the index files are already in the COMPSs system. This means that handing the index files to the alignment tasks creates a single symlink in the sandbox temporary file directory rather than duplicating the whole of the index structure for each job.
+
+
+2018-05-22 - GEM Naming
+-----------------------
+
+Update so that the gem files are name <genome-file>.gem.gz inline with requests from WP7 partners so that the name of the index is picked up correctly
+
+
+2018-05-22 - TrimGalore
+-----------------------
+
+To try and improve the quality of the reads that are used for numerous pipelines, TrimGalore has been included as a pipeline to aid in the clipping and removal of low quality regions of reads. The pipeline can be run on single or paired end FASTQ files. A report of the trimmed data is also returned for the user to identify what changes were made.

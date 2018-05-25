@@ -28,6 +28,11 @@ Tools for processing FastQ files
    .. autoclass:: tool.validate_fastqc.fastqcTool
       :members:
 
+   TrimGalore
+   ----------
+   .. autoclass:: tool.trimgalore.trimgalore
+      :members:
+
    Indexers
    ========
 
@@ -97,6 +102,11 @@ Tools for processing FastQ files
    BS-Seeker2 Filter
    -----------------
    .. autoclass:: tool.bs_seeker_filter.filterReadsTool
+      :members:
+
+   Trim Galore
+   -----------
+   .. autoclass:: tool.trimgalore.trimgalore
       :members:
 
 

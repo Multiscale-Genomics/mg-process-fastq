@@ -17,3 +17,4 @@ mg_process_fastq.egg-info*
 tool/FilterReads.py
 .cache
 /tests/data/tmp
+.pytest_cache

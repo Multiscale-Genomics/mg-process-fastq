@@ -42,6 +42,7 @@ from basic_modules.tool import Tool
 
 from tool.aligner_utils import alignerUtils
 
+
 # ------------------------------------------------------------------------------
 
 class gemIndexerTool(Tool):
@@ -68,8 +69,8 @@ class gemIndexerTool(Tool):
 
         self.configuration.update(configuration)
 
-    @task(genome_file=FILE_IN, new_genome_file=FILE_OUT, index_loc=FILE_OUT)
-    def gem_indexer(self, genome_file, index_loc): # pylint: disable=unused-argument, no-self-use
+    @task(genome_file=FILE_IN, index_loc=FILE_OUT)
+    def gem_indexer(self, genome_file, index_loc):  # pylint: disable=unused-argument, no-self-use
         """
         GEM Indexer
 
@@ -82,24 +83,28 @@ class gemIndexerTool(Tool):
         """
         try:
             au_handle = alignerUtils()
-            au_handle.gem_index_genome(genome_file, genome_file)
-            idx_out_pregz = index_loc.replace('.gem.gz', '.gem')
+            au_handle.gem_index_genome(genome_file)
         except (IOError, OSError) as msg:
             logger.fatal("I/O error({0}): {1}".format(
                 msg.errno, msg.strerror))
             return False
 
         try:
-            command_line = 'pigz ' + idx_out_pregz
-            args = shlex.split(command_line)
-            process = subprocess.Popen(args)
+            command_line = ['pigz ', genome_file + ".gem"]
+            logger.info("args for pigz:" + " ".join(command_line))
+            process = subprocess.Popen(" ".join(command_line), shell=True)
             process.wait()
         except OSError:
             logger.warn("OSERROR: pigz not installed, using gzip")
-            command_line = 'gzip ' + idx_out_pregz
+            command_line = 'gzip ' + genome_file + ".gem"
             args = shlex.split(command_line)
             process = subprocess.Popen(args)
             process.wait()
+
+        if genome_file + ".gem.gz" != index_loc:
+            with open(index_loc, "wb") as f_out:
+                with open(genome_file + ".gem.gz") as f_in:
+                    f_out.write(f_in.read())
 
         return True
 
@@ -125,13 +130,15 @@ class gemIndexerTool(Tool):
         # input and output share most metadata
         results = self.gem_indexer(
             input_files['genome'],
-            output_files['index']
+            input_files['genome'] + ".gem.gz"
         )
         results = compss_wait_on(results)
 
         if results is False:
             logger.fatal("GEM Indexer: run failed")
             return {}, {}
+
+        output_files["index"] = input_files['genome'] + ".gem.gz"
 
         output_metadata = {
             "index": Metadata(

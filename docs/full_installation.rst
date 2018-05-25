@@ -148,8 +148,6 @@ FastQC
    cd FastQC/
    chmod 755 fastqc
 
-
-
 GEM Sequence Aligner
 ^^^^^^^^^^^^^^^^^^^^
 
@@ -446,6 +444,30 @@ Install BSseeker
    ln -s ${HOME}/lib/BSseeker2/bs_align bs_align
    ln -s ${HOME}/lib/BSseeker2/bs_index bs_index
    ln -s ${HOME}/lib/BSseeker2/bs_utils bs_utils
+
+
+Trim Galore
+^^^^^^^^^^^
+
+.. code-block:: none
+   :linenos:
+
+   cd ${HOME}/lib
+   pip install cutadapt
+   wget -O trim_galore.tar.gz https://github.com/FelixKrueger/TrimGalore/archive/0.4.3.tar.gz
+   tar -xzf trim_galore.tar.gz
+
+   cd ${HOME}/bin
+   ln -s ${HOME}/lib/TrimGalore-0.4.3/trim_galore trim_galore
+
+Running on a COMPSs VM the symlink will need to be created in a system accessible area:
+
+.. code-block:: none
+   :linenos:
+
+   sudo ln -s ${HOME}/lib/TrimGalore-0.4.3/trim_galore /usr/local/bin/trim_galore
+   pip install cutadapt
+
 
 Post Installation Tidyup
 ------------------------

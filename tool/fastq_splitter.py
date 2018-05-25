@@ -21,9 +21,11 @@ import os
 import shutil
 import shlex
 import subprocess
+import shutil
 import sys
 import re
 import tarfile
+import multiprocessing
 
 from utils import logger
 
@@ -73,6 +75,28 @@ class fastq_splitter(Tool):
 
         self.configuration.update(configuration)
 
+    def _compress_file_mp(self, file_in):
+        """
+        Function to compress a given file using pigz. If pigz is not installed
+        then gzip is used.
+
+        Parameters
+        ----------
+        file_in : str
+            Input file
+        """
+        try:
+            command_line = 'pigz ' + file_in
+            args = shlex.split(command_line)
+            process = subprocess.Popen(args)
+            process.wait()
+        except OSError:
+            logger.warn("OSERROR: pigz not installed, using gzip")
+            command_line = 'gzip ' + file_in
+            args = shlex.split(command_line)
+            process = subprocess.Popen(args)
+            process.wait()
+
     @task(
         in_file1=FILE_IN, tag=IN,
         out_file=FILE_OUT, files_out=OUT,
@@ -90,7 +114,9 @@ class fastq_splitter(Tool):
             DEFAULT = tmp
             Tag used to identify the files. Useful if this is getting run
             manually on a single machine multiple times to prevent collisions of
-            file names
+            file names. It is also the temporary directory used within the
+            compressed out_file containing the separated and compressed FASTQ
+            files.
 
 
         Returns
@@ -141,6 +167,11 @@ class fastq_splitter(Tool):
         fqr.closeFastQ()
         fqr.closeOutputFiles()
 
+        fqgz_files = []
+        for fq_file in files_out:
+            self._compress_file_mp("/".join(file_loc_1[:-1]) + '/' + fq_file[0])
+            fqgz_files.append([fq_file[0] + ".gz"])
+
         untar_idx = True
         if "no-untar" in self.configuration and self.configuration["no-untar"] is True:
             untar_idx = False
@@ -150,26 +181,17 @@ class fastq_splitter(Tool):
 
             if os.path.isfile(out_file):
                 os.remove(out_file)
+
             tar = tarfile.open(output_file_pregz, "w")
-            tar.add("/".join(file_loc_1[:-1]), arcname='tmp')
+            tar.add("/".join(file_loc_1[:-1]), arcname=tag)
             tar.close()
 
-            try:
-                command_line = 'pigz ' + output_file_pregz
-                args = shlex.split(command_line)
-                process = subprocess.Popen(args)
-                process.wait()
-            except OSError:
-                logger.warn("OSERROR: pigz not installed, using gzip")
-                command_line = 'gzip ' + output_file_pregz
-                args = shlex.split(command_line)
-                process = subprocess.Popen(args)
-                process.wait()
+            self._compress_file_mp(output_file_pregz)
 
+            shutil.rmtree("/".join(file_loc_1[:-1]))
 
-            shutil.rmtree(tmp_dir)
+        return fqgz_files
 
-        return files_out
 
     @task(
         in_file1=FILE_IN, in_file2=FILE_IN, tag=IN,
@@ -190,7 +212,9 @@ class fastq_splitter(Tool):
             DEFAULT = tmp
             Tag used to identify the files. Useful if this is getting run
             manually on a single machine multiple times to prevent collisions of
-            file names
+            file names. It is also the temporary directory used within the
+            compressed out_file containing the separated and compressed FASTQ
+            files.
 
 
         Returns
@@ -258,17 +282,39 @@ class fastq_splitter(Tool):
                 file_loc_1 = fqr.fastq1.split("/")
                 new_suffix = "." + str(fqr.output_tag) + "_" + str(fqr.output_file_count) + ".fastq"
                 file_loc_1[-1] = re.sub('.fastq$', new_suffix, file_loc_1[-1])
-                file_loc_1.insert(-1, "tmp")
+                file_loc_1.insert(-1, tag)
 
                 file_loc_2 = fqr.fastq2.split("/")
                 new_suffix = "." + str(fqr.output_tag) + "_" + str(fqr.output_file_count) + ".fastq"
                 file_loc_2[-1] = re.sub('.fastq$', new_suffix, file_loc_2[-1])
-                file_loc_2.insert(-1, "tmp")
+                file_loc_2.insert(-1, tag)
 
                 files_out.append([file_loc_1[-1], file_loc_2[-1]])
 
         fqr.closeFastQ()
         fqr.closeOutputFiles()
+
+        fqgz_files = []
+        for fq_file in files_out:
+            fq_file_1 = "/".join(file_loc_1[:-1]) + '/' + fq_file[0]
+            fq_file_2 = "/".join(file_loc_1[:-1]) + '/' + fq_file[1]
+
+            f1_proc = multiprocessing.Process(
+                name='fastq_1', target=self._compress_file_mp,
+                args=(fq_file_1,)
+            )
+            f2_proc = multiprocessing.Process(
+                name='fastq_2', target=self._compress_file_mp,
+                args=(fq_file_2,)
+            )
+
+            f1_proc.start()
+            f2_proc.start()
+
+            f1_proc.join()
+            f2_proc.join()
+
+            fqgz_files.append([fq_file[0] + ".gz", fq_file[1] + ".gz"])
 
         output_file_pregz = out_file.replace('.tar.gz', '.tar')
 
@@ -280,24 +326,14 @@ class fastq_splitter(Tool):
             if os.path.isfile(out_file):
                 os.remove(out_file)
             tar = tarfile.open(output_file_pregz, "w")
-            tar.add("/".join(file_loc_1[:-1]), arcname='tmp')
+            tar.add("/".join(file_loc_1[:-1]), arcname=tag)
             tar.close()
 
-            try:
-                command_line = 'pigz ' + output_file_pregz
-                args = shlex.split(command_line)
-                process = subprocess.Popen(args)
-                process.wait()
-            except OSError:
-                logger.warn("OSERROR: pigz not installed, using gzip")
-                command_line = 'gzip ' + output_file_pregz
-                args = shlex.split(command_line)
-                process = subprocess.Popen(args)
-                process.wait()
+            self._compress_file_mp(output_file_pregz)
 
-            shutil.rmtree(tmp_dir)
+            shutil.rmtree("/".join(file_loc_1[:-1]))
 
-        return files_out
+        return fqgz_files
 
     def run(self, input_files, input_metadata, output_files):
         """

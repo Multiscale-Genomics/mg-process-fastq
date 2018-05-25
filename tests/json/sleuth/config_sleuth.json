@@ -25,6 +25,14 @@
                 "ERR030872": {"tissue": "thyroid"},
                 "ERR030903": {"tissue": "thyroid"}
             }
+        },
+        {
+            "name": "sleuth_sig_level",
+            "value": 1.0
+        },
+        {
+            "name": "sleuth_tag",
+            "value": "test"
         }
     ],
     "output_files": [
@@ -40,6 +48,38 @@
                     "description": "Output"
                 },
                 "file_path": "tests/data/sleuth/sleuth.R",
+                "data_type": "data_rna_seq",
+                "compressed": "null"
+            }
+        },
+        {
+            "required": true,
+            "allow_multiple": false,
+            "name": "sleuth_sig_genes_table",
+            "file": {
+                "file_type": "TSV",
+                "meta_data": {
+                    "visible": true,
+                    "tool": "process_sleuth",
+                    "description": "Output"
+                },
+                "file_path": "tests/data/sleuth/sleuth.sig_genes.tsv",
+                "data_type": "data_rna_seq",
+                "compressed": "null"
+            }
+        },
+        {
+            "required": true,
+            "allow_multiple": false,
+            "name": "sleuth_image_tar",
+            "file": {
+                "file_type": "TAR",
+                "meta_data": {
+                    "visible": true,
+                    "tool": "process_sleuth",
+                    "description": "Output"
+                },
+                "file_path": "tests/data/sleuth/sleuth.images.tar.gz",
                 "data_type": "data_rna_seq",
                 "compressed": "null"
             }

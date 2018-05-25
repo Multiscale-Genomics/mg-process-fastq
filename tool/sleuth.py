@@ -302,6 +302,28 @@ class sleuthTool(Tool):  # pylint: disable=invalid-name
                     "assembly": input_metadata["kallisto_tar"].meta_data["assembly"],
                     "tool": "sleuth"
                 }
+            ),
+            "sleuth_sig_genes_table": Metadata(
+                data_type=input_metadata['kallisto_tar'].data_type,
+                file_type="TSV",
+                file_path=output_files["sleuth_sig_genes_table"],
+                sources=input_metadata["kallisto_tar"].sources,
+                taxon_id=input_metadata["kallisto_tar"].taxon_id,
+                meta_data={
+                    "assembly": input_metadata["kallisto_tar"].meta_data["assembly"],
+                    "tool": "sleuth"
+                }
+            ),
+            "sleuth_image_tar": Metadata(
+                data_type=input_metadata['kallisto_tar'].data_type,
+                file_type="TSV",
+                file_path=output_files["sleuth_image_tar"],
+                sources=input_metadata["kallisto_tar"].sources,
+                taxon_id=input_metadata["kallisto_tar"].taxon_id,
+                meta_data={
+                    "assembly": input_metadata["kallisto_tar"].meta_data["assembly"],
+                    "tool": "sleuth"
+                }
             )
         }
 

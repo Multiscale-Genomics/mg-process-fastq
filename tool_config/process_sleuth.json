@@ -46,12 +46,20 @@
     ],
     "arguments": [
         {
-            "name": "kallisto_bootstrap_param",
-            "description": "Bootstramp Sampling Size",
-            "help": "Number of bootstrap rounds should be performed to identify the significance of the gene expression level calling. This is required to be greater than 1 for differential analysis with Sleuth.",
+            "name": "sleuth_sig_level",
+            "description": "Significance threshold cut off",
+            "help": "The gene table and images are based on the genes that have a p-value less than or equal to the <sleuth_sig_level>",
             "type": "string",
             "required": false,
-            "default": "0"
+            "default": "0.05"
+        },
+        {
+            "name": "sleuth_tag",
+            "description": "Tag",
+            "help": "Tag used when naming the dataset files",
+            "type": "string",
+            "required": false,
+            "default": "tmp"
         }
     ],
     "output_files": [
@@ -67,6 +75,38 @@
                     "description": "Sleuth R object"
                 },
                 "file_path": "sleuth.Rbin",
+                "data_type": "data_rna_seq",
+                "compressed": "null"
+            }
+        },
+        {
+            "required": true,
+            "allow_multiple": false,
+            "name": "sleuth_sig_genes_table",
+            "file": {
+                "file_type": "TSV",
+                "meta_data": {
+                    "visible": true,
+                    "tool": "process_sleuth",
+                    "description": "Output"
+                },
+                "file_path": "sleuth.sig_genes.tsv",
+                "data_type": "data_rna_seq",
+                "compressed": "null"
+            }
+        },
+        {
+            "required": true,
+            "allow_multiple": false,
+            "name": "sleuth_image_tar",
+            "file": {
+                "file_type": "TAR",
+                "meta_data": {
+                    "visible": true,
+                    "tool": "process_sleuth",
+                    "description": "Output"
+                },
+                "file_path": "sleuth.images.tar.gz",
                 "data_type": "data_rna_seq",
                 "compressed": "null"
             }

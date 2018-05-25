@@ -28,6 +28,11 @@ tc=$?
 rc=$(($rc + $tc))
 bash tidy_data.sh
 
+python tests/test_pipelines.py --pipeline trimgalore
+tc=$?
+rc=$(($rc + $tc))
+bash tidy_data.sh
+
 # # Not included for the moment due to installation issues with versions or R and python
 # python tests/test_toolchains.py --pipeline idamidseq
 # tc=$?

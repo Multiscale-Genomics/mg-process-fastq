@@ -85,6 +85,10 @@ cd bedtools2
 make
 # cd ${HOME}/build/Multiscale-Genomics/mg-process-fastq
 
+cd ${HOME}/lib
+wget -O trim_galore.tar.gz https://github.com/FelixKrueger/TrimGalore/archive/0.4.3.tar.gz
+tar -xzf trim_galore.tar.gz
+
 # Install MACS2
 # cd ${HOME}/build/Multiscale-Genomics/mg-process-fastq
 # chmod +x scripts/travis/includeMAC2.sh

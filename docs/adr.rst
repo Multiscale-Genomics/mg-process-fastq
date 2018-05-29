@@ -64,3 +64,9 @@ The first tool uses Sleuth to generate an R object of all the processed tracks. 
 -----------------------
 
 Update so that the gem files are name <genome-file>.gem.gz inline with requests from WP7 partners so that the name of the index is picked up correctly
+
+
+2018-05-22 - TrimGalore
+-----------------------
+
+To try and improve the quality of the reads that are used for numerous pipelines, TrimGalore has been included as a pipeline to aid in the clipping and removal of low quality regions of reads. The pipeline can be run on single or paired end FASTQ files. A report of the trimmed data is also returned for the user to identify what changes were made.

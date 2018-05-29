@@ -330,7 +330,7 @@ if __name__ == '__main__':
         print('TRIMGALORE')
         if trimgalore_pipeline(VERBOSE) > 0:
             sys.exit(1)
-        
+
         if TIDY:
             tidy_data()
 

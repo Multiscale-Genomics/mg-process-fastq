@@ -75,20 +75,6 @@ class process_rnaseq(Workflow):
         -------
         outputfiles : list
             List of locations for the output bam, bed and tsv files
-
-        Parameters
-        ----------
-        input_files : list
-            List of file locations
-        metadata : list
-            Required meta data
-        output_files : list
-            List of output file locations
-
-        Returns
-        -------
-        outputfiles : dict
-            List of locations for the output index files
         output_metadata : dict
             Metadata about each of the files
         """

@@ -50,6 +50,8 @@ class process_sleuth(Workflow):
                 this should be the experiment id (eg ERR030856) and the value
                 should be a description of the experiment (control, thyroid,
                 brain, lung, etc.)
+            sleuth_tag : str
+                Tag for naming the output files with.
         """
         logger.info("Processing Sleuth")
         if configuration is None:
@@ -80,8 +82,6 @@ class process_sleuth(Workflow):
 
             sleuth_object : str
                 Location of the Sleuth R object
-
-
 
         Returns
         -------

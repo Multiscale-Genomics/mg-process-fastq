@@ -1066,7 +1066,7 @@ RNA-Seq Analysis
    -------
    R data object : file
       Sleuth R object
-   
+
    Example
    -------
    When running the pipeline on a local machine without COMPSs:
@@ -1079,8 +1079,8 @@ RNA-Seq Analysis
          --in_metadata tests/json/input_sleuth.json \
          --out_metadata tests/json/output_sleuth.json \
          --local
-  
-  When using a local version of the [COMPS virtual machine](https://www.bsc.es/research-and-development/software-and-apps/software-list/comp-superscalar/):
+
+   When using a local version of the [COMPS virtual machine](https://www.bsc.es/research-and-development/software-and-apps/software-list/comp-superscalar/):
 
    .. code-block:: none
       :linenos:
@@ -1095,11 +1095,11 @@ RNA-Seq Analysis
             --in_metadata tests/json/input_sleuth.json \
             --out_metadata tests/json/output_sleuth.json
 
-
    Methods
    =======
    .. autoclass:: process_sleuth.process_sleuth
       :members:
+
 
 TrimGalore
 ----------

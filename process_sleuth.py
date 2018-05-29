@@ -52,6 +52,9 @@ class process_sleuth(Workflow):
                 brain, lung, etc.)
             sleuth_tag : str
                 Tag for naming the output files with.
+            sleuth_sig_level : float
+                Significance level for whether a gene is differentially
+                expressed or not. DEFAULT: 0.05
         """
         logger.info("Processing Sleuth")
         if configuration is None:
@@ -82,6 +85,12 @@ class process_sleuth(Workflow):
 
             sleuth_object : str
                 Location of the Sleuth R object
+            sleuth_sig_genes_table : str
+                Location of the top most significant genes with a p-value
+                greater than or equal to sleuth_sig_level
+            sleuth_image_tar : str
+                Location of the tar object comtaining all the generated images
+                for visualising the gene differential expression.
 
         Returns
         -------

@@ -174,7 +174,6 @@ def rnaseq_pipeline(verbose=False):
 
     return pytest.main(params)
 
-
 def sleuth_pipeline(verbose=False):
     """
     Runs the tests for the RNA-seq pipeline
@@ -194,6 +193,27 @@ def sleuth_pipeline(verbose=False):
 
     params.append('tests/test_pipeline_rnaseq.py')
     params.append('tests/test_pipeline_sleuth.py')
+
+    return pytest.main(params)
+
+
+def trimgalore_pipeline(verbose=False):
+    """
+    Runs the tests for the trimgalore pipeline
+
+    Runs the following tests:
+
+    .. code-block:: none
+
+       pytest -m trimgalore tests/test_pipeline_trimgalore.py
+    """
+
+    params = ['-m trimgalore']
+
+    if verbose is True:
+        params.append('-s')
+
+    params.append('tests/test_pipeline_trimgalore.py')
 
     return pytest.main(params)
 
@@ -243,7 +263,7 @@ if __name__ == '__main__':
         required=True,
         type=str,
         choices=[
-            'genome', 'chipseq', 'hic', 'idamidseq', 'idear', 'mnaseseq',
+            'genome', 'chipseq', 'hic', 'idamidseq', 'idear', 'trimgalore', 'mnaseseq',
             'rnaseq', 'sleuth', 'wgbs', 'all'
         ],
         help=""
@@ -303,6 +323,14 @@ if __name__ == '__main__':
         if idear_pipeline(VERBOSE) > 0:
             sys.exit(1)
 
+        if TIDY:
+            tidy_data()
+
+    if 'trimgalore' in PIPELINES or 'all' in PIPELINES:
+        print('TRIMGALORE')
+        if trimgalore_pipeline(VERBOSE) > 0:
+            sys.exit(1)
+        
         if TIDY:
             tidy_data()
 

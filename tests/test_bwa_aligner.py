@@ -117,7 +117,7 @@ def test_bwa_aligner_aln():
     assert os.path.getsize(resource_path + "macs2.Human.DRR000150.22_aln.bam") > 0
 
     try:
-        os.remove(resource_path + "macs2.Human.DRR000150.22_mem.bam")
+        os.remove(resource_path + "macs2.Human.DRR000150.22_aln.bam")
     except OSError, ose:
         print("Error: %s - %s." % (ose.filename, ose.strerror))
 

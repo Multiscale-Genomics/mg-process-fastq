@@ -1098,6 +1098,7 @@ Differential Gene Expression Analysis
             --in_metadata tests/json/input_sleuth.json \
             --out_metadata tests/json/output_sleuth.json
 
+
    Methods
    =======
    .. autoclass:: process_sleuth.process_sleuth

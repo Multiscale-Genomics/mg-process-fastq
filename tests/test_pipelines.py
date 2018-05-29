@@ -19,7 +19,7 @@ from __future__ import print_function
 
 import argparse
 import subprocess
-import pytest  # pylint: disable=unused-import
+import pytest
 
 
 def genome_pipeline(verbose=False):

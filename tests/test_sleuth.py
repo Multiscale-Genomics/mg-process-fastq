@@ -55,7 +55,9 @@ def test_sleuth():
     }
 
     output_files = {
-        "sleuth_object": resource_path + "sleuth.Rbin"
+        "sleuth_object": resource_path + "sleuth.Rbin",
+        "sleuth_sig_genes_table": resource_path + "sleuth_sig_genes.tsv",
+        "sleuth_image_tar": resource_path + "sleuth_images.tar.gz"
     }
 
     metadata = {
@@ -77,11 +79,18 @@ def test_sleuth():
             "ERR030858": {"tissue": "mixture"},
             "ERR030872": {"tissue": "thyroid"},
             "ERR030903": {"tissue": "thyroid"}
-        }
+        },
+        "sleuth_sig_level": 1.0,
+        "sleuth_tag": "test"
     }
 
     sleuth_handle = sleuthTool(config)
-    sleuth_handle.run(input_files, metadata, output_files)
+    sleuth_files, sleuth_meta = sleuth_handle.run(  # pylint: disable=unused-variable
+        input_files, metadata, output_files)
 
-    assert os.path.isfile(resource_path + "sleuth.Rbin") is True
-    assert os.path.getsize(resource_path + "sleuth.Rbin") > 0
+    # Add tests for all files created
+    for f_out in sleuth_files:
+        print("Sleuth RESULTS FILE:", f_out)
+        assert sleuth_files[f_out] == output_files[f_out]
+        assert os.path.isfile(sleuth_files[f_out]) is True
+        assert os.path.getsize(sleuth_files[f_out]) > 0

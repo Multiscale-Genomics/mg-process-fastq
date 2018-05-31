@@ -113,8 +113,14 @@ def test_genome_pipeline_01():
     files_out = {
         "bwa_index": resource_path + 'public.GCA_000001405.22.fasta.bwa.tar.gz',
         "bwt_index": resource_path + 'public.GCA_000001405.22.fasta.bt2.tar.gz',
-        "gem_index": resource_path + 'public.GCA_000001405.22.fasta.gem.gz'
+        "gem_index": resource_path + 'macs2.Human.GCA_000001405.22.fasta.gem.gz'
     }
+
+    for f_out in files_out:
+        try:
+            os.remove(files_out[f_out])
+        except OSError, ose:
+            print("Error: %s - %s." % (ose.filename, ose.strerror))
 
     genome_handle = process_genome()
     genome_files, genome_meta = genome_handle.run(files, metadata, files_out)  # pylint: disable=unused-variable

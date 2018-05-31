@@ -142,8 +142,14 @@ class process_chipseq(Workflow):
 
         logger.info("PROCESS CHIPSEQ - DEFINED OUTPUT:", output_files["bam"])
 
-        align_input_files = remap(input_files, "genome", "loc", "index")
-        align_input_file_meta = remap(metadata, "genome", "loc", "index")
+        if "genome_public" in input_files:
+            align_input_files = remap(
+                input_files, genome="genome_public", loc="loc", index="index_public")
+            align_input_file_meta = remap(
+                metadata, genome="genome_public", loc="loc", index="index_public")
+        else:
+            align_input_files = remap(input_files, "genome", "loc", "index")
+            align_input_file_meta = remap(metadata, "genome", "loc", "index")
 
         if "fastq2" in input_files:
             align_input_files["fastq2"] = input_files["fastq2"]
@@ -167,8 +173,14 @@ class process_chipseq(Workflow):
 
         if "bg_loc" in input_files:
             # Align background files
-            align_input_files_bg = remap(input_files, "genome", "index", loc="bg_loc")
-            align_input_file_meta_bg = remap(metadata, "genome", "index", loc="bg_loc")
+            if "genome_public" in input_files:
+                align_input_files_bg = remap(
+                    input_files, genome="genome_public", index="index_public", loc="bg_loc")
+                align_input_file_meta_bg = remap(
+                    metadata, genome="genome_public", index="index_public", loc="bg_loc")
+            else:
+                align_input_files_bg = remap(input_files, "genome", "index", loc="bg_loc")
+                align_input_file_meta_bg = remap(metadata, "genome", "index", loc="bg_loc")
 
             if "fastq2" in input_files:
                 align_input_files_bg["fastq2"] = input_files["fastq2_bg"]

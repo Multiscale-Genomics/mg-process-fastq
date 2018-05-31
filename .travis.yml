@@ -86,6 +86,7 @@ before_install:
     - cd ${HOME}/build/Multiscale-Genomics/mg-process-fastq
     - sudo chmod +x scripts/travis/includeMAC2.sh
     - sudo chmod +x scripts/travis/includeTADbit.sh
+    - sudo chmod +x scripts/travis/install_r_code.sh
 
     - if [[ "$TESTENV" == "rcode" ]]; then sudo apt-get install r-base-core; fi
     - if [[ "$TESTENV" == "rcode" ]]; then sudo apt-get install python-rpy2; fi

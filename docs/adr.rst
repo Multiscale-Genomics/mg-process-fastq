@@ -52,6 +52,12 @@ In the future the creation of the bai file could be done at alignment time, but 
 Added compression of the split FASTQ files to reduce the amount of space required when processing the data. There is also the removal of the tmp directory after the completion of the splitter to save on space.
 
 
+2018-05-09 - Handling aligner index decompression
+-------------------------------------------------
+
+The code has been modified so that there is a single decompression of the BWA and Bowtie2 common indexes. The index files are then explicitly handed to the alignment task rather than handing over the compressed index. The decompression is performed as a @task so that the index files are already in the COMPSs system. This means that handing the index files to the alignment tasks creates a single symlink in the sandbox temporary file directory rather than duplicating the whole of the index structure for each job.
+
+
 2018-05-22 - GEM Naming
 -----------------------
 

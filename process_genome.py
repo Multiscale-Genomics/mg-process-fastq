@@ -90,12 +90,19 @@ class process_genome(Workflow):
         output_files_generated = {}
         output_metadata = {}
 
+        if "genome_public" in input_files:
+            genome_input_file = {"genome": input_files["genome_public"]}
+            genome_input_meta = {"genome": metadata["genome_public"]}
+        else:
+            genome_input_file = {"genome": input_files["genome"]}
+            genome_input_meta = {"genome": metadata["genome"]}
+
         # Bowtie2 Indexer
         logger.info("Generating indexes for Bowtie2")
         bowtie2 = bowtieIndexerTool()
         bti, btm = bowtie2.run(
-            input_files,
-            metadata,
+            genome_input_file,
+            genome_input_meta,
             {'index': output_files['bwt_index']}
         )
 
@@ -113,8 +120,8 @@ class process_genome(Workflow):
         logger.info("Generating indexes for BWA")
         bwa = bwaIndexerTool()
         bwai, bwam = bwa.run(
-            input_files,
-            metadata,
+            genome_input_file,
+            genome_input_meta,
             {'index': output_files['bwa_index']}
         )
 
@@ -132,7 +139,7 @@ class process_genome(Workflow):
         logger.info("Generating indexes for GEM")
         gem = gemIndexerTool()
         gemi, gemm = gem.run(
-            input_files, metadata,
+            genome_input_file, genome_input_meta,
             {
                 'index': output_files['gem_index']
             }

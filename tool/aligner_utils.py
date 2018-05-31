@@ -18,7 +18,10 @@ from __future__ import print_function
 
 import shlex
 import subprocess
+import os
 import os.path
+import shutil
+import tarfile
 
 from utils import logger
 from tool.common import cd
@@ -100,6 +103,67 @@ class alignerUtils(object):
         return True
 
     @staticmethod
+    def bowtie2_untar_index(
+            genome_name, tar_file, bt2_1_file, bt2_2_file, bt2_3_file, bt2_4_file,
+            bt2_rev1_file, bt2_rev2_file):
+        """
+        Extracts the BWA index files from the genome index tar file.
+
+        Parameters
+        ----------
+        genome_file_name : str
+            Location string of the genome fasta file
+        tar_file : str
+            Location of the Bowtie2 index file
+        bt2_1_file : str
+            Location of the amb index file
+        bt2_2_file : str
+            Location of the ann index file
+        bt2_3_file : str
+            Location of the bwt index file
+        bt2_4_file : str
+            Location of the pac index file
+        bt2_rev1_file : str
+            Location of the sa index file
+        bt2_rev2_file : str
+            Location of the sa index file
+
+        Returns
+        -------
+        bool
+            Boolean indicating if the task was successful
+        """
+        try:
+            g_dir = tar_file.split("/")
+            g_dir = "/".join(g_dir[:-1])
+
+            tar = tarfile.open(tar_file)
+            tar.extractall(path=g_dir)
+            tar.close()
+
+            index_files = {
+                "1.bt2": bt2_1_file,
+                "2.bt2": bt2_2_file,
+                "3.bt2": bt2_3_file,
+                "4.bt2": bt2_4_file,
+                "rev.1.bt2": bt2_rev1_file,
+                "rev.2.bt2": bt2_rev2_file,
+            }
+
+            gidx_folder = tar_file.replace('.tar.gz', '/') + genome_name
+            for suffix in list(index_files.keys()):
+                with open(index_files[suffix], "wb") as f_out:
+                    with open(gidx_folder + "." + suffix, "rb") as f_in:
+                        f_out.write(f_in.read())
+
+            shutil.rmtree(tar_file.replace('.tar.gz', ''))
+        except IOError as error:
+            logger.fatal("UNTAR: I/O error({0}): {1}".format(error.errno, error.strerror))
+            return False
+
+        return True
+
+    @staticmethod
     def bwa_index_genome(genome_file):
         """
         Create an index of the genome FASTA file with BWA. These are saved
@@ -151,6 +215,63 @@ class alignerUtils(object):
             process.wait()
 
         return (amb_name, ann_name, bwt_name, pac_name, sa_name)
+
+    @staticmethod
+    def bwa_untar_index(genome_name, tar_file,
+                        amb_file, ann_file, bwt_file, pac_file, sa_file):
+        """
+        Extracts the BWA index files from the genome index tar file.
+
+        Parameters
+        ----------
+        genome_file_name : str
+            Location string of the genome fasta file
+        genome_idx : str
+            Location of the BWA index file
+        amb_file : str
+            Location of the amb index file
+        ann_file : str
+            Location of the ann index file
+        bwt_file : str
+            Location of the bwt index file
+        pac_file : str
+            Location of the pac index file
+        sa_file : str
+            Location of the sa index file
+
+        Returns
+        -------
+        bool
+            Boolean indicating if the task was successful
+        """
+        try:
+            g_dir = tar_file.split("/")
+            g_dir = "/".join(g_dir[:-1])
+
+            tar = tarfile.open(tar_file)
+            tar.extractall(path=g_dir)
+            tar.close()
+
+            index_files = {
+                "amb": amb_file,
+                "ann": ann_file,
+                "bwt": bwt_file,
+                "pac": pac_file,
+                "sa": sa_file
+            }
+
+            gidx_folder = tar_file.replace('.tar.gz', '/') + genome_name
+            for suffix in list(index_files.keys()):
+                with open(index_files[suffix], "wb") as f_out:
+                    with open(gidx_folder + "." + suffix, "rb") as f_in:
+                        f_out.write(f_in.read())
+
+            shutil.rmtree(tar_file.replace('.tar.gz', ''))
+        except IOError as error:
+            logger.fatal("UNTAR: I/O error({0}): {1}".format(error.errno, error.strerror))
+            return False
+
+        return True
 
     @staticmethod
     def bowtie2_align_reads(
@@ -338,6 +459,7 @@ class alignerUtils(object):
         os.remove(reads_file_1 + '.sam')
         os.remove(reads_file_1 + '.sai')
         os.remove(reads_file_2 + '.sai')
+
         return True
 
     @staticmethod

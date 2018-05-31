@@ -214,6 +214,7 @@ before_script:
 
     - cd ${HOME}/build/Multiscale-Genomics/mg-process-fastq
     - chmod +x scripts/travis/harness.sh
+    - chmod +x scripts/travis/r_harness.sh
     - chmod +x scripts/travis/docs_harness.sh
     - chmod +x scripts/travis/pylint_harness.sh
     - ls tests/data/

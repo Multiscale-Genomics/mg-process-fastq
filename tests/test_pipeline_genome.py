@@ -27,7 +27,7 @@ from process_genome import process_genome
 @pytest.mark.genome
 @pytest.mark.chipseq
 @pytest.mark.pipeline
-def test_genome_pipeline():
+def test_genome_pipeline_00():
     """
     Test case to ensure that the Genome indexing pipeline code works.
 
@@ -75,3 +75,60 @@ def test_genome_pipeline():
         assert genome_files[f_out] == files_out[f_out]
         assert os.path.isfile(genome_files[f_out]) is True
         assert os.path.getsize(genome_files[f_out]) > 0
+
+
+@pytest.mark.genome
+@pytest.mark.pipeline
+def test_genome_pipeline_01():
+    """
+    Test case to ensure that the Genome indexing pipeline code works.
+
+    Running the pipeline with the test data from the command line:
+
+    .. code-block:: none
+
+       runcompss                                                         \\
+          --lang=python                                                  \\
+          --library_path=${HOME}/bin                                     \\
+          --pythonpath=/<pyenv_virtenv_dir>/lib/python2.7/site-packages/ \\
+          --log_level=debug                                              \\
+          process_genome.py                                              \\
+             --taxon_id 9606                                             \\
+             --genome /<dataset_dir>/Human.GCA_000001405.22.fasta        \\
+             --assembly GRCh38                                           \\
+             --file /<dataset_dir>/DRR000150.22.fastq
+    """
+    resource_path = os.path.join(os.path.dirname(__file__), "data/")
+
+    files = {
+        'genome': resource_path + 'macs2.Human.GCA_000001405.22.fasta',
+    }
+
+    metadata = {
+        "genome": Metadata(
+            "Assembly", "fasta", files['genome'], None,
+            {'assembly': 'GCA_000001405.22'}),
+    }
+
+    files_out = {
+        "bwa_index": resource_path + 'public.GCA_000001405.22.fasta.bwa.tar.gz',
+        "bwt_index": resource_path + 'public.GCA_000001405.22.fasta.bt2.tar.gz',
+        "gem_index": resource_path + 'public.GCA_000001405.22.fasta.gem.gz'
+    }
+
+    genome_handle = process_genome()
+    genome_files, genome_meta = genome_handle.run(files, metadata, files_out)  # pylint: disable=unused-variable
+
+    print(genome_files)
+
+    # Add tests for all files created
+    for f_out in genome_files:
+        print("GENOME RESULTS FILE:", f_out)
+        assert genome_files[f_out] == files_out[f_out]
+        assert os.path.isfile(genome_files[f_out]) is True
+        assert os.path.getsize(genome_files[f_out]) > 0
+
+        try:
+            os.remove(genome_files[f_out])
+        except OSError, ose:
+            print("Error: %s - %s." % (ose.filename, ose.strerror))

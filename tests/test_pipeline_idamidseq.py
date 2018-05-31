@@ -39,7 +39,7 @@ def test_idamidseq_pipeline():
           --library_path=${HOME}/bin                                     \\
           --pythonpath=/<pyenv_virtenv_dir>/lib/python2.7/site-packages/ \\
           --log_level=debug                                              \\
-          process_chipseq.py                                             \\
+          process_damidseq.py                                             \\
              --taxon_id 9606                                             \\
              --genome /<dataset_dir>/Human.GCA_000001405.22.fasta        \\
              --assembly GRCh38                                           \\
@@ -120,3 +120,111 @@ def test_idamidseq_pipeline():
         # assert damidseq_files[f_out] == files_out[f_out]
         assert os.path.isfile(damidseq_files[f_out]) is True
         assert os.path.getsize(damidseq_files[f_out]) > 0
+
+        try:
+            os.remove(damidseq_files[f_out])
+        except OSError, ose:
+            print("Error: %s - %s." % (ose.filename, ose.strerror))
+
+
+@pytest.mark.idamidseq
+@pytest.mark.pipeline
+def test_idamidseq_pipeline():
+    """
+    Test case to ensure that the ChIP-seq pipeline code works.
+
+    Running the pipeline with the test data from the command line:
+
+    .. code-block:: none
+
+       runcompss                                                         \\
+          --lang=python                                                  \\
+          --library_path=${HOME}/bin                                     \\
+          --pythonpath=/<pyenv_virtenv_dir>/lib/python2.7/site-packages/ \\
+          --log_level=debug                                              \\
+          process_damidseq.py                                             \\
+             --taxon_id 9606                                             \\
+             --genome /<dataset_dir>/Human.GCA_000001405.22.fasta        \\
+             --assembly GRCh38                                           \\
+             --file /<dataset_dir>/DRR000150.22.fastq
+
+    """
+    resource_path = os.path.join(os.path.dirname(__file__), "data/")
+
+    files = {
+        'genome_public': resource_path + 'idear.Human.GCA_000001405.22.fasta',
+        'index_public': resource_path + 'idear.Human.GCA_000001405.22.fasta.bwa.tar.gz',
+        'fastq_1': resource_path + 'idear.Human.SRR3714775.fastq',
+        'fastq_2': resource_path + 'idear.Human.SRR3714776.fastq',
+        'bg_fastq_1': resource_path + 'idear.Human.SRR3714777.fastq',
+        'bg_fastq_2': resource_path + 'idear.Human.SRR3714778.fastq',
+    }
+
+    metadata = {
+        "genome_public": Metadata(
+            "Assembly", "fasta", files['genome_public'], None,
+            {'assembly': 'GCA_000001405.22'}),
+        "index_public": Metadata(
+            "Index", "bwa_index", files['index_public'], files['genome_public'],
+            {'assembly': 'GCA_000001405.22', "tool": "bwa_indexer"}),
+        "fastq_1": Metadata(
+            "data_idamid_seq", "fastq", files['fastq_1'], None,
+            {'assembly': 'GCA_000001405.22'}
+        ),
+        "fastq_2": Metadata(
+            "data_idamid_seq", "fastq", files['fastq_2'], None,
+            {'assembly': 'GCA_000001405.22'}
+        ),
+        "bg_fastq_1": Metadata(
+            "data_idamid_seq", "fastq", files['bg_fastq_1'], None,
+            {'assembly': 'GCA_000001405.22'}
+        ),
+        "bg_fastq_2": Metadata(
+            "data_idamid_seq", "fastq", files['bg_fastq_2'], None,
+            {'assembly': 'GCA_000001405.22'}
+        ),
+    }
+
+    config_param = {
+        "idear_title": "Full genome sequences for Homo sapiens (GRCh38)",
+        "idear_description": "Full genome sequences for Homo sapiens (GRCh38)",
+        "idear_common_name": "Human",
+        "idear_organism": "Homo sapiens",
+        "idear_provider": "ENA",
+        "idear_release_date": "2013",
+        "idear_sample_param": "Nup98",
+        "idear_background_param": "GFP",
+    }
+
+    files_out = {
+        "bam_1": files['fastq_1'].replace(".fastq", ".bam"),
+        "bam_2": files['fastq_2'].replace(".fastq", ".bam"),
+        "bg_bam_1": files['bg_fastq_1'].replace(".fastq", ".bam"),
+        "bg_bam_2": files['bg_fastq_2'].replace(".fastq", ".bam"),
+        "bam_1_filtered": files['fastq_1'].replace(".fastq", ".filtered.bam"),
+        "bam_2_filtered": files['fastq_2'].replace(".fastq", ".filtered.bam"),
+        "bg_bam_1_filtered": files['bg_fastq_1'].replace(".fastq", ".filtered.bam"),
+        "bg_bam_2_filtered": files['bg_fastq_2'].replace(".fastq", ".filtered.bam"),
+        "bsgenome": resource_path + "idear.Human.GCA_000001405.22.22.bsgenome.tar.gz",
+        "chrom_size": resource_path + "chrom.size",
+        "genome_2bit": resource_path + "idear.Human.GCA_000001405.22.2bit",
+        "seed_file": resource_path + "idear.Human.GCA_000001405.22.seed",
+        "bigwig": resource_path + "idear.Human.Nup98-GFP.bw"
+    }
+
+    damidseq_handle = process_damidseq(config_param)
+    damidseq_files, damidseq_meta = damidseq_handle.run(files, metadata, files_out)  # pylint: disable=unused-variable
+
+    print(damidseq_files)
+
+    # Add tests for all files created
+    for f_out in damidseq_files:
+        print("iDamID-SEQ RESULTS FILE:", f_out)
+        # assert damidseq_files[f_out] == files_out[f_out]
+        assert os.path.isfile(damidseq_files[f_out]) is True
+        assert os.path.getsize(damidseq_files[f_out]) > 0
+
+        try:
+            os.remove(damidseq_files[f_out])
+        except OSError, ose:
+            print("Error: %s - %s." % (ose.filename, ose.strerror))

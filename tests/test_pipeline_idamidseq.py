@@ -26,7 +26,7 @@ from process_damidseq import process_damidseq
 
 @pytest.mark.idamidseq
 @pytest.mark.pipeline
-def test_idamidseq_pipeline():
+def test_idamidseq_pipeline_00():
     """
     Test case to ensure that the ChIP-seq pipeline code works.
 
@@ -129,7 +129,7 @@ def test_idamidseq_pipeline():
 
 @pytest.mark.idamidseq
 @pytest.mark.pipeline
-def test_idamidseq_pipeline():
+def test_idamidseq_pipeline_01():
     """
     Test case to ensure that the ChIP-seq pipeline code works.
 

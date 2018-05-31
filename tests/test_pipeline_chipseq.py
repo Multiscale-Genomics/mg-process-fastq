@@ -24,20 +24,6 @@ from basic_modules.metadata import Metadata
 from process_chipseq import process_chipseq
 
 
-def tidy_data():
-    """
-    Runs the tidy_data.sh script
-    """
-    print("TIDY DATA")
-    try:
-        command_line = './tidy_data.sh'
-        process = subprocess.Popen(command_line, shell=True)
-        process.wait()
-    except (IOError, OSError) as msg:
-        print("I/O error({0}): {1}\n{2}".format(
-            msg.errno, msg.strerror, command_line))
-
-
 @pytest.mark.chipseq
 @pytest.mark.pipeline
 def test_chipseq_pipeline_00():

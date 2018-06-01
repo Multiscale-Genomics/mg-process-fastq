@@ -127,6 +127,6 @@ fi
 
 # Post Installation Tidyup
 cd ${HOME}/lib
-rm *.zip *.tar.gz
+rm -f *.zip *.tar.gz
 
 # cd ${HOME}/build/Multiscale-Genomics/mg-process-fastq

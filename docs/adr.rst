@@ -68,3 +68,8 @@ Update so that the gem files are name <genome-file>.gem.gz inline with requests 
 -----------------------
 
 To try and improve the quality of the reads that are used for numerous pipelines, TrimGalore has been included as a pipeline to aid in the clipping and removal of low quality regions of reads. The pipeline can be run on single or paired end FASTQ files. A report of the trimmed data is also returned for the user to identify what changes were made.
+
+2018-06-01 - Separated WGBS Vode Testing
+----------------------------------------
+
+To bring down the run time for the TravisCI, the WGBS has been moved to a separate track. This has the benefit of getting the testing started earlier and allowing the other tests to finish sooner.

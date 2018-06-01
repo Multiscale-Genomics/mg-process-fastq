@@ -21,7 +21,9 @@ python:
     - "2.7.12"
     #- "3.6.3"
 
-#sudo: false
+cache:
+    directories:
+        - ${HOME}/lib
 
 env:
     matrix:
@@ -31,43 +33,43 @@ env:
         - TESTENV=pylint
 
 addons:
-  apt:
-    packages:
-    #system environment
-    - make
-    - python-dev
-    - build-essential
-    - libssl-dev
-    - zlib1g-dev
-    - libbz2-dev
-    - libreadline-dev
-    - libsqlite3-dev
-    - libtiff5-dev
-    - libjpeg8-dev
-    - libfreetype6-dev
-    - liblcms2-dev
-    - libwebp-dev
-    - tcl8.6-dev
-    - tk8.6-dev
-    - python-tk
-    - wget
-    - curl
-    - llvm
-    - libncurses5-dev
-    - libncursesw5-dev
-    - xz-utils
-    - tk-dev
-    - mcl
-    - libgtk2.0-dev
-    - libcurl4-gnutls-dev
-    - unzip
-    - liblzma-dev
-    - libtool
-    - pigz
-    - tree
+    apt:
+        packages:
+            #system environment
+            - make
+            - python-dev
+            - build-essential
+            - libssl-dev
+            - zlib1g-dev
+            - libbz2-dev
+            - libreadline-dev
+            - libsqlite3-dev
+            - libtiff5-dev
+            - libjpeg8-dev
+            - libfreetype6-dev
+            - liblcms2-dev
+            - libwebp-dev
+            - tcl8.6-dev
+            - tk8.6-dev
+            - python-tk
+            - wget
+            - curl
+            - llvm
+            - libncurses5-dev
+            - libncursesw5-dev
+            - xz-utils
+            - tk-dev
+            - mcl
+            - libgtk2.0-dev
+            - libcurl4-gnutls-dev
+            - unzip
+            - liblzma-dev
+            - libtool
+            - pigz
+            - tree
 
-#env:
-#  - COVERALLS=false
+# env:
+#   - COVERALLS=false
 
 before_install:
     - pwd

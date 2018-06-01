@@ -19,11 +19,13 @@ python_version=$(python --version 2>&1)
 echo $python_version
 if [[ $python_version != *"3."* ]]; then
     cd ${HOME}/lib
-    wget https://github.com/3DGenomes/tadbit/archive/master.zip -O tadbit.zip
-    unzip tadbit.zip
-    cd TADbit-master
-    pip install scipy
-    pip install matplotlib
-    yes | python setup.py install --install-scripts=${HOME}/bin
+    if [ ! -d "TADbit-master" ]; then
+        wget https://github.com/3DGenomes/tadbit/archive/master.zip -O tadbit.zip
+        unzip tadbit.zip
+        cd TADbit-master
+        pip install scipy
+        pip install matplotlib
+        yes | python setup.py install --install-scripts=${HOME}/bin
+    fi
 
 fi

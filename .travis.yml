@@ -120,7 +120,7 @@ install:
 
     # Install BSseeker
     - cd ${HOME}/lib
-    - git clone https://github.com/BSSeeker/BSseeker2.git
+    - if [[ ! -d "BSseeker2" ]]; then git clone https://github.com/BSSeeker/BSseeker2.git
 
     - cd ${HOME}/build/Multiscale-Genomics/mg-process-fastq
     - ln -s ${HOME}/lib/BSseeker2/bs_align bs_align

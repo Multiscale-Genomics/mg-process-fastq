@@ -27,6 +27,7 @@ env:
     matrix:
         - TESTENV=docs
         - TESTENV=code
+        - TESTENV=wgbs_code
         - TESTENV=pylint
 
 addons:
@@ -85,12 +86,14 @@ before_install:
     - cd ${HOME}/build/Multiscale-Genomics/mg-process-fastq
     - sudo chmod +x scripts/travis/includeMAC2.sh
     - sudo chmod +x scripts/travis/includeTADbit.sh
+    - sudo chmod +x scripts/travis/install_wgbs_code.sh
 
     - if [[ "$TESTENV" == "code" ]]; then sudo apt-get install r-base-core; fi
     - if [[ "$TESTENV" == "code" ]]; then sudo apt-get install python-rpy2; fi
     - if [[ "$TESTENV" == "code" ]]; then sudo ./scripts/travis/install_code_test_dependencies.sh; fi
     - if [[ "$TESTENV" == "code" ]]; then ./scripts/travis/includeMAC2.sh; fi
     - if [[ "$TESTENV" == "code" ]]; then ./scripts/travis/includeTADbit.sh; fi
+    - if [[ "$TESTENV" == "wgbs_code" ]]; then sudo ./scripts/travis/install_wgbs_code.sh; fi
     - if [[ "$TESTENV" == "pylint" ]]; then ./scripts/travis/includeMAC2.sh; fi
     - if [[ "$TESTENV" == "pylint" ]]; then ./scripts/travis/includeTADbit.sh; fi
 
@@ -207,6 +210,7 @@ before_script:
 
     - cd ${HOME}/build/Multiscale-Genomics/mg-process-fastq
     - chmod +x scripts/travis/harness.sh
+    - chmod +x scripts/travis/wgbs_harness.sh
     - chmod +x scripts/travis/docs_harness.sh
     - chmod +x scripts/travis/pylint_harness.sh
     - ls tests/data/
@@ -216,6 +220,7 @@ before_script:
 
 script:
     - if [[ "$TESTENV" == "code" ]]; then ./scripts/travis/harness.sh; fi
+    - if [[ "$TESTENV" == "wgbs_code" ]]; then ./scripts/travis/wgbs_harness.sh; fi
     - if [[ "$TESTENV" == "docs" ]]; then ./scripts/travis/docs_harness.sh; fi
     - if [[ "$TESTENV" == "pylint" ]]; then ./scripts/travis/pylint_harness.sh; fi
 

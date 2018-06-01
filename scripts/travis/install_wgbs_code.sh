@@ -18,6 +18,13 @@
 # libtbb-dev did not seem to be installing correctly without using sudo
 sudo apt-get install libtbb-dev
 
+# FastQC
+cd ${HOME}/lib
+wget http://www.bioinformatics.babraham.ac.uk/projects/fastqc/fastqc_v0.11.5.zip
+unzip fastqc_v0.11.5.zip
+cd FastQC/
+chmod 755 fastqc
+
 # htslib
 cd ${HOME}/lib
 git clone https://github.com/samtools/htslib.git

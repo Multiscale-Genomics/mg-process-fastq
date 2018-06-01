@@ -23,7 +23,11 @@ python:
 
 cache:
     directories:
+        - $HOME/.cache/pip
         - ${HOME}/lib
+
+before_cache:
+    - rm -f $HOME/.cache/pip/log/debug.log
 
 env:
     matrix:
@@ -109,7 +113,7 @@ install:
     # Install APIs and Pipelines
     - cd ${HOME}/build/Multiscale-Genomics/mg-process-fastq
     - git status
-    - pip install -e .
+    - pip install --upgrade -e .
     - pip install -r requirements.txt
 
     # Fixed version due to errors in 1.7.3

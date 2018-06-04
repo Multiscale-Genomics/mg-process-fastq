@@ -20,74 +20,95 @@ sudo apt-get install libtbb-dev
 
 # FastQC
 cd ${HOME}/lib
-wget http://www.bioinformatics.babraham.ac.uk/projects/fastqc/fastqc_v0.11.5.zip
-unzip fastqc_v0.11.5.zip
-cd FastQC/
-chmod 755 fastqc
+if [ ! -d "FastQC" ]; then
+    wget http://www.bioinformatics.babraham.ac.uk/projects/fastqc/fastqc_v0.11.5.zip
+    unzip fastqc_v0.11.5.zip
+    cd FastQC/
+    chmod 755 fastqc
+fi
 
 # htslib
 cd ${HOME}/lib
-git clone https://github.com/samtools/htslib.git
-cd htslib
-autoheader
-autoconf
-./configure --prefix=${HOME}/lib/htslib
-make
-make install
+if [ ! -d "htslib" ]; then
+    git clone https://github.com/samtools/htslib.git
+    cd htslib
+    autoheader
+    autoconf
+    ./configure --prefix=${HOME}/lib/htslib
+    make
+    make install
+fi
 
 # SAMtools
 cd ${HOME}/lib
-git clone https://github.com/samtools/samtools.git
-cd samtools
-autoheader
-autoconf -Wno-syntax
-./configure --prefix=${HOME}/lib/samtools
-make
-make install
+if [ ! -d "samtools" ]; then
+    git clone https://github.com/samtools/samtools.git
+    cd samtools
+    autoheader
+    autoconf -Wno-syntax
+    ./configure --prefix=${HOME}/lib/samtools
+    make
+    make install
+fi
 
 # UCSC Tools
 cd ${HOME}/lib
-wget http://hgdownload.cse.ucsc.edu/admin/exe/linux.x86_64/bedToBigBed
-wget http://hgdownload.cse.ucsc.edu/admin/exe/linux.x86_64/wigToBigWig
+if [ ! -f "bedToBigBed" ]; then
+    wget http://hgdownload.cse.ucsc.edu/admin/exe/linux.x86_64/bedToBigBed
+    wget http://hgdownload.cse.ucsc.edu/admin/exe/linux.x86_64/wigToBigWig
+fi
 
 # Bowtie2 Aligner
 cd ${HOME}/lib
-wget --max-redirect 1 https://downloads.sourceforge.net/project/bowtie-bio/bowtie2/2.3.4/bowtie2-2.3.4-linux-x86_64.zip
-unzip bowtie2-2.3.4-linux-x86_64.zip
+if [ ! -d "bowtie2-2.3.4-linux-x86_64" ]; then
+    wget --max-redirect 1 https://downloads.sourceforge.net/project/bowtie-bio/bowtie2/2.3.4/bowtie2-2.3.4-linux-x86_64.zip
+    unzip bowtie2-2.3.4-linux-x86_64.zip
+fi
 
 # BWA Sequence Aligner
 cd ${HOME}/lib
-git clone https://github.com/lh3/bwa.git
-cd bwa
-make
+if [ ! -d "bwa" ]; then
+    git clone https://github.com/lh3/bwa.git
+    cd bwa
+    make
+fi
 
 # GEM Indexer
 cd ${HOME}/lib
-wget http://barnaserver.com/gemtools/releases/GEMTools-static-core2-1.7.1.tar.gz
-tar -xzf GEMTools-static-core2-1.7.1.tar.gz
+if [ ! -d "GEMTools-static-core2-1.7.1" ]; then
+    wget http://barnaserver.com/gemtools/releases/GEMTools-static-core2-1.7.1.tar.gz
+    tar -xzf GEMTools-static-core2-1.7.1.tar.gz
+fi
 
 # iNPS Peak Caller
 cd ${HOME}/lib
-mkdir iNPS
-cd iNPS
-wget http://www.picb.ac.cn/hanlab/files/iNPS_V1.2.2.zip
-unzip iNPS_V1.2.2.zip
+if [ ! -d "iNPS" ]; then
+    mkdir iNPS
+    cd iNPS
+    wget http://www.picb.ac.cn/hanlab/files/iNPS_V1.2.2.zip
+    unzip iNPS_V1.2.2.zip
+fi
 
 # Kallisto
 cd ${HOME}/lib
-wget https://github.com/pachterlab/kallisto/releases/download/v0.43.1/kallisto_linux-v0.43.1.tar.gz
-tar -xzf kallisto_linux-v0.43.1.tar.gz
+if [ ! -d "kallisto_linux-v0.43.1" ]; then
+    wget https://github.com/pachterlab/kallisto/releases/download/v0.43.1/kallisto_linux-v0.43.1.tar.gz
+    tar -xzf kallisto_linux-v0.43.1.tar.gz
+fi
 
 # bedTools
-wget https://github.com/arq5x/bedtools2/releases/download/v2.26.0/bedtools-2.26.0.tar.gz
-tar -zxvf bedtools-2.26.0.tar.gz
-cd bedtools2
-make
-# cd ${HOME}/build/Multiscale-Genomics/mg-process-fastq
+if [ ! -d "bedtools2" ]; then
+    wget https://github.com/arq5x/bedtools2/releases/download/v2.26.0/bedtools-2.26.0.tar.gz
+    tar -zxvf bedtools-2.26.0.tar.gz
+    cd bedtools2
+    make
+fi
 
 cd ${HOME}/lib
-wget -O trim_galore.tar.gz https://github.com/FelixKrueger/TrimGalore/archive/0.4.3.tar.gz
-tar -xzf trim_galore.tar.gz
+if [ ! -d "TrimGalore-0.4.3" ]; then
+    wget -O trim_galore.tar.gz https://github.com/FelixKrueger/TrimGalore/archive/0.4.3.tar.gz
+    tar -xzf trim_galore.tar.gz
+fi
 
 # Install MACS2
 # cd ${HOME}/build/Multiscale-Genomics/mg-process-fastq
@@ -106,4 +127,6 @@ tar -xzf trim_galore.tar.gz
 
 # Post Installation Tidyup
 cd ${HOME}/lib
-rm *.zip *.tar.gz
+rm -f *.zip *.tar.gz
+
+# cd ${HOME}/build/Multiscale-Genomics/mg-process-fastq

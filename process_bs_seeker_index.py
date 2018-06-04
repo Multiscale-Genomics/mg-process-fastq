@@ -87,12 +87,19 @@ class process_bs_seeker_index(Workflow):
         output_results_files = {}
         output_metadata = {}
 
+        if "genome_public" in input_files:
+            genome_input_file = {"genome": input_files["genome_public"]}
+            genome_input_meta = {"genome": metadata["genome_public"]}
+        else:
+            genome_input_file = {"genome": input_files["genome"]}
+            genome_input_meta = {"genome": metadata["genome"]}
+
         logger.info("WGBS - BS-Seeker2 Index")
         # Build the matching WGBS genome index
         builder = bssIndexerTool(self.configuration)
         genome_idx, gidx_meta = builder.run(
-            remap(input_files, "genome"),
-            remap(metadata, "genome"),
+            genome_input_file,
+            genome_input_meta,
             remap(output_files, "index")
         )
         output_results_files["index"] = genome_idx["index"]

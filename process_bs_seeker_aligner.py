@@ -99,13 +99,13 @@ class process_bs_seeker_aligner(Workflow):
         output_results_files = {}
         output_metadata = {}
 
+        if "genome_public" in input_files:
+            input_files["genome"] = input_files.pop("genome_public")
+            metadata["genome"] = metadata.pop("genome_public")
+
         logger.info("BS-Seeker2 Aligner")
         bss_aligner = bssAlignerTool(self.configuration)
-        bam, bam_meta = bss_aligner.run(
-            input_files,
-            metadata,
-            output_files
-        )
+        bam, bam_meta = bss_aligner.run(input_files, metadata, output_files)
 
         try:
             output_results_files["bam"] = bam["bam"]

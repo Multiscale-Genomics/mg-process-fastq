@@ -33,7 +33,8 @@ env:
     matrix:
         - TESTENV=docs
         - TESTENV=code
-        - TESTENV=wgbs_code
+        - TESTENV=wgbs_code_1
+        - TESTENV=wgbs_code_2
         - TESTENV=pylint
 
 addons:
@@ -99,7 +100,8 @@ before_install:
     - if [[ "$TESTENV" == "code" ]]; then sudo ./scripts/travis/install_code_test_dependencies.sh; fi
     - if [[ "$TESTENV" == "code" ]]; then ./scripts/travis/includeMAC2.sh; fi
     - if [[ "$TESTENV" == "code" ]]; then ./scripts/travis/includeTADbit.sh; fi
-    - if [[ "$TESTENV" == "wgbs_code" ]]; then sudo ./scripts/travis/install_wgbs_code.sh; fi
+    - if [[ "$TESTENV" == "wgbs_code_1" ]]; then sudo ./scripts/travis/install_wgbs_code.sh; fi
+    - if [[ "$TESTENV" == "wgbs_code_2" ]]; then sudo ./scripts/travis/install_wgbs_code.sh; fi
     - if [[ "$TESTENV" == "pylint" ]]; then ./scripts/travis/includeMAC2.sh; fi
     - if [[ "$TESTENV" == "pylint" ]]; then ./scripts/travis/includeTADbit.sh; fi
 
@@ -226,7 +228,8 @@ before_script:
 
 script:
     - if [[ "$TESTENV" == "code" ]]; then ./scripts/travis/harness.sh; fi
-    - if [[ "$TESTENV" == "wgbs_code" ]]; then ./scripts/travis/wgbs_harness.sh; fi
+    - if [[ "$TESTENV" == "wgbs_code_1" ]]; then ./scripts/travis/wgbs_harness.sh; fi
+    - if [[ "$TESTENV" == "wgbs_code_2" ]]; then ./scripts/travis/wgbs_harness.sh; fi
     - if [[ "$TESTENV" == "docs" ]]; then ./scripts/travis/docs_harness.sh; fi
     - if [[ "$TESTENV" == "pylint" ]]; then ./scripts/travis/pylint_harness.sh; fi
 

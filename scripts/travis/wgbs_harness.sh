@@ -19,7 +19,7 @@ rc=0
 pv=$(python -c 'import platform; print(platform.python_version())')
 
 if [[ $pv == "2.7.12" ]]; then
-    if [[ $TESTENV == "wgbs_code_1" ]]
+    if [[ $TESTENV == "wgbs_code_1" ]]; then
         python tests/test_toolchains.py --pipeline wgbs
         tc=$?
         rc=$(($rc + $tc))

@@ -25,6 +25,7 @@ cache:
     directories:
         - $HOME/.cache/pip
         - ${HOME}/lib
+        - ${HOME}/R
 
 before_cache:
     - rm -f $HOME/.cache/pip/log/debug.log

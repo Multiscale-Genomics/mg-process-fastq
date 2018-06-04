@@ -17,6 +17,6 @@
 
 if(!require("optparse")) install.packages("optparse")
 source("http://bioconductor.org/biocLite.R")
-biocLite("rhdf5")
-install.packages("devtools")
-devtools::install_github("pachterlab/sleuth")
+if(!require("rhdf5")) biocLite("rhdf5")
+if(!require("devtools")) install.packages("devtools")
+if(!require("sleuth")) devtools::install_github("pachterlab/sleuth")

@@ -51,49 +51,11 @@ if [ ! -d "samtools" ]; then
     make install
 fi
 
-# UCSC Tools
-cd ${HOME}/lib
-if [ ! -f "bedToBigBed" ]; then
-    wget http://hgdownload.cse.ucsc.edu/admin/exe/linux.x86_64/bedToBigBed
-    wget http://hgdownload.cse.ucsc.edu/admin/exe/linux.x86_64/wigToBigWig
-fi
-
 # Bowtie2 Aligner
 cd ${HOME}/lib
 if [ ! -d "bowtie2-2.3.4-linux-x86_64" ]; then
     wget --max-redirect 1 https://downloads.sourceforge.net/project/bowtie-bio/bowtie2/2.3.4/bowtie2-2.3.4-linux-x86_64.zip
     unzip bowtie2-2.3.4-linux-x86_64.zip
-fi
-
-# BWA Sequence Aligner
-cd ${HOME}/lib
-if [ ! -d "bwa" ]; then
-    git clone https://github.com/lh3/bwa.git
-    cd bwa
-    make
-fi
-
-# GEM Indexer
-cd ${HOME}/lib
-if [ ! -d "GEMTools-static-core2-1.7.1" ]; then
-    wget http://barnaserver.com/gemtools/releases/GEMTools-static-core2-1.7.1.tar.gz
-    tar -xzf GEMTools-static-core2-1.7.1.tar.gz
-fi
-
-# iNPS Peak Caller
-cd ${HOME}/lib
-if [ ! -d "iNPS" ]; then
-    mkdir iNPS
-    cd iNPS
-    wget http://www.picb.ac.cn/hanlab/files/iNPS_V1.2.2.zip
-    unzip iNPS_V1.2.2.zip
-fi
-
-# Kallisto
-cd ${HOME}/lib
-if [ ! -d "kallisto_linux-v0.43.1" ]; then
-    wget https://github.com/pachterlab/kallisto/releases/download/v0.43.1/kallisto_linux-v0.43.1.tar.gz
-    tar -xzf kallisto_linux-v0.43.1.tar.gz
 fi
 
 # bedTools
@@ -104,29 +66,8 @@ if [ ! -d "bedtools2" ]; then
     make
 fi
 
-cd ${HOME}/lib
-if [ ! -d "TrimGalore-0.4.3" ]; then
-    wget -O trim_galore.tar.gz https://github.com/FelixKrueger/TrimGalore/archive/0.4.3.tar.gz
-    tar -xzf trim_galore.tar.gz
-fi
-
-# Install MACS2
 # cd ${HOME}/build/Multiscale-Genomics/mg-process-fastq
-# chmod +x scripts/travis/includeMAC2.sh
-# ./scripts/travis/includeMAC2.sh
-
-# Install R packages required by iDEAR
-# cd ${HOME}/build/Multiscale-Genomics/mg-process-fastq
-# chmod +x scripts/travis/install_packages.R
-# sudo Rscript scripts/install_packages.R
-
-# Install TADbit (only on Python 2.7)
-# cd ${HOME}/build/Multiscale-Genomics/mg-process-fastq
-# chmod +x scripts/travis/includeTADbit.sh
-# ./scripts/travis/includeTADbit.sh
 
 # Post Installation Tidyup
 cd ${HOME}/lib
 rm -f *.zip *.tar.gz
-
-# cd ${HOME}/build/Multiscale-Genomics/mg-process-fastq

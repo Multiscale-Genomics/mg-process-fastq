@@ -15,17 +15,21 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+rc=0
 pv=$(python -c 'import platform; print(platform.python_version())')
-echo $pv
-cd ${HOME}/lib
+
 if [[ $pv == "2.7.12" ]]; then
-    pip install MACS2
-else
-    if [ ! -d "MACS" ]; then
-        git clone https://github.com/taoliu/MACS.git
-        cd MACS
-        git checkout MACS2p3
-        pip install .
-        alias macs2="macs2p3"
+    if [[ $TESTENV == "wgbs_code_1" ]]; then
+        python tests/test_toolchains.py --pipeline wgbs
+        tc=$?
+        rc=$(($rc + $tc))
+        bash tidy_data.sh
+    else
+        python tests/test_pipelines.py --pipeline wgbs
+        tc=$?
+        rc=$(($rc + $tc))
+        bash tidy_data.sh
     fi
 fi
+
+if [[ $rc != 0 ]]; then exit $rc; fi

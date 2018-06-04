@@ -51,13 +51,6 @@ if [ ! -d "samtools" ]; then
     make install
 fi
 
-# UCSC Tools
-cd ${HOME}/lib
-if [ ! -f "bedToBigBed" ]; then
-    wget http://hgdownload.cse.ucsc.edu/admin/exe/linux.x86_64/bedToBigBed
-    wget http://hgdownload.cse.ucsc.edu/admin/exe/linux.x86_64/wigToBigWig
-fi
-
 # Bowtie2 Aligner
 cd ${HOME}/lib
 if [ ! -d "bowtie2-2.3.4-linux-x86_64" ]; then
@@ -65,50 +58,16 @@ if [ ! -d "bowtie2-2.3.4-linux-x86_64" ]; then
     unzip bowtie2-2.3.4-linux-x86_64.zip
 fi
 
-# BWA Sequence Aligner
-cd ${HOME}/lib
-if [ ! -d "bwa" ]; then
-    git clone https://github.com/lh3/bwa.git
-    cd bwa
+# bedTools
+if [ ! -d "bedtools2" ]; then
+    wget https://github.com/arq5x/bedtools2/releases/download/v2.26.0/bedtools-2.26.0.tar.gz
+    tar -zxvf bedtools-2.26.0.tar.gz
+    cd bedtools2
     make
 fi
 
-# GEM Indexer
-cd ${HOME}/lib
-if [ ! -d "GEMTools-static-core2-1.7.1" ]; then
-    wget http://barnaserver.com/gemtools/releases/GEMTools-static-core2-1.7.1.tar.gz
-    tar -xzf GEMTools-static-core2-1.7.1.tar.gz
-fi
-
-# iNPS Peak Caller
-cd ${HOME}/lib
-if [ ! -d "iNPS" ]; then
-    mkdir iNPS
-    cd iNPS
-    wget http://www.picb.ac.cn/hanlab/files/iNPS_V1.2.2.zip
-    unzip iNPS_V1.2.2.zip
-fi
-
-# bedTools
-wget https://github.com/arq5x/bedtools2/releases/download/v2.27.1/bedtools-2.27.1.tar.gz
-tar -zxvf bedtools-2.27.1.tar.gz
-cd bedtools2
-make
 # cd ${HOME}/build/Multiscale-Genomics/mg-process-fastq
-
-cd ${HOME}/lib
-if [ ! -d "TrimGalore-0.4.3" ]; then
-    wget -O trim_galore.tar.gz https://github.com/FelixKrueger/TrimGalore/archive/0.4.3.tar.gz
-    tar -xzf trim_galore.tar.gz
-fi
-
-# Install R packages required by iDEAR
-# cd ${HOME}/build/Multiscale-Genomics/mg-process-fastq
-# chmod +x scripts/travis/install_packages.R
-# sudo Rscript scripts/install_packages.R
 
 # Post Installation Tidyup
 cd ${HOME}/lib
 rm -f *.zip *.tar.gz
-
-# cd ${HOME}/build/Multiscale-Genomics/mg-process-fastq

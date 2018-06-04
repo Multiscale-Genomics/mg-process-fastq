@@ -81,3 +81,11 @@ To try and improve the quality of the reads that are used for numerous pipelines
 ----------------------------------------
 
 To bring down the run time for the TravisCI, the WGBS has been moved to a separate track. This has the benefit of getting the testing started earlier and allowing the other tests to finish sooner.
+
+
+2018-06-01 - Travis Caching
+---------------------------
+
+Travis CI is now able to cache the lib directory so that the build phase is reduced to improve test speeds. If there ae changes to the lib then these need to be refreshed in the TravisCI settings to ensure that the new libraries are included, or flushed if there are changes to the versions of packages in the lib.
+
+There is also caching of the pip directory to reduce the load time.

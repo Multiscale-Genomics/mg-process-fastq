@@ -90,11 +90,13 @@ if [ ! -d "iNPS" ]; then
 fi
 
 # bedTools
-wget https://github.com/arq5x/bedtools2/releases/download/v2.27.1/bedtools-2.27.1.tar.gz
-tar -zxvf bedtools-2.27.1.tar.gz
-cd bedtools2
-make
-# cd ${HOME}/build/Multiscale-Genomics/mg-process-fastq
+cd ${HOME}/lib
+if [ ! -d "bedtools2" ]; then
+    wget https://github.com/arq5x/bedtools2/releases/download/v2.27.1/bedtools-2.27.1.tar.gz
+    tar -zxvf bedtools-2.27.1.tar.gz
+    cd bedtools2
+    make
+fi
 
 cd ${HOME}/lib
 if [ ! -d "TrimGalore-0.4.3" ]; then

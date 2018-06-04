@@ -17,12 +17,16 @@
 
 # FastQC
 cd ${HOME}/lib
-wget http://www.bioinformatics.babraham.ac.uk/projects/fastqc/fastqc_v0.11.5.zip
-unzip fastqc_v0.11.5.zip
-cd FastQC/
-chmod 755 fastqc
+if [ ! -d "FastQC" ]; then
+    wget http://www.bioinformatics.babraham.ac.uk/projects/fastqc/fastqc_v0.11.5.zip
+    unzip fastqc_v0.11.5.zip
+    cd FastQC/
+    chmod 755 fastqc
+fi
 
 # Kallisto
 cd ${HOME}/lib
-wget https://github.com/pachterlab/kallisto/releases/download/v0.43.1/kallisto_linux-v0.43.1.tar.gz
-tar -xzf kallisto_linux-v0.43.1.tar.gz
+if [ ! -d "kallisto_linux-v0.43.1" ]; then
+    wget https://github.com/pachterlab/kallisto/releases/download/v0.43.1/kallisto_linux-v0.43.1.tar.gz
+    tar -xzf kallisto_linux-v0.43.1.tar.gz
+fi

@@ -235,9 +235,9 @@ class bssMethylationCallerTool(Tool):
                 file_type="wig",
                 file_path=output_files["wig_file"],
                 sources=input_metadata["bam"].sources,
-                taxon_id=input_metadata["genome"].taxon_id,
+                taxon_id=input_metadata["bam"].taxon_id,
                 meta_data={
-                    "assembly": input_metadata["genome"].meta_data["assembly"],
+                    "assembly": input_metadata["bam"].meta_data["assembly"],
                     "tool": "bs_seeker_methylation_caller"
                 }
             ),
@@ -246,9 +246,9 @@ class bssMethylationCallerTool(Tool):
                 file_type="tsv",
                 file_path=output_files["cgmap_file"],
                 sources=input_metadata["bam"].sources,
-                taxon_id=input_metadata["genome"].taxon_id,
+                taxon_id=input_metadata["bam"].taxon_id,
                 meta_data={
-                    "assembly": input_metadata["genome"].meta_data["assembly"],
+                    "assembly": input_metadata["bam"].meta_data["assembly"],
                     "tool": "bs_seeker_methylation_caller"
                 }
             ),
@@ -257,9 +257,9 @@ class bssMethylationCallerTool(Tool):
                 file_type="tsv",
                 file_path=output_files["atcgmap_file"],
                 sources=input_metadata["bam"].sources,
-                taxon_id=input_metadata["genome"].taxon_id,
+                taxon_id=input_metadata["bam"].taxon_id,
                 meta_data={
-                    "assembly": input_metadata["genome"].meta_data["assembly"],
+                    "assembly": input_metadata["bam"].meta_data["assembly"],
                     "tool": "bs_seeker_methylation_caller"
                 }
             )

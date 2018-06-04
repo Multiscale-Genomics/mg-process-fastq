@@ -81,10 +81,21 @@ class process_bsgenome(Workflow):
         output_files_generated = {}
         output_metadata = {}
 
+        if "genome_public" in input_files:
+            genome_input_file = {"genome": input_files["genome_public"]}
+            genome_input_meta = {"genome": metadata["genome_public"]}
+        else:
+            genome_input_file = {"genome": input_files["genome"]}
+            genome_input_meta = {"genome": metadata["genome"]}
+
         # BSgenome
         logger.info("Generating BSgenome")
         bsg = bsgenomeTool(self.configuration)
-        bsgi, bsgm = bsg.run(input_files, metadata, output_files)
+        bsgi, bsgm = bsg.run(
+            genome_input_file,
+            genome_input_meta,
+            output_files
+        )
 
         try:
             for file_key in ["bsgenome", "chrom_size", "genome_2bit", "seed_file"]:

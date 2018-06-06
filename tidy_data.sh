@@ -55,5 +55,5 @@ for i in $b; do
     fi
 done
 
-# Added to remove the Sleuth results folder due to nexted structure
+# Added to remove the Sleuth results folder due to nested structure
 rm -rf sleuth/results

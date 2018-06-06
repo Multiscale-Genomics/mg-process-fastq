@@ -102,7 +102,7 @@ hiseq_info.txt file:
 .. code-block:: none
    :linenos:
 
-   # Extract the original reads from teh FASTQ files
+   # Extract the original reads from the FASTQ files
    python scripts/ExtractRowsFromFASTQs.py --input_1 ERR030856/ERR030856.fastq --rows ERR030856/ERR030856.reads --prop 0.1 --output_tag subset
    python scripts/ExtractRowsFromFASTQs.py --input_1 ERR030857/ERR030857.fastq --rows ERR030857/ERR030857.reads --prop 0.1 --output_tag subset
    python scripts/ExtractRowsFromFASTQs.py --input_1 ERR030858/ERR030858.fastq --rows ERR030858/ERR030858.reads --prop 0.1 --output_tag subset

@@ -31,7 +31,7 @@ from tool.sleuth import sleuthTool
 
 class process_sleuth(Workflow):
     """
-    Functions for processing Chip-Seq FastQ files. Files are the aligned,
+    Functions for processing Chip-Seq FastQ files. Files are then aligned,
     filtered and analysed for peak calling
     """
 

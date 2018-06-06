@@ -64,10 +64,10 @@ def test_sleuth():
         "kallisto_tar": Metadata(
             "data_rna_seq", "TAR", [
                 "results/ERR030856/sleuth.Human.ERR030856.tar.gz",
-                "results/ERR030856/sleuth.Human.ERR030857.tar.gz",
-                "results/ERR030856/sleuth.Human.ERR030858.tar.gz",
-                "results/ERR030856/sleuth.Human.ERR030872.tar.gz",
-                "results/ERR030856/sleuth.Human.ERR030903.tar.gz",
+                "results/ERR030857/sleuth.Human.ERR030857.tar.gz",
+                "results/ERR030858/sleuth.Human.ERR030858.tar.gz",
+                "results/ERR030872/sleuth.Human.ERR030872.tar.gz",
+                "results/ERR030903/sleuth.Human.ERR030903.tar.gz",
             ], None,
             {'assembly': 'test'}, 9606),
     }

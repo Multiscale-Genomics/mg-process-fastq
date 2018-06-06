@@ -176,7 +176,7 @@ def rnaseq_pipeline(verbose=False):
 
 def sleuth_pipeline(verbose=False):
     """
-    Runs the tests for the RNA-seq pipeline
+    Runs the tests for the Sleuth pipeline
 
     Runs the following tests:
 

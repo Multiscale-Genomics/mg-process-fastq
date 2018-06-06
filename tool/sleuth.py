@@ -44,7 +44,7 @@ from basic_modules.metadata import Metadata
 
 class sleuthTool(Tool):  # pylint: disable=invalid-name
     """
-    Tool for peak calling for iDamID-seq data
+    Tool for analysing gene differential expression using Sleuth
     """
 
     def __init__(self, configuration=None):
@@ -249,7 +249,7 @@ class sleuthTool(Tool):  # pylint: disable=invalid-name
     def run(self, input_files, input_metadata, output_files):
         """
         The main function to run Sleuth over a set of RNA-seq experiments
-        nalysed using Kallisto to identify differentially expressed genes.
+        analysed using Kallisto to identify differentially expressed genes.
 
         Parameters
         ----------

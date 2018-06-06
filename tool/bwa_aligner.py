@@ -300,7 +300,6 @@ class bwaAlignerTool(Tool):
         sources.append(input_files["loc"])
 
         fastq_file_gz = str(fastq1 + ".tar.gz")
-        logger.progress("FASTQ Splitter", status="RUNNING")
         if "fastq2" in input_files:
             fastq2 = input_files["fastq2"]
             sources.append(input_files["fastq2"])
@@ -350,7 +349,6 @@ class bwaAlignerTool(Tool):
         logger.info("BWA ALIGNER: Aligning sequence reads to the genome")
 
         output_bam_list = []
-        logger.progress("", status="RUNNING")
         logger.progress("ALIGNER - jobs = " + str(len(fastq_file_list)), task_id=1, total=4)
         for fastq_file_pair in fastq_file_list:
             if "fastq2" in input_files:

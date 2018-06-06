@@ -87,3 +87,9 @@ There is also caching of the pip directory to reduce the load time.
 ----------------------------------------
 
 Split the testing of the WGBS pipeline and tool chains so that they 2 sets can run in parallel. Both take too long when run in series.
+
+
+2018-06-05 - Use of the logger PROGRESS
+---------------------------------------
+
+Added in the use of the logger.progress to indicate the progression of a process.

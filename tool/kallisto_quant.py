@@ -299,7 +299,7 @@ class kallistoQuantificationTool(Tool):  # pylint: disable=invalid-name
 
         output_metadata = {
             "kallisto_tar_file": Metadata(
-                data_type="data_ranseq",
+                data_type="data_rnaseq",
                 file_type="TAR",
                 file_path=output_files["kallisto_tar_file"],
                 sources=sources,

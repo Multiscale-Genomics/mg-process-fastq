@@ -78,7 +78,8 @@ class process_sleuth(Workflow):
         metadata : dict
             Input file meta data associated with their roles
 
-             kallisto_tar : str
+            kallisto_tar : str
+                Meta data for the archive of experiments
 
         output_files : dict
             Output file locations

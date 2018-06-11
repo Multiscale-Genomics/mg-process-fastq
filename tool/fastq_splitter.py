@@ -19,8 +19,6 @@ from __future__ import print_function
 
 import os
 import shutil
-import shlex
-import subprocess
 import sys
 import re
 import tarfile

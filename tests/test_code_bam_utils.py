@@ -20,13 +20,15 @@ from __future__ import print_function
 import os.path
 import subprocess  # pylint: disable=unused-import
 import pytest  # pylint: disable=unused-import
-# import mock  # pylint: disable=unused-import
 import pysam
 
 from tool.bam_utils import bamUtils
 
 
 def touch(path):
+    """
+    Functio to create empty test files for functions
+    """
     with open(path, 'a'):
         os.utime(path, None)
 
@@ -47,7 +49,7 @@ def test_bam_index(mocker):
     touch('example.bam')
     touch('example.bam_tmp.bai')
     result = bamUtils.bam_index('example.bam', 'example.bam.bai')
-    subprocess.Popen.assert_called_once_with(cmd_view, shell=True)
+    subprocess.Popen.assert_called_once_with(cmd_view, shell=True)  # pylint: disable=no-member
     assert result is True
 
 
@@ -58,28 +60,34 @@ def test_bam_sort(mocker):
     """
     mocker.patch('pysam.sort')
     result = bamUtils.bam_sort('example.bam')
-    pysam.sort.assert_called_once_with('-o', 'example.bam', '-T', 'example.bam' + '_sort', 'example.bam')
+    pysam.sort.assert_called_once_with(  # pylint: disable=no-member
+        '-o', 'example.bam', '-T', 'example.bam' + '_sort', 'example.bam')
     assert result is True
 
 
 @pytest.mark.code
 def test_bam_merge_list(mocker):
     """
+    Test the bam_merge list function code
     """
     mocker.patch('pysam.merge')
     touch('example_1.bam')
     touch('example_2.bam')
     result = bamUtils.bam_merge(['example_1.bam', 'example_2.bam'])
-    pysam.merge.assert_called_once_with('-f', 'example_1.bam_merge.bam', 'example_1.bam', 'example_2.bam')
+    pysam.merge.assert_called_once_with(  # pylint: disable=no-member
+        '-f', 'example_1.bam_merge.bam', 'example_1.bam', 'example_2.bam')
     assert result is False
+
 
 @pytest.mark.code
 def test_bam_merge(mocker):
     """
+    Test the bam_merge function code
     """
     mocker.patch('pysam.merge')
     touch('example_1.bam')
     touch('example_2.bam')
     result = bamUtils.bam_merge('example_1.bam', 'example_2.bam')
-    pysam.merge.assert_called_once_with('-f', 'example_1.bam_merge.bam', 'example_1.bam', 'example_2.bam')
+    pysam.merge.assert_called_once_with(  # pylint: disable=no-member
+        '-f', 'example_1.bam_merge.bam', 'example_1.bam', 'example_2.bam')
     assert result is False

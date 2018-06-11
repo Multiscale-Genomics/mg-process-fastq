@@ -44,6 +44,7 @@ from basic_modules.tool import Tool
 from basic_modules.metadata import Metadata
 
 from tool.aligner_utils import alignerUtils
+from tool.common import common
 
 # ------------------------------------------------------------------------------
 
@@ -120,17 +121,7 @@ class bowtieIndexerTool(Tool):
             logger.fatal("I/O error({0}): {1}".format(error.errno, error.strerror))
             return False
 
-        try:
-            command_line = 'pigz ' + idx_out_pregz
-            args = shlex.split(command_line)
-            process = subprocess.Popen(args)
-            process.wait()
-        except OSError:
-            logger.warn("OSERROR: pigz not installed, using gzip")
-            command_line = 'gzip ' + idx_out_pregz
-            args = shlex.split(command_line)
-            process = subprocess.Popen(args)
-            process.wait()
+        common.zip_file(idx_out_pregz)
 
         return True
 

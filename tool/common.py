@@ -17,6 +17,11 @@
 from __future__ import print_function
 
 import os.path
+import shlex
+import subprocess
+
+from utils import logger
+
 
 class cd(object):  # pylint: disable=too-few-public-methods, invalid-name
     """
@@ -33,3 +38,31 @@ class cd(object):  # pylint: disable=too-few-public-methods, invalid-name
 
     def __exit__(self, etype, value, traceback):
         os.chdir(self.savedpath)
+
+
+class common(object):  # pylint: disable=too-few-public-methods, invalid-name
+    """
+    Common functions that can be used generically across tools and pipelines
+    """
+
+    @staticmethod
+    def zip_file(location):
+        """
+        Use pigz (gzip as a fallback) to compress a file
+
+        Parameters
+        ----------
+        location : str
+            Location of the file to be zipped
+        """
+        try:
+            command_line = 'pigz ' + location
+            args = shlex.split(command_line)
+            process = subprocess.Popen(args)
+            process.wait()
+        except OSError:
+            logger.warn("OSERROR: pigz not installed, using gzip")
+            command_line = 'gzip ' + location
+            args = shlex.split(command_line)
+            process = subprocess.Popen(args)
+            process.wait()

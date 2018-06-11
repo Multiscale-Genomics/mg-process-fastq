@@ -18,9 +18,9 @@
 from __future__ import print_function
 
 import os.path
+import subprocess  # pylint: disable=unused-import
 import pytest  # pylint: disable=unused-import
-import mock
-import subprocess
+# import mock  # pylint: disable=unused-import
 import pysam
 
 from tool.bam_utils import bamUtils

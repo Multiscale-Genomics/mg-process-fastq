@@ -41,7 +41,7 @@ except ImportError:
 
 class bamUtils(object):
     """
-    Tool for handloing bam files
+    Tool for handling bam files
     """
 
     def __init__(self):

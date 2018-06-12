@@ -421,6 +421,7 @@ class bowtie2AlignerTool(Tool):
             tar = tarfile.open(fastq_file_gz)
             tar.extractall(path=gz_data_path)
             tar.close()
+            os.remove(gz_data_path)
         except tarfile.TarError:
             logger.fatal("Split FASTQ files: Malformed tar file")
             return {}, {}

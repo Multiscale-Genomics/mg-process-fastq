@@ -56,7 +56,7 @@ class common(object):  # pylint: disable=too-few-public-methods, invalid-name
             Location of the file to be zipped
         """
         try:
-            command_line = 'pigz ' + location
+            command_line = 'pigz -p 2 ' + location
             args = shlex.split(command_line)
             process = subprocess.Popen(args)
             process.wait()

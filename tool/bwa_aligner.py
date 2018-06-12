@@ -250,7 +250,7 @@ class bwaAlignerTool(Tool):
 
         return command_params
 
-    def run(self, input_files, input_metadata, output_files):  # pylint: disable=too-many-locals,too-many-statements
+    def run(self, input_files, input_metadata, output_files):  # pylint: disable=too-many-branches,too-many-locals,too-many-statements
         """
         The main function to align bam files to a genome using BWA
 

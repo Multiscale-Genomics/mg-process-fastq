@@ -300,7 +300,8 @@ class alignerUtils(object):
         logger.info(' '.join(params))
 
         g_idx = genome_file.split("/")
-        g_idx[-1] = g_idx[-1].replace(".fasta", "")
+        g_idx_suffix = "." + g_idx[-1].split(".")[-1]
+        g_idx[-1] = g_idx[-1].replace(g_idx_suffix, "")
 
         cmd_aln = ' '.join([
             'bowtie2',

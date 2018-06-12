@@ -86,8 +86,8 @@ class bowtieIndexerTool(Tool):
         """
 
         file_name = file_loc.split('/')
-        file_name[-1] = file_name[-1].replace('.fasta', '')
-        file_name[-1].replace('.fa', '')
+        file_name_suffix = "." + file_name[-1].split(".")[-1]
+        file_name[-1] = file_name[-1].replace(file_name_suffix, '')
         file_name = "/".join(file_name)
 
         au_handle = alignerUtils()

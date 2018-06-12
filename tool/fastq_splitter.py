@@ -116,9 +116,10 @@ class fastq_splitter(Tool):
         count_r3 = 0
 
         file_loc_1 = fqr.fastq1.split("/")
+        file_loc_1_suffix = "." + file_loc_1[-1].split(".")[-1]
         file_loc_1[-1] = file_loc_1[-1].replace(
-            ".fastq",
-            "." + str(fqr.output_tag) + "_" + str(fqr.output_file_count) + ".fastq")
+            file_loc_1_suffix,
+            "." + str(fqr.output_tag) + "_" + str(fqr.output_file_count) + file_loc_1_suffix)
         file_loc_1.insert(-1, tag)
         tmp_dir = "/".join(file_loc_1[:-1])
 
@@ -132,8 +133,8 @@ class fastq_splitter(Tool):
             if count_r3 % fastq_chunk_size == 0:
                 fqr.incrementOutputFiles()
                 file_loc_1 = fqr.fastq1.split("/")
-                new_suffix = "." + str(fqr.output_tag) + "_" + str(fqr.output_file_count) + ".fastq"
-                file_loc_1[-1] = re.sub('.fastq$', new_suffix, file_loc_1[-1])
+                new_suffix = "." + str(fqr.output_tag) + "_" + str(fqr.output_file_count) + file_loc_1_suffix
+                file_loc_1[-1] = re.sub(file_loc_1_suffix + '$', new_suffix, file_loc_1[-1])
                 file_loc_1.insert(-1, tag)
 
                 files_out.append([file_loc_1[-1]])
@@ -218,14 +219,16 @@ class fastq_splitter(Tool):
         count_r3 = 0
 
         file_loc_1 = fqr.fastq1.split("/")
-        new_suffix = "." + str(fqr.output_tag) + "_" + str(fqr.output_file_count) + ".fastq"
+        file_loc_1_suffix = "." + file_loc_1[-1].split(".")[-1]
+        new_suffix = "." + str(fqr.output_tag) + "_" + str(fqr.output_file_count) + file_loc_1_suffix
         file_loc_1[-1] = re.sub('.fastq$', new_suffix, file_loc_1[-1])
         file_loc_1.insert(-1, tag)
 
         tmp_dir = "/".join(file_loc_1[:-1])
 
         file_loc_2 = fqr.fastq2.split("/")
-        new_suffix = "." + str(fqr.output_tag) + "_" + str(fqr.output_file_count) + ".fastq"
+        file_loc_2_suffix = "." + file_loc_2[-1].split(".")[-1]
+        new_suffix = "." + str(fqr.output_tag) + "_" + str(fqr.output_file_count) + file_loc_2_suffix
         file_loc_2[-1] = re.sub('.fastq$', new_suffix, file_loc_2[-1])
 
         file_loc_2.insert(-1, tag)
@@ -255,12 +258,12 @@ class fastq_splitter(Tool):
             if count_r3 % fastq_chunk_size == 0:
                 fqr.incrementOutputFiles()
                 file_loc_1 = fqr.fastq1.split("/")
-                new_suffix = "." + str(fqr.output_tag) + "_" + str(fqr.output_file_count) + ".fastq"
+                new_suffix = "." + str(fqr.output_tag) + "_" + str(fqr.output_file_count) + file_loc_1_suffix
                 file_loc_1[-1] = re.sub('.fastq$', new_suffix, file_loc_1[-1])
                 file_loc_1.insert(-1, "tmp")
 
                 file_loc_2 = fqr.fastq2.split("/")
-                new_suffix = "." + str(fqr.output_tag) + "_" + str(fqr.output_file_count) + ".fastq"
+                new_suffix = "." + str(fqr.output_tag) + "_" + str(fqr.output_file_count) + file_loc_2_suffix
                 file_loc_2[-1] = re.sub('.fastq$', new_suffix, file_loc_2[-1])
                 file_loc_2.insert(-1, "tmp")
 

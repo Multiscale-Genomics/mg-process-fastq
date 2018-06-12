@@ -111,10 +111,6 @@ class kallistoIndexerTool(Tool):
             list of the matching metadata
         """
 
-        # file_name = input_files[0]
-        # genome_idx_loc = file_name.replace('.fasta', '.idx')
-        # genome_idx_loc = genome_idx_loc.replace('.fa', '.idx')
-
         # input and output share most metadata
         output_metadata = {}
 
@@ -123,10 +119,6 @@ class kallistoIndexerTool(Tool):
             output_files["index"]
         )
         # results = compss_wait_on(results)
-
-        # if results is False:
-        #     logger.fatal("Kallisto Indexer: run failed")
-        #     return {}, {}
 
         output_metadata = {
             "index": Metadata(

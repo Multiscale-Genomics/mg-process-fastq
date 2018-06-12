@@ -26,14 +26,14 @@ try:
         raise ImportError
     from pycompss.api.parameter import IN, FILE_IN, FILE_OUT
     from pycompss.api.task import task
-    from pycompss.api.api import compss_wait_on, compss_open
+    from pycompss.api.api import barrier, compss_wait_on, compss_open
 except ImportError:
     logger.warn("[Warning] Cannot import \"pycompss\" API packages.")
     logger.warn("          Using mock decorators.")
 
     from utils.dummy_pycompss import IN, FILE_IN, FILE_OUT  # pylint: disable=ungrouped-imports
     from utils.dummy_pycompss import task  # pylint: disable=ungrouped-imports
-    from utils.dummy_pycompss import compss_wait_on, compss_open  # pylint: disable=ungrouped-imports
+    from utils.dummy_pycompss import barrier, compss_wait_on, compss_open  # pylint: disable=ungrouped-imports
 
 from basic_modules.tool import Tool
 from basic_modules.metadata import Metadata
@@ -468,10 +468,22 @@ class bowtie2AlignerTool(Tool):
                     self.get_aln_params(self.configuration)
                 )
 
+        barrier()
+
+        # Remove all tmp fastq files now that the reads have been aligned
+        for fastq_file_pair in fastq_file_list:
+            os.remove(gz_data_path + "/tmp/" + fastq_file_pair[0])
+            if "fastq2" in input_files:
+                os.remove(gz_data_path + "/tmp/" + fastq_file_pair[1])
+
         bam_handle = bamUtilsTask()
 
         logger.info("Merging bam files")
         bam_handle.bam_merge(output_bam_list)
+
+        # Remove all bam files that are not the final file
+        for i in output_bam_list[1:len(output_bam_list)]:
+            os.remove(i)
 
         logger.info("Sorting merged bam file")
         bam_handle.bam_sort(output_bam_list[0])

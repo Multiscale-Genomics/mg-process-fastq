@@ -484,7 +484,14 @@ class bowtie2AlignerTool(Tool):
 
         # Remove all bam files that are not the final file
         for i in output_bam_list[1:len(output_bam_list)]:
-            os.remove(i)
+            try:
+                os.remove(i)
+            except (OSError, IOError) as msg:
+                logger.warn(
+                    "Unable to remove file I/O error({0}): {1}".format(
+                        msg.errno, msg.strerror
+                    )
+                )
 
         logger.info("Sorting merged bam file")
         bam_handle.bam_sort(output_bam_list[0])

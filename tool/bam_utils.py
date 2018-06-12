@@ -404,7 +404,7 @@ class bamUtilsTask(object):
             else:
                 break
 
-        return bam_job_files[0]
+        return self.bam_copy(bam_job_files[0], in_bam_job_files[0])
 
     @task(bam_file_1=FILE_IN, bam_file_2=FILE_IN, bam_file_out=FILE_OUT)
     def bam_merge_2(self, bam_file_1, bam_file_2, bam_file_out):  # pylint: disable=no-self-use

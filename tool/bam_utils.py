@@ -347,6 +347,9 @@ class bamUtilsTask(object):
         """
         merge_round = -1
 
+        if len(in_bam_job_files) == 1:
+            return in_bam_job_files[0]
+
         bam_job_files = [i for i in in_bam_job_files]
         while True:
             merge_round += 1

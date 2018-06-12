@@ -203,7 +203,6 @@ class bwaAlignerTool(Tool):
             return False
 
         os.remove(out_bam)
-        # shutil.rmtree(g_dir)
 
         return True
 

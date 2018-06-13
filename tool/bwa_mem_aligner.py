@@ -20,6 +20,7 @@ from __future__ import print_function
 import os
 import sys
 import tarfile
+import shutil
 
 from utils import logger
 
@@ -363,6 +364,7 @@ class bwaAlignerMEMTool(Tool):
             tar.extractall(path=gz_data_path)
             tar.close()
             os.remove(fastq_file_gz)
+            compss_delete_file(fastq_file_gz)
         except tarfile.TarError:
             logger.fatal("Split FASTQ files: Malformed tar file")
             return {}, {}
@@ -446,7 +448,12 @@ class bwaAlignerMEMTool(Tool):
         logger.info("Copying bam file into the output file")
         bam_handle.bam_copy(output_bam_list[0], output_bam_file)
 
+        compss_delete_file(output_bam_list[0])
+
         logger.info("BWA ALIGNER: Alignments complete")
+
+        barrier()
+        shutil.rmtree(gz_data_path + "/tmp")
 
         output_metadata = {
             "bam": Metadata(

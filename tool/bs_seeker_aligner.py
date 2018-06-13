@@ -457,6 +457,7 @@ class bssAlignerTool(Tool):
             tar.extractall(path=gz_data_path)
             tar.close()
             os.remove(fastq_file_gz)
+            compss_delete_file(fastq_file_gz)
         except tarfile.TarError:
             logger.fatal("Split FASTQ files: Malformed tar file")
             return {}, {}

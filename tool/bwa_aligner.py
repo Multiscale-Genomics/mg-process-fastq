@@ -384,7 +384,7 @@ class bwaAlignerTool(Tool):
         # Remove all tmp fastq files now that the reads have been aligned
         if untar_idx:
             for idx_file in index_files:
-                os.remove(index_files[idx_file])
+                compss_delete_file(index_files[idx_file])
 
         for fastq_file_pair in fastq_file_list:
             os.remove(gz_data_path + "/tmp/" + fastq_file_pair[0])

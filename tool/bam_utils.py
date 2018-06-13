@@ -416,7 +416,7 @@ class bamUtilsTask(object):
                 break
 
         return_value = self.bam_copy(bam_job_files[0], in_bam_job_files[0])
-        for tmp_bam_file in cleanup_files.append(bam_out):
+        for tmp_bam_file in cleanup_files:
             compss_delete_file(tmp_bam_file)
 
         return return_value

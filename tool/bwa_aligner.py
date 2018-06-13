@@ -33,7 +33,7 @@ except ImportError:
 
     from utils.dummy_pycompss import IN, FILE_IN, FILE_OUT  # pylint: disable=ungrouped-imports
     from utils.dummy_pycompss import task  # pylint: disable=ungrouped-imports
-    from utils.dummy_pycompss import barrier, compss_wait_on, compss_open  # pylint: disable=ungrouped-imports
+    from utils.dummy_pycompss import barrier, compss_wait_on, compss_open, compss_delete_file  # pylint: disable=ungrouped-imports
 
 from basic_modules.tool import Tool
 from basic_modules.metadata import Metadata
@@ -312,6 +312,10 @@ class bwaAlignerTool(Tool):
 
         # Required to prevent iterating over the future objects
         fastq_file_list = compss_wait_on(fastq_file_list)
+        compss_delete_file(fastq1)
+        if "fastq2" in input_files:
+            compss_delete_file(fastq2)
+
         if not fastq_file_list:
             logger.fatal("FASTQ SPLITTER: run failed")
             return {}, {}
@@ -381,10 +385,18 @@ class bwaAlignerTool(Tool):
         barrier()
 
         # Remove all tmp fastq files now that the reads have been aligned
+        if untar_idx:
+            compss_delete_file(input_files["index"])
+
+            for idx_file in index_files:
+                os.remove(index_files[idx_file])
+
         for fastq_file_pair in fastq_file_list:
             os.remove(gz_data_path + "/tmp/" + fastq_file_pair[0])
+            compss_delete_file(gz_data_path + "/tmp/" + fastq_file_pair[0])
             if "fastq2" in input_files:
                 os.remove(gz_data_path + "/tmp/" + fastq_file_pair[1])
+                compss_delete_file(gz_data_path + "/tmp/" + fastq_file_pair[1])
 
         bam_handle = bamUtilsTask()
 
@@ -394,6 +406,7 @@ class bwaAlignerTool(Tool):
         # Remove all bam files that are not the final file
         for i in output_bam_list[1:len(output_bam_list)]:
             try:
+                compss_delete_file(i)
                 os.remove(i)
             except (OSError, IOError) as msg:
                 logger.warn(

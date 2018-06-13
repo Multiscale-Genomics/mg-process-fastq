@@ -129,8 +129,16 @@ class bwaAlignerTool(Tool):
             Location of the FASTQ file
         bam_loc : str
             Location of the output aligned bam file
-        genome_idx : idx
-            Location of the BWA index file
+        amb_file : str
+            Location of the amb index file
+        ann_file : str
+            Location of the ann index file
+        bwt_file : str
+            Location of the bwt index file
+        pac_file : str
+            Location of the pac index file
+        sa_file : str
+            Location of the sa index file
         aln_params : dict
             Alignment parameters
 
@@ -178,8 +186,16 @@ class bwaAlignerTool(Tool):
             Location of the FASTQ file
         bam_loc : str
             Location of the output aligned bam file
-        genome_idx : idx
-            Location of the BWA index file
+        amb_file : str
+            Location of the amb index file
+        ann_file : str
+            Location of the ann index file
+        bwt_file : str
+            Location of the bwt index file
+        pac_file : str
+            Location of the pac index file
+        sa_file : str
+            Location of the sa index file
         aln_params : dict
             Alignment parameters
 

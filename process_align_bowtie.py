@@ -109,6 +109,8 @@ class process_bowtie(Workflow):
         logger.info("PROCESS ALIGNMENT - DEFINED OUTPUT:", output_files["bam"])
 
         bowtie2_handle = bowtie2AlignerTool(self.configuration)
+
+        logger.progress("Bowtie2 Aligner", status="RUNNING")
         bowtie2_files, bowtie2_meta = bowtie2_handle.run(
             # ideally parameter "roles" don't change
             remap(input_files,
@@ -117,6 +119,7 @@ class process_bowtie(Workflow):
                   "genome", "loc", "index"),
             {"output": output_files["bam"]}
         )
+        logger.progress("Bowtie2 Aligner", status="DONE")
 
         try:
             output_files_generated["bam"] = bowtie2_files["bam"]

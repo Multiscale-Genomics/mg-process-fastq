@@ -109,6 +109,8 @@ class process_bwa(Workflow):
         logger.info("PROCESS ALIGNMENT - DEFINED OUTPUT:", output_files["bam"])
 
         bwa = bwaAlignerTool(self.configuration)
+
+        logger.progress("BWA ALN Aligner", status="RUNNING")
         bwa_files, bwa_meta = bwa.run(
             # ideally parameter "roles" don't change
             remap(input_files,
@@ -117,6 +119,7 @@ class process_bwa(Workflow):
                   "genome", "loc", "index"),
             {"output": output_files["bam"]}
         )
+        logger.progress("BWA ALN Aligner", status="DONE")
 
         try:
             output_files_generated["bam"] = bwa_files["bam"]

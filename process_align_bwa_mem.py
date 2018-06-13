@@ -107,6 +107,8 @@ class process_bwa_mem(Workflow):
         logger.info("PROCESS ALIGNMENT - DEFINED OUTPUT:", output_files["bam"])
 
         bwa = bwaAlignerMEMTool(self.configuration)
+
+        logger.progress("BWA MEM Aligner", status="RUNNING")
         bwa_files, bwa_meta = bwa.run(
             # ideally parameter "roles" don't change
             remap(input_files,
@@ -115,6 +117,7 @@ class process_bwa_mem(Workflow):
                   "genome", "loc", "index"),
             {"output": output_files["bam"]}
         )
+        logger.progress("BWA MEM Aligner", status="DONE")
 
         try:
             output_files_generated["bam"] = bwa_files["bam"]

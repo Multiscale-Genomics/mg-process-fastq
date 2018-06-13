@@ -313,10 +313,6 @@ class bwaAlignerTool(Tool):
         # Required to prevent iterating over the future objects
         fastq_file_list = compss_wait_on(fastq_file_list)
 
-        compss_delete_file(fastq1)
-        if "fastq2" in input_files:
-            compss_delete_file(fastq2)
-
         if not fastq_file_list:
             logger.fatal("FASTQ SPLITTER: run failed")
             return {}, {}
@@ -387,8 +383,6 @@ class bwaAlignerTool(Tool):
 
         # Remove all tmp fastq files now that the reads have been aligned
         if untar_idx:
-            compss_delete_file(input_files["index"])
-
             for idx_file in index_files:
                 os.remove(index_files[idx_file])
 

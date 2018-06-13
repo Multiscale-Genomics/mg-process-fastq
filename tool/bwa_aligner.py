@@ -14,10 +14,13 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 """
+
 from __future__ import print_function
+
 import os
 import sys
 import tarfile
+import shutil
 
 from utils import logger
 
@@ -433,7 +436,12 @@ class bwaAlignerTool(Tool):
         logger.info("Copying bam file into the output file")
         bam_handle.bam_copy(output_bam_list[0], output_bam_file)
 
+        compss_delete_file(output_bam_list[0])
+
         logger.info("BWA ALIGNER: Alignments complete")
+
+        barrier()
+        shutil.rmtree(gz_data_path + "/tmp")
 
         output_metadata = {
             "bam": Metadata(

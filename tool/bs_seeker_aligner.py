@@ -22,6 +22,7 @@ import shlex
 import subprocess
 import sys
 import tarfile
+import shutil
 
 from utils import logger
 
@@ -30,14 +31,14 @@ try:
         raise ImportError
     from pycompss.api.parameter import FILE_IN, FILE_OUT, IN
     from pycompss.api.task import task
-    from pycompss.api.api import barrier, compss_wait_on, compss_open
+    from pycompss.api.api import barrier, compss_wait_on, compss_open, compss_delete_file
 except ImportError:
     logger.warn("[Warning] Cannot import \"pycompss\" API packages.")
     logger.warn("          Using mock decorators.")
 
     from utils.dummy_pycompss import FILE_IN, FILE_OUT, IN  # pylint: disable=ungrouped-imports
     from utils.dummy_pycompss import task  # pylint: disable=ungrouped-imports
-    from utils.dummy_pycompss import barrier, compss_wait_on, compss_open  # pylint: disable=ungrouped-imports
+    from utils.dummy_pycompss import barrier, compss_wait_on, compss_open, compss_delete_file  # pylint: disable=ungrouped-imports
 
 from basic_modules.tool import Tool
 from basic_modules.metadata import Metadata
@@ -501,10 +502,16 @@ class bssAlignerTool(Tool):
         barrier()
 
         # Remove all tmp fastq files now that the reads have been aligned
+        # if untar_idx:
+        #     for idx_file in index_files:
+        #         compss_delete_file(index_files[idx_file])
+
         for fastq_file_pair in fastq_file_list:
             os.remove(gz_data_path + "/tmp/" + fastq_file_pair[0])
+            compss_delete_file(gz_data_path + "/tmp/" + fastq_file_pair[0])
             if "fastq2" in input_files:
                 os.remove(gz_data_path + "/tmp/" + fastq_file_pair[1])
+                compss_delete_file(gz_data_path + "/tmp/" + fastq_file_pair[1])
 
         bam_handle = bamUtilsTask()
 
@@ -514,6 +521,7 @@ class bssAlignerTool(Tool):
         # Remove all bam files that are not the final file
         for i in output_bam_list[1:len(output_bam_list)]:
             try:
+                compss_delete_file(i)
                 os.remove(i)
             except (OSError, IOError) as msg:
                 logger.warn(
@@ -528,8 +536,13 @@ class bssAlignerTool(Tool):
         logger.info("Copying bam file into the output file")
         bam_handle.bam_copy(output_bam_list[0], output_bam_file)
 
+        compss_delete_file(output_bam_list[0])
+
         logger.info("Creating output bam index file")
         bam_handle.bam_index(output_bam_file, output_bai_file)
+
+        barrier()
+        shutil.rmtree(gz_data_path + "/tmp")
 
         output_metadata = {
             "bam": Metadata(

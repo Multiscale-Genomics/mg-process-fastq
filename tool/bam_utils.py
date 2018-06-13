@@ -334,7 +334,7 @@ class bamUtilsTask(object):
         bam_handle = bamUtils()
         return bam_handle.bam_sort(bam_file)
 
-    def bam_merge(self, in_bam_job_files):
+    def bam_merge(self, in_bam_job_files):  # pylint: disable=too-many-branches
         """
         Wrapper task taking any number of bam files and merging them into a
         single bam file.
@@ -418,6 +418,8 @@ class bamUtilsTask(object):
         return_value = self.bam_copy(bam_job_files[0], in_bam_job_files[0])
         for tmp_bam_file in cleanup_files.append(bam_out):
             compss_delete_file(tmp_bam_file)
+
+        return return_value
 
     @task(bam_file_1=FILE_IN, bam_file_2=FILE_IN, bam_file_out=FILE_OUT)
     def bam_merge_2(self, bam_file_1, bam_file_2, bam_file_out):  # pylint: disable=no-self-use

@@ -108,7 +108,7 @@ class process_bwa_mem(Workflow):
         bwa_files, bwa_meta = bwa.run(
             input_files,
             metadata,
-            output_files
+            {"output": output_files["bam"]}
         )
         logger.progress("BWA MEM Aligner", status="DONE")
 

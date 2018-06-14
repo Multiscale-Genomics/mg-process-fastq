@@ -106,7 +106,7 @@ class process_bs_seeker_aligner(Workflow):
         bam, bam_meta = bss_aligner.run(
             input_files,
             metadata,
-            output_files
+            {"output": output_files["bam"]}
         )
         logger.progress("BSseeker2 Aligner", status="DONE")
 

@@ -110,7 +110,7 @@ class process_bowtie(Workflow):
         bowtie2_files, bowtie2_meta = bowtie2_handle.run(
             input_files,
             metadata,
-            output_files
+            {"output": output_files["bam"]}
         )
         logger.progress("Bowtie2 Aligner", status="DONE")
 

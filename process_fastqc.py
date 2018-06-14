@@ -82,11 +82,13 @@ class process_fastqc(Workflow):
         # FastQC Validation
         logger.info("Generating validation report for FastQ file")
         fastqc_handle = fastqcTool()
+        logger.progress("FASTQC Validation", status="RUNNING")
         bti, btm = fastqc_handle.run(
             input_files,
             metadata,
             {'report': output_files['report']}
         )
+        logger.progress("FASTQC Validation", status="DONE")
 
         try:
             output_files_generated['report'] = bti["report"]

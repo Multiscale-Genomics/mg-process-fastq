@@ -128,22 +128,26 @@ class process_wgbs(Workflow):
         logger.info("WGBS - BS-Seeker2 Index")
         # Build the matching WGBS genome index
         builder = bssIndexerTool(self.configuration)
+        logger.progress("BSseeker2 Indexer", status="RUNNING")
         genome_idx, gidx_meta = builder.run(
             remap(input_files, "genome"),
             remap(metadata, "genome"),
             remap(output_files, "index")
         )
+        logger.progress("BSseeker2 Indexer", status="DONE")
         output_results_files["index"] = genome_idx["index"]
         output_metadata["index"] = gidx_meta["index"]
 
         # Filter the FASTQ reads to remove duplicates
         logger.info("WGBS - Filter")
         frt = filterReadsTool(self.configuration)
+        logger.progress("BSseeker2 Filtering FASTQ 1", status="RUNNING")
         fastq1f, filter1_meta = frt.run(
             {"fastq": input_files["fastq1"]},
             {"fastq": metadata["fastq1"]},
             {"fastq_filtered": output_files["fastq1_filtered"]}
         )
+        logger.progress("BSseeker2 Filter FASTQ 1", status="DONE")
 
         try:
             output_results_files["fastq1_filtered"] = fastq1f["fastq_filtered"]
@@ -157,11 +161,13 @@ class process_wgbs(Workflow):
 
         if "fastq2" in input_files:
             logger.info("WGBS - Filter background")
+            logger.progress("BSseeker2 Filtering FASTQ 2", status="RUNNING")
             fastq2f, filter2_meta = frt.run(
                 {"fastq": input_files["fastq2"]},
                 {"fastq": metadata["fastq2"]},
                 {"fastq_filtered": output_files["fastq2_filtered"]}
             )
+            logger.progress("BSseeker2 Filtering FASTQ 2", status="DONE")
 
             try:
                 output_results_files["fastq2_filtered"] = fastq2f["fastq_filtered"]
@@ -194,11 +200,13 @@ class process_wgbs(Workflow):
             aligner_input_files["fastq2"] = fastq2f["fastq_filtered"]
             aligner_meta["fastq2"] = filter2_meta["fastq_filtered"]
 
+        logger.progress("BSseeker2 Aligner", status="RUNNING")
         bam, bam_meta = bss_aligner.run(
             aligner_input_files,
             aligner_meta,
             remap(output_files, "bam", "bai")
         )
+        logger.progress("BSseeker2 Aligner", status="DONE")
 
         try:
             output_results_files["bam"] = bam["bam"]
@@ -239,12 +247,13 @@ class process_wgbs(Workflow):
             mct_input_files["fastq2"] = fastq2f["fastq_filtered"]
             mct_meta["fastq2"] = filter2_meta["fastq_filtered"]
 
+        logger.progress("BSseeker2 Peak Caller", status="RUNNING")
         peak_files, peak_meta = peak_caller_handle.run(
             mct_input_files,
             mct_meta,
             remap(output_files, "wig_file", "cgmap_file", "atcgmap_file")
         )
-        # output_metadata["peak_calling"] = peak_meta
+        logger.progress("BSseeker2 Peak Caller", status="DONE")
 
         try:
             output_results_files["wig_file"] = peak_files["wig_file"]

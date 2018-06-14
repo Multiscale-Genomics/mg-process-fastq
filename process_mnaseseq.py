@@ -76,11 +76,13 @@ class process_mnaseseq(Workflow):
         output_metadata = {}
 
         bwa = bwaAlignerTool()
+        logger.progress("BWA ALN Aligner", status="RUNNING")
         bwa_files, bwa_meta = bwa.run(
             remap(input_files, "genome", "loc", "index"),
             remap(metadata, "genome", "loc", "index"),
             {"output": output_files["bam"]}
         )
+        logger.progress("BWA ALN Aligner", status="DONE")
 
         output_files_generated = {}
 
@@ -95,11 +97,13 @@ class process_mnaseseq(Workflow):
             logger.fatal("BWA Alignment failed")
 
         inps_tool = inps()
+        logger.progress("iNPS Peak Caller", status="RUNNING")
         inps_files, inps_meta = inps_tool.run(
             remap(bwa_files, "bam"),
             remap(bwa_meta, "bam"),
             {"bed": output_files["bed"]}
         )
+        logger.progress("iNPS Peak Caller", status="DONE")
 
         try:
             output_files_generated["bed"] = inps_files["bed"]

@@ -82,11 +82,13 @@ class process_iNPS(Workflow):
         # Process the MNAse-seq reads to find nucleosome
         logger.info("iNPS")
         inps_r = inps(self.configuration)
+        logger.progress("iNPS Peak Caller", status="RUNNING")
         bamf, bed_meta = inps_r.run(
             {"bam": input_files["bam"]},
             {"bam": metadata["bam"]},
             {"bed": output_files["bed"]}
         )
+        logger.progress("iNPS Peak Caller", status="DONE")
 
         try:
             output_results_files["bed"] = bamf["bed"]

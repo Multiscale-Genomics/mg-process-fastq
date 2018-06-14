@@ -84,7 +84,10 @@ class process_bsgenome(Workflow):
         # BSgenome
         logger.info("Generating BSgenome")
         bsg = bsgenomeTool(self.configuration)
+
+        logger.progress("BSgenome Indexer", status="RUNNING")
         bsgi, bsgm = bsg.run(input_files, metadata, output_files)
+        logger.progress("BSgenome Indexer", status="DONE")
 
         try:
             for file_key in ["bsgenome", "chrom_size", "genome_2bit", "seed_file"]:

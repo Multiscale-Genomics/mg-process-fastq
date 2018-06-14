@@ -101,7 +101,7 @@ class biobambam(Tool):
         bam_tmp_out = tmp_dir + '/' + td_list[-1] + '.filtered.tmp.bam'
 
         logger.info("BIOBAMBAM: command_line: " + command_line)
-
+        logger.progress("BIOBAMBAM", task_id=0, total=1)
         try:
             with open(bam_file_in, "r") as f_in:
                 with open(bam_tmp_out, "w") as f_out:
@@ -111,6 +111,7 @@ class biobambam(Tool):
             logger.fatal("I/O error({0}) - bamsormadup: {1}\n{2}".format(
                 msg.errno, msg.strerror, command_line))
             return False
+        logger.progress("BIOBAMBAM", task_id=1, total=1)
 
         try:
             with open(bam_file_out, "wb") as f_out:

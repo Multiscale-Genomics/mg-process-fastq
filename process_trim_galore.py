@@ -88,6 +88,7 @@ class process_trim_galore(Workflow):  # pylint: disable=invalid-name,too-few-pub
 
         trimg = trimgalore(self.configuration)
 
+        logger.progress("TrimGalore", status="RUNNING")
         if "fastq2" in input_files:
             trim_files, trim_meta = trimg.run(
                 {
@@ -124,6 +125,7 @@ class process_trim_galore(Workflow):  # pylint: disable=invalid-name,too-few-pub
                     "fastq1_report": output_files["fastq1_report"]
                 }
             )
+        logger.progress("TrimGalore", status="DONE")
 
         try:
             output_results_files["fastq1_trimmed"] = trim_files["fastq1_trimmed"]

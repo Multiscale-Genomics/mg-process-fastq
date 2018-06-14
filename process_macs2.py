@@ -129,6 +129,7 @@ class process_macs2(Workflow):
             macs_inputs["bam"] = input_files["bam_bg"]
             macs_metadt["bam"] = output_metadata['bam_bg']
 
+        logger.progress("MACS2 Peak Caller", status="RUNNING")
         m_results_files, m_results_meta = macs_caller.run(
             macs_inputs, macs_metadt,
             # Outputs of the final step may match workflow outputs;
@@ -137,6 +138,7 @@ class process_macs2(Workflow):
                 output_files,
                 'narrow_peak', 'summits', 'broad_peak', 'gapped_peak')
         )
+        logger.progress("MACS2 Peak Caller", status="DONE")
 
         if 'narrow_peak' in m_results_meta:
             output_files_generated['narrow_peak'] = m_results_files['narrow_peak']

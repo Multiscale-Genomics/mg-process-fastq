@@ -336,6 +336,8 @@ class bwaAlignerTool(Tool):
             logger.fatal("FASTQ SPLITTER: run failed")
             return {}, {}
 
+        logger.progress("FASTQ Splitter", task_id=0, total=4)
+
         if hasattr(sys, '_run_from_cmdl') is True:
             pass
         else:
@@ -357,6 +359,8 @@ class bwaAlignerTool(Tool):
             logger.fatal("Split FASTQ files: Malformed tar file")
             return {}, {}
 
+        logger.progress("FASTQ Splitter", task_id=1, total=4)
+
         # input and output share most metadata
         output_metadata = {}
 
@@ -366,6 +370,7 @@ class bwaAlignerTool(Tool):
         logger.info("BWA ALIGNER: Aligning sequence reads to the genome")
 
         output_bam_list = []
+        logger.progress("ALIGNER - jobs = " + str(len(fastq_file_list)), task_id=1, total=4)
         for fastq_file_pair in fastq_file_list:
             if "fastq2" in input_files:
                 tmp_fq1 = gz_data_path + "/tmp/" + fastq_file_pair[0]
@@ -412,11 +417,13 @@ class bwaAlignerTool(Tool):
             if "fastq2" in input_files:
                 os.remove(gz_data_path + "/tmp/" + fastq_file_pair[1])
                 compss_delete_file(gz_data_path + "/tmp/" + fastq_file_pair[1])
+        logger.progress("ALIGNER", task_id=2, total=4)
 
         bam_handle = bamUtilsTask()
 
-        logger.info("Merging bam files")
+        logger.progress("Merging bam files", task_id=2, total=4)
         bam_handle.bam_merge(output_bam_list)
+        logger.progress("Merging bam files", task_id=3, total=4)
 
         # Remove all bam files that are not the final file
         for i in output_bam_list[1:len(output_bam_list)]:
@@ -430,8 +437,9 @@ class bwaAlignerTool(Tool):
                     )
                 )
 
-        logger.info("Sorting merged bam file")
+        logger.progress("Sorting merged bam file", task_id=3, total=4)
         bam_handle.bam_sort(output_bam_list[0])
+        logger.progress("Sorting merged bam file", task_id=4, total=4)
 
         logger.info("Copying bam file into the output file")
         bam_handle.bam_copy(output_bam_list[0], output_bam_file)

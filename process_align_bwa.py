@@ -19,14 +19,10 @@
 
 from __future__ import print_function
 
-# Required for ReadTheDocs
-from functools import wraps  # pylint: disable=unused-import
-
 import argparse
 
 from basic_modules.workflow import Workflow
 from utils import logger
-from utils import remap
 
 from tool.bwa_aligner import bwaAlignerTool
 
@@ -109,14 +105,14 @@ class process_bwa(Workflow):
         logger.info("PROCESS ALIGNMENT - DEFINED OUTPUT:", output_files["bam"])
 
         bwa = bwaAlignerTool(self.configuration)
+
+        logger.progress("BWA ALN Aligner", status="RUNNING")
         bwa_files, bwa_meta = bwa.run(
-            # ideally parameter "roles" don't change
-            remap(input_files,
-                  "genome", "loc", "index"),
-            remap(metadata,
-                  "genome", "loc", "index"),
+            input_files,
+            metadata,
             {"output": output_files["bam"]}
         )
+        logger.progress("BWA ALN Aligner", status="DONE")
 
         try:
             output_files_generated["bam"] = bwa_files["bam"]

@@ -123,6 +123,7 @@ class process_idear(Workflow):
 
         # iDEAR to call peaks
         idear_caller = idearTool(self.configuration)
+        logger.progress("iDEAR Peak Caller", status="RUNNING")
         idear_caller.run(
             {
                 "bam_1": input_files["bam_1"],
@@ -140,6 +141,7 @@ class process_idear(Workflow):
                 "bigwig": output_files["bigwig"],
             }
         )
+        logger.progress("iDEAR Peak Caller", status="DONE")
 
         print("DAMID-SEQ RESULTS:", output_metadata)
         return output_files_generated, output_metadata

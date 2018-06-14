@@ -146,6 +146,7 @@ class process_damidseq(Workflow):
         # BSgenome
         logger.info("Generating BSgenome")
         bsg = bsgenomeTool(self.configuration)
+        logger.progress("BSgenome Indexer", status="RUNNING")
         bsgi, bsgm = bsg.run(
             {"genome": input_files["genome"]},
             {"genome": metadata["genome"]},
@@ -156,6 +157,7 @@ class process_damidseq(Workflow):
                 "seed_file": output_files["seed_file"]
             }
         )
+        logger.progress("BSgenome Indexer", status="DONE")
 
         try:
             file_keys = ["bsgenome", "chrom_size", "genome_2bit", "seed_file"]
@@ -172,6 +174,7 @@ class process_damidseq(Workflow):
         # Align and filter reads
         for aln in alignment_set:
             bwa = bwaAlignerTool(self.configuration)
+            logger.progress("BWA ALN Aligner - " + aln[0], status="RUNNING")
             bwa_files, bwa_meta = bwa.run(
                 remap(input_files,
                       "genome", "index", loc=aln[0]),
@@ -179,6 +182,7 @@ class process_damidseq(Workflow):
                       "genome", "index", loc=aln[0]),
                 {"output": output_files[aln[1]]}
             )
+            logger.progress("BWA ALN Aligner - " + aln[0], status="DONE")
 
             try:
                 output_files_generated[aln[1]] = bwa_files["bam"]
@@ -198,11 +202,13 @@ class process_damidseq(Workflow):
 
             # Filter the bams
             b3f = biobambam(self.configuration)
+            logger.progress("BioBamBam Filtering - " + aln[0], status="RUNNING")
             b3f_files, b3f_meta = b3f.run(
                 {"input": bwa_files["bam"]},
                 {"input": bwa_meta["bam"]},
                 {"output": output_files[aln[2]]}
             )
+            logger.progress("BioBamBam Filtering - " + aln[0], status="DONE")
 
             try:
                 output_files_generated[aln[2]] = b3f_files["bam"]
@@ -219,6 +225,7 @@ class process_damidseq(Workflow):
 
         # iDEAR to call peaks
         idear_caller = idearTool(self.configuration)
+        logger.progress("iDEAR Peak Caller", status="RUNNING")
         idear_files, idear_meta = idear_caller.run(
             {
                 "bam_1": output_files_generated["bam_1_filtered"],
@@ -236,6 +243,7 @@ class process_damidseq(Workflow):
                 "bigwig": output_files["bigwig"],
             }
         )
+        logger.progress("iDEAR Peak Caller", status="DONE")
 
         try:
             output_files_generated["bigwig"] = idear_files["bigwig"]

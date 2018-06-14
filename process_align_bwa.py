@@ -112,12 +112,9 @@ class process_bwa(Workflow):
 
         logger.progress("BWA ALN Aligner", status="RUNNING")
         bwa_files, bwa_meta = bwa.run(
-            # ideally parameter "roles" don't change
-            remap(input_files,
-                  "genome", "loc", "index"),
-            remap(metadata,
-                  "genome", "loc", "index"),
-            {"output": output_files["bam"]}
+            input_files,
+            metadata,
+            output_files
         )
         logger.progress("BWA ALN Aligner", status="DONE")
 

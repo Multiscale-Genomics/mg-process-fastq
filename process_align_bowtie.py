@@ -112,12 +112,9 @@ class process_bowtie(Workflow):
 
         logger.progress("Bowtie2 Aligner", status="RUNNING")
         bowtie2_files, bowtie2_meta = bowtie2_handle.run(
-            # ideally parameter "roles" don't change
-            remap(input_files,
-                  "genome", "loc", "index"),
-            remap(metadata,
-                  "genome", "loc", "index"),
-            {"output": output_files["bam"]}
+            input_files,
+            metadata,
+            output_files
         )
         logger.progress("Bowtie2 Aligner", status="DONE")
 

@@ -19,8 +19,6 @@ from __future__ import print_function
 
 import os
 import shutil
-import shlex
-import subprocess
 import sys
 import re
 import tarfile
@@ -45,6 +43,7 @@ from basic_modules.tool import Tool
 from basic_modules.metadata import Metadata
 
 from tool.fastqreader import fastqreader
+from tool.common import common
 
 
 # ------------------------------------------------------------------------------
@@ -154,17 +153,7 @@ class fastq_splitter(Tool):
             tar.add(tmp_dir, arcname='tmp')
             tar.close()
 
-            try:
-                command_line = 'pigz ' + output_file_pregz
-                args = shlex.split(command_line)
-                process = subprocess.Popen(args)
-                process.wait()
-            except OSError:
-                logger.warn("OSERROR: pigz not installed, using gzip")
-                command_line = 'gzip ' + output_file_pregz
-                args = shlex.split(command_line)
-                process = subprocess.Popen(args)
-                process.wait()
+            common.zip_file(output_file_pregz)
 
             shutil.rmtree(tmp_dir)
 
@@ -282,17 +271,7 @@ class fastq_splitter(Tool):
             tar.add(tmp_dir, arcname='tmp')
             tar.close()
 
-            try:
-                command_line = 'pigz ' + output_file_pregz
-                args = shlex.split(command_line)
-                process = subprocess.Popen(args)
-                process.wait()
-            except OSError:
-                logger.warn("OSERROR: pigz not installed, using gzip")
-                command_line = 'gzip ' + output_file_pregz
-                args = shlex.split(command_line)
-                process = subprocess.Popen(args)
-                process.wait()
+            common.zip_file(output_file_pregz)
 
             shutil.rmtree(tmp_dir)
 

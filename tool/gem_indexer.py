@@ -17,8 +17,6 @@
 
 from __future__ import print_function
 
-import shlex
-import subprocess
 import sys
 
 from utils import logger
@@ -41,6 +39,7 @@ from basic_modules.metadata import Metadata
 from basic_modules.tool import Tool
 
 from tool.aligner_utils import alignerUtils
+from tool.common import common
 
 
 # ------------------------------------------------------------------------------
@@ -89,17 +88,7 @@ class gemIndexerTool(Tool):
                 msg.errno, msg.strerror))
             return False
 
-        try:
-            command_line = ['pigz ', genome_file + ".gem"]
-            logger.info("args for pigz:" + " ".join(command_line))
-            process = subprocess.Popen(" ".join(command_line), shell=True)
-            process.wait()
-        except OSError:
-            logger.warn("OSERROR: pigz not installed, using gzip")
-            command_line = 'gzip ' + genome_file + ".gem"
-            args = shlex.split(command_line)
-            process = subprocess.Popen(args)
-            process.wait()
+        common.zip_file(genome_file + ".gem")
 
         if genome_file + ".gem.gz" != index_loc:
             with open(index_loc, "wb") as f_out:

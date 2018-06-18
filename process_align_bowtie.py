@@ -23,6 +23,7 @@ import argparse
 
 from basic_modules.workflow import Workflow
 from utils import logger
+from utils import remap
 
 from tool.bowtie_aligner import bowtie2AlignerTool
 

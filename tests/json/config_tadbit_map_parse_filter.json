@@ -32,20 +32,12 @@
             "value": "Execution directory for tool TADbit map, parse and filter"
         },
         {
-            "name": "mapping:refGenome",
-            "value": "refGenomes/hg38/GEM/hg38.gem"
-        },
-        {
             "name": "mapping:rest_enzyme",
             "value": "MboI"
         },
         {
             "name": "mapping:iterative_mapping",
             "value": false
-        },
-        {
-            "name": "parsing:refGenome",
-            "value": "refGenomes/R64-1-1/R64-1-1.fa"
         },
         {
             "name": "filtering:filters",
@@ -56,11 +48,11 @@
                 "4",
                 "9",
                 "10"
-            ]
+             ]
         },
         {
         	"name": "chromosomes",
-        	"value": "chr21"
+        	"value": ""
         },
         {
             "name": "mapping:windows",

@@ -6,28 +6,38 @@
     "owner": {
         "institution": "CNAG",
         "author": "Francois Serra",
-        "contact": "serra.francois@gmail.com",
-        "user": "fserra",
-        "url": "http://sgt.cnag.cat/3dg/tadbit/"
+        "contact": "david.castillo@cnag.crg.eu",
+        "url": "http:\/\/sgt.cnag.cat\/3dg\/tadbit\/"
     },
+    "status": 1,
     "external": true,
     "keywords": [
-        "3c", "dna","chromatin","interactions"
+        "dna",
+        "chromatin"
     ],
-    "launcher": {
-        "type": "SGE",
-        "queue": "tadbit.q",
-        "executable": "/home/pmes/code/mg-process-fastq/tadbit_bin_wrapper.py",
+    "infrastructure": {
+        "memory": 4,
         "cpus": 12,
-        "memory": "4.0"
+        "executable": "\/home\/pmes\/code\/mg-process-fastq\/tadbit_bin_wrapper.py",
+        "clouds": {
+            "mug-irb": {
+                "launcher": "SGE",
+                "queue": "tadbit.q",
+                "default_cloud": true
+            }
+        }
     },
     "input_files": [
         {
             "name": "bamin",
-            "description": "TADbit-generated BED file",
-            "help": "path to a TADbit-generated BED file with filtered reads",
-            "file_type": ["BAM"],
-            "data_type": ["hic_sequences"],
+            "description": "TADbit-generated BAM file",
+            "help": "path to a TADbit-generated BAM file with filtered reads",
+            "file_type": [
+                "BAM"
+            ],
+            "data_type": [
+                "hic_sequences"
+            ],
             "required": true,
             "allow_multiple": false
         },
@@ -35,14 +45,39 @@
             "name": "hic_biases",
             "description": "TADbit-generated PICKLE file",
             "help": "path to a TADbit-generated PICKLE file with HiC biases",
-            "file_type": ["PICKLE"],
-            "data_type": ["hic_biases"],
+            "file_type": [
+                "PICKLE"
+            ],
+            "data_type": [
+                "hic_biases"
+            ],
             "required": false,
             "allow_multiple": false
         }
     ],
+    "input_files_combinations": [
+        [
+            "bamin",
+            "hic_biases"
+        ]
+    ],
+    "input_files_combinations_internal": [
+        [
+            {
+                "hic_sequences": 1
+            },
+            {
+                "hic_biases": 1
+            }
+        ],
+        [
+            {
+                "hic_sequences": 1
+            }
+        ]
+    ],
     "arguments": [
-    	{
+        {
             "name": "coord1",
             "description": "Coordinate of the region to retrieve.",
             "help": "Coordinate of the region to retrieve. By default all genome, arguments can be either one chromosome name, or the coordinate in the form: chr3:110000000-120000000",
@@ -66,11 +101,11 @@
             "allow_multiple": false,
             "file": {
                 "file_type": "TXT",
+                "file_path": "hic_contacts_matrix.txt",
                 "data_type": "hic_contacts_matrix",
                 "compressed": "null",
-                "file_path": "hic_contacts_matrix.txt",
                 "meta_data": {
-                    "tool": "tadbit",
+                    "tool": "tadbit_bin",
                     "description": "HiC contact matrix raw",
                     "visible": true
                 }
@@ -82,12 +117,28 @@
             "allow_multiple": false,
             "file": {
                 "file_type": "TXT",
+                "file_path": "hic_contacts_matrix_norm.txt",
                 "data_type": "hic_contacts_matrix",
                 "compressed": "null",
-                "file_path": "hic_contacts_matrix_norm.txt",
                 "meta_data": {
-                    "tool": "tadbit",
+                    "tool": "tadbit_bin",
                     "description": "HiC contact matrix normalized",
+                    "visible": true
+                }
+            }
+        },
+        {
+            "name": "tadkit_matrix",
+            "required": false,
+            "allow_multiple": false,
+            "file": {
+                "file_type": "JSON",
+                "file_path": "tadkit_matrix.json",
+                "data_type": "chromatin_3dmodel_ensemble",
+                "compressed": "null",
+                "meta_data": {
+                    "tool": "tadbit_bin",
+                    "description": "HiC matrix for TADkit",
                     "visible": true
                 }
             }
@@ -98,16 +149,15 @@
             "allow_multiple": false,
             "file": {
                 "file_type": "TAR",
-                "data_type": "tool_statistics",
                 "file_path": "bin_stats.tar.gz",
+                "data_type": "tool_statistics",
                 "compressed": "gzip",
                 "meta_data": {
                     "description": "TADbit HiC matrices in png format",
-                    "tool": "tadbit",
+                    "tool": "tadbit_bin",
                     "visible": true
                 }
             }
         }
-    ],
-    "control_file": ".results.json"
-} 
+    ]
+}

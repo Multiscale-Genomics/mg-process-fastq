@@ -18,7 +18,7 @@
             "help": "Resolution of the normalization.",
             "type": "string",
             "required": true,
-            "value": "100000"
+            "value": "20000"
         },
         {
             "name": "optimization:gen_pos_chrom_name",
@@ -26,7 +26,7 @@
             "help": "Coordinates of the genomic region to model.",
             "type": "string",
             "required": true,
-            "value": "chr10"
+            "value": "chr2"
         },
         {
             "name": "optimization:gen_pos_begin",
@@ -34,7 +34,7 @@
             "help": "Genomic coordinate from which to start modeling.",
             "type": "int",
             "required": true,
-            "value": "2900000"
+            "value": "73000000"
         },
         {
             "name": "optimization:gen_pos_end",
@@ -42,7 +42,7 @@
             "help": "Genomic coordinate where to end modeling.",
             "type": "int",
             "required": true,
-            "value": "7900000"
+            "value": "77000000"
         },
         {
             "name": "optimization:num_mod_comp",
@@ -58,7 +58,7 @@
             "help": "Number of models to keep from the total of models computed, for the comparison with original Hi-C matrix.",
             "type": "int",
             "required": true,
-            "value": "2"
+            "value": "5"
         },
         {
             "name": "optimization:max_dist",
@@ -66,7 +66,7 @@
             "help": "Range of numbers for optimal maxdist parameter, i.e. 400:1000:100; or just a single number e.g. 800; or a list of numbers e.g. 400 600 800 1000.",
             "type": "string",
             "required": true,
-            "value": "400:1200:200"
+            "value": "400:600:200"
         },
         {
             "name": "optimization:upper_bound",
@@ -93,28 +93,28 @@
             "value": "2"
         },
 		{
-            "name": "generation:max_dist",
+            "name": "generation:max__dist",
             "description": "Maximum distance.",
             "help": "Range of numbers for optimal maxdist parameter, i.e. 400:1000:100; or just a single number e.g. 800; or a list of numbers e.g. 400 600 800 1000.",
             "type": "string",
             "required": true,
-            "value": "1200"
+            "value": "400"
         },
         {
-            "name": "generation:upper_bound",
+            "name": "generation:upper__bound",
             "description": "Upper bound for Z-scored frequencies of interaction.",
             "help": "Range of numbers for optimal upfreq parameter, i.e. 0:1.2:0.3; or just a single number e.g. 0.8; or a list of numbers e.g. 0.1 0.3 0.5 0.9.",
             "type": "string",
             "required": true,
-            "value": "0.3"
+            "value": "0.9"
         },
         {
-            "name": "generation:lower_bound",
+            "name": "generation:lower__bound",
             "description": "Lower bound for Z-scored frequencies of interaction.",
             "help": "Range of numbers for optimal low parameter, i.e. -1.2:0:0.3; or just a single number e.g. -0.8; or a list of numbers e.g. -0.1 -0.3 -0.5 -0.9.",
             "type": "string",
             "required": true,
-            "value": "-1.2"
+            "value": "0"
         },
         {
             "name": "generation:cutoff",
@@ -125,20 +125,20 @@
             "value": "2"
         },
         {
-            "name": "generation:num_mod_comp",
+            "name": "generation:num__mod_comp",
             "description": "Number of models to compute.",
             "help": "Number of models to compute for each optimization step.",
             "type": "int",
             "required": true,
-            "value": "20"
+            "value": "5"
         },
         {
-            "name": "generation:num_mod_keep",
+            "name": "generation:num__mod_keep",
             "description": "Number of models to keep.",
             "help": "Number of models to keep from the total of models computed, for the comparison with original Hi-C matrix.",
             "type": "int",
             "required": true,
-            "value": "20"
+            "value": "5"
         }
         
     ],

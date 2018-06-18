@@ -4,13 +4,14 @@
         "_id": "59b7e020d9422a5969b65378",
         "data_type": "hic_sequences",
         "file_type": "bam",
-        "file_path": "/scratch/results/vre/hic_chr10_paired_reads.bam",
+        "file_path": "/scratch/results/vre/yeast_paired_reads.bam",
         "sources": null,
         "taxon_id": "9606",
         "meta_data": {
             "visible": true,
             "validated": 1,
-            "assembly": "hg38"
+            "assembly": "R64-1-1",
+            "rest_enzyme":"HindIII"
         }
     },
     {

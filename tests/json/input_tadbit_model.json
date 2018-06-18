@@ -4,7 +4,7 @@
         "_id": "59b7e020d9422a5969b65378",
         "data_type": "hic_contacts_matrix",
         "file_type": "TXT",
-        "file_path": "/scratch/results/vre/nrm_chr10_100kb.abc",
+        "file_path": "/home/dcastillo/Downloads/nrm_chr2-3650-3850_20kb.abc",
         "sources": null,
         "taxon_id": "9606",
         "meta_data": {

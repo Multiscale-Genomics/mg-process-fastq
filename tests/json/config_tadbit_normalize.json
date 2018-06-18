@@ -53,15 +53,6 @@
             "required": false,
             "default": "Vanilla",
             "value": "oneD"
-        },
-        {
-            "name": "rest_enzyme",
-            "description": "Restriction enzyme",
-            "help": "For oneD normalization. Name of the restriction enzyme used to do the Hi-C experiment",
-            "type": "string",
-            "required": false,
-            "default": "MboI",
-            "value": "MboI"
         }
     ],
     "output_files": [

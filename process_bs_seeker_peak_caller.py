@@ -107,12 +107,14 @@ class process_bs_seeker_peak_caller(Workflow):
 
         # Methylation peak caller
         peak_caller_handle = bssMethylationCallerTool(self.configuration)
+
+        logger.progress("BSseeker2 Peak Caller", status="RUNNING")
         peak_files, peak_meta = peak_caller_handle.run(
             input_files,
             metadata,
             output_files
         )
-        # output_metadata["peak_calling"] = peak_meta
+        logger.progress("BSseeker2 Peak Caller", status="DONE")
 
         try:
             output_results_files["wig_file"] = peak_files["wig_file"]

@@ -19,14 +19,10 @@
 
 from __future__ import print_function
 
-# Required for ReadTheDocs
-from functools import wraps  # pylint: disable=unused-import
-
 import argparse
 
 from basic_modules.workflow import Workflow
 from utils import logger
-from utils import remap
 
 from tool.bowtie_aligner import bowtie2AlignerTool
 
@@ -118,9 +114,12 @@ class process_bowtie(Workflow):
             align_input_file_meta = remap(metadata, "genome", "loc", "index")
 
         bowtie2_handle = bowtie2AlignerTool(self.configuration)
+
+        logger.progress("Bowtie2 Aligner", status="RUNNING")
         bowtie2_files, bowtie2_meta = bowtie2_handle.run(
             align_input_files, align_input_file_meta, {"output": output_files["bam"]}
         )
+        logger.progress("Bowtie2 Aligner", status="DONE")
 
         try:
             output_files_generated["bam"] = bowtie2_files["bam"]

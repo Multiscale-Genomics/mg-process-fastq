@@ -97,11 +97,15 @@ class process_bs_seeker_index(Workflow):
         logger.info("WGBS - BS-Seeker2 Index")
         # Build the matching WGBS genome index
         builder = bssIndexerTool(self.configuration)
+
+        logger.progress("BSseeker2 Indexer", status="RUNNING")
         genome_idx, gidx_meta = builder.run(
             genome_input_file,
             genome_input_meta,
             remap(output_files, "index")
         )
+        logger.progress("BSseeker2 Indexer", status="DONE")
+
         output_results_files["index"] = genome_idx["index"]
         output_metadata["index"] = gidx_meta["index"]
 

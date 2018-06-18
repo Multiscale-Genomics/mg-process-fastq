@@ -357,9 +357,13 @@ class bowtie2AlignerTool(Tool):
         output_metadata : dict
         """
 
+        tasks_done = 0
+        task_count = 6
+
         untar_idx = True
         if "no-untar" in self.configuration and self.configuration["no-untar"] is True:
             untar_idx = False
+            task_count = 5
 
         index_files = {
             "1.bt2": input_files["genome"] + ".1.bt2",
@@ -371,6 +375,7 @@ class bowtie2AlignerTool(Tool):
         }
 
         if untar_idx:
+            logger.progress("Untar Index", task_id=tasks_done, total=task_count)
             self.untar_index(
                 input_files["genome"],
                 input_files["index"],
@@ -381,6 +386,8 @@ class bowtie2AlignerTool(Tool):
                 index_files["rev.1.bt2"],
                 index_files["rev.2.bt2"]
             )
+            tasks_done += 1
+            logger.progress("Untar Index", task_id=tasks_done, total=task_count)
         sources = [input_files["genome"]]
 
         fqs = fastq_splitter()
@@ -388,6 +395,7 @@ class bowtie2AlignerTool(Tool):
         fastq1 = input_files["loc"]
         sources.append(input_files["loc"])
 
+        logger.progress("FASTQ Splitter", task_id=tasks_done, total=task_count)
         fastq_file_gz = str(fastq1 + ".tar.gz")
         if "fastq2" in input_files:
             fastq2 = input_files["fastq2"]
@@ -425,12 +433,17 @@ class bowtie2AlignerTool(Tool):
             logger.fatal("Split FASTQ files: Malformed tar file")
             return {}, {}
 
+        tasks_done += 1
+        logger.progress("FASTQ Splitter", task_id=tasks_done, total=task_count)
+
         # input and output share most metadata
         output_metadata = {}
 
         output_bam_file = output_files["output"]
 
         logger.info("BOWTIE2 ALIGNER: Aligning sequence reads to the genome")
+        logger.progress("ALIGNER - jobs = " + str(len(fastq_file_list)),
+                        task_id=tasks_done, total=task_count)
 
         output_bam_list = []
         for fastq_file_pair in fastq_file_list:
@@ -468,16 +481,27 @@ class bowtie2AlignerTool(Tool):
                     self.get_aln_params(self.configuration)
                 )
 
+        tasks_done += 1
+        logger.progress("ALIGNER", task_id=tasks_done, total=task_count)
+
         bam_handle = bamUtilsTask()
 
-        logger.info("Merging bam files")
+        logger.progress("Merging bam files", task_id=tasks_done, total=task_count)
         bam_handle.bam_merge(output_bam_list)
+        tasks_done += 1
+        logger.progress("Merging bam files", task_id=tasks_done, total=task_count)
 
-        logger.info("Sorting merged bam file")
+        logger.progress("Sorting merged bam file", task_id=tasks_done, total=task_count)
         bam_handle.bam_sort(output_bam_list[0])
+        tasks_done += 1
+        logger.progress("Sorting merged bam file", task_id=tasks_done, total=task_count)
 
-        logger.info("Copying bam file into the output file")
+        logger.progress("Copying bam file into the output file",
+                        task_id=tasks_done, total=task_count)
         bam_handle.bam_copy(output_bam_list[0], output_bam_file)
+        tasks_done += 1
+        logger.progress("Copying bam file into the output file",
+                        task_id=tasks_done, total=task_count)
 
         logger.info("BOWTIE2 ALIGNER: Alignments complete")
 

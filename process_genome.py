@@ -100,11 +100,13 @@ class process_genome(Workflow):
         # Bowtie2 Indexer
         logger.info("Generating indexes for Bowtie2")
         bowtie2 = bowtieIndexerTool()
+        logger.progress("Bowtie2 Indexer", status="RUNNING")
         bti, btm = bowtie2.run(
             genome_input_file,
             genome_input_meta,
             {'index': output_files['bwt_index']}
         )
+        logger.progress("Bowtie2 Indexer", status="DONE")
 
         try:
             output_files_generated['bwt_index'] = bti["index"]
@@ -119,11 +121,13 @@ class process_genome(Workflow):
         # BWA Indexer
         logger.info("Generating indexes for BWA")
         bwa = bwaIndexerTool()
+        logger.progress("BWA Indexer", status="RUNNING")
         bwai, bwam = bwa.run(
             genome_input_file,
             genome_input_meta,
             {'index': output_files['bwa_index']}
         )
+        logger.progress("BWA Indexer", status="DONE")
 
         try:
             output_files_generated['bwa_index'] = bwai['index']
@@ -138,12 +142,14 @@ class process_genome(Workflow):
         # GEM Indexer
         logger.info("Generating indexes for GEM")
         gem = gemIndexerTool()
+        logger.progress("GEM Indexer", status="RUNNING")
         gemi, gemm = gem.run(
             genome_input_file, genome_input_meta,
             {
                 'index': output_files['gem_index']
             }
         )
+        logger.progress("GEM Indexer", status="DONE")
 
         try:
             output_files_generated['gem_index'] = gemi['index']

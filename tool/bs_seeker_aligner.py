@@ -396,6 +396,9 @@ class bssAlignerTool(Tool):
             Location of the filtered FASTQ file
         """
 
+        tasks_done = 0
+        task_count = 6
+
         try:
             if "bss_path" in self.configuration:
                 bss_path = self.configuration["bss_path"]
@@ -421,6 +424,8 @@ class bssAlignerTool(Tool):
 
         fastq1 = input_files["fastq1"]
         sources.append(input_files["fastq1"])
+
+        logger.progress("FASTQ Splitter", task_id=tasks_done, total=task_count)
 
         fastq_file_gz = fastq1 + ".tar.gz"
         if "fastq2" in input_files:
@@ -460,11 +465,17 @@ class bssAlignerTool(Tool):
             logger.fatal("Split FASTQ files: Malformed tar file")
             return {}, {}
 
+        tasks_done += 1
+        logger.progress("FASTQ Splitter", task_id=tasks_done, total=task_count)
+
         # input and output share most metadata
         output_metadata = {}
 
         output_bam_file = output_files["bam"]
         output_bai_file = output_files["bai"]
+
+        logger.progress("ALIGNER - jobs = " + str(len(fastq_file_list)),
+                        task_id=tasks_done, total=task_count)
 
         output_bam_list = []
         for fastq_file_pair in fastq_file_list:
@@ -496,19 +507,32 @@ class bssAlignerTool(Tool):
                     output_bam_file_tmp
                 )
 
+        tasks_done += 1
+        logger.progress("ALIGNER", task_id=tasks_done, total=task_count)
+
         bam_handle = bamUtilsTask()
 
-        logger.info("Merging bam files")
+        logger.progress("Merging bam files", task_id=tasks_done, total=task_count)
         bam_handle.bam_merge(output_bam_list)
+        tasks_done += 1
+        logger.progress("Merging bam files", task_id=tasks_done, total=task_count)
 
-        logger.info("Sorting merged bam file")
+        logger.progress("Sorting merged bam file", task_id=tasks_done, total=task_count)
         bam_handle.bam_sort(output_bam_list[0])
+        tasks_done += 1
+        logger.progress("Sorting merged bam file", task_id=tasks_done, total=task_count)
 
-        logger.info("Copying bam file into the output file")
+        logger.progress("Copying bam file into the output file",
+                        task_id=tasks_done, total=task_count)
         bam_handle.bam_copy(output_bam_list[0], output_bam_file)
+        tasks_done += 1
+        logger.progress("Copying bam file into the output file",
+                        task_id=tasks_done, total=task_count)
 
-        logger.info("Creating output bam index file")
+        logger.progress("Creating output bam index file", task_id=tasks_done, total=task_count)
         bam_handle.bam_index(output_bam_file, output_bai_file)
+        tasks_done += 1
+        logger.progress("Creating output bam index file", task_id=tasks_done, total=task_count)
 
         output_metadata = {
             "bam": Metadata(

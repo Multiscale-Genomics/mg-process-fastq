@@ -94,3 +94,15 @@ There is also caching of the pip directory to reduce the load time.
 ----------------------------------------
 
 Split the testing of the WGBS pipeline and tool chains so that they 2 sets can run in parallel. Both take too long when run in series.
+
+
+2018-06-05 - Use of the logger PROGRESS
+---------------------------------------
+
+Added in the use of the logger.progress to indicate the progression of a process.
+
+
+2018-06-14 - Paired end alignment
+---------------------------------
+
+The aligner pipelines has been modified the pass through all the input and metadata to the aligner tools, this simplifies the the passing of a second fastq file and also make using these pipelines for alignment of paired end data possible.

@@ -245,6 +245,7 @@ class macs2(Tool):
         if os.path.isfile(bam_tmp_file) is False or os.path.getsize(bam_tmp_file) == 0:
             logger.fatal("MISSING FILE: " + bam_tmp_file)
 
+        logger.progress("MACS2", task_id=0, total=1)
         try:
             args = shlex.split(command_line)
             process = subprocess.Popen(args)
@@ -257,6 +258,8 @@ class macs2(Tool):
         if process.returncode is not 0:
             logger.fatal("MACS2 ERROR: " + str(process.returncode))
             return process.returncode
+
+        logger.progress("MACS2", task_id=1, total=1)
 
         out_suffix = ['peaks.narrowPeak', 'peaks.broadPeak', 'peaks.gappedPeak', 'summits.bed']
         for f_suf in out_suffix:

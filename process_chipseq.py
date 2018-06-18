@@ -155,12 +155,14 @@ class process_chipseq(Workflow):
             align_input_files["fastq2"] = input_files["fastq2"]
             align_input_file_meta["fastq2"] = metadata["fastq2"]
 
+        logger.progress("BWA Aligner", status="RUNNING")
         bwa = bwaAlignerTool(self.configuration)
         bwa_files, bwa_meta = bwa.run(
             align_input_files,
             align_input_file_meta,
             {"output": output_files["bam"]}
         )
+        logger.progress("BWA Aligner", status="DONE")
         try:
             output_files_generated["bam"] = bwa_files["bam"]
             output_metadata["bam"] = bwa_meta["bam"]
@@ -186,11 +188,13 @@ class process_chipseq(Workflow):
                 align_input_files_bg["fastq2"] = input_files["fastq2_bg"]
                 align_input_file_meta_bg["fastq2"] = metadata["fastq2_bg"]
 
+            logger.progress("BWA Aligner - Background", status="RUNNING")
             bwa_bg_files, bwa_bg_meta = bwa.run(
                 align_input_files_bg,
                 align_input_file_meta_bg,
                 {"output": output_files["bam_bg"]}
             )
+            logger.progress("BWA Aligner - Background", status="DONE")
 
             try:
                 output_files_generated["bam_bg"] = bwa_bg_files["bam_bg"]
@@ -204,11 +208,13 @@ class process_chipseq(Workflow):
 
         # Filter the bams
         b3f = biobambam(self.configuration)
+        logger.progress("BioBamBam", status="RUNNING")
         b3f_files, b3f_meta = b3f.run(
             {"input": bwa_files['bam']},
             {"input": bwa_meta['bam']},
             {"output": output_files["filtered"]}
         )
+        logger.progress("BioBamBam", status="DONE")
 
         try:
             output_files_generated["filtered"] = b3f_files["bam"]
@@ -222,11 +228,13 @@ class process_chipseq(Workflow):
 
         if "bg_loc" in input_files:
             # Filter background aligned files
+            logger.progress("BioBamBam Background", status="RUNNING")
             b3f_bg_files, b3f_bg_meta = b3f.run(
                 {"input": bwa_bg_files['bam']},
                 {"input": bwa_bg_meta['bam']},
                 {"output": output_files["filtered_bg"]}
             )
+            logger.progress("BioBamBam Background", status="DONE")
 
             try:
                 output_files_generated["filtered_bg"] = b3f_bg_files["bam"]
@@ -247,6 +255,7 @@ class process_chipseq(Workflow):
             macs_inputs["bam_bg"] = output_files_generated["filtered_bg"]
             macs_metadt["bam_bg"] = output_metadata['filtered_bg']
 
+        logger.progress("MACS2", status="RUNNING")
         m_results_files, m_results_meta = macs_caller.run(
             macs_inputs, macs_metadt,
             # Outputs of the final step may match workflow outputs;
@@ -255,6 +264,7 @@ class process_chipseq(Workflow):
                 output_files,
                 'narrow_peak', 'summits', 'broad_peak', 'gapped_peak')
         )
+        logger.progress("MACS2", status="DONE")
 
         if not m_results_meta:
             logger.fatal("MACS2 peak calling failed")

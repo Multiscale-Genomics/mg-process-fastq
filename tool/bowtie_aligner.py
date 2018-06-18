@@ -28,14 +28,14 @@ try:
     if hasattr(sys, '_run_from_cmdl') is True:
         raise ImportError
     from pycompss.api.parameter import IN, FILE_IN, FILE_OUT
-    from pycompss.api.task import task
+    from pycompss.api.task import task, constraint
     from pycompss.api.api import barrier, compss_wait_on, compss_open, compss_delete_file
 except ImportError:
     logger.warn("[Warning] Cannot import \"pycompss\" API packages.")
     logger.warn("          Using mock decorators.")
 
     from utils.dummy_pycompss import IN, FILE_IN, FILE_OUT  # pylint: disable=ungrouped-imports
-    from utils.dummy_pycompss import task  # pylint: disable=ungrouped-imports
+    from utils.dummy_pycompss import task, constraint  # pylint: disable=ungrouped-imports
     from utils.dummy_pycompss import barrier, compss_wait_on, compss_open, compss_delete_file  # pylint: disable=ungrouped-imports
 
 from basic_modules.tool import Tool
@@ -117,6 +117,7 @@ class bowtie2AlignerTool(Tool):
 
         return True
 
+    @constraint(ComputingUnits="2")
     @task(returns=bool, genome_file_loc=FILE_IN, read_file_loc=FILE_IN,
           bam_loc=FILE_OUT, genome_idx=FILE_IN, aln_params=IN, isModifier=False)
     def bowtie2_aligner_single(  # pylint: disable=too-many-arguments, no-self-use
@@ -173,6 +174,7 @@ class bowtie2AlignerTool(Tool):
 
         return True
 
+    @constraint(ComputingUnits="4")
     @task(returns=bool, genome_file_loc=FILE_IN, read_file_loc1=FILE_IN,
           read_file_loc2=FILE_IN, bam_loc=FILE_OUT, genome_idx=FILE_IN,
           aln_params=IN, isModifier=False)

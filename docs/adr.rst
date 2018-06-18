@@ -99,3 +99,9 @@ Added in the use of the logger.progress to indicate the progression of a process
 ---------------------------------
 
 The aligner pipelines has been modified the pass through all the input and metadata to the aligner tools, this simplifies the the passing of a second fastq file and also make using these pipelines for alignment of paired end data possible.
+
+
+2018-06-18 - Branch tidying during alignment
+--------------------------------------------
+
+Modified the way that the alignments manage the temporary files. These are now deleted once the pipeline has finished using them. The purpose of this is to save space on teh file system and prevent large jobs taking up too much space.

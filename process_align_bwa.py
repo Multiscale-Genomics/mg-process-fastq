@@ -23,6 +23,7 @@ import argparse
 
 from basic_modules.workflow import Workflow
 from utils import logger
+from utils import remap
 
 from tool.bwa_aligner import bwaAlignerTool
 
@@ -104,13 +105,20 @@ class process_bwa(Workflow):
 
         logger.info("PROCESS ALIGNMENT - DEFINED OUTPUT:", output_files["bam"])
 
+        if "genome_public" in input_files:
+            align_input_files = remap(
+                input_files, genome="genome_public", loc="loc", index="index_public")
+            align_input_file_meta = remap(
+                metadata, genome="genome_public", loc="loc", index="index_public")
+        else:
+            align_input_files = remap(input_files, "genome", "loc", "index")
+            align_input_file_meta = remap(metadata, "genome", "loc", "index")
+
         bwa = bwaAlignerTool(self.configuration)
 
         logger.progress("BWA ALN Aligner", status="RUNNING")
         bwa_files, bwa_meta = bwa.run(
-            input_files,
-            metadata,
-            {"output": output_files["bam"]}
+            align_input_files, align_input_file_meta, {"output": output_files["bam"]}
         )
         logger.progress("BWA ALN Aligner", status="DONE")
 

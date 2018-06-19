@@ -400,8 +400,28 @@ class alignerUtils(object):
 
         return True
 
-    @staticmethod
-    def bwa_aln_align_reads_paired(genome_file, reads_file_1, reads_file_2, bam_loc, params):
+    def _bwa_aln_sai(self, genome_file, reads_file, params):
+        """
+        """
+        cmd_aln_1 = ' '.join([
+            'bwa aln',
+            '-t', '2',
+            '-q', '5',
+            ' '.join(params),
+            '-f', reads_file + '.sai',
+            genome_file, reads_file
+        ])
+
+        try:
+            logger.info("BWA ALN COMMAND: " + cmd_aln_1)
+            process = subprocess.Popen(cmd_aln_1, shell=True)
+            process.wait()
+        except (IOError, OSError) as msg:
+            logger.info("I/O error({0}): {1}\n{2}".format(
+                msg.errno, msg.strerror, cmd_aln_1))
+            return False
+
+    def bwa_aln_align_reads_paired(self, genome_file, reads_file_1, reads_file_2, bam_loc, params):
         """
         Map the reads to the genome using BWA.
         Parameters
@@ -414,21 +434,23 @@ class alignerUtils(object):
             Location of the output file
         """
 
-        cmd_aln_1 = ' '.join([
-            'bwa aln',
-            '-q', '5',
-            ' '.join(params),
-            '-f', reads_file_1 + '.sai',
-            genome_file, reads_file_1
-        ])
+        # cmd_aln_1 = ' '.join([
+        #     'bwa aln',
+        #     '-t', '2',
+        #     '-q', '5',
+        #     ' '.join(params),
+        #     '-f', reads_file_1 + '.sai',
+        #     genome_file, reads_file_1
+        # ])
 
-        cmd_aln_2 = ' '.join([
-            'bwa aln',
-            '-q', '5',
-            ' '.join(params),
-            '-f', reads_file_2 + '.sai',
-            genome_file, reads_file_2
-        ])
+        # cmd_aln_2 = ' '.join([
+        #     'bwa aln',
+        #     '-t', '2',
+        #     '-q', '5',
+        #     ' '.join(params),
+        #     '-f', reads_file_2 + '.sai',
+        #     genome_file, reads_file_2
+        # ])
 
         cmd_samse = ' '.join([
             'bwa sampe',
@@ -445,7 +467,30 @@ class alignerUtils(object):
             reads_file_1 + '.sam'
         ])
 
-        command_lines = [cmd_aln_1, cmd_aln_2, cmd_samse, cmd_sort]
+        # command_lines = [cmd_aln_1, cmd_aln_2, cmd_samse, cmd_sort]
+        command_lines = [cmd_samse, cmd_sort]
+
+        try:
+            import multiprocessing
+
+            f1_proc = multiprocessing.Process(
+                name='fastq_1', target=self._bwa_aln_sai,
+                args=(genome_file, reads_file_1, params)
+            )
+            f2_proc = multiprocessing.Process(
+                name='fastq_2', target=self._bwa_aln_sai,
+                args=(genome_file, reads_file_2, params)
+            )
+
+            f1_proc.start()
+            f2_proc.start()
+
+            f1_proc.join()
+            f2_proc.join()
+        except (IOError, OSError) as msg:
+            logger.info("SAI ERROR: I/O error({0}): {1}".format(
+                msg.errno, msg.strerror))
+            return False
 
         try:
             for command_line in command_lines:

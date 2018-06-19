@@ -119,11 +119,13 @@ class bowtie2AlignerTool(Tool):
 
     @constraint(ComputingUnits="2")
     @task(returns=bool, genome_file_loc=FILE_IN, read_file_loc=FILE_IN,
-          bam_loc=FILE_OUT, genome_idx=FILE_IN, aln_params=IN, isModifier=False)
+          bam_loc=FILE_OUT, bt2_1_file=FILE_IN, bt2_2_file=FILE_IN,
+          bt2_3_file=FILE_IN, bt2_4_file=FILE_IN, bt2_rev1_file=FILE_IN,
+          bt2_rev2_file=FILE_IN, aln_params=IN, isModifier=False)
     def bowtie2_aligner_single(  # pylint: disable=too-many-arguments, no-self-use
             self, genome_file_loc, read_file_loc, bam_loc,
-            bt2_1_file, bt2_2_file, bt2_3_file, bt2_4_file,  # pylint: disable=unused-argument
-            bt2_rev1_file, bt2_rev2_file, aln_params):  # pylint: disable=unused-argument
+            bt2_1_file, bt2_2_file, bt2_3_file, bt2_4_file,
+            bt2_rev1_file, bt2_rev2_file, aln_params):
         """
         Bowtie2 Aligner - Single End
 
@@ -176,7 +178,9 @@ class bowtie2AlignerTool(Tool):
 
     @constraint(ComputingUnits="4")
     @task(returns=bool, genome_file_loc=FILE_IN, read_file_loc1=FILE_IN,
-          read_file_loc2=FILE_IN, bam_loc=FILE_OUT, genome_idx=FILE_IN,
+          read_file_loc2=FILE_IN, bam_loc=FILE_OUT, bt2_1_file=FILE_IN,
+          bt2_2_file=FILE_IN, bt2_3_file=FILE_IN, bt2_4_file=FILE_IN,
+          bt2_rev1_file=FILE_IN, bt2_rev2_file=FILE_IN,
           aln_params=IN, isModifier=False)
     def bowtie2_aligner_paired(  # pylint: disable=too-many-arguments, no-self-use
             self, genome_file_loc, read_file_loc1, read_file_loc2, bam_loc,

@@ -92,7 +92,9 @@ class alignerUtils(object):
 
         output_file = index_name
         if output_file is None:
-            output_file = file_name[-1].replace('.fa', '')
+            genome_file_split = genome_file.split("/")
+            genome_file_split_suffix = "." + genome_file_split[-1].split(".")[-1]
+            output_file = file_name[-1].replace(genome_file_split_suffix, '')
 
         with cd("/".join(file_name[0:-1])):
             command_line = 'bowtie2-build ' + genome_file + ' ' + output_file

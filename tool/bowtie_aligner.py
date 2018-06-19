@@ -124,8 +124,8 @@ class bowtie2AlignerTool(Tool):
           bt2_rev2_file=FILE_IN, aln_params=IN, isModifier=False)
     def bowtie2_aligner_single(  # pylint: disable=too-many-arguments, no-self-use
             self, genome_file_loc, read_file_loc, bam_loc,
-            bt2_1_file, bt2_2_file, bt2_3_file, bt2_4_file,
-            bt2_rev1_file, bt2_rev2_file, aln_params):
+            bt2_1_file, bt2_2_file, bt2_3_file, bt2_4_file,  # pylint: disable=unused-argument
+            bt2_rev1_file, bt2_rev2_file, aln_params):  # pylint: disable=unused-argument
         """
         Bowtie2 Aligner - Single End
 
@@ -397,6 +397,7 @@ class bowtie2AlignerTool(Tool):
             )
             tasks_done += 1
             logger.progress("Untar Index", task_id=tasks_done, total=task_count)
+
         sources = [input_files["genome"]]
 
         fqs = fastq_splitter()

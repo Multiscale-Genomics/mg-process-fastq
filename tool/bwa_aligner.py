@@ -289,9 +289,13 @@ class bwaAlignerTool(Tool):
         output_metadata : dict
         """
 
+        tasks_done = 0
+        task_count = 6
+
         untar_idx = True
         if "no-untar" in self.configuration and self.configuration["no-untar"] is True:
             untar_idx = False
+            task_count = 5
 
         index_files = {
             "amb": input_files["genome"] + ".amb",
@@ -302,6 +306,7 @@ class bwaAlignerTool(Tool):
         }
 
         if untar_idx:
+            logger.progress("Untar Index", task_id=tasks_done, total=task_count)
             self.untar_index(
                 input_files["genome"],
                 input_files["index"],
@@ -311,6 +316,8 @@ class bwaAlignerTool(Tool):
                 index_files["pac"],
                 index_files["sa"]
             )
+            tasks_done += 1
+            logger.progress("Untar Index", task_id=tasks_done, total=task_count)
 
         sources = [input_files["genome"]]
 
@@ -318,6 +325,8 @@ class bwaAlignerTool(Tool):
 
         fastq1 = input_files["loc"]
         sources.append(input_files["loc"])
+
+        logger.progress("FASTQ Splitter", task_id=tasks_done, total=task_count)
 
         fastq_file_gz = str(fastq1 + ".tar.gz")
         if "fastq2" in input_files:
@@ -361,7 +370,8 @@ class bwaAlignerTool(Tool):
             logger.fatal("Split FASTQ files: Malformed tar file")
             return {}, {}
 
-        logger.progress("FASTQ Splitter", task_id=1, total=4)
+        tasks_done += 1
+        logger.progress("FASTQ Splitter", task_id=tasks_done, total=task_count)
 
         # input and output share most metadata
         output_metadata = {}
@@ -372,7 +382,9 @@ class bwaAlignerTool(Tool):
         logger.info("BWA ALIGNER: Aligning sequence reads to the genome")
 
         output_bam_list = []
-        logger.progress("ALIGNER - jobs = " + str(len(fastq_file_list)), task_id=1, total=4)
+        logger.progress("ALIGNER - jobs = " + str(len(fastq_file_list)),
+                        task_id=tasks_done, total=task_count)
+
         for fastq_file_pair in fastq_file_list:
             if "fastq2" in input_files:
                 tmp_fq1 = gz_data_path + "/tmp/" + fastq_file_pair[0]
@@ -419,13 +431,15 @@ class bwaAlignerTool(Tool):
             if "fastq2" in input_files:
                 os.remove(gz_data_path + "/tmp/" + fastq_file_pair[1])
                 compss_delete_file(gz_data_path + "/tmp/" + fastq_file_pair[1])
-        logger.progress("ALIGNER", task_id=2, total=4)
+        tasks_done += 1
+        logger.progress("ALIGNER", task_id=tasks_done, total=task_count)
 
         bam_handle = bamUtilsTask()
 
-        logger.progress("Merging bam files", task_id=2, total=4)
+        logger.progress("Merging bam files", task_id=tasks_done, total=task_count)
         bam_handle.bam_merge(output_bam_list)
-        logger.progress("Merging bam files", task_id=3, total=4)
+        tasks_done += 1
+        logger.progress("Merging bam files", task_id=tasks_done, total=task_count)
 
         # Remove all bam files that are not the final file
         for i in output_bam_list[1:len(output_bam_list)]:
@@ -439,12 +453,17 @@ class bwaAlignerTool(Tool):
                     )
                 )
 
-        logger.progress("Sorting merged bam file", task_id=3, total=4)
+        logger.progress("Sorting merged bam file", task_id=tasks_done, total=task_count)
         bam_handle.bam_sort(output_bam_list[0])
-        logger.progress("Sorting merged bam file", task_id=4, total=4)
+        tasks_done += 1
+        logger.progress("Sorting merged bam file", task_id=tasks_done, total=task_count)
 
-        logger.info("Copying bam file into the output file")
+        logger.progress("Copying bam file into the output file",
+                        task_id=tasks_done, total=task_count)
         bam_handle.bam_copy(output_bam_list[0], output_bam_file)
+        tasks_done += 1
+        logger.progress("Copying bam file into the output file",
+                        task_id=tasks_done, total=task_count)
 
         compss_delete_file(output_bam_list[0])
 

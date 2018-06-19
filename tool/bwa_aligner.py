@@ -28,7 +28,8 @@ try:
     if hasattr(sys, '_run_from_cmdl') is True:
         raise ImportError
     from pycompss.api.parameter import IN, FILE_IN, FILE_OUT
-    from pycompss.api.task import task, constraint
+    from pycompss.api.task import task
+    from pycompss.api.constraint import constraint
     from pycompss.api.api import barrier, compss_wait_on, compss_open, compss_delete_file
 except ImportError:
     logger.warn("[Warning] Cannot import \"pycompss\" API packages.")
@@ -115,8 +116,7 @@ class bwaAlignerTool(Tool):
 
     @constraint(ComputingUnits="2")
     @task(returns=bool, genome_file_loc=FILE_IN, read_file_loc=FILE_IN,
-          bam_loc=FILE_OUT, genome_idx=FILE_IN,
-          amb_file=FILE_IN, ann_file=FILE_IN, bwt_file=FILE_IN,
+          bam_loc=FILE_OUT, amb_file=FILE_IN, ann_file=FILE_IN, bwt_file=FILE_IN,
           pac_file=FILE_IN, sa_file=FILE_IN, aln_params=IN, isModifier=False)
     def bwa_aligner_single(  # pylint: disable=too-many-arguments, no-self-use
             self, genome_file_loc, read_file_loc, bam_loc,
@@ -151,6 +151,11 @@ class bwaAlignerTool(Tool):
         bam_loc : str
             Location of the output file
         """
+        if (
+                os.path.isfile(read_file_loc) is False or
+                os.path.getsize(read_file_loc) == 0):
+            return False
+
         out_bam = read_file_loc + '.out.bam'
 
         au_handle = alignerUtils()
@@ -163,7 +168,8 @@ class bwaAlignerTool(Tool):
             with open(bam_loc, "wb") as f_out:
                 with open(out_bam, "rb") as f_in:
                     f_out.write(f_in.read())
-        except IOError:
+        except IOError as error:
+            logger.fatal("SINGLE ALIGNER: I/O error({0}): {1}".format(error.errno, error.strerror))
             return False
 
         os.remove(out_bam)
@@ -172,7 +178,7 @@ class bwaAlignerTool(Tool):
 
     @constraint(ComputingUnits="4")
     @task(returns=bool, genome_file_loc=FILE_IN, read_file_loc1=FILE_IN,
-          read_file_loc2=FILE_IN, bam_loc=FILE_OUT, genome_idx=FILE_IN,
+          read_file_loc2=FILE_IN, bam_loc=FILE_OUT,
           amb_file=FILE_IN, ann_file=FILE_IN, bwt_file=FILE_IN,
           pac_file=FILE_IN, sa_file=FILE_IN, aln_params=IN, isModifier=False)
     def bwa_aligner_paired(  # pylint: disable=too-many-arguments, no-self-use
@@ -220,7 +226,8 @@ class bwaAlignerTool(Tool):
             with open(bam_loc, "wb") as f_out:
                 with open(out_bam, "rb") as f_in:
                     f_out.write(f_in.read())
-        except IOError:
+        except IOError as error:
+            logger.fatal("PARIED ALIGNER: I/O error({0}): {1}".format(error.errno, error.strerror))
             return False
 
         os.remove(out_bam)
@@ -241,6 +248,7 @@ class bwaAlignerTool(Tool):
         -------
         list
         """
+
         command_parameters = {
             "bwa_edit_dist_param": ["-n", True],
             "bwa_max_gap_open_param": ["-o", True],

@@ -145,11 +145,19 @@ class process_damidseq(Workflow):
 
         # BSgenome
         logger.info("Generating BSgenome")
+
+        if "genome_public" in input_files:
+            genome_input_file = {"genome": input_files["genome_public"]}
+            genome_input_meta = {"genome": metadata["genome_public"]}
+        else:
+            genome_input_file = {"genome": input_files["genome"]}
+            genome_input_meta = {"genome": metadata["genome"]}
+
         bsg = bsgenomeTool(self.configuration)
         logger.progress("BSgenome Indexer", status="RUNNING")
         bsgi, bsgm = bsg.run(
-            {"genome": input_files["genome"]},
-            {"genome": metadata["genome"]},
+            genome_input_file,
+            genome_input_meta,
             {
                 "bsgenome": output_files["bsgenome"],
                 "chrom_size": output_files["chrom_size"],
@@ -173,14 +181,19 @@ class process_damidseq(Workflow):
 
         # Align and filter reads
         for aln in alignment_set:
+            if "genome_public" in input_files:
+                align_input_files = remap(
+                    input_files, genome="genome_public", loc="loc", index="index_public")
+                align_input_file_meta = remap(
+                    metadata, genome="genome_public", loc="loc", index="index_public")
+            else:
+                align_input_files = remap(input_files, "genome", "index", loc=aln[0])
+                align_input_file_meta = remap(metadata, "genome", "index", loc=aln[0])
+
             bwa = bwaAlignerTool(self.configuration)
             logger.progress("BWA ALN Aligner - " + aln[0], status="RUNNING")
             bwa_files, bwa_meta = bwa.run(
-                remap(input_files,
-                      "genome", "index", loc=aln[0]),
-                remap(metadata,
-                      "genome", "index", loc=aln[0]),
-                {"output": output_files[aln[1]]}
+                align_input_files, align_input_file_meta, {"output": output_files[aln[1]]}
             )
             logger.progress("BWA ALN Aligner - " + aln[0], status="DONE")
 

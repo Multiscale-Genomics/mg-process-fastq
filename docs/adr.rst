@@ -69,6 +69,13 @@ Update so that the gem files are name <genome-file>.gem.gz inline with requests 
 
 To try and improve the quality of the reads that are used for numerous pipelines, TrimGalore has been included as a pipeline to aid in the clipping and removal of low quality regions of reads. The pipeline can be run on single or paired end FASTQ files. A report of the trimmed data is also returned for the user to identify what changes were made.
 
+
+2018-05-31 - Public genomes and indexes
+---------------------------------------
+
+The VRE is making it possible to use centrally stored genomic sequences and the pre-built indexes. This relies on a second key-value pair for the genome and indexes. Pipelines that interact with the public files need to be able to test for the present of "genome_public" and "index_public", if they are not present then they should be able to safely fall back on "genome" and "index" keys-value pairs. With the separation of the tools and the pipelines this means that the changes should only need to happen in the pipelines as this can perform the translation between the "genome_public" to "genome" ready for the tool.
+
+
 2018-06-01 - Separated WGBS Vode Testing
 ----------------------------------------
 

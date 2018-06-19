@@ -23,6 +23,7 @@ import argparse
 
 from basic_modules.workflow import Workflow
 from utils import logger
+from utils import remap
 
 from tool.bowtie_aligner import bowtie2AlignerTool
 
@@ -104,13 +105,20 @@ class process_bowtie(Workflow):
 
         logger.info("PROCESS ALIGNMENT - DEFINED OUTPUT:", output_files["bam"])
 
+        if "genome_public" in input_files:
+            align_input_files = remap(
+                input_files, genome="genome_public", loc="loc", index="index_public")
+            align_input_file_meta = remap(
+                metadata, genome="genome_public", loc="loc", index="index_public")
+        else:
+            align_input_files = remap(input_files, "genome", "loc", "index")
+            align_input_file_meta = remap(metadata, "genome", "loc", "index")
+
         bowtie2_handle = bowtie2AlignerTool(self.configuration)
 
         logger.progress("Bowtie2 Aligner", status="RUNNING")
         bowtie2_files, bowtie2_meta = bowtie2_handle.run(
-            input_files,
-            metadata,
-            {"output": output_files["bam"]}
+            align_input_files, align_input_file_meta, {"output": output_files["bam"]}
         )
         logger.progress("Bowtie2 Aligner", status="DONE")
 

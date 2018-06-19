@@ -356,6 +356,7 @@ class alignerUtils(object):
 
         cmd_aln = ' '.join([
             'bwa aln',
+            '-t', '4',
             '-q', '5',
             ' '.join(params),
             '-f', reads_file + '.sai',
@@ -402,6 +403,16 @@ class alignerUtils(object):
 
     def _bwa_aln_sai(self, genome_file, reads_file, params):
         """
+        Generate the sai files required for creating the sam file.
+
+        Parameters
+        ----------
+        genome_file : str
+            Location of the assembly file in the file system
+        reads_file : str
+            Location of the reads file in the file system
+        params : dict
+            Dictionary of the parameters for bwa aln
         """
         cmd_aln_1 = ' '.join([
             'bwa aln',
@@ -419,11 +430,11 @@ class alignerUtils(object):
         except (IOError, OSError) as msg:
             logger.info("I/O error({0}): {1}\n{2}".format(
                 msg.errno, msg.strerror, cmd_aln_1))
-            return False
 
     def bwa_aln_align_reads_paired(self, genome_file, reads_file_1, reads_file_2, bam_loc, params):
         """
         Map the reads to the genome using BWA.
+
         Parameters
         ----------
         genome_file : str
@@ -433,24 +444,6 @@ class alignerUtils(object):
         bam_loc : str
             Location of the output file
         """
-
-        # cmd_aln_1 = ' '.join([
-        #     'bwa aln',
-        #     '-t', '2',
-        #     '-q', '5',
-        #     ' '.join(params),
-        #     '-f', reads_file_1 + '.sai',
-        #     genome_file, reads_file_1
-        # ])
-
-        # cmd_aln_2 = ' '.join([
-        #     'bwa aln',
-        #     '-t', '2',
-        #     '-q', '5',
-        #     ' '.join(params),
-        #     '-f', reads_file_2 + '.sai',
-        #     genome_file, reads_file_2
-        # ])
 
         cmd_samse = ' '.join([
             'bwa sampe',
@@ -467,7 +460,6 @@ class alignerUtils(object):
             reads_file_1 + '.sam'
         ])
 
-        # command_lines = [cmd_aln_1, cmd_aln_2, cmd_samse, cmd_sort]
         command_lines = [cmd_samse, cmd_sort]
 
         try:

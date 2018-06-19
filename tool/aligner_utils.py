@@ -104,10 +104,9 @@ class alignerUtils(object):
 
         return True
 
-    @staticmethod
-    def bowtie2_untar_index(
-            genome_name, tar_file, bt2_1_file, bt2_2_file, bt2_3_file, bt2_4_file,
-            bt2_rev1_file, bt2_rev2_file):
+    def bowtie2_untar_index(self, genome_name, tar_file,
+                            bt2_1_file, bt2_2_file, bt2_3_file, bt2_4_file,
+                            bt2_rev1_file, bt2_rev2_file):
         """
         Extracts the BWA index files from the genome index tar file.
 
@@ -135,35 +134,16 @@ class alignerUtils(object):
         bool
             Boolean indicating if the task was successful
         """
-        try:
-            g_dir = tar_file.split("/")
-            g_dir = "/".join(g_dir[:-1])
+        index_files = {
+            "1.bt2": bt2_1_file,
+            "2.bt2": bt2_2_file,
+            "3.bt2": bt2_3_file,
+            "4.bt2": bt2_4_file,
+            "rev.1.bt2": bt2_rev1_file,
+            "rev.2.bt2": bt2_rev2_file,
+        }
 
-            tar = tarfile.open(tar_file)
-            tar.extractall(path=g_dir)
-            tar.close()
-
-            index_files = {
-                "1.bt2": bt2_1_file,
-                "2.bt2": bt2_2_file,
-                "3.bt2": bt2_3_file,
-                "4.bt2": bt2_4_file,
-                "rev.1.bt2": bt2_rev1_file,
-                "rev.2.bt2": bt2_rev2_file,
-            }
-
-            gidx_folder = tar_file.replace('.tar.gz', '/') + genome_name
-            for suffix in list(index_files.keys()):
-                with open(index_files[suffix], "wb") as f_out:
-                    with open(gidx_folder + "." + suffix, "rb") as f_in:
-                        f_out.write(f_in.read())
-
-            shutil.rmtree(tar_file.replace('.tar.gz', ''))
-        except IOError as error:
-            logger.fatal("UNTAR: I/O error({0}): {1}".format(error.errno, error.strerror))
-            return False
-
-        return True
+        return self._untar_index(genome_name, tar_file, index_files)
 
     @staticmethod
     def bwa_index_genome(genome_file):
@@ -218,8 +198,7 @@ class alignerUtils(object):
 
         return (amb_name, ann_name, bwt_name, pac_name, sa_name)
 
-    @staticmethod
-    def bwa_untar_index(genome_name, tar_file,
+    def bwa_untar_index(self, genome_name, tar_file,
                         amb_file, ann_file, bwt_file, pac_file, sa_file):
         """
         Extracts the BWA index files from the genome index tar file.
@@ -246,6 +225,18 @@ class alignerUtils(object):
         bool
             Boolean indicating if the task was successful
         """
+        index_files = {
+            "amb": amb_file,
+            "ann": ann_file,
+            "bwt": bwt_file,
+            "pac": pac_file,
+            "sa": sa_file
+        }
+
+        return self._untar_index(genome_name, tar_file, index_files)
+
+    @staticmethod
+    def _untar_index(genome_name, tar_file, index_files):
         try:
             g_dir = tar_file.split("/")
             g_dir = "/".join(g_dir[:-1])
@@ -253,14 +244,6 @@ class alignerUtils(object):
             tar = tarfile.open(tar_file)
             tar.extractall(path=g_dir)
             tar.close()
-
-            index_files = {
-                "amb": amb_file,
-                "ann": ann_file,
-                "bwt": bwt_file,
-                "pac": pac_file,
-                "sa": sa_file
-            }
 
             gidx_folder = tar_file.replace('.tar.gz', '/') + genome_name
             for suffix in list(index_files.keys()):

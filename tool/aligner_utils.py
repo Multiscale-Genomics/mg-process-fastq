@@ -78,7 +78,7 @@ class alignerUtils(object):
         return True
 
     @staticmethod
-    def bowtie_index_genome(genome_file, index_name=None):
+    def bowtie_index_genome(genome_file):
         """
         Create an index of the genome FASTA file with Bowtie2. These are saved
         alongside the assembly file.
@@ -239,7 +239,8 @@ class alignerUtils(object):
     @staticmethod
     def _untar_index(genome_name, tar_file, index_files):
         """
-        Untar the specified files for a genomic index into the specified location
+        Untar the specified files for a genomic index into the specified
+        location.
 
         Parameters
         ----------

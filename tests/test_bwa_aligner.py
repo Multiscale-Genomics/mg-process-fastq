@@ -120,7 +120,7 @@ def test_bwa_aligner_aln():
     cmdl = "samtools view -c -f 0 {}macs2.Human.DRR000150.22_aln.bam".format(resource_path)
     process = subprocess.Popen(cmdl, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     process.wait()
-    proc_out, proc_err = process.communicate()
+    proc_out, proc_err = process.communicate()  # pylint: disable=unused-variable
     assert int(proc_out) > 0
 
     try:
@@ -181,7 +181,7 @@ def test_bwa_aligner_mem():
     cmdl = "samtools view -c -f 0 {}macs2.Human.DRR000150.22_mem.bam".format(resource_path)
     process = subprocess.Popen(cmdl, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     process.wait()
-    proc_out, proc_err = process.communicate()
+    proc_out, proc_err = process.communicate()  # pylint: disable=unused-variable
     assert int(proc_out) > 0
 
     try:
@@ -268,7 +268,7 @@ def test_bwa_aligner_aln_paired():
     cmdl = "samtools view -c -f 1 {}bsSeeker.Mouse.SRR892982_1_aln.bam".format(resource_path)
     process = subprocess.Popen(cmdl, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     process.wait()
-    proc_out, proc_err = process.communicate()
+    proc_out, proc_err = process.communicate()  # pylint: disable=unused-variable
     assert int(proc_out) > 0
 
     try:
@@ -333,7 +333,7 @@ def test_bwa_aligner_mem_paired():
     cmdl = "samtools view -c -f 1 {}bsSeeker.Mouse.SRR892982_1_mem.bam".format(resource_path)
     process = subprocess.Popen(cmdl, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     process.wait()
-    proc_out, proc_err = process.communicate()
+    proc_out, proc_err = process.communicate()  # pylint: disable=unused-variable
     assert int(proc_out) > 0
 
     try:

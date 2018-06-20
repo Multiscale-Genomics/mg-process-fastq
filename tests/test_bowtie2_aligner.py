@@ -94,7 +94,7 @@ def test_bowtie2_aligner_single():
     cmdl = "samtools view -c -f 0 {}macs2.Human.DRR000150.22_bt2.bam".format(resource_path)
     process = subprocess.Popen(cmdl, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     process.wait()
-    proc_out, proc_err = process.communicate()
+    proc_out, proc_err = process.communicate()  # pylint: disable=unused-variable
     assert int(proc_out.strip()) > 0
 
     try:
@@ -154,7 +154,7 @@ def test_bowtie2_aligner_paired():
     cmdl = "samtools view -c -f 0 {}bsSeeker.Mouse.SRR892982_1_bt2.bam".format(resource_path)
     process = subprocess.Popen(cmdl, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     process.wait()
-    proc_out, proc_err = process.communicate()
+    proc_out, proc_err = process.communicate()  # pylint: disable=unused-variable
     assert int(proc_out.strip()) > 0
 
     try:

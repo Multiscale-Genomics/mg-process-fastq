@@ -501,11 +501,11 @@ class bowtie2AlignerTool(Tool):
                 compss_delete_file(index_files[idx_file])
 
         for fastq_file_pair in fastq_file_list:
-            os.remove(gz_data_path + "/tmp/" + fastq_file_pair[0])
             compss_delete_file(gz_data_path + "/tmp/" + fastq_file_pair[0])
+            os.remove(gz_data_path + "/tmp/" + fastq_file_pair[0])
             if "fastq2" in input_files:
-                os.remove(gz_data_path + "/tmp/" + fastq_file_pair[1])
                 compss_delete_file(gz_data_path + "/tmp/" + fastq_file_pair[1])
+                os.remove(gz_data_path + "/tmp/" + fastq_file_pair[1])
         tasks_done += 1
         logger.progress("ALIGNER", task_id=tasks_done, total=task_count)
 
@@ -545,7 +545,14 @@ class bowtie2AlignerTool(Tool):
         logger.info("BOWTIE2 ALIGNER: Alignments complete")
 
         barrier()
-        shutil.rmtree(gz_data_path + "/tmp")
+        try:
+            shutil.rmtree(gz_data_path + "/tmp")
+        except (OSError, IOError) as msg:
+            logger.warn(
+                "Already tidy I/O error({0}): {1}".format(
+                    msg.errno, msg.strerror
+                )
+            )
 
         output_metadata = {
             "bam": Metadata(

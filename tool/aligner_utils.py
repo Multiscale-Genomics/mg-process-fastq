@@ -90,19 +90,20 @@ class alignerUtils(object):
         """
         file_name = genome_file.split("/")
 
-        output_file = index_name
-        if output_file is None:
-            genome_file_split = genome_file.split("/")
-            genome_file_split_suffix = "." + genome_file_split[-1].split(".")[-1]
-            output_file = file_name[-1].replace(genome_file_split_suffix, '')
+        bt2_1_name = genome_file + ".1.bt2"
+        bt2_2_name = genome_file + ".2.bt2"
+        bt2_3_name = genome_file + ".3.bt2"
+        bt2_4_name = genome_file + ".4.bt2"
+        rev1_bt2_name = genome_file + ".rev.1.bt2"
+        rev2_bt2_name = genome_file + ".rev.2.bt2"
 
         with cd("/".join(file_name[0:-1])):
-            command_line = 'bowtie2-build ' + genome_file + ' ' + output_file
+            command_line = 'bowtie2-build ' + genome_file + ' ' + genome_file
             args = shlex.split(command_line)
             process = subprocess.Popen(args)
             process.wait()
 
-        return True
+        return (bt2_1_name, bt2_2_name, bt2_3_name, bt2_4_name, rev1_bt2_name, rev2_bt2_name)
 
     def bowtie2_untar_index(self, genome_name, tar_file,
                             bt2_1_file, bt2_2_file, bt2_3_file, bt2_4_file,
@@ -246,6 +247,7 @@ class alignerUtils(object):
             tar.close()
 
             gidx_folder = tar_file.replace('.tar.gz', '/') + genome_name
+
             for suffix in list(index_files.keys()):
                 with open(index_files[suffix], "wb") as f_out:
                     with open(gidx_folder + "." + suffix, "rb") as f_in:
@@ -284,14 +286,10 @@ class alignerUtils(object):
         logger.info(genome_file)
         logger.info(' '.join(params))
 
-        g_idx = genome_file.split("/")
-        g_idx_suffix = "." + g_idx[-1].split(".")[-1]
-        g_idx[-1] = g_idx[-1].replace(g_idx_suffix, "")
-
         cmd_aln = ' '.join([
             'bowtie2',
             '-p 4',
-            '-x', '/'.join(g_idx),
+            '-x', genome_file,
             ' '.join(params),
         ] + reads)
 

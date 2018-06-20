@@ -355,8 +355,6 @@ class bwaAlignerTool(Tool):
             logger.fatal("FASTQ SPLITTER: run failed")
             return {}, {}
 
-        logger.progress("FASTQ Splitter", task_id=0, total=4)
-
         if hasattr(sys, '_run_from_cmdl') is True:
             pass
         else:
@@ -478,7 +476,14 @@ class bwaAlignerTool(Tool):
         logger.info("BWA ALIGNER: Alignments complete")
 
         barrier()
-        shutil.rmtree(gz_data_path + "/tmp")
+        try:
+            shutil.rmtree(gz_data_path + "/tmp")
+        except (OSError, IOError) as msg:
+            logger.warn(
+                "Already tidy I/O error({0}): {1}".format(
+                    msg.errno, msg.strerror
+                )
+            )
 
         output_metadata = {
             "bam": Metadata(

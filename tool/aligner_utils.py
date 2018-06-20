@@ -238,6 +238,18 @@ class alignerUtils(object):
 
     @staticmethod
     def _untar_index(genome_name, tar_file, index_files):
+        """
+        Untar the specified files for a genomic index into the specified location
+
+        Parameters
+        ----------
+        genome_name : str
+            Name of the genome for the folder within the tar file
+        tar_file : str
+            Location of the tarred index files
+        index_files : dict
+            Dictionary object of the suffix and final index file location
+        """
         try:
             g_dir = tar_file.split("/")
             g_dir = "/".join(g_dir[:-1])

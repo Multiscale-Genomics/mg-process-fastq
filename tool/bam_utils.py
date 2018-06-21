@@ -382,7 +382,8 @@ class bamUtilsTask(object):
                             bam_job_files.pop(0), bam_job_files.pop(0), bam_job_files.pop(0),
                             bam_job_files.pop(0), bam_job_files.pop(0), bam_out
                         )
-                        bam_out = bam_job_files[0] + "_merge_" + str(merge_round) + ".bam"
+                        if bam_job_files:
+                            bam_out = bam_job_files[0] + "_merge_" + str(merge_round) + ".bam"
 
                     if len(bam_job_files) == 4:
                         tmp_alignments.append(bam_out)
@@ -404,7 +405,7 @@ class bamUtilsTask(object):
                         self.bam_merge_2(
                             bam_job_files.pop(0), bam_job_files.pop(0), bam_out
                         )
-                    else:
+                    elif len(bam_job_files) == 1:
                         tmp_alignments.append(bam_job_files[0])
 
                 barrier()

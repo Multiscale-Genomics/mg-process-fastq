@@ -114,7 +114,7 @@ class bwaAlignerMEMTool(Tool):
 
         return True
 
-    @constraint(ComputingUnits="2")
+    @constraint(ComputingUnits="4")
     @task(returns=bool, genome_file_loc=FILE_IN, read_file_loc=FILE_IN,
           bam_loc=FILE_OUT, amb_file=FILE_IN, ann_file=FILE_IN, bwt_file=FILE_IN,
           pac_file=FILE_IN, sa_file=FILE_IN, mem_params=IN, isModifier=False)

@@ -412,7 +412,7 @@ class alignerUtils(object):
         """
         cmd_aln_1 = ' '.join([
             'bwa aln',
-            '-t', '2',
+            '-t', '4',
             '-q', '5',
             ' '.join(params),
             '-f', reads_file + '.sai',

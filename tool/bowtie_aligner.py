@@ -117,7 +117,7 @@ class bowtie2AlignerTool(Tool):
 
         return True
 
-    @constraint(ComputingUnits="2")
+    @constraint(ComputingUnits="4")
     @task(returns=bool, genome_file_loc=FILE_IN, read_file_loc=FILE_IN,
           bam_loc=FILE_OUT, bt2_1_file=FILE_IN, bt2_2_file=FILE_IN,
           bt2_3_file=FILE_IN, bt2_4_file=FILE_IN, bt2_rev1_file=FILE_IN,

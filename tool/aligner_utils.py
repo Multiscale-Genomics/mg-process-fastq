@@ -105,7 +105,7 @@ class alignerUtils(object):
 
         return (bt2_1_name, bt2_2_name, bt2_3_name, bt2_4_name, rev1_bt2_name, rev2_bt2_name)
 
-    def bowtie2_untar_index(self, genome_name, tar_file,
+    def bowtie2_untar_index(self, genome_name, tar_file,  # pylint: disable=too-many-arguments
                             bt2_1_file, bt2_2_file, bt2_3_file, bt2_4_file,
                             bt2_rev1_file, bt2_rev2_file):
         """
@@ -199,7 +199,7 @@ class alignerUtils(object):
 
         return (amb_name, ann_name, bwt_name, pac_name, sa_name)
 
-    def bwa_untar_index(self, genome_name, tar_file,
+    def bwa_untar_index(self, genome_name, tar_file,  # pylint: disable=too-many-arguments
                         amb_file, ann_file, bwt_file, pac_file, sa_file):
         """
         Extracts the BWA index files from the genome index tar file.

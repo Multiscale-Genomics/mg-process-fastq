@@ -35,7 +35,7 @@ except ImportError:
 
     from utils.dummy_pycompss import FILE_IN, FILE_OUT, IN  # pylint: disable=ungrouped-imports
     from utils.dummy_pycompss import task  # pylint: disable=ungrouped-imports
-    from utils.dummy_pycompss import compss_wait_on, compss_open  # pylint: disable=ungrouped-imports
+    from utils.dummy_pycompss import compss_wait_on, compss_open, compss_delete_file  # pylint: disable=ungrouped-imports
 
 from basic_modules.metadata import Metadata
 from basic_modules.tool import Tool
@@ -463,6 +463,14 @@ class macs2(Tool):
                                     output_files['gapped_peak'] + "." + str(chromosome), 'rb'
                                 ) as file_in_handle:
                                     file_gp_handle.write(file_in_handle.read())
+                                compss_delete_file(
+                                    output_files['narrow_peak'] + "." + str(chromosome))
+                                compss_delete_file(
+                                    output_files['summits'] + "." + str(chromosome))
+                                compss_delete_file(
+                                    output_files['broad_peak'] + "." + str(chromosome))
+                                compss_delete_file(
+                                    output_files['gapped_peak'] + "." + str(chromosome))
 
         output_files_created = {}
         output_metadata = {}
@@ -488,6 +496,8 @@ class macs2(Tool):
                         "bed_type": output_bed_types[result_file]
                     }
                 )
+            else:
+                os.remove(output_files[result_file])
 
         logger.info('MACS2: GENERATED FILES:', output_files)
 

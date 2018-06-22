@@ -286,8 +286,8 @@ class kallistoQuantificationTool(Tool):
 
         output_metadata = {
             "abundance_h5_file": Metadata(
-                data_type="data_ranseq",
-                file_type="hdf5",
+                data_type="data_rna_seq",
+                file_type="HDF5",
                 file_path=output_files["abundance_h5_file"],
                 sources=[input_metadata["cdna"].file_path, input_metadata["fastq1"].file_path],
                 taxon_id=input_metadata["cdna"].taxon_id,
@@ -297,8 +297,8 @@ class kallistoQuantificationTool(Tool):
                 }
             ),
             "abundance_tsv_file": Metadata(
-                data_type="data_ranseq",
-                file_type="tsv",
+                data_type="data_rna_seq",
+                file_type="TSV",
                 file_path=output_files["abundance_tsv_file"],
                 sources=[input_metadata["cdna"].file_path, input_metadata["fastq1"].file_path],
                 taxon_id=input_metadata["cdna"].taxon_id,
@@ -308,8 +308,8 @@ class kallistoQuantificationTool(Tool):
                 }
             ),
             "run_info_file": Metadata(
-                data_type="data_ranseq",
-                file_type="tsv",
+                data_type="data_rna_seq",
+                file_type="JSON",
                 file_path=output_files["run_info_file"],
                 sources=[input_metadata["cdna"].file_path, input_metadata["fastq1"].file_path],
                 taxon_id=input_metadata["cdna"].taxon_id,

@@ -122,8 +122,8 @@ class kallistoIndexerTool(Tool):
 
         output_metadata = {
             "index": Metadata(
-                data_type="index_kallisto",
-                file_type="",
+                data_type="sequence_mapping_index_kallisto",
+                file_type="IDX",
                 file_path=output_files["index"],
                 sources=[input_metadata["cdna"].file_path],
                 taxon_id=input_metadata["cdna"].taxon_id,

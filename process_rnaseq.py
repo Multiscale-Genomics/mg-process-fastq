@@ -81,12 +81,14 @@ class process_rnaseq(Workflow):
 
         # Index the cDNA
         # This could get moved to the general tools section
-        k_index = kallistoIndexerTool(self.configuration)
+        k_index = kallistoIndexerTool()
+        logger.progress("Kallisto Indexer", status="RUNNING")
         k_out, k_meta = k_index.run(
             remap(input_files, "cdna"),
             remap(metadata, "cdna"),
             remap(output_files, "index"),
         )
+        logger.progress("Kallisto Indexer", status="DONE")
 
         if "index" not in k_out:
             logger.fatal("Kallisto: Index has not been generated")
@@ -95,6 +97,7 @@ class process_rnaseq(Workflow):
         # Quantification
         k_quant = kallistoQuantificationTool(self.configuration)
 
+        logger.progress("Kallisto Quant", status="RUNNING")
         if "fastq2" not in input_files:
             kq_input_files = {
                 "cdna": input_files["cdna"],
@@ -131,6 +134,7 @@ class process_rnaseq(Workflow):
                 kq_input_meta,
                 remap(output_files, "kallisto_tar_file")
             )
+        logger.progress("Kallisto Quant", status="DONE")
 
         try:
             kq_files["index"] = k_out["index"]

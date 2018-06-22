@@ -99,11 +99,14 @@ class process_bsFilter(Workflow):
         logger.info("BS-Filter")
 
         frt = filterReadsTool(self.configuration)
+
+        logger.progress("BSseeker2 Filter", status="RUNNING")
         fastq1f, filter1_meta = frt.run(
             {"fastq": input_files["fastq1"]},
             {"fastq": metadata["fastq1"]},
             {"fastq_filtered": output_files["fastq1_filtered"]}
         )
+        logger.progress("BSseeker2 Filter", status="DONE")
 
         try:
             output_results_files["fastq1_filtered"] = fastq1f["fastq_filtered"]

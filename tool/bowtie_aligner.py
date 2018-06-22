@@ -28,7 +28,8 @@ try:
     if hasattr(sys, '_run_from_cmdl') is True:
         raise ImportError
     from pycompss.api.parameter import IN, FILE_IN, FILE_OUT
-    from pycompss.api.task import task, constraint
+    from pycompss.api.task import task
+    from pycompss.api.constraint import constraint
     from pycompss.api.api import barrier, compss_wait_on, compss_open, compss_delete_file
 except ImportError:
     logger.warn("[Warning] Cannot import \"pycompss\" API packages.")

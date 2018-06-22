@@ -77,7 +77,8 @@ class bowtie2AlignerTool(Tool):
           bt2_4_file=FILE_OUT, bt2_rev1_file=FILE_OUT, bt2_rev2_file=FILE_OUT)
     def untar_index(  # pylint: disable=too-many-locals,too-many-arguments
             self, genome_file_name, genome_idx,
-            bt2_1_file, bt2_2_file, bt2_3_file, bt2_4_file, bt2_rev1_file, bt2_rev2_file):
+            bt2_1_file, bt2_2_file, bt2_3_file, bt2_4_file,
+            bt2_rev1_file, bt2_rev2_file):
         """
         Extracts the Bowtie2 index files from the genome index tar file.
 

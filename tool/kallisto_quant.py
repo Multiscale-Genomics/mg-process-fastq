@@ -30,14 +30,12 @@ try:
         raise ImportError
     from pycompss.api.parameter import FILE_IN, FILE_OUT
     from pycompss.api.task import task
-    # from pycompss.api.api import compss_wait_on
 except ImportError:
     logger.warn("[Warning] Cannot import \"pycompss\" API packages.")
     logger.warn("          Using mock decorators.")
 
     from utils.dummy_pycompss import FILE_IN, FILE_OUT  # pylint: disable=ungrouped-imports
     from utils.dummy_pycompss import task  # pylint: disable=ungrouped-imports
-    # from utils.dummy_pycompss import compss_wait_on  # pylint: disable=ungrouped-imports
 
 from basic_modules.tool import Tool
 from basic_modules.metadata import Metadata
@@ -258,13 +256,6 @@ class kallistoQuantificationTool(Tool):
 
         # input and output share most metadata
         output_metadata = {}
-
-        # file_loc = input_files[1].split("/")
-        # output_dir = "/".join(file_loc[0:-1])
-
-        # abundance_h5_file = output_dir + "/abundance.h5"
-        # abundance_tsv_file = output_dir + "/abundance.tsv"
-        # run_info_file = output_dir + "/run_info.json"
 
         if "fastq2" not in input_files:
             self.kallisto_quant_single(

@@ -104,6 +104,10 @@ class process_bowtie(Workflow):
 
         logger.info("PROCESS ALIGNMENT - DEFINED OUTPUT:", output_files["bam"])
 
+        if "genome_public" in input_files:
+            input_files["genome"] = input_files.pop("genome_public")
+            metadata["genome"] = metadata.pop("genome_public")
+
         bowtie2_handle = bowtie2AlignerTool(self.configuration)
 
         logger.progress("Bowtie2 Aligner", status="RUNNING")

@@ -24,9 +24,6 @@ from __future__ import print_function
 import argparse
 import sys
 
-# Required for ReadTheDocs
-from functools import wraps  # pylint: disable=unused-import
-
 from basic_modules.workflow import Workflow
 from dmp import dmp
 

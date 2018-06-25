@@ -240,6 +240,8 @@ class bamUtils(object):
                 msg.errno, msg.strerror, cmd_view_2))
             return False
 
+        os.remove(bam_file_in + ".sam")
+
         return True
 
     @staticmethod

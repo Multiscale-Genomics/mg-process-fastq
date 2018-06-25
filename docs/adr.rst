@@ -111,4 +111,4 @@ The aligner pipelines has been modified the pass through all the input and metad
 2018-06-18 - Branch tidying during alignment
 --------------------------------------------
 
-Modified the way that the alignments manage the temporary files. These are now deleted once the pipeline has finished using them. The purpose of this is to save space on teh file system and prevent large jobs taking up too much space.
+Modified the way that the alignment pipelines manage the temporary files. These are now deleted once the pipeline has finished using them. The purpose of this is to save space on the file system and prevent large jobs taking up too much space.

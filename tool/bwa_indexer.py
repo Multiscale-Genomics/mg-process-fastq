@@ -18,9 +18,7 @@
 from __future__ import print_function
 
 import os
-import shlex
 import shutil
-import subprocess
 import sys
 import tarfile
 
@@ -44,6 +42,7 @@ from basic_modules.tool import Tool
 from basic_modules.metadata import Metadata
 
 from tool.aligner_utils import alignerUtils
+from tool.common import common
 
 # ------------------------------------------------------------------------------
 
@@ -118,17 +117,7 @@ class bwaIndexerTool(Tool):
                 msg.errno, msg.strerror))
             return False
 
-        try:
-            command_line = 'pigz ' + idx_out_pregz
-            args = shlex.split(command_line)
-            process = subprocess.Popen(args)
-            process.wait()
-        except OSError:
-            logger.warn("OSERROR: pigz not installed, using gzip")
-            command_line = 'gzip ' + idx_out_pregz
-            args = shlex.split(command_line)
-            process = subprocess.Popen(args)
-            process.wait()
+        common.zip_file(idx_out_pregz)
 
         shutil.rmtree(index_dir)
 

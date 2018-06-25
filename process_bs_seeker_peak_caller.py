@@ -63,9 +63,6 @@ class process_bs_seeker_peak_caller(Workflow):
         input_files : dict
             List of strings for the locations of files. These should include:
 
-            genome_fa : str
-                Genome assembly in FASTA
-
             bam : str
                 Location for the FASTQ aligned reads bam file
 
@@ -78,7 +75,6 @@ class process_bs_seeker_peak_caller(Workflow):
         metadata : dict
             Input file meta data associated with their roles
 
-            genome_fa : dict
             index : dict
             bam : dict
             bai : dict
@@ -104,6 +100,10 @@ class process_bs_seeker_peak_caller(Workflow):
 
         output_results_files = {}
         output_metadata = {}
+
+        if "genome_public" in input_files:
+            input_files["genome"] = input_files.pop("genome_public")
+            metadata["genome"] = metadata.pop("genome_public")
 
         # Methylation peak caller
         peak_caller_handle = bssMethylationCallerTool(self.configuration)

@@ -336,8 +336,37 @@ class alignerUtils(object):
 
         return True
 
-    @staticmethod
-    def bwa_aln_align_reads_single(genome_file, reads_file, bam_loc, params):
+    def _bwa_aln_sai(self, genome_file, reads_file, params):  # pylint: disable=no-self-use
+        """
+        Generate the sai files required for creating the sam file.
+
+        Parameters
+        ----------
+        genome_file : str
+            Location of the assembly file in the file system
+        reads_file : str
+            Location of the reads file in the file system
+        params : dict
+            Dictionary of the parameters for bwa aln
+        """
+        cmd_aln_sai = ' '.join([
+            'bwa aln',
+            '-t', '4',
+            '-q', '5',
+            ' '.join(params),
+            '-f', reads_file + '.sai',
+            genome_file, reads_file
+        ])
+
+        try:
+            logger.info("BWA ALN COMMAND: " + cmd_aln_sai)
+            process = subprocess.Popen(cmd_aln_sai, shell=True)
+            process.wait()
+        except (IOError, OSError) as msg:
+            logger.info("I/O error({0}): {1}\n{2}".format(
+                msg.errno, msg.strerror, cmd_aln_sai))
+
+    def bwa_aln_align_reads_single(self, genome_file, reads_file, bam_loc, params):
         """
         Map the reads to the genome using BWA.
         Parameters
@@ -349,15 +378,6 @@ class alignerUtils(object):
         bam_loc : str
             Location of the output file
         """
-
-        cmd_aln = ' '.join([
-            'bwa aln',
-            '-t', '4',
-            '-q', '5',
-            ' '.join(params),
-            '-f', reads_file + '.sai',
-            genome_file, reads_file
-        ])
 
         cmd_samse = ' '.join([
             'bwa samse',
@@ -372,7 +392,9 @@ class alignerUtils(object):
             reads_file + '.sam'
         ])
 
-        command_lines = [cmd_aln, cmd_samse, cmd_sort]
+        self._bwa_aln_sai(genome_file, reads_file, params)
+
+        command_lines = [cmd_samse, cmd_sort]
 
         # print("BWA COMMAND LINES:", command_lines)
         try:
@@ -396,36 +418,6 @@ class alignerUtils(object):
         os.remove(reads_file + '.sai')
 
         return True
-
-    def _bwa_aln_sai(self, genome_file, reads_file, params):
-        """
-        Generate the sai files required for creating the sam file.
-
-        Parameters
-        ----------
-        genome_file : str
-            Location of the assembly file in the file system
-        reads_file : str
-            Location of the reads file in the file system
-        params : dict
-            Dictionary of the parameters for bwa aln
-        """
-        cmd_aln_1 = ' '.join([
-            'bwa aln',
-            '-t', '4',
-            '-q', '5',
-            ' '.join(params),
-            '-f', reads_file + '.sai',
-            genome_file, reads_file
-        ])
-
-        try:
-            logger.info("BWA ALN COMMAND: " + cmd_aln_1)
-            process = subprocess.Popen(cmd_aln_1, shell=True)
-            process.wait()
-        except (IOError, OSError) as msg:
-            logger.info("I/O error({0}): {1}\n{2}".format(
-                msg.errno, msg.strerror, cmd_aln_1))
 
     def bwa_aln_align_reads_paired(self, genome_file, reads_file_1, reads_file_2, bam_loc, params):
         """

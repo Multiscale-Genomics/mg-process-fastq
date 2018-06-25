@@ -112,3 +112,11 @@ The aligner pipelines has been modified the pass through all the input and metad
 --------------------------------------------
 
 Modified the way that the alignment pipelines manage the temporary files. These are now deleted once the pipeline has finished using them. The purpose of this is to save space on the file system and prevent large jobs taking up too much space.
+
+There have also been changes to the handling of paired end files for the alignment pipelines improving the clarity of what is happening and simplifying the passing of parameters. There are also changes to the tests to allow for the removal of temporary files and there are tests to make sure that the output bam files are single or paired end.
+
+Other changes include:
+- Simplification of the untarring functions
+- Modifications to the Bowtie2 index file for consistency with the BWA index file
+- Refactored the BWA ALN sai file generation to reduce redundancy to allow for multi-processing when there is paired-end data
+- Improved the handling of the suffixes for FASTQ and FASTA files so that it can handle variants

@@ -76,7 +76,7 @@ To try and improve the quality of the reads that are used for numerous pipelines
 The VRE is making it possible to use centrally stored genomic sequences and the pre-built indexes. This relies on a second key-value pair for the genome and indexes. Pipelines that interact with the public files need to be able to test for the present of "genome_public" and "index_public", if they are not present then they should be able to safely fall back on "genome" and "index" keys-value pairs. With the separation of the tools and the pipelines this means that the changes should only need to happen in the pipelines as this can perform the translation between the "genome_public" to "genome" ready for the tool.
 
 
-2018-06-01 - Separated WGBS Vode Testing
+2018-06-01 - Separated WGBS Code Testing
 ----------------------------------------
 
 To bring down the run time for the TravisCI, the WGBS has been moved to a separate track. This has the benefit of getting the testing started earlier and allowing the other tests to finish sooner.
@@ -85,7 +85,7 @@ To bring down the run time for the TravisCI, the WGBS has been moved to a separa
 2018-06-01 - Travis Caching
 ---------------------------
 
-Travis CI is now able to cache the lib directory so that the build phase is reduced to improve test speeds. If there ae changes to the lib then these need to be refreshed in the TravisCI settings to ensure that the new libraries are included, or flushed if there are changes to the versions of packages in the lib.
+Travis CI is now able to cache the lib directory so that the build phase is reduced to improve test speeds. If there are changes to the lib then these need to be refreshed in the TravisCI settings to ensure that the new libraries are included, or flushed if there are changes to the versions of packages in the lib.
 
 There is also caching of the pip directory to reduce the load time.
 

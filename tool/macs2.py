@@ -62,7 +62,7 @@ class macs2(Tool):
 
         self.configuration.update(configuration)
 
-    @constraint(ComputingUnits="4")
+    @constraint(ComputingUnits="1")
     @task(
         returns=bool,
         name=IN,
@@ -185,7 +185,7 @@ class macs2(Tool):
 
         return True
 
-    @constraint(ComputingUnits="4")
+    @constraint(ComputingUnits="1")
     @task(
         returns=bool,
         name=IN,

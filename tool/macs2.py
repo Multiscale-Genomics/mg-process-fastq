@@ -302,7 +302,7 @@ class macs2(Tool):
                         with open(output_tmp, "rb") as f_in:
                             f_out.write(f_in.read())
 
-        return 0
+        return True
 
     @staticmethod
     def get_macs2_params(params):
@@ -429,7 +429,7 @@ class macs2(Tool):
                     str(output_files['gapped_peak']) + "." + str(chromosome),
                     chromosome)
 
-            if result > 0:
+            if result is False:
                 logger.fatal("MACS2: Something went wrong with the peak calling")
 
         # Merge the results files into single files.

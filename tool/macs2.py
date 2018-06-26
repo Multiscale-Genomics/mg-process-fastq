@@ -64,7 +64,7 @@ class macs2(Tool):
 
     @constraint(ComputingUnits="4")
     @task(
-        returns=int,
+        returns=bool,
         name=IN,
         bam_file=FILE_IN,
         bai_file=FILE_IN,
@@ -151,11 +151,11 @@ class macs2(Tool):
             except (IOError, OSError) as msg:
                 logger.fatal("I/O error({0}): {1}\n{2}".format(
                     msg.errno, msg.strerror, command_line))
-                return msg.errno
+                return False
 
             if process.returncode is not 0:
                 logger.fatal("MACS2 ERROR", process.returncode)
-                return process.returncode
+                return False
 
             logger.info('Process Results 1:', process)
 
@@ -183,11 +183,11 @@ class macs2(Tool):
                         with open(output_tmp, "rb") as f_in:
                             f_out.write(f_in.read())
 
-        return 0
+        return True
 
     @constraint(ComputingUnits="4")
     @task(
-        returns=int,
+        returns=bool,
         name=IN,
         bam_file=FILE_IN,
         bai_file=FILE_IN,
@@ -272,11 +272,11 @@ class macs2(Tool):
             except (IOError, OSError) as msg:
                 logger.fatal("I/O error({0}): {1}\n{2}".format(
                     msg.errno, msg.strerror, command_line))
-                return msg.errno
+                return False
 
             if process.returncode is not 0:
                 logger.fatal("MACS2 ERROR: " + str(process.returncode))
-                return process.returncode
+                return False
 
             logger.progress("MACS2", task_id=1, total=1)
 

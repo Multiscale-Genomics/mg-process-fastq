@@ -407,7 +407,7 @@ class bamUtilsTask(object):  # pylint: disable=invalid-name
         bam_handle = bamUtils()
         return bam_handle.bam_filter(bam_file, bam_file_out, filter_name)
 
-    def bam_merge(self, in_bam_job_files):
+    def bam_merge(self, in_bam_job_files):  # pylint: disable=too-many-branches
         """
         Wrapper task taking any number of bam files and merging them into a
         single bam file.

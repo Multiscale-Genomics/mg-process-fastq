@@ -224,7 +224,7 @@ class bamUtils(object):
             chromosome
         ])
 
-        # Convert the new same file into a sorted bam file
+        # Convert the new sam file into a sorted bam file
         cmd_view_2 = ' '.join([
             'samtools sort',
             '-O bam',

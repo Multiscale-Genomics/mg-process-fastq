@@ -87,14 +87,23 @@ class bamUtils(object):
             "unmapped": "260"
         }
 
+        # Using samtools directly as pysam.view ignored the '-o' parameter
+        cmd_view = ' '.join([
+            "samtools view",
+            "-b",
+            "-F", filter_list[filter_name],
+            "-o", bam_file_out,
+            bam_file
+        ])
+
         try:
-            pysam.view(  # pylint: disable=no-member
-                "-b", "-F", filter_list[filter_name], "-o", bam_file_out, bam_file)
+            process = subprocess.Popen(cmd_view, shell=True)
+            process.wait()
         except (IOError, OSError) as msg:
             logger.info(
-                "I/O error({0}): {1}\n{2}".format(
+                "BAM FILTER - I/O error({0}): {1}\n{2}".format(
                     msg.errno, msg.strerror,
-                    "samtools -b -F {} -o {} {}".format(
+                    "samtools view -b -F {} -o {} {}".format(
                         filter_list[filter_name], bam_file_out, bam_file)
                     )
             )

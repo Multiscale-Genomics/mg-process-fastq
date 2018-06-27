@@ -38,6 +38,7 @@ except ImportError:
 
 from basic_modules.metadata import Metadata
 from basic_modules.tool import Tool
+from tool.bam_utils import bamUtils
 
 # ------------------------------------------------------------------------------
 
@@ -98,24 +99,30 @@ class biobambam(Tool):
 
         command_line = 'bamsormadup --tmpfile=' + tmp_dir
 
-        bam_tmp_out = tmp_dir + '/' + td_list[-1] + '.filtered.tmp.bam'
+        bam_tmp_marked_out = tmp_dir + '/' + td_list[-1] + '.marked.tmp.bam'
+        bam_tmp_filtered_out = tmp_dir + '/' + td_list[-1] + '.filtered.tmp.bam'
 
         logger.info("BIOBAMBAM: command_line: " + command_line)
-        logger.progress("BIOBAMBAM", task_id=0, total=1)
+        logger.progress("BIOBAMBAM", task_id=0, total=2)
         try:
             with open(bam_file_in, "r") as f_in:
-                with open(bam_tmp_out, "w") as f_out:
+                with open(bam_tmp_marked_out, "w") as f_out:
                     process = subprocess.Popen(command_line, shell=True, stdin=f_in, stdout=f_out)
                     process.wait()
         except (IOError, OSError) as msg:
             logger.fatal("I/O error({0}) - bamsormadup: {1}\n{2}".format(
                 msg.errno, msg.strerror, command_line))
             return False
-        logger.progress("BIOBAMBAM", task_id=1, total=1)
+        logger.progress("BIOBAMBAM", task_id=1, total=2)
+
+        logger.progress("SAMTOOLS REMOVE DUPLICATES", task_id=1, total=2)
+        bam_handle = bamUtils()
+        bam_handle.bam_filter(bam_tmp_marked_out, bam_tmp_filtered_out, "duplicate")
+        logger.progress("SAMTOOLS REMOVE DUPLICATES", task_id=2, total=2)
 
         try:
             with open(bam_file_out, "wb") as f_out:
-                with open(bam_tmp_out, "rb") as f_in:
+                with open(bam_tmp_filtered_out, "rb") as f_in:
                     f_out.write(f_in.read())
         except IOError as error:
             logger.fatal("I/O error({0}): {1}".format(error.errno, error.strerror))

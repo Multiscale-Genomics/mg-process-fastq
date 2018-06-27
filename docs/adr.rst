@@ -111,4 +111,6 @@ The aligner pipelines has been modified the pass through all the input and metad
 2018-06-27 - Remove reads marked as duplicate by BioBamBam
 ----------------------------------------------------------
 
-BioBamBam only marks reads as duplicate, but does not remove the after. The Tool has been updated to remove the flagged duplicates using samtools with the parameter `-F 1024`.
+BioBamBam only marks reads as duplicate, but does not remove the after. The Tool has been updated to remove the flagged duplicates using samtools with the parameter `-F 1024`. This matches the pipeline used within the `Blueprints project <http://dcc.blueprint-epigenome.eu/#/md/chip_seq_grch37>`_.
+
+Also performed some tidying of the code to annotate issues that had been highlighted by pylint.

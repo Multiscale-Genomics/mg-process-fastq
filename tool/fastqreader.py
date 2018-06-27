@@ -175,8 +175,9 @@ class fastqreader(object):  # pylint: disable=too-many-instance-attributes,inval
             self.output_tag = tag
 
         fq1 = self.fastq1.split("/")
-        new_suffix = "." + str(self.output_tag) + "_" + str(self.output_file_count) + ".fastq"
-        fq1[-1] = re.sub('.fastq$', new_suffix, fq1[-1])
+        fq1_suffix = "." + fq1[-1].split(".")[-1]
+        new_suffix = "." + str(self.output_tag) + "_" + str(self.output_file_count) + fq1_suffix
+        fq1[-1] = re.sub(fq1_suffix + '$', new_suffix, fq1[-1])
         fq1.insert(-1, "tmp")
 
         if os.path.isdir("/".join(fq1[0:-1])) is False:
@@ -191,8 +192,9 @@ class fastqreader(object):  # pylint: disable=too-many-instance-attributes,inval
 
         if self.paired is True:
             fq2 = self.fastq2.split("/")
-            new_suffix = "." + str(self.output_tag) + "_" + str(self.output_file_count) + ".fastq"
-            fq2[-1] = re.sub('.fastq$', new_suffix, fq2[-1])
+            fq2_suffix = "." + fq2[-1].split(".")[-1]
+            new_suffix = "." + str(self.output_tag) + "_" + str(self.output_file_count) + fq2_suffix
+            fq2[-1] = re.sub(fq2_suffix + '$', new_suffix, fq2[-1])
             fq2.insert(-1, "tmp")
             self.f2_output_file = open("/".join(fq2), "w")
             self.f2_output_file_loc = "/".join(fq2)

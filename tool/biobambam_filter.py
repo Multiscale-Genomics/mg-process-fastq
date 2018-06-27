@@ -27,13 +27,14 @@ try:
         raise ImportError
     from pycompss.api.parameter import FILE_IN, FILE_OUT
     from pycompss.api.task import task
+    from pycompss.api.constraint import constraint
     # from pycompss.api.api import compss_wait_on
 except ImportError:
     logger.warn("[Warning] Cannot import \"pycompss\" API packages.")
     logger.warn("          Using mock decorators.")
 
     from utils.dummy_pycompss import FILE_IN, FILE_OUT  # pylint: disable=ungrouped-imports
-    from utils.dummy_pycompss import task  # pylint: disable=ungrouped-imports
+    from utils.dummy_pycompss import task, constraint  # pylint: disable=ungrouped-imports
     # from utils.dummy_pycompss import compss_wait_on # pylint: disable=ungrouped-imports
 
 from basic_modules.metadata import Metadata
@@ -67,6 +68,7 @@ class biobambam(Tool):  # pylint: disable=invalid-name
 
         self.configuration.update(configuration)
 
+    @constraint(ComputingUnits="4")
     @task(returns=bool, bam_file_in=FILE_IN, bam_file_out=FILE_OUT,
           isModifier=False)
     def biobambam_filter_alignments(self, bam_file_in, bam_file_out):  # pylint: disable=no-self-use
@@ -97,7 +99,7 @@ class biobambam(Tool):  # pylint: disable=invalid-name
         logger.info("BIOBAMBAM: bam_file_out: " + bam_file_out)
         tmp_dir = "/".join(td_list[0:-1])
 
-        command_line = 'bamsormadup --tmpfile=' + tmp_dir
+        command_line = 'bamsormadup --threads=4 --tmpfile=' + tmp_dir
 
         bam_tmp_marked_out = tmp_dir + '/' + td_list[-1] + '.marked.tmp.bam'
         bam_tmp_filtered_out = tmp_dir + '/' + td_list[-1] + '.filtered.tmp.bam'

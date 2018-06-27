@@ -84,13 +84,8 @@ class bowtieIndexerTool(Tool):  # pylint: disable=invalid-name
             Location of the output index file
         """
 
-        file_name = file_loc.split('/')
-        file_name[-1] = file_name[-1].replace('.fasta', '')
-        file_name[-1].replace('.fa', '')
-        file_name = "/".join(file_name)
-
         au_handle = alignerUtils()
-        au_handle.bowtie_index_genome(file_loc, file_name)
+        bt2_1, bt2_2, bt2_3, bt2_4, bt2_rev1, bt2_rev2 = au_handle.bowtie_index_genome(file_loc)
 
         try:
             # tar.gz the index
@@ -102,12 +97,12 @@ class bowtieIndexerTool(Tool):  # pylint: disable=invalid-name
 
             idx_split = index_dir.split("/")
 
-            shutil.move(file_name + ".1.bt2", index_dir)
-            shutil.move(file_name + ".2.bt2", index_dir)
-            shutil.move(file_name + ".3.bt2", index_dir)
-            shutil.move(file_name + ".4.bt2", index_dir)
-            shutil.move(file_name + ".rev.1.bt2", index_dir)
-            shutil.move(file_name + ".rev.2.bt2", index_dir)
+            shutil.move(bt2_1, index_dir)
+            shutil.move(bt2_2, index_dir)
+            shutil.move(bt2_3, index_dir)
+            shutil.move(bt2_4, index_dir)
+            shutil.move(bt2_rev1, index_dir)
+            shutil.move(bt2_rev2, index_dir)
 
             index_folder = idx_split[-1]
 
@@ -120,6 +115,7 @@ class bowtieIndexerTool(Tool):  # pylint: disable=invalid-name
             return False
 
         common.zip_file(idx_out_pregz)
+        shutil.rmtree(index_dir)
 
         return True
 

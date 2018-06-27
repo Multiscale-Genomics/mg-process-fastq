@@ -27,14 +27,14 @@ try:
         raise ImportError
     from pycompss.api.parameter import FILE_IN, FILE_OUT, FILE_INOUT, IN
     from pycompss.api.task import task
-    from pycompss.api.api import barrier
+    from pycompss.api.api import barrier, compss_delete_file
 except ImportError:
     logger.warn("[Warning] Cannot import \"pycompss\" API packages.")
     logger.warn("          Using mock decorators.")
 
     from utils.dummy_pycompss import FILE_IN, FILE_OUT, FILE_INOUT, IN  # pylint: disable=ungrouped-imports
     from utils.dummy_pycompss import task  # pylint: disable=ungrouped-imports
-    from utils.dummy_pycompss import barrier  # pylint: disable=ungrouped-imports
+    from utils.dummy_pycompss import barrier, compss_delete_file  # pylint: disable=ungrouped-imports
 
 
 # ------------------------------------------------------------------------------
@@ -49,6 +49,16 @@ class bamUtils(object):  # pylint: disable=invalid-name
         Initialise the tool with its configuration.
         """
         logger.info("BAM Utils")
+
+    @staticmethod
+    def bam_count_reads(bam_file, aligned=False):
+        """
+        Wrapper to count the number of (aligned) reads in a bam file
+        """
+        if aligned:
+            return pysam.view("-c", "-F", "260", bam_file).strip()  # pylint: disable=no-member
+
+        return pysam.view("-c", bam_file).strip()  # pylint: disable=no-member
 
     @staticmethod
     def bam_sort(bam_file):
@@ -258,10 +268,10 @@ class bamUtils(object):  # pylint: disable=invalid-name
             chromosome
         ])
 
-        #
+        # Convert the new sam file into a sorted bam file
         cmd_view_2 = ' '.join([
-            'samtools view',
-            '-b',
+            'samtools sort',
+            '-O bam',
             '-o', bam_file_out,
             bam_file_in + ".sam"
         ])
@@ -283,6 +293,8 @@ class bamUtils(object):  # pylint: disable=invalid-name
             logger.info("I/O error({0}): {1}\n{2}".format(
                 msg.errno, msg.strerror, cmd_view_2))
             return False
+
+        os.remove(bam_file_in + ".sam")
 
         return True
 
@@ -408,7 +420,13 @@ class bamUtilsTask(object):  # pylint: disable=invalid-name
         """
         merge_round = -1
 
+        if len(in_bam_job_files) == 1:
+            return in_bam_job_files[0]
+
         bam_job_files = [i for i in in_bam_job_files]
+
+        cleanup_files = []
+
         while True:
             merge_round += 1
             if len(bam_job_files) > 1:
@@ -420,6 +438,7 @@ class bamUtilsTask(object):  # pylint: disable=invalid-name
                         for i in range(0, current_list_len-9, 10):  # pylint: disable=unused-variable
                             bam_out = bam_job_files[0] + "_merge_" + str(merge_round) + ".bam"
                             tmp_alignments.append(bam_out)
+                            cleanup_files.append(bam_out)
 
                             self.bam_merge_10(
                                 bam_job_files.pop(0), bam_job_files.pop(0), bam_job_files.pop(0),
@@ -431,30 +450,35 @@ class bamUtilsTask(object):  # pylint: disable=invalid-name
                     bam_out = bam_job_files[0] + "_merge_" + str(merge_round) + ".bam"
                     if len(bam_job_files) >= 5:
                         tmp_alignments.append(bam_out)
+                        cleanup_files.append(bam_out)
                         self.bam_merge_5(
                             bam_job_files.pop(0), bam_job_files.pop(0), bam_job_files.pop(0),
                             bam_job_files.pop(0), bam_job_files.pop(0), bam_out
                         )
-                        bam_out = bam_job_files[0] + "_merge_" + str(merge_round) + ".bam"
+                        if bam_job_files:
+                            bam_out = bam_job_files[0] + "_merge_" + str(merge_round) + ".bam"
 
                     if len(bam_job_files) == 4:
                         tmp_alignments.append(bam_out)
+                        cleanup_files.append(bam_out)
                         self.bam_merge_4(
                             bam_job_files.pop(0), bam_job_files.pop(0), bam_job_files.pop(0),
                             bam_job_files.pop(0), bam_out
                         )
                     elif len(bam_job_files) == 3:
                         tmp_alignments.append(bam_out)
+                        cleanup_files.append(bam_out)
                         self.bam_merge_3(
                             bam_job_files.pop(0), bam_job_files.pop(0), bam_job_files.pop(0),
                             bam_out
                         )
                     elif len(bam_job_files) == 2:
                         tmp_alignments.append(bam_out)
+                        cleanup_files.append(bam_out)
                         self.bam_merge_2(
                             bam_job_files.pop(0), bam_job_files.pop(0), bam_out
                         )
-                    else:
+                    elif len(bam_job_files) == 1:
                         tmp_alignments.append(bam_job_files[0])
 
                 barrier()
@@ -465,7 +489,11 @@ class bamUtilsTask(object):  # pylint: disable=invalid-name
             else:
                 break
 
-        return bam_job_files[0]
+        return_value = self.bam_copy(bam_job_files[0], in_bam_job_files[0])
+        for tmp_bam_file in cleanup_files:
+            compss_delete_file(tmp_bam_file)
+
+        return return_value
 
     @task(bam_file_1=FILE_IN, bam_file_2=FILE_IN, bam_file_out=FILE_OUT)
     def bam_merge_2(self, bam_file_1, bam_file_2, bam_file_out):  # pylint: disable=no-self-use

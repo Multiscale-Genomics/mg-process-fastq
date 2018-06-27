@@ -28,14 +28,15 @@ try:
         raise ImportError
     from pycompss.api.parameter import FILE_IN, FILE_OUT, IN
     from pycompss.api.task import task
-    from pycompss.api.api import compss_wait_on, compss_open
+    from pycompss.api.constraint import constraint
+    from pycompss.api.api import compss_wait_on, compss_open, compss_delete_file
 except ImportError:
     logger.warn("[Warning] Cannot import \"pycompss\" API packages.")
     logger.warn("          Using mock decorators.")
 
     from utils.dummy_pycompss import FILE_IN, FILE_OUT, IN  # pylint: disable=ungrouped-imports
-    from utils.dummy_pycompss import task  # pylint: disable=ungrouped-imports
-    from utils.dummy_pycompss import compss_wait_on, compss_open  # pylint: disable=ungrouped-imports
+    from utils.dummy_pycompss import task, constraint  # pylint: disable=ungrouped-imports
+    from utils.dummy_pycompss import compss_wait_on, compss_open, compss_delete_file  # pylint: disable=ungrouped-imports
 
 from basic_modules.metadata import Metadata
 from basic_modules.tool import Tool
@@ -61,8 +62,9 @@ class macs2(Tool):  # pylint: disable=invalid-name
 
         self.configuration.update(configuration)
 
+    @constraint(ComputingUnits="1")
     @task(
-        returns=int,
+        returns=bool,
         name=IN,
         bam_file=FILE_IN,
         bai_file=FILE_IN,
@@ -112,6 +114,15 @@ class macs2(Tool):  # pylint: disable=invalid-name
         od_list = bam_file.split("/")
         output_dir = "/".join(od_list[0:-1])
 
+        with open(narrowpeak, "w") as f_out:
+            f_out.write("")
+        with open(summits_bed, "w") as f_out:
+            f_out.write("")
+        with open(broadpeak, "w") as f_out:
+            f_out.write("")
+        with open(gappedpeak, "w") as f_out:
+            f_out.write("")
+
         from tool.bam_utils import bamUtils
 
         bam_tmp_file = bam_file.replace(".bam", "." + str(chromosome) + ".bam")
@@ -128,20 +139,26 @@ class macs2(Tool):  # pylint: disable=invalid-name
         ]
         command_line = ' '.join(command_param)
 
-        try:
-            args = shlex.split(command_line)
-            process = subprocess.Popen(args)
-            process.wait()
-        except (IOError, OSError) as msg:
-            logger.fatal("I/O error({0}): {1}\n{2}".format(
-                msg.errno, msg.strerror, command_line))
-            return msg.errno
+        cmdl = "samtools view -c -F 260 {}".format(bam_tmp_file)
+        process = subprocess.Popen(cmdl, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        process.wait()
+        proc_out, proc_err = process.communicate()  # pylint: disable=unused-variable
+        if int(proc_out) > 0:
+            try:
+                args = shlex.split(command_line)
+                process = subprocess.Popen(args)
+                process.wait()
+            except (IOError, OSError) as msg:
+                logger.fatal("I/O error({0}): {1}\n{2}".format(
+                    msg.errno, msg.strerror, command_line))
+                return False
 
-        if process.returncode is not 0:
-            logger.fatal("MACS2 ERROR", process.returncode)
-            return process.returncode
+            if process.returncode is not 0:
+                logger.fatal("MACS2 ERROR", process.returncode)
+                return False
 
-        logger.info('Process Results 1:', process)
+            logger.info('Process Results 1:', process)
+
         logger.info('LIST DIR 1:', os.listdir(output_dir))
 
         out_suffix = ['peaks.narrowPeak', 'peaks.broadPeak', 'peaks.gappedPeak', 'summits.bed']
@@ -165,24 +182,12 @@ class macs2(Tool):  # pylint: disable=invalid-name
                     with open(gappedpeak, "wb") as f_out:
                         with open(output_tmp, "rb") as f_in:
                             f_out.write(f_in.read())
-            else:
-                if f_suf == 'peaks.narrowPeak':
-                    with open(narrowpeak, "w") as f_out:
-                        f_out.write("")
-                elif f_suf == 'summits.bed':
-                    with open(summits_bed, "w") as f_out:
-                        f_out.write("")
-                elif f_suf == 'peaks.broadPeak':
-                    with open(broadpeak, "w") as f_out:
-                        f_out.write("")
-                elif f_suf == 'peaks.gappedPeak':
-                    with open(gappedpeak, "w") as f_out:
-                        f_out.write("")
 
-        return 0
+        return True
 
+    @constraint(ComputingUnits="1")
     @task(
-        returns=int,
+        returns=bool,
         name=IN,
         bam_file=FILE_IN,
         bai_file=FILE_IN,
@@ -226,6 +231,15 @@ class macs2(Tool):  # pylint: disable=invalid-name
         od_list = bam_file.split("/")
         output_dir = "/".join(od_list[0:-1])
 
+        with open(narrowpeak, "w") as f_out:
+            f_out.write("")
+        with open(summits_bed, "w") as f_out:
+            f_out.write("")
+        with open(broadpeak, "w") as f_out:
+            f_out.write("")
+        with open(gappedpeak, "w") as f_out:
+            f_out.write("")
+
         from tool.bam_utils import bamUtils
 
         bam_tmp_file = bam_file.replace(".bam", "." + str(chromosome) + ".bam")
@@ -245,21 +259,26 @@ class macs2(Tool):  # pylint: disable=invalid-name
         if os.path.isfile(bam_tmp_file) is False or os.path.getsize(bam_tmp_file) == 0:
             logger.fatal("MISSING FILE: " + bam_tmp_file)
 
-        logger.progress("MACS2", task_id=0, total=1)
-        try:
-            args = shlex.split(command_line)
-            process = subprocess.Popen(args)
-            process.wait()
-        except (IOError, OSError) as msg:
-            logger.fatal("I/O error({0}): {1}\n{2}".format(
-                msg.errno, msg.strerror, command_line))
-            return msg.errno
+        cmdl = "samtools view -c -F 260 {}".format(bam_tmp_file)
+        process = subprocess.Popen(cmdl, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        process.wait()
+        proc_out, proc_err = process.communicate()  # pylint: disable=unused-variable
+        if int(proc_out) > 0:
+            logger.progress("MACS2", task_id=0, total=1)
+            try:
+                args = shlex.split(command_line)
+                process = subprocess.Popen(args)
+                process.wait()
+            except (IOError, OSError) as msg:
+                logger.fatal("I/O error({0}): {1}\n{2}".format(
+                    msg.errno, msg.strerror, command_line))
+                return False
 
-        if process.returncode is not 0:
-            logger.fatal("MACS2 ERROR: " + str(process.returncode))
-            return process.returncode
+            if process.returncode is not 0:
+                logger.fatal("MACS2 ERROR: " + str(process.returncode))
+                return False
 
-        logger.progress("MACS2", task_id=1, total=1)
+            logger.progress("MACS2", task_id=1, total=1)
 
         out_suffix = ['peaks.narrowPeak', 'peaks.broadPeak', 'peaks.gappedPeak', 'summits.bed']
         for f_suf in out_suffix:
@@ -282,21 +301,8 @@ class macs2(Tool):  # pylint: disable=invalid-name
                     with open(gappedpeak, "wb") as f_out:
                         with open(output_tmp, "rb") as f_in:
                             f_out.write(f_in.read())
-            else:
-                if f_suf == 'peaks.narrowPeak':
-                    with open(narrowpeak, "w") as f_out:
-                        f_out.write("")
-                elif f_suf == 'summits.bed':
-                    with open(summits_bed, "w") as f_out:
-                        f_out.write("")
-                elif f_suf == 'peaks.broadPeak':
-                    with open(broadpeak, "w") as f_out:
-                        f_out.write("")
-                elif f_suf == 'peaks.gappedPeak':
-                    with open(gappedpeak, "w") as f_out:
-                        f_out.write("")
 
-        return 0
+        return True
 
     @staticmethod
     def get_macs2_params(params):
@@ -402,7 +408,7 @@ class macs2(Tool):  # pylint: disable=invalid-name
 
         for chromosome in chr_list:
             if 'bam_bg' in input_files:
-                self.macs2_peak_calling(
+                result = self.macs2_peak_calling(
                     name,
                     str(input_files['bam']), str(input_files['bam']) + '.bai',
                     str(input_files['bam_bg']), str(input_files['bam_bg']) + '.bai',
@@ -413,7 +419,7 @@ class macs2(Tool):  # pylint: disable=invalid-name
                     str(output_files['gapped_peak']) + "." + str(chromosome),
                     chromosome)
             else:
-                self.macs2_peak_calling_nobgd(
+                result = self.macs2_peak_calling_nobgd(
                     name,
                     str(input_files['bam']), str(input_files['bam']) + '.bai',
                     command_params,
@@ -422,6 +428,9 @@ class macs2(Tool):  # pylint: disable=invalid-name
                     str(output_files['broad_peak']) + "." + str(chromosome),
                     str(output_files['gapped_peak']) + "." + str(chromosome),
                     chromosome)
+
+            if result is False:
+                logger.fatal("MACS2: Something went wrong with the peak calling")
 
         # Merge the results files into single files.
         with open(output_files['narrow_peak'], 'w') as file_np_handle:
@@ -463,6 +472,14 @@ class macs2(Tool):  # pylint: disable=invalid-name
                                     output_files['gapped_peak'] + "." + str(chromosome), 'rb'
                                 ) as file_in_handle:
                                     file_gp_handle.write(file_in_handle.read())
+                                compss_delete_file(
+                                    output_files['narrow_peak'] + "." + str(chromosome))
+                                compss_delete_file(
+                                    output_files['summits'] + "." + str(chromosome))
+                                compss_delete_file(
+                                    output_files['broad_peak'] + "." + str(chromosome))
+                                compss_delete_file(
+                                    output_files['gapped_peak'] + "." + str(chromosome))
 
         output_files_created = {}
         output_metadata = {}
@@ -488,6 +505,8 @@ class macs2(Tool):  # pylint: disable=invalid-name
                         "bed_type": output_bed_types[result_file]
                     }
                 )
+            else:
+                os.remove(output_files[result_file])
 
         logger.info('MACS2: GENERATED FILES:', output_files)
 

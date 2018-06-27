@@ -78,7 +78,7 @@ class alignerUtils(object):  # pylint: disable=invalid-name
         return True
 
     @staticmethod
-    def bowtie_index_genome(genome_file, index_name=None):
+    def bowtie_index_genome(genome_file):
         """
         Create an index of the genome FASTA file with Bowtie2. These are saved
         alongside the assembly file.
@@ -90,22 +90,24 @@ class alignerUtils(object):  # pylint: disable=invalid-name
         """
         file_name = genome_file.split("/")
 
-        output_file = index_name
-        if output_file is None:
-            output_file = file_name[-1].replace('.fa', '')
+        bt2_1_name = genome_file + ".1.bt2"
+        bt2_2_name = genome_file + ".2.bt2"
+        bt2_3_name = genome_file + ".3.bt2"
+        bt2_4_name = genome_file + ".4.bt2"
+        rev1_bt2_name = genome_file + ".rev.1.bt2"
+        rev2_bt2_name = genome_file + ".rev.2.bt2"
 
         with cd("/".join(file_name[0:-1])):
-            command_line = 'bowtie2-build ' + genome_file + ' ' + output_file
+            command_line = 'bowtie2-build ' + genome_file + ' ' + genome_file
             args = shlex.split(command_line)
             process = subprocess.Popen(args)
             process.wait()
 
-        return True
+        return (bt2_1_name, bt2_2_name, bt2_3_name, bt2_4_name, rev1_bt2_name, rev2_bt2_name)
 
-    @staticmethod
-    def bowtie2_untar_index(
-            genome_name, tar_file, bt2_1_file, bt2_2_file, bt2_3_file, bt2_4_file,
-            bt2_rev1_file, bt2_rev2_file):
+    def bowtie2_untar_index(self, genome_name, tar_file,  # pylint: disable=too-many-arguments
+                            bt2_1_file, bt2_2_file, bt2_3_file, bt2_4_file,
+                            bt2_rev1_file, bt2_rev2_file):
         """
         Extracts the BWA index files from the genome index tar file.
 
@@ -133,35 +135,16 @@ class alignerUtils(object):  # pylint: disable=invalid-name
         bool
             Boolean indicating if the task was successful
         """
-        try:
-            g_dir = tar_file.split("/")
-            g_dir = "/".join(g_dir[:-1])
+        index_files = {
+            "1.bt2": bt2_1_file,
+            "2.bt2": bt2_2_file,
+            "3.bt2": bt2_3_file,
+            "4.bt2": bt2_4_file,
+            "rev.1.bt2": bt2_rev1_file,
+            "rev.2.bt2": bt2_rev2_file,
+        }
 
-            tar = tarfile.open(tar_file)
-            tar.extractall(path=g_dir)
-            tar.close()
-
-            index_files = {
-                "1.bt2": bt2_1_file,
-                "2.bt2": bt2_2_file,
-                "3.bt2": bt2_3_file,
-                "4.bt2": bt2_4_file,
-                "rev.1.bt2": bt2_rev1_file,
-                "rev.2.bt2": bt2_rev2_file,
-            }
-
-            gidx_folder = tar_file.replace('.tar.gz', '/') + genome_name
-            for suffix in list(index_files.keys()):
-                with open(index_files[suffix], "wb") as f_out:
-                    with open(gidx_folder + "." + suffix, "rb") as f_in:
-                        f_out.write(f_in.read())
-
-            shutil.rmtree(tar_file.replace('.tar.gz', ''))
-        except IOError as error:
-            logger.fatal("UNTAR: I/O error({0}): {1}".format(error.errno, error.strerror))
-            return False
-
-        return True
+        return self._untar_index(genome_name, tar_file, index_files)
 
     @staticmethod
     def bwa_index_genome(genome_file):
@@ -216,8 +199,7 @@ class alignerUtils(object):  # pylint: disable=invalid-name
 
         return (amb_name, ann_name, bwt_name, pac_name, sa_name)
 
-    @staticmethod
-    def bwa_untar_index(genome_name, tar_file,
+    def bwa_untar_index(self, genome_name, tar_file,  # pylint: disable=too-many-arguments
                         amb_file, ann_file, bwt_file, pac_file, sa_file):
         """
         Extracts the BWA index files from the genome index tar file.
@@ -244,6 +226,31 @@ class alignerUtils(object):  # pylint: disable=invalid-name
         bool
             Boolean indicating if the task was successful
         """
+        index_files = {
+            "amb": amb_file,
+            "ann": ann_file,
+            "bwt": bwt_file,
+            "pac": pac_file,
+            "sa": sa_file
+        }
+
+        return self._untar_index(genome_name, tar_file, index_files)
+
+    @staticmethod
+    def _untar_index(genome_name, tar_file, index_files):
+        """
+        Untar the specified files for a genomic index into the specified
+        location.
+
+        Parameters
+        ----------
+        genome_name : str
+            Name of the genome for the folder within the tar file
+        tar_file : str
+            Location of the tarred index files
+        index_files : dict
+            Dictionary object of the suffix and final index file location
+        """
         try:
             g_dir = tar_file.split("/")
             g_dir = "/".join(g_dir[:-1])
@@ -252,15 +259,8 @@ class alignerUtils(object):  # pylint: disable=invalid-name
             tar.extractall(path=g_dir)
             tar.close()
 
-            index_files = {
-                "amb": amb_file,
-                "ann": ann_file,
-                "bwt": bwt_file,
-                "pac": pac_file,
-                "sa": sa_file
-            }
-
             gidx_folder = tar_file.replace('.tar.gz', '/') + genome_name
+
             for suffix in list(index_files.keys()):
                 with open(index_files[suffix], "wb") as f_out:
                     with open(gidx_folder + "." + suffix, "rb") as f_in:
@@ -299,13 +299,10 @@ class alignerUtils(object):  # pylint: disable=invalid-name
         logger.info(genome_file)
         logger.info(' '.join(params))
 
-        g_idx = genome_file.split("/")
-        g_idx[-1] = g_idx[-1].replace(".fasta", "")
-
         cmd_aln = ' '.join([
             'bowtie2',
             '-p 4',
-            '-x', '/'.join(g_idx),
+            '-x', genome_file,
             ' '.join(params),
         ] + reads)
 
@@ -339,8 +336,37 @@ class alignerUtils(object):  # pylint: disable=invalid-name
 
         return True
 
-    @staticmethod
-    def bwa_aln_align_reads_single(genome_file, reads_file, bam_loc, params):
+    def _bwa_aln_sai(self, genome_file, reads_file, params):  # pylint: disable=no-self-use
+        """
+        Generate the sai files required for creating the sam file.
+
+        Parameters
+        ----------
+        genome_file : str
+            Location of the assembly file in the file system
+        reads_file : str
+            Location of the reads file in the file system
+        params : dict
+            Dictionary of the parameters for bwa aln
+        """
+        cmd_aln_sai = ' '.join([
+            'bwa aln',
+            '-t', '4',
+            '-q', '5',
+            ' '.join(params),
+            '-f', reads_file + '.sai',
+            genome_file, reads_file
+        ])
+
+        try:
+            logger.info("BWA ALN COMMAND: " + cmd_aln_sai)
+            process = subprocess.Popen(cmd_aln_sai, shell=True)
+            process.wait()
+        except (IOError, OSError) as msg:
+            logger.info("I/O error({0}): {1}\n{2}".format(
+                msg.errno, msg.strerror, cmd_aln_sai))
+
+    def bwa_aln_align_reads_single(self, genome_file, reads_file, bam_loc, params):
         """
         Map the reads to the genome using BWA.
         Parameters
@@ -352,14 +378,6 @@ class alignerUtils(object):  # pylint: disable=invalid-name
         bam_loc : str
             Location of the output file
         """
-
-        cmd_aln = ' '.join([
-            'bwa aln',
-            '-q', '5',
-            ' '.join(params),
-            '-f', reads_file + '.sai',
-            genome_file, reads_file
-        ])
 
         cmd_samse = ' '.join([
             'bwa samse',
@@ -374,7 +392,9 @@ class alignerUtils(object):  # pylint: disable=invalid-name
             reads_file + '.sam'
         ])
 
-        command_lines = [cmd_aln, cmd_samse, cmd_sort]
+        self._bwa_aln_sai(genome_file, reads_file, params)
+
+        command_lines = [cmd_samse, cmd_sort]
 
         # print("BWA COMMAND LINES:", command_lines)
         try:
@@ -399,10 +419,10 @@ class alignerUtils(object):  # pylint: disable=invalid-name
 
         return True
 
-    @staticmethod
-    def bwa_aln_align_reads_paired(genome_file, reads_file_1, reads_file_2, bam_loc, params):
+    def bwa_aln_align_reads_paired(self, genome_file, reads_file_1, reads_file_2, bam_loc, params):
         """
         Map the reads to the genome using BWA.
+
         Parameters
         ----------
         genome_file : str
@@ -412,22 +432,6 @@ class alignerUtils(object):  # pylint: disable=invalid-name
         bam_loc : str
             Location of the output file
         """
-
-        cmd_aln_1 = ' '.join([
-            'bwa aln',
-            '-q', '5',
-            ' '.join(params),
-            '-f', reads_file_1 + '.sai',
-            genome_file, reads_file_1
-        ])
-
-        cmd_aln_2 = ' '.join([
-            'bwa aln',
-            '-q', '5',
-            ' '.join(params),
-            '-f', reads_file_2 + '.sai',
-            genome_file, reads_file_2
-        ])
 
         cmd_samse = ' '.join([
             'bwa sampe',
@@ -444,7 +448,29 @@ class alignerUtils(object):  # pylint: disable=invalid-name
             reads_file_1 + '.sam'
         ])
 
-        command_lines = [cmd_aln_1, cmd_aln_2, cmd_samse, cmd_sort]
+        command_lines = [cmd_samse, cmd_sort]
+
+        try:
+            import multiprocessing
+
+            f1_proc = multiprocessing.Process(
+                name='fastq_1', target=self._bwa_aln_sai,
+                args=(genome_file, reads_file_1, params)
+            )
+            f2_proc = multiprocessing.Process(
+                name='fastq_2', target=self._bwa_aln_sai,
+                args=(genome_file, reads_file_2, params)
+            )
+
+            f1_proc.start()
+            f2_proc.start()
+
+            f1_proc.join()
+            f2_proc.join()
+        except (IOError, OSError) as msg:
+            logger.info("SAI ERROR: I/O error({0}): {1}".format(
+                msg.errno, msg.strerror))
+            return False
 
         try:
             for command_line in command_lines:

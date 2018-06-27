@@ -68,6 +68,41 @@ class bamUtils(object):
         return True
 
     @staticmethod
+    def bam_filter(bam_file, bam_file_out, filter_name):
+        """
+        Wrapper for filtering out reads from a bam file
+
+        Parameters
+        ----------
+        bam_file : str
+        bam_file_out : str
+        filter : str
+            One of:
+                duplicate - Read is PCR or optical duplicate (1024)
+                unmapped - Read is unmapped or not the primary alignment (260)
+        """
+
+        filter_list = {
+            "duplicate": "1024",
+            "unmapped": "260"
+        }
+
+        try:
+            pysam.view(  # pylint: disable=no-member
+                "-b", "-F", filter_list[filter_name], "-o", bam_file_out, bam_file)
+        except (IOError, OSError) as msg:
+            logger.info(
+                "I/O error({0}): {1}\n{2}".format(
+                    msg.errno, msg.strerror,
+                    "samtools -b -F {} -o {} {}".format(
+                        filter_list[filter_name], bam_file_out, bam_file)
+                    )
+            )
+            return False
+
+        return True
+
+    @staticmethod
     def bam_merge(*args):
         """
         Wrapper for the pysam SAMtools merge function

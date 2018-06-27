@@ -32,7 +32,7 @@ from tool.macs2 import macs2
 
 # ------------------------------------------------------------------------------
 
-class process_chipseq(Workflow):  # pylint: disable=invlid-name,too-few-public-methods
+class process_chipseq(Workflow):  # pylint: disable=invalid-name,too-few-public-methods
     """
     Functions for processing Chip-Seq FastQ files. Files are the aligned,
     filtered and analysed for peak calling

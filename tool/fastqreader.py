@@ -22,7 +22,7 @@ import errno
 import re
 
 
-class fastqreader(object):  # pylint: disable=too-many-instance-attributes
+class fastqreader(object):  # pylint: disable=too-many-instance-attributes,invalid-name
     """
     Module for reading single end and paired end FASTQ files
     """
@@ -51,7 +51,7 @@ class fastqreader(object):  # pylint: disable=too-many-instance-attributes
 
         self.paired = False
 
-    def openFastQ(self, file1, file2=None):
+    def openFastQ(self, file1, file2=None):  # pylint: disable=invalid-name
         """
         Create file handles for reading the FastQ files
 
@@ -72,7 +72,7 @@ class fastqreader(object):  # pylint: disable=too-many-instance-attributes
             self.f2_eof = False
             self.paired = True
 
-    def closeFastQ(self):
+    def closeFastQ(self):  # pylint: disable=invalid-name
         """
         Close file handles for the FastQ files.
         """
@@ -162,7 +162,7 @@ class fastqreader(object):  # pylint: disable=too-many-instance-attributes
             'end_posn': end_posn
         }
 
-    def createOutputFiles(self, tag=''):
+    def createOutputFiles(self, tag=''):  # pylint: disable=invalid-name
         """
         Create and open the file handles for the output files
 
@@ -197,7 +197,7 @@ class fastqreader(object):  # pylint: disable=too-many-instance-attributes
             self.f2_output_file = open("/".join(fq2), "w")
             self.f2_output_file_loc = "/".join(fq2)
 
-    def writeOutput(self, read, side=1):
+    def writeOutput(self, read, side=1):  # pylint: disable=invalid-name
         """
         Writer to print the extracted lines
 
@@ -222,7 +222,7 @@ class fastqreader(object):  # pylint: disable=too-many-instance-attributes
             return False
         return True
 
-    def closeOutputFiles(self):
+    def closeOutputFiles(self):  # pylint: disable=invalid-name
         """
         Close the output file handles
         """
@@ -231,7 +231,7 @@ class fastqreader(object):  # pylint: disable=too-many-instance-attributes
         if self.paired is True:
             self.f2_output_file.close()
 
-    def incrementOutputFiles(self):
+    def incrementOutputFiles(self):  # pylint: disable=invalid-name
         """
         Increment the counter and create new files for splitting the original
         FastQ paired end files.

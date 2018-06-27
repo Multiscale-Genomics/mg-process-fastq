@@ -106,3 +106,9 @@ Added in the use of the logger.progress to indicate the progression of a process
 ---------------------------------
 
 The aligner pipelines has been modified the pass through all the input and metadata to the aligner tools, this simplifies the the passing of a second fastq file and also make using these pipelines for alignment of paired end data possible.
+
+
+2018-06-27 - Remove reads marked as duplicate by BioBamBam
+----------------------------------------------------------
+
+BioBamBam only marks reads as duplicate, but does not remove the after. The Tool has been updated to remove the flagged duplicates using samtools with the parameter `-F 1024`.

@@ -47,7 +47,7 @@ from tool.common import common
 # ------------------------------------------------------------------------------
 
 
-class bowtieIndexerTool(Tool):
+class bowtieIndexerTool(Tool):  # pylint: disable=invalid-name
     """
     Tool for running indexers over a genome FASTA file
     """

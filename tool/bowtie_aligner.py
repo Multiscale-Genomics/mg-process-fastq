@@ -45,7 +45,7 @@ from tool.bam_utils import bamUtilsTask
 # ------------------------------------------------------------------------------
 
 
-class bowtie2AlignerTool(Tool):
+class bowtie2AlignerTool(Tool):  # pylint: disable=invalid-name
     """
     Tool for aligning sequence reads to a genome using BWA
     """

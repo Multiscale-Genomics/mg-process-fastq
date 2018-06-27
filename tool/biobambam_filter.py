@@ -43,7 +43,7 @@ from tool.bam_utils import bamUtils
 # ------------------------------------------------------------------------------
 
 
-class biobambam(Tool):
+class biobambam(Tool):  # pylint: disable=invalid-name
     """
     Tool to sort and filter bam files
     """

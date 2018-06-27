@@ -43,7 +43,7 @@ from basic_modules.metadata import Metadata
 # ------------------------------------------------------------------------------
 
 
-class kallistoIndexerTool(Tool):
+class kallistoIndexerTool(Tool):  # pylint: disable=invalid-name
     """
     Tool for running indexers over a genome FASTA file
     """
@@ -68,7 +68,7 @@ class kallistoIndexerTool(Tool):
         self.configuration.update(configuration)
 
     @task(cdna_file_loc=FILE_IN, cdna_idx_file=FILE_OUT)
-    def kallisto_indexer(self, cdna_file_loc, cdna_idx_file):  # pylint disable=no-self-use
+    def kallisto_indexer(self, cdna_file_loc, cdna_idx_file):  # pylint: disable=no-self-use
         """
         Kallisto Indexer
 

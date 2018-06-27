@@ -27,7 +27,7 @@ from utils import logger
 from tool.common import cd
 
 
-class alignerUtils(object):
+class alignerUtils(object):  # pylint: disable=invalid-name
     """
     Functions for downloading and processing N-seq FastQ files. Functions
     provided allow for the downloading and indexing of the genome assemblies.

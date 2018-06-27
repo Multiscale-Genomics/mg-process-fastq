@@ -48,7 +48,7 @@ from tool.bam_utils import bamUtilsTask
 # ------------------------------------------------------------------------------
 
 
-class bwaAlignerMEMTool(Tool):
+class bwaAlignerMEMTool(Tool):  # pylint: disable=invalid-name
     """
     Tool for aligning sequence reads to a genome using BWA
     """

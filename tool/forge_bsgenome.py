@@ -44,7 +44,7 @@ from tool.common import cd
 
 # ------------------------------------------------------------------------------
 
-class bsgenomeTool(Tool):
+class bsgenomeTool(Tool):  # pylint: disable=invalid-name
     """
     Tool for peak calling for iDamID-seq data
     """

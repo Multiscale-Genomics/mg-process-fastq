@@ -22,7 +22,7 @@ import os
 from tool.fastqreader import fastqreader
 
 
-class fastqUtils(object):
+class fastqUtils(object):  # pylint: disable=invalid-name
     """
     Set of methods to help with the management of FastQ files.
     """

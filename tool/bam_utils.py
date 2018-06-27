@@ -39,7 +39,7 @@ except ImportError:
 
 # ------------------------------------------------------------------------------
 
-class bamUtils(object):
+class bamUtils(object):  # pylint: disable=invalid-name
     """
     Tool for handling bam files
     """
@@ -334,7 +334,7 @@ class bamUtils(object):
         return output
 
 
-class bamUtilsTask(object):
+class bamUtilsTask(object):  # pylint: disable=invalid-name
     """
     Wrappers so that the function above can be used as part of a @task within
     COMPSs avoiding the files being copied around the infrastructure too many

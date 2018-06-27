@@ -44,7 +44,7 @@ from tool.bam_utils import bamUtilsTask
 
 # ------------------------------------------------------------------------------
 
-class macs2(Tool):
+class macs2(Tool):  # pylint: disable=invalid-name
     """
     Tool for peak calling for ChIP-seq data
     """
@@ -75,9 +75,9 @@ class macs2(Tool):
         gappedpeak=FILE_OUT,
         chromosome=IN,
         isModifier=False)
-    def macs2_peak_calling(  # pylint: disable=no-self-use
+    def macs2_peak_calling(  # pylint: disable=no-self-use,too-many-locals,too-many-arguments
             self, name, bam_file, bai_file, bam_file_bgd, bai_file_bgd, macs_params,
-            narrowpeak, summits_bed, broadpeak, gappedpeak, chromosome): # pylint: disable=unused-argument
+            narrowpeak, summits_bed, broadpeak, gappedpeak, chromosome):  # pylint: disable=unused-argument
         """
         Function to run MACS2 for peak calling on aligned sequence files and
         normalised against a provided background set of alignments.
@@ -193,7 +193,7 @@ class macs2(Tool):
         gappedpeak=FILE_OUT,
         chromosome=IN,
         isModifier=False)
-    def macs2_peak_calling_nobgd(  # pylint: disable=too-many-arguments,no-self-use,too-many-branches
+    def macs2_peak_calling_nobgd(  # pylint: disable=too-many-arguments,no-self-use,too-many-branches,too-many-locals,too-many-statements
             self, name, bam_file, bai_file, macs_params,
             narrowpeak, summits_bed, broadpeak, gappedpeak, chromosome):  # pylint: disable=unused-argument
         """
@@ -349,7 +349,7 @@ class macs2(Tool):
 
         return command_params
 
-    def run(self, input_files, input_metadata, output_files):
+    def run(self, input_files, input_metadata, output_files):  # pylint: disable=too-many-locals
         """
         The main function to run MACS 2 for peak calling over a given BAM file
         and matching background BAM file.

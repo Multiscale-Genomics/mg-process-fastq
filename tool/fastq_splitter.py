@@ -48,7 +48,7 @@ from tool.common import common
 
 # ------------------------------------------------------------------------------
 
-class fastq_splitter(Tool):
+class fastq_splitter(Tool):  # pylint: disable=invalid-name
     """
     Script for splitting up FASTQ files into manageable chunks
     """
@@ -163,7 +163,7 @@ class fastq_splitter(Tool):
         in_file1=FILE_IN, in_file2=FILE_IN, tag=IN,
         out_file=FILE_OUT, files_out=OUT,
         returns=list)
-    def paired_splitter(self, in_file1, in_file2, out_file, tag='tmp'):  # pylint: disable=no-self-use
+    def paired_splitter(self, in_file1, in_file2, out_file, tag='tmp'):  # pylint: disable=no-self-use,too-many-locals,too-many-statements
         """
         Function to divide the paired-end FastQ files into separte sub files
         of 1000000 sequences so that the aligner can run in parallel.

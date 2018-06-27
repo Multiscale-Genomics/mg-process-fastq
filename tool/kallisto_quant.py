@@ -45,7 +45,7 @@ from basic_modules.metadata import Metadata
 # ------------------------------------------------------------------------------
 
 
-class kallistoQuantificationTool(Tool):
+class kallistoQuantificationTool(Tool):  # pylint: disable=invalid-name
     """
     Tool for quantifying RNA-seq alignments to calculate expression levels of
     genes within a genome.
@@ -148,7 +148,7 @@ class kallistoQuantificationTool(Tool):
         abundance_h5_file=FILE_OUT,
         abundance_tsv_file=FILE_OUT,
         run_info_file=FILE_OUT)
-    def kallisto_quant_paired(  # pylint disable=no-self-use
+    def kallisto_quant_paired(  # pylint: disable=no-self-use,too-many-arguments
             self, cdna_idx_file, fastq_file_loc_01, fastq_file_loc_02,
             abundance_h5_file, abundance_tsv_file, run_info_file):
         """

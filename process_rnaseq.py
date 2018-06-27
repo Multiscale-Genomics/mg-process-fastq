@@ -95,7 +95,7 @@ class process_rnaseq(Workflow):
 
         # Index the cDNA
         # This could get moved to the general tools section
-        k_index = kallistoIndexerTool()
+        k_index = kallistoIndexerTool(self.configuration)
         logger.progress("Kallisto Indexer", status="RUNNING")
         k_out, k_meta = k_index.run(
             remap(input_files, "cdna"),

@@ -16,11 +16,12 @@
 """
 
 import os.path
-import pytest # pylint: disable=unused-import
+import pytest
 
 from basic_modules.metadata import Metadata
 
 from tool import bowtie_indexer
+
 
 @pytest.mark.chipseq
 @pytest.mark.genome
@@ -44,7 +45,7 @@ def test_bowtie_indexer_chipseq():
     metadata = {
         "genome": Metadata(
             "Assembly", "fasta", genome_fa, None,
-            {'assembly' : 'test'}),
+            {'assembly': 'test'}),
     }
 
     bti = bowtie_indexer.bowtieIndexerTool()
@@ -52,6 +53,7 @@ def test_bowtie_indexer_chipseq():
 
     assert os.path.isfile(output_files["index"]) is True
     assert os.path.getsize(output_files["index"]) > 0
+
 
 @pytest.mark.mnaseseq
 @pytest.mark.genome
@@ -74,7 +76,7 @@ def test_bowtie_indexer_mnaseseq():
     metadata = {
         "genome": Metadata(
             "Assembly", "fasta", genome_fa, None,
-            {'assembly' : 'test'}),
+            {'assembly': 'test'}),
     }
 
     bti = bowtie_indexer.bowtieIndexerTool()
@@ -82,6 +84,7 @@ def test_bowtie_indexer_mnaseseq():
 
     assert os.path.isfile(output_files["index"]) is True
     assert os.path.getsize(output_files["index"]) > 0
+
 
 @pytest.mark.genome
 @pytest.mark.bowtie2
@@ -104,7 +107,7 @@ def test_bowtie_indexer_wgbs():
     metadata = {
         "genome": Metadata(
             "Assembly", "fasta", genome_fa, None,
-            {'assembly' : 'test'}),
+            {'assembly': 'test'}),
     }
 
     bti = bowtie_indexer.bowtieIndexerTool()

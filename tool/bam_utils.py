@@ -51,6 +51,21 @@ class bamUtils(object):
         logger.info("BAM Utils")
 
     @staticmethod
+    def bam_count_reads(bam_file, aligned=False):
+        """
+        Wrapper to count the number of (aligned) reads in a bam file
+        """
+        aligned_flag = ""
+        if aligned:
+            aligned_flag = "-F 260 "
+        cmdl = "samtools view -c {}{}".format(aligned_flag, bam_file)
+        process = subprocess.Popen(cmdl, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        process.wait()
+        proc_out, proc_err = process.communicate()  # pylint: disable=unused-variable
+
+        return proc_out
+
+    @staticmethod
     def bam_sort(bam_file):
         """
         Wrapper for the pysam SAMtools sort function

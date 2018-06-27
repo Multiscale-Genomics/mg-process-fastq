@@ -25,14 +25,14 @@ from utils import logger
 try:
     if hasattr(sys, '_run_from_cmdl') is True:
         raise ImportError
-    from pycompss.api.parameter import FILE_IN, FILE_OUT, FILE_INOUT
+    from pycompss.api.parameter import FILE_IN, FILE_OUT, FILE_INOUT, IN
     from pycompss.api.task import task
     from pycompss.api.api import barrier
 except ImportError:
     logger.warn("[Warning] Cannot import \"pycompss\" API packages.")
     logger.warn("          Using mock decorators.")
 
-    from utils.dummy_pycompss import FILE_IN, FILE_OUT, FILE_INOUT  # pylint: disable=ungrouped-imports
+    from utils.dummy_pycompss import FILE_IN, FILE_OUT, FILE_INOUT, IN  # pylint: disable=ungrouped-imports
     from utils.dummy_pycompss import task  # pylint: disable=ungrouped-imports
     from utils.dummy_pycompss import barrier  # pylint: disable=ungrouped-imports
 
@@ -368,6 +368,23 @@ class bamUtilsTask(object):
         """
         bam_handle = bamUtils()
         return bam_handle.bam_sort(bam_file)
+
+    @task(bam_file=FILE_IN, bam_file_out=FILE_IN, filter_name=IN)
+    def bam_filter(bam_file, bam_file_out, filter_name):
+        """
+        Wrapper for filtering out reads from a bam file
+
+        Parameters
+        ----------
+        bam_file : str
+        bam_file_out : str
+        filter : str
+            One of:
+                duplicate - Read is PCR or optical duplicate (1024)
+                unmapped - Read is unmapped or not the primary alignment (260)
+        """
+        bam_handle = bamUtils()
+        return bam_handle.bam_filter(bam_file, bam_file_out, filter_name)
 
     def bam_merge(self, in_bam_job_files):
         """

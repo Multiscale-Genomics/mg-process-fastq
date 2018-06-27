@@ -379,7 +379,7 @@ class bamUtilsTask(object):
         return bam_handle.bam_sort(bam_file)
 
     @task(bam_file=FILE_IN, bam_file_out=FILE_IN, filter_name=IN)
-    def bam_filter(bam_file, bam_file_out, filter_name):
+    def bam_filter(self, bam_file, bam_file_out, filter_name):  # pylint: disable=no-self-use
         """
         Wrapper for filtering out reads from a bam file
 

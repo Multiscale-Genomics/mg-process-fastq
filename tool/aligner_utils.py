@@ -351,7 +351,7 @@ class alignerUtils(object):  # pylint: disable=invalid-name
         """
         cmd_aln_sai = ' '.join([
             'bwa aln',
-            '-t', '4',
+            '-t', '2',
             '-q', '5',
             ' '.join(params),
             '-f', reads_file + '.sai',

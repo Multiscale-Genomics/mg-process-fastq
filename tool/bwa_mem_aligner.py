@@ -353,9 +353,9 @@ class bwaAlignerMEMTool(Tool):  # pylint: disable=invalid-name
         # Required to prevent iterating over the future objects
         fastq_file_list = compss_wait_on(fastq_file_list)
 
-        compss_delete_file(fastq1)
-        if "fastq2" in input_files:
-            compss_delete_file(fastq2)
+        # compss_delete_file(fastq1)
+        # if "fastq2" in input_files:
+        #     compss_delete_file(fastq2)
 
         if not fastq_file_list:
             logger.fatal("FASTQ SPLITTER: run failed")

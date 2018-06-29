@@ -208,7 +208,7 @@ def test_bwa_aligner_00():
 
     for fastq_gz in files:
         with gzip.open(fastq_gz + '.gz', 'rb') as fgz_in:
-            with open(fastq_gz, 'w') as f_out:
+            with open(fastq_gz, 'wb') as f_out:
                 f_out.write(fgz_in.read())
 
     assert os.path.isfile(fastq_file_1) is True

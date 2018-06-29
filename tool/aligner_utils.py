@@ -404,13 +404,10 @@ class alignerUtils(object):
                     command_line, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
                 process.wait()
                 proc_out, proc_err = process.communicate()
-                logger.info("BWA ALN stdout" + proc_out)
-                logger.info("BWA ALN stderr" + proc_err)
         except (IOError, OSError) as msg:
             logger.info("I/O error({0}): {1}\n{2}".format(
                 msg.errno, msg.strerror, command_line))
             proc_out, proc_err = process.communicate()
-            logger.fatal("BWA ALN stdout" + proc_out)
             logger.fatal("BWA ALN stderr" + proc_err)
             return False
 

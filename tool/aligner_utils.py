@@ -403,7 +403,7 @@ class alignerUtils(object):
                 process = subprocess.Popen(
                     command_line, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
                 process.wait()
-                proc_out, proc_err = process.communicate()
+                proc_out, proc_err = process.communicate()  # pylint: disable=unused-variable
         except (IOError, OSError) as msg:
             logger.info("I/O error({0}): {1}\n{2}".format(
                 msg.errno, msg.strerror, command_line))
@@ -416,7 +416,7 @@ class alignerUtils(object):
 
         return True
 
-    def bwa_aln_align_reads_paired(self, genome_file, reads_file_1, reads_file_2, bam_loc, params):
+    def bwa_aln_align_reads_paired(self, genome_file, reads_file_1, reads_file_2, bam_loc, params):  # pylint: disable=too-many-arguments
         """
         Map the reads to the genome using BWA.
 

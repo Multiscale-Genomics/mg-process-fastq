@@ -99,7 +99,7 @@ def test_bowtie2_aligner_single():
 
     try:
         os.remove(resource_path + "macs2.Human.DRR000150.22_bt2.bam")
-    except OSError, ose:
+    except OSError as ose:
         print("Error: %s - %s." % (ose.filename, ose.strerror))
 
 
@@ -159,10 +159,10 @@ def test_bowtie2_aligner_paired():
 
     try:
         os.remove(resource_path + "bsSeeker.Mouse.SRR892982_1_bt2.bam")
-    except OSError, ose:
+    except OSError as ose:
         print("Error: %s - %s." % (ose.filename, ose.strerror))
 
     try:
         shutil.rmtree(resource_path + "tmp")
-    except OSError, ose:
+    except OSError as ose:
         print("Error: %s - %s." % (ose.filename, ose.strerror))

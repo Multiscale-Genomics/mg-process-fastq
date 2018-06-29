@@ -123,7 +123,7 @@ def test_idamidseq_pipeline_00():
 
         try:
             os.remove(damidseq_files[f_out])
-        except OSError, ose:
+        except OSError as ose:
             print("Error: %s - %s." % (ose.filename, ose.strerror))
 
 

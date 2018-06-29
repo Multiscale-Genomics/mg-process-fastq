@@ -119,7 +119,7 @@ def test_genome_pipeline_01():
     for f_out in files_out:
         try:
             os.remove(files_out[f_out])
-        except OSError, ose:
+        except OSError as ose:
             print("Error: %s - %s." % (ose.filename, ose.strerror))
 
     genome_handle = process_genome()

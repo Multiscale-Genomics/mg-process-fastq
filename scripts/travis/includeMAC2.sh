@@ -15,10 +15,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-pv=$(python -c 'import platform; print(platform.python_version())')
+pv=$(python -c 'import platform; v=platform.python_version_tuple(); print("{}.{}".format(v[0], v[1]))')
 echo $pv
 cd ${HOME}/lib
-if [[ $pv == "2.7.12" ]]; then
+if [[ $pv == "2.7" ]]; then
     pip install MACS2
 else
     if [ ! -d "MACS" ]; then

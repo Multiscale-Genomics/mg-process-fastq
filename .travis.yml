@@ -18,8 +18,8 @@ language: python
 os: linux
 
 python:
-    - "2.7.12"
-    - "3.6.5"
+    - "2.7"
+    - "3.6"
 
 cache:
     directories:

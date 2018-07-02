@@ -35,8 +35,8 @@ except ImportError:
 
 from basic_modules.tool import Tool
 
-from pytadbit.mapping.filter import apply_filter
-from pytadbit.mapping.filter import filter_reads
+from pytadbit.mapping.filter import apply_filter  # pylint: disable=import-error
+from pytadbit.mapping.filter import filter_reads  # pylint: disable=import-error
 
 
 # ------------------------------------------------------------------------------

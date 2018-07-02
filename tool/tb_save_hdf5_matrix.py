@@ -38,8 +38,8 @@ except ImportError:
     from utils.dummy_pycompss import task
     # from utils.dummy_pycompss import compss_wait_on
 
-from pytadbit import load_hic_data_from_reads
-from pytadbit.parsers.genome_parser import parse_fasta
+from pytadbit import load_hic_data_from_reads  # pylint: disable=import-error
+from pytadbit.parsers.genome_parser import parse_fasta  # pylint: disable=import-error
 
 # ------------------------------------------------------------------------------
 

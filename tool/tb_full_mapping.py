@@ -36,7 +36,7 @@ except ImportError:
 
 from basic_modules.tool import Tool
 
-from pytadbit.mapping.mapper import full_mapping
+from pytadbit.mapping.mapper import full_mapping  # pylint: disable=import-error
 
 
 # ------------------------------------------------------------------------------

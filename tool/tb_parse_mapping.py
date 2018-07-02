@@ -37,9 +37,9 @@ except ImportError:
 
 from basic_modules.tool import Tool
 
-from pytadbit.parsers.genome_parser import parse_fasta
-from pytadbit.parsers.map_parser import parse_map
-from pytadbit.mapping import get_intersection
+from pytadbit.parsers.genome_parser import parse_fasta  # pylint: disable=import-error
+from pytadbit.parsers.map_parser import parse_map  # pylint: disable=import-error
+from pytadbit.mapping import get_intersection  # pylint: disable=import-error
 
 
 # ------------------------------------------------------------------------------

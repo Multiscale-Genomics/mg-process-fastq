@@ -23,7 +23,7 @@ Requirements
 
 Software
 ^^^^^^^^
-- Python 2.7.10+
+- Python 2.7.10+ or 3.6+
 - bedtools (specifically bamtobed)
 - bedToBigBed - http://hgdownload.cse.ucsc.edu/admin/exe/linux.x86_64/
 - wigToBigWig - http://hgdownload.cse.ucsc.edu/admin/exe/linux.x86_64/

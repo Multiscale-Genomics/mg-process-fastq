@@ -90,9 +90,10 @@ class gemIndexerTool(Tool):  # pylint: disable=invalid-name
 
         common.zip_file(genome_file + ".gem")
 
-        with open(index_loc, "wb") as f_out:
-            with open(genome_file + ".gem.gz", "rb") as f_in:
-                f_out.write(f_in.read())
+        if genome_file + ".gem.gz" != index_loc:
+            with open(index_loc, "wb") as f_out:
+                with open(genome_file + ".gem.gz", "rb") as f_in:
+                    f_out.write(f_in.read())
 
         return True
 

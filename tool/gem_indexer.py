@@ -44,7 +44,7 @@ from tool.common import common
 
 # ------------------------------------------------------------------------------
 
-class gemIndexerTool(Tool):
+class gemIndexerTool(Tool):  # pylint: disable=invalid-name
     """
     Tool for running indexers over a genome FASTA file
     """

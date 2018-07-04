@@ -50,7 +50,7 @@ from tool.bam_utils import bamUtilsTask
 
 # ------------------------------------------------------------------------------
 
-class bssAlignerTool(Tool):
+class bssAlignerTool(Tool):  # pylint: disable=invalid-name
     """
     Script from BS-Seeker2 for building the index for alignment. In this case
     it uses Bowtie2.

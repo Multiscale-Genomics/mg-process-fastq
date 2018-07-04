@@ -44,7 +44,7 @@ from basic_modules.tool import Tool
 
 # ------------------------------------------------------------------------------
 
-class trimgalore(Tool):
+class trimgalore(Tool):  # pylint: disable=invalid-name
     """
     Tool for trimming FASTQ reads that are of low quality
     """
@@ -103,7 +103,7 @@ class trimgalore(Tool):
     @task(returns=bool,
           fastq_file_in=FILE_IN, fastq_file_out=FILE_OUT, fastq_report=FILE_OUT,
           params=IN, isModifier=False)
-    def trimgalore_single(self, fastq_file_in, fastq_file_out, fastq_report, params):  # pylint: disable=no-self-use
+    def trimgalore_single(self, fastq_file_in, fastq_file_out, fastq_report, params):  # pylint: disable=no-self-use,too-many-locals
         """
         Trims and removes low quality subsections and reads from a singed-ended
         FASTQ file
@@ -201,7 +201,7 @@ class trimgalore(Tool):
           fastq1_file_in=FILE_IN, fastq1_file_out=FILE_OUT, fastq1_report=FILE_OUT,
           fastq2_file_in=FILE_IN, fastq2_file_out=FILE_OUT, fastq2_report=FILE_OUT,
           params=IN, isModifier=False)
-    def trimgalore_paired(  # pylint: disable=no-self-use,too-many-arguments
+    def trimgalore_paired(  # pylint: disable=no-self-use,too-many-arguments,too-many-locals,too-many-statements
             self, fastq1_file_in, fastq1_file_out, fastq1_report,
             fastq2_file_in, fastq2_file_out, fastq2_report, params):  # pylint: disable=no-self-use
         """

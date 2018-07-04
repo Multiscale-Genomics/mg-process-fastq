@@ -43,7 +43,7 @@ from basic_modules.tool import Tool
 # ------------------------------------------------------------------------------
 
 
-class fastqcTool(Tool):
+class fastqcTool(Tool):  # pylint: disable=invalid-name
     """
     Tool for running indexers over a genome FASTA file
     """
@@ -68,7 +68,7 @@ class fastqcTool(Tool):
         self.configuration.update(configuration)
 
     @task(returns=bool, fastq_file=FILE_IN, report_file=FILE_OUT, isModifier=False)
-    def validate(self, fastq_file, report_file): # pylint: disable=unused-argument, no-self-use
+    def validate(self, fastq_file, report_file):  # pylint: disable=unused-argument, no-self-use
         """
         FastQC Validator
 

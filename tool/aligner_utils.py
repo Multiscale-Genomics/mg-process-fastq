@@ -27,7 +27,7 @@ from utils import logger
 from tool.common import cd
 
 
-class alignerUtils(object):
+class alignerUtils(object):  # pylint: disable=invalid-name
     """
     Functions for downloading and processing N-seq FastQ files. Functions
     provided allow for the downloading and indexing of the genome assemblies.
@@ -336,7 +336,7 @@ class alignerUtils(object):
 
         return True
 
-    def _bwa_aln_sai(self, genome_file, reads_file, params):  # pylint: disable=no-self-use
+    def _bwa_aln_sai(self, genome_file, reads_file, params, single=True):  # pylint: disable=no-self-use
         """
         Generate the sai files required for creating the sam file.
 
@@ -348,10 +348,17 @@ class alignerUtils(object):
             Location of the reads file in the file system
         params : dict
             Dictionary of the parameters for bwa aln
+        single : bool
+            True for single ended, will use 4 threads for processing
+            False for paired end, will use 2 threads for processing
         """
+        threads = "2"
+        if single:
+            threads = "4"
+
         cmd_aln_sai = ' '.join([
             'bwa aln',
-            '-t', '4',
+            '-t', threads,
             '-q', '5',
             ' '.join(params),
             '-f', reads_file + '.sai',
@@ -392,7 +399,7 @@ class alignerUtils(object):
             reads_file + '.sam'
         ])
 
-        self._bwa_aln_sai(genome_file, reads_file, params)
+        self._bwa_aln_sai(genome_file, reads_file, params, True)
 
         command_lines = [cmd_samse, cmd_sort]
 
@@ -455,11 +462,11 @@ class alignerUtils(object):
 
             f1_proc = multiprocessing.Process(
                 name='fastq_1', target=self._bwa_aln_sai,
-                args=(genome_file, reads_file_1, params)
+                args=(genome_file, reads_file_1, params, False)
             )
             f2_proc = multiprocessing.Process(
                 name='fastq_2', target=self._bwa_aln_sai,
-                args=(genome_file, reads_file_2, params)
+                args=(genome_file, reads_file_2, params, False)
             )
 
             f1_proc.start()

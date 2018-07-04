@@ -120,3 +120,11 @@ Other changes include:
 - Modifications to the Bowtie2 index file for consistency with the BWA index file
 - Refactored the BWA ALN sai file generation to reduce redundancy to allow for multi-processing when there is paired-end data
 - Improved the handling of the suffixes for FASTQ and FASTA files so that it can handle variants
+
+
+2018-06-27 - Remove reads marked as duplicate by BioBamBam
+----------------------------------------------------------
+
+BioBamBam only marks reads as duplicate, but does not remove the after. The Tool has been updated to remove the flagged duplicates using samtools with the parameter `-F 1024`. This matches the pipeline used within the `Blueprints project <http://dcc.blueprint-epigenome.eu/#/md/chip_seq_grch37>`_.
+
+Also performed some tidying of the code to annotate issues that had been highlighted by pylint.

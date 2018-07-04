@@ -49,7 +49,7 @@ from tool.bam_utils import bamUtilsTask
 # ------------------------------------------------------------------------------
 
 
-class bowtie2AlignerTool(Tool):
+class bowtie2AlignerTool(Tool):  # pylint: disable=invalid-name
     """
     Tool for aligning sequence reads to a genome using BWA
     """
@@ -426,9 +426,9 @@ class bowtie2AlignerTool(Tool):
             logger.fatal("FASTQ SPLITTER: run failed")
             return {}, {}
 
-        compss_delete_file(fastq1)
-        if "fastq2" in input_files:
-            compss_delete_file(fastq2)
+        # compss_delete_file(fastq1)
+        # if "fastq2" in input_files:
+        #     compss_delete_file(fastq2)
 
         if hasattr(sys, '_run_from_cmdl') is True:
             pass

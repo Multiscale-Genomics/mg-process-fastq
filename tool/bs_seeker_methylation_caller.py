@@ -47,7 +47,7 @@ from tool.bam_utils import bamUtilsTask
 # ------------------------------------------------------------------------------
 
 
-class bssMethylationCallerTool(Tool):
+class bssMethylationCallerTool(Tool):  # pylint: disable=invalid-name
     """
     Script from BS-Seeker2 for methylation calling
     """

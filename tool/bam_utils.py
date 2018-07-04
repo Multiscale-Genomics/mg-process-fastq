@@ -25,21 +25,21 @@ from utils import logger
 try:
     if hasattr(sys, '_run_from_cmdl') is True:
         raise ImportError
-    from pycompss.api.parameter import FILE_IN, FILE_OUT, FILE_INOUT
+    from pycompss.api.parameter import FILE_IN, FILE_OUT, FILE_INOUT, IN
     from pycompss.api.task import task
     from pycompss.api.api import barrier, compss_delete_file
 except ImportError:
     logger.warn("[Warning] Cannot import \"pycompss\" API packages.")
     logger.warn("          Using mock decorators.")
 
-    from utils.dummy_pycompss import FILE_IN, FILE_OUT, FILE_INOUT  # pylint: disable=ungrouped-imports
+    from utils.dummy_pycompss import FILE_IN, FILE_OUT, FILE_INOUT, IN  # pylint: disable=ungrouped-imports
     from utils.dummy_pycompss import task  # pylint: disable=ungrouped-imports
     from utils.dummy_pycompss import barrier, compss_delete_file  # pylint: disable=ungrouped-imports
 
 
 # ------------------------------------------------------------------------------
 
-class bamUtils(object):
+class bamUtils(object):  # pylint: disable=invalid-name
     """
     Tool for handling bam files
     """
@@ -75,6 +75,50 @@ class bamUtils(object):
                 "-o", bam_file, "-T", bam_file + "_sort", bam_file)
         except IOError:
             return False
+        return True
+
+    @staticmethod
+    def bam_filter(bam_file, bam_file_out, filter_name):
+        """
+        Wrapper for filtering out reads from a bam file
+
+        Parameters
+        ----------
+        bam_file : str
+        bam_file_out : str
+        filter : str
+            One of:
+                duplicate - Read is PCR or optical duplicate (1024)
+                unmapped - Read is unmapped or not the primary alignment (260)
+        """
+
+        filter_list = {
+            "duplicate": "1024",
+            "unmapped": "260"
+        }
+
+        # Using samtools directly as pysam.view ignored the '-o' parameter
+        cmd_view = ' '.join([
+            "samtools view",
+            "-b",
+            "-F", filter_list[filter_name],
+            "-o", bam_file_out,
+            bam_file
+        ])
+
+        try:
+            process = subprocess.Popen(cmd_view, shell=True)
+            process.wait()
+        except (IOError, OSError) as msg:
+            logger.info(
+                "BAM FILTER - I/O error({0}): {1}\n{2}".format(
+                    msg.errno, msg.strerror,
+                    "samtools view -b -F {} -o {} {}".format(
+                        filter_list[filter_name], bam_file_out, bam_file)
+                    )
+            )
+            return False
+
         return True
 
     @staticmethod
@@ -302,7 +346,7 @@ class bamUtils(object):
         return output
 
 
-class bamUtilsTask(object):
+class bamUtilsTask(object):  # pylint: disable=invalid-name
     """
     Wrappers so that the function above can be used as part of a @task within
     COMPSs avoiding the files being copied around the infrastructure too many
@@ -345,6 +389,23 @@ class bamUtilsTask(object):
         """
         bam_handle = bamUtils()
         return bam_handle.bam_sort(bam_file)
+
+    @task(bam_file=FILE_IN, bam_file_out=FILE_IN, filter_name=IN)
+    def bam_filter(self, bam_file, bam_file_out, filter_name):  # pylint: disable=no-self-use
+        """
+        Wrapper for filtering out reads from a bam file
+
+        Parameters
+        ----------
+        bam_file : str
+        bam_file_out : str
+        filter : str
+            One of:
+                duplicate - Read is PCR or optical duplicate (1024)
+                unmapped - Read is unmapped or not the primary alignment (260)
+        """
+        bam_handle = bamUtils()
+        return bam_handle.bam_filter(bam_file, bam_file_out, filter_name)
 
     def bam_merge(self, in_bam_job_files):  # pylint: disable=too-many-branches
         """

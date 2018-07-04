@@ -32,7 +32,7 @@ from tool.macs2 import macs2
 
 # ------------------------------------------------------------------------------
 
-class process_chipseq(Workflow):
+class process_chipseq(Workflow):  # pylint: disable=invalid-name,too-few-public-methods
     """
     Functions for processing Chip-Seq FastQ files. Files are the aligned,
     filtered and analysed for peak calling
@@ -54,7 +54,7 @@ class process_chipseq(Workflow):
 
         self.configuration.update(configuration)
 
-    def run(self, input_files, metadata, output_files):  # pylint: disable=too-many-branches
+    def run(self, input_files, metadata, output_files):  # pylint: disable=too-many-branches,too-many-locals,too-many-statements,line-too-long
         """
         Main run function for processing ChIP-seq FastQ data. Pipeline aligns
         the FASTQ files to the genome using BWA. MACS 2 is then used for peak

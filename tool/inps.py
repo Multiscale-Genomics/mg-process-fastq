@@ -42,7 +42,7 @@ from basic_modules.metadata import Metadata
 
 # ------------------------------------------------------------------------------
 
-class inps(Tool):
+class inps(Tool):  # pylint: disable=invalid-name
     """
     Tool for peak calling for MNase-seq data
     """

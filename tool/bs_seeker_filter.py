@@ -43,7 +43,7 @@ from basic_modules.metadata import Metadata
 
 # ------------------------------------------------------------------------------
 
-class filterReadsTool(Tool):
+class filterReadsTool(Tool):  # pylint: disable=invalid-name
     """
     Script from BS-Seeker2 for filtering FASTQ files to remove repeats
     """

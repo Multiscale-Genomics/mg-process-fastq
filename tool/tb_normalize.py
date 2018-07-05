@@ -22,6 +22,8 @@ import os
 from subprocess import PIPE, Popen
 import subprocess
 
+from utils import logger
+
 try:
     if hasattr(sys, '_run_from_cmdl') is True:
         raise ImportError
@@ -30,8 +32,8 @@ try:
     from pycompss.api.api import compss_wait_on
     # from pycompss.api.constraint import constraint
 except ImportError:
-    print("[Warning] Cannot import \"pycompss\" API packages.")
-    print("          Using mock decorators.")
+    logger.info("[Warning] Cannot import \"pycompss\" API packages.")
+    logger.info("          Using mock decorators.")
 
     from dummy_pycompss import FILE_IN, FILE_OUT, FILE_INOUT, IN
     from dummy_pycompss import task
@@ -51,7 +53,7 @@ class tbNormalizeTool(Tool):
         """
         Init function
         """
-        print("TADbit - Normalize")
+        logger.info("TADbit - Normalize")
         Tool.__init__(self)
 
     @task(bamin=FILE_IN, resolution=IN, min_perc=IN, max_perc=IN, workdir=IN)
@@ -100,7 +102,7 @@ class tbNormalizeTool(Tool):
         """
         #chr_hic_data = read_matrix(matrix_file, resolution=int(resolution))
 
-        print("TB NORMALIZATION:", bamin, normalization, resolution, min_perc, max_perc, workdir)
+        logger.info("TB NORMALIZATION: {0} {1} {2} {3} {4} {5}".format(bamin, normalization, resolution, min_perc, max_perc, workdir))
 
         _cmd = [
             'tadbit', 'normalize',
@@ -135,16 +137,16 @@ class tbNormalizeTool(Tool):
         try:
             proc = subprocess.check_output(_cmd, stderr=subprocess.STDOUT)
         except subprocess.CalledProcessError as e:
-            print(e.output)
+            logger.info(e.output)
             if not min_count:
-                print("cis/trans ratio failed, trying with min_count. Disabling plot.")
+                logger.info("cis/trans ratio failed, trying with min_count. Disabling plot.")
                 _cmd.append('--min_count')
                 _cmd.append('10')
                 _cmd.append('--normalize_only')
                 try:
                     proc = subprocess.check_output(_cmd, stderr=subprocess.STDOUT)
                 except subprocess.CalledProcessError as e:
-                    print(e.output)
+                    logger.fatal(e.output)
 
         os.chdir(workdir+"/04_normalization")
         for fl in glob.glob("biases_*.pickle"):
@@ -206,11 +208,11 @@ class tbNormalizeTool(Tool):
         bamin = input_files[0]
 
         if not os.path.isfile(bamin.replace('.bam', '.bam.bai')):
-            print('Creating bam index')
+            logger.info('Creating bam index')
             _cmd = ['samtools', 'index', bamin]
             out, err = Popen(_cmd, stdout=PIPE, stderr=PIPE).communicate()
-            print(out)
-            print(err)
+            logger.info(out)
+            logger.info(err)
 
         resolution = '1000000'
         if 'resolution' in metadata:

@@ -26,7 +26,7 @@
             "help": "Coordinates of the genomic region to model.",
             "type": "string",
             "required": true,
-            "value": "chr2"
+            "value": ""
         },
         {
             "name": "optimization:gen_pos_begin",
@@ -34,7 +34,7 @@
             "help": "Genomic coordinate from which to start modeling.",
             "type": "int",
             "required": true,
-            "value": "73000000"
+            "value": ""
         },
         {
             "name": "optimization:gen_pos_end",
@@ -42,7 +42,7 @@
             "help": "Genomic coordinate where to end modeling.",
             "type": "int",
             "required": true,
-            "value": "77000000"
+            "value": ""
         },
         {
             "name": "optimization:num_mod_comp",

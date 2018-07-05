@@ -21,6 +21,7 @@ from functools import wraps # pylint: disable=unused-import
 
 from basic_modules.workflow import Workflow
 from basic_modules.metadata import Metadata
+from utils import logger
 
 from tool.tb_bin import tbBinTool
 
@@ -97,10 +98,8 @@ class tadbit_bin(Workflow):
         outputfiles : list
             List of locations for the output files
         """
-
-        print(
-            "PROCESS BIN - FILES PASSED TO TOOLS:",
-            remap(input_files, "bamin")
+        logger.info(
+            "PROCESS BIN - FILES PASSED TO TOOLS: " + ','.join([str(input_files[k]) for k in input_files])
         )
         m_results_files = {}
         m_results_meta = {}
@@ -147,7 +146,7 @@ class tadbit_bin(Workflow):
                 clean_temps(tb_files[3])
 
         # List of files to get saved
-        print("TADBIT RESULTS:", m_results_files)
+        logger.info("TADBIT RESULTS: " + ','.join([str(m_results_files[k]) for k in m_results_files]))
 
         m_results_meta["hic_contacts_matrix_raw"] = Metadata(
             data_type="hic_contacts_matrix",
@@ -256,7 +255,7 @@ def clean_temps(working_path):
         os.rmdir(working_path)
     except OSError:
         pass
-    print('[CLEANING] Finished')
+    logger.info('[CLEANING] Finished')
 
 # ------------------------------------------------------------------------------
 
@@ -280,5 +279,5 @@ if __name__ == "__main__":
 
     RESULTS = main(in_args)
 
-    print(RESULTS)
+    # print(RESULTS)
     

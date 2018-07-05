@@ -19,6 +19,8 @@ from __future__ import print_function
 import sys
 import os.path
 
+from utils import logger
+
 from pytadbit.parsers.hic_bam_parser import bed2D_to_BAMhic
 
 try:
@@ -28,8 +30,8 @@ try:
     from pycompss.api.task import task
     from pycompss.api.api import compss_wait_on
 except ImportError:
-    print("[Warning] Cannot import \"pycompss\" API packages.")
-    print("          Using mock decorators.")
+    logger.info("[Warning] Cannot import \"pycompss\" API packages.")
+    logger.info("          Using mock decorators.")
 
     from utils.dummy_pycompss import FILE_IN, FILE_OUT, IN
     from utils.dummy_pycompss import task
@@ -51,7 +53,7 @@ class tbFilterTool(Tool):
         """
         Init function
         """
-        print("TADbit filter aligned reads")
+        logger.info("TADbit filter aligned reads")
         Tool.__init__(self)
 
     @task(
@@ -122,48 +124,48 @@ class tbFilterTool(Tool):
 
         for i in filters_suffixes:
             report_file_loc = reads_tmp + '_tmp.tsv_' + i + '.tsv'
-            print(report_file_loc)
+            logger.info(report_file_loc)
             if os.path.isfile(report_file_loc) is True:
-                print("- Present", os.path.getsize(report_file_loc))
+                logger.info("- Present {0}".format(os.path.getsize(report_file_loc)))
                 with open(report_file_loc, "rb") as f_in:
                     if i == 'dangling-end':
-                        print("- Saving to:", output_de)
+                        logger.info("- Saving to:" + output_de)
                         with open(output_de, "wb") as f_out:
                             f_out.write(f_in.read())
                     elif i == 'duplicated':
-                        print("- Saving to:", output_d)
+                        logger.info("- Saving to:" + output_d)
                         with open(output_d, "wb") as f_out:
                             f_out.write(f_in.read())
                     elif i == 'error':
-                        print("- Saving to:", output_e)
+                        logger.info("- Saving to:" + output_e)
                         with open(output_e, "wb") as f_out:
                             f_out.write(f_in.read())
                     elif i == 'extra_dangling-end':
-                        print("- Saving to:", output_ed)
+                        logger.info("- Saving to:" + output_ed)
                         with open(output_ed, "wb") as f_out:
                             f_out.write(f_in.read())
                     elif i == 'over-represented':
-                        print("- Saving to:", output_or)
+                        logger.info("- Saving to:" + output_or)
                         with open(output_or, "wb") as f_out:
                             f_out.write(f_in.read())
                     elif i == 'random_breaks':
-                        print("- Saving to:", output_rb)
+                        logger.info("- Saving to:" + output_rb)
                         with open(output_rb, "wb") as f_out:
                             f_out.write(f_in.read())
                     elif i == 'self-circle':
-                        print("- Saving to:", output_sc)
+                        logger.info("- Saving to:" + output_sc)
                         with open(output_sc, "wb") as f_out:
                             f_out.write(f_in.read())
                     elif i == 'too_close_from_RES':
-                        print("- Saving to:", output_tc)
+                        logger.info("- Saving to:" + output_tc)
                         with open(output_tc, "wb") as f_out:
                             f_out.write(f_in.read())
                     elif i == 'too_large':
-                        print("- Saving to:", output_tl)
+                        logger.info("- Saving to:" + output_tl)
                         with open(output_tl, "wb") as f_out:
                             f_out.write(f_in.read())
                     elif i == 'too_short':
-                        print("- Saving to:", output_ts)
+                        logger.info("- Saving to:" + output_ts)
                         with open(output_ts, "wb") as f_out:
                             f_out.write(f_in.read())
 
@@ -258,18 +260,18 @@ class tbFilterTool(Tool):
             sys.stdout = f
 
             #insert size
-            print ('Insert size\n')
+            logger.info ('Insert size\n')
 
-            print ('  - median insert size =', median)
-            print ('  - double median absolution of insert size =', mad)
-            print ('  - max insert size (when a gap in continuity of > 10 bp is found in fragment lengths) =', max_f)
+            logger.info ('  - median insert size = {0}'.format(median))
+            logger.info ('  - double median absolution of insert size = {0}'.format(mad))
+            logger.info ('  - max insert size (when a gap in continuity of > 10 bp is found in fragment lengths) = {0}'.format(max_f))
 
             max_mole = max_f # pseudo DEs
             min_dist = max_f + mad # random breaks
-            print ('   Using the maximum continuous fragment size'
+            logger.info ('   Using the maximum continuous fragment size'
                    '('+str(max_mole)+' bp) to check '
                    'for pseudo-dangling ends')
-            print ('   Using maximum continuous fragment size plus the MAD '
+            logger.info ('   Using maximum continuous fragment size plus the MAD '
                    '('+str(min_dist)+' bp) to check for random breaks')
 
             sys.stdout = orig_stdout

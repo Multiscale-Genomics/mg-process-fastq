@@ -22,6 +22,8 @@ from subprocess import PIPE, Popen
 import os
 from cPickle import load
 
+from utils import logger
+
 from pytadbit.parsers.hic_bam_parser import write_matrix
 from pytadbit import Chromosome
 from pytadbit.parsers.hic_parser import load_hic_data_from_bam
@@ -35,8 +37,8 @@ try:
     from pycompss.api.api import compss_wait_on
     # from pycompss.api.constraint import constraint
 except ImportError:
-    print("[Warning] Cannot import \"pycompss\" API packages.")
-    print("          Using mock decorators.")
+    logger.info("[Warning] Cannot import \"pycompss\" API packages.")
+    logger.info("          Using mock decorators.")
 
     from dummy_pycompss import FILE_IN, FILE_OUT, FILE_INOUT, IN
     from dummy_pycompss import task
@@ -56,7 +58,7 @@ class tbBinTool(Tool):
         """
         Init function
         """
-        print("TADbit - Bin")
+        logger.info("TADbit - Bin")
         Tool.__init__(self)
 
     @task(bamin=FILE_IN, biases=FILE_IN, resolution=IN, c=IN, c2=IN, norm=IN, workdir=IN)
@@ -101,7 +103,7 @@ class tbBinTool(Tool):
             Location of HiC normalized matrix in png format
 
         """
-        print("TB BIN:", bamin, resolution, workdir)
+        logger.info("TB BIN: {0}, {1}, {2}".format(bamin, resolution, workdir))
 
         output_metadata = {}
 
@@ -207,11 +209,11 @@ class tbBinTool(Tool):
         json_file_name = out_files['RAW'].replace(".abc", ".json")
         if start1 is not None:
             if focus[1]-focus[0] > 1200:
-                print("TADkit json too big, limiting to 1200 bins")
+                logger.info("TADkit json too big, limiting to 1200 bins")
                 focus = (focus[0], focus[0]+1200)
         else:
             if exp.size > 1200:
-                print("TADkit json too big, limiting to 1200 bins")
+                logger.info("TADkit json too big, limiting to 1200 bins")
                 focus = (1, 1200)
         exp.write_json(json_file_name, focus=focus)
         output_files.append(json_file_name)
@@ -262,11 +264,11 @@ class tbBinTool(Tool):
         bamin = input_files[0]
 
         if not os.path.isfile(bamin.replace('.bam', '.bam.bai')):
-            print('Creating bam index')
+            logger.info('Creating bam index')
             _cmd = ['samtools', 'index', bamin]
             out, err = Popen(_cmd, stdout=PIPE, stderr=PIPE).communicate()
-            print(out)
-            print(err)
+            logger.info(out)
+            logger.info(err)
 
         biases = None
         if len(input_files) > 1:

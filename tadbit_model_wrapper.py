@@ -21,6 +21,7 @@ from functools import wraps # pylint: disable=unused-import
 
 from basic_modules.workflow import Workflow
 from basic_modules.metadata import Metadata
+from utils import logger
 
 from tool.tb_model import tbModelTool
 
@@ -103,6 +104,14 @@ class tadbit_model(Workflow):
         self.configuration.update(
             {(key.split(':'))[-1]: val for key, val in self.configuration.items()}
         )
+        if self.configuration["gen_pos_chrom_name"] == 'all':
+            self.configuration["gen_pos_chrom_name"] = ""
+            self.configuration["gen_pos_begin"] = ""
+            self.configuration["gen_pos_end"] = ""
+        if "gen_pos_begin" not in self.configuration:
+            self.configuration["gen_pos_begin"] = ""
+        if "gen_pos_end" not in self.configuration:
+            self.configuration["gen_pos_end"] = ""
 
     def run(self, input_files, metadata, output_files):
         """
@@ -121,9 +130,8 @@ class tadbit_model(Workflow):
             List of locations for the output bam files
         """
 
-        print(
-            "PROCESS MODEL - FILES PASSED TO TOOLS:",
-            remap(input_files, "hic_contacts_matrix_norm")
+        logger.info(
+            "PROCESS MODEL - FILES PASSED TO TOOLS: {0}".format(str(input_files["hic_contacts_matrix_norm"]))
         )
 
         m_results_meta = {}
@@ -132,7 +140,7 @@ class tadbit_model(Workflow):
         if "norm" in metadata['hic_contacts_matrix_norm'].meta_data:
             if metadata['hic_contacts_matrix_norm'].meta_data["norm"] != 'norm':
                 clean_temps(self.configuration['workdir'])
-                print("Only normalized matrices can be used to build 3D models.\nExiting")
+                logger.fatal("Only normalized matrices can be used to build 3D models.\nExiting")
                 raise ValueError('Missing normalized input matrix.') 
             
         input_metadata = remap(self.configuration, "optimize_only", "gen_pos_chrom_name", "resolution", "gen_pos_begin",
@@ -174,7 +182,7 @@ class tadbit_model(Workflow):
                 taxon_id=metadata['hic_contacts_matrix_norm'].taxon_id)
 
         # List of files to get saved
-        print("TADBIT RESULTS:", m_results_files)
+        logger.info("TADBIT RESULTS: " + ','.join([str(m_results_files[k]) for k in m_results_files]))
 
         m_results_meta["modeling_stats"] = Metadata(
             data_type="tool_statistics",
@@ -244,7 +252,7 @@ def clean_temps(working_path):
         os.rmdir(working_path)
     except OSError:
         pass
-    print('[CLEANING] Finished')
+    logger.info('[CLEANING] Finished')
 
 def make_absolute_path(files, root):
     """Make paths absolute."""
@@ -274,4 +282,4 @@ if __name__ == "__main__":
 
     RESULTS = main(in_args)
 
-    print(RESULTS)
+    # print(RESULTS)

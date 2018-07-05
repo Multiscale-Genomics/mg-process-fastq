@@ -16,9 +16,9 @@ from string import ascii_letters as letters
 from functools import wraps # pylint: disable=unused-import
 from pysam import AlignmentFile
 
-
 from basic_modules.workflow import Workflow
 from basic_modules.metadata import Metadata
+from utils import logger
 
 from tool.tb_normalize import tbNormalizeTool
 
@@ -99,10 +99,9 @@ class tadbit_normalize(Workflow):
         outputfiles : list
             List of locations for the output files
         """
-
-        print(
-            "PROCESS NORMALIZE - FILES PASSED TO TOOLS:",
-            remap(input_files, "bamin")
+        
+        logger.info(
+            "PROCESS NORMALIZE - FILES PASSED TO TOOLS: {0}".format(str(input_files["bamin"]))
         )
 
         bamin = convert_from_unicode(input_files['bamin'])
@@ -117,7 +116,7 @@ class tadbit_normalize(Workflow):
                     input_metadata["rest_enzyme"] = convert_from_unicode(metadata['bamin'].meta_data['rest_enzyme'])
             
             if 'rest_enzyme' not in input_metadata or 'fasta' not in input_metadata or 'mappability' not in input_metadata:  
-                print('Error: missing parameters for oneD normalization. Please check that the BAM input file has been generated with the VRE tool.')
+                logger.fatal('Error: missing parameters for oneD normalization. Please check that the BAM input file has been generated with the VRE tool.')
                 return
 
         bamfile = AlignmentFile(bamin, 'rb')
@@ -145,7 +144,7 @@ class tadbit_normalize(Workflow):
                 tar.add(tn_files[2], arcname=os.path.basename(tn_files[2]))
 
         # List of files to get saved
-        print("TADBIT RESULTS:", m_results_files)
+        logger.info("TADBIT RESULTS: " + m_results_files["normalize_stats"])
 
         m_results_meta["hic_biases"] = Metadata(
             data_type="hic_biases",
@@ -228,7 +227,7 @@ def clean_temps(working_path):
         os.rmdir(working_path)
     except OSError:
         pass
-    print('[CLEANING] Finished')
+    logger.info('[CLEANING] Finished')
 
 # ------------------------------------------------------------------------------
 
@@ -252,4 +251,4 @@ if __name__ == "__main__":
 
     RESULTS = main(in_args)
 
-    print(RESULTS)
+    # print(RESULTS)

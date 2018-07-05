@@ -19,6 +19,8 @@ from __future__ import print_function
 
 import sys
 
+from utils import logger
+
 try:
     if hasattr(sys, '_run_from_cmdl') is True:
         raise ImportError
@@ -27,8 +29,8 @@ try:
     #from pycompss.api.constraint import constraint
     from pycompss.api.api import compss_wait_on
 except ImportError:
-    print("[Warning] Cannot import \"pycompss\" API packages.")
-    print("          Using mock decorators.")
+    logger.info("[Warning] Cannot import \"pycompss\" API packages.")
+    logger.info("          Using mock decorators.")
 
     from utils.dummy_pycompss import FILE_IN, FILE_OUT, IN
     from utils.dummy_pycompss import task
@@ -53,7 +55,7 @@ class tbParseMappingTool(Tool):
         """
         Init function
         """
-        print("TADbit parse mapping")
+        logger.info("TADbit parse mapping")
         Tool.__init__(self)
 
     @task(
@@ -180,10 +182,10 @@ class tbParseMappingTool(Tool):
 
         """
 
-        print("TB WINDOWS - full 1", window1_full)
-        print("TB WINDOWS - frag 1", window1_frag)
-        print("TB WINDOWS - full 2", window2_full)
-        print("TB WINDOWS - frag 2", window2_frag)
+        logger.info("TB WINDOWS - full 1 {0}".format(window1_full))
+        logger.info("TB WINDOWS - frag 1 {0}".format(window1_frag))
+        logger.info("TB WINDOWS - full 2 {0}".format(window2_full))
+        logger.info("TB WINDOWS - frag 2 {0}".format(window2_frag))
 
         #root_name = reads.split("/")
 

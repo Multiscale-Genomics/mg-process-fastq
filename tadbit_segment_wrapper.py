@@ -20,6 +20,7 @@ from functools import wraps # pylint: disable=unused-import
 
 from basic_modules.workflow import Workflow
 from basic_modules.metadata import Metadata
+from utils import logger
 
 from tool.tb_segment import tbSegmentTool
 
@@ -79,6 +80,7 @@ class tadbit_segment(Workflow):
         self.configuration['workdir'] = self.configuration['project']+'/_tmp_tadbit_'+tmp_name
         if not os.path.exists(self.configuration['workdir']):
             os.makedirs(self.configuration['workdir'])
+            open(self.configuration['workdir']+'/trace.db', 'a').close()
 
         self.configuration.update(
             {(key.split(':'))[-1]: val for key, val in self.configuration.items()}
@@ -101,9 +103,8 @@ class tadbit_segment(Workflow):
             List of locations for the output files
         """
 
-        print(
-            "PROCESS SEGMENT - FILES PASSED TO TOOLS:",
-            remap(input_files, "bamin")
+        logger.info(
+            "PROCESS SEGMENT - FILES PASSED TO TOOLS: {0}".format(str(input_files["bamin"]))
         )
         m_results_files = {}
         m_results_meta = {}
@@ -148,7 +149,7 @@ class tadbit_segment(Workflow):
                 "visible": True
             })
         # List of files to get saved
-        print("TADBIT RESULTS:", m_results_files)
+        logger.info("TADBIT RESULTS:" + m_results_files["tads_compartments"])
         #clean_temps(os.path.dirname(ts_files[0]))
         #clean_temps(os.path.join(self.configuration['workdir'],"06_segmentation"))
         #cleaning
@@ -213,7 +214,7 @@ def clean_temps(working_path):
         os.rmdir(working_path)
     except OSError:
         pass
-    print('[CLEANING] Finished')
+    logger.info('[CLEANING] Finished')
 
 # ------------------------------------------------------------------------------
 
@@ -237,5 +238,5 @@ if __name__ == "__main__":
 
     RESULTS = main(in_args)
 
-    print(RESULTS)
+    # print(RESULTS)
     

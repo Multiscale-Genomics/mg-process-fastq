@@ -21,6 +21,8 @@ import glob
 import os
 from subprocess import PIPE, Popen
 
+from utils import logger
+
 try:
     if hasattr(sys, '_run_from_cmdl') is True:
         raise ImportError
@@ -29,8 +31,8 @@ try:
     from pycompss.api.api import compss_wait_on
     # from pycompss.api.constraint import constraint
 except ImportError:
-    print("[Warning] Cannot import \"pycompss\" API packages.")
-    print("          Using mock decorators.")
+    logger.info("[Warning] Cannot import \"pycompss\" API packages.")
+    logger.info("          Using mock decorators.")
 
     from dummy_pycompss import FILE_IN, FILE_OUT, FILE_INOUT, IN
     from dummy_pycompss import task
@@ -51,7 +53,7 @@ class tbModelTool(Tool):
         """
         Init function
         """
-        print("TADbit - Modeling")
+        logger.info("TADbit - Modeling")
         Tool.__init__(self)
 
     @task(hic_contacts_matrix_norm=FILE_IN, resolution=IN, gen_pos_chrom_name=IN, gen_pos_begin=IN,
@@ -107,17 +109,22 @@ class tbModelTool(Tool):
 
         """
         #chr_hic_data = read_matrix(matrix_file, resolution=int(resolution))
-
-        print("TB MODELING:", hic_contacts_matrix_norm, resolution, gen_pos_chrom_name, gen_pos_begin,
-              gen_pos_end, num_mod_comp, num_mod_keep,
-              max_dist, upper_bound, lower_bound, cutoff, workdir)
+        
+        logger.info("TB MODELING: {0},{1},{2},{3},{4},{5},{6},{7},{8},{9},{10},{11}".format(hic_contacts_matrix_norm,
+            resolution, gen_pos_chrom_name, gen_pos_begin,
+            gen_pos_end, num_mod_comp, num_mod_keep,
+            max_dist, upper_bound, lower_bound, cutoff, workdir))
 
         try:
             beg = int(float(gen_pos_begin) / int(resolution))
             end = int(float(gen_pos_end) / int(resolution))
             if end - beg <= 2:
+                logger.fatal('"beg" and "end" parameter should be given in ' +
+                                'genomic coordinates, not bin')
                 raise Exception('"beg" and "end" parameter should be given in ' +
                                 'genomic coordinates, not bin')
+        except ValueError:
+            pass
         except TypeError:
             pass
 
@@ -126,53 +133,96 @@ class tbModelTool(Tool):
         if not os.path.exists(os.path.join(workdir, name)):
             os.makedirs(os.path.join(workdir, name))
 
+        #=======================================================================
+        # _cmd = [
+        #     'model_and_analyze.py',
+        #     '--norm', hic_contacts_matrix_norm,
+        #     '--res', resolution,
+        #     '--maxdist', max_dist,
+        #     '--upfreq', upper_bound,
+        #     '--lowfreq='+lower_bound,
+        #     '--dcutoff', cutoff,
+        #     '--ncpus', str(ncpus),
+        #     '--assembly', metadata["assembly"],
+        #     '--species', metadata["species"],
+        #     '--project', metadata["project"],
+        #     '--fig_format', 'png'
+        #     ]
+        # if len(gen_pos_chrom_name) > 0:
+        #     _cmd.append('--crm')
+        #     _cmd.append(gen_pos_chrom_name)
+        # if len(gen_pos_begin) > 0 and len(gen_pos_end) > 0:
+        #     _cmd.append('--beg')
+        #     _cmd.append(str(gen_pos_begin))
+        #     _cmd.append('--end')
+        #     _cmd.append(str(gen_pos_end))
+        # if optimize_only:
+        #     _cmd.append('--nmodels_opt')
+        #     _cmd.append(str(num_mod_comp))
+        #     _cmd.append('--nkeep_opt')
+        #     _cmd.append(str(num_mod_keep))
+        #     _cmd.append('--optimize_only')
+        #     _cmd.append('--outdir')
+        #     _cmd.append(workdir)
+        # else:
+        #     _cmd.append('--nmodels_opt')
+        #     _cmd.append('0')
+        #     _cmd.append('--nkeep_opt')
+        #     _cmd.append('0')
+        #     _cmd.append('--nmodels_mod')
+        #     _cmd.append(str(num_mod_comp))
+        #     _cmd.append('--nkeep_mod')
+        #     _cmd.append(str(num_mod_keep))
+        #     _cmd.append('--outdir')
+        #     _cmd.append(workdir)
+        #=======================================================================
+
         _cmd = [
-            'model_and_analyze.py',
-            '--norm', hic_contacts_matrix_norm,
-            '--res', resolution,
-            '--crm', gen_pos_chrom_name,
-            '--beg', str(gen_pos_begin),
-            '--end', str(gen_pos_end),
+            'tadbit', 'model',
+            '--workdir', os.path.join(workdir, name),
+            '--input_matrix', hic_contacts_matrix_norm,
+            '--reso', resolution,
             '--maxdist', max_dist,
             '--upfreq', upper_bound,
             '--lowfreq='+lower_bound,
             '--dcutoff', cutoff,
-            '--ncpus', str(ncpus),
+            '--cpu', str(ncpus),
             '--assembly', metadata["assembly"],
             '--species', metadata["species"],
             '--project', metadata["project"],
             '--fig_format', 'png'
             ]
+        if len(gen_pos_chrom_name) > 0:
+            _cmd.append('--crm')
+            _cmd.append(gen_pos_chrom_name)
+        if len(gen_pos_begin) > 0 and len(gen_pos_end) > 0:
+            _cmd.append('--beg')
+            _cmd.append(str(gen_pos_begin))
+            _cmd.append('--end')
+            _cmd.append(str(gen_pos_end))
+        _cmd.append('--nmodels')
+        _cmd.append(str(num_mod_comp))
+        _cmd.append('--nkeep')
+        _cmd.append(str(num_mod_keep))
+        
         if optimize_only:
-            _cmd.append('--nmodels_opt')
-            _cmd.append(str(num_mod_comp))
-            _cmd.append('--nkeep_opt')
-            _cmd.append(str(num_mod_keep))
-            _cmd.append('--optimize_only')
-            _cmd.append('--outdir')
-            _cmd.append(workdir)
+            _cmd.append('--optimize')
         else:
-            _cmd.append('--nmodels_opt')
-            _cmd.append('0')
-            _cmd.append('--nkeep_opt')
-            _cmd.append('0')
-            _cmd.append('--nmodels_mod')
-            _cmd.append(str(num_mod_comp))
-            _cmd.append('--nkeep_mod')
-            _cmd.append(str(num_mod_keep))
-            _cmd.append('--outdir')
-            _cmd.append(workdir)
-
+            _cmd.append('--model')
+            _cmd.append('--force')
+            _cmd.append('--analyze')
+            
         output_metadata = {}
 
         out, err = Popen(_cmd, stdout=PIPE, stderr=PIPE).communicate()
-        print(out)
-        print(err)
+        logger.info(out)
+        logger.info(err)
 
-        output_files = [os.path.join(workdir, name)]
+        output_folder = os.listdir(os.path.join(workdir, name, '06_model'))[0]
+        output_files = [os.path.join(workdir, name,'06_model',output_folder)]
 
         if not optimize_only:
-            os.chdir(os.path.join(workdir, name))
+            os.chdir(os.path.join(workdir, name,'06_model',output_folder))
             for fl in glob.glob("*.json"):
                 output_files.append(fl)
                 break

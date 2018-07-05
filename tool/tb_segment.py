@@ -19,6 +19,7 @@ from __future__ import print_function
 import sys
 import os
 from subprocess import CalledProcessError, PIPE, Popen
+from utils import logger
 
 try:
     if hasattr(sys, '_run_from_cmdl') is True:
@@ -28,8 +29,8 @@ try:
     from pycompss.api.api import compss_wait_on
     # from pycompss.api.constraint import constraint
 except ImportError:
-    print("[Warning] Cannot import \"pycompss\" API packages.")
-    print("          Using mock decorators.")
+    logger.info("[Warning] Cannot import \"pycompss\" API packages.")
+    logger.info("          Using mock decorators.")
 
     from dummy_pycompss import FILE_IN, FILE_OUT, FILE_INOUT, IN
     from dummy_pycompss import task
@@ -49,7 +50,7 @@ class tbSegmentTool(Tool):
         """
         Init function
         """
-        print("TADbit - Normalize")
+        logger.info("TADbit - Normalize")
         Tool.__init__(self)
 
     @task(bamin=FILE_IN, biases=FILE_IN, resolution=IN, workdir=IN)
@@ -84,14 +85,15 @@ class tbSegmentTool(Tool):
             Location of filtered_bins png
 
         """
-        print("TB SEGMENT:", bamin, resolution, workdir)
+        logger.info("TB SEGMENT: {0} {1} {2}".format(bamin, resolution, workdir))
 
         _cmd = [
             'tadbit', 'segment',
             '--nosql', '--mreads', bamin,
             '--workdir', workdir,
             '--resolution', resolution,
-            '--cpu', str(ncpus)
+            '--cpu', str(ncpus),
+            '--nosql'
             ]
 
         if '2' not in callers:
@@ -114,8 +116,8 @@ class tbSegmentTool(Tool):
         output_files = []
 
         out, err = Popen(_cmd, stdout=PIPE, stderr=PIPE).communicate()
-        print(out)
-        print(err)
+        logger.info(out)
+        logger.info(err)
 
         if '1' in callers:
             tad_dir = os.path.join(workdir, '06_segmentation',
@@ -162,11 +164,11 @@ class tbSegmentTool(Tool):
         bamin = input_files[0]
 
         if not os.path.isfile(bamin.replace('.bam', '.bam.bai')):
-            print('Creating bam index')
+            logger.info('Creating bam index')
             _cmd = ['samtools', 'index', bamin]
             out, err = Popen(_cmd, stdout=PIPE, stderr=PIPE).communicate()
-            print(out)
-            print(err)
+            logger.info(out)
+            logger.info(err)
 
         resolution = '1000000'
         if 'resolution' in metadata:

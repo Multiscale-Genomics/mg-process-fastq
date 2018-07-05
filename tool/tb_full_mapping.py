@@ -18,6 +18,8 @@
 from __future__ import print_function
 import sys
 
+from utils import logger
+
 try:
     if hasattr(sys, '_run_from_cmdl') is True:
         raise ImportError
@@ -26,8 +28,8 @@ try:
     # from pycompss.api.constraint import constraint
     from pycompss.api.api import compss_wait_on
 except ImportError:
-    print("[Warning] Cannot import \"pycompss\" API packages.")
-    print("          Using mock decorators.")
+    logger.info("[Warning] Cannot import \"pycompss\" API packages.")
+    logger.info("          Using mock decorators.")
 
     from utils.dummy_pycompss import FILE_IN, FILE_OUT, IN
     from utils.dummy_pycompss import task
@@ -37,6 +39,7 @@ except ImportError:
 from os import path, unlink
 
 from basic_modules.tool import Tool
+
 
 from pytadbit.mapping.mapper import full_mapping
 from pytadbit.utils.fastq_utils import quality_plot
@@ -52,7 +55,7 @@ class tbFullMappingTool(Tool):
         """
         Init function
         """
-        print("TADbit full_mapping")
+        logger.info("TADbit full_mapping")
         Tool.__init__(self)
 
     @task(
@@ -96,7 +99,7 @@ class tbFullMappingTool(Tool):
             Location of the fourth window index file
 
         """
-        print("tb_full_mapping_iter")
+        logger.info("tb_full_mapping_iter")
         output_dir = workdir
 
         map_files = full_mapping(
@@ -138,14 +141,14 @@ class tbFullMappingTool(Tool):
             Location of the window index file
 
         """
-        print("tb_full_mapping_frag")
+        logger.info("tb_full_mapping_frag")
         #od_loc = fastq_file.split("/")
         #output_dir = "/".join(od_loc[0:-1])
         output_dir = workdir
 
-        print("TB MAPPING - output_dir:", output_dir)
-        print("TB MAPPING - full_file dir:", full_file)
-        print("TB MAPPING - frag_file dir:", frag_file)
+        logger.info("TB MAPPING - output_dir:", output_dir)
+        logger.info("TB MAPPING - full_file dir:", full_file)
+        logger.info("TB MAPPING - frag_file dir:", frag_file)
         gzipped = ''
         dsrc = ''
         if fastq_file.endswith('.fastq.gz') or fastq_file.endswith('.fq.gz'):
@@ -251,12 +254,11 @@ class tbFullMappingTool(Tool):
             orig_stdout = sys.stdout
             f = open(log_path, "w")
             sys.stdout = f
-            print ('Hi-C QC plot')
-            print (dangling_ends, ligated)
+            logger.info ('Hi-C QC plot')
             for renz in dangling_ends:
-                print('  - Dangling-ends (sensu-stricto): ', dangling_ends[renz])
+                logger.info('  - Dangling-ends (sensu-stricto): ', dangling_ends[renz])
             for renz in ligated:
-                print('  - Ligation sites: ', ligated[renz])
+                logger.info('  - Ligation sites: ', ligated[renz])
 
             sys.stdout = orig_stdout
             f.close()

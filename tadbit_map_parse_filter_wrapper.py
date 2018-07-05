@@ -17,6 +17,7 @@ from functools import wraps # pylint: disable=unused-import
 
 from basic_modules.workflow import Workflow
 from basic_modules.metadata import Metadata
+from utils import logger
 
 from tool.tb_full_mapping import tbFullMappingTool
 from tool.tb_parse_mapping import tbParseMappingTool
@@ -125,7 +126,7 @@ class tadbit_map_parse_filter(Workflow):
             List of locations for the output bam files
         """
 
-        print(
+        logger.info(
             "PROCESS MAP - FILES PASSED TO TOOLS:",
             remap(input_files, "read1", "read2")
         )
@@ -178,8 +179,8 @@ class tadbit_map_parse_filter(Workflow):
         input_metadata['mapping'] = [tfm1_meta['func'], tfm2_meta['func']]
         input_metadata['expt_name'] = 'vre'
 
-        print("TB MAPPED FILES:", files)
-        print("TB PARSE METADATA:", input_metadata)
+        logger.info("TB MAPPED FILES:", files)
+        logger.info("TB PARSE METADATA:", input_metadata)
         tpm_files, tpm_meta = tpm.run(files, [], input_metadata)
 
         if 'error' in tpm_meta:
@@ -204,7 +205,7 @@ class tadbit_map_parse_filter(Workflow):
             if os.path.isfile(file_path):
                 os.unlink(file_path)
 
-        print("TB PARSED FILES:", tpm_files)
+        logger.info("TB PARSED FILES:", tpm_files)
 
         input_metadata = remap(self.configuration, "ncpus", "chromosomes", "workdir", 'filters')
         if 'min_dist_RE' in self.configuration:
@@ -226,7 +227,7 @@ class tadbit_map_parse_filter(Workflow):
             with open(tf_files[-2]) as infile:
                 outfile.write(infile.read())
 
-        print("TB FILTER FILES:", tf_files[0])
+        logger.info("TB FILTER FILES:", tf_files[0])
 
 
         m_results_files["paired_reads"] = tf_files[0]+'.bam'
@@ -241,7 +242,7 @@ class tadbit_map_parse_filter(Workflow):
             tar.add(tf_files[-1], arcname=os.path.basename(tf_files[-1]))
 
         # List of files to get saved
-        print("TADBIT RESULTS:", m_results_files)
+        logger.info("TADBIT RESULTS:", m_results_files)
 
         m_results_meta["paired_reads"] = Metadata(
             data_type="hic_sequences",
@@ -347,7 +348,7 @@ def clean_temps(working_path):
         os.rmdir(working_path)
     except OSError:
         pass
-    print('[CLEANING] Finished')
+    logger.info('[CLEANING] Finished')
 
 # ------------------------------------------------------------------------------
 
@@ -374,5 +375,4 @@ if __name__ == "__main__":
 
     RESULTS = main(in_args)
 
-    print(RESULTS)
-    
+    # logger.info(RESULTS)

@@ -19,7 +19,9 @@
 
 from __future__ import print_function
 
+import os.path
 import argparse
+import tarfile
 
 from basic_modules.workflow import Workflow
 from utils import logger
@@ -106,10 +108,37 @@ class process_sleuth(Workflow):
             sleuth_object : Metadata
 
         """
+        resource_path = os.path.split(input_files["kallisto"][0])[0]
+
+        kallisto_config = {}
+
+        # Build the kallisto_tar object required by the tool as only a single
+        # file can be loaded into an @task. Also builds the matching config
+        # data structure required to describe the different parameters of the
+        # experiments
+        tar = tarfile.open(os.path.join(resource_path, "results.tar.gz"), "w")
+        for i in range(len(input_files["kallisto"])):
+            dataset_name = self.configuration["kallisto_config"][i]["dataset"]
+            kallisto_config[dataset_name] = {}
+            for key in self.configuration["kallisto_config"]:
+                if key != "dataset":
+                    kallisto_config[dataset_name][key] = self.configuration["kallisto_config"][key]
+
+            tar.add(
+                input_files["kallisto"][i],
+                arcname=os.path.join(
+                    "results",
+                    self.configuration["kallisto_config"][i]["dataset"],
+                    os.path.split(input_files["kallisto"][0])[1])
+            )
+        tar.close()
+
+        self.configuration["kallisto_tar_config"] = kallisto_config
+
         sleuth_handle = sleuthTool(self.configuration)
         s_files, s_meta = sleuth_handle.run(
             {
-                "kallisto_tar": input_files["kallisto_tar"],
+                "kallisto_tar": os.path.join(resource_path, "results.tar.gz"),
             }, {
                 "kallisto_tar": metadata["kallisto_tar"],
             }, {

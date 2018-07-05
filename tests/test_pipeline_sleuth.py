@@ -18,7 +18,6 @@
 from __future__ import print_function
 
 import os.path
-import tarfile
 import pytest
 
 from basic_modules.metadata import Metadata
@@ -31,63 +30,69 @@ def test_sleuth_pipeline():
     """
     Test case to ensure that the Sleuth pipeline code works.
     """
-    resource_path = os.path.join(os.path.dirname(__file__), "data/sleuth/")
+    resource_path = os.path.join(os.path.dirname(__file__), "data", "sleuth")
 
-    tar = tarfile.open(resource_path + "results.tar.gz", "w")
-    tar.add(
-        resource_path + "sleuth.Human.ERR030856.tar.gz",
-        arcname="results/ERR030856/sleuth.Human.ERR030856.tar.gz")
-    tar.add(
-        resource_path + "sleuth.Human.ERR030857.tar.gz",
-        arcname="results/ERR030857/sleuth.Human.ERR030857.tar.gz")
-    tar.add(
-        resource_path + "sleuth.Human.ERR030858.tar.gz",
-        arcname="results/ERR030858/sleuth.Human.ERR030858.tar.gz")
-    tar.add(
-        resource_path + "sleuth.Human.ERR030872.tar.gz",
-        arcname="results/ERR030872/sleuth.Human.ERR030872.tar.gz")
-    tar.add(
-        resource_path + "sleuth.Human.ERR030903.tar.gz",
-        arcname="results/ERR030903/sleuth.Human.ERR030903.tar.gz")
-    tar.close()
+    # The files need moving to a file structure like;
+    #     "results/ERR030903/sleuth.Human.ERR030903.tar.gz"
+    # Then that needs to be tar'ed up and passed to a @task for decompression
+    # and analysis
 
-    files = {
-        'kallisto_tar': resource_path + 'results.tar.gz'
+    input_files = {
+        "kallisto": [
+            os.path.join(resource_path, "sleuth.Human.ERR030856.tar.gz"),
+            os.path.join(resource_path, "sleuth.Human.ERR030857.tar.gz"),
+            os.path.join(resource_path, "sleuth.Human.ERR030858.tar.gz"),
+            os.path.join(resource_path, "sleuth.Human.ERR030872.tar.gz"),
+            os.path.join(resource_path, "sleuth.Human.ERR030903.tar.gz")
+        ],
+    }
+
+    output_files = {
+        "sleuth_object": os.path.join(resource_path, "sleuth.Rbin"),
+        "sleuth_sig_genes_table": os.path.join(resource_path, "sleuth_sig_genes.tsv"),
+        "sleuth_image_tar": os.path.join(resource_path, "sleuth_images.tar.gz")
     }
 
     metadata = {
-        "kallisto_tar": Metadata(
-            "data_rna_seq", "TAR", [
-                "results/ERR030856/sleuth.Human.ERR030856.tar.gz",
-                "results/ERR030857/sleuth.Human.ERR030857.tar.gz",
-                "results/ERR030858/sleuth.Human.ERR030858.tar.gz",
-                "results/ERR030872/sleuth.Human.ERR030872.tar.gz",
-                "results/ERR030903/sleuth.Human.ERR030903.tar.gz"
-            ], None,
-            {'assembly': 'GRCh38'}),
-    }
-
-    files_out = {
-        "sleuth_object": resource_path + "sleuth.Rbin",
-        "sleuth_sig_genes_table": resource_path + "sleuth_sig_genes.tsv",
-        "sleuth_image_tar": resource_path + "sleuth_images.tar.gz"
+        "kallisto": [
+            Metadata(
+                "data_rna_seq", "TAR",
+                os.path.join(resource_path, "sleuth.Human.ERR030856.tar.gz"), None,
+                {'assembly': 'test'}, 9606),
+            Metadata(
+                "data_rna_seq", "TAR",
+                os.path.join(resource_path, "sleuth.Human.ERR030857.tar.gz"), None,
+                {'assembly': 'test'}, 9606),
+            Metadata(
+                "data_rna_seq", "TAR",
+                os.path.join(resource_path, "sleuth.Human.ERR030858.tar.gz"), None,
+                {'assembly': 'test'}, 9606),
+            Metadata(
+                "data_rna_seq", "TAR",
+                os.path.join(resource_path, "sleuth.Human.ERR030872.tar.gz"), None,
+                {'assembly': 'test'}, 9606),
+            Metadata(
+                "data_rna_seq", "TAR",
+                os.path.join(resource_path, "sleuth.Human.ERR030903.tar.gz"), None,
+                {'assembly': 'test'}, 9606),
+        ]
     }
 
     sleuth_config = {
-        "kallisto_tar_config": {
-            "ERR030856": {"tissue": "mixture"},
-            "ERR030857": {"tissue": "mixture"},
-            "ERR030858": {"tissue": "mixture"},
-            "ERR030872": {"tissue": "thyroid"},
-            "ERR030903": {"tissue": "thyroid"}
-        },
+        "kallisto_config": [
+            {"dataset": "ERR030856", "tissue": "mixture"},
+            {"dataset": "ERR030857", "tissue": "mixture"},
+            {"dataset": "ERR030858", "tissue": "mixture"},
+            {"dataset": "ERR030872", "tissue": "thyroid"},
+            {"dataset": "ERR030903", "tissue": "thyroid"}
+        ],
         "sleuth_sig_level": 1.0,
         "sleuth_tag": "test"
     }
 
     sleuth_handle = process_sleuth(sleuth_config)
     sleuth_files, sleuth_meta = sleuth_handle.run(  # pylint: disable=unused-variable
-        files, metadata, files_out)
+        input_files, metadata, output_files)
 
     # Checks that the returned files matches the expected set of results
     assert len(sleuth_files) == 3
@@ -95,6 +100,6 @@ def test_sleuth_pipeline():
     # Add tests for all files created
     for f_out in sleuth_files:
         print("Sleuth RESULTS FILE:", f_out)
-        assert sleuth_files[f_out] == files_out[f_out]
+        assert sleuth_files[f_out] == output_files[f_out]
         assert os.path.isfile(sleuth_files[f_out]) is True
         assert os.path.getsize(sleuth_files[f_out]) > 0

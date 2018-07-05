@@ -295,6 +295,8 @@ class kallistoQuantificationTool(Tool):  # pylint: disable=invalid-name
         else:
             return ({}, {})
 
+        meta_data = input_metadata["cdna"].meta_data
+        meta_data["tool"] = "kallisto_quant"
         output_metadata = {
             "kallisto_tar_file": Metadata(
                 data_type="data_rnaseq",
@@ -302,10 +304,7 @@ class kallistoQuantificationTool(Tool):  # pylint: disable=invalid-name
                 file_path=output_files["kallisto_tar_file"],
                 sources=sources,
                 taxon_id=input_metadata["cdna"].taxon_id,
-                meta_data={
-                    "assembly": input_metadata["cdna"].meta_data["assembly"],
-                    "tool": "kallisto_quant"
-                }
+                meta_data=meta_data
             )
         }
 

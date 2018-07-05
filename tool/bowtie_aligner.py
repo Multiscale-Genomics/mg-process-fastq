@@ -14,10 +14,13 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 """
+
 from __future__ import print_function
+
 import os
 import sys
 import tarfile
+import shutil
 
 from utils import logger
 
@@ -26,14 +29,15 @@ try:
         raise ImportError
     from pycompss.api.parameter import IN, FILE_IN, FILE_OUT
     from pycompss.api.task import task
-    from pycompss.api.api import compss_wait_on, compss_open
+    from pycompss.api.constraint import constraint
+    from pycompss.api.api import barrier, compss_wait_on, compss_open, compss_delete_file
 except ImportError:
     logger.warn("[Warning] Cannot import \"pycompss\" API packages.")
     logger.warn("          Using mock decorators.")
 
     from utils.dummy_pycompss import IN, FILE_IN, FILE_OUT  # pylint: disable=ungrouped-imports
-    from utils.dummy_pycompss import task  # pylint: disable=ungrouped-imports
-    from utils.dummy_pycompss import compss_wait_on, compss_open  # pylint: disable=ungrouped-imports
+    from utils.dummy_pycompss import task, constraint  # pylint: disable=ungrouped-imports
+    from utils.dummy_pycompss import barrier, compss_wait_on, compss_open, compss_delete_file  # pylint: disable=ungrouped-imports
 
 from basic_modules.tool import Tool
 from basic_modules.metadata import Metadata
@@ -45,7 +49,7 @@ from tool.bam_utils import bamUtilsTask
 # ------------------------------------------------------------------------------
 
 
-class bowtie2AlignerTool(Tool):
+class bowtie2AlignerTool(Tool):  # pylint: disable=invalid-name
     """
     Tool for aligning sequence reads to a genome using BWA
     """
@@ -74,7 +78,8 @@ class bowtie2AlignerTool(Tool):
           bt2_4_file=FILE_OUT, bt2_rev1_file=FILE_OUT, bt2_rev2_file=FILE_OUT)
     def untar_index(  # pylint: disable=too-many-locals,too-many-arguments
             self, genome_file_name, genome_idx,
-            bt2_1_file, bt2_2_file, bt2_3_file, bt2_4_file, bt2_rev1_file, bt2_rev2_file):
+            bt2_1_file, bt2_2_file, bt2_3_file, bt2_4_file,
+            bt2_rev1_file, bt2_rev2_file):
         """
         Extracts the Bowtie2 index files from the genome index tar file.
 
@@ -114,8 +119,11 @@ class bowtie2AlignerTool(Tool):
 
         return True
 
+    @constraint(ComputingUnits="4")
     @task(returns=bool, genome_file_loc=FILE_IN, read_file_loc=FILE_IN,
-          bam_loc=FILE_OUT, genome_idx=FILE_IN, aln_params=IN, isModifier=False)
+          bam_loc=FILE_OUT, bt2_1_file=FILE_IN, bt2_2_file=FILE_IN,
+          bt2_3_file=FILE_IN, bt2_4_file=FILE_IN, bt2_rev1_file=FILE_IN,
+          bt2_rev2_file=FILE_IN, aln_params=IN, isModifier=False)
     def bowtie2_aligner_single(  # pylint: disable=too-many-arguments, no-self-use
             self, genome_file_loc, read_file_loc, bam_loc,
             bt2_1_file, bt2_2_file, bt2_3_file, bt2_4_file,  # pylint: disable=unused-argument
@@ -170,8 +178,11 @@ class bowtie2AlignerTool(Tool):
 
         return True
 
+    @constraint(ComputingUnits="4")
     @task(returns=bool, genome_file_loc=FILE_IN, read_file_loc1=FILE_IN,
-          read_file_loc2=FILE_IN, bam_loc=FILE_OUT, genome_idx=FILE_IN,
+          read_file_loc2=FILE_IN, bam_loc=FILE_OUT, bt2_1_file=FILE_IN,
+          bt2_2_file=FILE_IN, bt2_3_file=FILE_IN, bt2_4_file=FILE_IN,
+          bt2_rev1_file=FILE_IN, bt2_rev2_file=FILE_IN,
           aln_params=IN, isModifier=False)
     def bowtie2_aligner_paired(  # pylint: disable=too-many-arguments, no-self-use
             self, genome_file_loc, read_file_loc1, read_file_loc2, bam_loc,
@@ -338,7 +349,7 @@ class bowtie2AlignerTool(Tool):
 
         return command_params
 
-    def run(self, input_files, input_metadata, output_files):  # pylint: disable=too-many-locals,too-many-statements
+    def run(self, input_files, input_metadata, output_files):  # pylint: disable=too-many-branches,too-many-locals,too-many-statements
         """
         The main function to align bam files to a genome using Bowtie2
 
@@ -388,6 +399,7 @@ class bowtie2AlignerTool(Tool):
             )
             tasks_done += 1
             logger.progress("Untar Index", task_id=tasks_done, total=task_count)
+
         sources = [input_files["genome"]]
 
         fqs = fastq_splitter()
@@ -414,6 +426,10 @@ class bowtie2AlignerTool(Tool):
             logger.fatal("FASTQ SPLITTER: run failed")
             return {}, {}
 
+        # compss_delete_file(fastq1)
+        # if "fastq2" in input_files:
+        #     compss_delete_file(fastq2)
+
         if hasattr(sys, '_run_from_cmdl') is True:
             pass
         else:
@@ -429,6 +445,8 @@ class bowtie2AlignerTool(Tool):
             tar = tarfile.open(fastq_file_gz)
             tar.extractall(path=gz_data_path)
             tar.close()
+            os.remove(fastq_file_gz)
+            compss_delete_file(fastq_file_gz)
         except tarfile.TarError:
             logger.fatal("Split FASTQ files: Malformed tar file")
             return {}, {}
@@ -481,6 +499,19 @@ class bowtie2AlignerTool(Tool):
                     self.get_aln_params(self.configuration)
                 )
 
+        barrier()
+
+        # Remove all tmp fastq files now that the reads have been aligned
+        if untar_idx:
+            for idx_file in index_files:
+                compss_delete_file(index_files[idx_file])
+
+        for fastq_file_pair in fastq_file_list:
+            compss_delete_file(gz_data_path + "/tmp/" + fastq_file_pair[0])
+            os.remove(gz_data_path + "/tmp/" + fastq_file_pair[0])
+            if "fastq2" in input_files:
+                compss_delete_file(gz_data_path + "/tmp/" + fastq_file_pair[1])
+                os.remove(gz_data_path + "/tmp/" + fastq_file_pair[1])
         tasks_done += 1
         logger.progress("ALIGNER", task_id=tasks_done, total=task_count)
 
@@ -490,6 +521,18 @@ class bowtie2AlignerTool(Tool):
         bam_handle.bam_merge(output_bam_list)
         tasks_done += 1
         logger.progress("Merging bam files", task_id=tasks_done, total=task_count)
+
+        # Remove all bam files that are not the final file
+        for i in output_bam_list[1:len(output_bam_list)]:
+            try:
+                compss_delete_file(i)
+                os.remove(i)
+            except (OSError, IOError) as msg:
+                logger.warn(
+                    "Unable to remove file I/O error({0}): {1}".format(
+                        msg.errno, msg.strerror
+                    )
+                )
 
         logger.progress("Sorting merged bam file", task_id=tasks_done, total=task_count)
         bam_handle.bam_sort(output_bam_list[0])
@@ -503,7 +546,19 @@ class bowtie2AlignerTool(Tool):
         logger.progress("Copying bam file into the output file",
                         task_id=tasks_done, total=task_count)
 
+        compss_delete_file(output_bam_list[0])
+
         logger.info("BOWTIE2 ALIGNER: Alignments complete")
+
+        barrier()
+        try:
+            shutil.rmtree(gz_data_path + "/tmp")
+        except (OSError, IOError) as msg:
+            logger.warn(
+                "Already tidy I/O error({0}): {1}".format(
+                    msg.errno, msg.strerror
+                )
+            )
 
         output_metadata = {
             "bam": Metadata(

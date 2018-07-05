@@ -22,6 +22,7 @@ import shlex
 import subprocess
 import sys
 import tarfile
+import shutil
 
 from utils import logger
 
@@ -30,14 +31,14 @@ try:
         raise ImportError
     from pycompss.api.parameter import FILE_IN, FILE_OUT, IN
     from pycompss.api.task import task
-    from pycompss.api.api import compss_wait_on, compss_open
+    from pycompss.api.api import barrier, compss_wait_on, compss_open, compss_delete_file
 except ImportError:
     logger.warn("[Warning] Cannot import \"pycompss\" API packages.")
     logger.warn("          Using mock decorators.")
 
     from utils.dummy_pycompss import FILE_IN, FILE_OUT, IN  # pylint: disable=ungrouped-imports
     from utils.dummy_pycompss import task  # pylint: disable=ungrouped-imports
-    from utils.dummy_pycompss import compss_wait_on, compss_open  # pylint: disable=ungrouped-imports
+    from utils.dummy_pycompss import barrier, compss_wait_on, compss_open, compss_delete_file  # pylint: disable=ungrouped-imports
 
 from basic_modules.tool import Tool
 from basic_modules.metadata import Metadata
@@ -49,7 +50,7 @@ from tool.bam_utils import bamUtilsTask
 
 # ------------------------------------------------------------------------------
 
-class bssAlignerTool(Tool):
+class bssAlignerTool(Tool):  # pylint: disable=invalid-name
     """
     Script from BS-Seeker2 for building the index for alignment. In this case
     it uses Bowtie2.
@@ -461,6 +462,8 @@ class bssAlignerTool(Tool):
             tar = tarfile.open(fastq_file_gz)
             tar.extractall(path=gz_data_path)
             tar.close()
+            os.remove(fastq_file_gz)
+            compss_delete_file(fastq_file_gz)
         except tarfile.TarError:
             logger.fatal("Split FASTQ files: Malformed tar file")
             return {}, {}
@@ -507,6 +510,20 @@ class bssAlignerTool(Tool):
                     output_bam_file_tmp
                 )
 
+        barrier()
+
+        # Remove all tmp fastq files now that the reads have been aligned
+        # if untar_idx:
+        #     for idx_file in index_files:
+        #         compss_delete_file(index_files[idx_file])
+
+        for fastq_file_pair in fastq_file_list:
+            os.remove(gz_data_path + "/tmp/" + fastq_file_pair[0])
+            compss_delete_file(gz_data_path + "/tmp/" + fastq_file_pair[0])
+            if "fastq2" in input_files:
+                os.remove(gz_data_path + "/tmp/" + fastq_file_pair[1])
+                compss_delete_file(gz_data_path + "/tmp/" + fastq_file_pair[1])
+
         tasks_done += 1
         logger.progress("ALIGNER", task_id=tasks_done, total=task_count)
 
@@ -516,6 +533,18 @@ class bssAlignerTool(Tool):
         bam_handle.bam_merge(output_bam_list)
         tasks_done += 1
         logger.progress("Merging bam files", task_id=tasks_done, total=task_count)
+
+        # Remove all bam files that are not the final file
+        for i in output_bam_list[1:len(output_bam_list)]:
+            try:
+                compss_delete_file(i)
+                os.remove(i)
+            except (OSError, IOError) as msg:
+                logger.warn(
+                    "Unable to remove file I/O error({0}): {1}".format(
+                        msg.errno, msg.strerror
+                    )
+                )
 
         logger.progress("Sorting merged bam file", task_id=tasks_done, total=task_count)
         bam_handle.bam_sort(output_bam_list[0])
@@ -529,10 +558,15 @@ class bssAlignerTool(Tool):
         logger.progress("Copying bam file into the output file",
                         task_id=tasks_done, total=task_count)
 
+        compss_delete_file(output_bam_list[0])
+
         logger.progress("Creating output bam index file", task_id=tasks_done, total=task_count)
         bam_handle.bam_index(output_bam_file, output_bai_file)
         tasks_done += 1
         logger.progress("Creating output bam index file", task_id=tasks_done, total=task_count)
+
+        barrier()
+        shutil.rmtree(gz_data_path + "/tmp")
 
         output_metadata = {
             "bam": Metadata(

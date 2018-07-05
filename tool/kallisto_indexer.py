@@ -28,14 +28,12 @@ try:
         raise ImportError
     from pycompss.api.parameter import FILE_IN, FILE_OUT
     from pycompss.api.task import task
-    # from pycompss.api.api import compss_wait_on
 except ImportError:
     logger.warn("[Warning] Cannot import \"pycompss\" API packages.")
     logger.warn("          Using mock decorators.")
 
     from utils.dummy_pycompss import FILE_IN, FILE_OUT  # pylint: disable=ungrouped-imports
     from utils.dummy_pycompss import task  # pylint: disable=ungrouped-imports
-    # from utils.dummy_pycompss import compss_wait_on  # pylint: disable=ungrouped-imports
 
 from basic_modules.tool import Tool
 from basic_modules.metadata import Metadata
@@ -43,7 +41,7 @@ from basic_modules.metadata import Metadata
 # ------------------------------------------------------------------------------
 
 
-class kallistoIndexerTool(Tool):
+class kallistoIndexerTool(Tool):  # pylint: disable=invalid-name
     """
     Tool for running indexers over a genome FASTA file
     """
@@ -68,7 +66,7 @@ class kallistoIndexerTool(Tool):
         self.configuration.update(configuration)
 
     @task(cdna_file_loc=FILE_IN, cdna_idx_file=FILE_OUT)
-    def kallisto_indexer(self, cdna_file_loc, cdna_idx_file):  # pylint disable=no-self-use
+    def kallisto_indexer(self, cdna_file_loc, cdna_idx_file):  # pylint: disable=no-self-use
         """
         Kallisto Indexer
 
@@ -111,10 +109,6 @@ class kallistoIndexerTool(Tool):
             list of the matching metadata
         """
 
-        # file_name = input_files[0]
-        # genome_idx_loc = file_name.replace('.fasta', '.idx')
-        # genome_idx_loc = genome_idx_loc.replace('.fa', '.idx')
-
         # input and output share most metadata
         output_metadata = {}
 
@@ -122,16 +116,11 @@ class kallistoIndexerTool(Tool):
             input_files["cdna"],
             output_files["index"]
         )
-        # results = compss_wait_on(results)
-
-        # if results is False:
-        #     logger.fatal("Kallisto Indexer: run failed")
-        #     return {}, {}
 
         output_metadata = {
             "index": Metadata(
-                data_type="index_kallisto",
-                file_type="",
+                data_type="sequence_mapping_index_kallisto",
+                file_type="IDX",
                 file_path=output_files["index"],
                 sources=[input_metadata["cdna"].file_path],
                 taxon_id=input_metadata["cdna"].taxon_id,

@@ -43,7 +43,7 @@ from basic_modules.metadata import Metadata
 # ------------------------------------------------------------------------------
 
 
-class idearTool(Tool):
+class idearTool(Tool):  # pylint: disable=invalid-name
     """
     Tool for peak calling for iDamID-seq data
     """
@@ -72,7 +72,7 @@ class idearTool(Tool):
         sample_name=IN, bg_name=IN, sample_bam_file_1=FILE_IN, sample_bam_file_2=FILE_IN,
         bg_bam_file_1=FILE_IN, bg_bam_file_2=FILE_IN, species=IN, assembly=IN, bsgenome=FILE_IN,
         peak_bw=FILE_OUT, isModifier=False)
-    def idear_peak_calling(  # pylint: disable=no-self-use
+    def idear_peak_calling(  # pylint: disable=no-self-use,too-many-locals,too-many-arguments
             self, sample_name, bg_name, sample_bam_file_1, sample_bam_file_2,
             bg_bam_file_1, bg_bam_file_2, common_species_name, assembly,
             bsgenome, peak_bw):
@@ -190,7 +190,6 @@ class idearTool(Tool):
             input_files["bsgenome"],
             output_files["bigwig"]
         )
-        #results = compss_wait_on(results)
 
         output_metadata = {
             "bigwig": Metadata(

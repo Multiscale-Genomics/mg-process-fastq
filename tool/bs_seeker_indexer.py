@@ -45,7 +45,7 @@ from tool.common import common
 
 # ------------------------------------------------------------------------------
 
-class bssIndexerTool(Tool):
+class bssIndexerTool(Tool):  # pylint: disable=invalid-name
     """
     Script from BS-Seeker2 for building the index for alignment. In this case
     it uses Bowtie2.

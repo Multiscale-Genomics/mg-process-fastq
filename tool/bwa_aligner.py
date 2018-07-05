@@ -14,10 +14,13 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 """
+
 from __future__ import print_function
+
 import os
 import sys
 import tarfile
+import shutil
 
 from utils import logger
 
@@ -26,14 +29,15 @@ try:
         raise ImportError
     from pycompss.api.parameter import IN, FILE_IN, FILE_OUT
     from pycompss.api.task import task
-    from pycompss.api.api import compss_wait_on, compss_open
+    from pycompss.api.constraint import constraint
+    from pycompss.api.api import barrier, compss_wait_on, compss_open, compss_delete_file
 except ImportError:
     logger.warn("[Warning] Cannot import \"pycompss\" API packages.")
     logger.warn("          Using mock decorators.")
 
     from utils.dummy_pycompss import IN, FILE_IN, FILE_OUT  # pylint: disable=ungrouped-imports
-    from utils.dummy_pycompss import task  # pylint: disable=ungrouped-imports
-    from utils.dummy_pycompss import compss_wait_on, compss_open  # pylint: disable=ungrouped-imports
+    from utils.dummy_pycompss import task, constraint  # pylint: disable=ungrouped-imports
+    from utils.dummy_pycompss import barrier, compss_wait_on, compss_open, compss_delete_file  # pylint: disable=ungrouped-imports
 
 from basic_modules.tool import Tool
 from basic_modules.metadata import Metadata
@@ -45,7 +49,7 @@ from tool.bam_utils import bamUtilsTask
 # ------------------------------------------------------------------------------
 
 
-class bwaAlignerTool(Tool):
+class bwaAlignerTool(Tool):  # pylint: disable=invalid-name
     """
     Tool for aligning sequence reads to a genome using BWA
     """
@@ -110,9 +114,9 @@ class bwaAlignerTool(Tool):
 
         return True
 
+    @constraint(ComputingUnits="4")
     @task(returns=bool, genome_file_loc=FILE_IN, read_file_loc=FILE_IN,
-          bam_loc=FILE_OUT, genome_idx=FILE_IN,
-          amb_file=FILE_IN, ann_file=FILE_IN, bwt_file=FILE_IN,
+          bam_loc=FILE_OUT, amb_file=FILE_IN, ann_file=FILE_IN, bwt_file=FILE_IN,
           pac_file=FILE_IN, sa_file=FILE_IN, aln_params=IN, isModifier=False)
     def bwa_aligner_single(  # pylint: disable=too-many-arguments, no-self-use
             self, genome_file_loc, read_file_loc, bam_loc,
@@ -129,8 +133,16 @@ class bwaAlignerTool(Tool):
             Location of the FASTQ file
         bam_loc : str
             Location of the output aligned bam file
-        genome_idx : idx
-            Location of the BWA index file
+        amb_file : str
+            Location of the amb index file
+        ann_file : str
+            Location of the ann index file
+        bwt_file : str
+            Location of the bwt index file
+        pac_file : str
+            Location of the pac index file
+        sa_file : str
+            Location of the sa index file
         aln_params : dict
             Alignment parameters
 
@@ -139,6 +151,11 @@ class bwaAlignerTool(Tool):
         bam_loc : str
             Location of the output file
         """
+        if (
+                os.path.isfile(read_file_loc) is False or
+                os.path.getsize(read_file_loc) == 0):
+            return False
+
         out_bam = read_file_loc + '.out.bam'
 
         au_handle = alignerUtils()
@@ -151,15 +168,17 @@ class bwaAlignerTool(Tool):
             with open(bam_loc, "wb") as f_out:
                 with open(out_bam, "rb") as f_in:
                     f_out.write(f_in.read())
-        except IOError:
+        except IOError as error:
+            logger.fatal("SINGLE ALIGNER: I/O error({0}): {1}".format(error.errno, error.strerror))
             return False
 
         os.remove(out_bam)
 
         return True
 
+    @constraint(ComputingUnits="4")
     @task(returns=bool, genome_file_loc=FILE_IN, read_file_loc1=FILE_IN,
-          read_file_loc2=FILE_IN, bam_loc=FILE_OUT, genome_idx=FILE_IN,
+          read_file_loc2=FILE_IN, bam_loc=FILE_OUT,
           amb_file=FILE_IN, ann_file=FILE_IN, bwt_file=FILE_IN,
           pac_file=FILE_IN, sa_file=FILE_IN, aln_params=IN, isModifier=False)
     def bwa_aligner_paired(  # pylint: disable=too-many-arguments, no-self-use
@@ -178,8 +197,16 @@ class bwaAlignerTool(Tool):
             Location of the FASTQ file
         bam_loc : str
             Location of the output aligned bam file
-        genome_idx : idx
-            Location of the BWA index file
+        amb_file : str
+            Location of the amb index file
+        ann_file : str
+            Location of the ann index file
+        bwt_file : str
+            Location of the bwt index file
+        pac_file : str
+            Location of the pac index file
+        sa_file : str
+            Location of the sa index file
         aln_params : dict
             Alignment parameters
 
@@ -199,11 +226,11 @@ class bwaAlignerTool(Tool):
             with open(bam_loc, "wb") as f_out:
                 with open(out_bam, "rb") as f_in:
                     f_out.write(f_in.read())
-        except IOError:
+        except IOError as error:
+            logger.fatal("PARIED ALIGNER: I/O error({0}): {1}".format(error.errno, error.strerror))
             return False
 
         os.remove(out_bam)
-        # shutil.rmtree(g_dir)
 
         return True
 
@@ -221,6 +248,7 @@ class bwaAlignerTool(Tool):
         -------
         list
         """
+
         command_parameters = {
             "bwa_edit_dist_param": ["-n", True],
             "bwa_max_gap_open_param": ["-o", True],
@@ -250,7 +278,7 @@ class bwaAlignerTool(Tool):
 
         return command_params
 
-    def run(self, input_files, input_metadata, output_files):  # pylint: disable=too-many-locals,too-many-statements
+    def run(self, input_files, input_metadata, output_files):  # pylint: disable=too-many-branches,too-many-locals,too-many-statements
         """
         The main function to align bam files to a genome using BWA
 
@@ -269,9 +297,13 @@ class bwaAlignerTool(Tool):
         output_metadata : dict
         """
 
+        tasks_done = 0
+        task_count = 6
+
         untar_idx = True
         if "no-untar" in self.configuration and self.configuration["no-untar"] is True:
             untar_idx = False
+            task_count = 5
 
         index_files = {
             "amb": input_files["genome"] + ".amb",
@@ -282,6 +314,7 @@ class bwaAlignerTool(Tool):
         }
 
         if untar_idx:
+            logger.progress("Untar Index", task_id=tasks_done, total=task_count)
             self.untar_index(
                 input_files["genome"],
                 input_files["index"],
@@ -291,6 +324,8 @@ class bwaAlignerTool(Tool):
                 index_files["pac"],
                 index_files["sa"]
             )
+            tasks_done += 1
+            logger.progress("Untar Index", task_id=tasks_done, total=task_count)
 
         sources = [input_files["genome"]]
 
@@ -298,6 +333,8 @@ class bwaAlignerTool(Tool):
 
         fastq1 = input_files["loc"]
         sources.append(input_files["loc"])
+
+        logger.progress("FASTQ Splitter", task_id=tasks_done, total=task_count)
 
         fastq_file_gz = str(fastq1 + ".tar.gz")
         if "fastq2" in input_files:
@@ -313,11 +350,14 @@ class bwaAlignerTool(Tool):
 
         # Required to prevent iterating over the future objects
         fastq_file_list = compss_wait_on(fastq_file_list)
+
+        # compss_delete_file(fastq1)
+        # if "fastq2" in input_files:
+        #     compss_delete_file(fastq2)
+
         if not fastq_file_list:
             logger.fatal("FASTQ SPLITTER: run failed")
             return {}, {}
-
-        logger.progress("FASTQ Splitter", task_id=0, total=4)
 
         if hasattr(sys, '_run_from_cmdl') is True:
             pass
@@ -334,11 +374,14 @@ class bwaAlignerTool(Tool):
             tar = tarfile.open(fastq_file_gz)
             tar.extractall(path=gz_data_path)
             tar.close()
+            os.remove(fastq_file_gz)
+            compss_delete_file(fastq_file_gz)
         except tarfile.TarError:
             logger.fatal("Split FASTQ files: Malformed tar file")
             return {}, {}
 
-        logger.progress("FASTQ Splitter", task_id=1, total=4)
+        tasks_done += 1
+        logger.progress("FASTQ Splitter", task_id=tasks_done, total=task_count)
 
         # input and output share most metadata
         output_metadata = {}
@@ -349,7 +392,9 @@ class bwaAlignerTool(Tool):
         logger.info("BWA ALIGNER: Aligning sequence reads to the genome")
 
         output_bam_list = []
-        logger.progress("ALIGNER - jobs = " + str(len(fastq_file_list)), task_id=1, total=4)
+        logger.progress("ALIGNER - jobs = " + str(len(fastq_file_list)),
+                        task_id=tasks_done, total=task_count)
+
         for fastq_file_pair in fastq_file_list:
             if "fastq2" in input_files:
                 tmp_fq1 = gz_data_path + "/tmp/" + fastq_file_pair[0]
@@ -383,22 +428,66 @@ class bwaAlignerTool(Tool):
                     self.get_aln_params(self.configuration)
                 )
 
-        logger.progress("ALIGNER", task_id=2, total=4)
+        barrier()
+
+        # Remove all tmp fastq files now that the reads have been aligned
+        if untar_idx:
+            for idx_file in index_files:
+                compss_delete_file(index_files[idx_file])
+
+        for fastq_file_pair in fastq_file_list:
+            os.remove(gz_data_path + "/tmp/" + fastq_file_pair[0])
+            compss_delete_file(gz_data_path + "/tmp/" + fastq_file_pair[0])
+            if "fastq2" in input_files:
+                os.remove(gz_data_path + "/tmp/" + fastq_file_pair[1])
+                compss_delete_file(gz_data_path + "/tmp/" + fastq_file_pair[1])
+        tasks_done += 1
+        logger.progress("ALIGNER", task_id=tasks_done, total=task_count)
 
         bam_handle = bamUtilsTask()
 
-        logger.progress("Merging bam files", task_id=2, total=4)
+        logger.progress("Merging bam files", task_id=tasks_done, total=task_count)
         bam_handle.bam_merge(output_bam_list)
-        logger.progress("Merging bam files", task_id=3, total=4)
+        tasks_done += 1
+        logger.progress("Merging bam files", task_id=tasks_done, total=task_count)
 
-        logger.progress("Sorting merged bam file", task_id=3, total=4)
+        # Remove all bam files that are not the final file
+        for i in output_bam_list[1:len(output_bam_list)]:
+            try:
+                compss_delete_file(i)
+                os.remove(i)
+            except (OSError, IOError) as msg:
+                logger.warn(
+                    "Unable to remove file I/O error({0}): {1}".format(
+                        msg.errno, msg.strerror
+                    )
+                )
+
+        logger.progress("Sorting merged bam file", task_id=tasks_done, total=task_count)
         bam_handle.bam_sort(output_bam_list[0])
-        logger.progress("Sorting merged bam file", task_id=4, total=4)
+        tasks_done += 1
+        logger.progress("Sorting merged bam file", task_id=tasks_done, total=task_count)
 
-        logger.info("Copying bam file into the output file")
+        logger.progress("Copying bam file into the output file",
+                        task_id=tasks_done, total=task_count)
         bam_handle.bam_copy(output_bam_list[0], output_bam_file)
+        tasks_done += 1
+        logger.progress("Copying bam file into the output file",
+                        task_id=tasks_done, total=task_count)
+
+        compss_delete_file(output_bam_list[0])
 
         logger.info("BWA ALIGNER: Alignments complete")
+
+        barrier()
+        try:
+            shutil.rmtree(gz_data_path + "/tmp")
+        except (OSError, IOError) as msg:
+            logger.warn(
+                "Already tidy I/O error({0}): {1}".format(
+                    msg.errno, msg.strerror
+                )
+            )
 
         output_metadata = {
             "bam": Metadata(

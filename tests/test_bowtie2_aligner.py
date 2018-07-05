@@ -19,6 +19,7 @@ from __future__ import print_function
 import os
 import shutil
 import gzip
+import subprocess
 import pytest
 
 from basic_modules.metadata import Metadata
@@ -90,13 +91,14 @@ def test_bowtie2_aligner_single():
     assert os.path.isfile(resource_path + "macs2.Human.DRR000150.22_bt2.bam") is True
     assert os.path.getsize(resource_path + "macs2.Human.DRR000150.22_bt2.bam") > 0
 
-    try:
-        os.remove(resource_path + "macs2.Human.DRR000150.22_bt2.bam")
-    except OSError, ose:
-        print("Error: %s - %s." % (ose.filename, ose.strerror))
+    cmdl = "samtools view -c -f 0 {}macs2.Human.DRR000150.22_bt2.bam".format(resource_path)
+    process = subprocess.Popen(cmdl, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    process.wait()
+    proc_out, proc_err = process.communicate()  # pylint: disable=unused-variable
+    assert int(proc_out.strip()) > 0
 
     try:
-        shutil.rmtree(resource_path + "tmp")
+        os.remove(resource_path + "macs2.Human.DRR000150.22_bt2.bam")
     except OSError, ose:
         print("Error: %s - %s." % (ose.filename, ose.strerror))
 
@@ -146,10 +148,14 @@ def test_bowtie2_aligner_paired():
     bowtie2_handle = bowtie2AlignerTool()
     bowtie2_handle.run(input_files, metadata, output_files)
 
-    print(__file__)
-
     assert os.path.isfile(resource_path + "bsSeeker.Mouse.SRR892982_1_bt2.bam") is True
     assert os.path.getsize(resource_path + "bsSeeker.Mouse.SRR892982_1_bt2.bam") > 0
+
+    cmdl = "samtools view -c -f 0 {}bsSeeker.Mouse.SRR892982_1_bt2.bam".format(resource_path)
+    process = subprocess.Popen(cmdl, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    process.wait()
+    proc_out, proc_err = process.communicate()  # pylint: disable=unused-variable
+    assert int(proc_out.strip()) > 0
 
     try:
         os.remove(resource_path + "bsSeeker.Mouse.SRR892982_1_bt2.bam")

@@ -22,7 +22,7 @@ import os
 from tool.fastqreader import fastqreader
 
 
-class fastqUtils(object):
+class fastqUtils(object):  # pylint: disable=invalid-name
     """
     Set of methods to help with the management of FastQ files.
     """
@@ -157,8 +157,10 @@ class fastqUtils(object):
 
         fqr.closeFastQ()
 
+        fastq_suffix = "." + fastq[-1].split(".")[-1]
+
         with open(fastq, "r") as fq_file:
-            with open(fastq.replace(".fastq", ".random"), "w") as tmp_fq_file:
+            with open(fastq.replace(fastq_suffix, ".random"), "w") as tmp_fq_file:
                 for r_id in list(fq_tmp.keys()):
                     fq_file.seek(fq_tmp[r_id][0])
                     tmp_fq_file.write(fq_file.read(fq_tmp[r_id][1]-fq_tmp[r_id][0]))

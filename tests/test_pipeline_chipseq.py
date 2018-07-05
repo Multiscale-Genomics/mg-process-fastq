@@ -94,7 +94,7 @@ def test_chipseq_pipeline_00():
 
         try:
             os.remove(chipseq_files[f_out])
-        except OSError, ose:
+        except OSError as ose:
             print("Error: %s - %s." % (ose.filename, ose.strerror))
 
 

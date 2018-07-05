@@ -19,7 +19,8 @@ from __future__ import print_function
 import os
 import shutil
 import gzip
-import pytest  # pylint: disable=unused-import
+import subprocess
+import pytest
 
 from basic_modules.metadata import Metadata
 
@@ -116,6 +117,12 @@ def test_bwa_aligner_aln():
     assert os.path.isfile(resource_path + "macs2.Human.DRR000150.22_aln.bam") is True
     assert os.path.getsize(resource_path + "macs2.Human.DRR000150.22_aln.bam") > 0
 
+    cmdl = "samtools view -c -f 0 {}macs2.Human.DRR000150.22_aln.bam".format(resource_path)
+    process = subprocess.Popen(cmdl, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    process.wait()
+    proc_out, proc_err = process.communicate()  # pylint: disable=unused-variable
+    assert int(proc_out) > 0
+
     try:
         os.remove(resource_path + "macs2.Human.DRR000150.22_aln.bam")
     except OSError, ose:
@@ -170,6 +177,12 @@ def test_bwa_aligner_mem():
 
     assert os.path.isfile(resource_path + "macs2.Human.DRR000150.22_mem.bam") is True
     assert os.path.getsize(resource_path + "macs2.Human.DRR000150.22_mem.bam") > 0
+
+    cmdl = "samtools view -c -f 0 {}macs2.Human.DRR000150.22_mem.bam".format(resource_path)
+    process = subprocess.Popen(cmdl, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    process.wait()
+    proc_out, proc_err = process.communicate()  # pylint: disable=unused-variable
+    assert int(proc_out) > 0
 
     try:
         os.remove(resource_path + "macs2.Human.DRR000150.22_mem.bam")
@@ -249,10 +262,14 @@ def test_bwa_aligner_aln_paired():
     bwa_t = bwaAlignerTool()
     bwa_t.run(input_files, metadata, output_files)
 
-    print(__file__)
-
     assert os.path.isfile(resource_path + "bsSeeker.Mouse.SRR892982_1_aln.bam") is True
     assert os.path.getsize(resource_path + "bsSeeker.Mouse.SRR892982_1_aln.bam") > 0
+
+    cmdl = "samtools view -c -f 1 {}bsSeeker.Mouse.SRR892982_1_aln.bam".format(resource_path)
+    process = subprocess.Popen(cmdl, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    process.wait()
+    proc_out, proc_err = process.communicate()  # pylint: disable=unused-variable
+    assert int(proc_out) > 0
 
     try:
         os.remove(resource_path + "bsSeeker.Mouse.SRR892982_1_aln.bam")
@@ -310,10 +327,14 @@ def test_bwa_aligner_mem_paired():
     bwa_t = bwaAlignerMEMTool()
     bwa_t.run(input_files, metadata, output_files)
 
-    print(__file__)
-
     assert os.path.isfile(resource_path + "bsSeeker.Mouse.SRR892982_1_mem.bam") is True
     assert os.path.getsize(resource_path + "bsSeeker.Mouse.SRR892982_1_mem.bam") > 0
+
+    cmdl = "samtools view -c -f 1 {}bsSeeker.Mouse.SRR892982_1_mem.bam".format(resource_path)
+    process = subprocess.Popen(cmdl, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    process.wait()
+    proc_out, proc_err = process.communicate()  # pylint: disable=unused-variable
+    assert int(proc_out) > 0
 
     try:
         os.remove(resource_path + "bsSeeker.Mouse.SRR892982_1_mem.bam")
@@ -425,8 +446,6 @@ def test_bwa_aligner_mnaseseq():
 
     bwa_t = bwaAlignerTool()
     bwa_t.run(input_files, metadata, output_files)
-
-    print(__file__)
 
     assert os.path.isfile(resource_path + "inps.Mouse.DRR000386.bam") is True
     assert os.path.getsize(resource_path + "inps.Mouse.DRR000386.bam") > 0

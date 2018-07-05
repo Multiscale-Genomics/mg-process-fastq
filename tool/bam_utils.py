@@ -25,21 +25,21 @@ from utils import logger
 try:
     if hasattr(sys, '_run_from_cmdl') is True:
         raise ImportError
-    from pycompss.api.parameter import FILE_IN, FILE_OUT, FILE_INOUT
+    from pycompss.api.parameter import FILE_IN, FILE_OUT, FILE_INOUT, IN
     from pycompss.api.task import task
-    from pycompss.api.api import barrier
+    from pycompss.api.api import barrier, compss_delete_file
 except ImportError:
     logger.warn("[Warning] Cannot import \"pycompss\" API packages.")
     logger.warn("          Using mock decorators.")
 
-    from utils.dummy_pycompss import FILE_IN, FILE_OUT, FILE_INOUT  # pylint: disable=ungrouped-imports
+    from utils.dummy_pycompss import FILE_IN, FILE_OUT, FILE_INOUT, IN  # pylint: disable=ungrouped-imports
     from utils.dummy_pycompss import task  # pylint: disable=ungrouped-imports
-    from utils.dummy_pycompss import barrier  # pylint: disable=ungrouped-imports
+    from utils.dummy_pycompss import barrier, compss_delete_file  # pylint: disable=ungrouped-imports
 
 
 # ------------------------------------------------------------------------------
 
-class bamUtils(object):
+class bamUtils(object):  # pylint: disable=invalid-name
     """
     Tool for handling bam files
     """
@@ -49,6 +49,16 @@ class bamUtils(object):
         Initialise the tool with its configuration.
         """
         logger.info("BAM Utils")
+
+    @staticmethod
+    def bam_count_reads(bam_file, aligned=False):
+        """
+        Wrapper to count the number of (aligned) reads in a bam file
+        """
+        if aligned:
+            return pysam.view("-c", "-F", "260", bam_file).strip()  # pylint: disable=no-member
+
+        return pysam.view("-c", bam_file).strip()  # pylint: disable=no-member
 
     @staticmethod
     def bam_sort(bam_file):
@@ -65,6 +75,50 @@ class bamUtils(object):
                 "-o", bam_file, "-T", bam_file + "_sort", bam_file)
         except IOError:
             return False
+        return True
+
+    @staticmethod
+    def bam_filter(bam_file, bam_file_out, filter_name):
+        """
+        Wrapper for filtering out reads from a bam file
+
+        Parameters
+        ----------
+        bam_file : str
+        bam_file_out : str
+        filter : str
+            One of:
+                duplicate - Read is PCR or optical duplicate (1024)
+                unmapped - Read is unmapped or not the primary alignment (260)
+        """
+
+        filter_list = {
+            "duplicate": "1024",
+            "unmapped": "260"
+        }
+
+        # Using samtools directly as pysam.view ignored the '-o' parameter
+        cmd_view = ' '.join([
+            "samtools view",
+            "-b",
+            "-F", filter_list[filter_name],
+            "-o", bam_file_out,
+            bam_file
+        ])
+
+        try:
+            process = subprocess.Popen(cmd_view, shell=True)
+            process.wait()
+        except (IOError, OSError) as msg:
+            logger.info(
+                "BAM FILTER - I/O error({0}): {1}\n{2}".format(
+                    msg.errno, msg.strerror,
+                    "samtools view -b -F {} -o {} {}".format(
+                        filter_list[filter_name], bam_file_out, bam_file)
+                    )
+            )
+            return False
+
         return True
 
     @staticmethod
@@ -214,10 +268,10 @@ class bamUtils(object):
             chromosome
         ])
 
-        #
+        # Convert the new sam file into a sorted bam file
         cmd_view_2 = ' '.join([
-            'samtools view',
-            '-b',
+            'samtools sort',
+            '-O bam',
             '-o', bam_file_out,
             bam_file_in + ".sam"
         ])
@@ -239,6 +293,8 @@ class bamUtils(object):
             logger.info("I/O error({0}): {1}\n{2}".format(
                 msg.errno, msg.strerror, cmd_view_2))
             return False
+
+        os.remove(bam_file_in + ".sam")
 
         return True
 
@@ -290,7 +346,7 @@ class bamUtils(object):
         return output
 
 
-class bamUtilsTask(object):
+class bamUtilsTask(object):  # pylint: disable=invalid-name
     """
     Wrappers so that the function above can be used as part of a @task within
     COMPSs avoiding the files being copied around the infrastructure too many
@@ -334,7 +390,24 @@ class bamUtilsTask(object):
         bam_handle = bamUtils()
         return bam_handle.bam_sort(bam_file)
 
-    def bam_merge(self, in_bam_job_files):
+    @task(bam_file=FILE_IN, bam_file_out=FILE_IN, filter_name=IN)
+    def bam_filter(self, bam_file, bam_file_out, filter_name):  # pylint: disable=no-self-use
+        """
+        Wrapper for filtering out reads from a bam file
+
+        Parameters
+        ----------
+        bam_file : str
+        bam_file_out : str
+        filter : str
+            One of:
+                duplicate - Read is PCR or optical duplicate (1024)
+                unmapped - Read is unmapped or not the primary alignment (260)
+        """
+        bam_handle = bamUtils()
+        return bam_handle.bam_filter(bam_file, bam_file_out, filter_name)
+
+    def bam_merge(self, in_bam_job_files):  # pylint: disable=too-many-branches
         """
         Wrapper task taking any number of bam files and merging them into a
         single bam file.
@@ -347,7 +420,13 @@ class bamUtilsTask(object):
         """
         merge_round = -1
 
+        if len(in_bam_job_files) == 1:
+            return in_bam_job_files[0]
+
         bam_job_files = [i for i in in_bam_job_files]
+
+        cleanup_files = []
+
         while True:
             merge_round += 1
             if len(bam_job_files) > 1:
@@ -359,6 +438,7 @@ class bamUtilsTask(object):
                         for i in range(0, current_list_len-9, 10):  # pylint: disable=unused-variable
                             bam_out = bam_job_files[0] + "_merge_" + str(merge_round) + ".bam"
                             tmp_alignments.append(bam_out)
+                            cleanup_files.append(bam_out)
 
                             self.bam_merge_10(
                                 bam_job_files.pop(0), bam_job_files.pop(0), bam_job_files.pop(0),
@@ -370,30 +450,35 @@ class bamUtilsTask(object):
                     bam_out = bam_job_files[0] + "_merge_" + str(merge_round) + ".bam"
                     if len(bam_job_files) >= 5:
                         tmp_alignments.append(bam_out)
+                        cleanup_files.append(bam_out)
                         self.bam_merge_5(
                             bam_job_files.pop(0), bam_job_files.pop(0), bam_job_files.pop(0),
                             bam_job_files.pop(0), bam_job_files.pop(0), bam_out
                         )
-                        bam_out = bam_job_files[0] + "_merge_" + str(merge_round) + ".bam"
+                        if bam_job_files:
+                            bam_out = bam_job_files[0] + "_merge_" + str(merge_round) + ".bam"
 
                     if len(bam_job_files) == 4:
                         tmp_alignments.append(bam_out)
+                        cleanup_files.append(bam_out)
                         self.bam_merge_4(
                             bam_job_files.pop(0), bam_job_files.pop(0), bam_job_files.pop(0),
                             bam_job_files.pop(0), bam_out
                         )
                     elif len(bam_job_files) == 3:
                         tmp_alignments.append(bam_out)
+                        cleanup_files.append(bam_out)
                         self.bam_merge_3(
                             bam_job_files.pop(0), bam_job_files.pop(0), bam_job_files.pop(0),
                             bam_out
                         )
                     elif len(bam_job_files) == 2:
                         tmp_alignments.append(bam_out)
+                        cleanup_files.append(bam_out)
                         self.bam_merge_2(
                             bam_job_files.pop(0), bam_job_files.pop(0), bam_out
                         )
-                    else:
+                    elif len(bam_job_files) == 1:
                         tmp_alignments.append(bam_job_files[0])
 
                 barrier()
@@ -404,7 +489,11 @@ class bamUtilsTask(object):
             else:
                 break
 
-        return bam_job_files[0]
+        return_value = self.bam_copy(bam_job_files[0], in_bam_job_files[0])
+        for tmp_bam_file in cleanup_files:
+            compss_delete_file(tmp_bam_file)
+
+        return return_value
 
     @task(bam_file_1=FILE_IN, bam_file_2=FILE_IN, bam_file_out=FILE_OUT)
     def bam_merge_2(self, bam_file_1, bam_file_2, bam_file_out):  # pylint: disable=no-self-use

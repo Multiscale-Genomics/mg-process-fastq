@@ -27,11 +27,11 @@ import sys
 from basic_modules.workflow import Workflow
 from dmp import dmp
 
-from tool.tb_full_mapping import tbFullMappingTool
-from tool.tb_parse_mapping import tbParseMappingTool
-from tool.tb_filter import tbFilterTool
-from tool.tb_generate_tads import tbGenerateTADsTool
-from tool.tb_save_hdf5_matrix import tbSaveAdjacencyHDF5Tool
+from mg_process_fastq.tool.tb_full_mapping import tbFullMappingTool
+from mg_process_fastq.tool.tb_parse_mapping import tbParseMappingTool
+from mg_process_fastq.tool.tb_filter import tbFilterTool
+from mg_process_fastq.tool.tb_generate_tads import tbGenerateTADsTool
+from mg_process_fastq.tool.tb_save_hdf5_matrix import tbSaveAdjacencyHDF5Tool
 
 
 # ------------------------------------------------------------------------------

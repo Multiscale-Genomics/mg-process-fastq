@@ -23,7 +23,7 @@ import argparse
 from basic_modules.workflow import Workflow
 from utils import logger
 
-from tool.validate_fastqc import fastqcTool
+from mg_process_fastq.tool.validate_fastqc import fastqcTool
 
 
 # ------------------------------------------------------------------------------

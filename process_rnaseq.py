@@ -25,8 +25,8 @@ from basic_modules.workflow import Workflow
 from utils import logger
 from utils import remap
 
-from tool.kallisto_indexer import kallistoIndexerTool
-from tool.kallisto_quant import kallistoQuantificationTool
+from mg_process_fastq.tool.kallisto_indexer import kallistoIndexerTool
+from mg_process_fastq.tool.kallisto_quant import kallistoQuantificationTool
 
 
 # ------------------------------------------------------------------------------

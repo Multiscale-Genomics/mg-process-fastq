@@ -24,7 +24,8 @@ import argparse
 from basic_modules.workflow import Workflow
 from utils import logger
 
-from tool.bs_seeker_filter import filterReadsTool
+from mg_process_fastq.tool.bs_seeker_filter import filterReadsTool
+
 
 # ------------------------------------------------------------------------------
 

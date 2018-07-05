@@ -25,9 +25,9 @@ from basic_modules.workflow import Workflow
 from utils import logger
 from utils import remap
 
-from tool.bwa_aligner import bwaAlignerTool
-from tool.biobambam_filter import biobambam
-from tool.macs2 import macs2
+from mg_process_fastq.tool.bwa_aligner import bwaAlignerTool
+from mg_process_fastq.tool.biobambam_filter import biobambam
+from mg_process_fastq.tool.macs2 import macs2
 
 
 # ------------------------------------------------------------------------------

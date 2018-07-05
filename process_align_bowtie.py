@@ -24,7 +24,7 @@ import argparse
 from basic_modules.workflow import Workflow
 from utils import logger
 
-from tool.bowtie_aligner import bowtie2AlignerTool
+from mg_process_fastq.tool.bowtie_aligner import bowtie2AlignerTool
 
 
 # ------------------------------------------------------------------------------

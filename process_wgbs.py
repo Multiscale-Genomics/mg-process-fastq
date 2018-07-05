@@ -25,10 +25,10 @@ from basic_modules.workflow import Workflow
 from utils import logger
 from utils import remap
 
-from tool.bs_seeker_aligner import bssAlignerTool
-from tool.bs_seeker_filter import filterReadsTool
-from tool.bs_seeker_indexer import bssIndexerTool
-from tool.bs_seeker_methylation_caller import bssMethylationCallerTool
+from mg_process_fastq.tool.bs_seeker_aligner import bssAlignerTool
+from mg_process_fastq.tool.bs_seeker_filter import filterReadsTool
+from mg_process_fastq.tool.bs_seeker_indexer import bssIndexerTool
+from mg_process_fastq.tool.bs_seeker_methylation_caller import bssMethylationCallerTool
 
 
 # ------------------------------------------------------------------------------

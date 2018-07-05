@@ -23,9 +23,9 @@ import argparse
 from basic_modules.workflow import Workflow
 from utils import logger
 
-from tool.bowtie_indexer import bowtieIndexerTool
-from tool.bwa_indexer import bwaIndexerTool
-from tool.gem_indexer import gemIndexerTool
+from mg_process_fastq.tool.bowtie_indexer import bowtieIndexerTool
+from mg_process_fastq.tool.bwa_indexer import bwaIndexerTool
+from mg_process_fastq.tool.gem_indexer import gemIndexerTool
 
 
 # ------------------------------------------------------------------------------

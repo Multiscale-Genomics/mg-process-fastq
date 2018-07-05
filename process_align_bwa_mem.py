@@ -24,7 +24,7 @@ import argparse
 from basic_modules.workflow import Workflow
 from utils import logger
 
-from tool.bwa_mem_aligner import bwaAlignerMEMTool
+from mg_process_fastq.tool.bwa_mem_aligner import bwaAlignerMEMTool
 
 
 # ------------------------------------------------------------------------------

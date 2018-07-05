@@ -25,8 +25,8 @@ from basic_modules.workflow import Workflow
 from utils import logger
 from utils import remap
 
-from tool.bwa_aligner import bwaAlignerTool
-from tool.inps import inps
+from mg_process_fastq.tool.bwa_aligner import bwaAlignerTool
+from mg_process_fastq.tool.inps import inps
 
 
 # ------------------------------------------------------------------------------

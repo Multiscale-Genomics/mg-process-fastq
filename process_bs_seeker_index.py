@@ -25,7 +25,7 @@ from basic_modules.workflow import Workflow
 from utils import logger
 from utils import remap
 
-from tool.bs_seeker_indexer import bssIndexerTool
+from mg_process_fastq.tool.bs_seeker_indexer import bssIndexerTool
 
 
 # ------------------------------------------------------------------------------

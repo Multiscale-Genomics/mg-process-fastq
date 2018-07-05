@@ -24,7 +24,7 @@ import argparse
 from basic_modules.workflow import Workflow
 from utils import logger
 
-from tool.bs_seeker_methylation_caller import bssMethylationCallerTool
+from mg_process_fastq.tool.bs_seeker_methylation_caller import bssMethylationCallerTool
 
 
 # ------------------------------------------------------------------------------

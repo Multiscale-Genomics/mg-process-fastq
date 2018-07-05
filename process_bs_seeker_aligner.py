@@ -24,7 +24,7 @@ import argparse
 from basic_modules.workflow import Workflow
 from utils import logger
 
-from tool.bs_seeker_aligner import bssAlignerTool
+from mg_process_fastq.tool.bs_seeker_aligner import bssAlignerTool
 
 
 # ------------------------------------------------------------------------------

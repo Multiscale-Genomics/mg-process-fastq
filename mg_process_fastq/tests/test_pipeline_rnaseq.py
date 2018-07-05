@@ -70,10 +70,10 @@ def test_rnaseq_pipeline():
     }
 
     files_out = {
-        "index": 'tests/data/kallisto.idx',
-        "abundance_h5_file": 'tests/data/kallisto.abundance.h5',
-        "abundance_tsv_file": 'tests/data/kallisto.abundance.tsv',
-        "run_info_file": 'tests/data/kallisto.run_info.json'
+        "index": resource_path + 'kallisto.idx',
+        "abundance_h5_file": resource_path + 'kallisto.abundance.h5',
+        "abundance_tsv_file": resource_path + 'kallisto.abundance.tsv',
+        "run_info_file": resource_path + 'kallisto.run_info.json'
     }
 
     rs_handle = process_rnaseq()

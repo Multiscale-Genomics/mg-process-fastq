@@ -123,7 +123,7 @@ class macs2(Tool):  # pylint: disable=invalid-name
         with open(gappedpeak, "w") as f_out:
             f_out.write("")
 
-        from tool.bam_utils import bamUtils
+        from mg_process_fastq.tool.bam_utils import bamUtils
 
         bam_tmp_file = bam_file.replace(".bam", "." + str(chromosome) + ".bam")
         bam_bgd_tmp_file = bam_file_bgd.replace(".bam", "." + str(chromosome) + ".bam")
@@ -240,7 +240,7 @@ class macs2(Tool):  # pylint: disable=invalid-name
         with open(gappedpeak, "w") as f_out:
             f_out.write("")
 
-        from tool.bam_utils import bamUtils
+        from mg_process_fastq.tool.bam_utils import bamUtils
 
         bam_tmp_file = bam_file.replace(".bam", "." + str(chromosome) + ".bam")
         bam_utils_handle = bamUtils()

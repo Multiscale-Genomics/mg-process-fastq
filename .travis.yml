@@ -221,7 +221,6 @@ before_script:
     - chmod +x scripts/travis/wgbs_harness.sh
     - chmod +x scripts/travis/docs_harness.sh
     - chmod +x scripts/travis/pylint_harness.sh
-    - ls tests/data/
     - git status
 
     - export PATH="${HOME}/bin:$PATH"

@@ -16,7 +16,7 @@
 Utility Functions
 =================
 
-.. automodule:: tool
+.. automodule:: mg_process_fastq.tool
 
    Common Functions
    ----------------
@@ -24,20 +24,20 @@ Utility Functions
    The following functions are ones that have been used across multiple tools for
    transformations of the data when requried.
 
-   .. autoclass:: tool.common.cd
+   .. autoclass:: mg_process_fastq.tool.common.cd
       :members:
 
    Alignment Utilities
    -------------------
-   .. autoclass:: tool.aligner_utils.alignerUtils
+   .. autoclass:: mg_process_fastq.tool.aligner_utils.alignerUtils
       :members:
 
    Bam Utilities
    -------------
-   .. autoclass:: tool.bam_utils.bamUtils
+   .. autoclass:: mg_process_fastq.tool.bam_utils.bamUtils
       :members:
 
-   .. autoclass:: tool.bam_utils.bamUtilsTask
+   .. autoclass:: mg_process_fastq.tool.bam_utils.bamUtilsTask
       :members:
 
    FASTQ Functions
@@ -52,7 +52,7 @@ Utility Functions
    The following functions are to provide easy access for iterating through entries
    within a FASTQ file(s) both single and paired.
 
-   .. autoclass:: tool.fastqreader.fastqreader
+   .. autoclass:: mg_process_fastq.tool.fastqreader.fastqreader
       :members:
 
    Splitting
@@ -62,7 +62,7 @@ Utility Functions
    chunks for parallel processing. It is able to work on single and paired end
    files.
 
-   .. autoclass:: tool.fastq_splitter.fastq_splitter
+   .. autoclass:: mg_process_fastq.tool.fastq_splitter.fastq_splitter
       :members:
 
    Entry Functions
@@ -70,5 +70,5 @@ Utility Functions
 
    The following functions allow for manipulating FASTQ files.
 
-   .. autoclass:: tool.fastq_utils.fastqUtils
+   .. autoclass:: mg_process_fastq.tool.fastq_utils.fastqUtils
       :members:

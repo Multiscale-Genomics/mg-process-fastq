@@ -16,7 +16,7 @@
 Tools for processing FastQ files
 ================================
 
-.. automodule:: tool
+.. automodule:: mg_process_fastq.tool
 
    File Validation
    ===============
@@ -25,12 +25,12 @@ Tools for processing FastQ files
 
    FastQC
    ------
-   .. autoclass:: tool.validate_fastqc.fastqcTool
+   .. autoclass:: mg_process_fastq.tool.validate_fastqc.fastqcTool
       :members:
 
    TrimGalore
    ----------
-   .. autoclass:: tool.trimgalore.trimgalore
+   .. autoclass:: mg_process_fastq.tool.trimgalore.trimgalore
       :members:
 
    Indexers
@@ -38,32 +38,32 @@ Tools for processing FastQ files
 
    Bowtie 2
    --------
-   .. autoclass:: tool.bowtie_indexer.bowtieIndexerTool
+   .. autoclass:: mg_process_fastq.tool.bowtie_indexer.bowtieIndexerTool
       :members:
 
    BSgenome Index
    --------------
-   .. autoclass:: tool.forge_bsgenome.bsgenomeTool
+   .. autoclass:: mg_process_fastq.tool.forge_bsgenome.bsgenomeTool
       :members:
 
    BS-Seeker2 Indexer
    ------------------
-   .. autoclass:: tool.bs_seeker_indexer.bssIndexerTool
+   .. autoclass:: mg_process_fastq.tool.bs_seeker_indexer.bssIndexerTool
       :members:
 
    BWA
    ---
-   .. autoclass:: tool.bwa_indexer.bwaIndexerTool
+   .. autoclass:: mg_process_fastq.tool.bwa_indexer.bwaIndexerTool
       :members:
 
    GEM
    ---
-   .. autoclass:: tool.gem_indexer.gemIndexerTool
+   .. autoclass:: mg_process_fastq.tool.gem_indexer.gemIndexerTool
       :members:
 
    Kallisto
    --------
-   .. autoclass:: tool.kallisto_indexer.kallistoIndexerTool
+   .. autoclass:: mg_process_fastq.tool.kallisto_indexer.kallistoIndexerTool
       :members:
 
 
@@ -72,22 +72,22 @@ Tools for processing FastQ files
 
    Bowtie2
    -------
-   .. autoclass:: tool.bowtie_aligner.bowtie2AlignerTool
+   .. autoclass:: mg_process_fastq.tool.bowtie_aligner.bowtie2AlignerTool
       :members:
 
    BWA - ALN
    ---------
-   .. autoclass:: tool.bwa_aligner.bwaAlignerTool
+   .. autoclass:: mg_process_fastq.tool.bwa_aligner.bwaAlignerTool
       :members:
 
    BWA - MEM
    ---------
-   .. autoclass:: tool.bwa_mem_aligner.bwaAlignerMEMTool
+   .. autoclass:: mg_process_fastq.tool.bwa_mem_aligner.bwaAlignerMEMTool
       :members:
 
    BS-Seeker2 Aligner
    ------------------
-   .. autoclass:: tool.bs_seeker_aligner.bssAlignerTool
+   .. autoclass:: mg_process_fastq.tool.bs_seeker_aligner.bssAlignerTool
       :members:
 
 
@@ -96,17 +96,17 @@ Tools for processing FastQ files
 
    BioBamBam Filter
    ----------------
-   .. autoclass:: tool.biobambam_filter.biobambam
+   .. autoclass:: mg_process_fastq.tool.biobambam_filter.biobambam
       :members:
 
    BS-Seeker2 Filter
    -----------------
-   .. autoclass:: tool.bs_seeker_filter.filterReadsTool
+   .. autoclass:: mg_process_fastq.tool.bs_seeker_filter.filterReadsTool
       :members:
 
    Trim Galore
    -----------
-   .. autoclass:: tool.trimgalore.trimgalore
+   .. autoclass:: mg_process_fastq.tool.trimgalore.trimgalore
       :members:
 
 
@@ -115,27 +115,27 @@ Tools for processing FastQ files
 
    BS-Seeker2 Methylation Caller
    -----------------------------
-   .. autoclass:: tool.bs_seeker_methylation_caller.bssMethylationCallerTool
+   .. autoclass:: mg_process_fastq.tool.bs_seeker_methylation_caller.bssMethylationCallerTool
       :members:
 
    iDEAR
    -----
-   .. autoclass:: tool.idear.idearTool
+   .. autoclass:: mg_process_fastq.tool.idear.idearTool
       :members:
 
    iNPS
    ----
-   .. autoclass:: tool.inps.inps
+   .. autoclass:: mg_process_fastq.tool.inps.inps
       :members:
 
    Kallisto Quantification
    -----------------------
-   .. autoclass:: tool.kallisto_quant.kallistoQuantificationTool
+   .. autoclass:: mg_process_fastq.tool.kallisto_quant.kallistoQuantificationTool
       :members:
 
    MACS2
    -----
-   .. autoclass:: tool.macs2.macs2
+   .. autoclass:: mg_process_fastq.tool.macs2.macs2
       :members:
 
 
@@ -147,25 +147,25 @@ Tools for processing FastQ files
 
    FASTQ mapping
    -------------
-   .. autoclass:: tool.tb_full_mapping.tbFullMappingTool
+   .. autoclass:: mg_process_fastq.tool.tb_full_mapping.tbFullMappingTool
       :members:
 
    Map Parsing
    -----------
-   .. autoclass:: tool.tb_parse_mapping.tbParseMappingTool
+   .. autoclass:: mg_process_fastq.tool.tb_parse_mapping.tbParseMappingTool
       :members:
 
    Filter Aligned Reads
    --------------------
-   .. autoclass:: tool.tb_filter.tbFilterTool
+   .. autoclass:: mg_process_fastq.tool.tb_filter.tbFilterTool
       :members:
 
    Save Matrix to HDF5 File
    ------------------------
-   .. autoclass:: tool.tb_save_hdf5_matrix.tbSaveAdjacencyHDF5Tool
+   .. autoclass:: mg_process_fastq.tool.tb_save_hdf5_matrix.tbSaveAdjacencyHDF5Tool
       :members:
 
    Generate TAD Predictions
    ------------------------
-   .. autoclass:: tool.tb_generate_tads.tbGenerateTADsTool
+   .. autoclass:: mg_process_fastq.tool.tb_generate_tads.tbGenerateTADsTool
       :members:

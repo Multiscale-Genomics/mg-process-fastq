@@ -21,6 +21,7 @@ from __future__ import print_function
 
 import os.path
 import argparse
+import re
 import tarfile
 
 from basic_modules.workflow import Workflow
@@ -119,17 +120,17 @@ class process_sleuth(Workflow):
         # experiments
         tar = tarfile.open(os.path.join(resource_path, "results.tar.gz"), "w")
         for i in range(len(input_files["kallisto"])):
-            dataset_name = self.configuration["kallisto_config"][i]["dataset"]
-            kallisto_config[dataset_name] = {}
-            for key in self.configuration["kallisto_config"][i]:
-                if key != "dataset":
-                    kallisto_config[dataset_name][key] = self.configuration["kallisto_config"][i][key]
+            ds_name = metadata["kallisto"][i].meta_data["dataset"]
+            kallisto_config[ds_name] = {}
+            for key in metadata["kallisto"][i].meta_data:
+                if re.search("condition:", key):
+                    condition = key.replace("condition:", "")
+                    kallisto_config[ds_name][condition] = metadata["kallisto"][i].meta_data[key]
 
             tar.add(
                 input_files["kallisto"][i],
                 arcname=os.path.join(
-                    "results",
-                    self.configuration["kallisto_config"][i]["dataset"],
+                    "results", ds_name,
                     os.path.split(input_files["kallisto"][0])[1])
             )
         tar.close()

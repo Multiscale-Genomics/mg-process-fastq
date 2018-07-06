@@ -58,34 +58,27 @@ def test_sleuth_pipeline():
             Metadata(
                 "data_rna_seq", "TAR",
                 os.path.join(resource_path, "sleuth.Human.ERR030856.tar.gz"), None,
-                {'assembly': 'test'}, 9606),
+                {'assembly': 'test', "dataset": "ERR030856", "condition:tissue": "mixture"}, 9606),
             Metadata(
                 "data_rna_seq", "TAR",
                 os.path.join(resource_path, "sleuth.Human.ERR030857.tar.gz"), None,
-                {'assembly': 'test'}, 9606),
+                {'assembly': 'test', "dataset": "ERR030857", "condition:tissue": "mixture"}, 9606),
             Metadata(
                 "data_rna_seq", "TAR",
                 os.path.join(resource_path, "sleuth.Human.ERR030858.tar.gz"), None,
-                {'assembly': 'test'}, 9606),
+                {'assembly': 'test', "dataset": "ERR030858", "condition:tissue": "mixture"}, 9606),
             Metadata(
                 "data_rna_seq", "TAR",
                 os.path.join(resource_path, "sleuth.Human.ERR030872.tar.gz"), None,
-                {'assembly': 'test'}, 9606),
+                {'assembly': 'test', "dataset": "ERR030872", "condition:tissue": "thyroid"}, 9606),
             Metadata(
                 "data_rna_seq", "TAR",
                 os.path.join(resource_path, "sleuth.Human.ERR030903.tar.gz"), None,
-                {'assembly': 'test'}, 9606),
+                {'assembly': 'test', "dataset": "ERR030903", "condition:tissue": "thyroid"}, 9606),
         ]
     }
 
     sleuth_config = {
-        "kallisto_config": [
-            {"dataset": "ERR030856", "tissue": "mixture"},
-            {"dataset": "ERR030857", "tissue": "mixture"},
-            {"dataset": "ERR030858", "tissue": "mixture"},
-            {"dataset": "ERR030872", "tissue": "thyroid"},
-            {"dataset": "ERR030903", "tissue": "thyroid"}
-        ],
         "sleuth_sig_level": 1.0,
         "sleuth_tag": "test"
     }

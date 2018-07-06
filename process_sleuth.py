@@ -24,6 +24,7 @@ import argparse
 import tarfile
 
 from basic_modules.workflow import Workflow
+from basic_modules.metadata import Metadata
 from utils import logger
 
 from tool.sleuth import sleuthTool
@@ -120,9 +121,9 @@ class process_sleuth(Workflow):
         for i in range(len(input_files["kallisto"])):
             dataset_name = self.configuration["kallisto_config"][i]["dataset"]
             kallisto_config[dataset_name] = {}
-            for key in self.configuration["kallisto_config"]:
+            for key in self.configuration["kallisto_config"][i]:
                 if key != "dataset":
-                    kallisto_config[dataset_name][key] = self.configuration["kallisto_config"][key]
+                    kallisto_config[dataset_name][key] = self.configuration["kallisto_config"][i][key]
 
             tar.add(
                 input_files["kallisto"][i],
@@ -133,6 +134,10 @@ class process_sleuth(Workflow):
             )
         tar.close()
 
+        kallisto_tarmetadata = Metadata(
+            "data_rna_seq", "TAR", input_files["kallisto"], None,
+            {'assembly': 'test'}, 9606)
+
         self.configuration["kallisto_tar_config"] = kallisto_config
 
         sleuth_handle = sleuthTool(self.configuration)
@@ -140,7 +145,7 @@ class process_sleuth(Workflow):
             {
                 "kallisto_tar": os.path.join(resource_path, "results.tar.gz"),
             }, {
-                "kallisto_tar": metadata["kallisto_tar"],
+                "kallisto_tar": kallisto_tarmetadata,
             }, {
                 "sleuth_object": output_files["sleuth_object"],
                 "sleuth_sig_genes_table": output_files["sleuth_sig_genes_table"],

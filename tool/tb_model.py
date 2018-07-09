@@ -195,7 +195,7 @@ class tbModelTool(Tool):
         if len(gen_pos_chrom_name) > 0:
             _cmd.append('--crm')
             _cmd.append(gen_pos_chrom_name)
-        if len(gen_pos_begin) > 0 and len(gen_pos_end) > 0:
+        if gen_pos_begin and gen_pos_end:
             _cmd.append('--beg')
             _cmd.append(str(gen_pos_begin))
             _cmd.append('--end')
@@ -213,7 +213,7 @@ class tbModelTool(Tool):
             _cmd.append('--analyze')
             
         output_metadata = {}
-
+        logger.info(' '.join(_cmd))
         out, err = Popen(_cmd, stdout=PIPE, stderr=PIPE).communicate()
         logger.info(out)
         logger.info(err)

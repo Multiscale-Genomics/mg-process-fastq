@@ -125,7 +125,7 @@ class tadbit_map_parse_filter(Workflow):
         outputfiles : list
             List of locations for the output bam files
         """
-
+        logger.progress(0)
         logger.info(
             "PROCESS MAP - FILES PASSED TO TOOLS:",
             remap(input_files, "read1", "read2")
@@ -155,7 +155,9 @@ class tadbit_map_parse_filter(Workflow):
                                "workdir", "windows", rest_enzyme="enzyme_name")
         input_metadata['quality_plot'] = True
         summary_file = input_metadata["workdir"]+'/'+'summary.txt'
-
+        
+        logger.info("MAPPING")
+        logger.info("Read 1 of 2")
         tfm1 = tbFullMappingTool()
         tfm1_files, tfm1_meta = tfm1.run([genome_gem, fastq_file_1], [], input_metadata)
         with open(summary_file, 'w') as outfile:
@@ -163,7 +165,7 @@ class tadbit_map_parse_filter(Workflow):
             with open(tfm1_files[-2]) as infile:
                 outfile.write(infile.read())
 
-
+        logger.info("Read 2 of 2")
         tfm2 = tbFullMappingTool()
         tfm2_files, tfm2_meta = tfm2.run([genome_gem, fastq_file_2], [], input_metadata)
         with open(summary_file, 'a') as outfile:
@@ -171,6 +173,7 @@ class tadbit_map_parse_filter(Workflow):
             with open(tfm2_files[-2]) as infile:
                 outfile.write(infile.read())
 
+        logger.info("PARSING")
         tpm = tbParseMappingTool()
         files = [genome_fa] + tfm1_files[:-2] + tfm2_files[:-2]
 
@@ -220,6 +223,7 @@ class tadbit_map_parse_filter(Workflow):
         input_metadata['custom_filter'] = True
         input_metadata['histogram'] = True
 
+        logger.info("FILTERING")
         tbf = tbFilterTool()
         tf_files, tf_meta = tbf.run(tpm_files, [], input_metadata)
         with open(summary_file, 'a') as outfile:
@@ -288,6 +292,8 @@ class tadbit_map_parse_filter(Workflow):
 
 
         clean_temps(self.configuration['workdir'])
+
+        logger.progress(100)
 
         return m_results_files, m_results_meta
 

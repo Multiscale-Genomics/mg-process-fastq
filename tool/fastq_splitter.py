@@ -147,8 +147,10 @@ class fastq_splitter(Tool):  # pylint: disable=invalid-name
             untar_idx = False
 
         if untar_idx is True:
-            output_file_pregz = out_file.replace('.tar.gz', '.tar')
+            if os.path.isfile(out_file):
+                os.remove(out_file)
 
+            output_file_pregz = out_file.replace('.tar.gz', '.tar')
             common.tar_folder(tmp_dir, output_file_pregz)
             common.zip_file(output_file_pregz)
 
@@ -259,8 +261,6 @@ class fastq_splitter(Tool):  # pylint: disable=invalid-name
         fqr.closeFastQ()
         fqr.closeOutputFiles()
 
-        output_file_pregz = out_file.replace('.tar.gz', '.tar')
-
         untar_idx = True
         if "no-untar" in self.configuration and self.configuration["no-untar"] is True:
             untar_idx = False
@@ -269,6 +269,7 @@ class fastq_splitter(Tool):  # pylint: disable=invalid-name
             if os.path.isfile(out_file):
                 os.remove(out_file)
 
+            output_file_pregz = out_file.replace('.tar.gz', '.tar')
             common.tar_folder(tmp_dir, output_file_pregz)
             common.zip_file(output_file_pregz)
 

@@ -18,7 +18,9 @@ from __future__ import print_function
 
 import os.path
 import shlex
+import shutil
 import subprocess
+import tarfile
 
 from utils import logger
 
@@ -46,6 +48,38 @@ class common(object):  # pylint: disable=too-few-public-methods, invalid-name
     """
 
     @staticmethod
+    def tar_folder(folder, tar_file, archive_name="tmp", keep_folder=False):
+        """
+        Archive a folder as a tar file.
+
+        This function will overwrite an existing file of the same name.
+
+        Parameters
+        ----------
+        folder : str
+            Location of the folder that is to be archived.
+        tar_file : str
+            Location of the archive tar file
+        archive_name : str
+            Name of the dir that the files in the archive should be stored in.
+            Default: tmp
+        keep_folder : bool
+            By default (False) the files and folder are deleted once they are added to
+            the archive.
+        """
+        onlyfiles = [f for f in os.listdir(folder) if os.path.isfile(os.path.join(folder, f))]
+
+        tar = tarfile.open(tar_file, "w")
+        for tmp_file in onlyfiles:
+            tar.add(os.path.join(folder, tmp_file), arcname=archive_name)
+            if keep_folder is False:
+                os.remove(os.path.join(folder, tmp_file))
+        tar.close()
+
+        if keep_folder is False:
+            shutil.rmtree(folder)
+
+    @staticmethod
     def zip_file(location):
         """
         Use pigz (gzip as a fallback) to compress a file
@@ -56,7 +90,7 @@ class common(object):  # pylint: disable=too-few-public-methods, invalid-name
             Location of the file to be zipped
         """
         try:
-            command_line = 'pigz -p 2 ' + location
+            command_line = "pigz -p 2 " + location
             args = shlex.split(command_line)
             process = subprocess.Popen(args)
             process.wait()

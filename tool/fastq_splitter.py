@@ -149,15 +149,8 @@ class fastq_splitter(Tool):  # pylint: disable=invalid-name
         if untar_idx is True:
             output_file_pregz = out_file.replace('.tar.gz', '.tar')
 
-            if os.path.isfile(out_file):
-                os.remove(out_file)
-            tar = tarfile.open(output_file_pregz, "w")
-            tar.add(tmp_dir, arcname='tmp')
-            tar.close()
-
+            common.tar_folder(tmp_dir, output_file_pregz)
             common.zip_file(output_file_pregz)
-
-            shutil.rmtree(tmp_dir)
 
         return files_out
 
@@ -275,13 +268,9 @@ class fastq_splitter(Tool):  # pylint: disable=invalid-name
         if untar_idx is True:
             if os.path.isfile(out_file):
                 os.remove(out_file)
-            tar = tarfile.open(output_file_pregz, "w")
-            tar.add(tmp_dir, arcname='tmp')
-            tar.close()
 
+            common.tar_folder(tmp_dir, output_file_pregz)
             common.zip_file(output_file_pregz)
-
-            shutil.rmtree(tmp_dir)
 
         return files_out
 

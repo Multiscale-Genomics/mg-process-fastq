@@ -436,12 +436,15 @@ class bwaAlignerMEMTool(Tool):  # pylint: disable=invalid-name
             for idx_file in index_files:
                 compss_delete_file(index_files[idx_file])
 
-        for fastq_file_pair in fastq_file_list:
-            os.remove(gz_data_path + "/tmp/" + fastq_file_pair[0])
-            compss_delete_file(gz_data_path + "/tmp/" + fastq_file_pair[0])
-            if "fastq2" in input_files:
-                os.remove(gz_data_path + "/tmp/" + fastq_file_pair[1])
-                compss_delete_file(gz_data_path + "/tmp/" + fastq_file_pair[1])
+        if hasattr(sys, '_run_from_cmdl') is True:
+            pass
+        else:
+            for fastq_file_pair in fastq_file_list:
+                os.remove(gz_data_path + "/tmp/" + fastq_file_pair[0])
+                compss_delete_file(gz_data_path + "/tmp/" + fastq_file_pair[0])
+                if "fastq2" in input_files:
+                    os.remove(gz_data_path + "/tmp/" + fastq_file_pair[1])
+                    compss_delete_file(gz_data_path + "/tmp/" + fastq_file_pair[1])
         tasks_done += 1
         logger.progress("ALIGNER", task_id=tasks_done, total=task_count)
 

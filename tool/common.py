@@ -71,7 +71,10 @@ class common(object):  # pylint: disable=too-few-public-methods, invalid-name
 
         tar = tarfile.open(tar_file, "w")
         for tmp_file in onlyfiles:
-            tar.add(os.path.join(folder, tmp_file), arcname=archive_name)
+            tar.add(
+                os.path.join(folder, tmp_file),
+                arcname=os.path.join(archive_name, tmp_file)
+            )
             if keep_folder is False:
                 os.remove(os.path.join(folder, tmp_file))
         tar.close()

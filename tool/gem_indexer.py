@@ -92,7 +92,7 @@ class gemIndexerTool(Tool):  # pylint: disable=invalid-name
 
         if genome_file + ".gem.gz" != index_loc:
             with open(index_loc, "wb") as f_out:
-                with open(genome_file + ".gem.gz") as f_in:
+                with open(genome_file + ".gem.gz", "rb") as f_in:
                     f_out.write(f_in.read())
 
         return True
@@ -119,7 +119,7 @@ class gemIndexerTool(Tool):  # pylint: disable=invalid-name
         # input and output share most metadata
         results = self.gem_indexer(
             input_files['genome'],
-            input_files['genome'] + ".gem.gz"
+            output_files['index']
         )
         results = compss_wait_on(results)
 

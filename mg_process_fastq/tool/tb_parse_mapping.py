@@ -201,7 +201,7 @@ class tbParseMappingTool(Tool):
 
         return True
 
-    def run(self, input_files, output_files, metadata=None):  # pylint: disable=too-many-locals,arguments-differ,inconsistent-return-statements
+    def run(self, input_files, output_files, metadata=None):  # pylint: disable=too-many-locals,arguments-differ
         """
         The main function to map the aligned reads and return the matching
         pairs. Parsing of the mappings can be either iterative of fragment
@@ -328,7 +328,7 @@ class tbParseMappingTool(Tool):
 
         # input and output share most metadata
         output_metadata = {
-            'chromosomes' : chromosome_meta
+            'chromosomes': chromosome_meta
         }
 
         if mapping_list[0] == mapping_list[1]:
@@ -350,7 +350,6 @@ class tbParseMappingTool(Tool):
                     window1_1, window1_2, window1_3, window1_4,
                     window2_1, window2_2, window2_3, window2_4,
                     read_iter)
-                # results = compss_wait_on(results)
                 return ([read_iter], output_metadata)
 
             elif mapping_list[0] == 'frag':
@@ -368,10 +367,11 @@ class tbParseMappingTool(Tool):
                     window2_full, window2_frag,
                     read_frag)
 
-                # results = compss_wait_on(results)
                 return ([read_frag], output_metadata)
 
             reads = None
             return ([reads], output_metadata)
+
+        return ([], {})
 
 # ------------------------------------------------------------------------------

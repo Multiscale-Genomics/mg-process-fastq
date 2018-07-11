@@ -367,8 +367,7 @@ class bwaAlignerTool(Tool):  # pylint: disable=invalid-name
                 with open(fastq_file_gz, "wb") as f_out:
                     f_out.write(f_in.read())
 
-        gz_data_path = fastq_file_gz.split("/")
-        gz_data_path = "/".join(gz_data_path[:-1])
+        gz_data_path = os.path.split(fastq_file_gz)[0]
 
         try:
             tar = tarfile.open(fastq_file_gz)
@@ -397,8 +396,8 @@ class bwaAlignerTool(Tool):  # pylint: disable=invalid-name
 
         for fastq_file_pair in fastq_file_list:
             if "fastq2" in input_files:
-                tmp_fq1 = gz_data_path + "/tmp/" + fastq_file_pair[0]
-                tmp_fq2 = gz_data_path + "/tmp/" + fastq_file_pair[1]
+                tmp_fq1 = os.path.join(gz_data_path, "tmp", fastq_file_pair[0])
+                tmp_fq2 = os.path.join(gz_data_path, "tmp", fastq_file_pair[1])
                 output_bam_file_tmp = tmp_fq1 + ".bam"
                 output_bam_list.append(output_bam_file_tmp)
 
@@ -413,7 +412,7 @@ class bwaAlignerTool(Tool):  # pylint: disable=invalid-name
                     self.get_aln_params(self.configuration)
                 )
             else:
-                tmp_fq = gz_data_path + "/tmp/" + fastq_file_pair[0]
+                tmp_fq = os.path.join(gz_data_path, "tmp", fastq_file_pair[0])
                 output_bam_file_tmp = tmp_fq + ".bam"
                 output_bam_list.append(output_bam_file_tmp)
 
@@ -439,11 +438,13 @@ class bwaAlignerTool(Tool):  # pylint: disable=invalid-name
             pass
         else:
             for fastq_file_pair in fastq_file_list:
-                os.remove(gz_data_path + "/tmp/" + fastq_file_pair[0])
-                compss_delete_file(gz_data_path + "/tmp/" + fastq_file_pair[0])
+                tmp_fq = os.path.join(gz_data_path, "tmp", fastq_file_pair[0])
+                compss_delete_file(tmp_fq)
+                os.remove(tmp_fq)
                 if "fastq2" in input_files:
-                    os.remove(gz_data_path + "/tmp/" + fastq_file_pair[1])
-                    compss_delete_file(gz_data_path + "/tmp/" + fastq_file_pair[1])
+                    tmp_fq = os.path.join(gz_data_path, "tmp", fastq_file_pair[1])
+                    compss_delete_file(tmp_fq)
+                    os.remove(tmp_fq)
         tasks_done += 1
         logger.progress("ALIGNER", task_id=tasks_done, total=task_count)
 

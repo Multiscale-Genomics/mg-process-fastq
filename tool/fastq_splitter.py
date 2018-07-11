@@ -18,10 +18,8 @@
 from __future__ import print_function
 
 import os
-import shutil
 import sys
 import re
-import tarfile
 
 from utils import logger
 
@@ -152,7 +150,7 @@ class fastq_splitter(Tool):  # pylint: disable=invalid-name
 
             output_file_pregz = out_file.replace('.tar.gz', '.tar')
             common.tar_folder(tmp_dir, output_file_pregz)
-            common.zip_file(output_file_pregz)
+            common.zip_file(output_file_pregz, 2)
 
         return files_out
 
@@ -271,7 +269,7 @@ class fastq_splitter(Tool):  # pylint: disable=invalid-name
 
             output_file_pregz = out_file.replace('.tar.gz', '.tar')
             common.tar_folder(tmp_dir, output_file_pregz)
-            common.zip_file(output_file_pregz)
+            common.zip_file(output_file_pregz, 2)
 
         return files_out
 

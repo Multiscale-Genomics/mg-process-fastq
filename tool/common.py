@@ -54,6 +54,10 @@ class common(object):  # pylint: disable=too-few-public-methods, invalid-name
 
         This function will overwrite an existing file of the same name.
 
+        The function adds each of the files to the archive individually and
+        removing the original once it has been added to save space on in the
+        storage area
+
         Parameters
         ----------
         folder : str
@@ -83,7 +87,7 @@ class common(object):  # pylint: disable=too-few-public-methods, invalid-name
             shutil.rmtree(folder)
 
     @staticmethod
-    def zip_file(location):
+    def zip_file(location, cpu=1):
         """
         Use pigz (gzip as a fallback) to compress a file
 
@@ -93,7 +97,7 @@ class common(object):  # pylint: disable=too-few-public-methods, invalid-name
             Location of the file to be zipped
         """
         try:
-            command_line = "pigz -p 2 " + location
+            command_line = "pigz -p {} {}".format(cpu, location)
             args = shlex.split(command_line)
             process = subprocess.Popen(args)
             process.wait()

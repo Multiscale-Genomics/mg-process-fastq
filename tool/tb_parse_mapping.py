@@ -372,4 +372,6 @@ class tbParseMappingTool(Tool):
             reads = None
             return ([reads], output_metadata)
 
+        return ([], {})
+
 # ------------------------------------------------------------------------------

@@ -134,3 +134,5 @@ Also performed some tidying of the code to annotate issues that had been highlig
 ---------------------------------------------------
 
 The previous splitter would split the FASTQ files into separate changes, then create the tar file and then the Gzip file. This results in a large amount of wasted tmp space, which is a limited resource. The changes implemented incrementally add the sub-FASTQ files to the archive file, deleting them once they have been added. The whole archive file is then compressed. This has a large advantage when handling larger human datasets.
+
+There has also been some refactoring of the handling of the archiving and compression steps to reduce the duplication of code within the repository.

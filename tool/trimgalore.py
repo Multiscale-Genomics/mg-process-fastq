@@ -185,7 +185,10 @@ class trimgalore(Tool):  # pylint: disable=invalid-name
 
         try:
             with open(fastq_report, "wb") as f_out:
-                with open("/".join(fastq_trimmed) + "_trimming_report.txt", "rb") as f_in:
+                with open(
+                    os.path.join(
+                        fastq_trimmed[0], fastq_trimmed[1] + "_trimming_report.txt"), "rb"
+                ) as f_in:
                     f_out.write(f_in.read())
         except IOError as error:
             logger.fatal("I/O error({0}) - TRIMMING REPORT FASTQ 1: {1}\n{2}\n{3}".format(
@@ -248,7 +251,7 @@ class trimgalore(Tool):  # pylint: disable=invalid-name
             tail_substring = "fq"
 
         gzipped = False
-        if fastq1_trimmed[-1][-3:] == ".gz":
+        if fastq1_trimmed[1][-3:] == ".gz":
             gzipped = True
 
         if gzipped:
@@ -304,11 +307,17 @@ class trimgalore(Tool):  # pylint: disable=invalid-name
                     f_out.write(f_in.read())
 
             with open(fastq1_report, "wb") as f_out:
-                with open(os.path.join(fastq1_trimmed[0], fastq1_trimmed + "_trimming_report.txt"), "rb") as f_in:
+                with open(
+                    os.path.join(
+                        fastq1_trimmed[0], fastq1_trimmed[1] + "_trimming_report.txt"), "rb"
+                ) as f_in:
                     f_out.write(f_in.read())
 
             with open(fastq2_report, "wb") as f_out:
-                with open(os.path.join(fastq2_trimmed[0], fastq2_trimmed + "_trimming_report.txt"), "rb") as f_in:
+                with open(
+                    os.path.join(
+                        fastq2_trimmed[0], fastq2_trimmed[1] + "_trimming_report.txt"), "rb"
+                ) as f_in:
                     f_out.write(f_in.read())
         except IOError as error:
             logger.fatal("I/O error({0}) - Missing output file: {1}".format(

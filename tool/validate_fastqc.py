@@ -17,6 +17,7 @@
 
 from __future__ import print_function
 
+import os
 import shlex
 import subprocess
 import sys
@@ -90,10 +91,20 @@ class fastqcTool(Tool):  # pylint: disable=invalid-name
             return False
 
         try:
-            fastq_file_tmp = fastq_file.split("/")
-            fastq_file_tmp[-1] = fastq_file_tmp[-1].replace(".fastq.gz", "_fastqc.html")
-            fastq_file_tmp[-1] = fastq_file_tmp[-1].replace(".fastq", "_fastqc.html")
-            fastq_file_tmp = "/".join(fastq_file_tmp)
+            fastq_file_tmp = os.path.split(fastq_file)
+
+            tail_substring = "fastq"
+            if ".fq" in fastq_file_tmp[1]:
+                tail_substring = "fq"
+
+            gzipped = ""
+            if fastq_file_tmp[1][-3:] == ".gz":
+                gzipped = ".gz"
+
+            fastq_file_tmp[1] = fastq_file_tmp[1].replace(
+                "." + tail_substring + gzipped, "_fastqc.html")
+            fastq_file_tmp = os.path.join(*fastq_file_tmp)
+
             with open(report_file, "wb") as f_out:
                 with open(fastq_file_tmp, "rb") as f_in:
                     f_out.write(f_in.read())
@@ -131,11 +142,6 @@ class fastqcTool(Tool):  # pylint: disable=invalid-name
             input_files['fastq'],
             output_files['report']
         )
-        # results = compss_wait_on(results)
-
-        # if results is False:
-        #     logger.fatal("FASTQC: run failed")
-        #     return {}, {}
 
         output_metadata = {
             "report": Metadata(

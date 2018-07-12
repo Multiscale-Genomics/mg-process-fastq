@@ -426,10 +426,6 @@ class bowtie2AlignerTool(Tool):  # pylint: disable=invalid-name
             logger.fatal("FASTQ SPLITTER: run failed")
             return {}, {}
 
-        # compss_delete_file(fastq1)
-        # if "fastq2" in input_files:
-        #     compss_delete_file(fastq2)
-
         if hasattr(sys, '_run_from_cmdl') is True:
             pass
         else:

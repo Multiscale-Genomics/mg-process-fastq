@@ -17,6 +17,7 @@
 
 from __future__ import print_function
 
+import os
 import subprocess
 import sys
 
@@ -94,15 +95,13 @@ class biobambam(Tool):  # pylint: disable=invalid-name
             Location of the output bam file
         """
 
-        td_list = bam_file_in.split("/")
         logger.info("BIOBAMBAM: bam_file_in: " + bam_file_in)
         logger.info("BIOBAMBAM: bam_file_out: " + bam_file_out)
-        tmp_dir = "/".join(td_list[0:-1])
 
-        command_line = 'bamsormadup --threads=4 --tmpfile=' + tmp_dir
+        command_line = 'bamsormadup --threads=4 --tmpfile=' + os.path.split(bam_file_in)[0]
 
-        bam_tmp_marked_out = tmp_dir + '/' + td_list[-1] + '.marked.tmp.bam'
-        bam_tmp_filtered_out = tmp_dir + '/' + td_list[-1] + '.filtered.tmp.bam'
+        bam_tmp_marked_out = bam_file_in + '.marked.tmp.bam'
+        bam_tmp_filtered_out = bam_file_in + '.filtered.tmp.bam'
 
         logger.info("BIOBAMBAM: command_line: " + command_line)
         logger.progress("BIOBAMBAM", task_id=0, total=2)
@@ -156,11 +155,6 @@ class biobambam(Tool):  # pylint: disable=invalid-name
         logger.info("BIOBAMBAM FILTER: Ready to run")
 
         self.biobambam_filter_alignments(input_files['input'], output_files['output'])
-        # results = compss_wait_on(results)
-
-        # if results is False:
-        #     logger.fatal("BIOBAMBAM: run failed")
-        #     return {}, {}
 
         logger.info("BIOBAMBAM FILTER: completed")
 

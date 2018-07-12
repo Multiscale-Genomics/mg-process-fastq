@@ -139,11 +139,8 @@ class macs2(Tool):  # pylint: disable=invalid-name
         ]
         command_line = ' '.join(command_param)
 
-        cmdl = "samtools view -c -F 260 {}".format(bam_tmp_file)
-        process = subprocess.Popen(cmdl, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        process.wait()
-        proc_out, proc_err = process.communicate()  # pylint: disable=unused-variable
-        if int(proc_out) > 0:
+        aligned_count = bam_utils_handle.bam_count_reads(bam_tmp_file, aligned=True)
+        if int(aligned_count) > 0:
             try:
                 args = shlex.split(command_line)
                 process = subprocess.Popen(args)
@@ -259,11 +256,8 @@ class macs2(Tool):  # pylint: disable=invalid-name
         if os.path.isfile(bam_tmp_file) is False or os.path.getsize(bam_tmp_file) == 0:
             logger.fatal("MISSING FILE: " + bam_tmp_file)
 
-        cmdl = "samtools view -c -F 260 {}".format(bam_tmp_file)
-        process = subprocess.Popen(cmdl, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        process.wait()
-        proc_out, proc_err = process.communicate()  # pylint: disable=unused-variable
-        if int(proc_out) > 0:
+        aligned_count = bam_utils_handle.bam_count_reads(bam_tmp_file, aligned=True)
+        if int(aligned_count) > 0:
             logger.progress("MACS2", task_id=0, total=1)
             try:
                 args = shlex.split(command_line)

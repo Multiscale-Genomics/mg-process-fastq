@@ -114,15 +114,15 @@ class kallistoQuantificationTool(Tool):  # pylint: disable=invalid-name
 
         output_files = [
             {
-                "in": os.path.join(output_dir[0], "/abundance.h5"),
+                "in": os.path.join(output_dir[0], "abundance.h5"),
                 "out": abundance_h5_file
             },
             {
-                "in": os.path.join(output_dir[0], "/abundance.tsv"),
+                "in": os.path.join(output_dir[0], "abundance.tsv"),
                 "out": abundance_tsv_file
             },
             {
-                "in": os.path.join(output_dir[0], "/run_info.json"),
+                "in": os.path.join(output_dir[0], "run_info.json"),
                 "out": run_info_file
             }
         ]
@@ -179,20 +179,21 @@ class kallistoQuantificationTool(Tool):  # pylint: disable=invalid-name
 
         output_files = [
             {
-                "in": os.path.join(output_dir[0], "/abundance.h5"),
+                "in": os.path.join(output_dir[0], "abundance.h5"),
                 "out": abundance_h5_file
             },
             {
-                "in": os.path.join(output_dir[0], "/abundance.tsv"),
+                "in": os.path.join(output_dir[0], "abundance.tsv"),
                 "out": abundance_tsv_file
             },
             {
-                "in": os.path.join(output_dir[0], "/run_info.json"),
+                "in": os.path.join(output_dir[0], "run_info.json"),
                 "out": run_info_file
             }
         ]
 
         for i in output_files:
+            print(i)
             if os.path.isfile(i["in"]) is True and os.path.getsize(i["in"]) > 0:
                 with open(i["out"], "wb") as f_out:
                     with open(i["in"], "rb") as f_in:

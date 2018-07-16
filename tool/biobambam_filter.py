@@ -17,8 +17,6 @@
 
 from __future__ import print_function
 
-import os
-import shlex
 import subprocess
 import sys
 
@@ -29,35 +27,51 @@ try:
         raise ImportError
     from pycompss.api.parameter import FILE_IN, FILE_OUT
     from pycompss.api.task import task
-    from pycompss.api.api import compss_wait_on
+    from pycompss.api.constraint import constraint
+    # from pycompss.api.api import compss_wait_on
 except ImportError:
     logger.warn("[Warning] Cannot import \"pycompss\" API packages.")
     logger.warn("          Using mock decorators.")
 
-    from utils.dummy_pycompss import FILE_IN, FILE_OUT # pylint: disable=ungrouped-imports
-    from utils.dummy_pycompss import task
-    from utils.dummy_pycompss import compss_wait_on
+    from utils.dummy_pycompss import FILE_IN, FILE_OUT  # pylint: disable=ungrouped-imports
+    from utils.dummy_pycompss import task, constraint  # pylint: disable=ungrouped-imports
+    # from utils.dummy_pycompss import compss_wait_on # pylint: disable=ungrouped-imports
 
 from basic_modules.metadata import Metadata
 from basic_modules.tool import Tool
+from tool.bam_utils import bamUtils
 
 # ------------------------------------------------------------------------------
 
-class biobambam(Tool):
+
+class biobambam(Tool):  # pylint: disable=invalid-name
     """
     Tool to sort and filter bam files
     """
 
     def __init__(self, configuration=None):
         """
-        Init function
+        Initialise the tool with its configuration.
+
+
+        Parameters
+        ----------
+        configuration : dict
+            a dictionary containing parameters that define how the operation
+            should be carried out, which are specific to each Tool.
         """
         logger.info("BioBamBam2 Filter")
         Tool.__init__(self)
 
+        if configuration is None:
+            configuration = {}
+
+        self.configuration.update(configuration)
+
+    @constraint(ComputingUnits="4")
     @task(returns=bool, bam_file_in=FILE_IN, bam_file_out=FILE_OUT,
           isModifier=False)
-    def biobambam_filter_alignments(self, bam_file_in, bam_file_out):
+    def biobambam_filter_alignments(self, bam_file_in, bam_file_out):  # pylint: disable=no-self-use
         """
         Sorts and filters the bam file.
 
@@ -85,25 +99,32 @@ class biobambam(Tool):
         logger.info("BIOBAMBAM: bam_file_out: " + bam_file_out)
         tmp_dir = "/".join(td_list[0:-1])
 
-        command_line = 'bamsormadup --tmpfile=' + tmp_dir
-        args = shlex.split(command_line)
+        command_line = 'bamsormadup --threads=4 --tmpfile=' + tmp_dir
 
-        bam_tmp_out = tmp_dir + '/' + td_list[-1] + '.filtered.tmp.bam'
+        bam_tmp_marked_out = tmp_dir + '/' + td_list[-1] + '.marked.tmp.bam'
+        bam_tmp_filtered_out = tmp_dir + '/' + td_list[-1] + '.filtered.tmp.bam'
 
         logger.info("BIOBAMBAM: command_line: " + command_line)
-
+        logger.progress("BIOBAMBAM", task_id=0, total=2)
         try:
             with open(bam_file_in, "r") as f_in:
-                with open(bam_tmp_out, "w") as f_out:
-                    process = subprocess.Popen(args, stdin=f_in, stdout=f_out)
+                with open(bam_tmp_marked_out, "w") as f_out:
+                    process = subprocess.Popen(command_line, shell=True, stdin=f_in, stdout=f_out)
                     process.wait()
-        except IOError as error:
-            logger.fatal("I/O error({0}): {1}".format(error.errno, error.strerror))
+        except (IOError, OSError) as msg:
+            logger.fatal("I/O error({0}) - bamsormadup: {1}\n{2}".format(
+                msg.errno, msg.strerror, command_line))
             return False
+        logger.progress("BIOBAMBAM", task_id=1, total=2)
+
+        logger.progress("SAMTOOLS REMOVE DUPLICATES", task_id=1, total=2)
+        bam_handle = bamUtils()
+        bam_handle.bam_filter(bam_tmp_marked_out, bam_tmp_filtered_out, "duplicate")
+        logger.progress("SAMTOOLS REMOVE DUPLICATES", task_id=2, total=2)
 
         try:
             with open(bam_file_out, "wb") as f_out:
-                with open(bam_tmp_out, "rb") as f_in:
+                with open(bam_tmp_filtered_out, "rb") as f_in:
                     f_out.write(f_in.read())
         except IOError as error:
             logger.fatal("I/O error({0}): {1}".format(error.errno, error.strerror))
@@ -119,31 +140,33 @@ class biobambam(Tool):
         Parameters
         ----------
         input_files : dict
-            List of input bam file locations where 0 is the bam data file
+           List of input bam file locations where 0 is the bam data file
         metadata : dict
+           Matching meta data for the input files
         output_files : dict
+           List of output file locations
 
         Returns
         -------
         output_files : dict
-            Filtered bam fie.
+           Filtered bam fie.
         output_metadata : dict
-            List of matching metadata dict objects
+           List of matching metadata dict objects
         """
         logger.info("BIOBAMBAM FILTER: Ready to run")
 
-        results = self.biobambam_filter_alignments(input_files['input'], output_files['output'])
-        results = compss_wait_on(results)
+        self.biobambam_filter_alignments(input_files['input'], output_files['output'])
+        # results = compss_wait_on(results)
 
-        if results is False:
-            logger.fatal("BIOBAMBAM: run failed")
-            return {}, {}
+        # if results is False:
+        #     logger.fatal("BIOBAMBAM: run failed")
+        #     return {}, {}
 
         logger.info("BIOBAMBAM FILTER: completed")
 
         output_metadata = {
             "bam": Metadata(
-                data_type="data_chip_seq",
+                data_type=input_metadata["input"].data_type,
                 file_type="BAM",
                 file_path=output_files["output"],
                 sources=[input_metadata["input"].file_path],

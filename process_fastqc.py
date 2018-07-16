@@ -18,15 +18,13 @@
 """
 from __future__ import print_function
 
-# Required for ReadTheDocs
-from functools import wraps # pylint: disable=unused-import
-
 import argparse
 
 from basic_modules.workflow import Workflow
 from utils import logger
 
 from tool.validate_fastqc import fastqcTool
+
 
 # ------------------------------------------------------------------------------
 
@@ -51,7 +49,7 @@ class process_fastqc(Workflow):
 
         self.configuration.update(configuration)
 
-    def run(self, input_files, metadata, output_files):
+    def run(self, input_files, metadata, output_files):  # pylint: disable=no-self-use
         """
         Main run function for the validation of FASTQ files. The pipeline uses FastQC
 
@@ -81,7 +79,13 @@ class process_fastqc(Workflow):
         # FastQC Validation
         logger.info("Generating validation report for FastQ file")
         fastqc_handle = fastqcTool()
-        bti, btm = fastqc_handle.run(input_files, metadata, {'report': output_files['report']})
+        logger.progress("FASTQC Validation", status="RUNNING")
+        bti, btm = fastqc_handle.run(
+            input_files,
+            metadata,
+            {'report': output_files['report']}
+        )
+        logger.progress("FASTQC Validation", status="DONE")
 
         try:
             output_files_generated['report'] = bti["report"]
@@ -94,6 +98,7 @@ class process_fastqc(Workflow):
             logger.fatal("FastQ validation process failed")
 
         return (output_files_generated, output_metadata)
+
 
 # ------------------------------------------------------------------------------
 
@@ -119,17 +124,21 @@ def main_json(config, in_metadata, out_metadata):
 
     return result
 
+
 # ------------------------------------------------------------------------------
 
 if __name__ == "__main__":
-    import sys
-    sys._run_from_cmdl = True  # pylint: disable=protected-access
 
     # Set up the command line parameters
     PARSER = argparse.ArgumentParser(description="Validate FastQ file")
-    PARSER.add_argument("--config", help="Configuration file")
-    PARSER.add_argument("--in_metadata", help="Location of input metadata file")
-    PARSER.add_argument("--out_metadata", help="Location of output metadata file")
+    PARSER.add_argument(
+        "--config", help="Configuration file")
+    PARSER.add_argument(
+        "--in_metadata", help="Location of input metadata file")
+    PARSER.add_argument(
+        "--out_metadata", help="Location of output metadata file")
+    PARSER.add_argument(
+        "--local", action="store_const", const=True, default=False)
 
     # Get the matching parameters from the command line
     ARGS = PARSER.parse_args()
@@ -137,6 +146,11 @@ if __name__ == "__main__":
     CONFIG = ARGS.config
     IN_METADATA = ARGS.in_metadata
     OUT_METADATA = ARGS.out_metadata
+    LOCAL = ARGS.local
+
+    if LOCAL:
+        import sys
+        sys._run_from_cmdl = True  # pylint: disable=protected-access
 
     RESULTS = main_json(CONFIG, IN_METADATA, OUT_METADATA)
     print(RESULTS)

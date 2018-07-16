@@ -28,23 +28,22 @@ from utils import logger
 try:
     if hasattr(sys, '_run_from_cmdl') is True:
         raise ImportError
-    from pycompss.api.parameter import FILE_IN, FILE_OUT, IN
+    from pycompss.api.parameter import FILE_IN, FILE_OUT
     from pycompss.api.task import task
-    from pycompss.api.api import compss_wait_on
 except ImportError:
     logger.warn("[Warning] Cannot import \"pycompss\" API packages.")
     logger.warn("          Using mock decorators.")
 
-    from utils.dummy_pycompss import FILE_IN, FILE_OUT, IN # pylint: disable=ungrouped-imports
-    from utils.dummy_pycompss import task
-    from utils.dummy_pycompss import compss_wait_on
+    from utils.dummy_pycompss import FILE_IN, FILE_OUT  # pylint: disable=ungrouped-imports
+    from utils.dummy_pycompss import task  # pylint: disable=ungrouped-imports
 
 from basic_modules.tool import Tool
 from basic_modules.metadata import Metadata
 
 # ------------------------------------------------------------------------------
 
-class kallistoQuantificationTool(Tool):
+
+class kallistoQuantificationTool(Tool):  # pylint: disable=invalid-name
     """
     Tool for quantifying RNA-seq alignments to calculate expression levels of
     genes within a genome.
@@ -52,10 +51,22 @@ class kallistoQuantificationTool(Tool):
 
     def __init__(self, configuration=None):
         """
-        Init function
+        Initialise the tool with its configuration.
+
+
+        Parameters
+        ----------
+        configuration : dict
+            a dictionary containing parameters that define how the operation
+            should be carried out, which are specific to each Tool.
         """
         logger.info("Kallisto Quantification")
         Tool.__init__(self)
+
+        if configuration is None:
+            configuration = {}
+
+        self.configuration.update(configuration)
 
     @task(
         cdna_idx_file=FILE_IN,
@@ -63,7 +74,7 @@ class kallistoQuantificationTool(Tool):
         abundance_h5_file=FILE_OUT,
         abundance_tsv_file=FILE_OUT,
         run_info_file=FILE_OUT)
-    def kallisto_quant_single(
+    def kallisto_quant_single(  # pylint: disable=too-many-arguments, too-many-locals
             self, cdna_idx_file, fastq_file_loc,
             abundance_h5_file, abundance_tsv_file, run_info_file):
         """
@@ -117,13 +128,14 @@ class kallistoQuantificationTool(Tool):
         ]
 
         for i in output_files:
-            if os.path.isfile(i["in"]) is True and os.path.getsize(i["in"]) > 0:
-                with open(i["out"], "wb") as f_out:
-                    with open(i["in"], "rb") as f_in:
-                        f_out.write(f_in.read())
-            else:
-                with open(i["out"], "w") as f_out:
-                    f_out.write("")
+            if i["in"] != i["out"]:
+                if os.path.isfile(i["in"]) is True and os.path.getsize(i["in"]) > 0:
+                    with open(i["out"], "wb") as f_out:
+                        with open(i["in"], "rb") as f_in:
+                            f_out.write(f_in.read())
+                else:
+                    with open(i["out"], "w") as f_out:
+                        f_out.write("")
 
         return True
 
@@ -134,7 +146,7 @@ class kallistoQuantificationTool(Tool):
         abundance_h5_file=FILE_OUT,
         abundance_tsv_file=FILE_OUT,
         run_info_file=FILE_OUT)
-    def kallisto_quant_paired(
+    def kallisto_quant_paired(  # pylint: disable=no-self-use,too-many-arguments
             self, cdna_idx_file, fastq_file_loc_01, fastq_file_loc_02,
             abundance_h5_file, abundance_tsv_file, run_info_file):
         """
@@ -191,7 +203,8 @@ class kallistoQuantificationTool(Tool):
 
         return True
 
-    def seq_read_stats(self, file_in):
+    @staticmethod
+    def seq_read_stats(file_in):
         """
         Calculate the mean and standard deviation of the reads in a fastq file
 
@@ -221,7 +234,7 @@ class kallistoQuantificationTool(Tool):
         length_sd = std(total_len)
         length_mean = mean(total_len)
 
-        return {'mean' : length_mean, 'std' : length_sd}
+        return {'mean': length_mean, 'std': length_sd}
 
     def run(self, input_files, input_metadata, output_files):
         """
@@ -244,35 +257,28 @@ class kallistoQuantificationTool(Tool):
         # input and output share most metadata
         output_metadata = {}
 
-        # file_loc = input_files[1].split("/")
-        # output_dir = "/".join(file_loc[0:-1])
-
-        # abundance_h5_file = output_dir + "/abundance.h5"
-        # abundance_tsv_file = output_dir + "/abundance.tsv"
-        # run_info_file = output_dir + "/run_info.json"
-
         if "fastq2" not in input_files:
-            results = self.kallisto_quant_single(
+            self.kallisto_quant_single(
                 input_files["index"], input_files["fastq1"],
                 output_files["abundance_h5_file"], output_files["abundance_tsv_file"],
                 output_files["run_info_file"]
             )
-            results = compss_wait_on(results)
+            # results = compss_wait_on(results)
         elif "fastq2" in input_files:
             # handle error
-            results = self.kallisto_quant_paired(
+            self.kallisto_quant_paired(
                 input_files["index"], input_files["fastq1"], input_files["fastq2"],
                 output_files["abundance_h5_file"], output_files["abundance_tsv_file"],
                 output_files["run_info_file"]
             )
-            results = compss_wait_on(results)
+            # results = compss_wait_on(results)
         else:
             return ({}, {})
 
         output_metadata = {
             "abundance_h5_file": Metadata(
-                data_type="data_ranseq",
-                file_type="hdf5",
+                data_type="data_rna_seq",
+                file_type="HDF5",
                 file_path=output_files["abundance_h5_file"],
                 sources=[input_metadata["cdna"].file_path, input_metadata["fastq1"].file_path],
                 taxon_id=input_metadata["cdna"].taxon_id,
@@ -282,8 +288,8 @@ class kallistoQuantificationTool(Tool):
                 }
             ),
             "abundance_tsv_file": Metadata(
-                data_type="data_ranseq",
-                file_type="tsv",
+                data_type="data_rna_seq",
+                file_type="TSV",
                 file_path=output_files["abundance_tsv_file"],
                 sources=[input_metadata["cdna"].file_path, input_metadata["fastq1"].file_path],
                 taxon_id=input_metadata["cdna"].taxon_id,
@@ -293,8 +299,8 @@ class kallistoQuantificationTool(Tool):
                 }
             ),
             "run_info_file": Metadata(
-                data_type="data_ranseq",
-                file_type="tsv",
+                data_type="data_rna_seq",
+                file_type="JSON",
                 file_path=output_files["run_info_file"],
                 sources=[input_metadata["cdna"].file_path, input_metadata["fastq1"].file_path],
                 taxon_id=input_metadata["cdna"].taxon_id,

@@ -21,9 +21,11 @@ cd ${HOME}/lib
 if [[ $pv == "2.7.12" ]]; then
     pip install MACS2
 else
-    git clone https://github.com/taoliu/MACS.git
-    cd MACS
-    git checkout MACS2p3
-    pip install .
-    alias macs2="macs2p3"
+    if [ ! -d "MACS" ]; then
+        git clone https://github.com/taoliu/MACS.git
+        cd MACS
+        git checkout MACS2p3
+        pip install .
+        alias macs2="macs2p3"
+    fi
 fi

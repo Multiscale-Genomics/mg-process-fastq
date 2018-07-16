@@ -32,12 +32,13 @@ except ImportError:
     from utils.dummy_pycompss import FILE_IN, FILE_OUT, FILE_INOUT, IN
     from utils.dummy_pycompss import task
     from utils.dummy_pycompss import compss_wait_on
-    #from utils.dummy_pycompss import constraint
+    # from utils.dummy_pycompss import constraint
 
 from basic_modules.tool import Tool
 
 from pytadbit import Chromosome
 from pytadbit import load_hic_data_from_reads
+
 
 # ------------------------------------------------------------------------------
 
@@ -54,8 +55,9 @@ class tbGenerateTADsTool(Tool):
         Tool.__init__(self)
 
     @task(adj_list=FILE_IN, resolution=IN, normalized=IN, returns=list)
-    def tb_hic_chr(self, adj_list, resolution):
+    def tb_hic_chr(self, adj_list, resolution):  # pylint: disable=no-self-use
         """
+        Get the list of chromosomes in the adjacency list
         """
         print("TB LOADED HIC MATRIX")
         hic_data = load_hic_data_from_reads(adj_list, resolution=int(resolution))
@@ -63,7 +65,6 @@ class tbGenerateTADsTool(Tool):
         print("TB LOADED HIC MATRIX")
 
         return hic_data.chromosomes.keys()
-
 
     @task(expt_name=IN, adj_list=FILE_IN, chrom=IN, resolution=IN, normalized=IN, tad_file=FILE_OUT)
     # @constraint(ProcessorCoreCount=16)
@@ -89,7 +90,7 @@ class tbGenerateTADsTool(Tool):
             Location of the output TAD file
 
         """
-        #chr_hic_data = read_matrix(matrix_file, resolution=int(resolution))
+        # chr_hic_data = read_matrix(matrix_file, resolution=int(resolution))
 
         print("TB TAD GENERATOR:", expt_name, adj_list, chrom, resolution, normalized, tad_file)
 
@@ -122,17 +123,19 @@ class tbGenerateTADsTool(Tool):
     @task(input_file=FILE_IN, chrom=IN, resolution=IN, output_file=FILE_INOUT)
     def tb_merge_tad_files(self, input_file, chrom, resolution, output_file):
         """
+        Merge 2 TAD adjacnecny list files
         """
         with open(output_file, 'a') as f_out:
             with open(input_file, 'r') as f_in:
                 for line in f_in:
                     line = line.split("\t")
                     line[-1] = line[-1].rstrip()
-                    f_out.write(str(chrom) + "\t" + line[1] + "\t" + line[2] + "\tTADs_" + str(resolution) + "\t" + line[3] + "\t.\n")
+                    f_out.write(
+                        str(chrom) + "\t" + line[1] + "\t" + line[2] + "\tTADs_" + str(resolution) + "\t" + line[3] + "\t.\n")  # pylint: disable=line-too-long
 
         return True
 
-    def run(self, input_files, output_files, metadata=None):
+    def run(self, input_files, output_files, metadata=None):  # pylint: disable=arguments-differ
         """
         The main function to the predict TAD sites for a given resolution from
         the Hi-C matrix
@@ -176,7 +179,7 @@ class tbGenerateTADsTool(Tool):
 
         tad_files = {}
 
-        results =[]
+        results = []
         for resolution in resolutions:
             print("TB LOADING Hi-C:", adj_list, resolution, normalized)
             hic_data_chr = self.tb_hic_chr(adj_list, resolution)
@@ -188,7 +191,7 @@ class tbGenerateTADsTool(Tool):
             tad_files[resolution] = {}
 
             for chrom in hic_data_chr:
-                save_tad_file = "/".join(root_name[0:-1]) + '/' + metadata['expt_name'] + '_tad_' + chrom + '_' + str(resolution) + '.tsv'
+                save_tad_file = "/".join(root_name[0:-1]) + '/' + metadata['expt_name'] + '_tad_' + chrom + '_' + str(resolution) + '.tsv'  # pylint: disable=line-too-long
                 tad_files[resolution][chrom] = save_tad_file
 
                 expt_name = metadata['expt_name'] + '_tad_' + chrom + '_' + str(resolution)
@@ -201,7 +204,7 @@ class tbGenerateTADsTool(Tool):
                     )
                 )
 
-        results = compss_wait_on(results)
+        #results = compss_wait_on(results)
 
         # Step to merge all the TAD files into a single bed file
         tad_bed_file = "/".join(root_name[0:-1]) + '/' + metadata['expt_name'] + '_tads.tsv'
@@ -221,7 +224,7 @@ class tbGenerateTADsTool(Tool):
                     resolution,
                     tad_bed_file
                 )
-                results = compss_wait_on(results)
+                # results = compss_wait_on(results) # This one avoids all parallelism
 
         return ([tad_bed_file], output_metadata)
 

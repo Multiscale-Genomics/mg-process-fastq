@@ -30,7 +30,7 @@
     },
     "input_files": [
         {
-            "name": "genome",
+            "name": "cdna",
             "description": "Genome sequence file",
             "help": "path to a assembly sequence file",
             "file_type": ["FASTA"],
@@ -43,7 +43,7 @@
             "help": "path to a FASTQ sequence read file",
             "file_type": ["FASTQ"],
             "data_type": ["data_rna_seq"],
-            "required": false,
+            "required": true,
             "allow_multiple": false
         }, {
             "name": "fastq2",
@@ -51,9 +51,16 @@
             "help": "path to a FASTQ sequence read file",
             "file_type": ["FASTQ"],
             "data_type": ["data_rna_seq"],
-            "required": true,
+            "required": false,
             "allow_multiple": false
         }
+    ],
+    "input_files_combinations": [
+        [
+            "cdna",
+            "fastq1",
+            "fastq2"
+        ]
     ],
     "arguments": [],
     "output_files": [
@@ -83,7 +90,7 @@
                     "tool": "process_rnaseq",
                     "description": "Filtered aligned sequences"
                 },
-                "file_path": "abundance.h5",
+                "file_path": "kallisto.abundance.h5",
                 "data_type": "data_rna_seq",
                 "compressed": "null"
             }
@@ -98,7 +105,7 @@
                     "tool": "process_rnaseq",
                     "description": "Background aligned sequences"
                 },
-                "file_path": "abundance.tsv",
+                "file_path": "kallisto.abundance.tsv",
                 "data_type": "data_rna_seq",
                 "compressed": "null"
             }
@@ -113,7 +120,7 @@
                     "tool": "process_rnaseq",
                     "description": "Kallisto run information file"
                 },
-                "file_path": "run_info.json",
+                "file_path": "kallisto.run_info.json",
                 "data_type": "data_rna_seq",
                 "compressed": "null"
             }

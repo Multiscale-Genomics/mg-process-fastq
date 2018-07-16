@@ -17,8 +17,6 @@
 
 from __future__ import print_function
 
-import os
-import shlex
 import subprocess
 import sys
 import tarfile
@@ -30,21 +28,24 @@ try:
         raise ImportError
     from pycompss.api.parameter import FILE_IN, FILE_OUT, IN
     from pycompss.api.task import task
-    from pycompss.api.api import compss_wait_on
+    # from pycompss.api.api import compss_wait_on
 except ImportError:
     logger.warn("[Warning] Cannot import \"pycompss\" API packages.")
     logger.warn("          Using mock decorators.")
 
-    from utils.dummy_pycompss import FILE_IN, FILE_OUT, IN # pylint: disable=ungrouped-imports
-    from utils.dummy_pycompss import task
-    from utils.dummy_pycompss import compss_wait_on
+    from utils.dummy_pycompss import FILE_IN, FILE_OUT, IN  # pylint: disable=ungrouped-imports
+    from utils.dummy_pycompss import task  # pylint: disable=ungrouped-imports
+    # from utils.dummy_pycompss import compss_wait_on  # pylint: disable=ungrouped-imports
 
 from basic_modules.tool import Tool
 from basic_modules.metadata import Metadata
 
+from tool.common import common
+
+
 # ------------------------------------------------------------------------------
 
-class bssIndexerTool(Tool):
+class bssIndexerTool(Tool):  # pylint: disable=invalid-name
     """
     Script from BS-Seeker2 for building the index for alignment. In this case
     it uses Bowtie2.
@@ -52,15 +53,29 @@ class bssIndexerTool(Tool):
 
     def __init__(self, configuration=None):
         """
-        Init function
+        Initialise the tool with its configuration.
+
+
+        Parameters
+        ----------
+        configuration : dict
+            a dictionary containing parameters that define how the operation
+            should be carried out, which are specific to each Tool.
         """
         logger.info("BS-Seeker Indexer wrapper")
         Tool.__init__(self)
 
+        if configuration is None:
+            configuration = {}
+
+        self.configuration.update(configuration)
+
     @task(
-        fasta_file=FILE_IN, aligner=IN, aligner_path=IN, bss_path=IN,
+        fasta_file=FILE_IN, aligner=IN, aligner_path=IN, bss_path=IN, params=IN,
         idx_out=FILE_OUT)
-    def bss_build_index(self, fasta_file, aligner, aligner_path, bss_path, idx_out):
+    def bss_build_index(  # pylint: disable=no-self-use,too-many-arguments
+            self, fasta_file, aligner, aligner_path, bss_path, params, idx_out
+    ):  # pylint disable=no-self-use
         """
         Function to submit the FASTA file for the reference sequence and build
         the required index file used by the aligner.
@@ -88,7 +103,8 @@ class bssIndexerTool(Tool):
         ff_split = fasta_file.split("/")
 
         command_line = (
-            "python " + bss_path + "/bs_seeker2-build.py"
+            "python " + bss_path + "/bs_seeker2-build.py " + ""
+            " ".join(params) + ""
             " -f " + fasta_file + ""
             " --aligner " + aligner + " --path " + aligner_path + ""
             " --db " + "/".join(ff_split[:-1])
@@ -96,10 +112,12 @@ class bssIndexerTool(Tool):
 
         try:
             logger.info("BS - INDEX CMD:", command_line)
-            args = shlex.split(command_line)
-            process = subprocess.Popen(args)
+            # args = shlex.split(command_line)
+            process = subprocess.Popen(command_line, shell=True)
             process.wait()
-        except Exception:
+        except (IOError, OSError) as msg:
+            logger.fatal("I/O error({0}) - BS - INDEX CMD: {1}\n{2}".format(
+                msg.errno, msg.strerror, command_line))
             return False
 
         try:
@@ -113,15 +131,47 @@ class bssIndexerTool(Tool):
             tar = tarfile.open(idx_out_pregz, "w")
             tar.add(fasta_file + "_" + aligner, arcname=ff_split[-1] + "_" + aligner)
             tar.close()
-
-            command_line = 'pigz ' + idx_out_pregz
-            args = shlex.split(command_line)
-            process = subprocess.Popen(args)
-            process.wait()
-        except Exception:
+        except (IOError, OSError) as msg:
+            logger.fatal("I/O error({0}): {1}\n{2}".format(
+                msg.errno, msg.strerror, command_line))
             return False
 
+        common.zip_file(idx_out_pregz)
+
         return True
+
+    @staticmethod
+    def get_bss_index_params(params):
+        """
+        Function to handle to extraction of commandline parameters and formatting
+        them for use in the aligner for BWA ALN
+
+        Parameters
+        ----------
+        params : dict
+
+        Returns
+        -------
+        list
+        """
+        command_params = []
+
+        command_parameters = {
+            "bss_rrbs_param": ["-r", False],
+            "bss_lower_bound_param": ["-l", True],
+            "bss_upper_bound_param": ["-u", True],
+            "bss_cut_format_param": ["-c", True],
+        }
+
+        for param in params:
+            if param in command_parameters:
+                if command_parameters[param][1]:
+                    command_params = command_params + [command_parameters[param][0], params[param]]
+                else:
+                    if command_parameters[param][0]:
+                        command_params.append(command_parameters[param][0])
+
+        return command_params
 
     def run(self, input_files, input_metadata, output_files):
         """
@@ -143,39 +193,32 @@ class bssIndexerTool(Tool):
         logger.info("WGBS - Index output files:", output_files)
 
         try:
-            if "bss_path" in input_metadata:
-                bss_path = input_metadata["bss_path"]
+            if "bss_path" in self.configuration:
+                bss_path = self.configuration["bss_path"]
             else:
                 raise KeyError
-            if "aligner_path" in input_metadata:
-                aligner_path = input_metadata["aligner_path"]
+            if "aligner_path" in self.configuration:
+                aligner_path = self.configuration["aligner_path"]
             else:
                 raise KeyError
-            if "aligner" in input_metadata:
-                aligner = input_metadata["aligner"]
+            if "aligner" in self.configuration:
+                aligner = self.configuration["aligner"]
             else:
                 raise KeyError
         except KeyError:
             logger.fatal("WGBS - BS SEEKER2: Unassigned configuration variables")
 
+        command_params = self.get_bss_index_params(self.configuration)
 
         # handle error
-        results = self.bss_build_index(
+        logger.info("FASTA: " + str(input_files["genome"]))
+        logger.info("ALIGNER: " + str(aligner))
+        logger.info("ALIGNER PATH: " + str(aligner))
+        logger.info("BSS PATH: " + str(aligner))
+        self.bss_build_index(
             input_files["genome"],
-            aligner, aligner_path, bss_path,
+            aligner, aligner_path, bss_path, command_params,
             output_files["index"])
-        results = compss_wait_on(results)
-
-        if results is False:
-            logger.fatal("BS SEEKER2 Indexer: run failed")
-            return {}, {}
-
-        if (
-                os.path.isfile(output_files["index"]) is False and
-                os.path.getsize(output_files["index"]) == 0):
-            logger.fatal("BS SEEKER2 Indexer: Index archive not created")
-            return {}, {}
-
 
         output_metadata = {
             "index": Metadata(

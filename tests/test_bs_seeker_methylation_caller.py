@@ -33,15 +33,14 @@ def test_bs_seeker_methylation_caller():
     input_files = {
         "genome": resource_path + "bsSeeker.Mouse.GRCm38.fasta",
         "index": resource_path + "bsSeeker.Mouse.GRCm38.fasta.bt2.tar.gz",
-        "fastq1": resource_path + "bsSeeker.Mouse.GRCm38_1_filtered.fastq",
-        "fastq2": resource_path + "bsSeeker.Mouse.GRCm38_2_filtered.fastq",
-        "bam": resource_path + "bsSeeker.Mouse.GRCm38_1_filtered.bam",
+        "bam": resource_path + "bsSeeker.Mouse.SRR892982_1.filtered.bam",
+        "bai": resource_path + "bsSeeker.Mouse.SRR892982_1.filtered.bai",
     }
 
     output_files = {
-        "wig_file": resource_path + "bsSeeker.Mouse.GRCm38_1.wig",
-        "cgmap_file": resource_path + "bsSeeker.Mouse.GRCm38_1.cgmap",
-        "atcgmap_file": resource_path + "bsSeeker.Mouse.GRCm38_1.atcgmap"
+        "wig_file": resource_path + "bsSeeker.Mouse.SRR892982_1.wig",
+        "cgmap_file": resource_path + "bsSeeker.Mouse.SRR892982_1.cgmap",
+        "atcgmap_file": resource_path + "bsSeeker.Mouse.SRR892982_1.atcgmap"
     }
 
     metadata = {
@@ -51,24 +50,26 @@ def test_bs_seeker_methylation_caller():
         "index": Metadata(
             "index_bowtie", "index", input_files["genome"], None,
             {'assembly' : 'test'}),
-        "fastq1": Metadata(
-            "data_wgbs", "fastq", input_files["fastq1"], None,
+        "bam": Metadata(
+            "data_wgbs", "bam", input_files["bam"], None,
             {'assembly' : 'test'}),
-        "fastq2": Metadata(
-            "data_wgbs", "fastq", input_files["fastq2"], None,
+        "bai": Metadata(
+            "data_wgbs", "bai", input_files["bai"], None,
             {'assembly' : 'test'}),
+    }
+
+    config_param = {
         "aligner" : "bowtie2",
-        "aligner_path" : home + "/lib/bowtie2-2.3.2",
+        "aligner_path" : home + "/lib/bowtie2-2.3.4-linux-x86_64",
         "bss_path" : home + "/lib/BSseeker2"
     }
 
-    bsmc = bs_seeker_methylation_caller.bssMethylationCallerTool()
+    bsmc = bs_seeker_methylation_caller.bssMethylationCallerTool(config_param)
     bsmc.run(input_files, metadata, output_files)
 
     assert os.path.isfile(output_files["wig_file"]) is True
     assert os.path.getsize(output_files["wig_file"]) > 0
     assert os.path.isfile(output_files["cgmap_file"]) is True
-    # Blank file for this small dataset
-    #assert os.path.getsize(output_files["cgmap_file"]) > 0
+    assert os.path.getsize(output_files["cgmap_file"]) > 0
     assert os.path.isfile(output_files["atcgmap_file"]) is True
     assert os.path.getsize(output_files["atcgmap_file"]) > 0

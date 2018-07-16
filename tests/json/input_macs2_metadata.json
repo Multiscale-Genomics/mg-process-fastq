@@ -1,0 +1,16 @@
+[
+    {
+        "compressed": 0,
+        "_id": "59b7e020d9422a5969b65378",
+        "data_type": "data_chip_seq",
+        "file_type": "fastq",
+        "file_path": "tests/data/macs2.Human.DRR000150.22_aln_filtered.bam",
+        "sources": [],
+        "taxon_id": 9606,
+        "meta_data": {
+            "visible": true,
+            "validated": 1,
+            "assembly": "GCA_000001405.22"
+        }
+    }
+]

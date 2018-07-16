@@ -33,13 +33,13 @@ def test_bs_seeker_aligner():
     input_files = {
         "genome": resource_path + "bsSeeker.Mouse.GRCm38.fasta",
         "index": resource_path + "bsSeeker.Mouse.GRCm38.fasta.bt2.tar.gz",
-        "fastq1": resource_path + "bsSeeker.Mouse.GRCm38_1_filtered.fastq",
-        "fastq2": resource_path + "bsSeeker.Mouse.GRCm38_2_filtered.fastq",
+        "fastq1": resource_path + "bsSeeker.Mouse.SRR892982_1.filtered.fastq",
+        "fastq2": resource_path + "bsSeeker.Mouse.SRR892982_2.filtered.fastq",
     }
 
     output_files = {
-        "bam": resource_path + "bsSeeker.Mouse.GRCm38_1_filtered.bam",
-        "bai": resource_path + "bsSeeker.Mouse.GRCm38_1_filtered.bai"
+        "bam": resource_path + "bsSeeker.Mouse.SRR892982_1.filtered.bam",
+        "bai": resource_path + "bsSeeker.Mouse.SRR892982_1.filtered.bai"
     }
 
     metadata = {
@@ -54,13 +54,16 @@ def test_bs_seeker_aligner():
             {'assembly' : 'test'}),
         "fastq2": Metadata(
             "data_wgbs", "fastq", input_files["fastq2"], None,
-            {'assembly' : 'test'}),
+            {'assembly' : 'test'})
+    }
+
+    config_param = {
         "aligner" : "bowtie2",
-        "aligner_path" : home + "/lib/bowtie2-2.3.2",
+        "aligner_path" : home + "/lib/bowtie2-2.3.4-linux-x86_64",
         "bss_path" : home + "/lib/BSseeker2"
     }
 
-    bsa = bs_seeker_aligner.bssAlignerTool()
+    bsa = bs_seeker_aligner.bssAlignerTool(config_param)
     bsa.run(input_files, metadata, output_files)
 
     assert os.path.isfile(output_files["bam"]) is True

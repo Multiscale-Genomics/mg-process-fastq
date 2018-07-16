@@ -47,7 +47,7 @@ setup(
     packages=find_packages(),
     include_package_data=True,
     install_requires=[
-        'numpy', 'h5py', 'pytest', 'rpy2'
+        'numpy', 'h5py', 'pytest'
     ],
     setup_requires=[
         'pytest-runner',
@@ -55,7 +55,7 @@ setup(
     tests_require=[
         'pytest',
     ],
-#     cmdclass={
-#         'install' : Install_DamIDSeq,
-#     },
+    # cmdclass={
+    #     'install' : Install_DamIDSeq,
+    # },
 )

@@ -18,9 +18,6 @@
 """
 from __future__ import print_function
 
-# Required for ReadTheDocs
-from functools import wraps # pylint: disable=unused-import
-
 import argparse
 
 from basic_modules.workflow import Workflow
@@ -29,6 +26,7 @@ from utils import logger
 from tool.bowtie_indexer import bowtieIndexerTool
 from tool.bwa_indexer import bwaIndexerTool
 from tool.gem_indexer import gemIndexerTool
+
 
 # ------------------------------------------------------------------------------
 
@@ -75,7 +73,8 @@ class process_genome(Workflow):
             gem_index : str
                 Location of the GEM index file
             genome_gem : str
-                Location of a the FASTA file generated for the GEM indexing step
+                Location of a the FASTA file generated for the GEM indexing
+                step
 
         Returns
         -------
@@ -88,10 +87,23 @@ class process_genome(Workflow):
         output_files_generated = {}
         output_metadata = {}
 
+        if "genome_public" in input_files:
+            genome_input_file = {"genome": input_files["genome_public"]}
+            genome_input_meta = {"genome": metadata["genome_public"]}
+        else:
+            genome_input_file = {"genome": input_files["genome"]}
+            genome_input_meta = {"genome": metadata["genome"]}
+
         # Bowtie2 Indexer
         logger.info("Generating indexes for Bowtie2")
         bowtie2 = bowtieIndexerTool()
-        bti, btm = bowtie2.run(input_files, metadata, {'index': output_files['bwt_index']})
+        logger.progress("Bowtie2 Indexer", status="RUNNING")
+        bti, btm = bowtie2.run(
+            genome_input_file,
+            genome_input_meta,
+            {'index': output_files['bwt_index']}
+        )
+        logger.progress("Bowtie2 Indexer", status="DONE")
 
         try:
             output_files_generated['bwt_index'] = bti["index"]
@@ -106,7 +118,13 @@ class process_genome(Workflow):
         # BWA Indexer
         logger.info("Generating indexes for BWA")
         bwa = bwaIndexerTool()
-        bwai, bwam = bwa.run(input_files, metadata, {'index': output_files['bwa_index']})
+        logger.progress("BWA Indexer", status="RUNNING")
+        bwai, bwam = bwa.run(
+            genome_input_file,
+            genome_input_meta,
+            {'index': output_files['bwa_index']}
+        )
+        logger.progress("BWA Indexer", status="DONE")
 
         try:
             output_files_generated['bwa_index'] = bwai['index']
@@ -121,32 +139,27 @@ class process_genome(Workflow):
         # GEM Indexer
         logger.info("Generating indexes for GEM")
         gem = gemIndexerTool()
+        logger.progress("GEM Indexer", status="RUNNING")
         gemi, gemm = gem.run(
-            input_files, metadata,
+            genome_input_file, genome_input_meta,
             {
-                'index': output_files['gem_index'],
-                'genome_gem': output_files['genome_gem']
+                'index': output_files['gem_index']
             }
         )
+        logger.progress("GEM Indexer", status="DONE")
 
         try:
             output_files_generated['gem_index'] = gemi['index']
-            output_files_generated['genome_gem'] = gemi['genome_gem']
-
             output_metadata['gem_index'] = gemm['index']
-            output_metadata['genome_gem'] = gemm['genome_gem']
 
             tool_name = output_metadata['gem_index'].meta_data['tool']
             output_metadata['gem_index'].meta_data['tool_description'] = tool_name
             output_metadata['gem_index'].meta_data['tool'] = "process_genome"
-
-            tool_name = output_metadata['genome_gem'].meta_data['tool']
-            output_metadata['genome_gem'].meta_data['tool_description'] = tool_name
-            output_metadata['genome_gem'].meta_data['tool'] = "process_genome"
         except KeyError:
             logger.fatal("GEM indexer failed")
 
         return (output_files_generated, output_metadata)
+
 
 # ------------------------------------------------------------------------------
 
@@ -172,17 +185,21 @@ def main_json(config, in_metadata, out_metadata):
 
     return result
 
+
 # ------------------------------------------------------------------------------
 
 if __name__ == "__main__":
-    import sys
-    sys._run_from_cmdl = True  # pylint: disable=protected-access
 
     # Set up the command line parameters
     PARSER = argparse.ArgumentParser(description="Index the genome file")
-    PARSER.add_argument("--config", help="Configuration file")
-    PARSER.add_argument("--in_metadata", help="Location of input metadata file")
-    PARSER.add_argument("--out_metadata", help="Location of output metadata file")
+    PARSER.add_argument(
+        "--config", help="Configuration file")
+    PARSER.add_argument(
+        "--in_metadata", help="Location of input metadata file")
+    PARSER.add_argument(
+        "--out_metadata", help="Location of output metadata file")
+    PARSER.add_argument(
+        "--local", action="store_const", const=True, default=False)
 
     # Get the matching parameters from the command line
     ARGS = PARSER.parse_args()
@@ -190,6 +207,11 @@ if __name__ == "__main__":
     CONFIG = ARGS.config
     IN_METADATA = ARGS.in_metadata
     OUT_METADATA = ARGS.out_metadata
+    LOCAL = ARGS.local
+
+    if LOCAL:
+        import sys
+        sys._run_from_cmdl = True  # pylint: disable=protected-access
 
     RESULTS = main_json(CONFIG, IN_METADATA, OUT_METADATA)
     print(RESULTS)

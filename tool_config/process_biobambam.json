@@ -1,0 +1,70 @@
+{
+    "_id": "process_biobambam",
+    "name": "BioBamBam Filtering",
+    "title": "BioBamBam Filtering",
+    "short_description": "Filtering aligned reads with BioBamBam",
+    "owner": {
+        "institution": "EMBL-EBI",
+        "author": "Mark McDowall",
+        "contact": "mcdowall@ebi.ac.uk",
+        "user": "",
+        "url": "https://github.com/Multiscale-Genomics/mg-process-fastq"
+    },
+    "status": 0,
+    "external": true,
+    "has_custom_viewer": false,
+    "keywords": [
+        "dna","chromatin"
+    ],
+    "infrastructure": {
+        "memory": 12,
+        "cpus": 4,
+        "executable": "/home/pmes/code/mg-process-fastq/process_biobambam.py",
+        "clouds": {
+            "mug-bsc": {
+                "launcher": "PMES",
+                "workflowType": "COMPSs",
+                "default_cloud": true
+            }
+        }
+      },
+    },
+    "input_files": [
+        {
+            "name": "bam",
+            "description": "Sequence read file",
+            "help": "path to a BAm alignment file",
+            "file_type": ["BAM"],
+            "data_type": [
+                "data_chip_seq", "data_idamid_seq", "data_mnase_seq", "data_rna_seq",
+                "data_wgbs", "data_hic"
+            ],
+            "required": true,
+            "allow_multiple": false
+        }
+    ],
+    "input_files_combinations": [
+        [
+            "bam"
+        ]
+    ],
+    "arguments": [],
+    "output_files": [
+        {
+            "required": true,
+            "allow_multiple": false,
+            "name": "filtered",
+            "file": {
+                "file_type": "bam",
+                "meta_data": {
+                    "visible": true,
+                    "tool": "process_biobambam",
+                    "description": "Filtered aligned sequences"
+                },
+                "file_path": "filtered.bam",
+                "data_type": "data_seq",
+                "compressed": "null"
+            }
+        }
+    ]
+}

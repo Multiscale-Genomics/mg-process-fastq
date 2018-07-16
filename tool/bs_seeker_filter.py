@@ -28,34 +28,47 @@ try:
         raise ImportError
     from pycompss.api.parameter import FILE_IN, FILE_OUT, IN
     from pycompss.api.task import task
-    from pycompss.api.api import compss_wait_on
+    # from pycompss.api.api import compss_wait_on
 except ImportError:
     logger.warn("[Warning] Cannot import \"pycompss\" API packages.")
     logger.warn("          Using mock decorators.")
 
-    from utils.dummy_pycompss import FILE_IN, FILE_OUT, IN # pylint: disable=ungrouped-imports
-    from utils.dummy_pycompss import task
-    from utils.dummy_pycompss import compss_wait_on
+    from utils.dummy_pycompss import FILE_IN, FILE_OUT, IN  # pylint: disable=ungrouped-imports
+    from utils.dummy_pycompss import task  # pylint: disable=ungrouped-imports
+    # from utils.dummy_pycompss import compss_wait_on  # pylint: disable=ungrouped-imports
 
 from basic_modules.tool import Tool
 from basic_modules.metadata import Metadata
 
+
 # ------------------------------------------------------------------------------
 
-class filterReadsTool(Tool):
+class filterReadsTool(Tool):  # pylint: disable=invalid-name
     """
     Script from BS-Seeker2 for filtering FASTQ files to remove repeats
     """
 
     def __init__(self, configuration=None):
         """
-        Init function
+        Initialise the tool with its configuration.
+
+
+        Parameters
+        ----------
+        configuration : dict
+            a dictionary containing parameters that define how the operation
+            should be carried out, which are specific to each Tool.
         """
         logger.info("BS-Seeker FilterReads wrapper")
         Tool.__init__(self)
 
+        if configuration is None:
+            configuration = {}
+
+        self.configuration.update(configuration)
+
     @task(infile=FILE_IN, outfile=FILE_OUT, bss_path=IN)
-    def bss_seeker_filter(self, infile, outfile, bss_path):
+    def bss_seeker_filter(self, infile, outfile, bss_path):  # pylint disable=no-self-use
         """
         This is optional, but removes reads that can be problematic for the
         alignment of whole genome datasets.
@@ -113,7 +126,7 @@ class filterReadsTool(Tool):
         """
 
         try:
-            if "bss_path" not in input_metadata:
+            if "bss_path" not in self.configuration:
                 raise KeyError
         except KeyError:
             logger.fatal("WGBS - BS SEEKER2: Unassigned configuration variables")
@@ -121,22 +134,20 @@ class filterReadsTool(Tool):
 
         output_metadata = {}
 
-        print(
-            "BS FILTER PARAMS:",
-            input_files["fastq"],
-            output_files["fastq_filtered"],
-            input_metadata["bss_path"])
+        logger.info("BS FILTER PARAMS - FASTQ: " + input_files["fastq"])
+        logger.info("BS FILTER PARAMS - FASTQ FILTERED: " + output_files["fastq_filtered"])
+        logger.info("BS FILTER PARAMS - BSS PATH: " + self.configuration["bss_path"])
 
-        results = self.bss_seeker_filter(
+        self.bss_seeker_filter(
             input_files["fastq"],
             output_files["fastq_filtered"],
-            input_metadata["bss_path"]
+            self.configuration["bss_path"]
         )
-        results = compss_wait_on(results)
+        # results = compss_wait_on(results)
 
-        if results is False:
-            logger.fatal("BS SEEKER2 Filter: run failed")
-            return {}, {}
+        # if results is False:
+        #     logger.fatal("BS SEEKER2 Filter: run failed")
+        #     return {}, {}
 
         output_metadata = {
             "fastq_filtered": Metadata(

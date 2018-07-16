@@ -4,7 +4,7 @@
         "_id": "59b7e020d9422a5969b65378",
         "data_type": "data_mnase_seq",
         "file_type": "fastq",
-        "file_path": "tests/data/inps.Mouse.DRR000386.fastq.fastq",
+        "file_path": "tests/data/inps.Mouse.DRR000386.fastq",
         "sources": [],
         "taxon_id": 10090,
         "meta_data": {

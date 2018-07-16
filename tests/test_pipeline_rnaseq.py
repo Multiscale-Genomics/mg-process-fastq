@@ -18,10 +18,11 @@
 from __future__ import print_function
 
 import os.path
-import pytest # pylint: disable=unused-import
+import pytest
 
-from process_rnaseq import process_rnaseq
 from basic_modules.metadata import Metadata
+from process_rnaseq import process_rnaseq
+
 
 @pytest.mark.rnaseq
 @pytest.mark.pipeline
@@ -57,14 +58,14 @@ def test_rnaseq_pipeline():
     metadata = {
         "cdna": Metadata(
             "Assembly", "fasta", files['cdna'], None,
-            {'assembly' : 'GCA_000001405.22'}),
+            {'assembly': 'GCA_000001405.22'}),
         "fastq1": Metadata(
             "data_rna_seq", "fastq", files['fastq1'], None,
-            {'assembly' : 'GCA_000001405.22'}
+            {'assembly': 'GCA_000001405.22'}
         ),
         "fastq2": Metadata(
             "data_rna_seq", "fastq", files['fastq2'], None,
-            {'assembly' : 'GCA_000001405.22'}
+            {'assembly': 'GCA_000001405.22'}
         ),
     }
 
@@ -76,7 +77,7 @@ def test_rnaseq_pipeline():
     }
 
     rs_handle = process_rnaseq()
-    rs_files, rs_meta = rs_handle.run(files, metadata, files_out)
+    rs_files, rs_meta = rs_handle.run(files, metadata, files_out)  # pylint: disable=unused-variable
 
     # Checks that the returned files matches the expected set of results
     assert len(rs_files) == 4

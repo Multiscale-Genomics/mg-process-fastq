@@ -18,9 +18,10 @@
 from __future__ import print_function
 
 import os.path
-import pytest # pylint: disable=unused-import
+import pytest
 
 from tool.tb_generate_tads import tbGenerateTADsTool
+
 
 @pytest.mark.hic
 def test_tb_generate_tads_frag_01():
@@ -31,22 +32,23 @@ def test_tb_generate_tads_frag_01():
     reads_tsv = resource_path + "tb.Human.SRR1658573_frag_01_filtered_map.tsv"
 
     metadata = {
-        'assembly' : 'test',
-        'expt_name' : 'tb.Human.SRR1658573_frag_01',
-        'enzyme_name' : 'MboI',
-        'windows' : ((1, 'end')),
-        'mapping' : ['frag', 'frag'],
-        'resolutions' : [10000, 100000],
-        'normalized' : False
+        'assembly': 'test',
+        'expt_name': 'tb.Human.SRR1658573_frag_01',
+        'enzyme_name': 'MboI',
+        'windows': ((1, 'end')),
+        'mapping': ['frag', 'frag'],
+        'resolutions': [10000, 100000],
+        'normalized': False
     }
 
     tgt_handle = tbGenerateTADsTool()
-    tgt_files, tgt_meta = tgt_handle.run([reads_tsv], [], metadata)
+    tgt_files, tgt_meta = tgt_handle.run([reads_tsv], [], metadata)  # pylint: disable=unused-variable
 
     print(tgt_files)
 
     assert os.path.isfile(tgt_files[0]) is True
     assert os.path.getsize(tgt_files[0]) > 0
+
 
 @pytest.mark.hic
 def test_tb_generate_tads_frag_02():
@@ -57,22 +59,23 @@ def test_tb_generate_tads_frag_02():
     reads_tsv = resource_path + "tb.Human.SRR1658573_frag_02_filtered_map.tsv"
 
     metadata = {
-        'assembly' : 'test',
-        'expt_name' : 'tb.Human.SRR1658573_frag_02',
-        'enzyme_name' : 'MboI',
-        'windows' : ((1, 'end')),
-        'mapping' : ['frag', 'frag'],
-        'resolutions' : [10000, 100000],
-        'normalized' : False
+        'assembly': 'test',
+        'expt_name': 'tb.Human.SRR1658573_frag_02',
+        'enzyme_name': 'MboI',
+        'windows': ((1, 'end')),
+        'mapping': ['frag', 'frag'],
+        'resolutions': [10000, 100000],
+        'normalized': False
     }
 
     tgt_handle = tbGenerateTADsTool()
-    tgt_files, tgt_meta = tgt_handle.run([reads_tsv], [], metadata)
+    tgt_files, tgt_meta = tgt_handle.run([reads_tsv], [], metadata)  # pylint: disable=unused-variable
 
     print(tgt_files)
 
     assert os.path.isfile(tgt_files[0]) is True
     assert os.path.getsize(tgt_files[0]) > 0
+
 
 @pytest.mark.hic
 def test_tb_generate_tads_iter_01():
@@ -83,22 +86,23 @@ def test_tb_generate_tads_iter_01():
     reads_tsv = resource_path + "tb.Human.SRR1658573_iter_01_filtered_map.tsv"
 
     metadata = {
-        'assembly' : 'test',
-        'expt_name' : 'tb.Human.SRR1658573_iter_01',
-        'enzyme_name' : 'MboI',
-        'windows' : ((1, 'end')),
-        'mapping' : ['frag', 'frag'],
-        'resolutions' : [10000, 100000],
-        'normalized' : False
+        'assembly': 'test',
+        'expt_name': 'tb.Human.SRR1658573_iter_01',
+        'enzyme_name': 'MboI',
+        'windows': ((1, 'end')),
+        'mapping': ['frag', 'frag'],
+        'resolutions': [10000, 100000],
+        'normalized': False
     }
 
     tgt_handle = tbGenerateTADsTool()
-    tgt_files, tgt_meta = tgt_handle.run([reads_tsv], [], metadata)
+    tgt_files, tgt_meta = tgt_handle.run([reads_tsv], [], metadata)  # pylint: disable=unused-variable
 
     print(tgt_files)
 
     assert os.path.isfile(tgt_files[0]) is True
     assert os.path.getsize(tgt_files[0]) > 0
+
 
 @pytest.mark.hic
 def test_tb_generate_tads_iter_02():
@@ -109,17 +113,17 @@ def test_tb_generate_tads_iter_02():
     reads_tsv = resource_path + "tb.Human.SRR1658573_iter_02_filtered_map.tsv"
 
     metadata = {
-        'assembly' : 'test',
-        'expt_name' : 'tb.Human.SRR1658573_iter_02',
-        'enzyme_name' : 'MboI',
-        'windows' : ((1, 'end')),
-        'mapping' : ['frag', 'frag'],
-        'resolutions' : [10000, 100000],
-        'normalized' : False
+        'assembly': 'test',
+        'expt_name': 'tb.Human.SRR1658573_iter_02',
+        'enzyme_name': 'MboI',
+        'windows': ((1, 'end')),
+        'mapping': ['frag', 'frag'],
+        'resolutions': [10000, 100000],
+        'normalized': False
     }
 
     tgt_handle = tbGenerateTADsTool()
-    tgt_files, tgt_meta = tgt_handle.run([reads_tsv], [], metadata)
+    tgt_files, tgt_meta = tgt_handle.run([reads_tsv], [], metadata)  # pylint: disable=unused-variable
 
     print(tgt_files)
 

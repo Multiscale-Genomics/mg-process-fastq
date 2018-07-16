@@ -1,0 +1,175 @@
+{
+    "_id": "process_bs_seeker_peak_caller",
+    "name": "BS Seeker 2 Methylation Peak Caller",
+    "title": "WGBS BS Seeker2 Indexer",
+    "short_description": "BS Seeker2 methylation peak caller. For full details about all parameters please consult the BS Seeker2 aligner documentation at https://github.com/BSSeeker/BSseeker2#44-bs_seeker2-call_methylationpy",
+    "owner": {
+        "institution": "EMBL-EBI",
+        "author": "Mark McDowall",
+        "contact": "mcdowall@ebi.ac.uk",
+        "user": "",
+        "url": "https://github.com/Multiscale-Genomics/mg-process-fastq"
+    },
+    "status": 0,
+    "external": true,
+    "has_custom_viewer": false,
+    "keywords": [
+        "dna"
+    ],
+    "infrastructure": {
+        "memory": 12,
+        "cpus": 4,
+        "executable": "/home/pmes/code/mg-process-fastq/process_bs_seeker_peak_caller.py",
+        "clouds": {
+            "mug-bsc": {
+                "launcher": "PMES",
+                "workflowType": "COMPSs",
+                "default_cloud": true
+            }
+        }
+    },
+    "input_files": [
+        {
+            "name": "genome",
+            "description": "Genome sequence file",
+            "help": "path to a assembly sequence file",
+            "file_type": ["FASTA"],
+            "data_type": ["sequence_genomic", "sequence_dna"],
+            "required": true,
+            "allow_multiple": false
+        },
+        {
+            "name": "index",
+            "description": "BS Seeker2 Bowtie2 Index",
+            "help": "path to a assembly sequence file",
+            "file_type": ["TAR"],
+            "data_type": ["sequence_genomic", "sequence_dna"],
+            "required": true,
+            "allow_multiple": false
+        },
+        {
+            "name": "bam",
+            "description": "BS Seeker2 Bowtie2 aligned reads",
+            "help": "path to a assembly sequence file",
+            "file_type": ["bam"],
+            "data_type": ["data_wgbs"],
+            "required": true,
+            "allow_multiple": false
+        }
+    ],
+    "input_files_combinations": [
+        [
+            "genome",
+            "fastq1",
+            "fastq2",
+            "index",
+            "bam"
+        ]
+    ],
+    "arguments": [
+        {
+            "name": "aligner",
+            "description": "Name of the aligner",
+            "help": "Name of the aligner",
+            "type": "string",
+            "required": true,
+            "default": "bowtie2"
+        },
+        {
+            "name": "aligner_path",
+            "description": "Location of the aligner libraries",
+            "help": "Location of the aligner libraries",
+            "type": "string",
+            "required": true,
+            "default": "${HOME}/lib/bowtie2-2.3.2"
+        },
+        {
+            "name": "bss_path",
+            "description": "Location of the BS Seeker2 code libraries",
+            "help": "Location of the BS Seeker2 code libraries",
+            "type": "string",
+            "required": true,
+            "default": "${HOME}/lib/BSseeker2"
+        },
+        {
+            "name": "bss_pc_rm_SX_param",
+            "description": "Remove reads with the XS:i:1 tag",
+            "help": "Remove reads with the XS:i:1 tag",
+            "type": "boolean",
+            "required": true,
+            "default": false
+        },
+        {
+            "name": "bss_pc_rm_CCGG_param",
+            "description": "Remove sites located at CCGG",
+            "help": "Remove sites located at CCGG",
+            "type": "boolean",
+            "required": true,
+            "default": false
+        },
+        {
+            "name": "bss_pc_rm_overlap_param",
+            "description": "Remove one pair if both pairs overlap",
+            "help": "Remove one pair if both pairs overlap",
+            "type": "boolean",
+            "required": true,
+            "default": false
+        },
+        {
+            "name": "bss_pc_read_no_param",
+            "description": "Lowest number of aligned reads for a site to be included in the wig file",
+            "help": "Lowest number of aligned reads for a site to be included in the wig file",
+            "type": "integer",
+            "required": true,
+            "default": 1
+        }
+    ],
+    "output_files": [
+        {
+            "required": false,
+            "allow_multiple": false,
+            "name": "wig_file",
+            "file": {
+                "file_type": "wig",
+                "meta_data": {
+                    "visible": true,
+                    "tool": "process_bs_seeker_peak_caller",
+                    "description": "WGBS peaks"
+                },
+                "file_path": "wgbs.wig",
+                "data_type": "data_wgbs",
+                "compressed": "null"
+            }
+        }, {
+            "required": false,
+            "allow_multiple": false,
+            "name": "cgmap_file",
+            "file": {
+                "file_type": "tsv",
+                "meta_data": {
+                    "visible": true,
+                    "tool": "process_bs_seeker_peak_caller",
+                    "description": "CGmap file"
+                },
+                "file_path": "cgmap.tsv",
+                "data_type": "data_wgbs",
+                "compressed": "null"
+            }
+        }, {
+            "required": false,
+            "allow_multiple": false,
+            "name": "atcgmap_file",
+            "file": {
+                "file_type": "tsv",
+                "meta_data": {
+                    "visible": true,
+                    "tool": "process_bs_seeker_peak_caller",
+                    "description": "ATCGmap file"
+                },
+                "file_path": "atcgmap.tsv",
+                "data_type": "data_wgbs",
+                "compressed": "null"
+            }
+        }
+    ]
+}

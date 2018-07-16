@@ -28,6 +28,7 @@ from utils import remap
 from tool.kallisto_indexer import kallistoIndexerTool
 from tool.kallisto_quant import kallistoQuantificationTool
 
+
 # ------------------------------------------------------------------------------
 
 class process_rnaseq(Workflow):
@@ -39,8 +40,7 @@ class process_rnaseq(Workflow):
 
     def __init__(self, configuration=None):
         """
-        Initialise the tool with its configuration.
-
+        Initialise the class
 
         Parameters
         ----------
@@ -95,12 +95,14 @@ class process_rnaseq(Workflow):
 
         # Index the cDNA
         # This could get moved to the general tools section
-        k_index = kallistoIndexerTool()
+        k_index = kallistoIndexerTool(self.configuration)
+        logger.progress("Kallisto Indexer", status="RUNNING")
         k_out, k_meta = k_index.run(
             remap(input_files, "cdna"),
             remap(metadata, "cdna"),
             remap(output_files, "index"),
         )
+        logger.progress("Kallisto Indexer", status="DONE")
 
         if "index" not in k_out:
             logger.fatal("Kallisto: Index has not been generated")
@@ -109,6 +111,7 @@ class process_rnaseq(Workflow):
         # Quantification
         k_quant = kallistoQuantificationTool()
 
+        logger.progress("Kallisto Quant", status="RUNNING")
         if "fastq2" not in input_files:
             kq_input_files = {
                 "cdna": input_files["cdna"],
@@ -124,7 +127,10 @@ class process_rnaseq(Workflow):
             kq_files, kq_meta = k_quant.run(
                 kq_input_files,
                 kq_input_meta,
-                remap(output_files, "abundance_h5_file", "abundance_tsv_file", "run_info_file")
+                remap(
+                    output_files,
+                    "abundance_h5_file", "abundance_tsv_file", "run_info_file"
+                )
             )
         elif "fastq2" in input_files:
             kq_input_files = {
@@ -145,6 +151,7 @@ class process_rnaseq(Workflow):
                 kq_input_meta,
                 remap(output_files, "abundance_h5_file", "abundance_tsv_file", "run_info_file")
             )
+        logger.progress("Kallisto Quant", status="DONE")
 
         try:
             kq_files["index"] = k_out["index"]
@@ -169,6 +176,7 @@ class process_rnaseq(Workflow):
             logger.fatal("Kallisto failed")
 
         return (kq_files, kq_meta)
+
 
 # -----------------------------------------------------------------------------
 
@@ -195,17 +203,22 @@ def main_json(config, in_metadata, out_metadata):
 
     return result
 
+
 # ------------------------------------------------------------------------------
 
 if __name__ == "__main__":
-    import sys
-    sys._run_from_cmdl = True  # pylint: disable=protected-access
 
     # Set up the command line parameters
-    PARSER = argparse.ArgumentParser(description="Parse RNA-seq for expression analysis")
-    PARSER.add_argument("--config", help="Configuration file")
-    PARSER.add_argument("--in_metadata", help="Location of input metadata file")
-    PARSER.add_argument("--out_metadata", help="Location of output metadata file")
+    PARSER = argparse.ArgumentParser(
+        description="Parse RNA-seq for expression analysis")
+    PARSER.add_argument(
+        "--config", help="Configuration file")
+    PARSER.add_argument(
+        "--in_metadata", help="Location of input metadata file")
+    PARSER.add_argument(
+        "--out_metadata", help="Location of output metadata file")
+    PARSER.add_argument(
+        "--local", action="store_const", const=True, default=False)
 
     # Get the matching parameters from the command line
     ARGS = PARSER.parse_args()
@@ -213,6 +226,11 @@ if __name__ == "__main__":
     CONFIG = ARGS.config
     IN_METADATA = ARGS.in_metadata
     OUT_METADATA = ARGS.out_metadata
+    LOCAL = ARGS.local
+
+    if LOCAL:
+        import sys
+        sys._run_from_cmdl = True  # pylint: disable=protected-access
 
     RESULTS = main_json(CONFIG, IN_METADATA, OUT_METADATA)
 

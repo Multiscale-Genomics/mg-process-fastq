@@ -32,32 +32,45 @@ except ImportError:
     logger.warn("[Warning] Cannot import \"pycompss\" API packages.")
     logger.warn("          Using mock decorators.")
 
-    from utils.dummy_pycompss import FILE_IN, FILE_OUT, IN # pylint: disable=ungrouped-imports
-    from utils.dummy_pycompss import task
-    from utils.dummy_pycompss import compss_wait_on
+    from utils.dummy_pycompss import FILE_IN, FILE_OUT, IN  # pylint: disable=ungrouped-imports
+    from utils.dummy_pycompss import task  # pylint: disable=ungrouped-imports
+    from utils.dummy_pycompss import compss_wait_on  # pylint: disable=ungrouped-imports
 
 from basic_modules.tool import Tool
 from basic_modules.metadata import Metadata
 
+
 # ------------------------------------------------------------------------------
 
-class inps(Tool):
+class inps(Tool):  # pylint: disable=invalid-name
     """
     Tool for peak calling for MNase-seq data
     """
 
     def __init__(self, configuration=None):
         """
-        Init function
+        Initialise the tool with its configuration.
+
+
+        Parameters
+        ----------
+        configuration : dict
+            a dictionary containing parameters that define how the operation
+            should be carried out, which are specific to each Tool.
         """
         logger.info("iNPS Peak Caller")
         Tool.__init__(self)
+
+        if configuration is None:
+            configuration = {}
+
+        self.configuration.update(configuration)
 
     @task(
         returns=int,
         bam_file=FILE_IN, peak_bed=FILE_OUT, inps_params=IN,
         isModifier=False)
-    def inps_peak_calling(self, bam_file, peak_bed, inps_params):
+    def inps_peak_calling(self, bam_file, peak_bed, inps_params):  # pylint: disable=no-self-use
         """
         Convert Bam to Bed then make Nucleosome peak calls. These are saved as
         bed files That can then get displayed on genome browsers.
@@ -137,6 +150,7 @@ class inps(Tool):
             output_files["bed"],
             command_params
         )
+
         results = compss_wait_on(results)
 
         output_metadata = {

@@ -18,7 +18,7 @@ from __future__ import print_function
 
 import sys
 
-#from basic_modules.metadata import Metadata
+# from basic_modules.metadata import Metadata
 from basic_modules.tool import Tool
 
 import numpy as np
@@ -29,19 +29,20 @@ try:
         raise ImportError
     from pycompss.api.parameter import FILE_IN, FILE_INOUT, IN
     from pycompss.api.task import task
-    from pycompss.api.api import compss_wait_on
+    # from pycompss.api.api import compss_wait_on
 except ImportError:
     print("[Warning] Cannot import \"pycompss\" API packages.")
     print("          Using mock decorators.")
 
     from utils.dummy_pycompss import FILE_IN, FILE_INOUT, IN
     from utils.dummy_pycompss import task
-    from utils.dummy_pycompss import compss_wait_on
+    # from utils.dummy_pycompss import compss_wait_on
 
 from pytadbit import load_hic_data_from_reads
 from pytadbit.parsers.genome_parser import parse_fasta
 
 # ------------------------------------------------------------------------------
+
 
 class tbSaveAdjacencyHDF5Tool(Tool):
     """
@@ -54,7 +55,6 @@ class tbSaveAdjacencyHDF5Tool(Tool):
         """
         print("TADbit save adjacency matrix")
         Tool.__init__(self)
-
 
     @task(adjlist_file=FILE_IN, adj_hdf5=FILE_INOUT, normalized=IN, resolution=IN, chromosomes=IN)
     def tb_matrix_hdf5(self, adjlist_file, adj_hdf5, normalized, resolution, chromosomes):
@@ -115,7 +115,7 @@ class tbSaveAdjacencyHDF5Tool(Tool):
 
         return True
 
-    def run(self, input_files, output_files, metadata=None):
+    def run(self, input_files, output_files, metadata=None):  # pylint: disable=too-many-locals,arguments-differ
         """
         The main function save the adjacency list from Hi-C into an HDF5 index
         file at the defined resolutions.
@@ -154,7 +154,7 @@ class tbSaveAdjacencyHDF5Tool(Tool):
         for chr_id in genome_seq:
             chromosomes.append([chr_id, len(genome_seq[chr_id])])
 
-        #assembly = metadata['assembly']
+        # assembly = metadata['assembly']
         resolutions = metadata['resolutions']
 
         normalized = False
@@ -173,9 +173,9 @@ class tbSaveAdjacencyHDF5Tool(Tool):
             # if normalized is False:
             #     hic_data.normalize_hic(iterations=9, max_dev=0.1)
 
-            results = self.tb_matrix_hdf5(
+            self.tb_matrix_hdf5(
                 adjlist_file, hdf5_file, normalized, resolution, chromosomes)
-            results = compss_wait_on(results)
+            # results = compss_wait_on(results)
 
         return ([hdf5_file], [output_metadata])
 

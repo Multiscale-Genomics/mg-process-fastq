@@ -13,54 +13,68 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-language: "python"
+language: python
+
+os: linux
 
 python:
-  - "2.7.12"
-  - "3.6.3"
+    - "2.7.12"
+    #- "3.6.3"
 
-#sudo: false
+cache:
+    directories:
+        - $HOME/.cache/pip
+        - ${HOME}/lib
+
+before_cache:
+    - rm -f $HOME/.cache/pip/log/debug.log
+
+env:
+    matrix:
+        - TESTENV=docs
+        - TESTENV=code
+        - TESTENV=wgbs_code_1
+        - TESTENV=wgbs_code_2
+        - TESTENV=pylint
 
 addons:
-  apt:
-    packages:
-    #system environment
-    - make
-    - python-dev
-    - build-essential
-    - libssl-dev
-    - zlib1g-dev
-    - libbz2-dev
-    - libreadline-dev
-    - libsqlite3-dev
-    - libtiff5-dev
-    - libjpeg8-dev
-    - libfreetype6-dev
-    - liblcms2-dev
-    - libwebp-dev
-    - tcl8.6-dev
-    - tk8.6-dev
-    - python-tk
-    - wget
-    - curl
-    - llvm
-    - libncurses5-dev
-    - libncursesw5-dev
-    - xz-utils
-    - tk-dev
-    - mcl
-    - libgtk2.0-dev
-    - r-base-core
-    - python-rpy2
-    - libcurl4-gnutls-dev
-    - unzip
-    - liblzma-dev
-    - libtool
-    - pigz
-    #- libtbb2
+    apt:
+        packages:
+            #system environment
+            - make
+            - python-dev
+            - build-essential
+            - libssl-dev
+            - zlib1g-dev
+            - libbz2-dev
+            - libreadline-dev
+            - libsqlite3-dev
+            - libtiff5-dev
+            - libjpeg8-dev
+            - libfreetype6-dev
+            - liblcms2-dev
+            - libwebp-dev
+            - tcl8.6-dev
+            - tk8.6-dev
+            - python-tk
+            - wget
+            - curl
+            - llvm
+            - libncurses5-dev
+            - libncursesw5-dev
+            - xz-utils
+            - tk-dev
+            - mcl
+            - libgtk2.0-dev
+            - libcurl4-gnutls-dev
+            - unzip
+            - liblzma-dev
+            - libtool
+            - pigz
+            - tree
 
-#env:
-#  - COVERALLS=false
+# env:
+#   - COVERALLS=false
 
 before_install:
     - pwd
@@ -68,7 +82,28 @@ before_install:
     - mkdir -p ${HOME}/bin
     - mkdir -p ${HOME}/lib
     - mkdir -p ${HOME}/code
+    - mkdir -p ${HOME}/R
     - lsb_release -a
+
+    # Install the latest version of R
+    - sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys E084DAB9
+    - echo "deb http://cran.r-project.org/bin/linux/ubuntu trusty/" | sudo tee -a /etc/apt/sources.list
+    - sudo apt-get update -qq
+
+    - cd ${HOME}/build/Multiscale-Genomics/mg-process-fastq
+    - sudo chmod +x scripts/travis/includeMAC2.sh
+    - sudo chmod +x scripts/travis/includeTADbit.sh
+    - sudo chmod +x scripts/travis/install_wgbs_code.sh
+
+    - if [[ "$TESTENV" == "code" ]]; then sudo apt-get install r-base-core; fi
+    - if [[ "$TESTENV" == "code" ]]; then sudo apt-get install python-rpy2; fi
+    - if [[ "$TESTENV" == "code" ]]; then sudo ./scripts/travis/install_code_test_dependencies.sh; fi
+    - if [[ "$TESTENV" == "code" ]]; then ./scripts/travis/includeMAC2.sh; fi
+    - if [[ "$TESTENV" == "code" ]]; then ./scripts/travis/includeTADbit.sh; fi
+    - if [[ "$TESTENV" == "wgbs_code_1" ]]; then sudo ./scripts/travis/install_wgbs_code.sh; fi
+    - if [[ "$TESTENV" == "wgbs_code_2" ]]; then sudo ./scripts/travis/install_wgbs_code.sh; fi
+    - if [[ "$TESTENV" == "pylint" ]]; then ./scripts/travis/includeMAC2.sh; fi
+    - if [[ "$TESTENV" == "pylint" ]]; then ./scripts/travis/includeTADbit.sh; fi
 
 services:
     - docker
@@ -80,82 +115,18 @@ install:
     # Install APIs and Pipelines
     - cd ${HOME}/build/Multiscale-Genomics/mg-process-fastq
     - git status
-    - pip install -e .
+    - pip install --upgrade -e .
     - pip install -r requirements.txt
 
-    # htslib
-    - cd ${HOME}/lib
-    - git clone https://github.com/samtools/htslib.git
-    - cd htslib
-    - autoheader
-    - autoconf
-    - ./configure --prefix=${HOME}/lib/htslib
-    - make
-    - make install
-
-    # SAMtools
-    - cd ${HOME}/lib
-    - git clone https://github.com/samtools/samtools.git
-    - cd samtools
-    - autoheader
-    - autoconf -Wno-syntax
-    - ./configure --prefix=${HOME}/lib/samtools
-    - make
-    - make install
-
-    # UCSC Tools
-    - cd ${HOME}/lib
-    - wget http://hgdownload.cse.ucsc.edu/admin/exe/linux.x86_64/bedToBigBed
-    - wget http://hgdownload.cse.ucsc.edu/admin/exe/linux.x86_64/wigToBigWig
-
-    # Bowtie2 Aligner
-    - cd ${HOME}/lib
-    - wget --max-redirect 1 https://downloads.sourceforge.net/project/bowtie-bio/bowtie2/2.3.2/bowtie2-2.3.2-linux-x86_64.zip
-    - unzip bowtie2-2.3.2-linux-x86_64.zip
-
-    # BWA Sequence Aligner
-    - cd ${HOME}/lib
-    - git clone https://github.com/lh3/bwa.git
-    - cd bwa
-    - make
-
-    # GEM Indexer
-    - cd ${HOME}/lib
-    - wget http://barnaserver.com/gemtools/releases/GEMTools-static-core2-1.7.1.tar.gz
-    - tar -xzf GEMTools-static-core2-1.7.1.tar.gz
-
-    # iNPS Peak Caller
-    - cd ${HOME}/lib
-    - mkdir iNPS
-    - cd iNPS
-    - wget http://www.picb.ac.cn/hanlab/files/iNPS_V1.2.2.zip
-    - unzip iNPS_V1.2.2.zip
-
-    # Kallisto
-    - cd ${HOME}/lib
-    - wget https://github.com/pachterlab/kallisto/releases/download/v0.43.1/kallisto_linux-v0.43.1.tar.gz
-    - tar -xzf kallisto_linux-v0.43.1.tar.gz
-
-    # bedTools
-    - wget https://github.com/arq5x/bedtools2/releases/download/v2.26.0/bedtools-2.26.0.tar.gz
-    - tar -zxvf bedtools-2.26.0.tar.gz
-    - cd bedtools2
-    - make
-    # - cd ${HOME}/build/Multiscale-Genomics/mg-process-fastq
-
-    # Install MACS2
-    - cd ${HOME}/build/Multiscale-Genomics/mg-process-fastq
-    - chmod +x scripts/travis/includeMAC2.sh
-    - ./scripts/travis/includeMAC2.sh
-
-    # Install TADbit (only on Python 2.7)
-    - cd ${HOME}/build/Multiscale-Genomics/mg-process-fastq
-    - chmod +x scripts/travis/includeTADbit.sh
-    - ./scripts/travis/includeTADbit.sh
+    # Fixed version due to errors in 1.7.3
+    # TODO test when 1.7.4 is available
+    - if [[ "$TESTENV" == "code" ]]; then pip install cutadapt; fi
+    - if [[ "$TESTENV" == "docs" ]]; then pip install sphinx==1.7.2; fi
+    - if [[ "$TESTENV" == "pylint" ]]; then pip install pylint; fi
 
     # Install BSseeker
     - cd ${HOME}/lib
-    - git clone https://github.com/BSSeeker/BSseeker2.git
+    - if [[ ! -d "BSseeker2" ]]; then git clone https://github.com/BSSeeker/BSseeker2.git; fi
 
     - cd ${HOME}/build/Multiscale-Genomics/mg-process-fastq
     - ln -s ${HOME}/lib/BSseeker2/bs_align bs_align
@@ -163,36 +134,31 @@ install:
     - ln -s ${HOME}/lib/BSseeker2/bs_utils bs_utils
     - ln -s ${HOME}/lib/BSseeker2/FilterReads.py FilterReads.py
 
-    # Post Installation Tidyup
-    - cd ${HOME}/lib
-    - rm *.zip *.tar.gz
-
-before_script :
+before_script:
     - cd ${HOME}/bin
+
+    - ln -s ${HOME}/lib/FastQC/fastqc
+    - ln -s ${HOME}/lib/TrimGalore-0.4.3/trim_galore trim_galore
 
     - ln -s ${HOME}/lib/bedtools2/bin/bedtools bedtools
 
     - ln -s ${HOME}/lib/bedToBigBed bedToBigBed
     - ln -s ${HOME}/lib/wigToBigWig wigToBigWig
-    #- ln -s ${HOME}/lib/iNPS_V1.2.2.py iNPS_V1.2.2.py
     - ln -s ${HOME}/lib/kallisto_linux-v0.43.1/kallisto kallisto
 
-    - cat iNPS <<EOL
-   #!/usr/bin/env bash
-   python3 ${HOME}/lib/iNPS/iNPS_V1.2.2.py "$@"
-   EOL
+    - ln -s ${HOME}/build/Multiscale-Genomics/mg-process-fastq/scripts/iNPS iNPS
 
     - ln -s ${HOME}/lib/bwa/bwa bwa
 
-    - ln -s ${HOME}/lib/bowtie2-2.3.2/bowtie2 bowtie2
-    - ln -s ${HOME}/lib/bowtie2-2.3.2/bowtie2-align-s bowtie2-align-s
-    - ln -s ${HOME}/lib/bowtie2-2.3.2/bowtie2-align-l bowtie2-align-l
-    - ln -s ${HOME}/lib/bowtie2-2.3.2/bowtie2-build bowtie2-build
-    - ln -s ${HOME}/lib/bowtie2-2.3.2/bowtie2-build-s bowtie2-build-s
-    - ln -s ${HOME}/lib/bowtie2-2.3.2/bowtie2-build-l bowtie2-build-l
-    - ln -s ${HOME}/lib/bowtie2-2.3.2/bowtie2-inspect bowtie2-inspect
-    - ln -s ${HOME}/lib/bowtie2-2.3.2/bowtie2-inspect-s bowtie2-inspect-s
-    - ln -s ${HOME}/lib/bowtie2-2.3.2/bowtie2-inspect-l bowtie2-inspect-l
+    - ln -s ${HOME}/lib/bowtie2-2.3.4-linux-x86_64/bowtie2 bowtie2
+    - ln -s ${HOME}/lib/bowtie2-2.3.4-linux-x86_64/bowtie2-align-s bowtie2-align-s
+    - ln -s ${HOME}/lib/bowtie2-2.3.4-linux-x86_64/bowtie2-align-l bowtie2-align-l
+    - ln -s ${HOME}/lib/bowtie2-2.3.4-linux-x86_64/bowtie2-build bowtie2-build
+    - ln -s ${HOME}/lib/bowtie2-2.3.4-linux-x86_64/bowtie2-build-s bowtie2-build-s
+    - ln -s ${HOME}/lib/bowtie2-2.3.4-linux-x86_64/bowtie2-build-l bowtie2-build-l
+    - ln -s ${HOME}/lib/bowtie2-2.3.4-linux-x86_64/bowtie2-inspect bowtie2-inspect
+    - ln -s ${HOME}/lib/bowtie2-2.3.4-linux-x86_64/bowtie2-inspect-s bowtie2-inspect-s
+    - ln -s ${HOME}/lib/bowtie2-2.3.4-linux-x86_64/bowtie2-inspect-l bowtie2-inspect-l
 
     - ln -s ${HOME}/lib/gemtools-1.7.1-core2/bin/gem-2-bed gem-2-bed
     - ln -s ${HOME}/lib/gemtools-1.7.1-core2/bin/gem-2-gem gem-2-gem
@@ -233,6 +199,15 @@ before_script :
     - ln -s ${HOME}/lib/samtools/bin/zoom2sam.pl zoom2sam.pl
 
     - cd ${HOME}/build/Multiscale-Genomics/mg-process-fastq
+
+    # - echo "R_LIB=${HOME}/R" > ${HOME}/.Renviron
+    # - echo "options(repos = c(CRAN = 'http://mirrors.ebi.ac.uk/CRAN/'))" > ${HOME}/.Rprofile
+    # - echo ".libPaths('~/R')" >> ${HOME}/.Rprofile
+    # - echo 'message("Using library:", .libPaths()[1])' >> ${HOME}/.Rprofile
+    # - Rscript scripts/install_packages.R
+
+
+    - cd ${HOME}/build/Multiscale-Genomics/mg-process-fastq
     - docker run -p 80:80 --name biobambamcontainer multiscalegenomics/mgprocessfastq:biobambamimage
     - pwd
 
@@ -243,9 +218,18 @@ before_script :
 
     - cd ${HOME}/build/Multiscale-Genomics/mg-process-fastq
     - chmod +x scripts/travis/harness.sh
+    - chmod +x scripts/travis/wgbs_harness.sh
+    - chmod +x scripts/travis/docs_harness.sh
+    - chmod +x scripts/travis/pylint_harness.sh
     - ls tests/data/
     - git status
 
-script :
-    "./scripts/travis/harness.sh"
+    - export PATH="${HOME}/bin:$PATH"
+
+script:
+    - if [[ "$TESTENV" == "code" ]]; then ./scripts/travis/harness.sh; fi
+    - if [[ "$TESTENV" == "wgbs_code_1" ]]; then ./scripts/travis/wgbs_harness.sh; fi
+    - if [[ "$TESTENV" == "wgbs_code_2" ]]; then ./scripts/travis/wgbs_harness.sh; fi
+    - if [[ "$TESTENV" == "docs" ]]; then ./scripts/travis/docs_harness.sh; fi
+    - if [[ "$TESTENV" == "pylint" ]]; then ./scripts/travis/pylint_harness.sh; fi
 

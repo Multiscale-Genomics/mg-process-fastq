@@ -35,6 +35,10 @@
 
 import os, sys
 sys.path.insert(0, os.path.abspath('..'))
+
+# Required to us the dummy_pycompss calls
+sys._run_from_cmdl = True
+
 import tool
 
 from mock import Mock as MagicMock
@@ -94,7 +98,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'MuG - FASTQ Pipelines'
-copyright = u'2017, Mark McDowall'
+copyright = u'2018, Mark McDowall'
 author = u'Mark McDowall'
 
 # The version info for the project you're documenting, acts as replacement for

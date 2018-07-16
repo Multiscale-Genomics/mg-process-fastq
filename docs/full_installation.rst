@@ -35,7 +35,8 @@ Setup the System Environment
    sudo apt-get install -y make build-essential libssl-dev zlib1g-dev       \\
    libbz2-dev libreadline-dev libsqlite3-dev wget curl llvm libncurses5-dev \\
    libncursesw5-dev xz-utils tk-dev unzip mcl libgtk2.0-dev r-base-core     \\
-   libcurl4-gnutls-dev python-rpy2 git libtbb2 pigz liblzma-dev libhdf5-dev
+   libcurl4-gnutls-dev python-rpy2 git libtbb2 pigz liblzma-dev libhdf5-dev \\
+   texlive-latex-base tree
 
    cd ${HOME}
    mkdir bin lib code
@@ -81,6 +82,11 @@ UCSC Tools
    wget http://hgdownload.cse.ucsc.edu/admin/exe/linux.x86_64/bedToBigBed
    wget http://hgdownload.cse.ucsc.edu/admin/exe/linux.x86_64/wigToBigWig
 
+   wget http://hgdownload.soe.ucsc.edu/admin/exe/linux.x86_64/faToTwoBit
+   wget http://hgdownload.soe.ucsc.edu/admin/exe/linux.x86_64/twoBitInfo
+
+   chmod +x bedToBigBed wigToBigWig faToTwoBit twoBitInfo
+
 BioBamBam2
 ^^^^^^^^^^
 
@@ -116,8 +122,8 @@ Bowtie2 Aligner
    :linenos:
 
    cd ${HOME}/lib
-   wget --max-redirect 1 https://downloads.sourceforge.net/project/bowtie-bio/bowtie2/2.3.2/bowtie2-2.3.2-linux-x86_64.zip
-   unzip bowtie2-2.3.2-linux-x86_64.zip
+   wget --max-redirect 1 https://downloads.sourceforge.net/project/bowtie-bio/bowtie2/2.3.4/bowtie2-2.3.4-linux-x86_64.zip
+   unzip bowtie2-2.3.4-linux-x86_64.zip
 
 BWA Sequence Aligner
 ^^^^^^^^^^^^^^^^^^^^
@@ -142,8 +148,6 @@ FastQC
    cd FastQC/
    chmod 755 fastqc
 
-
-
 GEM Sequence Aligner
 ^^^^^^^^^^^^^^^^^^^^
 
@@ -167,9 +171,10 @@ iNPS Peak Caller
    unzip iNPS_V1.2.2.zip
 
    cd ${HOME}/bin
+   touch iNPS
    cat iNPS <<EOL
    #!/usr/bin/env bash
-   python3 ${HOME}/lib/iNPS/iNPS_V1.2.2.py "$@"
+   py3 ${HOME}/lib/iNPS/iNPS_V1.2.2.py "$@"
    EOL
 
    chmod 777 iNPS
@@ -214,6 +219,7 @@ bedTools
 .. code-block:: none
    :linenos:
 
+   cd ${HOME}/lib
    wget https://github.com/arq5x/bedtools2/releases/download/v2.26.0/bedtools-2.26.0.tar.gz
    tar -zxvf bedtools-2.26.0.tar.gz
    cd bedtools2
@@ -232,18 +238,20 @@ Setup the symlinks
 
    ln -s ${HOME}/lib/bedToBigBed bedToBigBed
    ln -s ${HOME}/lib/wigToBigWig wigToBigWig
+   ln -s ${HOME}/lib/faToTwoBit faToTwoBit
+   ln -s ${HOME}/lib/twoBitInfo twoBitInfo
 
    ln -s ${HOME}/lib/bwa/bwa bwa
 
-   ln -s ${HOME}/lib/bowtie2-2.3.2/bowtie2 bowtie2
-   ln -s ${HOME}/lib/bowtie2-2.3.2/bowtie2-align-s bowtie2-align-s
-   ln -s ${HOME}/lib/bowtie2-2.3.2/bowtie2-align-l bowtie2-align-l
-   ln -s ${HOME}/lib/bowtie2-2.3.2/bowtie2-build bowtie2-build
-   ln -s ${HOME}/lib/bowtie2-2.3.2/bowtie2-build-s bowtie2-build-s
-   ln -s ${HOME}/lib/bowtie2-2.3.2/bowtie2-build-l bowtie2-build-l
-   ln -s ${HOME}/lib/bowtie2-2.3.2/bowtie2-inspect bowtie2-inspect
-   ln -s ${HOME}/lib/bowtie2-2.3.2/bowtie2-inspect-s bowtie2-inspect-s
-   ln -s ${HOME}/lib/bowtie2-2.3.2/bowtie2-inspect-l bowtie2-inspect-l
+   ln -s ${HOME}/lib/bowtie2-2.3.4-linux-x86_64/bowtie2 bowtie2
+   ln -s ${HOME}/lib/bowtie2-2.3.4-linux-x86_64/bowtie2-align-s bowtie2-align-s
+   ln -s ${HOME}/lib/bowtie2-2.3.4-linux-x86_64/bowtie2-align-l bowtie2-align-l
+   ln -s ${HOME}/lib/bowtie2-2.3.4-linux-x86_64/bowtie2-build bowtie2-build
+   ln -s ${HOME}/lib/bowtie2-2.3.4-linux-x86_64/bowtie2-build-s bowtie2-build-s
+   ln -s ${HOME}/lib/bowtie2-2.3.4-linux-x86_64/bowtie2-build-l bowtie2-build-l
+   ln -s ${HOME}/lib/bowtie2-2.3.4-linux-x86_64/bowtie2-inspect bowtie2-inspect
+   ln -s ${HOME}/lib/bowtie2-2.3.4-linux-x86_64/bowtie2-inspect-s bowtie2-inspect-s
+   ln -s ${HOME}/lib/bowtie2-2.3.4-linux-x86_64/bowtie2-inspect-l bowtie2-inspect-l
 
    ln -s ${HOME}/lib/FastQC/fastqc
 
@@ -395,6 +403,18 @@ the COMPSs environment.
 
    ln -s ${HOME}/.pyenv/versions/mg-process-fastq/bin/macs2 ${HOME}/bin/macs2
 
+Install iDEAR
+^^^^^^^^^^^^^
+
+.. code-block:: none
+   :linenos:
+
+   cd ${HOME}/lib
+   source("https://bioconductor.org/biocLite.R")
+   biocLite("BSgenome")
+   biocLite("DESeq2")
+   if(!require("devtools")) install.packages("devtools")
+   devtools::install_bitbucket("juanlmateo/idear")
 
 Install TADbit
 ^^^^^^^^^^^^^^
@@ -424,6 +444,30 @@ Install BSseeker
    ln -s ${HOME}/lib/BSseeker2/bs_align bs_align
    ln -s ${HOME}/lib/BSseeker2/bs_index bs_index
    ln -s ${HOME}/lib/BSseeker2/bs_utils bs_utils
+
+
+Trim Galore
+^^^^^^^^^^^
+
+.. code-block:: none
+   :linenos:
+
+   cd ${HOME}/lib
+   pip install cutadapt
+   wget -O trim_galore.tar.gz https://github.com/FelixKrueger/TrimGalore/archive/0.4.3.tar.gz
+   tar -xzf trim_galore.tar.gz
+
+   cd ${HOME}/bin
+   ln -s ${HOME}/lib/TrimGalore-0.4.3/trim_galore trim_galore
+
+Running on a COMPSs VM the symlink will need to be created in a system accessible area:
+
+.. code-block:: none
+   :linenos:
+
+   sudo ln -s ${HOME}/lib/TrimGalore-0.4.3/trim_galore /usr/local/bin/trim_galore
+   pip install cutadapt
+
 
 Post Installation Tidyup
 ------------------------

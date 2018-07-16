@@ -1,0 +1,93 @@
+{
+    "input_files": [
+        {
+            "required": true,
+            "allow_multiple": false,
+            "name": "bam_1",
+            "value": "59b7e020d9422a5969b65375"
+        }, {
+            "required": true,
+            "allow_multiple": false,
+            "name": "bam_2",
+            "value": "59b7e020d9422a5969b65376"
+        }, {
+            "required": true,
+            "allow_multiple": false,
+            "name": "bg_bam_1",
+            "value": "59b7e020d9422a5969b65377"
+        }, {
+            "required": true,
+            "allow_multiple": false,
+            "name": "bg_bam_2",
+            "value": "59b7e020d9422a5969b65378"
+        }, {
+            "required": true,
+            "allow_multiple": false,
+            "name": "bsgenome",
+            "value": "59b7e020d9422a5969b65374"
+        }
+    ],
+    "arguments": [
+        {
+            "name": "project",
+            "value": "run001"
+        },
+        {
+            "name": "description",
+            "value": null
+        },
+        {
+            "name": "idear_title",
+            "value": "Full genome sequences for Homo sapiens (GRCh38)"
+        },
+        {
+            "name": "idear_description",
+            "value": "Full genome sequences for Homo sapiens (GRCh38)"
+        },
+        {
+            "name": "idear_common_name",
+            "value": "Human"
+        },
+        {
+            "name": "idear_organism",
+            "value": "Homo sapiens"
+        },
+        {
+            "name": "idear_provider",
+            "value": "ENA"
+        },
+        {
+            "name": "idear_release_date",
+            "value": "2013"
+        },
+        {
+            "name": "idear_sample_param",
+            "value": "Nup98"
+        },
+        {
+            "name": "idear_background_param",
+            "value": "GFP"
+        }
+    ],
+    "output_files": [
+        {
+            "required": false,
+            "allow_multiple": false,
+            "name": "bigwig",
+            "file": {
+                "file_type": "bigwig",
+                "meta_data": {
+                    "visible": true,
+                    "tool": "idear",
+                    "description": "Output"
+                },
+                "file_path": "tests/data/idear.Human.Nup98-GFP.bw",
+                "data_type": "data_idamid_seq",
+                "compressed": "null"
+            }
+        }
+    ]
+}
+
+
+

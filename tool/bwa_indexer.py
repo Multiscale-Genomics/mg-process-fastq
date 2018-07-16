@@ -18,9 +18,7 @@
 from __future__ import print_function
 
 import os
-import shlex
 import shutil
-import subprocess
 import sys
 import tarfile
 
@@ -31,21 +29,23 @@ try:
         raise ImportError
     from pycompss.api.parameter import FILE_IN, FILE_OUT
     from pycompss.api.task import task
-    from pycompss.api.api import compss_wait_on
+    # from pycompss.api.api import compss_wait_on
 except ImportError:
     logger.warn("[Warning] Cannot import \"pycompss\" API packages.")
     logger.warn("          Using mock decorators.")
 
-    from utils.dummy_pycompss import FILE_IN, FILE_OUT # pylint: disable=ungrouped-imports
-    from utils.dummy_pycompss import task
-    from utils.dummy_pycompss import compss_wait_on
+    from utils.dummy_pycompss import FILE_IN, FILE_OUT  # pylint: disable=ungrouped-imports
+    from utils.dummy_pycompss import task  # pylint: disable=ungrouped-imports
+    # from utils.dummy_pycompss import compss_wait_on  # pylint: disable=ungrouped-imports
 
 from basic_modules.tool import Tool
 from basic_modules.metadata import Metadata
 
+from tool.aligner_utils import alignerUtils
 from tool.common import common
 
 # ------------------------------------------------------------------------------
+
 
 class bwaIndexerTool(Tool):
     """
@@ -54,13 +54,25 @@ class bwaIndexerTool(Tool):
 
     def __init__(self, configuration=None):
         """
-        Init function
+        Initialise the tool with its configuration.
+
+
+        Parameters
+        ----------
+        configuration : dict
+            a dictionary containing parameters that define how the operation
+            should be carried out, which are specific to each Tool.
         """
         logger.info("BWA Indexer")
         Tool.__init__(self)
 
+        if configuration is None:
+            configuration = {}
+
+        self.configuration.update(configuration)
+
     @task(file_loc=FILE_IN, idx_out=FILE_OUT)
-    def bwa_indexer(self, file_loc, idx_out): # pylint: disable=unused-argument
+    def bwa_indexer(self, file_loc, idx_out):  # pylint disable=no-self-use
         """
         BWA Indexer
 
@@ -75,12 +87,12 @@ class bwaIndexerTool(Tool):
         -------
         bool
         """
-        try:
-            common_handler = common()
-            amb_loc, ann_loc, bwt_loc, pac_loc, sa_loc = common_handler.bwa_index_genome(file_loc)
 
+        au_handler = alignerUtils()
+        amb_loc, ann_loc, bwt_loc, pac_loc, sa_loc = au_handler.bwa_index_genome(file_loc)
+        try:
             # tar.gz the index
-            print("BS - idx_out", idx_out, idx_out.replace('.tar.gz', ''))
+            logger.info("BWA - idx_out", idx_out, idx_out.replace('.tar.gz', ''))
             idx_out_pregz = idx_out.replace('.tar.gz', '.tar')
 
             index_dir = idx_out.replace('.tar.gz', '')
@@ -100,16 +112,16 @@ class bwaIndexerTool(Tool):
             tar.add(index_dir, arcname=index_folder)
             tar.close()
 
-            command_line = 'pigz ' + idx_out_pregz
-            args = shlex.split(command_line)
-            process = subprocess.Popen(args)
-            process.wait()
-
-            shutil.rmtree(index_dir)
-
-            return True
-        except Exception:
+        except (IOError, OSError) as msg:
+            logger.fatal("I/O error({0}) - BWA INDEXER: {1}".format(
+                msg.errno, msg.strerror))
             return False
+
+        common.zip_file(idx_out_pregz)
+
+        shutil.rmtree(index_dir)
+
+        return True
 
     def run(self, input_files, input_metadata, output_files):
         """
@@ -118,10 +130,10 @@ class bwaIndexerTool(Tool):
 
         Parameters
         ----------
-        input_files : list
+        input_files : dict
             List containing the location of the genome assembly FASTA file
-        meta_data : list
-        output_files : list
+        meta_data : dict
+        output_files : dict
             List of outpout files generated
 
         Returns
@@ -133,15 +145,15 @@ class bwaIndexerTool(Tool):
             index : Metadata
                 Metadata relating to the index file
         """
-        results = self.bwa_indexer(
+        self.bwa_indexer(
             input_files["genome"],
             output_files["index"]
         )
-        results = compss_wait_on(results)
+        # results = compss_wait_on(results)
 
-        if results is False:
-            logger.fatal("BWA Indexer: run failed")
-            return {}, {}
+        # if results is False:
+        #     logger.fatal("BWA Indexer: run failed")
+        #     return {}, {}
 
         output_metadata = {
             "index": Metadata(

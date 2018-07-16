@@ -18,9 +18,10 @@
 from __future__ import print_function
 
 import os.path
-import pytest # pylint: disable=unused-import
+import pytest
 
 from tool.tb_parse_mapping import tbParseMappingTool
+
 
 @pytest.mark.hic
 def test_tb_parse_mapping_frag():
@@ -43,21 +44,22 @@ def test_tb_parse_mapping_frag():
     ]
 
     metadata = {
-        'expt_name' : 'tb.Human.SRR1658573',
-        'enzyme_name' : 'MboI',
-        'mapping' : ['frag', 'frag']
+        'expt_name': 'tb.Human.SRR1658573',
+        'enzyme_name': 'MboI',
+        'mapping': ['frag', 'frag']
     }
 
     tpm = tbParseMappingTool()
-    tpm_files, tpm_meta = tpm.run(files, [], metadata)
+    tpm_files, tpm_meta = tpm.run(files, [], metadata)  # pylint: disable=unused-variable
 
     output_frag = resource_path + "tb.Human.SRR1658573_frag.tsv"
 
     assert os.path.isfile(output_frag) is True
     assert os.path.getsize(output_frag) > 0
 
+
 @pytest.mark.hic
-def test_tb_parse_mapping_iter():
+def test_tb_parse_mapping_iter():  # pylint: disable=too-many-locals
     """
     Test case to ensure that the BWA indexer works.
     """
@@ -81,15 +83,15 @@ def test_tb_parse_mapping_iter():
     ]
 
     metadata = {
-        'assembly' : 'test',
-        'expt_name' : 'tb.Human.SRR1658573',
-        'enzyme_name' : 'MboI',
-        'windows' : ((1, 25), (1, 50), (1, 75), (1, 100)),
-        'mapping' : ['iter', 'iter']
+        'assembly': 'test',
+        'expt_name': 'tb.Human.SRR1658573',
+        'enzyme_name': 'MboI',
+        'windows': ((1, 25), (1, 50), (1, 75), (1, 100)),
+        'mapping': ['iter', 'iter']
     }
 
     tpm = tbParseMappingTool()
-    tpm_files, tpm_meta = tpm.run(files, [], metadata)
+    tpm_files, tpm_meta = tpm.run(files, [], metadata)  # pylint: disable=unused-variable
 
     output_iter = resource_path + "tb.Human.SRR1658573_iter.tsv"
 

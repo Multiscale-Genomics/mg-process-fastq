@@ -18,9 +18,10 @@
 from __future__ import print_function
 
 import os.path
-import pytest # pylint: disable=unused-import
+import pytest
 
 from tool.tb_filter import tbFilterTool
+
 
 @pytest.mark.hic
 def test_tb_filter_frag_01():
@@ -31,15 +32,15 @@ def test_tb_filter_frag_01():
     reads_tsv = resource_path + "tb.Human.SRR1658573_frag.tsv"
 
     metadata = {
-        'assembly' : 'test',
-        'expt_name' : 'tb.Human.SRR1658573_frag_01',
-        'enzyme_name' : 'MboI',
-        'windows' : ((1, 'end')),
-        'mapping' : ['frag', 'frag']
+        'assembly': 'test',
+        'expt_name': 'tb.Human.SRR1658573_frag_01',
+        'enzyme_name': 'MboI',
+        'windows': ((1, 'end')),
+        'mapping': ['frag', 'frag']
     }
 
     tpm = tbFilterTool()
-    tpm_files, tpm_meta = tpm.run([reads_tsv], [], metadata)
+    tpm_files, tpm_meta = tpm.run([reads_tsv], [], metadata)  # pylint: disable=unused-variable
 
     reads_tsv = resource_path + metadata['expt_name'] + "_filtered_map.tsv"
 
@@ -62,9 +63,10 @@ def test_tb_filter_frag_01():
     assert os.path.isfile(reads_tsv + '_too_close_from_RES.tsv') is True
     assert os.path.getsize(reads_tsv + '_too_close_from_RES.tsv') > 0
     assert os.path.isfile(reads_tsv + '_too_large.tsv') is True
-    #assert os.path.getsize(reads_tsv + '_too_large.tsv') > 0
+    # assert os.path.getsize(reads_tsv + '_too_large.tsv') > 0
     assert os.path.isfile(reads_tsv + '_too_short.tsv') is True
     assert os.path.getsize(reads_tsv + '_too_short.tsv') > 0
+
 
 @pytest.mark.hic
 def test_tb_filter_frag_02():
@@ -75,16 +77,16 @@ def test_tb_filter_frag_02():
     reads_tsv = resource_path + "tb.Human.SRR1658573_frag.tsv"
 
     metadata = {
-        'assembly' : 'test',
-        'expt_name' : 'tb.Human.SRR1658573_frag_02',
-        'enzyme_name' : 'MboI',
-        'windows' : ((1, 'end')),
-        'mapping' : ['frag', 'frag'],
-        'conservative_filtering' : True
+        'assembly': 'test',
+        'expt_name': 'tb.Human.SRR1658573_frag_02',
+        'enzyme_name': 'MboI',
+        'windows': ((1, 'end')),
+        'mapping': ['frag', 'frag'],
+        'conservative_filtering': True
     }
 
     tpm = tbFilterTool()
-    tpm_files, tpm_meta = tpm.run([reads_tsv], [], metadata)
+    tpm_files, tpm_meta = tpm.run([reads_tsv], [], metadata)  # pylint: disable=unused-variable
 
     reads_tsv = resource_path + metadata['expt_name'] + "_filtered_map.tsv"
 
@@ -107,9 +109,10 @@ def test_tb_filter_frag_02():
     assert os.path.isfile(reads_tsv + '_too_close_from_RES.tsv') is True
     assert os.path.getsize(reads_tsv + '_too_close_from_RES.tsv') > 0
     assert os.path.isfile(reads_tsv + '_too_large.tsv') is True
-    #assert os.path.getsize(reads_tsv + '_too_large.tsv') > 0
+    # assert os.path.getsize(reads_tsv + '_too_large.tsv') > 0
     assert os.path.isfile(reads_tsv + '_too_short.tsv') is True
     assert os.path.getsize(reads_tsv + '_too_short.tsv') > 0
+
 
 @pytest.mark.hic
 def test_tb_filter_iter_01():
@@ -120,15 +123,15 @@ def test_tb_filter_iter_01():
     reads_tsv = resource_path + "tb.Human.SRR1658573_iter.tsv"
 
     metadata = {
-        'assembly' : 'test',
-        'expt_name' : 'tb.Human.SRR1658573_iter_01',
-        'enzyme_name' : 'MboI',
-        'windows' : ((1, 'end')),
-        'mapping' : ['iter', 'iter']
+        'assembly': 'test',
+        'expt_name': 'tb.Human.SRR1658573_iter_01',
+        'enzyme_name': 'MboI',
+        'windows': ((1, 'end')),
+        'mapping': ['iter', 'iter']
     }
 
     tpm = tbFilterTool()
-    tpm_files, tpm_meta = tpm.run([reads_tsv], [], metadata)
+    tpm_files, tpm_meta = tpm.run([reads_tsv], [], metadata)  # pylint: disable=unused-variable
 
     reads_tsv = resource_path + metadata['expt_name'] + "_filtered_map.tsv"
 
@@ -151,9 +154,10 @@ def test_tb_filter_iter_01():
     assert os.path.isfile(reads_tsv + '_too_close_from_RES.tsv') is True
     assert os.path.getsize(reads_tsv + '_too_close_from_RES.tsv') > 0
     assert os.path.isfile(reads_tsv + '_too_large.tsv') is True
-    #assert os.path.getsize(reads_tsv + '_too_large.tsv') > 0
+    # assert os.path.getsize(reads_tsv + '_too_large.tsv') > 0
     assert os.path.isfile(reads_tsv + '_too_short.tsv') is True
     assert os.path.getsize(reads_tsv + '_too_short.tsv') > 0
+
 
 @pytest.mark.hic
 def test_tb_filter_iter_02():
@@ -164,16 +168,16 @@ def test_tb_filter_iter_02():
     reads_tsv = resource_path + "tb.Human.SRR1658573_iter.tsv"
 
     metadata = {
-        'assembly' : 'test',
-        'expt_name' : 'tb.Human.SRR1658573_iter_02',
-        'enzyme_name' : 'MboI',
-        'windows' : ((1, 'end')),
-        'mapping' : ['iter', 'iter'],
-        'conservative_filtering' : True
+        'assembly': 'test',
+        'expt_name': 'tb.Human.SRR1658573_iter_02',
+        'enzyme_name': 'MboI',
+        'windows': ((1, 'end')),
+        'mapping': ['iter', 'iter'],
+        'conservative_filtering': True
     }
 
     tpm = tbFilterTool()
-    tpm_files, tpm_meta = tpm.run([reads_tsv], [], metadata)
+    tpm_files, tpm_meta = tpm.run([reads_tsv], [], metadata)  # pylint: disable=unused-variable
 
     reads_tsv = resource_path + metadata['expt_name'] + "_filtered_map.tsv"
 
@@ -196,6 +200,6 @@ def test_tb_filter_iter_02():
     assert os.path.isfile(reads_tsv + '_too_close_from_RES.tsv') is True
     assert os.path.getsize(reads_tsv + '_too_close_from_RES.tsv') > 0
     assert os.path.isfile(reads_tsv + '_too_large.tsv') is True
-    #assert os.path.getsize(reads_tsv + '_too_large.tsv') > 0
+    # assert os.path.getsize(reads_tsv + '_too_large.tsv') > 0
     assert os.path.isfile(reads_tsv + '_too_short.tsv') is True
     assert os.path.getsize(reads_tsv + '_too_short.tsv') > 0

@@ -101,9 +101,9 @@ class fastqcTool(Tool):  # pylint: disable=invalid-name
             if fastq_file_tmp[1][-3:] == ".gz":
                 gzipped = ".gz"
 
-            fastq_file_tmp[1] = fastq_file_tmp[1].replace(
+            fastq_file_tmp_name = fastq_file_tmp[1].replace(
                 "." + tail_substring + gzipped, "_fastqc.html")
-            fastq_file_tmp = os.path.join(*fastq_file_tmp)
+            fastq_file_tmp = os.path.join(fastq_file_tmp[0], fastq_file_tmp_name)
 
             with open(report_file, "wb") as f_out:
                 with open(fastq_file_tmp, "rb") as f_in:

@@ -536,7 +536,7 @@ class bamUtilsTask(object):  # pylint: disable=invalid-name
     @task(
         bam_file_1=FILE_IN, bam_file_2=FILE_IN, bam_file_3=FILE_IN,
         bam_file_4=FILE_IN, bam_file_out=FILE_OUT)
-    def bam_merge_4(self, bam_file_1, bam_file_2, bam_file_3, bam_file_4, bam_file_out):  # pylint: disable=no-self-use
+    def bam_merge_4(self, bam_file_1, bam_file_2, bam_file_3, bam_file_4, bam_file_out):  # pylint: disable=no-self-use,,too-many-arguments
         """
         Wrapper for the pysam SAMtools merge function
 

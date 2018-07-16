@@ -49,7 +49,7 @@ def test_trim_galore_pipeline():
     resource_path = os.path.join(os.path.dirname(__file__), "data/")
 
     files = {
-        'fastq1': resource_path + 'bsSeeker.Mouse.SRR892982_1.fastq.gz'
+        'fastq1': os.path.join(resource_path, 'bsSeeker.Mouse.SRR892982_1.fastq.gz')
     }
 
     metadata = {
@@ -104,8 +104,8 @@ def test_trim_galore_pipeline_02():
     resource_path = os.path.join(os.path.dirname(__file__), "data/")
 
     files = {
-        'fastq1': resource_path + 'bsSeeker.Mouse.SRR892982_1.fastq.gz',
-        'fastq2': resource_path + 'bsSeeker.Mouse.SRR892982_2.fastq.gz'
+        'fastq1': os.path.join(resource_path, 'bsSeeker.Mouse.SRR892982_1.fastq.gz'),
+        'fastq2': os.path.join(resource_path, 'bsSeeker.Mouse.SRR892982_2.fastq.gz')
     }
 
     metadata = {

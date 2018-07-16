@@ -128,3 +128,9 @@ Other changes include:
 BioBamBam only marks reads as duplicate, but does not remove the after. The Tool has been updated to remove the flagged duplicates using samtools with the parameter `-F 1024`. This matches the pipeline used within the `Blueprints project <http://dcc.blueprint-epigenome.eu/#/md/chip_seq_grch37>`_.
 
 Also performed some tidying of the code to annotate issues that had been highlighted by pylint.
+
+
+2018-07-16 - Modified handling of file locations
+------------------------------------------------
+
+Updated the handling of file locations to use os.path.join and os.path.split to allow for compatibility between different operating systems for the pipelines and tools.

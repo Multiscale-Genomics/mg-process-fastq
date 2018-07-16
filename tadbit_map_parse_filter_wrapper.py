@@ -83,6 +83,8 @@ class tadbit_map_parse_filter(Workflow):
         self.configuration["ncpus"] = num_cores
 
         tmp_name = ''.join([letters[int(random()*52)]for _ in xrange(5)])
+        if 'execution' in self.configuration:
+            self.configuration['project'] = self.configuration['execution']
         self.configuration['workdir'] = self.configuration['project']+'/_tmp_tadbit_'+tmp_name
         if not os.path.exists(self.configuration['workdir']):
             os.makedirs(self.configuration['workdir'])

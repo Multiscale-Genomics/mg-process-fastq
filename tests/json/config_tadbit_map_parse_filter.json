@@ -1,0 +1,110 @@
+{
+   "input_files": [
+        {
+            "required": true,
+            "allow_multiple": false,
+            "name": "read1",
+            "value": "59b7e020d9422a5969b65378"
+        }, {
+            "required": true,
+            "allow_multiple": false,
+            "name": "read2",
+            "value": "59b7e020d9422a5969b65372"
+        }, {
+            "required": true,
+            "allow_multiple": false,
+            "name": "parsing:refGenome",
+            "value": "59b7e020d9422a5969b65373"
+        }, {
+            "required": true,
+            "allow_multiple": false,
+            "name": "mapping:refGenome",
+            "value": "59b7e020d9422a5969b65374"
+        }
+    ],
+    "arguments": [
+        {
+            "name": "project",
+            "value": "/scratch/results/vre/"
+        },
+        {
+            "name": "description",
+            "value": "Execution directory for tool TADbit map, parse and filter"
+        },
+        {
+            "name": "mapping:rest_enzyme",
+            "value": "MboI"
+        },
+        {
+            "name": "mapping:iterative_mapping",
+            "value": false
+        },
+        {
+            "name": "filtering:filters",
+            "value": [
+                "1",
+                "2",
+                "3",
+                "4",
+                "9",
+                "10"
+             ]
+        },
+        {
+        	"name": "chromosomes",
+        	"value": ""
+        },
+        {
+            "name": "mapping:windows",
+            "value": "1:20 1:40"
+        },
+        {
+            "name": "filtering:min_dist_RE",
+            "value": "500"
+        },
+        {
+            "name": "filtering:min_fragment_size",
+            "value": "50"
+        },
+        {
+            "name": "filtering:max_fragment_size",
+            "value": "100000"
+        }
+    ],
+    "output_files": [
+        {
+            "name": "paired_reads",
+            "required": true,
+            "allow_multiple": false,
+            "file": {
+                "file_type": "BAM",
+                "data_type": "hic_sequences",
+                "file_path": "paired_reads.bam",
+                "compressed": "null",
+                "meta_data": {
+                    "tool": "tadbit",
+                    "description": "Paired end reads",
+                    "visible": true
+                }
+            }
+        },
+        {
+            "name": "map_parse_filter_stats",
+            "required": true,
+            "allow_multiple": false,
+            "file": {
+                "file_type": "TAR",
+                "data_type": "tool_statistics",
+                "file_path": "map_parse_filter_stats.tar.gz",
+                "compressed": "gzip",
+                "meta_data": {
+                    "description": "TADbit mapping, parsing and filtering statistics",
+                    "tool": "tadbit",
+                    "visible": true
+                }
+            }
+        }
+    ]
+}
+
+

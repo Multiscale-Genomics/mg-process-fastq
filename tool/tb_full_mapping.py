@@ -18,26 +18,30 @@
 from __future__ import print_function
 import sys
 
+from utils import logger
+
 try:
     if hasattr(sys, '_run_from_cmdl') is True:
         raise ImportError
     from pycompss.api.parameter import FILE_IN, FILE_OUT, IN
     from pycompss.api.task import task
     # from pycompss.api.constraint import constraint
-    # from pycompss.api.api import compss_wait_on
+    from pycompss.api.api import compss_wait_on
 except ImportError:
-    print("[Warning] Cannot import \"pycompss\" API packages.")
-    print("          Using mock decorators.")
+    logger.info("[Warning] Cannot import \"pycompss\" API packages.")
+    logger.info("          Using mock decorators.")
 
     from utils.dummy_pycompss import FILE_IN, FILE_OUT, IN
     from utils.dummy_pycompss import task
-    # from utils.dummy_pycompss import constraint
-    # from utils.dummy_pycompss import compss_wait_on
+    from utils.dummy_pycompss import constraint
+    from utils.dummy_pycompss import compss_wait_on
+
+from os import path, unlink
 
 from basic_modules.tool import Tool
 
-from pytadbit.mapping.mapper import full_mapping  # pylint: disable=import-error
-
+from pytadbit.mapping.mapper import full_mapping
+from pytadbit.utils.fastq_utils import quality_plot
 
 # ------------------------------------------------------------------------------
 
@@ -50,7 +54,7 @@ class tbFullMappingTool(Tool):
         """
         Init function
         """
-        print("TADbit full_mapping")
+        logger.info("TADbit full_mapping")
         Tool.__init__(self)
 
     @task(
@@ -59,7 +63,7 @@ class tbFullMappingTool(Tool):
     # @constraint(ProcessorCoreCount=32)
     def tb_full_mapping_iter(
             self, gem_file, fastq_file, windows,
-            window1, window2, window3, window4):  # pylint: disable=unused-argument
+            window1, window2, window3, window4, ncpus=1, workdir='/tmp/'):
         """
         Function to map the FASTQ files to the GEM file over different window
         sizes ready for alignment
@@ -94,14 +98,13 @@ class tbFullMappingTool(Tool):
             Location of the fourth window index file
 
         """
-        print("tb_full_mapping_iter")
-        od_loc = fastq_file.split("/")
-        output_dir = "/".join(od_loc[0:-1])
+        logger.info("tb_full_mapping_iter")
+        output_dir = workdir
 
-        full_mapping(
+        map_files = full_mapping(
             gem_file, fastq_file, output_dir,
-            windows=windows, frag_map=False, nthreads=32, clean=True,
-            temp_dir='/tmp/'
+            windows=windows, frag_map=False, nthreads=ncpus, clean=True,
+            temp_dir=workdir
         )
 
         return True
@@ -112,7 +115,7 @@ class tbFullMappingTool(Tool):
     # @constraint(ProcessorCoreCount=16)
     def tb_full_mapping_frag(
             self, gem_file, fastq_file, enzyme_name, windows,
-            full_file, frag_file):
+            full_file, frag_file, ncpus=1, workdir='/tmp/'):
         """
         Function to map the FASTQ files to the GEM file based on fragments
         derived from the restriction enzyme that was used.
@@ -137,38 +140,49 @@ class tbFullMappingTool(Tool):
             Location of the window index file
 
         """
-        print("tb_full_mapping_frag")
-        od_loc = fastq_file.split("/")
-        output_dir = "/".join(od_loc[0:-1])
+        logger.info("tb_full_mapping_frag")
+        #od_loc = fastq_file.split("/")
+        #output_dir = "/".join(od_loc[0:-1])
+        output_dir = workdir
 
-        print("TB MAPPING - output_dir:", output_dir)
-        print("TB MAPPING - full_file dir:", full_file)
-        print("TB MAPPING - frag_file dir:", frag_file)
+        logger.info("TB MAPPING - output_dir:", output_dir)
+        logger.info("TB MAPPING - full_file dir:", full_file)
+        logger.info("TB MAPPING - frag_file dir:", frag_file)
+        gzipped = ''
+        dsrc = ''
+        if fastq_file.endswith('.fastq.gz') or fastq_file.endswith('.fq.gz'):
+            gzipped = '.gz'
+        if fastq_file.endswith('.fastq.dsrc'):
+            dsrc = '.dsrc'
 
-        fastq_file_tmp = fastq_file.replace(".fastq", '')
-        fastq_file_tmp = fastq_file_tmp.replace(".fq", '')
+        file_name = path.basename(fastq_file)
+        file_name = file_name.replace('.fastq'+dsrc+gzipped, '')
+        file_name = file_name.replace('.fq'+dsrc+gzipped, '')
+        fastq_file_tmp = workdir+'/'+file_name
 
-        with open(fastq_file_tmp + "_tmp.fastq", "wb") as f_out:
-            with open(fastq_file, "rb") as f_in:
-                f_out.write(f_in.read())
-
-        full_mapping(
-            gem_file, fastq_file_tmp + "_tmp.fastq", output_dir,
-            r_enz=enzyme_name, windows=windows, frag_map=True, nthreads=32,
-            clean=True, temp_dir='/tmp/'
+        map_files = full_mapping(
+            gem_file, fastq_file, output_dir,
+            r_enz=enzyme_name, windows=windows, frag_map=True, nthreads=ncpus,
+            clean=True, temp_dir=workdir
         )
 
         with open(full_file, "wb") as f_out:
-            with open(fastq_file_tmp + "_tmp_full_1-end.map", "rb") as f_in:
+            with open(fastq_file_tmp +dsrc+"_full_1-end.map", "rb") as f_in:
                 f_out.write(f_in.read())
 
+        if path.isfile(fastq_file_tmp +dsrc+"_full_1-end.map"):
+            unlink(fastq_file_tmp +dsrc+"_full_1-end.map")
+
         with open(frag_file, "wb") as f_out:
-            with open(fastq_file_tmp + "_tmp_frag_1-end.map", "rb") as f_in:
+            with open(fastq_file_tmp +dsrc+"_frag_1-end.map", "rb") as f_in:
                 f_out.write(f_in.read())
+
+        if path.isfile(fastq_file_tmp +dsrc+"_frag_1-end.map"):
+            unlink(fastq_file_tmp +dsrc+"_frag_1-end.map")
 
         return True
 
-    def run(self, input_files, output_files, metadata=None):  # pylint: disable=too-many-locals,arguments-differ
+    def run(self, input_files, output_files, metadata=None):
         """
         The main function to map the FASTQ files to the GEM file over different
         window sizes ready for alignment
@@ -199,43 +213,88 @@ class tbFullMappingTool(Tool):
         gem_file = input_files[0]
         fastq_file = input_files[1]
         windows = metadata['windows']
+        if windows and len(windows) == 0:
+            windows = None
+        if 'ncpus' not in metadata:
+            metadata['ncpus'] = 8
+        if 'iterative_mapping' in metadata:
+            if isinstance(metadata['iterative_mapping'], basestring):
+                frag_base = not metadata['iterative_mapping'].lower() in ("yes", "true", "t", "1")
+            else:
+                frag_base = not metadata['iterative_mapping']
+        else:
+            frag_base = (windows is None)
+        if 'workdir' in metadata:
+            root_path = metadata['workdir']
+        else:
+            root_path = path.dirname(path.abspath(fastq_file))
 
-        root_name = fastq_file.split("/")
-        root_name[-1] = root_name[-1].replace('.fastq', '')
-        root_name[-1] = root_name[-1].replace('.fq', '')
+        gzipped = ''
+        if fastq_file.lower().endswith('.fastq.gz') or fastq_file.lower().endswith('.fq.gz'):
+            gzipped = '.gz'
+        file_name = path.basename(fastq_file)
+        file_name = (file_name.replace('.fastq'+gzipped, '')).replace('.FASTQ'+gzipped, '')
+        file_name = (file_name.replace('.fq'+gzipped, '')).replace('.FQ'+gzipped, '')
+        quality_plot_file = ''
+        log_path = ''
+        #name = root_name[-1]
 
-        # name = root_name[-1]
+        if 'quality_plot' in metadata:
+            quality_plot_file = 'QC-plot_'+file_name + '.png'
+            log_path = root_path+'/'+'mapping_log_'+file_name + '.txt'
 
-        # input and output share most metadata
+            dangling_ends, ligated = quality_plot(
+                fastq_file, r_enz=metadata['enzyme_name'],
+                nreads=100000, paired=False,
+                savefig=path.join(
+                    root_path,
+                    quality_plot_file))
+
+            orig_stdout = sys.stdout
+            f = open(log_path, "w")
+            sys.stdout = f
+            logger.info ('Hi-C QC plot')
+            for renz in dangling_ends:
+                logger.info('  - Dangling-ends (sensu-stricto): ', dangling_ends[renz])
+            for renz in ligated:
+                logger.info('  - Ligation sites: ', ligated[renz])
+
+            sys.stdout = orig_stdout
+            f.close()
+
+        file_name = root_path+'/'+file_name
         output_metadata = {}
+        # input and output share most metadata
 
-        root_path = '/'.join(root_name)
+        if frag_base:
+            full_file = file_name + "_full.map"
+            frag_file = file_name + "_frag.map"
 
-        if windows is None:
-            full_file = root_path + "_full.map"
-            frag_file = root_path + "_frag.map"
-
-            self.tb_full_mapping_frag(
-                gem_file, fastq_file, metadata['enzyme_name'], windows,
-                full_file, frag_file
+            results = self.tb_full_mapping_frag(
+                gem_file, fastq_file, metadata['enzyme_name'], None,
+                full_file, frag_file, ncpus=metadata['ncpus'], workdir=root_path
             )
-            # results = compss_wait_on(results)
+            results = compss_wait_on(results)
 
             output_metadata['func'] = 'frag'
-            return ([full_file, frag_file], output_metadata)
+            return ([full_file, frag_file, log_path, root_path+'/'+quality_plot_file], output_metadata)
 
-        window1 = root_path + "_full_" + str(windows[0][0]) + "-" + str(windows[0][1]) + ".map"
-        window2 = root_path + "_full_" + str(windows[1][0]) + "-" + str(windows[1][1]) + ".map"
-        window3 = root_path + "_full_" + str(windows[2][0]) + "-" + str(windows[2][1]) + ".map"
-        window4 = root_path + "_full_" + str(windows[3][0]) + "-" + str(windows[3][1]) + ".map"
+        window1 = window2 = window3 = window4 = None
+        window1 = file_name + "_full_" + str(windows[0][0]) + "-" + str(windows[0][1]) + ".map"
+        if len(windows) > 1:
+            window2 = file_name + "_full_" + str(windows[1][0]) + "-" + str(windows[1][1]) + ".map"
+        if len(windows) > 2:
+            window3 = file_name + "_full_" + str(windows[2][0]) + "-" + str(windows[2][1]) + ".map"
+        if len(windows) > 3:
+            window4 = file_name + "_full_" + str(windows[3][0]) + "-" + str(windows[3][1]) + ".map"
 
-        self.tb_full_mapping_iter(
+        results = self.tb_full_mapping_iter(
             gem_file, fastq_file, windows,
-            window1, window2, window3, window4
+            window1, window2, window3, window4, ncpus=metadata['ncpus'], workdir=root_path
         )
-        # results = compss_wait_on(results)
+        results = compss_wait_on(results)
 
         output_metadata['func'] = 'iter'
-        return ([window1, window2, window3, window4], output_metadata)
+        return ([window1, window2, window3, window4, log_path, root_path+'/'+quality_plot_file], output_metadata)
 
 # ------------------------------------------------------------------------------

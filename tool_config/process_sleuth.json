@@ -34,7 +34,7 @@
             "description": "Kallisto results",
             "help": "Path to a tar file containing the results of multiple RNA-seq experiments that have been analysed using Kallisto",
             "file_type": ["TAR"],
-            "data_type": ["data_rna_seq"],
+            "data_type": "data_rna_seq",
             "required": true,
             "allow_multiple": false
         }

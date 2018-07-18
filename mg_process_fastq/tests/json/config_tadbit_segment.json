@@ -1,0 +1,73 @@
+{
+   "input_files": [
+        {
+            "required": true,
+            "allow_multiple": false,
+            "name": "bamin",
+            "value": "59b7e020d9422a5969b65378"
+        },
+        {
+            "required": false,
+            "allow_multiple": false,
+            "name": "biases",
+            "value": "59b7e020d9422a5969b65372"
+        }
+    ],
+    "arguments": [
+    {
+            "name": "project",
+            "value": "/scratch/results/vre/"
+        },
+    	{
+            "name": "resolution",
+            "description": "Resolution of the normalization",
+            "help": "Resolution of the normalization.",
+            "type": "string",
+            "required": true,
+            "default": "100000",
+            "value" : "100000"
+        },
+        {
+            "name": "segmentation:chromosome_names",
+            "description": "List of chromosomes names",
+            "help": "List of chromosomes names separated by spaces",
+            "type": "string",
+            "required": false,
+            "default": "",
+            "value" : "chr10"
+        },
+        {
+            "name": "segmentation:callers",
+            "description": "1 for TAD calling, 2 for compartment calling",
+            "help": "1 for TAD calling, 2 for compartment calling",
+            "type": "int",
+            "required": true,
+            "default": "1",
+             "value": [
+                "1",
+                "2"
+            ]
+        }
+    ],
+    "output_files": [
+        {
+            "name": "tads_compartments",
+            "required": false,
+            "allow_multiple": false,
+            "file": {
+                "file_type": "TAR",
+                "data_type": "tool_statistics",
+                "file_path": "tads_compartments.tar.gz",
+                "compressed": "gzip",
+                "meta_data": {
+                    "description": "TADbit HiC compartments stats",
+                    "tool": "tadbit",
+                    "visible": true
+                }
+            }
+        }
+    ],
+    "control_file": ".results.json"
+}
+
+

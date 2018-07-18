@@ -19,25 +19,28 @@ from __future__ import print_function
 import sys
 import os.path
 
+from utils import logger
+
+from pytadbit.parsers.hic_bam_parser import bed2D_to_BAMhic
+
 try:
     if hasattr(sys, '_run_from_cmdl') is True:
         raise ImportError
     from pycompss.api.parameter import FILE_IN, FILE_OUT, IN
     from pycompss.api.task import task
-    # from pycompss.api.api import compss_wait_on
+    from pycompss.api.api import compss_wait_on
 except ImportError:
-    print("[Warning] Cannot import \"pycompss\" API packages.")
-    print("          Using mock decorators.")
+    logger.info("[Warning] Cannot import \"pycompss\" API packages.")
+    logger.info("          Using mock decorators.")
 
     from utils.dummy_pycompss import FILE_IN, FILE_OUT, IN
     from utils.dummy_pycompss import task
-    # from utils.dummy_pycompss import compss_wait_on
+    from utils.dummy_pycompss import compss_wait_on
 
 from basic_modules.tool import Tool
 
-from pytadbit.mapping.filter import apply_filter
-from pytadbit.mapping.filter import filter_reads
-
+from pytadbit.mapping.filter import apply_filter, filter_reads
+from pytadbit.mapping.analyze import insert_sizes
 
 # ------------------------------------------------------------------------------
 
@@ -50,17 +53,18 @@ class tbFilterTool(Tool):
         """
         Init function
         """
-        print("TADbit filter aligned reads")
+        logger.info("TADbit filter aligned reads")
         Tool.__init__(self)
 
     @task(
-        reads=FILE_IN, filter_reads_file=FILE_OUT, conservative=IN,
+        reads=FILE_IN, filter_reads_file=FILE_OUT, custom_filter=IN, conservative=IN,
         output_de=FILE_OUT, output_d=FILE_OUT, output_e=FILE_OUT,
         output_ed=FILE_OUT, output_or=FILE_OUT, output_rb=FILE_OUT,
         output_sc=FILE_OUT, output_tc=FILE_OUT, output_tl=FILE_OUT,
         output_ts=FILE_OUT, returns=int)
-    def tb_filter(  # pylint: disable=too-many-branches
-            self, reads, filter_reads_file, conservative, output_de, output_d,
+    def tb_filter(
+            self, reads, filter_reads_file, custom_filter, min_dist_RE, min_fragment_size,
+            max_fragment_size, conservative, output_de, output_d,
             output_e, output_ed, output_or, output_rb, output_sc, output_tc,
             output_tl, output_ts):
         """
@@ -89,86 +93,85 @@ class tbFilterTool(Tool):
         with open(reads_tmp + "_tmp.tsv", "wb") as f_out:
             with open(reads, "rb") as f_in:
                 f_out.write(f_in.read())
-
         masked = filter_reads(
             reads_tmp + "_tmp.tsv",
             max_molecule_length=610,
-            min_dist_to_re=915,
+            min_dist_to_re=min_dist_RE,
             over_represented=0.005,
-            max_frag_size=100000,
-            min_frag_size=100,
+            max_frag_size=max_fragment_size,
+            min_frag_size=min_fragment_size,
             re_proximity=4)
 
         filter_reads_file_tmp = filter_reads_file.replace(".tsv", '')
+        filters_suffixes = ['self-circle', 'dangling-end', 'error', 'extra dangling-end', 'too close from REs', 'too short', 'too large', 'over-represented', 'duplicated', 'random breaks']
 
-        if conservative is True:
-            # Ignore filter 5 (based on docs) as not very helpful
-            apply_filter(
-                reads_tmp + "_tmp.tsv", filter_reads_file_tmp + "_tmp.tsv",
-                masked, filters=[1, 2, 3, 4, 6, 7, 8, 9, 10])
+        if custom_filter:
+            applied_filters = custom_filter
+            filters_suffixes = [filters_suffixes[i-1] for i in applied_filters]
         else:
-            # Less conservative option
-            apply_filter(
-                reads_tmp + "_tmp.tsv", filter_reads_file_tmp + "_tmp.tsv",
-                masked, filters=[1, 2, 3, 9, 10])
+            if conservative is True:
+                applied_filters = [1, 2, 3, 4, 6, 7, 8, 9, 10]
+                # Ignore filter 5 (based on docs) as not very helpful
+            else:
+                # Less conservative option
+                applied_filters = [1, 2, 3, 9, 10]
+
+        apply_filter(reads_tmp + "_tmp.tsv", filter_reads_file_tmp + "_tmp.tsv", masked, filters=applied_filters)
 
         with open(filter_reads_file, "wb") as f_out:
             with open(filter_reads_file_tmp + "_tmp.tsv", "rb") as f_in:
                 f_out.write(f_in.read())
 
-        filters_suffixes = [
-            'dangling-end', 'duplicated', 'error', 'extra_dangling-end', 'over-represented',
-            'random_breaks', 'self-circle', 'too_close_from_RES', 'too_large', 'too_short']
         for i in filters_suffixes:
             report_file_loc = reads_tmp + '_tmp.tsv_' + i + '.tsv'
-            print(report_file_loc)
+            logger.info(report_file_loc)
             if os.path.isfile(report_file_loc) is True:
-                print("- Present", os.path.getsize(report_file_loc))
+                logger.info("- Present {0}".format(os.path.getsize(report_file_loc)))
                 with open(report_file_loc, "rb") as f_in:
                     if i == 'dangling-end':
-                        print("- Saving to:", output_de)
+                        logger.info("- Saving to:" + output_de)
                         with open(output_de, "wb") as f_out:
                             f_out.write(f_in.read())
                     elif i == 'duplicated':
-                        print("- Saving to:", output_d)
+                        logger.info("- Saving to:" + output_d)
                         with open(output_d, "wb") as f_out:
                             f_out.write(f_in.read())
                     elif i == 'error':
-                        print("- Saving to:", output_e)
+                        logger.info("- Saving to:" + output_e)
                         with open(output_e, "wb") as f_out:
                             f_out.write(f_in.read())
                     elif i == 'extra_dangling-end':
-                        print("- Saving to:", output_ed)
+                        logger.info("- Saving to:" + output_ed)
                         with open(output_ed, "wb") as f_out:
                             f_out.write(f_in.read())
                     elif i == 'over-represented':
-                        print("- Saving to:", output_or)
+                        logger.info("- Saving to:" + output_or)
                         with open(output_or, "wb") as f_out:
                             f_out.write(f_in.read())
                     elif i == 'random_breaks':
-                        print("- Saving to:", output_rb)
+                        logger.info("- Saving to:" + output_rb)
                         with open(output_rb, "wb") as f_out:
                             f_out.write(f_in.read())
                     elif i == 'self-circle':
-                        print("- Saving to:", output_sc)
+                        logger.info("- Saving to:" + output_sc)
                         with open(output_sc, "wb") as f_out:
                             f_out.write(f_in.read())
                     elif i == 'too_close_from_RES':
-                        print("- Saving to:", output_tc)
+                        logger.info("- Saving to:" + output_tc)
                         with open(output_tc, "wb") as f_out:
                             f_out.write(f_in.read())
                     elif i == 'too_large':
-                        print("- Saving to:", output_tl)
+                        logger.info("- Saving to:" + output_tl)
                         with open(output_tl, "wb") as f_out:
                             f_out.write(f_in.read())
                     elif i == 'too_short':
-                        print("- Saving to:", output_ts)
+                        logger.info("- Saving to:" + output_ts)
                         with open(output_ts, "wb") as f_out:
                             f_out.write(f_in.read())
 
-        return True
+        return masked
 
-    def run(self, input_files, output_files, metadata=None):  # pylint: disable=too-many-locals,arguments-differ
+    def run(self, input_files, output_files, metadata=None):
         """
         The main function to filter the reads to remove experimental artifacts
 
@@ -193,12 +196,28 @@ class tbFilterTool(Tool):
         """
 
         reads = input_files[0]
+
         conservative = True
-        if 'conservative_filtering' in metadata:
-            conservative = metadata['conservative_filtering']
+        custom_filter = None
+        if 'custom_filter' in metadata:
+            custom_filter = metadata['filters']
+
+        elif 'conservative' in metadata:
+            conservative = metadata['conservative']
+
+        min_dist_RE = 915
+        max_fragment_size = 100000
+        min_fragment_size = 100
+        if 'min_dist_RE' in metadata:
+            min_dist_RE = int(metadata['min_dist_RE'])
+        if 'min_fragment_size' in metadata:
+            min_fragment_size = int(metadata['min_fragment_size'])
+        if 'max_fragment_size' in metadata:
+            max_fragment_size = int(metadata['max_fragment_size'])
 
         root_name = reads.split("/")
-        filtered_reads_file = "/".join(root_name[0:-1]) + '/' + metadata['expt_name'] + '_filtered_map.tsv'  # pylint: disable=line-too-long
+
+        filtered_reads_file = "/".join(root_name[0:-1]) + '/' + metadata['expt_name'] + '_filtered_map.tsv'
 
         output_de = filtered_reads_file + '_dangling-end.tsv'
         output_d = filtered_reads_file + '_duplicated.tsv'
@@ -215,12 +234,50 @@ class tbFilterTool(Tool):
         output_metadata = {}
 
         # handle error
-        self.tb_filter(
-            reads, filtered_reads_file, conservative,
+        results = self.tb_filter(
+            reads, filtered_reads_file, custom_filter, min_dist_RE,
+            min_fragment_size, max_fragment_size, conservative,
             output_de, output_d, output_e, output_ed, output_or, output_rb,
             output_sc, output_tc, output_tl, output_ts)
-        # results = compss_wait_on(results)
+        results = compss_wait_on(results)
 
-        return ([filtered_reads_file], output_metadata)
+        if 'outbam' in metadata:
+            outbam = metadata['root_dir'] + '/' + metadata['outbam']
+            bed2D_to_BAMhic(filtered_reads_file, True, 32, outbam, 'mid', results)
+            filtered_reads_file = outbam
+
+        hist_path = ''
+        if 'histogram' in metadata:
+            hist_path = "/".join(root_name[0:-1]) + '/histogram_fragment_sizes_.png'
+            log_path = "/".join(root_name[0:-1]) + '/filter_log.txt'
+
+            median, max_f, mad = insert_sizes(
+                reads, nreads=1000000, stats=('median', 'first_decay', 'MAD'),
+                savefig=hist_path)
+
+            orig_stdout = sys.stdout
+            f = open(log_path, "w")
+            sys.stdout = f
+
+            #insert size
+            logger.info ('Insert size\n')
+
+            logger.info ('  - median insert size = {0}'.format(median))
+            logger.info ('  - double median absolution of insert size = {0}'.format(mad))
+            logger.info ('  - max insert size (when a gap in continuity of > 10 bp is found in fragment lengths) = {0}'.format(max_f))
+
+            max_mole = max_f # pseudo DEs
+            min_dist = max_f + mad # random breaks
+            logger.info ('   Using the maximum continuous fragment size'
+                   '('+str(max_mole)+' bp) to check '
+                   'for pseudo-dangling ends')
+            logger.info ('   Using maximum continuous fragment size plus the MAD '
+                   '('+str(min_dist)+' bp) to check for random breaks')
+
+            sys.stdout = orig_stdout
+            f.close()
+
+
+        return ([filtered_reads_file, log_path, hist_path], output_metadata)
 
 # ------------------------------------------------------------------------------

@@ -26,16 +26,16 @@ try:
         raise ImportError
     from pycompss.api.parameter import FILE_IN, FILE_OUT, IN
     from pycompss.api.task import task
-    #from pycompss.api.constraint import constraint
+    # from pycompss.api.constraint import constraint
     from pycompss.api.api import compss_wait_on
 except ImportError:
     logger.info("[Warning] Cannot import \"pycompss\" API packages.")
     logger.info("          Using mock decorators.")
 
-    from utils.dummy_pycompss import FILE_IN, FILE_OUT, IN
-    from utils.dummy_pycompss import task
-    # from utils.dummy_pycompss import constraint
-    from utils.dummy_pycompss import compss_wait_on
+    from utils.dummy_pycompss import FILE_IN, FILE_OUT, IN  # pylint: disable=ungrouped-imports
+    from utils.dummy_pycompss import task  # pylint: disable=ungrouped-imports
+    # from utils.dummy_pycompss import constraint  # pylint: disable=ungrouped-imports
+    from utils.dummy_pycompss import compss_wait_on  # pylint: disable=ungrouped-imports
 
 from basic_modules.tool import Tool
 
@@ -44,6 +44,7 @@ from pytadbit.parsers.map_parser import parse_map
 from pytadbit.mapping import get_intersection
 
 # ------------------------------------------------------------------------------
+
 
 class tbParseMappingTool(Tool):
     """
@@ -122,7 +123,7 @@ class tbParseMappingTool(Tool):
         if window1_4 and window2_4:
             wind1 += [window1_4]
             wind2 += [window2_4]
-            
+
         parse_map(
             wind1,
             wind2,
@@ -331,7 +332,7 @@ class tbParseMappingTool(Tool):
         filter_chrom = None
         if 'chromosomes' in metadata and metadata['chromosomes'] != '':
             filter_chrom = metadata['chromosomes'].split(',')
-            
+
         root_name = input_files[1].split("/")
 
         reads = "/".join(root_name[0:-1]) + '/'

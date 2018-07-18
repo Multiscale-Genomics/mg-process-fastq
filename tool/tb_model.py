@@ -34,9 +34,9 @@ except ImportError:
     logger.info("[Warning] Cannot import \"pycompss\" API packages.")
     logger.info("          Using mock decorators.")
 
-    from dummy_pycompss import FILE_IN, FILE_OUT, FILE_INOUT, IN
-    from dummy_pycompss import task
-    from dummy_pycompss import compss_wait_on
+    from dummy_pycompss import FILE_IN, FILE_OUT, FILE_INOUT, IN  # pylint: disable=ungrouped-imports
+    from dummy_pycompss import task  # pylint: disable=ungrouped-imports
+    from dummy_pycompss import compss_wait_on  # pylint: disable=ungrouped-imports
     #from dummy_pycompss import constraint
 
 from basic_modules.tool import Tool
@@ -109,7 +109,7 @@ class tbModelTool(Tool):
 
         """
         #chr_hic_data = read_matrix(matrix_file, resolution=int(resolution))
-        
+
         logger.info("TB MODELING: {0},{1},{2},{3},{4},{5},{6},{7},{8},{9},{10},{11}".format(hic_contacts_matrix_norm,
             resolution, gen_pos_chrom_name, gen_pos_begin,
             gen_pos_end, num_mod_comp, num_mod_keep,
@@ -204,14 +204,14 @@ class tbModelTool(Tool):
         _cmd.append(str(num_mod_comp))
         _cmd.append('--nkeep')
         _cmd.append(str(num_mod_keep))
-        
+
         if optimize_only:
             _cmd.append('--optimize')
         else:
             _cmd.append('--model')
             _cmd.append('--force')
             _cmd.append('--analyze')
-            
+
         output_metadata = {}
         logger.info(' '.join(_cmd))
         out, err = Popen(_cmd, stdout=PIPE, stderr=PIPE).communicate()

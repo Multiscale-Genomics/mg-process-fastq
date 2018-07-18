@@ -21,8 +21,6 @@ import os.path
 
 from utils import logger
 
-from pytadbit.parsers.hic_bam_parser import bed2D_to_BAMhic
-
 try:
     if hasattr(sys, '_run_from_cmdl') is True:
         raise ImportError
@@ -33,16 +31,19 @@ except ImportError:
     logger.info("[Warning] Cannot import \"pycompss\" API packages.")
     logger.info("          Using mock decorators.")
 
-    from utils.dummy_pycompss import FILE_IN, FILE_OUT, IN
-    from utils.dummy_pycompss import task
-    from utils.dummy_pycompss import compss_wait_on
+    from utils.dummy_pycompss import FILE_IN, FILE_OUT, IN  # pylint: disable=ungrouped-imports
+    from utils.dummy_pycompss import task  # pylint: disable=ungrouped-imports
+    from utils.dummy_pycompss import compss_wait_on  # pylint: disable=ungrouped-imports
 
 from basic_modules.tool import Tool
 
-from pytadbit.mapping.filter import apply_filter, filter_reads
+from pytadbit.parsers.hic_bam_parser import bed2D_to_BAMhic
+from pytadbit.mapping.filter import apply_filter
+from pytadbit.mapping.filter import filter_reads
 from pytadbit.mapping.analyze import insert_sizes
 
 # ------------------------------------------------------------------------------
+
 
 class tbFilterTool(Tool):
     """

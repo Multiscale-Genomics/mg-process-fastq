@@ -18,7 +18,9 @@ from __future__ import print_function
 
 import sys
 import os
-from subprocess import CalledProcessError, PIPE, Popen
+# from subprocess import CalledProcessError
+from subprocess import PIPE
+from subprocess import Popen
 from utils import logger
 
 try:
@@ -26,20 +28,21 @@ try:
         raise ImportError
     from pycompss.api.parameter import FILE_IN, FILE_OUT, FILE_INOUT, IN
     from pycompss.api.task import task
-    from pycompss.api.api import compss_wait_on
+    # from pycompss.api.api import compss_wait_on
     # from pycompss.api.constraint import constraint
 except ImportError:
     logger.info("[Warning] Cannot import \"pycompss\" API packages.")
     logger.info("          Using mock decorators.")
 
-    from dummy_pycompss import FILE_IN, FILE_OUT, FILE_INOUT, IN
-    from dummy_pycompss import task
-    from dummy_pycompss import compss_wait_on
-    #from dummy_pycompss import constraint
+    from dummy_pycompss import FILE_IN, FILE_OUT, FILE_INOUT, IN  # pylint: disable=ungrouped-imports
+    from dummy_pycompss import task  # pylint: disable=ungrouped-imports
+    # from dummy_pycompss import compss_wait_on  # pylint: disable=ungrouped-imports
+    # from dummy_pycompss import constraint  # pylint: disable=ungrouped-imports
 
 from basic_modules.tool import Tool
 
 # ------------------------------------------------------------------------------
+
 
 class tbSegmentTool(Tool):
     """

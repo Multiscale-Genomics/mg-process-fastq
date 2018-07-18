@@ -35,9 +35,9 @@ except ImportError:
     logger.info("[Warning] Cannot import \"pycompss\" API packages.")
     logger.info("          Using mock decorators.")
 
-    from dummy_pycompss import FILE_IN, FILE_OUT, FILE_INOUT, IN
-    from dummy_pycompss import task
-    from dummy_pycompss import compss_wait_on
+    from dummy_pycompss import FILE_IN, FILE_OUT, FILE_INOUT, IN  # pylint: disable=ungrouped-imports
+    from dummy_pycompss import task  # pylint: disable=ungrouped-imports
+    from dummy_pycompss import compss_wait_on  # pylint: disable=ungrouped-imports
     #from dummy_pycompss import constraint
 
 from basic_modules.tool import Tool
@@ -130,7 +130,7 @@ class tbNormalizeTool(Tool):
             _cmd.append(mappability)
             _cmd.append('--renz')
             _cmd.append(rest_enzyme)
-                    
+
         output_metadata = {}
         output_files = []
 
@@ -217,11 +217,11 @@ class tbNormalizeTool(Tool):
         resolution = '1000000'
         if 'resolution' in metadata:
             resolution = metadata['resolution']
-        
+
         normalization = 'Vanilla'
         if 'normalization' in metadata:
             normalization = metadata['normalization']
-        
+
         min_perc = max_perc = min_count = fasta = mappability = rest_enzyme = None
         ncpus = 1
         if 'ncpus' in metadata:

@@ -40,10 +40,10 @@ except ImportError:
     logger.info("[Warning] Cannot import \"pycompss\" API packages.")
     logger.info("          Using mock decorators.")
 
-    from dummy_pycompss import FILE_IN, FILE_OUT, FILE_INOUT, IN  # pylint: disable=ungrouped-imports
-    from dummy_pycompss import task  # pylint: disable=ungrouped-imports
-    from dummy_pycompss import compss_wait_on  # pylint: disable=ungrouped-imports
-    #from dummy_pycompss import constraint
+    from utils.dummy_pycompss import FILE_IN, FILE_OUT, IN # pylint: disable=ungrouped-imports
+    from utils.dummy_pycompss import task # pylint: disable=ungrouped-imports
+    from utils.dummy_pycompss import compss_wait_on # pylint: disable=ungrouped-imports
+    # from utils.dummy_pycompss import constraint # pylint: disable=ungrouped-imports
 
 from basic_modules.tool import Tool
 
@@ -61,7 +61,9 @@ class tbBinTool(Tool):
         logger.info("TADbit - Bin")
         Tool.__init__(self)
 
-    @task(bamin=FILE_IN, biases=FILE_IN, resolution=IN, c=IN, c2=IN, norm=IN, workdir=IN)
+    @task(bamin=FILE_IN, biases=FILE_IN, resolution=IN, coord1=IN, coord2=IN,
+          norm=IN, workdir=IN, raw_matrix=FILE_OUT, raw_fig=FILE_OUT,
+          nrm_matrix=FILE_OUT, nrm_fig=FILE_OUT, json_matrix=FILE_OUT)
     # @constraint(ProcessorCoreCount=16)
     def tb_bin(self, bamin, biases, resolution, coord1, coord2, norm, workdir, ncpus="1", metadata=None):
         """

@@ -21,6 +21,8 @@ import os.path
 
 from utils import logger
 
+from pytadbit.parsers.hic_bam_parser import bed2D_to_BAMhic
+
 try:
     if hasattr(sys, '_run_from_cmdl') is True:
         raise ImportError
@@ -31,19 +33,16 @@ except ImportError:
     logger.info("[Warning] Cannot import \"pycompss\" API packages.")
     logger.info("          Using mock decorators.")
 
-    from utils.dummy_pycompss import FILE_IN, FILE_OUT, IN  # pylint: disable=ungrouped-imports
-    from utils.dummy_pycompss import task  # pylint: disable=ungrouped-imports
-    from utils.dummy_pycompss import compss_wait_on  # pylint: disable=ungrouped-imports
+    from utils.dummy_pycompss import FILE_IN, FILE_OUT, IN # pylint: disable=ungrouped-imports
+    from utils.dummy_pycompss import task # pylint: disable=ungrouped-imports
+    from utils.dummy_pycompss import compss_wait_on # pylint: disable=ungrouped-imports
 
 from basic_modules.tool import Tool
 
-from pytadbit.parsers.hic_bam_parser import bed2D_to_BAMhic
-from pytadbit.mapping.filter import apply_filter
-from pytadbit.mapping.filter import filter_reads
+from pytadbit.mapping.filter import apply_filter, filter_reads
 from pytadbit.mapping.analyze import insert_sizes
 
 # ------------------------------------------------------------------------------
-
 
 class tbFilterTool(Tool):
     """
@@ -261,24 +260,26 @@ class tbFilterTool(Tool):
             sys.stdout = f
 
             #insert size
-            logger.info ('Insert size\n')
+            logger.info('Insert size\n')
 
-            logger.info ('  - median insert size = {0}'.format(median))
-            logger.info ('  - double median absolution of insert size = {0}'.format(mad))
-            logger.info ('  - max insert size (when a gap in continuity of > 10 bp is found in fragment lengths) = {0}'.format(max_f))
+            logger.info('  - median insert size = {0}'.format(median))
+            logger.info('  - double median absolution of insert size = {0}'.format(mad))
+            logger.info('  - max insert size (when a gap in continuity of > 10 bp is found in fragment lengths) = {0}'.format(max_f))
 
             max_mole = max_f # pseudo DEs
             min_dist = max_f + mad # random breaks
-            logger.info ('   Using the maximum continuous fragment size'
+            logger.info('   Using the maximum continuous fragment size'
                    '('+str(max_mole)+' bp) to check '
                    'for pseudo-dangling ends')
-            logger.info ('   Using maximum continuous fragment size plus the MAD '
+            logger.info('   Using maximum continuous fragment size plus the MAD '
                    '('+str(min_dist)+' bp) to check for random breaks')
 
             sys.stdout = orig_stdout
             f.close()
 
-
-        return ([filtered_reads_file, log_path, hist_path], output_metadata)
+        return_files = [filtered_reads_file]
+        if 'histogram' in metadata:
+            return_files += [log_path, hist_path]
+        return (return_files, output_metadata)
 
 # ------------------------------------------------------------------------------

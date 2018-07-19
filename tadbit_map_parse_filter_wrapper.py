@@ -1,5 +1,21 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+"""
+.. See the NOTICE file distributed with this work for additional information
+   regarding copyright ownership.
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+"""
 
 from __future__ import print_function
 
@@ -11,13 +27,15 @@ import multiprocessing
 import json
 from random import random
 from string import ascii_letters as letters
-import collections
 # Required for ReadTheDocs
 from functools import wraps # pylint: disable=unused-import
 
 from basic_modules.workflow import Workflow
 from basic_modules.metadata import Metadata
+from tool.common import CommandLineParser
+from tool.common import format_utils
 from utils import logger
+from utils import remap
 
 from tool.tb_full_mapping import tbFullMappingTool
 from tool.tb_parse_mapping import tbParseMappingTool
@@ -25,24 +43,6 @@ from tool.tb_filter import tbFilterTool
 
 if '/opt/COMPSs/Bindings/python' in sys.path:
     sys.path.pop(sys.path.index('/opt/COMPSs/Bindings/python'))
-
-class CommandLineParser(object):
-    """Parses command line"""
-    @staticmethod
-    def valid_file(file_name):
-        if not os.path.exists(file_name):
-            raise argparse.ArgumentTypeError("The file does not exist")
-        return file_name
-
-    @staticmethod
-    def valid_integer_number(ivalue):
-        try:
-            ivalue = int(ivalue)
-        except:
-            raise argparse.ArgumentTypeError("%s is an invalid value" % ivalue)
-        if ivalue <= 0:
-            raise argparse.ArgumentTypeError("%s is an invalid value" % ivalue)
-        return ivalue
 
 # ------------------------------------------------------------------------------
 class tadbit_map_parse_filter(Workflow):
@@ -66,16 +66,13 @@ class tadbit_map_parse_filter(Workflow):
         """
         tool_extra_config = json.load(file(os.path.dirname(os.path.abspath(__file__))
                                            +'/tadbit_wrappers_config.json'))
-        os.environ["PATH"] += os.pathsep + convert_from_unicode(tool_extra_config["bin_path"])
+        if os.path.isdir(format_utils.convert_from_unicode(tool_extra_config["bin_path"])):
+            os.environ["PATH"] += os.pathsep + format_utils.convert_from_unicode(tool_extra_config["bin_path"])
 
         if configuration is None:
             configuration = {}
 
-        self.configuration.update(convert_from_unicode(configuration))
-
-        #temporal
-        self.configuration['public_dir'] = '/orozco/services/MuG/MuG_public/'
-        #self.configuration['public_dir'] = '/scratch/genomes/'
+        self.configuration.update(format_utils.convert_from_unicode(configuration))
 
         # Number of cores available
         num_cores = multiprocessing.cpu_count()
@@ -127,7 +124,6 @@ class tadbit_map_parse_filter(Workflow):
         outputfiles : list
             List of locations for the output bam files
         """
-        logger.progress(0)
         logger.info(
             "PROCESS MAP - FILES PASSED TO TOOLS:",
             remap(input_files, "read1", "read2")
@@ -138,23 +134,23 @@ class tadbit_map_parse_filter(Workflow):
 
         assembly = "UNK"
         if 'parsing:refGenome' in input_files:
-            genome_fa = convert_from_unicode(input_files['parsing:refGenome'])
+            genome_fa = format_utils.convert_from_unicode(input_files['parsing:refGenome'])
         elif 'parsing_refGenome' in self.configuration:
             genome_fa = self.configuration['public_dir']+ \
-                convert_from_unicode(self.configuration['parsing_refGenome'])
+                format_utils.convert_from_unicode(self.configuration['parsing_refGenome'])
 
         if 'mapping:refGenome' in input_files:
-            genome_gem = convert_from_unicode(input_files['mapping:refGenome'])
-            assembly = convert_from_unicode(metadata['mapping:refGenome'].meta_data['assembly'])
+            genome_gem = format_utils.convert_from_unicode(input_files['mapping:refGenome'])
+            assembly = format_utils.convert_from_unicode(metadata['mapping:refGenome'].meta_data['assembly'])
         elif 'mapping_refGenome' in self.configuration:
             genome_gem = self.configuration['public_dir']+ \
-                convert_from_unicode(self.configuration['mapping_refGenome'])
+                format_utils.convert_from_unicode(self.configuration['mapping_refGenome'])
             assembly = os.path.basename(genome_gem).split('.')[0]
 
-        fastq_file_1 = convert_from_unicode(input_files['read1'])
-        fastq_file_2 = convert_from_unicode(input_files['read2'])
+        fastq_file_1 = format_utils.convert_from_unicode(input_files['read1'])
+        fastq_file_2 = format_utils.convert_from_unicode(input_files['read2'])
         input_metadata = remap(self.configuration, "ncpus", "iterative_mapping", \
-                               "workdir", "windows", rest_enzyme="enzyme_name")
+                               "workdir", "windows", enzyme_name="rest_enzyme")
         input_metadata['quality_plot'] = True
         summary_file = input_metadata["workdir"]+'/'+'summary.txt'
         
@@ -180,7 +176,7 @@ class tadbit_map_parse_filter(Workflow):
         files = [genome_fa] + tfm1_files[:-2] + tfm2_files[:-2]
 
         input_metadata = remap(self.configuration, "ncpus", "chromosomes", \
-                               "workdir", rest_enzyme="enzyme_name")
+                               "workdir", enzyme_name="rest_enzyme")
         input_metadata['mapping'] = [tfm1_meta['func'], tfm2_meta['func']]
         input_metadata['expt_name'] = 'vre'
 
@@ -295,37 +291,7 @@ class tadbit_map_parse_filter(Workflow):
 
         clean_temps(self.configuration['workdir'])
 
-        logger.progress(100)
-
         return m_results_files, m_results_meta
-
-# ------------------------------------------------------------------------------
-
-def remap(indict, *args, **kwargs):
-    """
-    Re-map keys of indict using information from arguments.
-    Non-keyword arguments are keys of input dictionary that are passed
-    unchanged to the output. Keyword arguments must be in the form
-    old="new"
-    and act as a translation table for new key names.
-    """
-    outdict = {role: indict[role] for role in args}
-    outdict.update(
-        {new: indict[old] for old, new in kwargs.items()}
-    )
-    return outdict
-
-# ------------------------------------------------------------------------------
-
-def convert_from_unicode(data):
-    if isinstance(data, basestring):
-        return str(data)
-    elif isinstance(data, collections.Mapping):
-        return dict(map(convert_from_unicode, data.iteritems()))
-    elif isinstance(data, collections.Iterable):
-        return type(data)(map(convert_from_unicode, data))
-    else:
-        return data
 
 # ------------------------------------------------------------------------------
 

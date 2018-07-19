@@ -34,6 +34,7 @@ def test_tb_model():
     files = [hic_contacts_matrix_norm]
         
     metadata = {
+        'project' : "tests/test_model",
         'resolution' : "100000",
         'optimize_only': False,
         'gen_pos_chrom_name' : "chr21",

@@ -16,8 +16,6 @@
 """
 
 from __future__ import print_function
-from os import path
-from os import unlink
 import sys
 
 from utils import logger
@@ -33,18 +31,20 @@ except ImportError:
     logger.info("[Warning] Cannot import \"pycompss\" API packages.")
     logger.info("          Using mock decorators.")
 
-    from utils.dummy_pycompss import FILE_IN, FILE_OUT, IN  # pylint: disable=ungrouped-imports
-    from utils.dummy_pycompss import task  # pylint: disable=ungrouped-imports
-    # from utils.dummy_pycompss import constraint  # pylint: disable=ungrouped-imports
-    from utils.dummy_pycompss import compss_wait_on  # pylint: disable=ungrouped-imports
+    from utils.dummy_pycompss import FILE_IN, FILE_OUT, IN # pylint: disable=ungrouped-imports
+    from utils.dummy_pycompss import task # pylint: disable=ungrouped-imports
+    # from utils.dummy_pycompss import constraint # pylint: disable=ungrouped-imports
+    from utils.dummy_pycompss import compss_wait_on # pylint: disable=ungrouped-imports
+
+from os import path, unlink
 
 from basic_modules.tool import Tool
+
 
 from pytadbit.mapping.mapper import full_mapping
 from pytadbit.utils.fastq_utils import quality_plot
 
 # ------------------------------------------------------------------------------
-
 
 class tbFullMappingTool(Tool):
     """
@@ -278,7 +278,10 @@ class tbFullMappingTool(Tool):
             results = compss_wait_on(results)
 
             output_metadata['func'] = 'frag'
-            return ([full_file, frag_file, log_path, root_path+'/'+quality_plot_file], output_metadata)
+            return_files = [full_file, frag_file]
+            if 'quality_plot' in metadata:
+                return_files += [log_path, root_path+'/'+quality_plot_file]
+            return (return_files, output_metadata)
 
         window1 = window2 = window3 = window4 = None
         window1 = file_name + "_full_" + str(windows[0][0]) + "-" + str(windows[0][1]) + ".map"
@@ -296,6 +299,9 @@ class tbFullMappingTool(Tool):
         results = compss_wait_on(results)
 
         output_metadata['func'] = 'iter'
-        return ([window1, window2, window3, window4, log_path, root_path+'/'+quality_plot_file], output_metadata)
+        return_files = [window1, window2, window3, window4]
+        if 'quality_plot' in metadata:
+            return_files += [log_path, root_path+'/'+quality_plot_file]
+        return (return_files, output_metadata)
 
 # ------------------------------------------------------------------------------

@@ -423,9 +423,9 @@ Install TADbit
    :linenos:
 
    cd ${HOME}/lib
-   wget https://github.com/3DGenomes/tadbit/archive/master.zip -O tadbit.zip
+   wget https://github.com/3DGenomes/TADbit/archive/dev.zip -O tadbit.zip
    unzip tadbit.zip
-   cd TADbit-master
+   cd TADbit-dev
 
    # If the pyenv env is not called mg-process-fastq then change this to match,
    # the sme is true for teh version of python

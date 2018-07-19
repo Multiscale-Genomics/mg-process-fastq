@@ -26,7 +26,7 @@ try:
         raise ImportError
     from pycompss.api.parameter import FILE_IN, FILE_OUT, IN
     from pycompss.api.task import task
-    # from pycompss.api.constraint import constraint
+    #from pycompss.api.constraint import constraint
     from pycompss.api.api import compss_wait_on
 except ImportError:
     logger.info("[Warning] Cannot import \"pycompss\" API packages.")
@@ -44,7 +44,6 @@ from pytadbit.parsers.map_parser import parse_map
 from pytadbit.mapping import get_intersection
 
 # ------------------------------------------------------------------------------
-
 
 class tbParseMappingTool(Tool):
     """
@@ -123,7 +122,7 @@ class tbParseMappingTool(Tool):
         if window1_4 and window2_4:
             wind1 += [window1_4]
             wind2 += [window2_4]
-
+            
         parse_map(
             wind1,
             wind2,
@@ -332,13 +331,25 @@ class tbParseMappingTool(Tool):
         filter_chrom = None
         if 'chromosomes' in metadata and metadata['chromosomes'] != '':
             filter_chrom = metadata['chromosomes'].split(',')
-
+            
         root_name = input_files[1].split("/")
 
         reads = "/".join(root_name[0:-1]) + '/'
 
-        genome_seq = parse_fasta(genome_file, chr_filter=filter_chrom, chr_regexp="^(chr)?[A-Za-z]?[0-9]{0,3}[XVI]{0,3}(?:ito)?[A-Z-a-z]?$", save_cache=False, reload_cache=True)
+        genome_seq = parse_fasta(genome_file, chr_filter=filter_chrom,
+                                 chr_regexp="^(chr)?[A-Za-z]?[0-9]{0,3}[XVI]{0,3}(?:ito)?[A-Z-a-z]?$",
+                                 save_cache=False, reload_cache=True)
 
+        if len(genome_seq) == 0:
+            genome_seq = parse_fasta(genome_file, chr_filter=filter_chrom,
+                                     save_cache=False, reload_cache=True)
+            if len(genome_seq) == 0:
+                logger.fatal("Reference genome FASTA file does not contain any valid chromosome")
+                raise ValueError('No valid chromosomes in FASTA.')
+            else:
+                logger.warn("No chromosomes headers found in fasta, found {0}.".format([k for k in genome_seq]))
+                logger.warn("Using them instead")
+            
         chromosome_meta = []
         for k in genome_seq:
             chromosome_meta.append([k, len(genome_seq[k])])
@@ -365,7 +376,7 @@ class tbParseMappingTool(Tool):
                     genome_seq, enzyme_name,
                     window1_1, window1_2, window1_3, window1_4,
                     window2_1, window2_2, window2_3, window2_4,
-                    read_iter,ncpus=metadata['ncpus'])
+                    read_iter,ncpus=(1 if 'ncpus' not in metadata else metadata['ncpus']))
                 results = compss_wait_on(results)
                 if results == 0:
                     output_metadata = {
@@ -387,7 +398,7 @@ class tbParseMappingTool(Tool):
                     genome_seq, enzyme_name,
                     window1_full, window1_frag,
                     window2_full, window2_frag,
-                    read_frag,ncpus=metadata['ncpus'])
+                    read_frag,ncpus=(1 if 'ncpus' not in metadata else metadata['ncpus']))
 
                 results = compss_wait_on(results)
                 if results == 0:

@@ -16,20 +16,18 @@
 """
 from __future__ import print_function
 
-import os.path
 import shlex
 import subprocess
+import os.path
+import argparse
+import collections
 
-from utils import logger
-
-
-class cd(object):  # pylint: disable=too-few-public-methods, invalid-name
+class cd(object):
     """
     Context manager for changing the current working directory
     """
 
     def __init__(self, newpath):
-        self.savedpath = os.getcwd()
         self.newpath = os.path.expanduser(newpath)
 
     def __enter__(self):
@@ -39,30 +37,300 @@ class cd(object):  # pylint: disable=too-few-public-methods, invalid-name
     def __exit__(self, etype, value, traceback):
         os.chdir(self.savedpath)
 
-
-class common(object):  # pylint: disable=too-few-public-methods, invalid-name
+class common(object):
     """
-    Common functions that can be used generically across tools and pipelines
+    Functions for downloading and processing *-seq FastQ files. Functions
+    provided allow for the downloading andindexing of the genome assemblies.
     """
 
-    @staticmethod
-    def zip_file(location):
+    def __init__(self):
         """
-        Use pigz (gzip as a fallback) to compress a file
+        Initialise the module
+        """
+        print("Common functions")
+
+    def replaceENAHeader(self, file_path, file_out):
+        """
+        The ENA header has pipes in the header as part of teh stable_id. This
+        function removes the ENA stable_id and replaces it with the final
+        section after splitting the stable ID on the pipe.
+        """
+        with open(file_out, 'w') as new_file:
+            with open(file_path) as old_file:
+                for line in old_file:
+                    if line[0] == '>':
+                        space_line = line.split(" ")
+                        new_file.write(">" + space_line[0].split("|")[-1].replace(">", "") + "\n")
+                    else:
+                        new_file.write(line)
+
+        return True
+
+    def gem_index_genome(self, genome_file, gem_file):
+        """
+        Create an index of the genome FASTA file with GEM. These are saved
+        alongside the assembly file.
 
         Parameters
         ----------
-        location : str
-            Location of the file to be zipped
+        genome_file : str
+            Location of the assembly file in the file system
+
         """
+        command_line = 'gem-indexer -i ' + genome_file + ' -o ' + gem_file
+
+        args = shlex.split(command_line)
+        process = subprocess.Popen(args)
+        process.wait()
+
+        return True
+
+    def bowtie_index_genome(self, genome_file, index_name=None):
+        """
+        Create an index of the genome FASTA file with Bowtie2. These are saved
+        alongside the assembly file.
+
+        Parameters
+        ----------
+        genome_file : str
+            Location of the assembly file in the file system
+        """
+        file_name = genome_file.split("/")
+
+        output_file = index_name
+        if output_file is None:
+            output_file = file_name[-1].replace('.fa', '')
+
+        with cd("/".join(file_name[0:-1])):
+            command_line = 'bowtie2-build ' + genome_file + ' ' + output_file
+            args = shlex.split(command_line)
+            process = subprocess.Popen(args)
+            process.wait()
+
+        return True
+
+    def bwa_index_genome(self, genome_file):
+        """
+        Create an index of the genome FASTA file with BWA. These are saved
+        alongside the assembly file. If the index has already been generated
+        then the locations of the files are returned
+
+        Parameters
+        ----------
+        genome_file : str
+            Location of the assembly file in the file system
+
+        Returns
+        -------
+        amb_file : str
+            Location of the amb file
+        ann_file : str
+            Location of the ann file
+        bwt_file : str
+            Location of the bwt file
+        pac_file : str
+            Location of the pac file
+        sa_file : str
+            Location of the sa file
+
+        Example
+        -------
+        .. code-block:: python
+           :linenos:
+
+           from tool.common import common
+           cf = common()
+
+           indexes = cf.bwa_index_genome('/<data_dir>/human_GRCh38.fa.gz')
+           print(indexes)
+
+
+        """
+        command_line = 'bwa index ' + genome_file
+
+        amb_name = genome_file + '.amb'
+        ann_name = genome_file + '.ann'
+        bwt_name = genome_file + '.bwt'
+        pac_name = genome_file + '.pac'
+        sa_name = genome_file + '.sa'
+
+        if os.path.isfile(bwt_name) is False:
+            args = shlex.split(command_line)
+            process = subprocess.Popen(args)
+            process.wait()
+
+        return (amb_name, ann_name, bwt_name, pac_name, sa_name)
+
+    def bwa_aln_align_reads_single(self, genome_file, reads_file, bam_loc):
+        """
+        Map the reads to the genome using BWA.
+        Parameters
+        ----------
+        genome_file : str
+            Location of the assembly file in the file system
+        reads_file : str
+            Location of the reads file in the file system
+        bam_loc : str
+            Location of the output file
+        """
+
+        intermediate_file = reads_file + '.sai'
+        intermediate_sam_file = reads_file + '.sam'
+        output_bam_file = bam_loc
+
+        command_lines = [
+            'bwa aln -q 5 -f ' + intermediate_file + ' ' + genome_file + ' ' + reads_file,
+            'bwa samse -f ' + intermediate_sam_file  + ' ' + genome_file + ' ' +
+            intermediate_file + ' ' + reads_file,
+            'samtools view -b -o ' + output_bam_file + ' ' + intermediate_sam_file
+        ]
+
+        print("BWA COMMAND LINES:", command_lines)
+
+        for command_line in command_lines:
+            args = shlex.split(command_line)
+            process = subprocess.Popen(args)
+            process.wait()
+
+        return output_bam_file
+
+    def bwa_aln_align_reads_paired(self, genome_file, reads_file_1, reads_file_2, bam_loc):
+        """
+        Map the reads to the genome using BWA.
+        Parameters
+        ----------
+        genome_file : str
+            Location of the assembly file in the file system
+        reads_file : str
+            Location of the reads file in the file system
+        bam_loc : str
+            Location of the output file
+        """
+
+        intermediate_file = reads_file + '.sai'
+        intermediate_sam_file = reads_file + '.sam'
+        output_bam_file = bam_loc
+
+        command_lines = [
+            # 'bwa aln -q 5 -f ' + intermediate_file + ' ' + genome_file + ' ' + reads_file,
+            # 'bwa samse -f ' + intermediate_sam_file  + ' ' + genome_file + ' ' +
+            # intermediate_file + ' ' + reads_file,
+            # 'samtools view -b -o ' + output_bam_file + ' ' + intermediate_sam_file
+        ]
+
+        print("BWA COMMAND LINES:", command_lines)
+
+        for command_line in command_lines:
+            args = shlex.split(command_line)
+            process = subprocess.Popen(args)
+            process.wait()
+
+        return output_bam_file
+
+    def bwa_mem_align_reads_single(self, genome_file, reads_file, bam_loc):
+        """
+        Map the reads to the genome using BWA.
+
+        Parameters
+        ----------
+        genome_file : str
+            Location of the assembly file in the file system
+        reads_file : str
+            Location of the reads file in the file system
+        bam_loc : str
+            Location of the output file
+        """
+
+        intermediate_sam_file = reads_file + '.sam'
+        output_bam_file = bam_loc
+
+        command_line = 'bwa mem ' + genome_file + ' ' + reads_file
+        args = shlex.split(command_line)
+        with open(intermediate_sam_file, "w") as f_out:
+            sub_proc = subprocess.Popen(args, stdout=f_out)
+            sub_proc.wait()
+
+        command_line = 'samtools view -b -o ' + output_bam_file + ' ' + intermediate_sam_file
+        args = shlex.split(command_line)
+        process = subprocess.Popen(args)
+        process.wait()
+
+        return output_bam_file
+
+    def bwa_mem_align_reads_paired(self, genome_file, reads_file_1, reads_file_2, bam_loc):
+        """
+        Map the reads to the genome using BWA.
+
+        Parameters
+        ----------
+        genome_file : str
+            Location of the assembly file in the file system
+        reads_file : str
+            Location of the reads file in the file system
+        bam_loc : str
+            Location of the output file
+        """
+
+        intermediate_sam_file = reads_file_1 + '.sam'
+        output_bam_file = bam_loc
+
+        command_line = 'bwa mem ' + genome_file + ' ' + reads_file_1 + ' ' + reads_file_2
+        args = shlex.split(command_line)
+        with open(intermediate_sam_file, "w") as f_out:
+            sub_proc = subprocess.Popen(args, stdout=f_out)
+            sub_proc.wait()
+
+        command_line = 'samtools view -b -o ' + output_bam_file + ' ' + intermediate_sam_file
+        args = shlex.split(command_line)
+        process = subprocess.Popen(args)
+        process.wait()
+
+        return output_bam_file
+
+class CommandLineParser(object):
+    """Parses command line"""
+    @staticmethod
+    def valid_file(file_name):
+        if not os.path.exists(file_name):
+            raise argparse.ArgumentTypeError("The file does not exist")
+        return file_name
+
+    @staticmethod
+    def valid_integer_number(ivalue):
         try:
-            command_line = 'pigz -p 2 ' + location
-            args = shlex.split(command_line)
-            process = subprocess.Popen(args)
-            process.wait()
-        except OSError:
-            logger.warn("OSERROR: pigz not installed, using gzip")
-            command_line = 'gzip ' + location
-            args = shlex.split(command_line)
-            process = subprocess.Popen(args)
-            process.wait()
+            ivalue = int(ivalue)
+        except:
+            raise argparse.ArgumentTypeError("%s is an invalid value" % ivalue)
+        if ivalue <= 0:
+            raise argparse.ArgumentTypeError("%s is an invalid value" % ivalue)
+        return ivalue
+
+class format_utils(object):
+    """
+    Useful functions to format strings 
+    """
+    @staticmethod
+    def convert_from_unicode(data):
+        """
+        Converts from unicode to string.
+
+        Parameters
+        ----------
+        data : str or collection
+            Input object in unicode
+        """
+        if isinstance(data, basestring):
+            return str(data)
+        if isinstance(data, collections.Mapping):
+            return dict(map(format_utils.convert_from_unicode, data.iteritems()))
+        if isinstance(data, collections.Iterable):
+            return type(data)(map(format_utils.convert_from_unicode, data))
+        return data
+    @staticmethod
+    def nice(reso):
+        """
+        Function to nicely format resolution in Mb or Kb
+        """
+        if reso >= 1000000:
+            return '%dMb' % (reso / 1000000)
+        return '%dkb' % (reso / 1000)

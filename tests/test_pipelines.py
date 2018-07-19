@@ -18,8 +18,7 @@
 from __future__ import print_function
 
 import argparse
-import pytest  # pylint: disable=unused-import
-
+import pytest # pylint: disable=unused-import
 
 def genome_pipeline(verbose=False):
     """
@@ -41,7 +40,6 @@ def genome_pipeline(verbose=False):
 
     return pytest.main(params)
 
-
 def chipseq_pipeline(verbose=False):
     """
     Runs the tests for the ChIP-seq pipeline
@@ -59,10 +57,10 @@ def chipseq_pipeline(verbose=False):
         params.append('-s')
 
     params.append('tests/test_pipeline_genome.py')
+    params.append('tests/test_fastqc_validation.py')
     params.append('tests/test_pipeline_chipseq.py')
 
     return pytest.main(params)
-
 
 def hic_pipeline(verbose=False):
     """
@@ -80,57 +78,30 @@ def hic_pipeline(verbose=False):
     if verbose is True:
         params.append('-s')
 
+    params.append('tests/test_fastqc_validation.py')
     params.append('tests/test_pipeline_tb.py')
 
     return pytest.main(params)
 
-
-def idamidseq_pipeline(verbose=False):
+def tadbit_tools(verbose=False):
     """
-    Runs the tests for the ChIP-seq pipeline
+    Runs the tests for tadbit tools
 
     Runs the following tests:
 
     .. code-block:: none
 
-       pytest -m chipseq tests/test_pipeline_chipseq.py
+       pytest -m tadbit tests/test_tadbit_tools.py
     """
 
-    params = ['-m idamidseq']
+    params = ['-m tadbit']
 
     if verbose is True:
         params.append('-s')
 
-    params.append('tests/test_bwa_indexer.py')
-    params.append('tests/test_pipeline_idamidseq.py')
+    params.append('tests/test_tadbit_tools.py')
 
     return pytest.main(params)
-
-
-def idear_pipeline(verbose=False):
-    """
-    Runs the tests for the ChIP-seq pipeline
-
-    Runs the following tests:
-
-    .. code-block:: none
-
-       pytest -m chipseq tests/test_pipeline_chipseq.py
-    """
-
-    params = ['-m idamidseq']
-
-    if verbose is True:
-        params.append('-s')
-
-    params.append('tests/test_bwa_indexer.py')
-    params.append('tests/test_bwa_aligner.py')
-    params.append('tests/test_biobambam.py')
-    params.append('tests/test_bsgenome.py')
-    params.append('tests/test_pipeline_idear.py')
-
-    return pytest.main(params)
-
 
 def mnaseseq_pipeline(verbose=False):
     """
@@ -148,10 +119,10 @@ def mnaseseq_pipeline(verbose=False):
     if verbose is True:
         params.append('-s')
 
+    params.append('tests/test_fastqc_validation.py')
     params.append('tests/test_pipeline_mnaseseq.py')
 
     return pytest.main(params)
-
 
 def rnaseq_pipeline(verbose=False):
     """
@@ -169,31 +140,10 @@ def rnaseq_pipeline(verbose=False):
     if verbose is True:
         params.append('-s')
 
+    params.append('tests/test_fastqc_validation.py')
     params.append('tests/test_pipeline_rnaseq.py')
 
     return pytest.main(params)
-
-
-def trimgalore_pipeline(verbose=False):
-    """
-    Runs the tests for the trimgalore pipeline
-
-    Runs the following tests:
-
-    .. code-block:: none
-
-       pytest -m trimgalore tests/test_pipeline_trimgalore.py
-    """
-
-    params = ['-m trimgalore']
-
-    if verbose is True:
-        params.append('-s')
-
-    params.append('tests/test_pipeline_trimgalore.py')
-
-    return pytest.main(params)
-
 
 def wgbs_pipeline(verbose=False):
     """
@@ -211,30 +161,28 @@ def wgbs_pipeline(verbose=False):
     if verbose is True:
         params.append('-s')
 
+    params.append('tests/test_fastqc_validation.py')
     params.append('tests/test_pipeline_wgbs.py')
 
     return pytest.main(params)
 
-
 if __name__ == '__main__':
     import sys
-    sys._run_from_cmdl = True  # pylint: disable=protected-access
+    sys._run_from_cmdl = True
 
     PARSER = argparse.ArgumentParser(description="Test runner for tool chains")
     PARSER.add_argument(
         "--pipeline",
         required=True,
         type=str,
-        choices=[
-            'genome', 'chipseq', 'hic', 'idamidseq', 'idear', 'trimgalore', 'mnaseseq',
-            'rnaseq', 'wgbs', 'all'
-        ],
+        choices=['genome', 'chipseq', 'hic', 'tadbit', 'mnaseseq', 'rnaseq', 'wgbs', 'all'],
         help=""
     )
     PARSER.add_argument("--verbose", action='store_const', const=True, default=False)
 
     # Get the matching parameters from the command line
     ARGS = PARSER.parse_args()
+    #print(ARGS)
 
     PIPELINES = ARGS.pipeline
 
@@ -245,7 +193,9 @@ if __name__ == '__main__':
     PIPELINES = PIPELINES.split(",")
     print("PIPELINES:", PIPELINES)
 
-    VERBOSE = ARGS.verbose
+    VERBOSE = 0
+    if ARGS.verbose is True:
+        VERBOSE = 1
 
     if 'genome' in PIPELINES or 'all' in PIPELINES:
         print('GENOME')
@@ -262,19 +212,9 @@ if __name__ == '__main__':
         if hic_pipeline(VERBOSE) > 0:
             sys.exit(1)
 
-    if 'idamidseq' in PIPELINES or 'all' in PIPELINES:
-        print('IDAMIDSEQ')
-        if idamidseq_pipeline(VERBOSE) > 0:
-            sys.exit(1)
-
-    if 'idear' in PIPELINES or 'all' in PIPELINES:
-        print('IDEAR')
-        if idear_pipeline(VERBOSE) > 0:
-            sys.exit(1)
-
-    if 'trimgalore' in PIPELINES or 'all' in PIPELINES:
-        print('TRIMGALORE')
-        if trimgalore_pipeline(VERBOSE) > 0:
+    if 'tadbit' in PIPELINES or 'all' in PIPELINES:
+        print('TADbit')
+        if tadbit_tools(VERBOSE) > 0:
             sys.exit(1)
 
     if 'mnaseseq' in PIPELINES or 'all' in PIPELINES:

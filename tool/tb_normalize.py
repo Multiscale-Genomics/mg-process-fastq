@@ -35,10 +35,10 @@ except ImportError:
     logger.info("[Warning] Cannot import \"pycompss\" API packages.")
     logger.info("          Using mock decorators.")
 
-    from dummy_pycompss import FILE_IN, FILE_OUT, FILE_INOUT, IN  # pylint: disable=ungrouped-imports
-    from dummy_pycompss import task  # pylint: disable=ungrouped-imports
-    from dummy_pycompss import compss_wait_on  # pylint: disable=ungrouped-imports
-    #from dummy_pycompss import constraint
+    from utils.dummy_pycompss import FILE_IN, FILE_OUT, IN # pylint: disable=ungrouped-imports
+    from utils.dummy_pycompss import task # pylint: disable=ungrouped-imports
+    from utils.dummy_pycompss import compss_wait_on # pylint: disable=ungrouped-imports
+    #from utils.dummy_pycompss import constraint
 
 from basic_modules.tool import Tool
 
@@ -56,7 +56,9 @@ class tbNormalizeTool(Tool):
         logger.info("TADbit - Normalize")
         Tool.__init__(self)
 
-    @task(bamin=FILE_IN, resolution=IN, min_perc=IN, max_perc=IN, workdir=IN)
+    @task(bamin=FILE_IN, normalization=IN, resolution=IN, min_perc=IN,
+          max_perc=IN, workdir=IN, biases=FILE_OUT, interactions_plot=FILE_OUT,
+          filtered_bins_plot=FILE_OUT)
     # @constraint(ProcessorCoreCount=16)
     def tb_normalize(self, bamin, normalization, resolution, min_perc, max_perc, workdir, ncpus="1", min_count=None, fasta=None, mappability=None, rest_enzyme=None):
         """
@@ -130,7 +132,7 @@ class tbNormalizeTool(Tool):
             _cmd.append(mappability)
             _cmd.append('--renz')
             _cmd.append(rest_enzyme)
-
+                    
         output_metadata = {}
         output_files = []
 
@@ -217,11 +219,11 @@ class tbNormalizeTool(Tool):
         resolution = '1000000'
         if 'resolution' in metadata:
             resolution = metadata['resolution']
-
+        
         normalization = 'Vanilla'
         if 'normalization' in metadata:
             normalization = metadata['normalization']
-
+        
         min_perc = max_perc = min_count = fasta = mappability = rest_enzyme = None
         ncpus = 1
         if 'ncpus' in metadata:

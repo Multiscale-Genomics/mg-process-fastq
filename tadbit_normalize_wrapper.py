@@ -1,5 +1,21 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+"""
+.. See the NOTICE file distributed with this work for additional information
+   regarding copyright ownership.
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+"""
 
 from __future__ import print_function
 
@@ -8,7 +24,6 @@ import argparse
 import sys
 import json
 import multiprocessing
-import collections
 import tarfile
 from random import random
 from string import ascii_letters as letters
@@ -18,27 +33,13 @@ from pysam import AlignmentFile
 
 from basic_modules.workflow import Workflow
 from basic_modules.metadata import Metadata
+from tool.common import CommandLineParser
+from tool.common import format_utils
 from utils import logger
+from utils import remap
 
 from tool.tb_normalize import tbNormalizeTool
 
-class CommandLineParser(object):
-    """Parses command line"""
-    @staticmethod
-    def valid_file(file_name):
-        if not os.path.exists(file_name):
-            raise argparse.ArgumentTypeError("The file does not exist")
-        return file_name
-
-    @staticmethod
-    def valid_integer_number(ivalue):
-        try:
-            ivalue = int(ivalue)
-        except:
-            raise argparse.ArgumentTypeError("%s is an invalid value" % ivalue)
-        if ivalue <= 0:
-            raise argparse.ArgumentTypeError("%s is an invalid value" % ivalue)
-        return ivalue
 # ------------------------------------------------------------------------------
 class tadbit_normalize(Workflow):
     """
@@ -59,12 +60,13 @@ class tadbit_normalize(Workflow):
             should be carried out, which are specific to each Tool.
         """
         tool_extra_config = json.load(file(os.path.dirname(os.path.abspath(__file__))+'/tadbit_wrappers_config.json'))
-        os.environ["PATH"] += os.pathsep + convert_from_unicode(tool_extra_config["bin_path"])
+        if os.path.isdir(format_utils.convert_from_unicode(tool_extra_config["bin_path"])):
+            os.environ["PATH"] += os.pathsep + format_utils.convert_from_unicode(tool_extra_config["bin_path"])
 
         if configuration is None:
             configuration = {}
 
-        self.configuration.update(convert_from_unicode(configuration))
+        self.configuration.update(format_utils.convert_from_unicode(configuration))
 
         # Number of cores available
         num_cores = multiprocessing.cpu_count()
@@ -106,16 +108,16 @@ class tadbit_normalize(Workflow):
             "PROCESS NORMALIZE - FILES PASSED TO TOOLS: {0}".format(str(input_files["bamin"]))
         )
 
-        bamin = convert_from_unicode(input_files['bamin'])
+        bamin = format_utils.convert_from_unicode(input_files['bamin'])
         input_metadata = remap(self.configuration, "normalization", "resolution", "min_perc", "workdir", "max_perc", "ncpus")
 
-        assembly = convert_from_unicode(metadata['bamin'].meta_data['assembly'])
+        assembly = format_utils.convert_from_unicode(metadata['bamin'].meta_data['assembly'])
         if self.configuration["normalization"] == 'oneD':
-            if 'refGenomes_folder' in input_files and os.path.isfile(convert_from_unicode(input_files['refGenomes_folder'])+assembly+'/'+assembly+'.fa'):
-                input_metadata["fasta"] = convert_from_unicode(input_files['refGenomes_folder'])+assembly+'/'+assembly+'.fa'
-                input_metadata["mappability"] = convert_from_unicode(input_files['refGenomes_folder'])+assembly+'/MAPPABILITY/'+assembly+'.bedGraph'
+            if 'refGenomes_folder' in input_files and os.path.isfile(format_utils.convert_from_unicode(input_files['refGenomes_folder'])+assembly+'/'+assembly+'.fa'):
+                input_metadata["fasta"] = format_utils.convert_from_unicode(input_files['refGenomes_folder'])+assembly+'/'+assembly+'.fa'
+                input_metadata["mappability"] = format_utils.convert_from_unicode(input_files['refGenomes_folder'])+assembly+'/MAPPABILITY/'+assembly+'.bedGraph'
                 if 'rest_enzyme' in metadata['bamin'].meta_data:
-                    input_metadata["rest_enzyme"] = convert_from_unicode(metadata['bamin'].meta_data['rest_enzyme'])
+                    input_metadata["rest_enzyme"] = format_utils.convert_from_unicode(metadata['bamin'].meta_data['rest_enzyme'])
             
             if 'rest_enzyme' not in input_metadata or 'fasta' not in input_metadata or 'mappability' not in input_metadata:  
                 logger.fatal('Error: missing parameters for oneD normalization. Please check that the BAM input file has been generated with the VRE tool.')
@@ -156,7 +158,7 @@ class tadbit_normalize(Workflow):
             meta_data={
                 "description": "HiC biases for normalization",
                 "visible": True,
-                "assembly": convert_from_unicode(metadata['bamin'].meta_data['assembly']),
+                "assembly": format_utils.convert_from_unicode(metadata['bamin'].meta_data['assembly']),
                 "norm": self.configuration["normalization"]
             },
             taxon_id=metadata['bamin'].taxon_id)
@@ -176,32 +178,6 @@ class tadbit_normalize(Workflow):
 
         return m_results_files, m_results_meta
 
-# ------------------------------------------------------------------------------
-
-def remap(indict, *args, **kwargs):
-    """
-    Re-map keys of indict using information from arguments.
-    Non-keyword arguments are keys of input dictionary that are passed
-    unchanged to the output. Keyword arguments must be in the form
-    old="new"
-    and act as a translation table for new key names.
-    """
-    outdict = {role: indict[role] for role in args}
-    outdict.update(
-        {new: indict[old] for old, new in kwargs.items()}
-    )
-    return outdict
-
-# ------------------------------------------------------------------------------
-
-def convert_from_unicode(data):
-    if isinstance(data, basestring):
-        return str(data)
-    if isinstance(data, collections.Mapping):
-        return dict(map(convert_from_unicode, data.iteritems()))
-    if isinstance(data, collections.Iterable):
-        return type(data)(map(convert_from_unicode, data))
-    return data
 # ------------------------------------------------------------------------------
 
 def main(args):

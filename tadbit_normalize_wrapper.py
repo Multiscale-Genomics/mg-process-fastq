@@ -143,7 +143,8 @@ class tadbit_normalize(Workflow):
         m_results_files["normalize_stats"] = self.configuration['project']+"/normalize_stats.tar.gz"
 
         with tarfile.open(m_results_files["normalize_stats"], "w:gz") as tar:
-            tar.add(tn_files[1], arcname=os.path.basename(tn_files[1]))
+            if len(tn_files) > 1:
+                tar.add(tn_files[1], arcname=os.path.basename(tn_files[1]))
             if len(tn_files) > 2:
                 tar.add(tn_files[2], arcname=os.path.basename(tn_files[2]))
 

@@ -174,7 +174,10 @@ class tbBinTool(Tool):
             tmpdir=workdir, append_to_tar=None, ncpus=ncpus,
             verbose=True)
         output_files = [out_files['RAW']]
-        imx = load_hic_data_from_bam(bamin, resolution, biases=biases if biases else None, ncpus=ncpus, tmpdir=workdir)
+        imx = load_hic_data_from_bam(bamin, resolution,
+                                     biases=biases if biases else None,
+                                     region=region1,
+                                     ncpus=ncpus, tmpdir=workdir)
         hic_contacts_matrix_raw_fig = workdir+"/genomic_maps_raw.png"
         focus = None
         by_chrom = None

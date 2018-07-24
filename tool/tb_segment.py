@@ -18,6 +18,8 @@ from __future__ import print_function
 
 import sys
 import os
+import glob
+import shutil
 # from subprocess import CalledProcessError
 from subprocess import PIPE
 from subprocess import Popen
@@ -126,10 +128,12 @@ class tbSegmentTool(Tool):
         if '1' in callers:
             tad_dir = os.path.join(workdir, '06_segmentation',
                                    'tads_%s' % (format_utils.nice(int(resolution))))
+            clean_headers(tad_dir)
             output_files.append(tad_dir)
         if '2' in callers:
             cmprt_dir = os.path.join(workdir, '06_segmentation',
                                      'compartments_%s' % (format_utils.nice(int(resolution))))
+            clean_headers(cmprt_dir)
             output_files.append(cmprt_dir)
 
         return (output_files, output_metadata)
@@ -201,3 +205,19 @@ class tbSegmentTool(Tool):
         output_files, output_metadata = self.tb_segment(bamin, biases, resolution, callers, chromosomes, root_name, fasta, ncpus)
 
         return (output_files, output_metadata)
+
+def clean_headers(fpath):
+    """
+        Replaces spaces by underscores in the headers of tsv files
+    """
+    os.chdir(fpath)
+        
+    for fl in glob.glob("*.tsv"):
+        tsv_file = open(fl) 
+        line = tsv_file.readline()
+        line = line.replace(' ','_')
+        dest_file = os.path.join(os.path.dirname(fl),'vre_'+os.path.basename(fl))
+        to_file = open(dest_file,mode="w")
+        to_file.write(line)
+        shutil.copyfileobj(tsv_file, to_file)
+        os.unlink(fl)

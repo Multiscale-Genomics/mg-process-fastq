@@ -428,7 +428,7 @@ Install TADbit
    cd TADbit-master
 
    # If the pyenv env is not called mg-process-fastq then change this to match,
-   # the sme is true for teh version of python
+   # the same is true for the version of python
    python setup.py install --install-lib=${HOME}/.pyenv/versions/mg-process-fastq/lib/python2.7/site-packages/ --install-scripts=${HOME}/bin
 
 Install BSseeker

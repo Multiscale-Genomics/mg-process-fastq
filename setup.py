@@ -47,7 +47,8 @@ setup(
     packages=find_packages(),
     include_package_data=True,
     install_requires=[
-        'numpy', 'h5py', 'pytest'
+        'numpy', 'h5py', 'pytest', 'scipy', 'matplotlib', 'pysam', 'mock',
+        'bz2file', 'ConfigParser'
     ],
     setup_requires=[
         'pytest-runner',

@@ -18,7 +18,7 @@ language: python
 os: linux
 
 python:
-    - "2.7.12"
+    - "2.7"
     #- "3.6.3"
 
 cache:

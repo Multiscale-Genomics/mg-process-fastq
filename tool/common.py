@@ -55,7 +55,7 @@ class common(object):  # pylint: disable=too-few-public-methods, invalid-name
         This function will overwrite an existing file of the same name.
 
         The function adds each of the files to the archive individually and
-        removing the original once it has been added to save space on in the
+        removing the original once it has been added to save space in the
         storage area
 
         Parameters

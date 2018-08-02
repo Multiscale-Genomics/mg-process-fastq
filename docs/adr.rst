@@ -143,4 +143,4 @@ There has also been some refactoring of the handling of the archiving and compre
 
 MACS2 is able to automatically handle the files that are handed to it except for paired-end BAM and BED files (BAMPE and BEDPE respectively). The MACS2 tool only accepts BAM files so a check was implemented to determine if the BAM file contained paired-end reads.
 
-There has also been a major rewrite of the MACS2 tool to remove code duplication
+There has also been a major rewrite of the MACS2 tool to remove code duplication.

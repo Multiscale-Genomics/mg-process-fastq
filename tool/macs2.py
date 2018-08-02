@@ -41,7 +41,7 @@ except ImportError:
 from basic_modules.metadata import Metadata
 from basic_modules.tool import Tool
 from tool.bam_utils import bamUtilsTask
-from too.common import common
+from tool.common import common
 
 
 # ------------------------------------------------------------------------------

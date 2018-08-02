@@ -136,3 +136,11 @@ Also performed some tidying of the code to annotate issues that had been highlig
 The original repo had the tools and tests in a directory that was in the root of the repo. This is problematic when there is sharing of the code as there are collisions in the name space. This has meant that all of the code needs to be moved into a new subdirectory (mg_process_fastq).
 
 This change will probably necessitate incrementing the major release number to 1.0.0 as this is not a backwards compatible change and will require changes in other repos that rely on mg-process-fastq. As a result this will need to be part of a planned release with other developers.
+
+
+2018-07-11 - Changes FASTQ splitter file management
+---------------------------------------------------
+
+The previous splitter would split the FASTQ files into separate changes, then create the tar file and then the Gzip file. This results in a large amount of wasted tmp space, which is a limited resource. The changes implemented incrementally add the sub-FASTQ files to the archive file, deleting them once they have been added. The whole archive file is then compressed. This has a large advantage when handling larger human datasets.
+
+There has also been some refactoring of the handling of the archiving and compression steps to reduce the duplication of code within the repository.

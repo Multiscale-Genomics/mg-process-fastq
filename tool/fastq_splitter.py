@@ -18,10 +18,8 @@
 from __future__ import print_function
 
 import os
-import shutil
 import sys
 import re
-import tarfile
 
 from utils import logger
 
@@ -147,17 +145,12 @@ class fastq_splitter(Tool):  # pylint: disable=invalid-name
             untar_idx = False
 
         if untar_idx is True:
-            output_file_pregz = out_file.replace('.tar.gz', '.tar')
-
             if os.path.isfile(out_file):
                 os.remove(out_file)
-            tar = tarfile.open(output_file_pregz, "w")
-            tar.add(tmp_dir, arcname='tmp')
-            tar.close()
 
-            common.zip_file(output_file_pregz)
-
-            shutil.rmtree(tmp_dir)
+            output_file_pregz = out_file.replace('.tar.gz', '.tar')
+            common.tar_folder(tmp_dir, output_file_pregz)
+            common.zip_file(output_file_pregz, 2)
 
         return files_out
 
@@ -266,8 +259,6 @@ class fastq_splitter(Tool):  # pylint: disable=invalid-name
         fqr.closeFastQ()
         fqr.closeOutputFiles()
 
-        output_file_pregz = out_file.replace('.tar.gz', '.tar')
-
         untar_idx = True
         if "no-untar" in self.configuration and self.configuration["no-untar"] is True:
             untar_idx = False
@@ -275,13 +266,10 @@ class fastq_splitter(Tool):  # pylint: disable=invalid-name
         if untar_idx is True:
             if os.path.isfile(out_file):
                 os.remove(out_file)
-            tar = tarfile.open(output_file_pregz, "w")
-            tar.add(tmp_dir, arcname='tmp')
-            tar.close()
 
-            common.zip_file(output_file_pregz)
-
-            shutil.rmtree(tmp_dir)
+            output_file_pregz = out_file.replace('.tar.gz', '.tar')
+            common.tar_folder(tmp_dir, output_file_pregz)
+            common.zip_file(output_file_pregz, 2)
 
         return files_out
 

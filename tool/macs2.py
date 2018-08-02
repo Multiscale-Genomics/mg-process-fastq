@@ -117,7 +117,7 @@ class macs2(Tool):  # pylint: disable=invalid-name
         od_list = bam_file.split("/")
         output_dir = "/".join(od_list[0:-1])
 
-        from mg_common.tool.bam_utils import bamUtils
+        from tool.bam_utils import bamUtils
 
         bam_tmp_file = bam_file.replace(".bam", "." + str(chromosome) + ".bam")
         bam_utils_handle = bamUtils()

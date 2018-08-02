@@ -82,6 +82,7 @@ class common(object):  # pylint: disable=too-few-public-methods, invalid-name
 
         return True
 
+    @staticmethod
     def tar_folder(folder, tar_file, archive_name="tmp", keep_folder=False):
         """
         Archive a folder as a tar file.

@@ -15,7 +15,8 @@
    limitations under the License.
 """
 
-from setuptools import setup, find_packages
+from setuptools import setup
+from setuptools import find_packages
 # from setuptools.command.install import install
 
 # class Install_DamIDSeq(install):
@@ -44,10 +45,12 @@ from setuptools import setup, find_packages
 
 setup(
     name='mg_process_fastq',
+    url='https://github.com/Multiscale-Genomics/mg-process-fastq',
     packages=find_packages(),
     include_package_data=True,
     install_requires=[
-        'numpy', 'h5py', 'pytest'
+        'numpy', 'h5py', 'pytest', 'scipy', 'matplotlib', 'pysam', 'mock',
+        'bz2file', 'ConfigParser'
     ],
     setup_requires=[
         'pytest-runner',
@@ -58,4 +61,9 @@ setup(
     # cmdclass={
     #     'install' : Install_DamIDSeq,
     # },
+    classifiers=[
+        "Programming Language :: Python :: 2.7",
+        "Programming Language :: Python :: 3.6",
+        "License :: OSI Approved :: Apache 2.0",
+    ]
 )

@@ -52,7 +52,7 @@ def test_bowtie2_aligner_00():
 @pytest.mark.bowtie2
 def test_bowtie2_aligner_single():
     """
-    Function to test BWA Aligner
+    Function to test Bowtie Aligner
     """
     resource_path = os.path.join(os.path.dirname(__file__), "data/")
     genome_fa = resource_path + "macs2.Human.GCA_000001405.22.fasta"
@@ -106,7 +106,7 @@ def test_bowtie2_aligner_single():
 @pytest.mark.bowtie2
 def test_bowtie2_aligner_paired():
     """
-    Function to test BWA Aligner
+    Function to test Bowtie Aligner
     """
     resource_path = os.path.join(os.path.dirname(__file__), "data/")
     genome_fa = resource_path + "bsSeeker.Mouse.GRCm38.fasta"

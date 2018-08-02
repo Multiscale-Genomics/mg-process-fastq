@@ -1,0 +1,89 @@
+{
+    "_id": "tadbit_segment",
+    "name": "TADbit segment",
+    "title": "TADbit Hi-C segment",
+    "short_description": "TADbit Hi-C segement (TADs and compartments).",
+    "owner": {
+        "institution": "CNAG",
+        "author": "Francois Serra",
+        "contact": "serra.francois@gmail.com",
+        "user": "fserra",
+        "url": "http://sgt.cnag.cat/3dg/tadbit/"
+    },
+    "external": true,
+    "keywords": [
+        "3c", "dna","chromatin","interactions"
+    ],
+    "launcher": {
+        "type": "SGE",
+        "queue": "tadbit.q",
+        "executable": "/home/pmes/code/mg-process-fastq/tadbit_segment_wrapper.py",
+        "cpus": 12,
+        "memory": "4.0"
+    },
+    "input_files": [
+        {
+            "name": "bamin",
+            "description": "TADbit-generated BED file",
+            "help": "path to a TADbit-generated BED file with filtered reads",
+            "file_type": ["BAM"],
+            "data_type": ["hic_sequences"],
+            "required": true,
+            "allow_multiple": false
+        },
+        {
+            "name": "hic_biases",
+            "description": "TADbit-generated PICKLE file",
+            "help": "path to a TADbit-generated PICKLE file with HiC biases",
+            "file_type": ["PICKLE"],
+            "data_type": ["hic_biases"],
+            "required": false,
+            "allow_multiple": false
+        }
+    ],
+    "arguments": [
+        {
+            "name": "resolution",
+            "description": "Resolution of the normalization",
+            "help": "Resolution of the normalization.",
+            "type": "string",
+            "required": true,
+            "default": "100000"
+        },
+        {
+            "name": "chromosome_names",
+            "description": "List of chromosomes names",
+            "help": "List of chromosomes names separated by spaces",
+            "type": "string",
+            "required": false,
+            "default": ""
+        },
+        {
+            "name": "callers",
+            "description": "1 for TAD calling, 2 for compartment calling",
+            "help": "1 for TAD calling, 2 for compartment calling",
+            "type": "int",
+            "required": true,
+            "default": "1"
+        }
+    ],
+    "output_files": [
+        {
+            "name": "tads_compartments",
+            "required": false,
+            "allow_multiple": false,
+            "file": {
+                "file_type": "TAR",
+                "data_type": "tool_statistics",
+                "file_path": "tads_compartments.tar.gz",
+                "compressed": "gzip",
+                "meta_data": {
+                    "description": "TADbit HiC tads and compartments stats",
+                    "tool": "tadbit",
+                    "visible": true
+                }
+            }
+        }
+    ],
+    "control_file": ".results.json"
+} 

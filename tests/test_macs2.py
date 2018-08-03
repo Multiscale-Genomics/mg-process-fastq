@@ -16,11 +16,12 @@
 """
 
 import os.path
-import pytest # pylint: disable=unused-import
+import pytest  # pylint: disable=unused-import
 
 from basic_modules.metadata import Metadata
 
 from tool.macs2 import macs2
+
 
 @pytest.mark.chipseq
 def test_macs2():
@@ -44,7 +45,7 @@ def test_macs2():
     metadata = {
         "bam": Metadata(
             "data_chipseq", "fastq", [], None,
-            {'assembly' : 'test'}),
+            {'assembly': 'test'}),
     }
 
     macs_handle = macs2({"macs_nomodel_param": True})
@@ -54,6 +55,7 @@ def test_macs2():
     assert os.path.getsize(resource_path + "macs2.Human.DRR000150.22_peaks.narrowPeak") > 0
     assert os.path.isfile(resource_path + "macs2.Human.DRR000150.22_peaks.summits.bed") is True
     assert os.path.getsize(resource_path + "macs2.Human.DRR000150.22_peaks.summits.bed") > 0
+
 
 @pytest.mark.chipseq
 def test_macs2_background():
@@ -78,10 +80,10 @@ def test_macs2_background():
     metadata = {
         "bam": Metadata(
             "data_chipseq", "fastq", [], None,
-            {'assembly' : 'test'}),
+            {'assembly': 'test'}),
         "bam_bg": Metadata(
             "data_chipseq", "fastq", [], None,
-            {'assembly' : 'test'}),
+            {'assembly': 'test'}),
     }
 
     macs_handle = macs2({"macs_nomodel_param": True})

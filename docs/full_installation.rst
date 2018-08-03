@@ -387,6 +387,8 @@ Install MACS2
 This should get installed as part of the installation in the mg-process-fastq
 package, if not then it will need to be installed separately.
 
+For Python 2.7:
+
 .. code-block:: none
    :linenos:
 
@@ -394,14 +396,26 @@ package, if not then it will need to be installed separately.
    pyenv activate mg-process-fastq
    pip install MACS2
 
-Whether this package is installed as part of the mg-process-fastq package or
-manually the following symlink should also be created if it is to be run within
-the COMPSs environment.
+   ln -s ${HOME}/.pyenv/versions/mg-process-fastq/bin/macs2 ${HOME}/bin/macs2
+
+For Python 3.6:
 
 .. code-block:: none
    :linenos:
 
-   ln -s ${HOME}/.pyenv/versions/mg-process-fastq/bin/macs2 ${HOME}/bin/macs2
+   cd ${HOME}/code
+   pyenv activate mg-process-fastq
+   git clone https://github.com/taoliu/MACS.git
+   cd MACS
+   git checkout MACS2p3
+
+   cython MACS2/*.pyx
+   cython MACS2/IO/*.pyx
+   python setup_w_cython.py install
+
+   pip install .
+   alias macs2="macs2p3"
+
 
 Install iDEAR
 ^^^^^^^^^^^^^

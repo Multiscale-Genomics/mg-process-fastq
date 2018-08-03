@@ -131,6 +131,7 @@ def test_trim_galore_pipeline_02():
     # Checks that the returned files matches the expected set of results
     assert len(tg_files) == 4
 
+
     # Add tests for all files created
     for f_out in tg_files:
         assert tg_files[f_out] == files_out[f_out]

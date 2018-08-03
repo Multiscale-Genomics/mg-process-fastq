@@ -42,6 +42,7 @@ from pytadbit.mapping.filter import apply_filter
 from pytadbit.mapping.filter import filter_reads
 from pytadbit.mapping.analyze import insert_sizes
 
+
 # ------------------------------------------------------------------------------
 
 

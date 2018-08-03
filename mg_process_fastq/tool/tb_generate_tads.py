@@ -36,8 +36,8 @@ except ImportError:
 
 from basic_modules.tool import Tool
 
-from pytadbit import Chromosome
-from pytadbit import load_hic_data_from_reads
+from pytadbit import Chromosome  # pylint: disable=import-error
+from pytadbit import load_hic_data_from_reads  # pylint: disable=import-error
 
 
 # ------------------------------------------------------------------------------

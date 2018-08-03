@@ -40,7 +40,7 @@ def test_bowtie2_aligner_00():
 
     for fastq_gz in files:
         with gzip.open(fastq_gz + '.gz', 'rb') as fgz_in:
-            with open(fastq_gz, 'w') as f_out:
+            with open(fastq_gz, 'wb') as f_out:
                 f_out.write(fgz_in.read())
 
     assert os.path.isfile(fastq_file_1) is True
@@ -99,7 +99,7 @@ def test_bowtie2_aligner_single():
 
     try:
         os.remove(resource_path + "macs2.Human.DRR000150.22_bt2.bam")
-    except OSError, ose:
+    except OSError as ose:
         print("Error: %s - %s." % (ose.filename, ose.strerror))
 
 
@@ -159,10 +159,10 @@ def test_bowtie2_aligner_paired():
 
     try:
         os.remove(resource_path + "bsSeeker.Mouse.SRR892982_1_bt2.bam")
-    except OSError, ose:
+    except OSError as ose:
         print("Error: %s - %s." % (ose.filename, ose.strerror))
 
     try:
         shutil.rmtree(resource_path + "tmp")
-    except OSError, ose:
+    except OSError as ose:
         print("Error: %s - %s." % (ose.filename, ose.strerror))

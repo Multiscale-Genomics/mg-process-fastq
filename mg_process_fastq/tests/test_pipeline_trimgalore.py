@@ -67,7 +67,7 @@ def test_trim_galore_pipeline():
 
     # Checks that the returned files matches the expected set of results
     assert len(tg_files) == 1
-    print (tg_meta)
+    print(tg_meta)
 
     # Add tests for all files created
     for f_out in tg_files:
@@ -129,7 +129,7 @@ def test_trim_galore_pipeline_02():
 
     # Checks that the returned files matches the expected set of results
     assert len(tg_files) == 2
-    print (tg_meta)
+    print(tg_meta)
 
     # Add tests for all files created
     for f_out in tg_files:

@@ -23,6 +23,7 @@ from basic_modules.metadata import Metadata
 from mg_process_fastq.tool.macs2 import macs2
 
 
+
 @pytest.mark.chipseq
 def test_macs2():
     """

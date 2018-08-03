@@ -16,11 +16,12 @@
 """
 
 import os.path
-import pytest # pylint: disable=unused-import
+import pytest  # pylint: disable=unused-import
 
 from basic_modules.metadata import Metadata
 
 from tool import biobambam_filter
+
 
 @pytest.mark.chipseq
 def test_biobambam_chipseq():
@@ -41,7 +42,7 @@ def test_biobambam_chipseq():
     metadata = {
         "input": Metadata(
             "data_chipseq", "fastq", [], None,
-            {'assembly' : 'test'}),
+            {'assembly': 'test'}),
     }
 
     bbb = biobambam_filter.biobambam()
@@ -49,6 +50,7 @@ def test_biobambam_chipseq():
 
     assert os.path.isfile(resource_path + "macs2.Human.DRR000150.22_aln_filtered.bam") is True
     assert os.path.getsize(resource_path + "macs2.Human.DRR000150.22_aln_filtered.bam") > 0
+
 
 @pytest.mark.idamidseq
 def test_biobambam_idamidseq():
@@ -77,7 +79,7 @@ def test_biobambam_idamidseq():
         metadata = {
             "input": Metadata(
                 "data_damid_seq", "bam", [], None,
-                {'assembly' : 'test'}),
+                {'assembly': 'test'}),
         }
 
         bbb = biobambam_filter.biobambam()

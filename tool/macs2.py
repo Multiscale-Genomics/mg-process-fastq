@@ -67,7 +67,7 @@ class macs2(Tool):  # pylint: disable=invalid-name
     def _macs2_runner(  # pylint: disable=too-many-locals,too-many-statements,too-many-statements,too-many-arguments
             name, bam_file, bai_file, macs_params,
             narrowpeak, summits_bed, broadpeak, gappedpeak,
-            chromosome=None, bam_file_bgd=None, bai_file_bgd=None):
+            rscript, bdg, chromosome=None, bam_file_bgd=None, bai_file_bgd=None):
         """
         Function to run MACS2 for peak calling on aligned sequence files and
         normalised against a provided background set of alignments.
@@ -180,11 +180,14 @@ class macs2(Tool):  # pylint: disable=invalid-name
         summits_bed=FILE_OUT,
         broadpeak=FILE_OUT,
         gappedpeak=FILE_OUT,
+        rscript=FILE_OUT,
+        bdg=FILE_OUT,
         chromosome=IN,
         isModifier=False)
     def macs2_peak_calling(  # pylint: disable=no-self-use,too-many-arguments
             self, name, bam_file, bai_file, bam_file_bgd, bai_file_bgd, macs_params,
-            narrowpeak, summits_bed, broadpeak, gappedpeak, chromosome):  # pylint: disable=unused-argument
+            narrowpeak, summits_bed, broadpeak, gappedpeak,
+            rscript, bdg, chromosome):  # pylint: disable=unused-argument
         """
         Function to run MACS2 for peak calling on aligned sequence files and
         normalised against a provided background set of alignments.
@@ -235,7 +238,8 @@ class macs2(Tool):  # pylint: disable=invalid-name
         self._macs2_runner(
             name, bam_file, bai_file, macs_params,
             narrowpeak, summits_bed, broadpeak, gappedpeak,
-            chromosome, bam_file_bgd, bai_file_bgd)
+            rscript=rscript, bdg=bdg, chromosome=chromosome,
+            bam_file_bgd=bam_file_bgd, bai_file_bgd=bai_file_bgd)
 
         return True
 
@@ -250,11 +254,14 @@ class macs2(Tool):  # pylint: disable=invalid-name
         summits_bed=FILE_OUT,
         broadpeak=FILE_OUT,
         gappedpeak=FILE_OUT,
+        rscript=FILE_OUT,
+        bdg=FILE_OUT,
         chromosome=IN,
         isModifier=False)
     def macs2_peak_calling_nobgd(  # pylint: disable=too-many-arguments,no-self-use,too-many-branches
             self, name, bam_file, bai_file, macs_params,
-            narrowpeak, summits_bed, broadpeak, gappedpeak, chromosome):  # pylint: disable=unused-argument
+            narrowpeak, summits_bed, broadpeak, gappedpeak,
+            rscript, bdg, chromosome):  # pylint: disable=unused-argument
         """
         Function to run MACS2 for peak calling on aligned sequence files without
         a background dataset for normalisation.
@@ -299,7 +306,7 @@ class macs2(Tool):  # pylint: disable=invalid-name
         self._macs2_runner(
             name, bam_file, bai_file, macs_params,
             narrowpeak, summits_bed, broadpeak, gappedpeak,
-            chromosome)
+            rscript=rscript, bdg=bdg, chromosome=chromosome)
 
         return True
 
@@ -417,6 +424,8 @@ class macs2(Tool):  # pylint: disable=invalid-name
                     str(output_files['summits']) + "." + str(chromosome),
                     str(output_files['broad_peak']) + "." + str(chromosome),
                     str(output_files['gapped_peak']) + "." + str(chromosome),
+                    str(output_files['rscript']) + "." + str(chromosome),
+                    str(output_files['bdg']) + "." + str(chromosome),
                     chromosome)
             else:
                 result = self.macs2_peak_calling_nobgd(
@@ -427,6 +436,8 @@ class macs2(Tool):  # pylint: disable=invalid-name
                     str(output_files['summits']) + "." + str(chromosome),
                     str(output_files['broad_peak']) + "." + str(chromosome),
                     str(output_files['gapped_peak']) + "." + str(chromosome),
+                    str(output_files['rscript']) + "." + str(chromosome),
+                    str(output_files['bdg']) + "." + str(chromosome),
                     chromosome)
 
             if result is False:

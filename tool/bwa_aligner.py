@@ -502,7 +502,8 @@ class bwaAlignerTool(Tool):  # pylint: disable=invalid-name
                 taxon_id=input_metadata["genome"].taxon_id,
                 meta_data={
                     "assembly": input_metadata["genome"].meta_data["assembly"],
-                    "tool": "bwa_aligner"
+                    "tool": "bwa_aligner",
+                    "parameters": self.get_aln_params(self.configuration)
                 }
             )
         }

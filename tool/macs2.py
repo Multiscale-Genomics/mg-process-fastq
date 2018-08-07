@@ -164,6 +164,8 @@ class macs2(Tool):  # pylint: disable=invalid-name
         common_handle.to_output_file(output_tmp.format(name, 'peaks.broadPeak'), broadpeak)
         common_handle.to_output_file(output_tmp.format(name, 'peaks.gappedPeak'), gappedpeak)
         common_handle.to_output_file(output_tmp.format(name, 'summits.bed'), summits_bed)
+        common_handle.to_output_file(output_tmp.format(name, 'model.rscript'), rscript)
+        common_handle.to_output_file('bdg', bdg)
 
         return True
 
@@ -346,7 +348,7 @@ class macs2(Tool):  # pylint: disable=invalid-name
             "macs_broad-cutoff_param": ["--broad-cutoff", True],
             "macs_to-large_param": ["--to-large", False],
             "macs_down-sample_param": ["--down-sample", False],
-            "macs_bdg_param": ["--bdg", True],
+            "macs_bdg_param": ["--bdg", False],
             "macs_call-summits_param": ["--call-summits", True],
         }
 
@@ -498,7 +500,8 @@ class macs2(Tool):  # pylint: disable=invalid-name
                     meta_data={
                         "assembly": input_metadata["bam"].meta_data["assembly"],
                         "tool": "macs2",
-                        "bed_type": output_bed_types[result_file]
+                        "bed_type": output_bed_types[result_file],
+                        "parameters": command_params
                     }
                 )
             else:

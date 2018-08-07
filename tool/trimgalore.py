@@ -452,7 +452,8 @@ class trimgalore(Tool):  # pylint: disable=invalid-name
                 sources=[input_metadata["fastq1"].file_path],
                 taxon_id=input_metadata["fastq1"].taxon_id,
                 meta_data={
-                    "tool": "trim_galore"
+                    "tool": "trim_galore",
+                    "parameters": command_params
                 }
             ),
             "fastq1_report": Metadata(
@@ -462,7 +463,8 @@ class trimgalore(Tool):  # pylint: disable=invalid-name
                 sources=[output_files["fastq1_trimmed"]],
                 taxon_id=input_metadata["fastq1"].taxon_id,
                 meta_data={
-                    "tool": "trim_galore"
+                    "tool": "trim_galore",
+                    "parameters": command_params
                 }
             )
         }
@@ -477,7 +479,8 @@ class trimgalore(Tool):  # pylint: disable=invalid-name
                 sources=[input_metadata["fastq2"].file_path],
                 taxon_id=input_metadata["fastq2"].taxon_id,
                 meta_data={
-                    "tool": "trim_galore"
+                    "tool": "trim_galore",
+                    "parameters": command_params
                 }
             )
             output_metadata["fastq2_report"] = Metadata(
@@ -487,7 +490,8 @@ class trimgalore(Tool):  # pylint: disable=invalid-name
                 sources=[output_files["fastq2_trimmed"]],
                 taxon_id=input_metadata["fastq2"].taxon_id,
                 meta_data={
-                    "tool": "trim_galore"
+                    "tool": "trim_galore",
+                    "parameters": command_params
                 }
             )
 

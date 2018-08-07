@@ -144,3 +144,15 @@ There has also been some refactoring of the handling of the archiving and compre
 MACS2 is able to automatically handle the files that are handed to it except for paired-end BAM and BED files (BAMPE and BEDPE respectively). The MACS2 tool only accepts BAM files so a check was implemented to determine if the BAM file contained paired-end reads.
 
 There has also been a major rewrite of the MACS2 tool to remove code duplication.
+
+
+2018-08-07 - Storing tool parameters as part of the metadata
+------------------------------------------------------------
+
+To improve the amount of information that is stored about the run of a tool, the parameters that were used are now being included as part of the metadata.
+
+
+2018-08-07 - Extra output files from MACS2
+------------------------------------------
+
+MACS2 is able to generate a plot of the results as well as a bedGraph. These have now been integrated as part of the output files from teh tool.

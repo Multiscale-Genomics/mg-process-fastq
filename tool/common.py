@@ -77,10 +77,13 @@ class common(object):  # pylint: disable=too-few-public-methods, invalid-name
             return True
 
         if empty:
+            logger.warn("Empty File - {}".format(output_file))
             with open(output_file, "w") as f_out:
                 f_out.write("")
+            return True
 
-        return True
+        logger.fatal("I/O error: No file - {}".format(output_file))
+        return False
 
     @staticmethod
     def tar_folder(folder, tar_file, archive_name="tmp", keep_folder=False):

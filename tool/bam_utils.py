@@ -99,11 +99,14 @@ class bamUtils(object):  # pylint: disable=invalid-name
         filter : str
             One of:
                 duplicate - Read is PCR or optical duplicate (1024)
+                supplementary - Reads that are chimeric, fusion or non linearly
+                                aligned (2048)
                 unmapped - Read is unmapped or not the primary alignment (260)
         """
 
         filter_list = {
             "duplicate": "1024",
+            "supplementary": "2048",
             "unmapped": "260"
         }
 

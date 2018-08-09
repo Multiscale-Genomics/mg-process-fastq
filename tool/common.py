@@ -82,7 +82,6 @@ class common(object):  # pylint: disable=too-few-public-methods, invalid-name
                 f_out.write("")
             return True
 
-        logger.fatal("I/O error: No file - {}".format(output_file))
         return False
 
     @staticmethod

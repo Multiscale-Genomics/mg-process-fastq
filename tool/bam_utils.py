@@ -51,6 +51,30 @@ class bamUtils(object):  # pylint: disable=invalid-name
         logger.info("BAM Utils")
 
     @staticmethod
+    def sam_to_bam(sam_file, bam_file):
+        """
+        Function for converting sam files to bam files
+        """
+        # Convert the new sam file into a sorted bam file
+        cmd_sort = ' '.join([
+            'samtools sort',
+            '-O bam',
+            '-o', bam_file,
+            sam_file
+        ])
+
+        try:
+            logger.info("CREATE BAM COMMAND: " + cmd_sort)
+            process = subprocess.Popen(cmd_sort, shell=True)
+            process.wait()
+        except (IOError, OSError) as msg:
+            logger.info("I/O error({0}): {1}\n{2}".format(
+                msg.errno, msg.strerror, cmd_sort))
+            return False
+
+        return True
+
+    @staticmethod
     def bam_count_reads(bam_file, aligned=False):
         """
         Wrapper to count the number of (aligned) reads in a bam file

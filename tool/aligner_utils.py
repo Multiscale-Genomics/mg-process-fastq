@@ -25,6 +25,7 @@ import tarfile
 
 from utils import logger
 from tool.common import cd
+from tool.bam_utils import bam_utils
 
 
 class alignerUtils(object):  # pylint: disable=invalid-name
@@ -306,13 +307,6 @@ class alignerUtils(object):  # pylint: disable=invalid-name
             ' '.join(params),
         ] + reads)
 
-        cmd_sort = ' '.join([
-            'samtools sort',
-            '-O bam',
-            '-o', bam_loc,
-            reads_file_1 + '.sam'
-        ])
-
         try:
             with open(reads_file_1 + '.sam', "w") as f_out:
                 logger.info("BOWTIE2 COMMAND: " + cmd_aln)
@@ -323,18 +317,15 @@ class alignerUtils(object):  # pylint: disable=invalid-name
                 msg.errno, msg.strerror, cmd_aln))
             return False
 
-        try:
-            logger.info("BOWTIE2 COMMAND: " + cmd_sort)
-            process = subprocess.Popen(cmd_sort, shell=True)
-            process.wait()
-        except (IOError, OSError) as msg:
-            logger.info("I/O error({0}): {1}\n{2}".format(
-                msg.errno, msg.strerror, cmd_sort))
-            return False
+        bu_handle = bam_utils()
+        return_val = bu_handle.sam_to_bam(reads_file_1 + '.sam', bam_loc)
 
-        os.remove(reads_file_1 + '.sam')
+        if return_val:
+            os.remove(reads_file_1 + '.sam')
+        else:
+            logger.warn("IO error with {} to {}".format(reads_file_1 + '.sam', bam_loc))
 
-        return True
+        return return_val
 
     def _bwa_aln_sai(self, genome_file, reads_file, params, single=True):  # pylint: disable=no-self-use
         """
@@ -401,27 +392,29 @@ class alignerUtils(object):  # pylint: disable=invalid-name
 
         self._bwa_aln_sai(genome_file, reads_file, params, True)
 
-        command_lines = [cmd_samse, cmd_sort]
-
-        # print("BWA COMMAND LINES:", command_lines)
         try:
-            for command_line in command_lines:
-                logger.info("BWA ALN COMMAND: " + command_line)
-                process = subprocess.Popen(
-                    command_line, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-                process.wait()
-                proc_out, proc_err = process.communicate()  # pylint: disable=unused-variable
+            logger.info("BWA ALN COMMAND: " + cmd_samse)
+            process = subprocess.Popen(
+                cmd_samse, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            process.wait()
+            proc_out, proc_err = process.communicate()  # pylint: disable=unused-variable
         except (IOError, OSError) as msg:
             logger.info("I/O error({0}): {1}\n{2}".format(
-                msg.errno, msg.strerror, command_line))
+                msg.errno, msg.strerror, cmd_samse))
             proc_out, proc_err = process.communicate()
             logger.fatal("BWA ALN stderr" + proc_err)
             return False
 
-        os.remove(reads_file + '.sam')
-        os.remove(reads_file + '.sai')
+        bu_handle = bam_utils()
+        return_val = bu_handle.sam_to_bam(reads_file + '.sam', bam_loc)
 
-        return True
+        if return_val:
+            os.remove(reads_file + '.sam')
+            os.remove(reads_file + '.sai')
+        else:
+            logger.warn("IO error with {} to {}".format(reads_file + '.sam', bam_loc))
+
+        return return_val
 
     def bwa_aln_align_reads_paired(self, genome_file, reads_file_1, reads_file_2, bam_loc, params):  # pylint: disable=too-many-arguments
         """
@@ -444,15 +437,6 @@ class alignerUtils(object):  # pylint: disable=invalid-name
             reads_file_1 + '.sai', reads_file_2 + '.sai',
             reads_file_1, reads_file_2
         ])
-
-        cmd_sort = ' '.join([
-            'samtools sort',
-            '-O bam',
-            '-o', bam_loc,
-            reads_file_1 + '.sam'
-        ])
-
-        command_lines = [cmd_samse, cmd_sort]
 
         try:
             import multiprocessing
@@ -477,20 +461,25 @@ class alignerUtils(object):  # pylint: disable=invalid-name
             return False
 
         try:
-            for command_line in command_lines:
-                logger.info("BWA ALN COMMAND: " + command_line)
-                process = subprocess.Popen(command_line, shell=True)
-                process.wait()
+            logger.info("BWA ALN COMMAND: " + cmd_samse)
+            process = subprocess.Popen(cmd_samse, shell=True)
+            process.wait()
         except (IOError, OSError) as msg:
             logger.info("I/O error({0}): {1}\n{2}".format(
-                msg.errno, msg.strerror, command_line))
+                msg.errno, msg.strerror, cmd_samse))
             return False
 
-        os.remove(reads_file_1 + '.sam')
-        os.remove(reads_file_1 + '.sai')
-        os.remove(reads_file_2 + '.sai')
+        bu_handle = bam_utils()
+        return_val = bu_handle.sam_to_bam(reads_file_1 + '.sam', bam_loc)
 
-        return True
+        if return_val:
+            os.remove(reads_file_1 + '.sam')
+            os.remove(reads_file_1 + '.sai')
+            os.remove(reads_file_2 + '.sai')
+        else:
+            logger.warn("IO error with {} to {}".format(reads_file_1 + '.sam', bam_loc))
+
+        return return_val
 
     @staticmethod
     def bwa_mem_align_reads(
@@ -518,13 +507,6 @@ class alignerUtils(object):  # pylint: disable=invalid-name
             genome_file
         ] + reads)
 
-        cmd_sort = ' '.join([
-            'samtools sort',
-            '-O bam',
-            '-o', bam_loc,
-            reads_file_1 + '.sam'
-        ])
-
         try:
             with open(reads_file_1 + '.sam', "w") as f_out:
                 logger.info("BWA MEM COMMAND: " + cmd_aln)
@@ -535,15 +517,12 @@ class alignerUtils(object):  # pylint: disable=invalid-name
                 msg.errno, msg.strerror, cmd_aln))
             return False
 
-        try:
-            logger.info("BWA MEM COMMAND: " + cmd_sort)
-            process = subprocess.Popen(cmd_sort, shell=True)
-            process.wait()
-        except (IOError, OSError) as msg:
-            logger.info("I/O error({0}): {1}\n{2}".format(
-                msg.errno, msg.strerror, cmd_sort))
-            return False
+        bu_handle = bam_utils()
+        return_val = bu_handle.sam_to_bam(reads_file_1 + '.sam', bam_loc)
 
-        os.remove(reads_file_1 + '.sam')
+        if return_val:
+            os.remove(reads_file_1 + '.sam')
+        else:
+            logger.warn("IO error with {} to {}".format(reads_file_1 + '.sam', bam_loc))
 
-        return True
+        return return_val

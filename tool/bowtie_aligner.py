@@ -45,6 +45,7 @@ from basic_modules.metadata import Metadata
 from tool.fastq_splitter import fastq_splitter
 from tool.aligner_utils import alignerUtils
 from tool.bam_utils import bamUtilsTask
+from tool.common import common
 
 # ------------------------------------------------------------------------------
 
@@ -167,16 +168,15 @@ class bowtie2AlignerTool(Tool):  # pylint: disable=invalid-name
                 genome_file_loc, out_bam, aln_params, read_file_loc))
         )
 
-        try:
-            with open(bam_loc, "wb") as f_out:
-                with open(out_bam, "rb") as f_in:
-                    f_out.write(f_in.read())
-        except IOError:
-            return False
+        common_handle = common()
+        return_val = common_handle.to_output_file(out_bam, bam_loc, False)
+
+        if return_val is False:
+            logger.fatal("IO Error: Missing file - {}".format(out_bam))
 
         os.remove(out_bam)
 
-        return True
+        return return_val
 
     @constraint(ComputingUnits="4")
     @task(returns=bool, genome_file_loc=FILE_IN, read_file_loc1=FILE_IN,

@@ -124,7 +124,12 @@ class biobambam(Tool):  # pylint: disable=invalid-name
         logger.progress("SAMTOOLS REMOVE DUPLICATES", task_id=2, total=2)
 
         common_handle = common()
-        return common_handle.to_output_file(bam_tmp_filtered_out, bam_file_out, False)
+        return_val = common_handle.to_output_file(bam_tmp_filtered_out, bam_file_out, False)
+
+        if return_val is False:
+            "I/O error: No file - {}".format(bam_tmp_filtered_out)
+
+        return return_val
 
     def run(self, input_files, input_metadata, output_files):
         """

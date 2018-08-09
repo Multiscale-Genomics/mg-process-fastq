@@ -67,7 +67,8 @@ class macs2(Tool):  # pylint: disable=invalid-name
     def _macs2_runner(  # pylint: disable=too-many-locals,too-many-statements,too-many-statements,too-many-arguments
             name, bam_file, bai_file, macs_params,
             narrowpeak, summits_bed, broadpeak, gappedpeak,
-            rscript, bdg, chromosome=None, bam_file_bgd=None, bai_file_bgd=None):
+            bdg_control_lambda=None, bdg_treat_pileup=None, chromosome=None,
+            bam_file_bgd=None, bai_file_bgd=None):
         """
         Function to run MACS2 for peak calling on aligned sequence files and
         normalised against a provided background set of alignments.
@@ -164,7 +165,7 @@ class macs2(Tool):  # pylint: disable=invalid-name
         common_handle.to_output_file(output_tmp.format(name, 'peaks.broadPeak'), broadpeak)
         common_handle.to_output_file(output_tmp.format(name, 'peaks.gappedPeak'), gappedpeak)
         common_handle.to_output_file(output_tmp.format(name, 'summits.bed'), summits_bed)
-        common_handle.to_output_file(output_tmp.format(name, 'model.rscript'), rscript)
+        common_handle.to_output_file('bdg', bdg)
         common_handle.to_output_file('bdg', bdg)
 
         return True
@@ -183,13 +184,14 @@ class macs2(Tool):  # pylint: disable=invalid-name
         broadpeak=FILE_OUT,
         gappedpeak=FILE_OUT,
         rscript=FILE_OUT,
-        bdg=FILE_OUT,
+        bdg_control_lambda=FILE_OUT,
+        bdg_treat_pileup=FILE_OUT,
         chromosome=IN,
         isModifier=False)
     def macs2_peak_calling(  # pylint: disable=no-self-use,too-many-arguments
             self, name, bam_file, bai_file, bam_file_bgd, bai_file_bgd, macs_params,
             narrowpeak, summits_bed, broadpeak, gappedpeak,
-            rscript, bdg, chromosome):  # pylint: disable=unused-argument
+            bdg_control_lambda, bdg_treat_pileup, chromosome):  # pylint: disable=unused-argument
         """
         Function to run MACS2 for peak calling on aligned sequence files and
         normalised against a provided background set of alignments.
@@ -240,8 +242,8 @@ class macs2(Tool):  # pylint: disable=invalid-name
         self._macs2_runner(
             name, bam_file, bai_file, macs_params,
             narrowpeak, summits_bed, broadpeak, gappedpeak,
-            rscript=rscript, bdg=bdg, chromosome=chromosome,
-            bam_file_bgd=bam_file_bgd, bai_file_bgd=bai_file_bgd)
+            bdg_control_lambda=bdg_control_lambda, bdg_treat_pileup=bdg_treat_pileup,
+            chromosome=chromosome, bam_file_bgd=bam_file_bgd, bai_file_bgd=bai_file_bgd)
 
         return True
 
@@ -256,14 +258,14 @@ class macs2(Tool):  # pylint: disable=invalid-name
         summits_bed=FILE_OUT,
         broadpeak=FILE_OUT,
         gappedpeak=FILE_OUT,
-        rscript=FILE_OUT,
-        bdg=FILE_OUT,
+        bdg_control_lambda=FILE_OUT,
+        bdg_treat_pileup=FILE_OUT,
         chromosome=IN,
         isModifier=False)
     def macs2_peak_calling_nobgd(  # pylint: disable=too-many-arguments,no-self-use,too-many-branches
             self, name, bam_file, bai_file, macs_params,
             narrowpeak, summits_bed, broadpeak, gappedpeak,
-            rscript, bdg, chromosome):  # pylint: disable=unused-argument
+            bdg_control_lambda, bdg_treat_pileup, chromosome):  # pylint: disable=unused-argument
         """
         Function to run MACS2 for peak calling on aligned sequence files without
         a background dataset for normalisation.
@@ -308,7 +310,8 @@ class macs2(Tool):  # pylint: disable=invalid-name
         self._macs2_runner(
             name, bam_file, bai_file, macs_params,
             narrowpeak, summits_bed, broadpeak, gappedpeak,
-            rscript=rscript, bdg=bdg, chromosome=chromosome)
+            bdg_control_lambda=bdg_control_lambda, bdg_treat_pileup=bdg_treat_pileup,
+            chromosome=chromosome)
 
         return True
 
@@ -329,7 +332,7 @@ class macs2(Tool):  # pylint: disable=invalid-name
         command_params = []
 
         command_parameters = {
-            "macs2_format_param": ["--format", True],
+            "macs_format_param": ["--format", True],
             "macs_gsize_param": ["--gsize", True],
             "macs_tsize_param": ["--tsize", True],
             "macs_bw_param": ["--bw", True],
@@ -426,8 +429,8 @@ class macs2(Tool):  # pylint: disable=invalid-name
                     str(output_files['summits']) + "." + str(chromosome),
                     str(output_files['broad_peak']) + "." + str(chromosome),
                     str(output_files['gapped_peak']) + "." + str(chromosome),
-                    str(output_files['rscript']) + "." + str(chromosome),
-                    str(output_files['bdg']) + "." + str(chromosome),
+                    str(output_files['bdg_control_lambda']) + "." + str(chromosome),
+                    str(output_files['bdg_treat_pileup']) + "." + str(chromosome),
                     chromosome)
             else:
                 result = self.macs2_peak_calling_nobgd(
@@ -438,8 +441,8 @@ class macs2(Tool):  # pylint: disable=invalid-name
                     str(output_files['summits']) + "." + str(chromosome),
                     str(output_files['broad_peak']) + "." + str(chromosome),
                     str(output_files['gapped_peak']) + "." + str(chromosome),
-                    str(output_files['rscript']) + "." + str(chromosome),
-                    str(output_files['bdg']) + "." + str(chromosome),
+                    str(output_files['bdg_control_lambda']) + "." + str(chromosome),
+                    str(output_files['bdg_treat_pileup']) + "." + str(chromosome),
                     chromosome)
 
             if result is False:

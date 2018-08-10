@@ -413,7 +413,7 @@ class bamUtilsTask(object):  # pylint: disable=invalid-name
         bam_handle = bamUtils()
         return bam_handle.bam_list_chromosomes(bam_file)
 
-    @task(bam_file=FILE_INOUT)
+    @task(returns=bool, bam_file=FILE_INOUT)
     def bam_sort(self, bam_file):  # pylint: disable=no-self-use
         """
         Wrapper for the pysam SAMtools sort function

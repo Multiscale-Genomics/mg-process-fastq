@@ -72,7 +72,7 @@ class bssMethylationCallerTool(Tool):  # pylint: disable=invalid-name
         self.configuration.update(configuration)
 
     @task(
-        bss_path=IN, bam_file=FILE_IN, genome_idx=FILE_IN, params=IN,
+        returns=bool, bss_path=IN, bam_file=FILE_IN, genome_idx=FILE_IN, params=IN,
         wig_file=FILE_OUT, cgmap_file=FILE_OUT, atcgmap_file=FILE_OUT)
     def bss_methylation_caller(  # pylint disable=no-self-use
             self, bss_path, bam_file, genome_idx, params, wig_file, cgmap_file, atcgmap_file):

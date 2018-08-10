@@ -127,10 +127,12 @@ class macs2(Tool):  # pylint: disable=invalid-name
 
         # Test to see if the bam file contains paired end reads
         if bam_utils_handle.bam_paired_reads(bam_file):
-            macs_params.append(["--format", "BAMPE"])
+            macs_params.append("--format BAMPE")
 
         command_param = [
-            'macs2 callpeak', " ".join(macs_params), '-t', bam_tmp_file, '-n', name
+            'macs2 callpeak',
+            " ".join(macs_params),
+            '-t', bam_tmp_file, '-n', name
         ]
         if bam_file_bgd is not None:
             bam_bgd_tmp_file = bam_file_bgd.replace(".bam", "." + str(chromosome) + ".bam")
@@ -165,8 +167,8 @@ class macs2(Tool):  # pylint: disable=invalid-name
         common_handle.to_output_file(output_tmp.format(name, 'peaks.broadPeak'), broadpeak)
         common_handle.to_output_file(output_tmp.format(name, 'peaks.gappedPeak'), gappedpeak)
         common_handle.to_output_file(output_tmp.format(name, 'summits.bed'), summits_bed)
-        common_handle.to_output_file('bdg', bdg)
-        common_handle.to_output_file('bdg', bdg)
+        common_handle.to_output_file(output_tmp.format(name, 'control_lambda.bdg'), bdg_control_lambda)
+        common_handle.to_output_file(output_tmp.format(name, 'treat_pileup.bdg'), bdg_treat_pileup)
 
         return True
 
@@ -429,8 +431,8 @@ class macs2(Tool):  # pylint: disable=invalid-name
                     str(output_files['summits']) + "." + str(chromosome),
                     str(output_files['broad_peak']) + "." + str(chromosome),
                     str(output_files['gapped_peak']) + "." + str(chromosome),
-                    str(output_files['bdg_control_lambda']) + "." + str(chromosome),
-                    str(output_files['bdg_treat_pileup']) + "." + str(chromosome),
+                    "",  # str(output_files['bdg_control_lambda']) + "." + str(chromosome),
+                    "",  # str(output_files['bdg_treat_pileup']) + "." + str(chromosome),
                     chromosome)
             else:
                 result = self.macs2_peak_calling_nobgd(
@@ -441,8 +443,8 @@ class macs2(Tool):  # pylint: disable=invalid-name
                     str(output_files['summits']) + "." + str(chromosome),
                     str(output_files['broad_peak']) + "." + str(chromosome),
                     str(output_files['gapped_peak']) + "." + str(chromosome),
-                    str(output_files['bdg_control_lambda']) + "." + str(chromosome),
-                    str(output_files['bdg_treat_pileup']) + "." + str(chromosome),
+                    "",  # str(output_files['bdg_control_lambda']) + "." + str(chromosome),
+                    "",  # str(output_files['bdg_treat_pileup']) + "." + str(chromosome),
                     chromosome)
 
             if result is False:

@@ -25,7 +25,7 @@ import tarfile
 
 from utils import logger
 from tool.common import cd
-from tool.bam_utils import bam_utils
+from tool.bam_utils import bamUtils
 
 
 class alignerUtils(object):  # pylint: disable=invalid-name
@@ -317,7 +317,7 @@ class alignerUtils(object):  # pylint: disable=invalid-name
                 msg.errno, msg.strerror, cmd_aln))
             return False
 
-        bu_handle = bam_utils()
+        bu_handle = bamUtils()
         return_val = bu_handle.sam_to_bam(reads_file_1 + '.sam', bam_loc)
 
         if return_val:
@@ -383,13 +383,6 @@ class alignerUtils(object):  # pylint: disable=invalid-name
             genome_file, reads_file + '.sai', reads_file
         ])
 
-        cmd_sort = ' '.join([
-            'samtools sort',
-            '-O bam',
-            '-o', bam_loc,
-            reads_file + '.sam'
-        ])
-
         self._bwa_aln_sai(genome_file, reads_file, params, True)
 
         try:
@@ -405,7 +398,7 @@ class alignerUtils(object):  # pylint: disable=invalid-name
             logger.fatal("BWA ALN stderr" + proc_err)
             return False
 
-        bu_handle = bam_utils()
+        bu_handle = bamUtils()
         return_val = bu_handle.sam_to_bam(reads_file + '.sam', bam_loc)
 
         if return_val:
@@ -469,7 +462,7 @@ class alignerUtils(object):  # pylint: disable=invalid-name
                 msg.errno, msg.strerror, cmd_samse))
             return False
 
-        bu_handle = bam_utils()
+        bu_handle = bamUtils()
         return_val = bu_handle.sam_to_bam(reads_file_1 + '.sam', bam_loc)
 
         if return_val:
@@ -517,7 +510,7 @@ class alignerUtils(object):  # pylint: disable=invalid-name
                 msg.errno, msg.strerror, cmd_aln))
             return False
 
-        bu_handle = bam_utils()
+        bu_handle = bamUtils()
         return_val = bu_handle.sam_to_bam(reads_file_1 + '.sam', bam_loc)
 
         if return_val:

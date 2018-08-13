@@ -156,3 +156,9 @@ To improve the amount of information that is stored about the run of a tool, the
 ------------------------------------------
 
 MACS2 is able to generate a plot of the results as well as a bedGraph. These have now been integrated as part of the output files from teh tool.
+
+
+2018-08-13 - Normalised the use of OSError
+------------------------------------------
+
+IOError was depricated in favour of OSError when moving to py3, but to maintian backwards compatibility IOError also needs to be supported. There were places in the code where this was not true and other places that relied on just OSError. Instances of just IOError have been converted to testing for both IOError and OSError and visa versa.

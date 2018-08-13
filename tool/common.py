@@ -138,7 +138,7 @@ class common(object):  # pylint: disable=too-few-public-methods, invalid-name
             args = shlex.split(command_line)
             process = subprocess.Popen(args)
             process.wait()
-        except OSError:
+        except (OSError, IOError):
             logger.warn("OSERROR: pigz not installed, using gzip")
             command_line = 'gzip ' + location
             args = shlex.split(command_line)

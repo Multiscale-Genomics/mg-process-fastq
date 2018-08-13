@@ -518,10 +518,10 @@ class macs2(Tool):  # pylint: disable=invalid-name
         }
         for result_file in bdg_files:
             if (
-                    os.path.isfile(output_files[result_file]) is True
-                    and os.path.getsize(output_files[result_file]) > 0
+                    os.path.isfile(bdg_files[result_file]) is True
+                    and os.path.getsize(bdg_files[result_file]) > 0
             ):
-                output_files_created[result_file] = output_files[result_file]
+                output_files_created[result_file] = bdg_files[result_file]
 
                 sources = [input_metadata["bam"].file_path]
                 if 'bam_bg' in input_files:
@@ -530,7 +530,7 @@ class macs2(Tool):  # pylint: disable=invalid-name
                 output_metadata[result_file] = Metadata(
                     data_type="data_chip_seq",
                     file_type="BEDGRAPH",
-                    file_path=output_files[result_file],
+                    file_path=bdg_files[result_file],
                     sources=sources,
                     taxon_id=input_metadata["bam"].taxon_id,
                     meta_data={
@@ -540,7 +540,7 @@ class macs2(Tool):  # pylint: disable=invalid-name
                     }
                 )
             else:
-                os.remove(output_files[result_file])
+                os.remove(bdg_files[result_file])
 
         logger.info('MACS2: GENERATED FILES:', output_files)
 

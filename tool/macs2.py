@@ -512,6 +512,36 @@ class macs2(Tool):  # pylint: disable=invalid-name
             else:
                 os.remove(output_files[result_file])
 
+        bdg_files = {
+            "control_lambda": os.path.join(root_name[0], name + "_control_lambda.bdg"),
+            "treat_pvalue": os.path.join(root_name[0], name + "_treat_pvalue.bdg")
+        }
+        for result_file in bdg_files:
+            if (
+                    os.path.isfile(output_files[result_file]) is True
+                    and os.path.getsize(output_files[result_file]) > 0
+            ):
+                output_files_created[result_file] = output_files[result_file]
+
+                sources = [input_metadata["bam"].file_path]
+                if 'bam_bg' in input_files:
+                    sources.append(input_metadata["bam_bg"].file_path)
+
+                output_metadata[result_file] = Metadata(
+                    data_type="data_chip_seq",
+                    file_type="BEDGRAPH",
+                    file_path=output_files[result_file],
+                    sources=sources,
+                    taxon_id=input_metadata["bam"].taxon_id,
+                    meta_data={
+                        "assembly": input_metadata["bam"].meta_data["assembly"],
+                        "tool": "macs2",
+                        "parameters": command_params
+                    }
+                )
+            else:
+                os.remove(output_files[result_file])
+
         logger.info('MACS2: GENERATED FILES:', output_files)
 
         return (output_files_created, output_metadata)

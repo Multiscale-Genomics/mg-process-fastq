@@ -132,7 +132,8 @@ class macs2(Tool):  # pylint: disable=invalid-name
         command_param = [
             'macs2 callpeak',
             " ".join(macs_params),
-            '-t', bam_tmp_file, '-n', name
+            '-t', bam_tmp_file,
+            '-n', name
         ]
         if bam_file_bgd is not None:
             bam_bgd_tmp_file = bam_file_bgd.replace(".bam", "." + str(chromosome) + ".bam")
@@ -390,9 +391,8 @@ class macs2(Tool):  # pylint: disable=invalid-name
             List of matching metadata dict objects
 
         """
-        root_name = input_files['bam'].split("/")
-        root_name[-1] = root_name[-1].replace('.bam', '')
-        name = root_name[-1]
+        root_name = os.path.split(input_files['bam'])
+        name = root_name[1].replace('.bam', '')
 
         # input and output share most metadata
         output_bed_types = {
@@ -431,8 +431,8 @@ class macs2(Tool):  # pylint: disable=invalid-name
                     str(output_files['summits']) + "." + str(chromosome),
                     str(output_files['broad_peak']) + "." + str(chromosome),
                     str(output_files['gapped_peak']) + "." + str(chromosome),
-                    "",  # str(output_files['bdg_control_lambda']) + "." + str(chromosome),
-                    "",  # str(output_files['bdg_treat_pileup']) + "." + str(chromosome),
+                    os.path.join(root_name[0], name + "_control_lambda.bdg"),
+                    os.path.join(root_name[0], name + "_treat_pvalue.bdg"),
                     chromosome)
             else:
                 result = self.macs2_peak_calling_nobgd(
@@ -443,8 +443,8 @@ class macs2(Tool):  # pylint: disable=invalid-name
                     str(output_files['summits']) + "." + str(chromosome),
                     str(output_files['broad_peak']) + "." + str(chromosome),
                     str(output_files['gapped_peak']) + "." + str(chromosome),
-                    "",  # str(output_files['bdg_control_lambda']) + "." + str(chromosome),
-                    "",  # str(output_files['bdg_treat_pileup']) + "." + str(chromosome),
+                    os.path.join(root_name[0], name + "_control_lambda.bdg"),
+                    os.path.join(root_name[0], name + "_treat_pvalue.bdg"),
                     chromosome)
 
             if result is False:

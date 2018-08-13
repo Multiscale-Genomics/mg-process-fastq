@@ -232,7 +232,7 @@ class bowtie2AlignerTool(Tool):  # pylint: disable=invalid-name
             with open(bam_loc, "wb") as f_out:
                 with open(out_bam, "rb") as f_in:
                     f_out.write(f_in.read())
-        except IOError:
+        except (OSError, IOError):
             return False
 
         os.remove(out_bam)

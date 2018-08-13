@@ -168,7 +168,7 @@ class bwaAlignerTool(Tool):  # pylint: disable=invalid-name
             with open(bam_loc, "wb") as f_out:
                 with open(out_bam, "rb") as f_in:
                     f_out.write(f_in.read())
-        except IOError as error:
+        except (OSError, IOError) as error:
             logger.fatal("SINGLE ALIGNER: I/O error({0}): {1}".format(error.errno, error.strerror))
             return False
 
@@ -226,7 +226,7 @@ class bwaAlignerTool(Tool):  # pylint: disable=invalid-name
             with open(bam_loc, "wb") as f_out:
                 with open(out_bam, "rb") as f_in:
                     f_out.write(f_in.read())
-        except IOError as error:
+        except (OSError, IOError) as error:
             logger.fatal("PARIED ALIGNER: I/O error({0}): {1}".format(error.errno, error.strerror))
             return False
 

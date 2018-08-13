@@ -271,7 +271,7 @@ class alignerUtils(object):  # pylint: disable=invalid-name
                         f_out.write(f_in.read())
 
             shutil.rmtree(tar_file.replace('.tar.gz', ''))
-        except IOError as error:
+        except (OSError, IOError) as error:
             logger.fatal("UNTAR: I/O error({0}): {1}".format(error.errno, error.strerror))
             return False
 
@@ -315,7 +315,7 @@ class alignerUtils(object):  # pylint: disable=invalid-name
                 logger.info("BOWTIE2 COMMAND: " + cmd_aln)
                 process = subprocess.Popen(cmd_aln, shell=True, stdout=f_out)
                 process.wait()
-        except (IOError, OSError) as msg:
+        except (OSError, IOError) as msg:
             logger.info("I/O error({0}): {1}\n{2}".format(
                 msg.errno, msg.strerror, cmd_aln))
             return False
@@ -363,7 +363,7 @@ class alignerUtils(object):  # pylint: disable=invalid-name
             logger.info("BWA ALN COMMAND: " + cmd_aln_sai)
             process = subprocess.Popen(cmd_aln_sai, shell=True)
             process.wait()
-        except (IOError, OSError) as msg:
+        except (OSError, IOError) as msg:
             logger.info("I/O error({0}): {1}\n{2}".format(
                 msg.errno, msg.strerror, cmd_aln_sai))
 
@@ -394,7 +394,7 @@ class alignerUtils(object):  # pylint: disable=invalid-name
                 cmd_samse, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             process.wait()
             proc_out, proc_err = process.communicate()  # pylint: disable=unused-variable
-        except (IOError, OSError) as msg:
+        except (OSError, IOError) as msg:
             logger.info("I/O error({0}): {1}\n{2}".format(
                 msg.errno, msg.strerror, cmd_samse))
             proc_out, proc_err = process.communicate()
@@ -451,7 +451,7 @@ class alignerUtils(object):  # pylint: disable=invalid-name
 
             f1_proc.join()
             f2_proc.join()
-        except (IOError, OSError) as msg:
+        except (OSError, IOError) as msg:
             logger.info("SAI ERROR: I/O error({0}): {1}".format(
                 msg.errno, msg.strerror))
             return False
@@ -460,7 +460,7 @@ class alignerUtils(object):  # pylint: disable=invalid-name
             logger.info("BWA ALN COMMAND: " + cmd_samse)
             process = subprocess.Popen(cmd_samse, shell=True)
             process.wait()
-        except (IOError, OSError) as msg:
+        except (OSError, IOError) as msg:
             logger.info("I/O error({0}): {1}\n{2}".format(
                 msg.errno, msg.strerror, cmd_samse))
             return False
@@ -508,7 +508,7 @@ class alignerUtils(object):  # pylint: disable=invalid-name
                 logger.info("BWA MEM COMMAND: " + cmd_aln)
                 process = subprocess.Popen(cmd_aln, shell=True, stdout=f_out)
                 process.wait()
-        except (IOError, OSError) as msg:
+        except (OSError, IOError) as msg:
             logger.info("I/O error({0}): {1}\n{2}".format(
                 msg.errno, msg.strerror, cmd_aln))
             return False

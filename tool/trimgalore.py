@@ -93,7 +93,7 @@ class trimgalore(Tool):  # pylint: disable=invalid-name
             logger.info("TRIM GALORE stdout" + version)
             logger.info("TRIM GALORE stderr" + proc_err)
 
-        except (IOError, OSError) as msg:
+        except (OSError, IOError) as msg:
             logger.fatal("I/O error({0}) - trim_galore: {1}\n{2}".format(
                 msg.errno, msg.strerror, command_line))
             return ""
@@ -156,7 +156,7 @@ class trimgalore(Tool):  # pylint: disable=invalid-name
 
         try:
             os.mkdir(tmp_dir)
-        except (IOError, OSError) as msg:
+        except (OSError, IOError) as msg:
             logger.warn("I/O error({0}) - tmp folder already exists: {1}".format(
                 msg.errno, msg.strerror))
 
@@ -171,7 +171,7 @@ class trimgalore(Tool):  # pylint: disable=invalid-name
             args = shlex.split(command_line)
             process = subprocess.Popen(args)
             process.wait()
-        except (IOError, OSError) as msg:
+        except (OSError, IOError) as msg:
             logger.fatal("I/O error({0}) - trim_galore: {1}\n{2}".format(
                 msg.errno, msg.strerror, command_line))
             return False
@@ -180,7 +180,7 @@ class trimgalore(Tool):  # pylint: disable=invalid-name
             with open(fastq_file_out, "wb") as f_out:
                 with open(tg_tmp_out, "rb") as f_in:
                     f_out.write(f_in.read())
-        except IOError as error:
+        except (OSError, IOError) as error:
             logger.fatal(
                 "I/O error({0}): {1}".format(error.errno, error.strerror))
             return False
@@ -189,7 +189,7 @@ class trimgalore(Tool):  # pylint: disable=invalid-name
             with open(fastq_report, "wb") as f_out:
                 with open("/".join(fastq_trimmed) + "_trimming_report.txt", "rb") as f_in:
                     f_out.write(f_in.read())
-        except IOError as error:
+        except (OSError, IOError) as error:
             logger.fatal("I/O error({0}) - TRIMMING REPORT FASTQ 1: {1}\n{2}\n{3}".format(
                 error.errno, error.strerror,
                 fastq_report, "/".join(fastq_trimmed) + "_trimming_report.txt"))
@@ -275,7 +275,7 @@ class trimgalore(Tool):  # pylint: disable=invalid-name
 
         try:
             os.mkdir(tmp_dir)
-        except (IOError, OSError) as msg:
+        except (OSError, IOError) as msg:
             logger.warn("I/O error({0}) - tmp folder already exists: {1}".format(
                 msg.errno, msg.strerror))
 
@@ -288,7 +288,7 @@ class trimgalore(Tool):  # pylint: disable=invalid-name
             args = shlex.split(command_line)
             process = subprocess.Popen(args)
             process.wait()
-        except (IOError, OSError) as msg:
+        except (OSError, IOError) as msg:
             logger.fatal("I/O error({0}) - trim_galore: {1}\n{2}".format(
                 msg.errno, msg.strerror, command_line))
             return False
@@ -309,7 +309,7 @@ class trimgalore(Tool):  # pylint: disable=invalid-name
             with open(fastq2_report, "wb") as f_out:
                 with open("/".join(fastq2_trimmed) + "_trimming_report.txt", "rb") as f_in:
                     f_out.write(f_in.read())
-        except IOError as error:
+        except (OSError, IOError) as error:
             logger.fatal("I/O error({0}) - Missing output file: {1}".format(
                 error.errno, error.strerror))
             return False

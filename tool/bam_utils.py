@@ -67,7 +67,7 @@ class bamUtils(object):  # pylint: disable=invalid-name
             logger.info("CREATE BAM COMMAND: " + cmd_sort)
             process = subprocess.Popen(cmd_sort, shell=True)
             process.wait()
-        except (IOError, OSError) as msg:
+        except (OSError, IOError) as msg:
             logger.info("I/O error({0}): {1}\n{2}".format(
                 msg.errno, msg.strerror, cmd_sort))
             return False
@@ -107,7 +107,7 @@ class bamUtils(object):  # pylint: disable=invalid-name
         try:
             pysam.sort(  # pylint: disable=no-member
                 "-o", bam_file, "-T", bam_file + "_sort", bam_file)
-        except IOError:
+        except (OSError, IOError):
             return False
         return True
 
@@ -145,7 +145,7 @@ class bamUtils(object):  # pylint: disable=invalid-name
         try:
             process = subprocess.Popen(cmd_view, shell=True)
             process.wait()
-        except (IOError, OSError) as msg:
+        except (OSError, IOError) as msg:
             logger.info(
                 "BAM FILTER - I/O error({0}): {1}\n{2}".format(
                     msg.errno, msg.strerror,
@@ -184,7 +184,7 @@ class bamUtils(object):  # pylint: disable=invalid-name
             with open(tmp_bam, "rb") as f_in:
                 with open(final_bam, "wb") as f_out:
                     f_out.write(f_in.read())
-        except IOError:
+        except (OSError, IOError):
             return False
 
         os.remove(tmp_bam)
@@ -209,7 +209,7 @@ class bamUtils(object):  # pylint: disable=invalid-name
             with open(bam_in, "rb") as f_in:
                 with open(bam_out, "wb") as f_out:
                     f_out.write(f_in.read())
-        except IOError:
+        except (OSError, IOError):
             return False
 
         return True
@@ -238,7 +238,7 @@ class bamUtils(object):  # pylint: disable=invalid-name
             logger.info("INDEX BAM COMMAND: " + cmd_view)
             process = subprocess.Popen(cmd_view, shell=True)
             process.wait()
-        except (IOError, OSError) as msg:
+        except (OSError, IOError) as msg:
             logger.info("I/O error({0}): {1}\n{2}".format(
                 msg.errno, msg.strerror, cmd_view))
             return False
@@ -247,7 +247,7 @@ class bamUtils(object):  # pylint: disable=invalid-name
             with open(bam_file + "_tmp.bai", "rb") as f_in:
                 with open(bam_idx_file, "wb") as f_out:
                     f_out.write(f_in.read())
-        except IOError:
+        except (OSError, IOError):
             return False
 
         return True
@@ -316,7 +316,7 @@ class bamUtils(object):  # pylint: disable=invalid-name
             logger.info("EXTRACT SAM COMMAND: " + cmd_view_1)
             process = subprocess.Popen(cmd_view_1, shell=True)
             process.wait()
-        except (IOError, OSError) as msg:
+        except (OSError, IOError) as msg:
             logger.info("I/O error({0}): {1}\n{2}".format(
                 msg.errno, msg.strerror, cmd_view_1))
             return False
@@ -325,7 +325,7 @@ class bamUtils(object):  # pylint: disable=invalid-name
             logger.info("CREATE BAM COMMAND: " + cmd_view_2)
             process = subprocess.Popen(cmd_view_2, shell=True)
             process.wait()
-        except (IOError, OSError) as msg:
+        except (OSError, IOError) as msg:
             logger.info("I/O error({0}): {1}\n{2}".format(
                 msg.errno, msg.strerror, cmd_view_2))
             return False

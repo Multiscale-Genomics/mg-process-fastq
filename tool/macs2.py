@@ -510,7 +510,11 @@ class macs2(Tool):  # pylint: disable=invalid-name
                     }
                 )
             else:
-                os.remove(output_files[result_file])
+                try:
+                    os.remove(output_files[result_file])
+                except IOError as error:
+                    logger.warn("MACS2: I/O error({0}): {1}\nMissing file: {2}".format(
+                        error.errno, error.strerror, output_files[result_file]))
 
         bdg_files = {
             "control_lambda": os.path.join(root_name[0], name + "_control_lambda.bdg"),
@@ -540,7 +544,11 @@ class macs2(Tool):  # pylint: disable=invalid-name
                     }
                 )
             else:
-                os.remove(bdg_files[result_file])
+                try:
+                    os.remove(bdg_files[result_file])
+                except IOError as error:
+                    logger.warn("MACS2: I/O error({0}): {1}\nMissing file: {2}".format(
+                        error.errno, error.strerror, bdg_files[result_file]))
 
         logger.info('MACS2: GENERATED FILES:', output_files)
 

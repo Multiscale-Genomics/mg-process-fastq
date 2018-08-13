@@ -138,6 +138,14 @@ The previous splitter would split the FASTQ files into separate changes, then cr
 There has also been some refactoring of the handling of the archiving and compression steps to reduce the duplication of code within the repository.
 
 
+2018-08-02 - Added in Paired End BAM file handling for MACS2
+------------------------------------------------------------
+
+MACS2 is able to automatically handle the files that are handed to it except for paired-end BAM and BED files (BAMPE and BEDPE respectively). The MACS2 tool only accepts BAM files so a check was implemented to determine if the BAM file contained paired-end reads.
+
+There has also been a major rewrite of the MACS2 tool to remove code duplication.
+
+
 2018-07-16 - Modified handling of file locations
 ------------------------------------------------
 

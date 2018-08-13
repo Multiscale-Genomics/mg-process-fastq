@@ -546,7 +546,7 @@ class macs2(Tool):  # pylint: disable=invalid-name
             else:
                 try:
                     os.remove(bdg_files[result_file])
-                except IOError as error:
+                except (OSError, IOError) as error:
                     logger.warn("MACS2: I/O error({0}): {1}\nMissing file: {2}".format(
                         error.errno, error.strerror, bdg_files[result_file]))
 

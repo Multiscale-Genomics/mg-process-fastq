@@ -182,8 +182,8 @@
                     "tool": "process_trim_galore",
                     "description": "Trimmed reads"
                 },
-                "file_path": "fastq1_trimmed.fq",
-                "data_type": "data_wgbs",
+                "file_path": "fastq1_trimmed.fastq",
+                "data_type": "null",
                 "compressed": "null"
             }
         }, {
@@ -197,8 +197,39 @@
                     "tool": "process_trim_galore",
                     "description": "Trimmed reads"
                 },
-                "file_path": "fastq2_trimmed.fq",
-                "data_type": "data_wgbs",
+                "file_path": "fastq2_trimmed.fastq",
+                "data_type": "null",
+                "compressed": "null"
+            }
+
+        }, {
+            "required": true,
+            "allow_multiple": false,
+            "name": "fastq1_report",
+            "file": {
+                "file_type": "txt",
+                "meta_data": {
+                    "visible": true,
+                    "tool": "process_trim_galore",
+                    "description": "FASTQ 1 trimming report"
+                },
+                "file_path": "fastq1_trimmed.report.txt",
+                "data_type": "null",
+                "compressed": "null"
+            }
+        }, {
+            "required": false,
+            "allow_multiple": false,
+            "name": "fastq2_report",
+            "file": {
+                "file_type": "txt",
+                "meta_data": {
+                    "visible": true,
+                    "tool": "process_trim_galore",
+                    "description": "FASTQ 2 trimming report"
+                },
+                "file_path": "fastq2_trimmed.report.txt",
+                "data_type": "null",
                 "compressed": "null"
             }
 

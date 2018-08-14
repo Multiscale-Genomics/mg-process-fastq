@@ -150,7 +150,7 @@ class trimgalore(Tool):  # pylint: disable=invalid-name
             tg_tmp_out = os.path.join(tmp_dir, fastq_trimmed[1])
             tg_tmp_out = tg_tmp_out.replace(
                 "." + tail_substring,
-                "_trimmed.fq.gz"
+                "_trimmed.fq"
             )
 
         try:
@@ -179,12 +179,19 @@ class trimgalore(Tool):  # pylint: disable=invalid-name
                     f_out.write(f_in.read())
         except (OSError, IOError) as error:
             logger.fatal(
-                "I/O error({0}): {1}".format(error.errno, error.strerror))
+                "I/O error({0}) - TRIMMED FASTQ: {1}\nREADING: {2}\nWRITING: {3}".format(
+                    error.errno, error.strerror, tg_tmp_out, fastq_file_out
+                )
+            )
             return False
 
         try:
             with open(fastq_report, "wb") as f_out:
-                with open(os.path.join(fastq_trimmed[0], "tmp", fastq_trimmed[1] + "_trimming_report.txt"), "rb") as f_in:
+                with open(
+                    os.path.join(
+                        fastq_trimmed[0], "tmp", fastq_trimmed[1] + "_trimming_report.txt"
+                    ), "rb"
+                ) as f_in:
                     f_out.write(f_in.read())
         except (OSError, IOError) as error:
             logger.fatal("I/O error({0}) - TRIMMING REPORT FASTQ 1: {1}\n{2}\n{3}".format(
@@ -260,12 +267,12 @@ class trimgalore(Tool):  # pylint: disable=invalid-name
             tg_tmp_out_1 = os.path.join(fastq1_trimmed[0], 'tmp', fastq1_trimmed[1])
             tg_tmp_out_1 = tg_tmp_out_1.replace(
                 "." + tail_substring,
-                "_trimmed.fq.gz"
+                "_trimmed.fq"
             )
             tg_tmp_out_2 = os.path.join(fastq2_trimmed[0], 'tmp', fastq2_trimmed[1])
             tg_tmp_out_2 = tg_tmp_out_2.replace(
                 "." + tail_substring,
-                "_trimmed.fq.gz"
+                "_trimmed.fq"
             )
 
         try:

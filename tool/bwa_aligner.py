@@ -440,11 +440,25 @@ class bwaAlignerTool(Tool):  # pylint: disable=invalid-name
             for fastq_file_pair in fastq_file_list:
                 tmp_fq = os.path.join(gz_data_path, "tmp", fastq_file_pair[0])
                 compss_delete_file(tmp_fq)
-                os.remove(tmp_fq)
+                try:
+                    os.remove(tmp_fq)
+                except (OSError, IOError) as msg:
+                    logger.warn(
+                        "Unable to remove file I/O error({0}): {1}".format(
+                            msg.errno, msg.strerror
+                        )
+                    )
                 if "fastq2" in input_files:
                     tmp_fq = os.path.join(gz_data_path, "tmp", fastq_file_pair[1])
                     compss_delete_file(tmp_fq)
-                    os.remove(tmp_fq)
+                    try:
+                        os.remove(tmp_fq)
+                    except (OSError, IOError) as msg:
+                        logger.warn(
+                            "Unable to remove file I/O error({0}): {1}".format(
+                                msg.errno, msg.strerror
+                            )
+                        )
         tasks_done += 1
         logger.progress("ALIGNER", task_id=tasks_done, total=task_count)
 

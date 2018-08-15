@@ -18,10 +18,11 @@
 from __future__ import print_function
 
 import os.path
-from pysam                                import AlignmentFile
-import pytest # pylint: disable=unused-import
+from pysam import AlignmentFile
+import pytest
 
 from tool.tb_normalize import tbNormalizeTool
+
 
 @pytest.mark.hic
 def test_tb_normalize():
@@ -29,23 +30,23 @@ def test_tb_normalize():
     Test case to normalize a sample bam file to 100K
     """
     resource_path = os.path.join(os.path.dirname(__file__), "data/")
-    
+
     bamin = resource_path + "tb_paired_reads.bam"
-    
+
     metadata = {
-        'resolution' : "100000",
-        'min_perc' : '2',
-        'max_perc' : '99.8',
-        'ncpus' : '4'
+        'resolution': "100000",
+        'min_perc': '2',
+        'max_perc': '99.8',
+        'ncpus': '4'
     }
-    
+
     bamfile = AlignmentFile(bamin, 'rb')
     if len(bamfile.references) == 1:
         metadata["min_count"] = "10"
     bamfile.close()
-        
-    tn = tbNormalizeTool()
-    tn_files, tn_meta = tn.run([bamin], [], metadata)
+
+    tn_handle = tbNormalizeTool()
+    tn_files, tn_meta = tn_handle.run([bamin], [], metadata)
 
     assert len(tn_files) > 1
-    
+    assert len(tn_meta) > 1

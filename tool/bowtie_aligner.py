@@ -45,6 +45,7 @@ from basic_modules.metadata import Metadata
 from tool.fastq_splitter import fastq_splitter
 from tool.aligner_utils import alignerUtils
 from tool.bam_utils import bamUtilsTask
+from tool.common import common
 
 # ------------------------------------------------------------------------------
 
@@ -167,16 +168,15 @@ class bowtie2AlignerTool(Tool):  # pylint: disable=invalid-name
                 genome_file_loc, out_bam, aln_params, read_file_loc))
         )
 
-        try:
-            with open(bam_loc, "wb") as f_out:
-                with open(out_bam, "rb") as f_in:
-                    f_out.write(f_in.read())
-        except IOError:
-            return False
+        common_handle = common()
+        return_val = common_handle.to_output_file(out_bam, bam_loc, False)
+
+        if return_val is False:
+            logger.fatal("IO Error: Missing file - {}".format(out_bam))
 
         os.remove(out_bam)
 
-        return True
+        return return_val
 
     @constraint(ComputingUnits="4")
     @task(returns=bool, genome_file_loc=FILE_IN, read_file_loc1=FILE_IN,
@@ -232,7 +232,7 @@ class bowtie2AlignerTool(Tool):  # pylint: disable=invalid-name
             with open(bam_loc, "wb") as f_out:
                 with open(out_bam, "rb") as f_in:
                     f_out.write(f_in.read())
-        except IOError:
+        except (OSError, IOError):
             return False
 
         os.remove(out_bam)
@@ -461,6 +461,7 @@ class bowtie2AlignerTool(Tool):  # pylint: disable=invalid-name
         output_bam_list = []
         for fastq_file_pair in fastq_file_list:
             if "fastq2" in input_files:
+                command_params = self.get_aln_params(self.configuration, True)
                 tmp_fq1 = os.path.join(gz_data_path, "tmp", fastq_file_pair[0])
                 tmp_fq2 = os.path.join(gz_data_path, "tmp", fastq_file_pair[1])
                 output_bam_file_tmp = tmp_fq1 + ".bam"
@@ -475,9 +476,10 @@ class bowtie2AlignerTool(Tool):  # pylint: disable=invalid-name
                     index_files["4.bt2"],
                     index_files["rev.1.bt2"],
                     index_files["rev.2.bt2"],
-                    self.get_aln_params(self.configuration, True)
+                    command_params
                 )
             else:
+                command_params = self.get_aln_params(self.configuration)
                 tmp_fq = os.path.join(gz_data_path, "tmp", fastq_file_pair[0])
                 output_bam_file_tmp = tmp_fq + ".bam"
                 output_bam_list.append(output_bam_file_tmp)
@@ -491,7 +493,7 @@ class bowtie2AlignerTool(Tool):  # pylint: disable=invalid-name
                     index_files["4.bt2"],
                     index_files["rev.1.bt2"],
                     index_files["rev.2.bt2"],
-                    self.get_aln_params(self.configuration)
+                    command_params
                 )
 
         barrier()
@@ -570,7 +572,8 @@ class bowtie2AlignerTool(Tool):  # pylint: disable=invalid-name
                 taxon_id=input_metadata["genome"].taxon_id,
                 meta_data={
                     "assembly": input_metadata["genome"].meta_data["assembly"],
-                    "tool": "bowtie_aligner"
+                    "tool": "bowtie_aligner",
+                    "parameters": command_params
                 }
             )
         }

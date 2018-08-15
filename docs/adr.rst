@@ -150,3 +150,22 @@ There has also been a major rewrite of the MACS2 tool to remove code duplication
 ------------------------------------------------
 
 Updated the handling of file locations to use os.path.join and os.path.split to allow for compatibility between different operating systems for the pipelines and tools.
+
+
+2018-08-07 - Storing tool parameters as part of the metadata
+------------------------------------------------------------
+
+To improve the amount of information that is stored about the run of a tool, the parameters that were used are now being included as part of the metadata.
+
+
+2018-08-07 - Extra output files from MACS2
+------------------------------------------
+
+MACS2 is able to generate a plot of the results as well as a bedGraph. These have now been integrated as part of the output files from teh tool.
+
+
+2018-08-13 - Normalised the use of OSError
+------------------------------------------
+
+IOError was depricated in favour of OSError when moving to py3, but to maintian backwards compatibility IOError also needs to be supported. There were places in the code where this was not true and other places that relied on just OSError. Instances of just IOError have been converted to testing for both IOError and OSError and visa versa.
+

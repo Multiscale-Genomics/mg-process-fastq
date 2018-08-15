@@ -262,6 +262,36 @@
                 "data_type": "data_chip_seq",
                 "compressed": "null"
             }
+        }, {
+            "required": false,
+            "allow_multiple": false,
+            "name": "control_lambda",
+            "file": {
+                "file_type": "bigwig",
+                "meta_data": {
+                    "visible": true,
+                    "tool": "process_chipseq",
+                    "description": "Output"
+                },
+                "file_path": "macs2.filtered_control_lambda.bw",
+                "data_type": "data_chip_seq",
+                "compressed": "null"
+            }
+        }, {
+            "required": false,
+            "allow_multiple": false,
+            "name": "treat_pileup",
+            "file": {
+                "file_type": "bigwig",
+                "meta_data": {
+                    "visible": true,
+                    "tool": "process_chipseq",
+                    "description": "Output"
+                },
+                "file_path": "macs2.filtered_treat_pileup.bw",
+                "data_type": "data_chip_seq",
+                "compressed": "null"
+            }
         }
     ]
 }

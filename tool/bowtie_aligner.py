@@ -408,7 +408,8 @@ class bowtie2AlignerTool(Tool):  # pylint: disable=invalid-name
         sources.append(input_files["loc"])
 
         logger.progress("FASTQ Splitter", task_id=tasks_done, total=task_count)
-        fastq_file_gz = str(fastq1 + ".tar.gz")
+        fastq_file_gz = os.path.join(
+            self.configuration["execution"], os.path.split(fastq1)[1] + ".tar.gz")
         if "fastq2" in input_files:
             fastq2 = input_files["fastq2"]
             sources.append(input_files["fastq2"])

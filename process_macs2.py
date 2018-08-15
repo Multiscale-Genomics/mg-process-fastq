@@ -143,28 +143,42 @@ class process_macs2(Workflow):
 
             tool_name = output_metadata['narrow_peak'].meta_data['tool']
             output_metadata['narrow_peak'].meta_data['tool_description'] = tool_name
-            output_metadata['narrow_peak'].meta_data['tool'] = "process_chipseq"
+            output_metadata['narrow_peak'].meta_data['tool'] = "process_macs2"
         if 'summits' in m_results_meta:
             output_files_generated['summits'] = m_results_files['summits']
             output_metadata['summits'] = m_results_meta['summits']
 
             tool_name = output_metadata['summits'].meta_data['tool']
             output_metadata['summits'].meta_data['tool_description'] = tool_name
-            output_metadata['summits'].meta_data['tool'] = "process_chipseq"
+            output_metadata['summits'].meta_data['tool'] = "process_macs2"
         if 'broad_peak' in m_results_meta:
             output_files_generated['broad_peak'] = m_results_files['broad_peak']
             output_metadata['broad_peak'] = m_results_meta['broad_peak']
 
             tool_name = output_metadata['broad_peak'].meta_data['tool']
             output_metadata['broad_peak'].meta_data['tool_description'] = tool_name
-            output_metadata['broad_peak'].meta_data['tool'] = "process_chipseq"
+            output_metadata['broad_peak'].meta_data['tool'] = "process_macs2"
         if 'gapped_peak' in m_results_meta:
             output_files_generated['gapped_peak'] = m_results_files['gapped_peak']
             output_metadata['gapped_peak'] = m_results_meta['gapped_peak']
 
             tool_name = output_metadata['gapped_peak'].meta_data['tool']
             output_metadata['gapped_peak'].meta_data['tool_description'] = tool_name
-            output_metadata['gapped_peak'].meta_data['tool'] = "process_chipseq"
+            output_metadata['gapped_peak'].meta_data['tool'] = "process_macs2"
+        if 'control_lambda' in m_results_meta:
+            output_files_generated['control_lambda'] = m_results_files['control_lambda']
+            output_metadata['control_lambda'] = m_results_meta['control_lambda']
+
+            tool_name = output_metadata['control_lambda'].meta_data['tool']
+            output_metadata['control_lambda'].meta_data['tool_description'] = tool_name
+            output_metadata['control_lambda'].meta_data['tool'] = "process_macs2"
+        if 'treat_pileup' in m_results_meta:
+            output_files_generated['treat_pileup'] = m_results_files['treat_pileup']
+            output_metadata['treat_pileup'] = m_results_meta['treat_pileup']
+
+            tool_name = output_metadata['treat_pileup'].meta_data['tool']
+            output_metadata['treat_pileup'].meta_data['tool_description'] = tool_name
+            output_metadata['treat_pileup'].meta_data['tool'] = "process_macs2"
 
         return output_files_generated, output_metadata
 

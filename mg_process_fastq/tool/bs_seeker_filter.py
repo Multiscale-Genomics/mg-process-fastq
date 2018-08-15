@@ -67,7 +67,7 @@ class filterReadsTool(Tool):  # pylint: disable=invalid-name
 
         self.configuration.update(configuration)
 
-    @task(infile=FILE_IN, outfile=FILE_OUT, bss_path=IN)
+    @task(returns=bool, infile=FILE_IN, outfile=FILE_OUT, bss_path=IN)
     def bss_seeker_filter(self, infile, outfile, bss_path):  # pylint disable=no-self-use
         """
         This is optional, but removes reads that can be problematic for the

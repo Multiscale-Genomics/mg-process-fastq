@@ -48,6 +48,43 @@ class common(object):  # pylint: disable=too-few-public-methods, invalid-name
     """
 
     @staticmethod
+    def to_output_file(input_file, output_file, empty=True):
+        """
+        When handling the output of files within the @task function copying the
+        results into the correct output files should be done by reading from and
+        writing to rather than renaming.
+
+        In cases where there are a known set of output files, if the input file
+        is missing then a blank file should be created and handled by the run()
+        function of the tool. If an empty file should not be created then the
+        empty parameter should be set to False.
+
+        Parameters
+        ----------
+        input_file : str
+            Location of the input file
+        output_file : str
+            Location of the output file
+        empty : bool
+            In cases where the input_file is missing an empty output_file is
+            created. Should be set to False if no file shold be created.
+        """
+        logger.info(input_file + ' - ' + str(os.path.isfile(input_file)))
+        if os.path.isfile(input_file) is True and os.path.getsize(input_file) > 0:
+            with open(output_file, "wb") as f_out:
+                with open(input_file, "rb") as f_in:
+                    f_out.write(f_in.read())
+            return True
+
+        if empty:
+            logger.warn("Empty File - {}".format(output_file))
+            with open(output_file, "w") as f_out:
+                f_out.write("")
+            return True
+
+        return False
+
+    @staticmethod
     def tar_folder(folder, tar_file, archive_name="tmp", keep_folder=False):
         """
         Archive a folder as a tar file.
@@ -101,7 +138,7 @@ class common(object):  # pylint: disable=too-few-public-methods, invalid-name
             args = shlex.split(command_line)
             process = subprocess.Popen(args)
             process.wait()
-        except OSError:
+        except (OSError, IOError):
             logger.warn("OSERROR: pigz not installed, using gzip")
             command_line = 'gzip ' + location
             args = shlex.split(command_line)

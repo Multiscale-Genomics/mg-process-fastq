@@ -113,6 +113,12 @@ class process_trim_galore(Workflow):  # pylint: disable=invalid-name,too-few-pub
                 tool_name = output_metadata["fastq2_trimmed"].meta_data["tool"]
                 output_metadata["fastq2_trimmed"].meta_data["tool_description"] = tool_name
                 output_metadata["fastq2_trimmed"].meta_data["tool"] = "process_trim_galore"
+
+                output_results_files["fastq2_report"] = trim_files["fastq2_report"]
+                output_metadata["fastq2_report"] = trim_meta["fastq2_report"]
+                tool_name = output_metadata["fastq2_report"].meta_data["tool"]
+                output_metadata["fastq2_report"].meta_data["tool_description"] = tool_name
+                output_metadata["fastq2_report"].meta_data["tool"] = "process_trim_galore"
             except KeyError:
                 logger.fatal("Trim Galore fastq2: Error while trimming")
                 return {}, {}
@@ -133,6 +139,12 @@ class process_trim_galore(Workflow):  # pylint: disable=invalid-name,too-few-pub
             tool_name = output_metadata["fastq1_trimmed"].meta_data["tool"]
             output_metadata["fastq1_trimmed"].meta_data["tool_description"] = tool_name
             output_metadata["fastq1_trimmed"].meta_data["tool"] = "process_trim_galore"
+
+            output_results_files["fastq1_report"] = trim_files["fastq1_report"]
+            output_metadata["fastq1_report"] = trim_meta["fastq1_report"]
+            tool_name = output_metadata["fastq1_report"].meta_data["tool"]
+            output_metadata["fastq1_report"].meta_data["tool_description"] = tool_name
+            output_metadata["fastq1_report"].meta_data["tool"] = "process_trim_galore"
         except KeyError:
             logger.fatal("Trim Galore fastq1: Error while trimming")
             return {}, {}

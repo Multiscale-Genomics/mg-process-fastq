@@ -147,11 +147,7 @@ Filter this sam file for the reads which aligned with chromosome 19 using the fo
 
    awk '$3 != "*"' inps.Mouse.GRCm38.sam >inps.Mouse.GRCm38.sam.19.sam
 
-From the filtered reads from the above output file, extract the corresponding entries in fastq file. You may do this using the file at :
-
-.. code-block:: none
-
-   https://github.com/Multiscale-Genomics/mg-misc-scripts/blob/master/MNaseSeq_Scripts/makeFastQFiles.py
+From the filtered reads from the above output file, extract the corresponding entries in fastq file. You may do this using the file at https://github.com/Multiscale-Genomics/mg-misc-scripts/blob/master/MNaseSeq_Scripts/makeFastQFiles.py
 
 and running it via command line:
 

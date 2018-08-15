@@ -139,7 +139,7 @@ before_script:
     - cd ${HOME}/bin
 
     - ln -s ${HOME}/lib/FastQC/fastqc
-    - ln -s ${HOME}/lib/TrimGalore-0.4.3/trim_galore trim_galore
+    - ln -s ${HOME}/lib/TrimGalore-0.5.0/trim_galore trim_galore
 
     - ln -s ${HOME}/lib/bedtools2/bin/bedtools bedtools
 

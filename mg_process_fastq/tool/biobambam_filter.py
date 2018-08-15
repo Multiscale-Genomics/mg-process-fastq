@@ -40,6 +40,7 @@ except ImportError:
 from basic_modules.metadata import Metadata
 from basic_modules.tool import Tool
 from mg_process_fastq.tool.bam_utils import bamUtils
+from mg_process_fastq.tool.common import common
 
 # ------------------------------------------------------------------------------
 
@@ -122,15 +123,13 @@ class biobambam(Tool):  # pylint: disable=invalid-name
         bam_handle.bam_filter(bam_tmp_marked_out, bam_tmp_filtered_out, "duplicate")
         logger.progress("SAMTOOLS REMOVE DUPLICATES", task_id=2, total=2)
 
-        try:
-            with open(bam_file_out, "wb") as f_out:
-                with open(bam_tmp_filtered_out, "rb") as f_in:
-                    f_out.write(f_in.read())
-        except IOError as error:
-            logger.fatal("I/O error({0}): {1}".format(error.errno, error.strerror))
-            return False
+        common_handle = common()
+        return_val = common_handle.to_output_file(bam_tmp_filtered_out, bam_file_out, False)
 
-        return True
+        if return_val is False:
+            "I/O error: No file - {}".format(bam_tmp_filtered_out)
+
+        return return_val
 
     def run(self, input_files, input_metadata, output_files):
         """

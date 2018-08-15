@@ -23,6 +23,7 @@ from basic_modules.metadata import Metadata
 
 from mg_process_fastq.tool import bs_seeker_filter
 
+
 @pytest.mark.wgbs
 def test_bs_seeker_filter_00():
     """
@@ -45,6 +46,7 @@ def test_bs_seeker_filter_00():
     assert os.path.isfile(fastq_file_2) is True
     assert os.path.getsize(fastq_file_2) > 0
 
+
 @pytest.mark.wgbs
 def test_bs_seeker_filter_01():
     """
@@ -64,13 +66,14 @@ def test_bs_seeker_filter_01():
     metadata = {
         "fastq": Metadata(
             "data_wgbs", "fastq", input_files["fastq"], None,
-            {'assembly' : 'test'})
+            {'assembly': 'test'})
     }
 
     config_param = {
-        "aligner" : "bowtie2",
-        "aligner_path" : home + "/lib/bowtie2-2.3.4-linux-x86_64",
-        "bss_path" : home + "/lib/BSseeker2"
+        "aligner": "bowtie2",
+        "aligner_path": home + "/lib/bowtie2-2.3.4-linux-x86_64",
+        "bss_path": home + "/lib/BSseeker2",
+        "execution": resource_path
     }
 
     bsi = bs_seeker_filter.filterReadsTool(config_param)
@@ -78,6 +81,7 @@ def test_bs_seeker_filter_01():
 
     assert os.path.isfile(output_files["fastq_filtered"]) is True
     assert os.path.getsize(output_files["fastq_filtered"]) > 0
+
 
 @pytest.mark.wgbs
 def test_bs_seeker_filter_02():
@@ -98,13 +102,14 @@ def test_bs_seeker_filter_02():
     metadata = {
         "fastq": Metadata(
             "data_wgbs", "fastq", input_files["fastq"], None,
-            {'assembly' : 'test'})
+            {'assembly': 'test'})
     }
 
     config_param = {
-        "aligner" : "bowtie2",
-        "aligner_path" : home + "/lib/bowtie2-2.3.4-linux-x86_64",
-        "bss_path" : home + "/lib/BSseeker2"
+        "aligner": "bowtie2",
+        "aligner_path": home + "/lib/bowtie2-2.3.4-linux-x86_64",
+        "bss_path": home + "/lib/BSseeker2",
+        "execution": resource_path
     }
 
     bsi = bs_seeker_filter.filterReadsTool(config_param)

@@ -67,7 +67,7 @@ class bssAlignerTool(Tool):  # pylint: disable=invalid-name
             a dictionary containing parameters that define how the operation
             should be carried out, which are specific to each Tool.
         """
-        print("BS-Seeker Aligner")
+        logger.info("BS-Seeker Aligner")
         Tool.__init__(self)
 
         if configuration is None:
@@ -349,7 +349,7 @@ class bssAlignerTool(Tool):  # pylint: disable=invalid-name
                 tar = tarfile.open(genome_idx)
                 tar.extractall(path=g_dir)
                 tar.close()
-            except IOError:
+            except (OSError, IOError):
                 logger.fatal("WGBS - BS SEEKER2: Missing index archive")
                 return False
 
@@ -372,7 +372,7 @@ class bssAlignerTool(Tool):  # pylint: disable=invalid-name
                     f_out.write(f_in.read())
 
             os.remove(bam_out + "_tmp.bam")
-        except IOError:
+        except (OSError, IOError):
             logger.fatal("WGBS - BS SEEKER2: Failed sorting")
             return False
 
@@ -577,7 +577,8 @@ class bssAlignerTool(Tool):  # pylint: disable=invalid-name
                 taxon_id=input_metadata["genome"].taxon_id,
                 meta_data={
                     "assembly": input_metadata["genome"].meta_data["assembly"],
-                    "tool": "bs_seeker_aligner"
+                    "tool": "bs_seeker_aligner",
+                    "parameters": aln_params
                 }
             ),
             "bai": Metadata(

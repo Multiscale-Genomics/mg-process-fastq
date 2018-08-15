@@ -19,6 +19,10 @@
     ],
     "arguments": [
         {
+            "name": "execution",
+            "value": "mg_process_fastq/tests/data"
+        },
+        {
             "name": "project",
             "value": "run001"
         },

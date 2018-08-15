@@ -67,7 +67,8 @@ class macs2(Tool):  # pylint: disable=invalid-name
     def _macs2_runner(  # pylint: disable=too-many-locals,too-many-statements,too-many-statements,too-many-arguments
             name, bam_file, bai_file, macs_params,
             narrowpeak, summits_bed, broadpeak, gappedpeak,
-            chromosome=None, bam_file_bgd=None, bai_file_bgd=None):
+            bdg_control_lambda=None, bdg_treat_pileup=None, chromosome=None,
+            bam_file_bgd=None, bai_file_bgd=None):
         """
         Function to run MACS2 for peak calling on aligned sequence files and
         normalised against a provided background set of alignments.
@@ -126,10 +127,13 @@ class macs2(Tool):  # pylint: disable=invalid-name
 
         # Test to see if the bam file contains paired end reads
         if bam_utils_handle.bam_paired_reads(bam_file):
-            macs_params.append(["--format", "BAMPE"])
+            macs_params.append("--format BAMPE")
 
         command_param = [
-            'macs2 callpeak', " ".join(macs_params), '-t', bam_tmp_file, '-n', name
+            'macs2 callpeak',
+            " ".join(macs_params),
+            '-t', bam_tmp_file,
+            '-n', name
         ]
         if bam_file_bgd is not None:
             bam_bgd_tmp_file = bam_file_bgd.replace(".bam", "." + str(chromosome) + ".bam")
@@ -164,6 +168,8 @@ class macs2(Tool):  # pylint: disable=invalid-name
         common_handle.to_output_file(output_tmp.format(name, 'peaks.broadPeak'), broadpeak)
         common_handle.to_output_file(output_tmp.format(name, 'peaks.gappedPeak'), gappedpeak)
         common_handle.to_output_file(output_tmp.format(name, 'summits.bed'), summits_bed)
+        common_handle.to_output_file(output_tmp.format(name, 'control_lambda.bdg'), bdg_control_lambda)
+        common_handle.to_output_file(output_tmp.format(name, 'treat_pileup.bdg'), bdg_treat_pileup)
 
         return True
 
@@ -180,11 +186,15 @@ class macs2(Tool):  # pylint: disable=invalid-name
         summits_bed=FILE_OUT,
         broadpeak=FILE_OUT,
         gappedpeak=FILE_OUT,
+        rscript=FILE_OUT,
+        bdg_control_lambda=FILE_OUT,
+        bdg_treat_pileup=FILE_OUT,
         chromosome=IN,
         isModifier=False)
     def macs2_peak_calling(  # pylint: disable=no-self-use,too-many-arguments
             self, name, bam_file, bai_file, bam_file_bgd, bai_file_bgd, macs_params,
-            narrowpeak, summits_bed, broadpeak, gappedpeak, chromosome):  # pylint: disable=unused-argument
+            narrowpeak, summits_bed, broadpeak, gappedpeak,
+            bdg_control_lambda, bdg_treat_pileup, chromosome):  # pylint: disable=unused-argument
         """
         Function to run MACS2 for peak calling on aligned sequence files and
         normalised against a provided background set of alignments.
@@ -235,7 +245,8 @@ class macs2(Tool):  # pylint: disable=invalid-name
         self._macs2_runner(
             name, bam_file, bai_file, macs_params,
             narrowpeak, summits_bed, broadpeak, gappedpeak,
-            chromosome, bam_file_bgd, bai_file_bgd)
+            bdg_control_lambda=bdg_control_lambda, bdg_treat_pileup=bdg_treat_pileup,
+            chromosome=chromosome, bam_file_bgd=bam_file_bgd, bai_file_bgd=bai_file_bgd)
 
         return True
 
@@ -250,11 +261,14 @@ class macs2(Tool):  # pylint: disable=invalid-name
         summits_bed=FILE_OUT,
         broadpeak=FILE_OUT,
         gappedpeak=FILE_OUT,
+        bdg_control_lambda=FILE_OUT,
+        bdg_treat_pileup=FILE_OUT,
         chromosome=IN,
         isModifier=False)
     def macs2_peak_calling_nobgd(  # pylint: disable=too-many-arguments,no-self-use,too-many-branches
             self, name, bam_file, bai_file, macs_params,
-            narrowpeak, summits_bed, broadpeak, gappedpeak, chromosome):  # pylint: disable=unused-argument
+            narrowpeak, summits_bed, broadpeak, gappedpeak,
+            bdg_control_lambda, bdg_treat_pileup, chromosome):  # pylint: disable=unused-argument
         """
         Function to run MACS2 for peak calling on aligned sequence files without
         a background dataset for normalisation.
@@ -299,7 +313,8 @@ class macs2(Tool):  # pylint: disable=invalid-name
         self._macs2_runner(
             name, bam_file, bai_file, macs_params,
             narrowpeak, summits_bed, broadpeak, gappedpeak,
-            chromosome)
+            bdg_control_lambda=bdg_control_lambda, bdg_treat_pileup=bdg_treat_pileup,
+            chromosome=chromosome)
 
         return True
 
@@ -320,7 +335,7 @@ class macs2(Tool):  # pylint: disable=invalid-name
         command_params = []
 
         command_parameters = {
-            "macs2_format_param": ["--format", True],
+            "macs_format_param": ["--format", True],
             "macs_gsize_param": ["--gsize", True],
             "macs_tsize_param": ["--tsize", True],
             "macs_bw_param": ["--bw", True],
@@ -339,7 +354,7 @@ class macs2(Tool):  # pylint: disable=invalid-name
             "macs_broad-cutoff_param": ["--broad-cutoff", True],
             "macs_to-large_param": ["--to-large", False],
             "macs_down-sample_param": ["--down-sample", False],
-            "macs_bdg_param": ["--bdg", True],
+            "macs_bdg_param": ["--bdg", False],
             "macs_call-summits_param": ["--call-summits", True],
         }
 
@@ -362,7 +377,7 @@ class macs2(Tool):  # pylint: disable=invalid-name
 
         Parameters
         ----------
-        input_files : list
+        input_files : dict
             List of input bam file locations where 0 is the bam data file and 1
             is the matching background bam file
         metadata : dict
@@ -370,15 +385,14 @@ class macs2(Tool):  # pylint: disable=invalid-name
 
         Returns
         -------
-        output_files : list
+        output_files : dict
             List of locations for the output files.
-        output_metadata : list
+        output_metadata : dict
             List of matching metadata dict objects
 
         """
-        root_name = input_files['bam'].split("/")
-        root_name[-1] = root_name[-1].replace('.bam', '')
-        name = root_name[-1]
+        root_name = os.path.split(input_files['bam'])
+        name = root_name[1].replace('.bam', '')
 
         # input and output share most metadata
         output_bed_types = {
@@ -417,6 +431,8 @@ class macs2(Tool):  # pylint: disable=invalid-name
                     str(output_files['summits']) + "." + str(chromosome),
                     str(output_files['broad_peak']) + "." + str(chromosome),
                     str(output_files['gapped_peak']) + "." + str(chromosome),
+                    os.path.join(root_name[0], name + "_control_lambda.bdg"),
+                    os.path.join(root_name[0], name + "_treat_pvalue.bdg"),
                     chromosome)
             else:
                 result = self.macs2_peak_calling_nobgd(
@@ -427,6 +443,8 @@ class macs2(Tool):  # pylint: disable=invalid-name
                     str(output_files['summits']) + "." + str(chromosome),
                     str(output_files['broad_peak']) + "." + str(chromosome),
                     str(output_files['gapped_peak']) + "." + str(chromosome),
+                    os.path.join(root_name[0], name + "_control_lambda.bdg"),
+                    os.path.join(root_name[0], name + "_treat_pvalue.bdg"),
                     chromosome)
 
             if result is False:
@@ -487,11 +505,50 @@ class macs2(Tool):  # pylint: disable=invalid-name
                     meta_data={
                         "assembly": input_metadata["bam"].meta_data["assembly"],
                         "tool": "macs2",
-                        "bed_type": output_bed_types[result_file]
+                        "bed_type": output_bed_types[result_file],
+                        "parameters": command_params
                     }
                 )
             else:
-                os.remove(output_files[result_file])
+                try:
+                    os.remove(output_files[result_file])
+                except (OSError, IOError) as error:
+                    logger.warn("MACS2: I/O error({0}): {1}\nMissing file: {2}".format(
+                        error.errno, error.strerror, output_files[result_file]))
+
+        bdg_files = {
+            "control_lambda": os.path.join(root_name[0], name + "_control_lambda.bdg"),
+            "treat_pvalue": os.path.join(root_name[0], name + "_treat_pvalue.bdg")
+        }
+        for result_file in bdg_files:
+            if (
+                    os.path.isfile(bdg_files[result_file]) is True
+                    and os.path.getsize(bdg_files[result_file]) > 0
+            ):
+                output_files_created[result_file] = bdg_files[result_file]
+
+                sources = [input_metadata["bam"].file_path]
+                if 'bam_bg' in input_files:
+                    sources.append(input_metadata["bam_bg"].file_path)
+
+                output_metadata[result_file] = Metadata(
+                    data_type="data_chip_seq",
+                    file_type="BEDGRAPH",
+                    file_path=bdg_files[result_file],
+                    sources=sources,
+                    taxon_id=input_metadata["bam"].taxon_id,
+                    meta_data={
+                        "assembly": input_metadata["bam"].meta_data["assembly"],
+                        "tool": "macs2",
+                        "parameters": command_params
+                    }
+                )
+            else:
+                try:
+                    os.remove(bdg_files[result_file])
+                except (OSError, IOError) as error:
+                    logger.warn("MACS2: I/O error({0}): {1}\nMissing file: {2}".format(
+                        error.errno, error.strerror, bdg_files[result_file]))
 
         logger.info('MACS2: GENERATED FILES:', output_files)
 

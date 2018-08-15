@@ -468,11 +468,11 @@ Trim Galore
 
    cd ${HOME}/lib
    pip install cutadapt
-   wget -O trim_galore.tar.gz https://github.com/FelixKrueger/TrimGalore/archive/0.4.3.tar.gz
+   wget -O trim_galore.tar.gz https://github.com/FelixKrueger/TrimGalore/archive/0.5.0.tar.gz
    tar -xzf trim_galore.tar.gz
 
    cd ${HOME}/bin
-   ln -s ${HOME}/lib/TrimGalore-0.4.3/trim_galore trim_galore
+   ln -s ${HOME}/lib/TrimGalore-0.5.0/trim_galore trim_galore
 
 Running on a COMPSs VM the symlink will need to be created in a system accessible area:
 

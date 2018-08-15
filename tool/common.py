@@ -77,10 +77,12 @@ class common(object):  # pylint: disable=too-few-public-methods, invalid-name
             return True
 
         if empty:
+            logger.warn("Empty File - {}".format(output_file))
             with open(output_file, "w") as f_out:
                 f_out.write("")
+            return True
 
-        return True
+        return False
 
     @staticmethod
     def tar_folder(folder, tar_file, archive_name="tmp", keep_folder=False):
@@ -136,7 +138,7 @@ class common(object):  # pylint: disable=too-few-public-methods, invalid-name
             args = shlex.split(command_line)
             process = subprocess.Popen(args)
             process.wait()
-        except OSError:
+        except (OSError, IOError):
             logger.warn("OSERROR: pigz not installed, using gzip")
             command_line = 'gzip ' + location
             args = shlex.split(command_line)

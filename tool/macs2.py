@@ -377,7 +377,7 @@ class macs2(Tool):  # pylint: disable=invalid-name
 
         Parameters
         ----------
-        input_files : list
+        input_files : dict
             List of input bam file locations where 0 is the bam data file and 1
             is the matching background bam file
         metadata : dict
@@ -385,9 +385,9 @@ class macs2(Tool):  # pylint: disable=invalid-name
 
         Returns
         -------
-        output_files : list
+        output_files : dict
             List of locations for the output files.
-        output_metadata : list
+        output_metadata : dict
             List of matching metadata dict objects
 
         """

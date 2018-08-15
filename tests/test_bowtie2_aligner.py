@@ -85,7 +85,7 @@ def test_bowtie2_aligner_single():
         )
     }
 
-    bowtie2_handle = bowtie2AlignerTool()
+    bowtie2_handle = bowtie2AlignerTool({"execution": resource_path})
     bowtie2_handle.run(input_files, metadata, output_files)
 
     assert os.path.isfile(resource_path + "macs2.Human.DRR000150.22_bt2.bam") is True
@@ -145,7 +145,7 @@ def test_bowtie2_aligner_paired():
         )
     }
 
-    bowtie2_handle = bowtie2AlignerTool()
+    bowtie2_handle = bowtie2AlignerTool({"execution": resource_path})
     bowtie2_handle.run(input_files, metadata, output_files)
 
     assert os.path.isfile(resource_path + "bsSeeker.Mouse.SRR892982_1_bt2.bam") is True

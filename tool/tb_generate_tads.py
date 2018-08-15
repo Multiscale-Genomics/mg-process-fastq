@@ -16,6 +16,7 @@
 """
 from __future__ import print_function
 
+import os
 import sys
 
 try:
@@ -68,7 +69,8 @@ class tbGenerateTADsTool(Tool):
 
     @task(expt_name=IN, adj_list=FILE_IN, chrom=IN, resolution=IN, normalized=IN, tad_file=FILE_OUT)
     # @constraint(ProcessorCoreCount=16)
-    def tb_generate_tads(self, expt_name, adj_list, chrom, resolution, normalized, tad_file):
+    def tb_generate_tads(  # pylint: disable=no-self-use,too-many-arguments
+            self, expt_name, adj_list, chrom, resolution, normalized, tad_file):
         """
         Function to the predict TAD sites for a given resolution from the Hi-C
         matrix
@@ -121,7 +123,7 @@ class tbGenerateTADsTool(Tool):
         return True
 
     @task(input_file=FILE_IN, chrom=IN, resolution=IN, output_file=FILE_INOUT)
-    def tb_merge_tad_files(self, input_file, chrom, resolution, output_file):
+    def tb_merge_tad_files(self, input_file, chrom, resolution, output_file):  # pylint: disable=no-self-use
         """
         Merge 2 TAD adjacnecny list files
         """
@@ -135,7 +137,7 @@ class tbGenerateTADsTool(Tool):
 
         return True
 
-    def run(self, input_files, output_files, metadata=None):  # pylint: disable=arguments-differ
+    def run(self, input_files, output_files, metadata=None):  # pylint: disable=arguments-differ,too-many-locals
         """
         The main function to the predict TAD sites for a given resolution from
         the Hi-C matrix
@@ -191,7 +193,9 @@ class tbGenerateTADsTool(Tool):
             tad_files[resolution] = {}
 
             for chrom in hic_data_chr:
-                save_tad_file = "/".join(root_name[0:-1]) + '/' + metadata['expt_name'] + '_tad_' + chrom + '_' + str(resolution) + '.tsv'  # pylint: disable=line-too-long
+                tad_file_name = "{}_tad_{}_{}.tsv".format(
+                    metadata['expt_name'], str(chrom), str(resolution))
+                save_tad_file = os.path.join(os.path.join(*root_name[0:-1]), tad_file_name)
                 tad_files[resolution][chrom] = save_tad_file
 
                 expt_name = metadata['expt_name'] + '_tad_' + chrom + '_' + str(resolution)
@@ -204,7 +208,7 @@ class tbGenerateTADsTool(Tool):
                     )
                 )
 
-        #results = compss_wait_on(results)
+        # results = compss_wait_on(results)
 
         # Step to merge all the TAD files into a single bed file
         tad_bed_file = "/".join(root_name[0:-1]) + '/' + metadata['expt_name'] + '_tads.tsv'

@@ -64,7 +64,7 @@ class tbFullMappingTool(Tool):
     # @constraint(ProcessorCoreCount=32)
     def tb_full_mapping_iter(
             self, gem_file, fastq_file, windows,
-            window1, window2, window3, window4, ncpus=1, workdir='/tmp/'):
+            window1, window2, window3, window4, ncpus=1, workdir='/tmp/'):  # pylint: disable=unused-argument
         """
         Function to map the FASTQ files to the GEM file over different window
         sizes ready for alignment
@@ -102,7 +102,7 @@ class tbFullMappingTool(Tool):
         logger.info("tb_full_mapping_iter")
         output_dir = workdir
 
-        map_files = full_mapping(
+        full_mapping(
             gem_file, fastq_file, output_dir,
             windows=windows, frag_map=False, nthreads=ncpus, clean=True,
             temp_dir=workdir
@@ -114,7 +114,7 @@ class tbFullMappingTool(Tool):
         gem_file=FILE_IN, fastq_file=FILE_IN, enzyme_name=IN, windows=IN,
         full_file=FILE_OUT, frag_file=FILE_OUT)
     # @constraint(ProcessorCoreCount=16)
-    def tb_full_mapping_frag(
+    def tb_full_mapping_frag(  # pylint: disable=no-self-use,too-many-arguments,too-many-locals
             self, gem_file, fastq_file, enzyme_name, windows,
             full_file, frag_file, ncpus=1, workdir='/tmp/'):
         """
@@ -142,8 +142,8 @@ class tbFullMappingTool(Tool):
 
         """
         logger.info("tb_full_mapping_frag")
-        #od_loc = fastq_file.split("/")
-        #output_dir = "/".join(od_loc[0:-1])
+        # od_loc = fastq_file.split("/")
+        # output_dir = "/".join(od_loc[0:-1])
         output_dir = workdir
 
         logger.info("TB MAPPING - output_dir:", output_dir)
@@ -161,29 +161,29 @@ class tbFullMappingTool(Tool):
         file_name = file_name.replace('.fq'+dsrc+gzipped, '')
         fastq_file_tmp = workdir+'/'+file_name
 
-        map_files = full_mapping(
+        full_mapping(
             gem_file, fastq_file, output_dir,
             r_enz=enzyme_name, windows=windows, frag_map=True, nthreads=ncpus,
             clean=True, temp_dir=workdir
         )
 
         with open(full_file, "wb") as f_out:
-            with open(fastq_file_tmp +dsrc+"_full_1-end.map", "rb") as f_in:
+            with open(fastq_file_tmp + dsrc + "_full_1-end.map", "rb") as f_in:
                 f_out.write(f_in.read())
 
-        if path.isfile(fastq_file_tmp +dsrc+"_full_1-end.map"):
-            unlink(fastq_file_tmp +dsrc+"_full_1-end.map")
+        if path.isfile(fastq_file_tmp + dsrc + "_full_1-end.map"):
+            unlink(fastq_file_tmp + dsrc + "_full_1-end.map")
 
         with open(frag_file, "wb") as f_out:
-            with open(fastq_file_tmp +dsrc+"_frag_1-end.map", "rb") as f_in:
+            with open(fastq_file_tmp + dsrc + "_frag_1-end.map", "rb") as f_in:
                 f_out.write(f_in.read())
 
-        if path.isfile(fastq_file_tmp +dsrc+"_frag_1-end.map"):
-            unlink(fastq_file_tmp +dsrc+"_frag_1-end.map")
+        if path.isfile(fastq_file_tmp + dsrc + "_frag_1-end.map"):
+            unlink(fastq_file_tmp + dsrc + "_frag_1-end.map")
 
         return True
 
-    def run(self, input_files, output_files, metadata=None):
+    def run(self, input_files, output_files, metadata=None):  # pylint: disable=too-many-locals,too-many-branches,too-many-statements
         """
         The main function to map the FASTQ files to the GEM file over different
         window sizes ready for alignment
@@ -214,7 +214,7 @@ class tbFullMappingTool(Tool):
         gem_file = input_files[0]
         fastq_file = input_files[1]
         windows = metadata['windows']
-        if windows and len(windows) == 0:
+        if windows and len(windows) == 0:  # pylint: disable=len-as-condition
             windows = None
         if 'ncpus' not in metadata:
             metadata['ncpus'] = 8
@@ -238,7 +238,7 @@ class tbFullMappingTool(Tool):
         file_name = (file_name.replace('.fq'+gzipped, '')).replace('.FQ'+gzipped, '')
         quality_plot_file = ''
         log_path = ''
-        #name = root_name[-1]
+        # name = root_name[-1]
 
         if 'quality_plot' in metadata:
             quality_plot_file = 'QC-plot_'+file_name + '.png'
@@ -254,7 +254,7 @@ class tbFullMappingTool(Tool):
             orig_stdout = sys.stdout
             f = open(log_path, "w")
             sys.stdout = f
-            logger.info ('Hi-C QC plot')
+            logger.info('Hi-C QC plot')
             for renz in dangling_ends:
                 logger.info('  - Dangling-ends (sensu-stricto): ', dangling_ends[renz])
             for renz in ligated:
@@ -296,6 +296,9 @@ class tbFullMappingTool(Tool):
         results = compss_wait_on(results)
 
         output_metadata['func'] = 'iter'
-        return ([window1, window2, window3, window4, log_path, root_path+'/'+quality_plot_file], output_metadata)
+        return (
+            [window1, window2, window3, window4, log_path, path.join(root_path, quality_plot_file)],
+            output_metadata
+        )
 
 # ------------------------------------------------------------------------------

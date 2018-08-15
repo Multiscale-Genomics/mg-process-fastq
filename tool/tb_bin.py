@@ -43,9 +43,10 @@ except ImportError:
     from dummy_pycompss import FILE_IN, FILE_OUT, FILE_INOUT, IN  # pylint: disable=ungrouped-imports
     from dummy_pycompss import task  # pylint: disable=ungrouped-imports
     from dummy_pycompss import compss_wait_on  # pylint: disable=ungrouped-imports
-    #from dummy_pycompss import constraint
+    # from dummy_pycompss import constraint
 
 from basic_modules.tool import Tool
+
 
 # ------------------------------------------------------------------------------
 
@@ -63,7 +64,9 @@ class tbBinTool(Tool):
 
     @task(bamin=FILE_IN, biases=FILE_IN, resolution=IN, c=IN, c2=IN, norm=IN, workdir=IN)
     # @constraint(ProcessorCoreCount=16)
-    def tb_bin(self, bamin, biases, resolution, coord1, coord2, norm, workdir, ncpus="1", metadata=None):
+    def tb_bin(  # pylint: disable=no-self-use,too-many-locals,too-many-arguments,too-many-statements,too-many-branches
+            self, bamin, biases, resolution, coord1, coord2, norm, workdir,
+            ncpus="1", metadata=None):
         """
         Function to bin to a given resolution the Hi-C
         matrix
@@ -172,7 +175,10 @@ class tbBinTool(Tool):
             tmpdir=workdir, append_to_tar=None, ncpus=ncpus,
             verbose=True)
         output_files = [out_files['RAW']]
-        imx = load_hic_data_from_bam(bamin, resolution, biases=biases if biases else None, ncpus=ncpus, tmpdir=workdir)
+        imx = load_hic_data_from_bam(
+            bamin, resolution,
+            biases=biases if biases else None,
+            ncpus=ncpus, tmpdir=workdir)
         hic_contacts_matrix_raw_fig = workdir+"/genomic_maps_raw.png"
         focus = None
         by_chrom = None
@@ -184,9 +190,14 @@ class tbBinTool(Tool):
             else:
                 by_chrom = 'all'
                 hic_contacts_matrix_raw_fig = workdir+"/genomic_maps_raw"
-        hic_map(imx, resolution, savefig=hic_contacts_matrix_raw_fig, normalized=False, by_chrom=by_chrom, focus=focus)
+        hic_map(
+            imx, resolution, savefig=hic_contacts_matrix_raw_fig,
+            normalized=False, by_chrom=by_chrom, focus=focus)
         if by_chrom == 'all':
-            hic_map(imx, resolution, savefig=hic_contacts_matrix_raw_fig+"/full_map.png", normalized=False, by_chrom=None, focus=focus)
+            hic_map(
+                imx, resolution,
+                savefig=hic_contacts_matrix_raw_fig+"/full_map.png",
+                normalized=False, by_chrom=None, focus=focus)
         output_files.append(hic_contacts_matrix_raw_fig)
 
         if len(norm) > 1:
@@ -194,12 +205,21 @@ class tbBinTool(Tool):
             hic_contacts_matrix_norm_fig = workdir+"/genomic_maps_nrm.png"
             if by_chrom == 'all':
                 hic_contacts_matrix_norm_fig = workdir+"/genomic_maps_nrm"
-            hic_map(imx, resolution, savefig=hic_contacts_matrix_norm_fig, normalized=True, by_chrom=by_chrom, focus=focus)
+            hic_map(
+                imx, resolution,
+                savefig=hic_contacts_matrix_norm_fig, normalized=True,
+                by_chrom=by_chrom, focus=focus)
             if by_chrom == 'all':
-                hic_map(imx, resolution, savefig=hic_contacts_matrix_norm_fig+"/full_map.png", normalized=True, by_chrom=None, focus=focus)
+                hic_map(
+                    imx, resolution,
+                    savefig=hic_contacts_matrix_norm_fig+"/full_map.png",
+                    normalized=True, by_chrom=None, focus=focus)
             output_files.append(hic_contacts_matrix_norm_fig)
 
-        json_chr = Chromosome(name="VRE Chromosome", species=metadata["species"], assembly=metadata["assembly"], max_tad_size=260000)
+        json_chr = Chromosome(
+            name="VRE Chromosome",
+            species=metadata["species"], assembly=metadata["assembly"],
+            max_tad_size=260000)
         json_chr.add_experiment(
             "exp1", resolution,
             hic_data=imx,
@@ -220,7 +240,7 @@ class tbBinTool(Tool):
 
         return (output_files, output_metadata)
 
-    def run(self, input_files, output_files, metadata=None):
+    def run(self, input_files, output_files, metadata=None):  # pylint: disable=too-many-locals
         """
         The main function to the predict TAD sites for a given resolution from
         the Hi-C matrix
@@ -298,7 +318,9 @@ class tbBinTool(Tool):
         project_metadata["species"] = metadata["species"]
         project_metadata["assembly"] = metadata["assembly"]
 
-        output_files, output_metadata = self.tb_bin(bamin, biases, resolution, coord1, coord2, norm, root_name, ncpus, project_metadata)
+        output_files, output_metadata = self.tb_bin(
+            bamin, biases, resolution, coord1, coord2, norm, root_name, ncpus,
+            project_metadata)
 
         return (output_files, output_metadata)
 

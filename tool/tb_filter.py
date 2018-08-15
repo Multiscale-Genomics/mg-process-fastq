@@ -64,7 +64,7 @@ class tbFilterTool(Tool):
         output_ed=FILE_OUT, output_or=FILE_OUT, output_rb=FILE_OUT,
         output_sc=FILE_OUT, output_tc=FILE_OUT, output_tl=FILE_OUT,
         output_ts=FILE_OUT, returns=int)
-    def tb_filter(
+    def tb_filter(  # pylint: disable=no-self-use,too-many-locals,too-many-arguments,too-many-statements,too-many-branches
             self, reads, filter_reads_file, custom_filter, min_dist_RE, min_fragment_size,
             max_fragment_size, conservative, output_de, output_d,
             output_e, output_ed, output_or, output_rb, output_sc, output_tc,
@@ -105,7 +105,10 @@ class tbFilterTool(Tool):
             re_proximity=4)
 
         filter_reads_file_tmp = filter_reads_file.replace(".tsv", '')
-        filters_suffixes = ['self-circle', 'dangling-end', 'error', 'extra dangling-end', 'too close from REs', 'too short', 'too large', 'over-represented', 'duplicated', 'random breaks']
+        filters_suffixes = [
+            'self-circle', 'dangling-end', 'error', 'extra dangling-end',
+            'too close from REs', 'too short', 'too large', 'over-represented',
+            'duplicated', 'random breaks']
 
         if custom_filter:
             applied_filters = custom_filter
@@ -118,7 +121,9 @@ class tbFilterTool(Tool):
                 # Less conservative option
                 applied_filters = [1, 2, 3, 9, 10]
 
-        apply_filter(reads_tmp + "_tmp.tsv", filter_reads_file_tmp + "_tmp.tsv", masked, filters=applied_filters)
+        apply_filter(
+            reads_tmp + "_tmp.tsv", filter_reads_file_tmp + "_tmp.tsv", masked,
+            filters=applied_filters)
 
         with open(filter_reads_file, "wb") as f_out:
             with open(filter_reads_file_tmp + "_tmp.tsv", "rb") as f_in:
@@ -173,7 +178,7 @@ class tbFilterTool(Tool):
 
         return masked
 
-    def run(self, input_files, output_files, metadata=None):
+    def run(self, input_files, output_files, metadata=None):  # pylint: disable=too-many-locals,too-many-statements
         """
         The main function to filter the reads to remove experimental artifacts
 
@@ -261,24 +266,25 @@ class tbFilterTool(Tool):
             f = open(log_path, "w")
             sys.stdout = f
 
-            #insert size
-            logger.info ('Insert size\n')
+            # insert size
+            logger.info('Insert size\n')
 
-            logger.info ('  - median insert size = {0}'.format(median))
-            logger.info ('  - double median absolution of insert size = {0}'.format(mad))
-            logger.info ('  - max insert size (when a gap in continuity of > 10 bp is found in fragment lengths) = {0}'.format(max_f))
+            logger.info('  - median insert size = {0}'.format(median))
+            logger.info('  - double median absolution of insert size = {0}'.format(mad))
+            logger.info('  - max insert size (when a gap in continuity of > 10 bp is found in fragment lengths) = {0}'.format(max_f))  # pylint: disable=line-too-long
 
-            max_mole = max_f # pseudo DEs
-            min_dist = max_f + mad # random breaks
-            logger.info ('   Using the maximum continuous fragment size'
-                   '('+str(max_mole)+' bp) to check '
-                   'for pseudo-dangling ends')
-            logger.info ('   Using maximum continuous fragment size plus the MAD '
-                   '('+str(min_dist)+' bp) to check for random breaks')
+            max_mole = max_f  # pseudo DEs
+            min_dist = max_f + mad  # random breaks
+            logger.info(
+                '   Using the maximum continuous fragment size'
+                '('+str(max_mole)+' bp) to check '
+                'for pseudo-dangling ends')
+            logger.info(
+                '   Using maximum continuous fragment size plus the MAD '
+                '(' + str(min_dist) + ' bp) to check for random breaks')
 
             sys.stdout = orig_stdout
             f.close()
-
 
         return ([filtered_reads_file, log_path, hist_path], output_metadata)
 

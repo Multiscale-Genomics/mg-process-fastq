@@ -58,7 +58,8 @@ class tbSegmentTool(Tool):
 
     @task(bamin=FILE_IN, biases=FILE_IN, resolution=IN, workdir=IN)
     # @constraint(ProcessorCoreCount=16)
-    def tb_segment(self, bamin, biases, resolution, callers, chromosomes, workdir, fasta=None, ncpus="1"):
+    def tb_segment(  # pylint: disable=no-self-use,too-many-locals,too-many-arguments
+            self, bamin, biases, resolution, callers, chromosomes, workdir, fasta=None, ncpus="1"):
         """
         Function to find tads and compartments in the Hi-C
         matrix
@@ -133,7 +134,7 @@ class tbSegmentTool(Tool):
 
         return (output_files, output_metadata)
 
-    def run(self, input_files, output_files, metadata=None):
+    def run(self, input_files, output_files, metadata=None):  # pylint: disable=too-many-locals
         """
         The main function to the predict TAD sites and compartments for a given resolution from
         the Hi-C matrix
@@ -197,11 +198,13 @@ class tbSegmentTool(Tool):
 
         # input and output share most metadata
 
-        output_files, output_metadata = self.tb_segment(bamin, biases, resolution, callers, chromosomes, root_name, fasta, ncpus)
+        output_files, output_metadata = self.tb_segment(
+            bamin, biases, resolution, callers, chromosomes, root_name, fasta, ncpus)
 
         return (output_files, output_metadata)
 
 # ------------------------------------------------------------------------------
+
 
 def nice(reso):
     if reso >= 1000000:

@@ -38,9 +38,10 @@ except ImportError:
     from dummy_pycompss import FILE_IN, FILE_OUT, FILE_INOUT, IN  # pylint: disable=ungrouped-imports
     from dummy_pycompss import task  # pylint: disable=ungrouped-imports
     from dummy_pycompss import compss_wait_on  # pylint: disable=ungrouped-imports
-    #from dummy_pycompss import constraint
+    # from dummy_pycompss import constraint
 
 from basic_modules.tool import Tool
+
 
 # ------------------------------------------------------------------------------
 
@@ -58,7 +59,9 @@ class tbNormalizeTool(Tool):
 
     @task(bamin=FILE_IN, resolution=IN, min_perc=IN, max_perc=IN, workdir=IN)
     # @constraint(ProcessorCoreCount=16)
-    def tb_normalize(self, bamin, normalization, resolution, min_perc, max_perc, workdir, ncpus="1", min_count=None, fasta=None, mappability=None, rest_enzyme=None):
+    def tb_normalize(  # pylint: disable=no-self-use,too-many-locals,too-many-arguments
+            self, bamin, normalization, resolution, min_perc, max_perc, workdir,
+            ncpus="1", min_count=None, fasta=None, mappability=None, rest_enzyme=None):
         """
         Function to normalize to a given resolution the Hi-C
         matrix
@@ -100,9 +103,11 @@ class tbNormalizeTool(Tool):
             Location of filtered_bins png
 
         """
-        #chr_hic_data = read_matrix(matrix_file, resolution=int(resolution))
+        # chr_hic_data = read_matrix(matrix_file, resolution=int(resolution))
 
-        logger.info("TB NORMALIZATION: {0} {1} {2} {3} {4} {5}".format(bamin, normalization, resolution, min_perc, max_perc, workdir))
+        logger.info(
+            "TB NORMALIZATION: {0} {1} {2} {3} {4} {5}".format(
+                bamin, normalization, resolution, min_perc, max_perc, workdir))
 
         _cmd = [
             'tadbit', 'normalize',
@@ -135,7 +140,7 @@ class tbNormalizeTool(Tool):
         output_files = []
 
         try:
-            proc = subprocess.check_output(_cmd, stderr=subprocess.STDOUT)
+            proc = subprocess.check_output(_cmd, stderr=subprocess.STDOUT)  # pylint: disable=unused-variable
         except subprocess.CalledProcessError as e:
             logger.info(e.output)
             if not min_count:
@@ -144,7 +149,7 @@ class tbNormalizeTool(Tool):
                 _cmd.append('10')
                 _cmd.append('--normalize_only')
                 try:
-                    proc = subprocess.check_output(_cmd, stderr=subprocess.STDOUT)
+                    proc = subprocess.check_output(_cmd, stderr=subprocess.STDOUT)  # pylint: disable=unused-variable
                 except subprocess.CalledProcessError as e:
                     logger.fatal(e.output)
 
@@ -192,7 +197,8 @@ class tbNormalizeTool(Tool):
             mappability: str
                 Location of the file with mappability, required for oneD normalization
             rest_enzyme: str
-                For oneD normalization. Name of the restriction enzyme used to do the Hi-C experiment
+                For oneD normalization. Name of the restriction enzyme used to do
+                the Hi-C experiment
 
 
 
@@ -245,7 +251,9 @@ class tbNormalizeTool(Tool):
 
         # input and output share most metadata
 
-        output_files, output_metadata = self.tb_normalize(bamin, normalization, resolution, min_perc, max_perc, root_name, ncpus, min_count, fasta, mappability, rest_enzyme)
+        output_files, output_metadata = self.tb_normalize(
+            bamin, normalization, resolution, min_perc, max_perc, root_name, ncpus,
+            min_count, fasta, mappability, rest_enzyme)
 
         return (output_files, output_metadata)
 

@@ -49,15 +49,21 @@ class tbSaveAdjacencyHDF5Tool(Tool):
     Tool for filtering out experimetnal artifacts from the aligned data
     """
 
-    def __init__(self):
+    def __init__(self, configuration=None):
         """
         Init function
         """
         print("TADbit save adjacency matrix")
         Tool.__init__(self)
 
+        if configuration is None:
+            configuration = {}
+
+        self.configuration.update(configuration)
+
     @task(adjlist_file=FILE_IN, adj_hdf5=FILE_INOUT, normalized=IN, resolution=IN, chromosomes=IN)
-    def tb_matrix_hdf5(self, adjlist_file, adj_hdf5, normalized, resolution, chromosomes):
+    def tb_matrix_hdf5(  # pylint: disable=no-self-use,too-many-arguments
+            self, adjlist_file, adj_hdf5, normalized, resolution, chromosomes):
         """
         Function to the Hi-C matrix into an HDF5 file
 

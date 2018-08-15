@@ -15,14 +15,12 @@ import tarfile
 from random import random
 from string import ascii_letters as letters
 
-# Required for ReadTheDocs
-from functools import wraps # pylint: disable=unused-import
-
 from basic_modules.workflow import Workflow
 from basic_modules.metadata import Metadata
 from utils import logger
 
 from tool.tb_segment import tbSegmentTool
+
 
 class CommandLineParser(object):
     """Parses command line"""
@@ -41,10 +39,13 @@ class CommandLineParser(object):
         if ivalue <= 0:
             raise argparse.ArgumentTypeError("%s is an invalid value" % ivalue)
         return ivalue
+
 # ------------------------------------------------------------------------------
+
+
 class tadbit_segment(Workflow):
     """
-    Wrapper for the VRE form TADbit segment. 
+    Wrapper for the VRE form TADbit segment.
     It detects TADs and compartments from a BAM file.
     """
     configuration = {}
@@ -61,7 +62,8 @@ class tadbit_segment(Workflow):
             should be carried out, which are specific to each Tool.
         """
 
-        tool_extra_config = json.load(file(os.path.dirname(os.path.abspath(__file__))+'/tadbit_wrappers_config.json'))
+        tool_extra_config = json.load(
+            file(os.path.dirname(os.path.abspath(__file__))+'/tadbit_wrappers_config.json'))
         os.environ["PATH"] += os.pathsep + convert_from_unicode(tool_extra_config["bin_path"])
 
         if configuration is None:
@@ -69,8 +71,8 @@ class tadbit_segment(Workflow):
 
         self.configuration.update(convert_from_unicode(configuration))
 
-        #self.configuration['public_dir'] = '/orozco/services/MuG/MuG_public/refGenomes/'
-        #self.configuration['public_dir'] = '/scratch/genomes/'
+        # self.configuration['public_dir'] = '/orozco/services/MuG/MuG_public/refGenomes/'
+        # self.configuration['public_dir'] = '/scratch/genomes/'
 
         # Number of cores available
         num_cores = multiprocessing.cpu_count()
@@ -110,8 +112,8 @@ class tadbit_segment(Workflow):
         )
         m_results_files = {}
         m_results_meta = {}
-        #hic_data = load_hic_data_from_reads('/home/dcastillo/workspace/vre/mg-process-fastq-tadbit/tests/data/raw_None:0-13381_10kb.abc', resolution=10000)
-        #exp = Experiment("vre", resolution=10000, hic_data=hic_data)
+        # hic_data = load_hic_data_from_reads('/home/dcastillo/workspace/vre/mg-process-fastq-tadbit/tests/data/raw_None:0-13381_10kb.abc', resolution=10000)
+        # exp = Experiment("vre", resolution=10000, hic_data=hic_data)
 
         input_metadata = remap(self.configuration, "resolution", "callers", "workdir", "ncpus")
         assembly = convert_from_unicode(metadata['bamin'].meta_data['assembly'])
@@ -124,7 +126,9 @@ class tadbit_segment(Workflow):
         if 'biases' in input_files:
             in_files.append(convert_from_unicode(input_files['biases']))
 
-        #hic_data = HiC_data((), len(bins_dict), sections, bins_dict, resolution=int(input_metadata['resolution']))
+        # hic_data = HiC_data(
+        #     (), len(bins_dict), sections, bins_dict, resolution=int(input_metadata['resolution'])
+        # )
         ts = tbSegmentTool()
         ts_files, ts_meta = ts.run(in_files, [], input_metadata)
 
@@ -150,16 +154,19 @@ class tadbit_segment(Workflow):
                 "description": "TADbit HiC tads and compartments statistics",
                 "visible": True
             })
+
         # List of files to get saved
         logger.info("TADBIT RESULTS:" + m_results_files["tads_compartments"])
-        #clean_temps(os.path.dirname(ts_files[0]))
-        #clean_temps(os.path.join(self.configuration['workdir'],"06_segmentation"))
-        #cleaning
+
+        # clean_temps(os.path.dirname(ts_files[0]))
+        # clean_temps(os.path.join(self.configuration['workdir'],"06_segmentation"))
+        # cleaning
         clean_temps(self.configuration['workdir'])
 
         return m_results_files, m_results_meta
 
 # ------------------------------------------------------------------------------
+
 
 def remap(indict, *args, **kwargs):
     """
@@ -177,6 +184,7 @@ def remap(indict, *args, **kwargs):
 
 # ------------------------------------------------------------------------------
 
+
 def convert_from_unicode(data):
     if isinstance(data, basestring):
         return str(data)
@@ -187,6 +195,7 @@ def convert_from_unicode(data):
     return data
 
 # ------------------------------------------------------------------------------
+
 
 def main(args):
 
@@ -200,6 +209,7 @@ def main(args):
     return result
 
 #===============================================================================
+
 
 def clean_temps(working_path):
     """Cleans the workspace from temporal folder and scratch files"""
@@ -220,25 +230,31 @@ def clean_temps(working_path):
 
 # ------------------------------------------------------------------------------
 
+
 if __name__ == "__main__":
-    sys._run_from_cmdl = True # pylint: disable=protected-access
+    sys._run_from_cmdl = True  # pylint: disable=protected-access
 
     # Set up the command line parameters
-    parser = argparse.ArgumentParser(description="TADbit map")
+    PARSER = argparse.ArgumentParser(description="TADbit map")
+
     # Config file
-    parser.add_argument("--config", help="Configuration JSON file",
+    PARSER.add_argument("--config", help="Configuration JSON file",
                         type=CommandLineParser.valid_file, metavar="config", required=True)
 
     # Metadata
-    parser.add_argument("--in_metadata", help="Project metadata", metavar="in_metadata", required=True)
+    PARSER.add_argument(
+        "--in_metadata", help="Project metadata", metavar="in_metadata", required=True)
+
     # Output metadata
-    parser.add_argument("--out_metadata", help="Output metadata", metavar="output_metadata", required=True)
+    PARSER.add_argument(
+        "--out_metadata", help="Output metadata", metavar="output_metadata", required=True)
+
     # Log file
-    parser.add_argument("--log_file", help="Log file", metavar="log_file", required=True)
+    PARSER.add_argument(
+        "--log_file", help="Log file", metavar="log_file", required=True)
 
-    in_args = parser.parse_args()
+    IN_ARGS = PARSER.parse_args()
 
-    RESULTS = main(in_args)
+    RESULTS = main(IN_ARGS)
 
     # print(RESULTS)
-    

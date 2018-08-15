@@ -12,8 +12,7 @@ import collections
 import tarfile
 from random import random
 from string import ascii_letters as letters
-# Required for ReadTheDocs
-from functools import wraps # pylint: disable=unused-import
+
 from pysam import AlignmentFile
 
 from basic_modules.workflow import Workflow
@@ -21,6 +20,7 @@ from basic_modules.metadata import Metadata
 from utils import logger
 
 from tool.tb_normalize import tbNormalizeTool
+
 
 class CommandLineParser(object):
     """Parses command line"""
@@ -39,10 +39,13 @@ class CommandLineParser(object):
         if ivalue <= 0:
             raise argparse.ArgumentTypeError("%s is an invalid value" % ivalue)
         return ivalue
+
 # ------------------------------------------------------------------------------
+
+
 class tadbit_normalize(Workflow):
     """
-    Wrapper for the VRE form TADbit normalize. 
+    Wrapper for the VRE form TADbit normalize.
     It normalizes a BAM file at a given resolution.
     """
     configuration = {}
@@ -58,7 +61,8 @@ class tadbit_normalize(Workflow):
             a dictionary containing parameters that define how the operation
             should be carried out, which are specific to each Tool.
         """
-        tool_extra_config = json.load(file(os.path.dirname(os.path.abspath(__file__))+'/tadbit_wrappers_config.json'))
+        tool_extra_config = json.load(
+            file(os.path.dirname(os.path.abspath(__file__)) + '/tadbit_wrappers_config.json'))
         os.environ["PATH"] += os.pathsep + convert_from_unicode(tool_extra_config["bin_path"])
 
         if configuration is None:
@@ -69,10 +73,10 @@ class tadbit_normalize(Workflow):
         # Number of cores available
         num_cores = multiprocessing.cpu_count()
         self.configuration["ncpus"] = num_cores
-        
+
         if "normalization" not in self.configuration:
             self.configuration["normalization"] = "Vanilla"
-        
+
         tmp_name = ''.join([letters[int(random()*52)]for _ in xrange(5)])
         if 'execution' in self.configuration:
             self.configuration['project'] = self.configuration['execution']
@@ -80,7 +84,7 @@ class tadbit_normalize(Workflow):
         if not os.path.exists(self.configuration['workdir']):
             os.makedirs(self.configuration['workdir'])
             open(self.configuration['workdir']+'/trace.db', 'a').close()
-        
+
         self.configuration.update(
             {(key.split(':'))[-1]: val for key, val in self.configuration.items()}
         )
@@ -101,25 +105,28 @@ class tadbit_normalize(Workflow):
         outputfiles : list
             List of locations for the output files
         """
-        
+
         logger.info(
             "PROCESS NORMALIZE - FILES PASSED TO TOOLS: {0}".format(str(input_files["bamin"]))
         )
 
         bamin = convert_from_unicode(input_files['bamin'])
-        input_metadata = remap(self.configuration, "normalization", "resolution", "min_perc", "workdir", "max_perc", "ncpus")
+        input_metadata = remap(
+            self.configuration, "normalization", "resolution", "min_perc", "workdir",
+            "max_perc", "ncpus")
 
         assembly = convert_from_unicode(metadata['bamin'].meta_data['assembly'])
         if self.configuration["normalization"] == 'oneD':
-            if 'refGenomes_folder' in input_files and os.path.isfile(convert_from_unicode(input_files['refGenomes_folder'])+assembly+'/'+assembly+'.fa'):
-                input_metadata["fasta"] = convert_from_unicode(input_files['refGenomes_folder'])+assembly+'/'+assembly+'.fa'
+            refGenome_file = convert_from_unicode(input_files['refGenomes_folder']) + assembly + '/' + assembly + '.fa'
+            if 'refGenomes_folder' in input_files and os.path.isfile(refGenome_file):
+                input_metadata["fasta"] = refGenome_file
                 input_metadata["mappability"] = convert_from_unicode(input_files['refGenomes_folder'])+assembly+'/MAPPABILITY/'+assembly+'.bedGraph'
                 if 'rest_enzyme' in metadata['bamin'].meta_data:
                     input_metadata["rest_enzyme"] = convert_from_unicode(metadata['bamin'].meta_data['rest_enzyme'])
-            
-            if 'rest_enzyme' not in input_metadata or 'fasta' not in input_metadata or 'mappability' not in input_metadata:  
+
+            if 'rest_enzyme' not in input_metadata or 'fasta' not in input_metadata or 'mappability' not in input_metadata:
                 logger.fatal('Error: missing parameters for oneD normalization. Please check that the BAM input file has been generated with the VRE tool.')
-                return
+                return [], []
 
         bamfile = AlignmentFile(bamin, 'rb')
         if len(bamfile.references) == 1:
@@ -170,13 +177,14 @@ class tadbit_normalize(Workflow):
                 "visible": False
             })
 
-        #cleaning
+        # cleaning
         clean_temps(self.configuration['workdir']+"/04_normalization")
         clean_temps(self.configuration['workdir'])
 
         return m_results_files, m_results_meta
 
 # ------------------------------------------------------------------------------
+
 
 def remap(indict, *args, **kwargs):
     """
@@ -194,6 +202,7 @@ def remap(indict, *args, **kwargs):
 
 # ------------------------------------------------------------------------------
 
+
 def convert_from_unicode(data):
     if isinstance(data, basestring):
         return str(data)
@@ -203,6 +212,7 @@ def convert_from_unicode(data):
         return type(data)(map(convert_from_unicode, data))
     return data
 # ------------------------------------------------------------------------------
+
 
 def main(args):
 
@@ -215,6 +225,7 @@ def main(args):
 
     return result
 
+
 def clean_temps(working_path):
     """Cleans the workspace from temporal folder and scratch files"""
     for the_file in os.listdir(working_path):
@@ -222,7 +233,7 @@ def clean_temps(working_path):
         try:
             if os.path.isfile(file_path):
                 os.unlink(file_path)
-            #elif os.path.isdir(file_path): shutil.rmtree(file_path)
+            # elif os.path.isdir(file_path): shutil.rmtree(file_path)
         except OSError:
             pass
     try:
@@ -233,24 +244,30 @@ def clean_temps(working_path):
 
 # ------------------------------------------------------------------------------
 
+
 if __name__ == "__main__":
-    sys._run_from_cmdl = True # pylint: disable=protected-access
+    sys._run_from_cmdl = True  # pylint: disable=protected-access
 
     # Set up the command line parameters
-    parser = argparse.ArgumentParser(description="TADbit map")
+    PARSER = argparse.ArgumentParser(description="TADbit map")
     # Config file
-    parser.add_argument("--config", help="Configuration JSON file",
+    PARSER.add_argument("--config", help="Configuration JSON file",
                         type=CommandLineParser.valid_file, metavar="config", required=True)
 
     # Metadata
-    parser.add_argument("--in_metadata", help="Project metadata", metavar="in_metadata", required=True)
+    PARSER.add_argument(
+        "--in_metadata", help="Project metadata", metavar="in_metadata", required=True)
+
     # Output metadata
-    parser.add_argument("--out_metadata", help="Output metadata", metavar="output_metadata", required=True)
+    PARSER.add_argument(
+        "--out_metadata", help="Output metadata", metavar="output_metadata", required=True)
+
     # Log file
-    parser.add_argument("--log_file", help="Log file", metavar="log_file", required=True)
+    PARSER.add_argument(
+        "--log_file", help="Log file", metavar="log_file", required=True)
 
-    in_args = parser.parse_args()
+    IN_ARGS = PARSER.parse_args()
 
-    RESULTS = main(in_args)
+    RESULTS = main(IN_ARGS)
 
     # print(RESULTS)

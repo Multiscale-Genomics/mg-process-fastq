@@ -16,14 +16,12 @@ import tarfile
 from random import random
 from string import ascii_letters as letters
 
-# Required for ReadTheDocs
-from functools import wraps # pylint: disable=unused-import
-
 from basic_modules.workflow import Workflow
 from basic_modules.metadata import Metadata
 from utils import logger
 
 from tool.tb_bin import tbBinTool
+
 
 class CommandLineParser(object):
     """Parses command line"""
@@ -42,7 +40,10 @@ class CommandLineParser(object):
         if ivalue <= 0:
             raise argparse.ArgumentTypeError("%s is an invalid value" % ivalue)
         return ivalue
+
+
 # ------------------------------------------------------------------------------
+
 class tadbit_bin(Workflow):
     """
     Wrapper for the VRE form TADbit bin.
@@ -61,7 +62,8 @@ class tadbit_bin(Workflow):
             a dictionary containing parameters that define how the operation
             should be carried out, which are specific to each Tool.
         """
-        tool_extra_config = json.load(file(os.path.dirname(os.path.abspath(__file__))+'/tadbit_wrappers_config.json'))
+        tool_extra_config = json.load(
+            file(os.path.dirname(os.path.abspath(__file__))+'/tadbit_wrappers_config.json'))
         os.environ["PATH"] += os.pathsep + convert_from_unicode(tool_extra_config["bin_path"])
 
         if configuration is None:
@@ -101,12 +103,13 @@ class tadbit_bin(Workflow):
             List of locations for the output files
         """
         logger.info(
-            "PROCESS BIN - FILES PASSED TO TOOLS: " + ','.join([str(input_files[k]) for k in input_files])
+            "PROCESS BIN - FILES PASSED TO TOOLS: " + ','.join(
+                [str(input_files[k]) for k in input_files])
         )
         m_results_files = {}
         m_results_meta = {}
-        #hic_data = load_hic_data_from_reads('/home/dcastillo/workspace/vre/mg-process-fastq-tadbit/tests/data/raw_None:0-13381_10kb.abc', resolution=10000)
-        #exp = Experiment("vre", resolution=10000, hic_data=hic_data)
+        # hic_data = load_hic_data_from_reads('tests/data/raw_None:0-13381_10kb.abc', resolution=10000)
+        # exp = Experiment("vre", resolution=10000, hic_data=hic_data)
 
         input_metadata = remap(self.configuration, "resolution", "workdir", "ncpus")
         if "coord1" in self.configuration:
@@ -123,17 +126,28 @@ class tadbit_bin(Workflow):
         if "assembly" in metadata['bamin'].meta_data:
             input_metadata["assembly"] = metadata['bamin'].meta_data["assembly"]
         if metadata['bamin'].taxon_id:
-            dt = json.load(urllib2.urlopen("http://www.ebi.ac.uk/ena/data/taxonomy/v1/taxon/tax-id/"+str(metadata['bamin'].taxon_id)))
-            input_metadata["species"] = dt['scientificName']
-        #hic_data = HiC_data((), len(bins_dict), sections, bins_dict, resolution=int(input_metadata['resolution']))
-        tb = tbBinTool()
-        tb_files, tb_meta = tb.run(in_files, [], input_metadata)
+            dt_url = "http://www.ebi.ac.uk/ena/data/taxonomy/v1/taxon/tax-id/{}"
+            dt_json = json.load(
+                urllib2.urlopen(
+                    dt_url.format(str(metadata['bamin'].taxon_id))
+                )
+            )
+            input_metadata["species"] = dt_json['scientificName']
+        # hic_data = HiC_data(
+        #     (), len(bins_dict), sections, bins_dict, resolution=int(input_metadata['resolution'])
+        # )
+        tb_handle = tbBinTool()
+        tb_files, tb_meta = tb_handle.run(in_files, [], input_metadata)
 
         m_results_files["bin_stats"] = self.configuration['project']+"/bin_stats.tar.gz"
-        m_results_files["hic_contacts_matrix_raw"] = self.configuration['project']+"/"+os.path.basename(tb_files[0])
+
+        matrix_raw_file_name = self.configuration['project']+"/"+os.path.basename(tb_files[0])
+        m_results_files["hic_contacts_matrix_raw"] = matrix_raw_file_name
+
         os.rename(tb_files[0], m_results_files["hic_contacts_matrix_raw"])
         if len(input_metadata["norm"]) > 1:
-            m_results_files["hic_contacts_matrix_norm"] = self.configuration['project']+"/"+os.path.basename(tb_files[2])
+            matrix_norm_file_name = self.configuration['project']+"/"+os.path.basename(tb_files[2])
+            m_results_files["hic_contacts_matrix_norm"] = matrix_norm_file_name
             os.rename(tb_files[2], m_results_files["hic_contacts_matrix_norm"])
 
         with tarfile.open(m_results_files["bin_stats"], "w:gz") as tar:
@@ -148,7 +162,9 @@ class tadbit_bin(Workflow):
                 clean_temps(tb_files[3])
 
         # List of files to get saved
-        logger.info("TADBIT RESULTS: " + ','.join([str(m_results_files[k]) for k in m_results_files]))
+        logger.info(
+            "TADBIT RESULTS: " + ','.join(
+                [str(m_results_files[k]) for k in m_results_files]))
 
         m_results_meta["hic_contacts_matrix_raw"] = Metadata(
             data_type="hic_contacts_matrix",
@@ -159,9 +175,10 @@ class tadbit_bin(Workflow):
                 "description": "HiC contact matrix raw",
                 "visible": True,
                 "assembly": convert_from_unicode(metadata['bamin'].meta_data['assembly']),
-                "norm" : 'raw'
+                "norm": 'raw'
             },
             taxon_id=metadata['bamin'].taxon_id)
+
         m_results_meta["bin_stats"] = Metadata(
             data_type="tool_statistics",
             file_type="TAR",
@@ -171,6 +188,7 @@ class tadbit_bin(Workflow):
                 "description": "TADbit HiC matrices in png format",
                 "visible": False
             })
+
         if len(input_metadata["norm"]) > 1:
             m_results_meta["hic_contacts_matrix_norm"] = Metadata(
                 data_type="hic_contacts_matrix",
@@ -181,12 +199,14 @@ class tadbit_bin(Workflow):
                     "description": "HiC contact matrix normalized",
                     "visible": True,
                     "assembly": convert_from_unicode(metadata['bamin'].meta_data['assembly']),
-                    "norm" : 'norm'
+                    "norm": 'norm'
                 },
                 taxon_id=metadata['bamin'].taxon_id)
-        
-        m_results_files["tadkit_matrix"] = self.configuration['project']+"/"+os.path.basename(tb_files[-1])
+
+        tk_matrix_file_name = self.configuration['project']+"/"+os.path.basename(tb_files[-1])
+        m_results_files["tadkit_matrix"] = tk_matrix_file_name
         os.rename(tb_files[-1], m_results_files["tadkit_matrix"])
+
         m_results_meta["tadkit_matrix"] = Metadata(
             data_type="chromatin_3dmodel_ensemble",
             file_type="JSON",
@@ -198,12 +218,14 @@ class tadbit_bin(Workflow):
                 "assembly": input_metadata["assembly"]
             },
             taxon_id=metadata['bamin'].taxon_id)
-        #cleaning
+
+        # cleaning
         clean_temps(self.configuration['workdir'])
 
         return m_results_files, m_results_meta
 
 # ------------------------------------------------------------------------------
+
 
 def remap(indict, *args, **kwargs):
     """
@@ -221,6 +243,7 @@ def remap(indict, *args, **kwargs):
 
 # ------------------------------------------------------------------------------
 
+
 def convert_from_unicode(data):
     if isinstance(data, basestring):
         return str(data)
@@ -230,6 +253,7 @@ def convert_from_unicode(data):
         return type(data)(map(convert_from_unicode, data))
     return data
 # ------------------------------------------------------------------------------
+
 
 def main(args):
 
@@ -241,6 +265,7 @@ def main(args):
                         args.out_metadata)
 
     return result
+
 
 def clean_temps(working_path):
     """Cleans the workspace from temporal folder and scratch files"""
@@ -261,25 +286,28 @@ def clean_temps(working_path):
 
 # ------------------------------------------------------------------------------
 
+
 if __name__ == "__main__":
-    sys._run_from_cmdl = True # pylint: disable=protected-access
+    sys._run_from_cmdl = True  # pylint: disable=protected-access
 
     # Set up the command line parameters
-    parser = argparse.ArgumentParser(description="TADbit map")
+    PARSER = argparse.ArgumentParser(description="TADbit map")
     # Config file
-    parser.add_argument("--config", help="Configuration JSON file",
+    PARSER.add_argument("--config", help="Configuration JSON file",
                         type=CommandLineParser.valid_file, metavar="config", required=True)
 
     # Metadata
-    parser.add_argument("--in_metadata", help="Project metadata", metavar="in_metadata", required=True)
+    PARSER.add_argument(
+        "--in_metadata", help="Project metadata", metavar="in_metadata", required=True)
     # Output metadata
-    parser.add_argument("--out_metadata", help="Output metadata", metavar="output_metadata", required=True)
+    PARSER.add_argument(
+        "--out_metadata", help="Output metadata", metavar="output_metadata", required=True)
     # Log file
-    parser.add_argument("--log_file", help="Log file", metavar="log_file", required=True)
+    PARSER.add_argument(
+        "--log_file", help="Log file", metavar="log_file", required=True)
 
-    in_args = parser.parse_args()
+    IN_ARGS = PARSER.parse_args()
 
-    RESULTS = main(in_args)
+    RESULTS = main(IN_ARGS)
 
     # print(RESULTS)
-    

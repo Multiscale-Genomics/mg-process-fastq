@@ -12,8 +12,6 @@ import json
 from random import random
 from string import ascii_letters as letters
 import collections
-# Required for ReadTheDocs
-from functools import wraps # pylint: disable=unused-import
 
 from basic_modules.workflow import Workflow
 from basic_modules.metadata import Metadata
@@ -25,6 +23,7 @@ from tool.tb_filter import tbFilterTool
 
 if '/opt/COMPSs/Bindings/python' in sys.path:
     sys.path.pop(sys.path.index('/opt/COMPSs/Bindings/python'))
+
 
 class CommandLineParser(object):
     """Parses command line"""
@@ -44,10 +43,12 @@ class CommandLineParser(object):
             raise argparse.ArgumentTypeError("%s is an invalid value" % ivalue)
         return ivalue
 
+
 # ------------------------------------------------------------------------------
+
 class tadbit_map_parse_filter(Workflow):
     """
-    Wrapper for the VRE form TADbit map, parse and filter. 
+    Wrapper for the VRE form TADbit map, parse and filter.
     It combines different tools to map, merge and filter
     two fastq files corresponding to read1 and read2.
     """
@@ -65,7 +66,7 @@ class tadbit_map_parse_filter(Workflow):
             should be carried out, which are specific to each Tool.
         """
         tool_extra_config = json.load(file(os.path.dirname(os.path.abspath(__file__))
-                                           +'/tadbit_wrappers_config.json'))
+                                           + '/tadbit_wrappers_config.json'))
         os.environ["PATH"] += os.pathsep + convert_from_unicode(tool_extra_config["bin_path"])
 
         if configuration is None:
@@ -73,9 +74,9 @@ class tadbit_map_parse_filter(Workflow):
 
         self.configuration.update(convert_from_unicode(configuration))
 
-        #temporal
+        # temporal
         self.configuration['public_dir'] = '/orozco/services/MuG/MuG_public/'
-        #self.configuration['public_dir'] = '/scratch/genomes/'
+        # self.configuration['public_dir'] = '/scratch/genomes/'
 
         # Number of cores available
         num_cores = multiprocessing.cpu_count()
@@ -111,7 +112,7 @@ class tadbit_map_parse_filter(Workflow):
         if 'rest_enzyme' not in self.configuration:
             self.configuration["rest_enzyme"] = ''
 
-    def run(self, input_files, metadata, output_files):
+    def run(self, input_files, metadata, output_files):  # pylint: disable=too-many-locals,too-many-statements
         """
         Parameters
         ----------
@@ -140,14 +141,14 @@ class tadbit_map_parse_filter(Workflow):
         if 'parsing:refGenome' in input_files:
             genome_fa = convert_from_unicode(input_files['parsing:refGenome'])
         elif 'parsing_refGenome' in self.configuration:
-            genome_fa = self.configuration['public_dir']+ \
+            genome_fa = self.configuration['public_dir'] + \
                 convert_from_unicode(self.configuration['parsing_refGenome'])
 
         if 'mapping:refGenome' in input_files:
             genome_gem = convert_from_unicode(input_files['mapping:refGenome'])
             assembly = convert_from_unicode(metadata['mapping:refGenome'].meta_data['assembly'])
         elif 'mapping_refGenome' in self.configuration:
-            genome_gem = self.configuration['public_dir']+ \
+            genome_gem = self.configuration['public_dir'] + \
                 convert_from_unicode(self.configuration['mapping_refGenome'])
             assembly = os.path.basename(genome_gem).split('.')[0]
 
@@ -157,7 +158,7 @@ class tadbit_map_parse_filter(Workflow):
                                "workdir", "windows", rest_enzyme="enzyme_name")
         input_metadata['quality_plot'] = True
         summary_file = input_metadata["workdir"]+'/'+'summary.txt'
-        
+
         logger.info("MAPPING")
         logger.info("Read 1 of 2")
         tfm1 = tbFullMappingTool()
@@ -235,10 +236,9 @@ class tadbit_map_parse_filter(Workflow):
 
         logger.info("TB FILTER FILES:", tf_files[0])
 
-
         m_results_files["paired_reads"] = tf_files[0]+'.bam'
         m_results_files["paired_reads_bai"] = m_results_files["paired_reads"]+'.bai'
-        m_results_files["map_parse_filter_stats"] = self.configuration['project']+ \
+        m_results_files["map_parse_filter_stats"] = self.configuration['project'] + \
             "/map_parse_filter_stats.tar.gz"
 
         with tarfile.open(m_results_files["map_parse_filter_stats"], "w:gz") as tar:
@@ -259,7 +259,7 @@ class tadbit_map_parse_filter(Workflow):
                 "description": "Paired end reads",
                 "visible": True,
                 "assembly": assembly,
-                "paired" : "paired",
+                "paired": "paired",
                 "sorted": "sorted",
                 "associated_files": [
                     m_results_files["paired_reads"]+'.bai'
@@ -292,12 +292,12 @@ class tadbit_map_parse_filter(Workflow):
                 "visible": False
             })
 
-
         clean_temps(self.configuration['workdir'])
 
         logger.progress(100)
 
         return m_results_files, m_results_meta
+
 
 # ------------------------------------------------------------------------------
 
@@ -317,6 +317,7 @@ def remap(indict, *args, **kwargs):
 
 # ------------------------------------------------------------------------------
 
+
 def convert_from_unicode(data):
     if isinstance(data, basestring):
         return str(data)
@@ -329,6 +330,7 @@ def convert_from_unicode(data):
 
 # ------------------------------------------------------------------------------
 
+
 def main(args):
 
     from apps.jsonapp import JSONApp
@@ -337,7 +339,6 @@ def main(args):
                         args.config,
                         args.in_metadata,
                         args.out_metadata)
-
 
     return result
 
@@ -349,7 +350,7 @@ def clean_temps(working_path):
         try:
             if os.path.isfile(file_path):
                 os.unlink(file_path)
-            #elif os.path.isdir(file_path): shutil.rmtree(file_path)
+            # elif os.path.isdir(file_path): shutil.rmtree(file_path)
         except OSError:
             pass
     try:
@@ -360,27 +361,28 @@ def clean_temps(working_path):
 
 # ------------------------------------------------------------------------------
 
+
 if __name__ == "__main__":
 
-    sys._run_from_cmdl = True # pylint: disable=protected-access
+    sys._run_from_cmdl = True  # pylint: disable=protected-access
 
     # Set up the command line parameters
-    parser = argparse.ArgumentParser(description="TADbit map")
+    PARSER = argparse.ArgumentParser(description="TADbit map")
     # Config file
-    parser.add_argument("--config", help="Configuration JSON file",
+    PARSER.add_argument("--config", help="Configuration JSON file",
                         type=CommandLineParser.valid_file, metavar="config", required=True)
 
     # Metadata
-    parser.add_argument("--in_metadata", help="Project metadata", \
+    PARSER.add_argument("--in_metadata", help="Project metadata",
                         metavar="in_metadata", required=True)
     # Output metadata
-    parser.add_argument("--out_metadata", help="Output metadata", \
+    PARSER.add_argument("--out_metadata", help="Output metadata",
                         metavar="output_metadata", required=True)
     # Log file
-    parser.add_argument("--log_file", help="Log file", metavar="log_file", required=True)
+    PARSER.add_argument("--log_file", help="Log file", metavar="log_file", required=True)
 
-    in_args = parser.parse_args()
+    IN_ARGS = PARSER.parse_args()
 
-    RESULTS = main(in_args)
+    RESULTS = main(IN_ARGS)
 
     # logger.info(RESULTS)

@@ -162,3 +162,9 @@ MACS2 is able to generate a plot of the results as well as a bedGraph. These hav
 ------------------------------------------
 
 IOError was depricated in favour of OSError when moving to py3, but to maintian backwards compatibility IOError also needs to be supported. There were places in the code where this was not true and other places that relied on just OSError. Instances of just IOError have been converted to testing for both IOError and OSError and visa versa.
+
+
+2018-08-15 - Use the config.json execution path
+-----------------------------------------------
+
+Using the directory of the input file for building the location of the working directory with outside of a task is not a viable option as it can write data to the wrong directory. The execution path provided in the config.json arguments is the right place. This location is also the location for output files. This issue occurred as the FASTQ splitter was generating a tar file that the aligners were downloading to the wrong location. Even though this was tidied up this was still not the right place to put this file.

@@ -171,7 +171,7 @@ class fastqreader(object):  # pylint: disable=too-many-instance-attributes,inval
         tag : str
             Tag to identify the output files (DEFAULT: '')
         """
-        if tag != '' and self.output_tag != tag:
+        if tag not in ('', self.output_tag):
             self.output_tag = tag
 
         fq1 = self.fastq1.split("/")

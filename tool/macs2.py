@@ -274,35 +274,6 @@ class macs2(Tool):  # pylint: disable=invalid-name
         Function to run MACS2 for peak calling on aligned sequence files without
         a background dataset for normalisation.
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-        command_line = "macs2 callpeak " + " ".join(macs_params) + " -t " + bam_tmp_file
-        command_line = command_line + ' -n ' + name + '_out --outdir ' + output_dir
-
-        logger.info("MACS2 - NAME: " + name)
-        logger.info("Output Files: " + narrowpeak)
-        logger.info("Output Files: " + summits_bed)
-        logger.info("Output Files: " + broadpeak)
-        logger.info("Output Files: " + gappedpeak)
-        logger.info("MACS2 COMMAND LINE: " + command_line)
-
-        if os.path.isfile(bam_tmp_file) is False or os.path.getsize(bam_tmp_file) == 0:
-            logger.fatal("MISSING FILE: " + bam_tmp_file)
-
-        aligned_count = bam_utils_handle.bam_count_reads(bam_tmp_file, aligned=True)
-        if int(aligned_count) > 0:
-            logger.progress("MACS2", task_id=0, total=1)
-            try:
-                args = shlex.split(command_line)
-                process = subprocess.Popen(args)
-                process.wait()
-            except (IOError, OSError) as msg:
-                logger.fatal("I/O error({0}): {1}\n{2}".format(
-                    msg.errno, msg.strerror, command_line))
-                return False
-=======
-=======
->>>>>>> fef4fc1a4738acc941669c57dfd8e6f0f882cc86
         Parameters
         ----------
         name : str
@@ -323,10 +294,6 @@ class macs2(Tool):  # pylint: disable=invalid-name
             If the tool is to be run over a single chromosome the matching
             chromosome name should be specified. If None then the whole bam file
             is analysed
-<<<<<<< HEAD
->>>>>>> master
-=======
->>>>>>> fef4fc1a4738acc941669c57dfd8e6f0f882cc86
 
         Returns
         -------

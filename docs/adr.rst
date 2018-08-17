@@ -152,6 +152,12 @@ MACS2 is able to automatically handle the files that are handed to it except for
 There has also been a major rewrite of the MACS2 tool to remove code duplication.
 
 
+2018-07-16 - Modified handling of file locations
+------------------------------------------------
+
+Updated the handling of file locations to use os.path.join and os.path.split to allow for compatibility between different operating systems for the pipelines and tools.
+
+
 2018-08-07 - Storing tool parameters as part of the metadata
 ------------------------------------------------------------
 

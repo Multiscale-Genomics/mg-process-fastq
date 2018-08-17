@@ -472,6 +472,8 @@ class bowtie2AlignerTool(Tool):  # pylint: disable=invalid-name
                 output_bam_file_tmp = tmp_fq1 + ".bam"
                 output_bam_list.append(output_bam_file_tmp)
 
+                logger.info("BOWTIE2 ALIGN (PAIRED) FILES:\n\t{}\n\t{}".format(tmp_fq1, tmp_fq2))
+
                 self.bowtie2_aligner_paired(
                     str(input_files["genome"]), tmp_fq1, tmp_fq2,
                     output_bam_file_tmp,
@@ -489,7 +491,7 @@ class bowtie2AlignerTool(Tool):  # pylint: disable=invalid-name
                 output_bam_file_tmp = tmp_fq + ".bam"
                 output_bam_list.append(output_bam_file_tmp)
 
-                logger.info("BOWTIE2 ALN FILES:" + tmp_fq)
+                logger.info("BOWTIE2 ALIGN (SINGLE) FILES:" + tmp_fq)
                 self.bowtie2_aligner_single(
                     str(input_files["genome"]), tmp_fq, output_bam_file_tmp,
                     index_files["1.bt2"],

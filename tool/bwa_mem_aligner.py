@@ -376,8 +376,15 @@ class bwaAlignerMEMTool(Tool):  # pylint: disable=invalid-name
             tar = tarfile.open(fastq_file_gz)
             tar.extractall(path=gz_data_path)
             tar.close()
-            os.remove(fastq_file_gz)
             compss_delete_file(fastq_file_gz)
+            try:
+                os.remove(fastq_file_gz)
+            except (OSError, IOError) as msg:
+                logger.warn(
+                    "Unable to remove file I/O error({0}): {1}".format(
+                        msg.errno, msg.strerror
+                    )
+                )
         except tarfile.TarError:
             logger.fatal("Split FASTQ files: Malformed tar file")
             return {}, {}

@@ -445,8 +445,15 @@ class bowtie2AlignerTool(Tool):  # pylint: disable=invalid-name
             tar = tarfile.open(fastq_file_gz)
             tar.extractall(path=gz_data_path)
             tar.close()
-            os.remove(fastq_file_gz)
             compss_delete_file(fastq_file_gz)
+            try:
+                os.remove(fastq_file_gz)
+            except (OSError, IOError) as msg:
+                logger.warn(
+                    "Unable to remove file I/O error({0}): {1}".format(
+                        msg.errno, msg.strerror
+                    )
+                )
         except tarfile.TarError:
             logger.fatal("Split FASTQ files: Malformed tar file")
             return {}, {}
@@ -516,11 +523,25 @@ class bowtie2AlignerTool(Tool):  # pylint: disable=invalid-name
             for fastq_file_pair in fastq_file_list:
                 tmp_fq = os.path.join(gz_data_path, "tmp", fastq_file_pair[0])
                 compss_delete_file(tmp_fq)
-                os.remove(tmp_fq)
+                try:
+                    os.remove(tmp_fq)
+                except (OSError, IOError) as msg:
+                    logger.warn(
+                        "Unable to remove file I/O error({0}): {1}".format(
+                            msg.errno, msg.strerror
+                        )
+                    )
                 if "fastq2" in input_files:
                     tmp_fq = os.path.join(gz_data_path, "tmp", fastq_file_pair[1])
                     compss_delete_file(tmp_fq)
-                    os.remove(tmp_fq)
+                    try:
+                        os.remove(tmp_fq)
+                    except (OSError, IOError) as msg:
+                        logger.warn(
+                            "Unable to remove file I/O error({0}): {1}".format(
+                                msg.errno, msg.strerror
+                            )
+                        )
 
         tasks_done += 1
         logger.progress("ALIGNER", task_id=tasks_done, total=task_count)

@@ -51,6 +51,30 @@ class bamUtils(object):  # pylint: disable=invalid-name
         logger.info("BAM Utils")
 
     @staticmethod
+    def sam_to_bam(sam_file, bam_file):
+        """
+        Function for converting sam files to bam files
+        """
+        # Convert the new sam file into a sorted bam file
+        cmd_sort = ' '.join([
+            'samtools sort',
+            '-O bam',
+            '-o', bam_file,
+            sam_file
+        ])
+
+        try:
+            logger.info("CREATE BAM COMMAND: " + cmd_sort)
+            process = subprocess.Popen(cmd_sort, shell=True)
+            process.wait()
+        except (OSError, IOError) as msg:
+            logger.info("I/O error({0}): {1}\n{2}".format(
+                msg.errno, msg.strerror, cmd_sort))
+            return False
+
+        return True
+
+    @staticmethod
     def bam_count_reads(bam_file, aligned=False):
         """
         Wrapper to count the number of (aligned) reads in a bam file
@@ -59,6 +83,16 @@ class bamUtils(object):  # pylint: disable=invalid-name
             return pysam.view("-c", "-F", "260", bam_file).strip()  # pylint: disable=no-member
 
         return pysam.view("-c", bam_file).strip()  # pylint: disable=no-member
+
+    @staticmethod
+    def bam_paired_reads(bam_file):
+        """
+        Wrapper to test if a bam file contains paired end reads
+        """
+        paired_count = pysam.view("-c", "-f", "1", bam_file).strip()  # pylint: disable=no-member
+        if int(paired_count) > 0:
+            return True
+        return False
 
     @staticmethod
     def bam_sort(bam_file):
@@ -73,7 +107,7 @@ class bamUtils(object):  # pylint: disable=invalid-name
         try:
             pysam.sort(  # pylint: disable=no-member
                 "-o", bam_file, "-T", bam_file + "_sort", bam_file)
-        except IOError:
+        except (OSError, IOError):
             return False
         return True
 
@@ -89,11 +123,13 @@ class bamUtils(object):  # pylint: disable=invalid-name
         filter : str
             One of:
                 duplicate - Read is PCR or optical duplicate (1024)
+                supplementary - Reads that are chimeric, fusion or non linearly aligned (2048)
                 unmapped - Read is unmapped or not the primary alignment (260)
         """
 
         filter_list = {
             "duplicate": "1024",
+            "supplementary": "2048",
             "unmapped": "260"
         }
 
@@ -109,7 +145,7 @@ class bamUtils(object):  # pylint: disable=invalid-name
         try:
             process = subprocess.Popen(cmd_view, shell=True)
             process.wait()
-        except (IOError, OSError) as msg:
+        except (OSError, IOError) as msg:
             logger.info(
                 "BAM FILTER - I/O error({0}): {1}\n{2}".format(
                     msg.errno, msg.strerror,
@@ -148,7 +184,7 @@ class bamUtils(object):  # pylint: disable=invalid-name
             with open(tmp_bam, "rb") as f_in:
                 with open(final_bam, "wb") as f_out:
                     f_out.write(f_in.read())
-        except IOError:
+        except (OSError, IOError):
             return False
 
         os.remove(tmp_bam)
@@ -173,7 +209,7 @@ class bamUtils(object):  # pylint: disable=invalid-name
             with open(bam_in, "rb") as f_in:
                 with open(bam_out, "wb") as f_out:
                     f_out.write(f_in.read())
-        except IOError:
+        except (OSError, IOError):
             return False
 
         return True
@@ -202,7 +238,7 @@ class bamUtils(object):  # pylint: disable=invalid-name
             logger.info("INDEX BAM COMMAND: " + cmd_view)
             process = subprocess.Popen(cmd_view, shell=True)
             process.wait()
-        except (IOError, OSError) as msg:
+        except (OSError, IOError) as msg:
             logger.info("I/O error({0}): {1}\n{2}".format(
                 msg.errno, msg.strerror, cmd_view))
             return False
@@ -211,7 +247,7 @@ class bamUtils(object):  # pylint: disable=invalid-name
             with open(bam_file + "_tmp.bai", "rb") as f_in:
                 with open(bam_idx_file, "wb") as f_out:
                     f_out.write(f_in.read())
-        except IOError:
+        except (OSError, IOError):
             return False
 
         return True
@@ -280,7 +316,7 @@ class bamUtils(object):  # pylint: disable=invalid-name
             logger.info("EXTRACT SAM COMMAND: " + cmd_view_1)
             process = subprocess.Popen(cmd_view_1, shell=True)
             process.wait()
-        except (IOError, OSError) as msg:
+        except (OSError, IOError) as msg:
             logger.info("I/O error({0}): {1}\n{2}".format(
                 msg.errno, msg.strerror, cmd_view_1))
             return False
@@ -289,7 +325,7 @@ class bamUtils(object):  # pylint: disable=invalid-name
             logger.info("CREATE BAM COMMAND: " + cmd_view_2)
             process = subprocess.Popen(cmd_view_2, shell=True)
             process.wait()
-        except (IOError, OSError) as msg:
+        except (OSError, IOError) as msg:
             logger.info("I/O error({0}): {1}\n{2}".format(
                 msg.errno, msg.strerror, cmd_view_2))
             return False
@@ -377,7 +413,7 @@ class bamUtilsTask(object):  # pylint: disable=invalid-name
         bam_handle = bamUtils()
         return bam_handle.bam_list_chromosomes(bam_file)
 
-    @task(bam_file=FILE_INOUT)
+    @task(returns=bool, bam_file=FILE_INOUT)
     def bam_sort(self, bam_file):  # pylint: disable=no-self-use
         """
         Wrapper for the pysam SAMtools sort function
@@ -668,6 +704,25 @@ class bamUtilsTask(object):  # pylint: disable=invalid-name
             Location of the bam file that is to be indexed
         bam_idx_file : str
             Location of the bam index file (.bai)
+        """
+        bam_handle = bamUtils()
+        return bam_handle.bam_stats(bam_file)
+
+    @task(returns=bool, bam_file=FILE_IN)
+    def bam_paired_reads(self, bam_file):  # pylint: disable=no-self-use
+        """
+        Wrapper for the pysam SAMtools view function to identify if a bam file
+        contains paired end reads
+
+        Parameters
+        ----------
+        bam_file : str
+            Location of the bam file that is to be indexed
+
+        Returns
+        -------
+        bool
+            True if the bam file contains paired end reads
         """
         bam_handle = bamUtils()
         return bam_handle.bam_stats(bam_file)

@@ -73,7 +73,7 @@ class bssMethylationCallerTool(Tool):  # pylint: disable=invalid-name
         self.configuration.update(configuration)
 
     @task(
-        bss_path=IN, bam_file=FILE_IN, genome_idx=FILE_IN, params=IN,
+        returns=bool, bss_path=IN, bam_file=FILE_IN, genome_idx=FILE_IN, params=IN,
         wig_file=FILE_OUT, cgmap_file=FILE_OUT, atcgmap_file=FILE_OUT)
     def bss_methylation_caller(  # pylint disable=no-self-use
             self, bss_path, bam_file, genome_idx, params, wig_file, cgmap_file, atcgmap_file):
@@ -218,12 +218,12 @@ class bssMethylationCallerTool(Tool):  # pylint: disable=invalid-name
 
         bam_handler = bamUtilsTask()
         bam_handler.check_header(input_files["bam"])
-
+        command_params = self.get_params(self.configuration)
         self.bss_methylation_caller(
             bss_path,
             input_files["bam"],
             input_files["index"],
-            self.get_params(self.configuration),
+            command_params,
             output_files["wig_file"],
             output_files["cgmap_file"],
             output_files["atcgmap_file"]
@@ -238,7 +238,8 @@ class bssMethylationCallerTool(Tool):  # pylint: disable=invalid-name
                 taxon_id=input_metadata["bam"].taxon_id,
                 meta_data={
                     "assembly": input_metadata["bam"].meta_data["assembly"],
-                    "tool": "bs_seeker_methylation_caller"
+                    "tool": "bs_seeker_methylation_caller",
+                    "parameters": command_params
                 }
             ),
             "cgmap_file": Metadata(
@@ -249,7 +250,8 @@ class bssMethylationCallerTool(Tool):  # pylint: disable=invalid-name
                 taxon_id=input_metadata["bam"].taxon_id,
                 meta_data={
                     "assembly": input_metadata["bam"].meta_data["assembly"],
-                    "tool": "bs_seeker_methylation_caller"
+                    "tool": "bs_seeker_methylation_caller",
+                    "parameters": command_params
                 }
             ),
             "atcgmap_file": Metadata(
@@ -260,7 +262,8 @@ class bssMethylationCallerTool(Tool):  # pylint: disable=invalid-name
                 taxon_id=input_metadata["bam"].taxon_id,
                 meta_data={
                     "assembly": input_metadata["bam"].meta_data["assembly"],
-                    "tool": "bs_seeker_methylation_caller"
+                    "tool": "bs_seeker_methylation_caller",
+                    "parameters": command_params
                 }
             )
         }

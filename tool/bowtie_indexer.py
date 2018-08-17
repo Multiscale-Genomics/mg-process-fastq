@@ -63,7 +63,7 @@ class bowtieIndexerTool(Tool):  # pylint: disable=invalid-name
             a dictionary containing parameters that define how the operation
             should be carried out, which are specific to each Tool.
         """
-        print("Bowtie2 Indexer")
+        logger.info("Bowtie2 Indexer")
         Tool.__init__(self)
 
         if configuration is None:
@@ -106,7 +106,7 @@ class bowtieIndexerTool(Tool):  # pylint: disable=invalid-name
             tar.add(index_dir, arcname=os.path.split(index_dir)[1])
             tar.close()
 
-        except IOError as error:
+        except (OSError, IOError) as error:
             logger.fatal("I/O error({0}): {1}".format(error.errno, error.strerror))
             return False
 

@@ -72,8 +72,8 @@ class bssIndexerTool(Tool):  # pylint: disable=invalid-name
         self.configuration.update(configuration)
 
     @task(
-        fasta_file=FILE_IN, aligner=IN, aligner_path=IN, bss_path=IN, params=IN,
-        idx_out=FILE_OUT)
+        returns=bool, fasta_file=FILE_IN, aligner=IN, aligner_path=IN,
+        bss_path=IN, params=IN, idx_out=FILE_OUT, isModifier=False)
     def bss_build_index(  # pylint: disable=no-self-use,too-many-arguments
             self, fasta_file, aligner, aligner_path, bss_path, params, idx_out
     ):  # pylint disable=no-self-use
@@ -112,7 +112,7 @@ class bssIndexerTool(Tool):  # pylint: disable=invalid-name
         ).format()
 
         try:
-            logger.info("BS - INDEX CMD:", command_line)
+            logger.info("BS - INDEX CMD: " + command_line)
             # args = shlex.split(command_line)
             process = subprocess.Popen(command_line, shell=True)
             process.wait()
@@ -123,18 +123,18 @@ class bssIndexerTool(Tool):  # pylint: disable=invalid-name
 
         try:
             # tar.gz the index
-            logger.info("BS - idx_out:", idx_out, idx_out.replace('.tar.gz', ''))
+            logger.info("BS - idx_out: " + idx_out, idx_out.replace('.tar.gz', ''))
             idx_out_pregz = idx_out.replace('.tar.gz', '.tar')
 
-            logger.info("BS - idx archive:", idx_out_pregz)
-            logger.info("BS - idx folder to add:", fasta_file + "_" + aligner)
-            logger.info("BS - idx folder arcname:", ff_split[1] + "_" + aligner)
+            logger.info("BS - idx archive: " + idx_out_pregz)
+            logger.info("BS - idx folder to add: " + fasta_file + "_" + aligner)
+            logger.info("BS - idx folder arcname: " + ff_split[-1] + "_" + aligner)
             tar = tarfile.open(idx_out_pregz, "w")
             tar.add(fasta_file + "_" + aligner, arcname=ff_split[1] + "_" + aligner)
             tar.close()
         except (IOError, OSError) as msg:
-            logger.fatal("I/O error({0}): {1}\n{2}".format(
-                msg.errno, msg.strerror, command_line))
+            logger.fatal("TAR I/O error({0}): {1}".format(
+                msg.errno, msg.strerror))
             return False
 
         common.zip_file(idx_out_pregz)

@@ -59,7 +59,7 @@ class idearTool(Tool):  # pylint: disable=invalid-name
             a dictionary containing parameters that define how the operation
             should be carried out, which are specific to each Tool.
         """
-        print("iDEAR Peak Caller")
+        logger.info("iDEAR Peak Caller")
         Tool.__init__(self)
 
         if configuration is None:
@@ -141,7 +141,7 @@ class idearTool(Tool):  # pylint: disable=invalid-name
             with open(peak_bw + ".tmp", "rb") as f_in:
                 with open(peak_bw, "wb") as f_out:
                     f_out.write(f_in.read())
-        except IOError:
+        except (OSError, IOError):
             logger.fatal("iDEAR failed to generate peak file")
             logger.fatal("iDEAR stdout" + proc_out)
             logger.fatal("iDEAR stderr" + proc_err)

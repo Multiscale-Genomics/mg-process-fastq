@@ -16,9 +16,9 @@
 # limitations under the License.
 
 rc=0
-pv=$(python -c 'import platform; print(platform.python_version())')
+pv=$(python -c 'import platform; v=platform.python_version_tuple(); print("{}.{}".format(v[0], v[1]))')
 
-if [[ $pv == "2.7.12" ]]; then
+if [[ $pv == "2.7" ]]; then
     if [[ $TESTENV == "wgbs_code_1" ]]; then
         python tests/test_toolchains.py --pipeline wgbs
         tc=$?

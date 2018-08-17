@@ -183,7 +183,7 @@ class fastqreader(object):  # pylint: disable=too-many-instance-attributes,inval
         if os.path.isdir(fq1[0]) is False:
             try:
                 os.mkdir(fq1[0])
-            except OSError as oserror:
+            except (OSError, IOError) as oserror:
                 if oserror.errno != errno.EEXIST:
                     raise OSError
 

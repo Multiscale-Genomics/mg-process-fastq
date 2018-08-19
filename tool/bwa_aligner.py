@@ -168,7 +168,7 @@ class bwaAlignerTool(Tool):  # pylint: disable=invalid-name
             with open(bam_loc, "wb") as f_out:
                 with open(out_bam, "rb") as f_in:
                     f_out.write(f_in.read())
-        except IOError as error:
+        except (OSError, IOError) as error:
             logger.fatal("SINGLE ALIGNER: I/O error({0}): {1}".format(error.errno, error.strerror))
             return False
 
@@ -226,7 +226,7 @@ class bwaAlignerTool(Tool):  # pylint: disable=invalid-name
             with open(bam_loc, "wb") as f_out:
                 with open(out_bam, "rb") as f_in:
                     f_out.write(f_in.read())
-        except IOError as error:
+        except (OSError, IOError) as error:
             logger.fatal("PARIED ALIGNER: I/O error({0}): {1}".format(error.errno, error.strerror))
             return False
 
@@ -367,8 +367,7 @@ class bwaAlignerTool(Tool):  # pylint: disable=invalid-name
                 with open(fastq_file_gz, "wb") as f_out:
                     f_out.write(f_in.read())
 
-        gz_data_path = fastq_file_gz.split("/")
-        gz_data_path = "/".join(gz_data_path[:-1])
+        gz_data_path = os.path.split(fastq_file_gz)[0]
 
         try:
             tar = tarfile.open(fastq_file_gz)
@@ -397,8 +396,8 @@ class bwaAlignerTool(Tool):  # pylint: disable=invalid-name
 
         for fastq_file_pair in fastq_file_list:
             if "fastq2" in input_files:
-                tmp_fq1 = gz_data_path + "/tmp/" + fastq_file_pair[0]
-                tmp_fq2 = gz_data_path + "/tmp/" + fastq_file_pair[1]
+                tmp_fq1 = os.path.join(gz_data_path, "tmp", fastq_file_pair[0])
+                tmp_fq2 = os.path.join(gz_data_path, "tmp", fastq_file_pair[1])
                 output_bam_file_tmp = tmp_fq1 + ".bam"
                 output_bam_list.append(output_bam_file_tmp)
 
@@ -413,7 +412,7 @@ class bwaAlignerTool(Tool):  # pylint: disable=invalid-name
                     self.get_aln_params(self.configuration)
                 )
             else:
-                tmp_fq = gz_data_path + "/tmp/" + fastq_file_pair[0]
+                tmp_fq = os.path.join(gz_data_path, "tmp", fastq_file_pair[0])
                 output_bam_file_tmp = tmp_fq + ".bam"
                 output_bam_list.append(output_bam_file_tmp)
 
@@ -435,12 +434,31 @@ class bwaAlignerTool(Tool):  # pylint: disable=invalid-name
             for idx_file in index_files:
                 compss_delete_file(index_files[idx_file])
 
-        for fastq_file_pair in fastq_file_list:
-            os.remove(gz_data_path + "/tmp/" + fastq_file_pair[0])
-            compss_delete_file(gz_data_path + "/tmp/" + fastq_file_pair[0])
-            if "fastq2" in input_files:
-                os.remove(gz_data_path + "/tmp/" + fastq_file_pair[1])
-                compss_delete_file(gz_data_path + "/tmp/" + fastq_file_pair[1])
+        if hasattr(sys, '_run_from_cmdl') is True:
+            pass
+        else:
+            for fastq_file_pair in fastq_file_list:
+                tmp_fq = os.path.join(gz_data_path, "tmp", fastq_file_pair[0])
+                compss_delete_file(tmp_fq)
+                try:
+                    os.remove(tmp_fq)
+                except (OSError, IOError) as msg:
+                    logger.warn(
+                        "Unable to remove file I/O error({0}): {1}".format(
+                            msg.errno, msg.strerror
+                        )
+                    )
+                if "fastq2" in input_files:
+                    tmp_fq = os.path.join(gz_data_path, "tmp", fastq_file_pair[1])
+                    compss_delete_file(tmp_fq)
+                    try:
+                        os.remove(tmp_fq)
+                    except (OSError, IOError) as msg:
+                        logger.warn(
+                            "Unable to remove file I/O error({0}): {1}".format(
+                                msg.errno, msg.strerror
+                            )
+                        )
         tasks_done += 1
         logger.progress("ALIGNER", task_id=tasks_done, total=task_count)
 
@@ -498,7 +516,8 @@ class bwaAlignerTool(Tool):  # pylint: disable=invalid-name
                 taxon_id=input_metadata["genome"].taxon_id,
                 meta_data={
                     "assembly": input_metadata["genome"].meta_data["assembly"],
-                    "tool": "bwa_aligner"
+                    "tool": "bwa_aligner",
+                    "parameters": self.get_aln_params(self.configuration)
                 }
             )
         }

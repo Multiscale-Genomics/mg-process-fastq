@@ -42,6 +42,7 @@ from basic_modules.tool import Tool
 from pytadbit.mapping.filter import apply_filter, filter_reads
 from pytadbit.mapping.analyze import insert_sizes
 
+
 # ------------------------------------------------------------------------------
 
 class tbFilterTool(Tool):

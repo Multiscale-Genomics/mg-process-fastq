@@ -128,3 +128,37 @@ Other changes include:
 BioBamBam only marks reads as duplicate, but does not remove the after. The Tool has been updated to remove the flagged duplicates using samtools with the parameter `-F 1024`. This matches the pipeline used within the `Blueprints project <http://dcc.blueprint-epigenome.eu/#/md/chip_seq_grch37>`_.
 
 Also performed some tidying of the code to annotate issues that had been highlighted by pylint.
+
+
+2018-07-11 - Changes FASTQ splitter file management
+---------------------------------------------------
+
+The previous splitter would split the FASTQ files into separate changes, then create the tar file and then the Gzip file. This results in a large amount of wasted tmp space, which is a limited resource. The changes implemented incrementally add the sub-FASTQ files to the archive file, deleting them once they have been added. The whole archive file is then compressed. This has a large advantage when handling larger human datasets.
+
+There has also been some refactoring of the handling of the archiving and compression steps to reduce the duplication of code within the repository.
+
+
+2018-08-02 - Added in Paired End BAM file handling for MACS2
+------------------------------------------------------------
+
+MACS2 is able to automatically handle the files that are handed to it except for paired-end BAM and BED files (BAMPE and BEDPE respectively). The MACS2 tool only accepts BAM files so a check was implemented to determine if the BAM file contained paired-end reads.
+
+There has also been a major rewrite of the MACS2 tool to remove code duplication.
+
+
+2018-08-07 - Storing tool parameters as part of the metadata
+------------------------------------------------------------
+
+To improve the amount of information that is stored about the run of a tool, the parameters that were used are now being included as part of the metadata.
+
+
+2018-08-07 - Extra output files from MACS2
+------------------------------------------
+
+MACS2 is able to generate a plot of the results as well as a bedGraph. These have now been integrated as part of the output files from teh tool.
+
+
+2018-08-13 - Normalised the use of OSError
+------------------------------------------
+
+IOError was depricated in favour of OSError when moving to py3, but to maintian backwards compatibility IOError also needs to be supported. There were places in the code where this was not true and other places that relied on just OSError. Instances of just IOError have been converted to testing for both IOError and OSError and visa versa.

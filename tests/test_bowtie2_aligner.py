@@ -40,7 +40,7 @@ def test_bowtie2_aligner_00():
 
     for fastq_gz in files:
         with gzip.open(fastq_gz + '.gz', 'rb') as fgz_in:
-            with open(fastq_gz, 'w') as f_out:
+            with open(fastq_gz, 'wb') as f_out:
                 f_out.write(fgz_in.read())
 
     assert os.path.isfile(fastq_file_1) is True
@@ -52,7 +52,7 @@ def test_bowtie2_aligner_00():
 @pytest.mark.bowtie2
 def test_bowtie2_aligner_single():
     """
-    Function to test BWA Aligner
+    Function to test Bowtie Aligner
     """
     resource_path = os.path.join(os.path.dirname(__file__), "data/")
     genome_fa = resource_path + "macs2.Human.GCA_000001405.22.fasta"
@@ -99,14 +99,14 @@ def test_bowtie2_aligner_single():
 
     try:
         os.remove(resource_path + "macs2.Human.DRR000150.22_bt2.bam")
-    except OSError, ose:
+    except OSError as ose:
         print("Error: %s - %s." % (ose.filename, ose.strerror))
 
 
 @pytest.mark.bowtie2
 def test_bowtie2_aligner_paired():
     """
-    Function to test BWA Aligner
+    Function to test Bowtie Aligner
     """
     resource_path = os.path.join(os.path.dirname(__file__), "data/")
     genome_fa = resource_path + "bsSeeker.Mouse.GRCm38.fasta"
@@ -159,10 +159,10 @@ def test_bowtie2_aligner_paired():
 
     try:
         os.remove(resource_path + "bsSeeker.Mouse.SRR892982_1_bt2.bam")
-    except OSError, ose:
+    except OSError as ose:
         print("Error: %s - %s." % (ose.filename, ose.strerror))
 
     try:
         shutil.rmtree(resource_path + "tmp")
-    except OSError, ose:
+    except OSError as ose:
         print("Error: %s - %s." % (ose.filename, ose.strerror))

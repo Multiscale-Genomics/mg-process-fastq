@@ -50,7 +50,7 @@
             "help": "Number of models to compute for each optimization step.",
             "type": "int",
             "required": true,
-            "value": "5"
+            "value": "1"
         },
         {
             "name": "optimization:num_mod_keep",
@@ -58,7 +58,7 @@
             "help": "Number of models to keep from the total of models computed, for the comparison with original Hi-C matrix.",
             "type": "int",
             "required": true,
-            "value": "5"
+            "value": "1"
         },
         {
             "name": "optimization:max_dist",
@@ -66,7 +66,7 @@
             "help": "Range of numbers for optimal maxdist parameter, i.e. 400:1000:100; or just a single number e.g. 800; or a list of numbers e.g. 400 600 800 1000.",
             "type": "string",
             "required": true,
-            "value": "400:600:200"
+            "value": "400:400:200"
         },
         {
             "name": "optimization:upper_bound",
@@ -74,7 +74,7 @@
             "help": "Range of numbers for optimal upfreq parameter, i.e. 0:1.2:0.3; or just a single number e.g. 0.8; or a list of numbers e.g. 0.1 0.3 0.5 0.9.",
             "type": "string",
             "required": true,
-            "value": "0:1.2:0.3"
+            "value": "0:0.3:0.3"
         },
         {
             "name": "optimization:lower_bound",
@@ -82,7 +82,7 @@
             "help": "Range of numbers for optimal low parameter, i.e. -1.2:0:0.3; or just a single number e.g. -0.8; or a list of numbers e.g. -0.1 -0.3 -0.5 -0.9.",
             "type": "string",
             "required": true,
-            "value": "-1.2:0:0.3"
+            "value": "-0.6:-0.6:0.3"
         },
         {
             "name": "optimization:cutoff",
@@ -125,7 +125,7 @@
             "value": "2"
         },
         {
-            "name": "generation:num__mod_comp",
+            "name": "generation:anum__mod_comp",
             "description": "Number of models to compute.",
             "help": "Number of models to compute for each optimization step.",
             "type": "int",

@@ -22,6 +22,8 @@ import os.path
 import argparse
 import collections
 
+from utils import logger
+
 class cd(object):
     """
     Context manager for changing the current working directory
@@ -48,6 +50,27 @@ class common(object):
         Initialise the module
         """
         print("Common functions")
+
+    @staticmethod
+    def zip_file(location):
+        """
+        Use pigz (gzip as a fallback) to compress a file
+        Parameters
+        ----------
+        location : str
+            Location of the file to be zipped
+        """
+        try:
+            command_line = 'pigz -p 2 ' + location
+            args = shlex.split(command_line)
+            process = subprocess.Popen(args)
+            process.wait()
+        except OSError:
+            logger.warn("OSERROR: pigz not installed, using gzip")
+            command_line = 'gzip ' + location
+            args = shlex.split(command_line)
+            process = subprocess.Popen(args)
+            process.wait()
 
     def replaceENAHeader(self, file_path, file_out):
         """

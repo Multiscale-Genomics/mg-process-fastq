@@ -52,7 +52,7 @@
             "type": "string",
             "required": false,
             "default": "Vanilla",
-            "value": "oneD"
+            "value": "Vanilla"
         }
     ],
     "output_files": [

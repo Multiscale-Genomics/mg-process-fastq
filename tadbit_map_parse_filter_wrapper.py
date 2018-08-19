@@ -47,7 +47,7 @@ if '/opt/COMPSs/Bindings/python' in sys.path:
 # ------------------------------------------------------------------------------
 class tadbit_map_parse_filter(Workflow):
     """
-    Wrapper for the VRE form TADbit map, parse and filter. 
+    Wrapper for the VRE form TADbit map, parse and filter.
     It combines different tools to map, merge and filter
     two fastq files corresponding to read1 and read2.
     """
@@ -67,7 +67,8 @@ class tadbit_map_parse_filter(Workflow):
         tool_extra_config = json.load(file(os.path.dirname(os.path.abspath(__file__))
                                            +'/tadbit_wrappers_config.json'))
         if os.path.isdir(format_utils.convert_from_unicode(tool_extra_config["bin_path"])):
-            os.environ["PATH"] += os.pathsep + format_utils.convert_from_unicode(tool_extra_config["bin_path"])
+            os.environ["PATH"] += os.pathsep + format_utils.convert_from_unicode(
+                tool_extra_config["bin_path"])
 
         if configuration is None:
             configuration = {}
@@ -97,8 +98,8 @@ class tadbit_map_parse_filter(Workflow):
             self.configuration['filters'] = [int(f) for f in self.configuration['filters']]
         if 'windows' in self.configuration:
             if self.configuration['windows']:
-                w1 = self.configuration['windows'].split(" ")
-                self.configuration['windows'] = [tuple(map(int, x.split(':'))) for x in w1]
+                windows1 = self.configuration['windows'].split(" ")
+                self.configuration['windows'] = [tuple(map(int, x.split(':'))) for x in windows1]
             else:
                 self.configuration['windows'] = ''
         else:
@@ -141,7 +142,8 @@ class tadbit_map_parse_filter(Workflow):
 
         if 'mapping:refGenome' in input_files:
             genome_gem = format_utils.convert_from_unicode(input_files['mapping:refGenome'])
-            assembly = format_utils.convert_from_unicode(metadata['mapping:refGenome'].meta_data['assembly'])
+            assembly = format_utils.convert_from_unicode(
+                metadata['mapping:refGenome'].meta_data['assembly'])
         elif 'mapping_refGenome' in self.configuration:
             genome_gem = self.configuration['public_dir']+ \
                 format_utils.convert_from_unicode(self.configuration['mapping_refGenome'])
@@ -153,7 +155,7 @@ class tadbit_map_parse_filter(Workflow):
                                "workdir", "windows", enzyme_name="rest_enzyme")
         input_metadata['quality_plot'] = True
         summary_file = input_metadata["workdir"]+'/'+'summary.txt'
-        
+
         logger.info("MAPPING")
         logger.info("Read 1 of 2")
         tfm1 = tbFullMappingTool()
@@ -223,7 +225,7 @@ class tadbit_map_parse_filter(Workflow):
 
         logger.info("FILTERING")
         tbf = tbFilterTool()
-        tf_files, tf_meta = tbf.run(tpm_files, [], input_metadata)
+        tf_files, _ = tbf.run(tpm_files, [], input_metadata)
         with open(summary_file, 'a') as outfile:
             outfile.write("\n\nFiltering\n--------------\n")
             with open(tf_files[-2]) as infile:
@@ -296,7 +298,9 @@ class tadbit_map_parse_filter(Workflow):
 # ------------------------------------------------------------------------------
 
 def main(args):
-
+    """
+    Main function
+    """
     from apps.jsonapp import JSONApp
     app = JSONApp()
     result = app.launch(tadbit_map_parse_filter,
@@ -331,22 +335,21 @@ if __name__ == "__main__":
     sys._run_from_cmdl = True # pylint: disable=protected-access
 
     # Set up the command line parameters
-    parser = argparse.ArgumentParser(description="TADbit map")
+    PARSER = argparse.ArgumentParser(description="TADbit map")
     # Config file
-    parser.add_argument("--config", help="Configuration JSON file",
+    PARSER.add_argument("--config", help="Configuration JSON file",
                         type=CommandLineParser.valid_file, metavar="config", required=True)
 
     # Metadata
-    parser.add_argument("--in_metadata", help="Project metadata", \
+    PARSER.add_argument("--in_metadata", help="Project metadata", \
                         metavar="in_metadata", required=True)
     # Output metadata
-    parser.add_argument("--out_metadata", help="Output metadata", \
+    PARSER.add_argument("--out_metadata", help="Output metadata", \
                         metavar="output_metadata", required=True)
     # Log file
-    parser.add_argument("--log_file", help="Log file", metavar="log_file", required=True)
+    PARSER.add_argument("--log_file", help="Log file", metavar="log_file", required=True)
 
-    in_args = parser.parse_args()
+    IN_ARGS = PARSER.parse_args()
 
-    RESULTS = main(in_args)
-
-    # logger.info(RESULTS)
+    RESULTS = main(IN_ARGS)
+    

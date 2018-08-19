@@ -19,6 +19,12 @@ from __future__ import print_function
 
 import sys
 
+from pytadbit.parsers.genome_parser import parse_fasta  # pylint: disable=import-error
+from pytadbit.parsers.map_parser import parse_map  # pylint: disable=import-error
+from pytadbit.mapping import get_intersection  # pylint: disable=import-error
+
+from basic_modules.tool import Tool
+
 from utils import logger
 
 try:
@@ -36,12 +42,6 @@ except ImportError:
     from utils.dummy_pycompss import task  # pylint: disable=ungrouped-imports
     # from utils.dummy_pycompss import constraint  # pylint: disable=ungrouped-imports
     from utils.dummy_pycompss import compss_wait_on  # pylint: disable=ungrouped-imports
-
-from basic_modules.tool import Tool
-
-from pytadbit.parsers.genome_parser import parse_fasta  # pylint: disable=import-error
-from pytadbit.parsers.map_parser import parse_map  # pylint: disable=import-error
-from pytadbit.mapping import get_intersection  # pylint: disable=import-error
 
 # ------------------------------------------------------------------------------
 
@@ -63,7 +63,6 @@ class tbParseMappingTool(Tool):
         window1_1=FILE_IN, window1_2=FILE_IN, window1_3=FILE_IN, window1_4=FILE_IN,
         window2_1=FILE_IN, window2_2=FILE_IN, window2_3=FILE_IN, window2_4=FILE_IN,
         reads=FILE_OUT)
-    # @constraint(ProcessorCoreCount=32)
     def tb_parse_mapping_iter(
             self, genome_seq, enzyme_name,
             window1_1, window1_2, window1_3, window1_4,
@@ -122,7 +121,7 @@ class tbParseMappingTool(Tool):
         if window1_4 and window2_4:
             wind1 += [window1_4]
             wind2 += [window2_4]
-            
+
         parse_map(
             wind1,
             wind2,
@@ -134,7 +133,7 @@ class tbParseMappingTool(Tool):
             ncpus=ncpus
         )
 
-        counts, multiples = get_intersection(reads1, reads2, reads_both, verbose=True)
+        counts, _ = get_intersection(reads1, reads2, reads_both, verbose=True)
 
         with open(reads, "wb") as f_out:
             with open(reads_both, "rb") as f_in:
@@ -147,7 +146,6 @@ class tbParseMappingTool(Tool):
         window1_full=FILE_IN, window1_frag=FILE_IN,
         window2_full=FILE_IN, window2_frag=FILE_IN,
         reads=FILE_OUT)
-    # @constraint(ProcessorCoreCount=32)
     def tb_parse_mapping_frag(
             self, genome_seq, enzyme_name,
             window1_full, window1_frag, window2_full, window2_frag,
@@ -206,7 +204,7 @@ class tbParseMappingTool(Tool):
             ncpus=ncpus
         )
 
-        counts, multiples = get_intersection(reads1, reads2, reads_both, verbose=True)
+        counts, _ = get_intersection(reads1, reads2, reads_both, verbose=True)
 
         with open(reads, "wb") as f_out:
             with open(reads_both, "rb") as f_in:
@@ -331,25 +329,26 @@ class tbParseMappingTool(Tool):
         filter_chrom = None
         if 'chromosomes' in metadata and metadata['chromosomes'] != '':
             filter_chrom = metadata['chromosomes'].split(',')
-            
+
         root_name = input_files[1].split("/")
 
         reads = "/".join(root_name[0:-1]) + '/'
 
         genome_seq = parse_fasta(genome_file, chr_filter=filter_chrom,
-                                 chr_regexp="^(chr)?[A-Za-z]?[0-9]{0,3}[XVI]{0,3}(?:ito)?[A-Z-a-z]?$",
-                                 save_cache=False, reload_cache=True)
+                    chr_regexp="^(chr)?[A-Za-z]?[0-9]{0,3}[XVI]{0,3}(?:ito)?[A-Z-a-z]?$",
+                    save_cache=False, reload_cache=True)
 
-        if len(genome_seq) == 0:
+        if not genome_seq:
             genome_seq = parse_fasta(genome_file, chr_filter=filter_chrom,
                                      save_cache=False, reload_cache=True)
-            if len(genome_seq) == 0:
+            if not genome_seq:
                 logger.fatal("Reference genome FASTA file does not contain any valid chromosome")
                 raise ValueError('No valid chromosomes in FASTA.')
             else:
-                logger.warn("No chromosomes headers found in fasta, found {0}.".format([k for k in genome_seq]))
+                logger.warn("No chromosomes headers found in fasta, found {0}.".format(
+                    [k for k in genome_seq]))
                 logger.warn("Using them instead")
-            
+
         chromosome_meta = []
         for k in genome_seq:
             chromosome_meta.append([k, len(genome_seq[k])])
@@ -380,7 +379,8 @@ class tbParseMappingTool(Tool):
                 results = compss_wait_on(results)
                 if results == 0:
                     output_metadata = {
-                        'error' : 'No interactions found, please verify input data and chromosome filtering'
+                        'error' : 'No interactions found, \
+                        please verify input data and chromosome filtering'
                     }
                     return ([], output_metadata)
                 return ([read_iter], output_metadata)
@@ -403,7 +403,8 @@ class tbParseMappingTool(Tool):
                 results = compss_wait_on(results)
                 if results == 0:
                     output_metadata = {
-                        'error' : 'No interactions found, please verify input data and chromosome filtering'
+                        'error' : 'No interactions found, \
+                        please verify input data and chromosome filtering'
                     }
                     return ([], output_metadata)
                 return ([read_frag], output_metadata)

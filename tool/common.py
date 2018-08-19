@@ -21,6 +21,8 @@ import shlex
 import shutil
 import subprocess
 import tarfile
+import argparse
+import collections
 
 from utils import logger
 
@@ -144,3 +146,51 @@ class common(object):  # pylint: disable=too-few-public-methods, invalid-name
             args = shlex.split(command_line)
             process = subprocess.Popen(args)
             process.wait()
+
+class CommandLineParser(object):
+    """Parses command line"""
+    @staticmethod
+    def valid_file(file_name):
+        if not os.path.exists(file_name):
+            raise argparse.ArgumentTypeError("The file does not exist")
+        return file_name
+
+    @staticmethod
+    def valid_integer_number(ivalue):
+        try:
+            ivalue = int(ivalue)
+        except:
+            raise argparse.ArgumentTypeError("%s is an invalid value" % ivalue)
+        if ivalue <= 0:
+            raise argparse.ArgumentTypeError("%s is an invalid value" % ivalue)
+        return ivalue
+
+class format_utils(object):
+    """
+    Useful functions to format strings 
+    """
+    @staticmethod
+    def convert_from_unicode(data):
+        """
+        Converts from unicode to string.
+
+        Parameters
+        ----------
+        data : str or collection
+            Input object in unicode
+        """
+        if isinstance(data, basestring):
+            return str(data)
+        if isinstance(data, collections.Mapping):
+            return dict(map(format_utils.convert_from_unicode, data.iteritems()))
+        if isinstance(data, collections.Iterable):
+            return type(data)(map(format_utils.convert_from_unicode, data))
+        return data
+    @staticmethod
+    def nice(reso):
+        """
+        Function to nicely format resolution in Mb or Kb
+        """
+        if reso >= 1000000:
+            return '%dMb' % (reso / 1000000)
+        return '%dkb' % (reso / 1000)

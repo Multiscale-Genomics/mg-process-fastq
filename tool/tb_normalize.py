@@ -22,6 +22,8 @@ import os
 from subprocess import PIPE, Popen
 import subprocess
 
+from basic_modules.tool import Tool
+
 from utils import logger
 
 try:
@@ -40,8 +42,6 @@ except ImportError:
     from utils.dummy_pycompss import compss_wait_on # pylint: disable=ungrouped-imports
     #from utils.dummy_pycompss import constraint
 
-from basic_modules.tool import Tool
-
 # ------------------------------------------------------------------------------
 
 class tbNormalizeTool(Tool):
@@ -59,8 +59,9 @@ class tbNormalizeTool(Tool):
     @task(bamin=FILE_IN, normalization=IN, resolution=IN, min_perc=IN,
           max_perc=IN, workdir=IN, biases=FILE_OUT, interactions_plot=FILE_OUT,
           filtered_bins_plot=FILE_OUT)
-    # @constraint(ProcessorCoreCount=16)
-    def tb_normalize(self, bamin, normalization, resolution, min_perc, max_perc, workdir, ncpus="1", min_count=None, fasta=None, mappability=None, rest_enzyme=None):
+    def tb_normalize(self, bamin, normalization, resolution, min_perc,
+                     max_perc, workdir, ncpus="1", min_count=None, fasta=None,
+                     mappability=None, rest_enzyme=None):
         """
         Function to normalize to a given resolution the Hi-C
         matrix
@@ -104,7 +105,8 @@ class tbNormalizeTool(Tool):
         """
         #chr_hic_data = read_matrix(matrix_file, resolution=int(resolution))
 
-        logger.info("TB NORMALIZATION: {0} {1} {2} {3} {4} {5}".format(bamin, normalization, resolution, min_perc, max_perc, workdir))
+        logger.info("TB NORMALIZATION: {0} {1} {2} {3} {4} {5}".format(
+            bamin, normalization, resolution, min_perc, max_perc, workdir))
 
         _cmd = [
             'tadbit', 'normalize',
@@ -132,33 +134,34 @@ class tbNormalizeTool(Tool):
             _cmd.append(mappability)
             _cmd.append('--renz')
             _cmd.append(rest_enzyme)
-                    
+
         output_metadata = {}
         output_files = []
 
         try:
-            proc = subprocess.check_output(_cmd, stderr=subprocess.STDOUT)
-        except subprocess.CalledProcessError as e:
-            logger.info(e.output)
+            _ = subprocess.check_output(_cmd, stderr=subprocess.STDOUT,
+                                        cwd=workdir)
+        except subprocess.CalledProcessError as subp_err:
+            logger.info(subp_err.output)
             if not min_count:
                 logger.info("cis/trans ratio failed, trying with min_count. Disabling plot.")
                 _cmd.append('--min_count')
                 _cmd.append('10')
                 _cmd.append('--normalize_only')
                 try:
-                    proc = subprocess.check_output(_cmd, stderr=subprocess.STDOUT)
-                except subprocess.CalledProcessError as e:
-                    logger.fatal(e.output)
+                    _ = subprocess.check_output(_cmd, stderr=subprocess.STDOUT)
+                except subprocess.CalledProcessError as subp_err:
+                    logger.fatal(subp_err.output)
 
         os.chdir(workdir+"/04_normalization")
-        for fl in glob.glob("biases_*.pickle"):
-            output_files.append(os.path.abspath(fl))
+        for fl_file in glob.glob("biases_*.pickle"):
+            output_files.append(os.path.abspath(fl_file))
             break
-        for fl in glob.glob("interactions*.png"):
-            output_files.append(os.path.abspath(fl))
+        for fl_file in glob.glob("interactions*.png"):
+            output_files.append(os.path.abspath(fl_file))
             break
-        for fl in glob.glob("filtered_bins_*.png"):
-            output_files.append(os.path.abspath(fl))
+        for fl_file in glob.glob("filtered_bins_*.png"):
+            output_files.append(os.path.abspath(fl_file))
             break
 
         return (output_files, output_metadata)
@@ -194,9 +197,8 @@ class tbNormalizeTool(Tool):
             mappability: str
                 Location of the file with mappability, required for oneD normalization
             rest_enzyme: str
-                For oneD normalization. Name of the restriction enzyme used to do the Hi-C experiment
-
-
+                For oneD normalization.
+                Name of the restriction enzyme used to do the Hi-C experiment
 
         Returns
         -------
@@ -219,11 +221,11 @@ class tbNormalizeTool(Tool):
         resolution = '1000000'
         if 'resolution' in metadata:
             resolution = metadata['resolution']
-        
+
         normalization = 'Vanilla'
         if 'normalization' in metadata:
             normalization = metadata['normalization']
-        
+
         min_perc = max_perc = min_count = fasta = mappability = rest_enzyme = None
         ncpus = 1
         if 'ncpus' in metadata:
@@ -247,7 +249,9 @@ class tbNormalizeTool(Tool):
 
         # input and output share most metadata
 
-        output_files, output_metadata = self.tb_normalize(bamin, normalization, resolution, min_perc, max_perc, root_name, ncpus, min_count, fasta, mappability, rest_enzyme)
+        output_files, output_metadata = self.tb_normalize(bamin, normalization,
+                            resolution, min_perc, max_perc, root_name, ncpus,
+                            min_count, fasta, mappability, rest_enzyme)
 
         return (output_files, output_metadata)
 

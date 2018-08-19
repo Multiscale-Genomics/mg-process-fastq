@@ -22,28 +22,24 @@ from subprocess import PIPE, Popen
 import os
 from cPickle import load
 
-from utils import logger
-
 from pytadbit.parsers.hic_bam_parser import write_matrix
 from pytadbit import Chromosome
 from pytadbit.parsers.hic_parser import load_hic_data_from_bam
 from pytadbit.mapping.analyze import hic_map
+
+from utils import logger
 
 try:
     if hasattr(sys, '_run_from_cmdl') is True:
         raise ImportError
     from pycompss.api.parameter import FILE_IN, FILE_OUT, FILE_INOUT, IN
     from pycompss.api.task import task
-    from pycompss.api.api import compss_wait_on
-    # from pycompss.api.constraint import constraint
 except ImportError:
     logger.info("[Warning] Cannot import \"pycompss\" API packages.")
     logger.info("          Using mock decorators.")
 
     from utils.dummy_pycompss import FILE_IN, FILE_OUT, IN # pylint: disable=ungrouped-imports
     from utils.dummy_pycompss import task # pylint: disable=ungrouped-imports
-    from utils.dummy_pycompss import compss_wait_on # pylint: disable=ungrouped-imports
-    # from utils.dummy_pycompss import constraint # pylint: disable=ungrouped-imports
 
 from basic_modules.tool import Tool
 
@@ -64,8 +60,8 @@ class tbBinTool(Tool):
     @task(bamin=FILE_IN, biases=FILE_IN, resolution=IN, coord1=IN, coord2=IN,
           norm=IN, workdir=IN, raw_matrix=FILE_OUT, raw_fig=FILE_OUT,
           nrm_matrix=FILE_OUT, nrm_fig=FILE_OUT, json_matrix=FILE_OUT)
-    # @constraint(ProcessorCoreCount=16)
-    def tb_bin(self, bamin, biases, resolution, coord1, coord2, norm, workdir, ncpus="1", metadata=None):
+    def tb_bin(self, bamin, biases, resolution, coord1, coord2,
+               norm, workdir, ncpus="1", metadata=None):
         """
         Function to bin to a given resolution the Hi-C
         matrix
@@ -189,9 +185,11 @@ class tbBinTool(Tool):
             else:
                 by_chrom = 'all'
                 hic_contacts_matrix_raw_fig = workdir+"/genomic_maps_raw"
-        hic_map(imx, resolution, savefig=hic_contacts_matrix_raw_fig, normalized=False, by_chrom=by_chrom, focus=focus)
+        hic_map(imx, resolution, savefig=hic_contacts_matrix_raw_fig,
+                normalized=False, by_chrom=by_chrom, focus=focus)
         if by_chrom == 'all':
-            hic_map(imx, resolution, savefig=hic_contacts_matrix_raw_fig+"/full_map.png", normalized=False, by_chrom=None, focus=focus)
+            hic_map(imx, resolution, savefig=hic_contacts_matrix_raw_fig+"/full_map.png",
+                    normalized=False, by_chrom=None, focus=focus)
         output_files.append(hic_contacts_matrix_raw_fig)
 
         if len(norm) > 1:
@@ -199,12 +197,15 @@ class tbBinTool(Tool):
             hic_contacts_matrix_norm_fig = workdir+"/genomic_maps_nrm.png"
             if by_chrom == 'all':
                 hic_contacts_matrix_norm_fig = workdir+"/genomic_maps_nrm"
-            hic_map(imx, resolution, savefig=hic_contacts_matrix_norm_fig, normalized=True, by_chrom=by_chrom, focus=focus)
+            hic_map(imx, resolution, savefig=hic_contacts_matrix_norm_fig,
+                    normalized=True, by_chrom=by_chrom, focus=focus)
             if by_chrom == 'all':
-                hic_map(imx, resolution, savefig=hic_contacts_matrix_norm_fig+"/full_map.png", normalized=True, by_chrom=None, focus=focus)
+                hic_map(imx, resolution, savefig=hic_contacts_matrix_norm_fig+"/full_map.png",
+                        normalized=True, by_chrom=None, focus=focus)
             output_files.append(hic_contacts_matrix_norm_fig)
 
-        json_chr = Chromosome(name="VRE Chromosome", species=metadata["species"], assembly=metadata["assembly"], max_tad_size=260000)
+        json_chr = Chromosome(name="VRE Chromosome", species=metadata["species"],
+                              assembly=metadata["assembly"], max_tad_size=260000)
         json_chr.add_experiment(
             "exp1", resolution,
             hic_data=imx,
@@ -303,7 +304,8 @@ class tbBinTool(Tool):
         project_metadata["species"] = metadata["species"]
         project_metadata["assembly"] = metadata["assembly"]
 
-        output_files, output_metadata = self.tb_bin(bamin, biases, resolution, coord1, coord2, norm, root_name, ncpus, project_metadata)
+        output_files, output_metadata = self.tb_bin(bamin, biases, resolution,
+                        coord1, coord2, norm, root_name, ncpus, project_metadata)
 
         return (output_files, output_metadata)
 

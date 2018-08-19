@@ -45,7 +45,7 @@ from tool.tb_segment import tbSegmentTool
 # ------------------------------------------------------------------------------
 class tadbit_segment(Workflow):
     """
-    Wrapper for the VRE form TADbit segment. 
+    Wrapper for the VRE form TADbit segment.
     It detects TADs and compartments from a BAM file.
     """
     configuration = {}
@@ -62,16 +62,15 @@ class tadbit_segment(Workflow):
             should be carried out, which are specific to each Tool.
         """
 
-        tool_extra_config = json.load(file(os.path.dirname(os.path.abspath(__file__))+'/tadbit_wrappers_config.json'))
-        os.environ["PATH"] += os.pathsep + format_utils.convert_from_unicode(tool_extra_config["bin_path"])
+        tool_extra_config = json.load(file(os.path.dirname(
+            os.path.abspath(__file__))+'/tadbit_wrappers_config.json'))
+        os.environ["PATH"] += os.pathsep + format_utils.convert_from_unicode(
+            tool_extra_config["bin_path"])
 
         if configuration is None:
             configuration = {}
 
         self.configuration.update(format_utils.convert_from_unicode(configuration))
-
-        #self.configuration['public_dir'] = '/orozco/services/MuG/MuG_public/refGenomes/'
-        #self.configuration['public_dir'] = '/scratch/genomes/'
 
         # Number of cores available
         num_cores = multiprocessing.cpu_count()
@@ -111,13 +110,15 @@ class tadbit_segment(Workflow):
         )
         m_results_files = {}
         m_results_meta = {}
-        #hic_data = load_hic_data_from_reads('/home/dcastillo/workspace/vre/mg-process-fastq-tadbit/tests/data/raw_None:0-13381_10kb.abc', resolution=10000)
-        #exp = Experiment("vre", resolution=10000, hic_data=hic_data)
 
-        input_metadata = remap(self.configuration, "resolution", "callers", "workdir", "ncpus")
-        assembly = format_utils.convert_from_unicode(metadata['bamin'].meta_data['assembly'])
-        if 'refGenomes_folder' in input_files and os.path.isfile(format_utils.convert_from_unicode(input_files['refGenomes_folder'])+assembly+'/'+assembly+'.fa'):
-            input_metadata["fasta"] = format_utils.convert_from_unicode(input_files['refGenomes_folder'])+assembly+'/'+assembly+'.fa'
+        input_metadata = remap(self.configuration,
+                               "resolution", "callers", "workdir", "ncpus")
+        assembly = format_utils.convert_from_unicode(
+            metadata['bamin'].meta_data['assembly'])
+        if 'refGenomes_folder' in input_files and os.path.isfile(format_utils.convert_from_unicode(
+                input_files['refGenomes_folder'])+assembly+'/'+assembly+'.fa'):
+            input_metadata["fasta"] = format_utils.convert_from_unicode(
+                input_files['refGenomes_folder'])+assembly+'/'+assembly+'.fa'
         if "chromosome_names" in self.configuration:
             input_metadata["chromosomes"] = self.configuration["chromosome_names"]
 
@@ -125,11 +126,11 @@ class tadbit_segment(Workflow):
         if 'biases' in input_files:
             in_files.append(format_utils.convert_from_unicode(input_files['biases']))
 
-        #hic_data = HiC_data((), len(bins_dict), sections, bins_dict, resolution=int(input_metadata['resolution']))
-        ts = tbSegmentTool()
-        ts_files, ts_meta = ts.run(in_files, [], input_metadata)
+        ts_handler = tbSegmentTool()
+        ts_files, _ = ts_handler.run(in_files, [], input_metadata)
 
-        m_results_files["tads_compartments"] = self.configuration['project']+"/tads_compartments.tar.gz"
+        m_results_files["tads_compartments"] = self.configuration['project']+ \
+            "/tads_compartments.tar.gz"
 
         tar = tarfile.open(m_results_files["tads_compartments"], "w:gz")
         if '1' in self.configuration['callers'] and '2' in self.configuration['callers']:
@@ -163,7 +164,9 @@ class tadbit_segment(Workflow):
 # ------------------------------------------------------------------------------
 
 def main(args):
-
+    """
+    Main function
+    """
     from apps.jsonapp import JSONApp
     app = JSONApp()
     result = app.launch(tadbit_segment,
@@ -198,21 +201,22 @@ if __name__ == "__main__":
     sys._run_from_cmdl = True # pylint: disable=protected-access
 
     # Set up the command line parameters
-    parser = argparse.ArgumentParser(description="TADbit map")
+    PARSER = argparse.ArgumentParser(description="TADbit map")
     # Config file
-    parser.add_argument("--config", help="Configuration JSON file",
+    PARSER.add_argument("--config", help="Configuration JSON file",
                         type=CommandLineParser.valid_file, metavar="config", required=True)
 
     # Metadata
-    parser.add_argument("--in_metadata", help="Project metadata", metavar="in_metadata", required=True)
+    PARSER.add_argument("--in_metadata", help="Project metadata",
+                        metavar="in_metadata", required=True)
     # Output metadata
-    parser.add_argument("--out_metadata", help="Output metadata", metavar="output_metadata", required=True)
+    PARSER.add_argument("--out_metadata", help="Output metadata",
+                        metavar="output_metadata", required=True)
     # Log file
-    parser.add_argument("--log_file", help="Log file", metavar="log_file", required=True)
+    PARSER.add_argument("--log_file", help="Log file",
+                        metavar="log_file", required=True)
 
-    in_args = parser.parse_args()
+    IN_ARGS = PARSER.parse_args()
 
-    RESULTS = main(in_args)
-
-    # print(RESULTS)
+    RESULTS = main(IN_ARGS)
     

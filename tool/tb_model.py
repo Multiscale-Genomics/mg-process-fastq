@@ -21,6 +21,8 @@ import glob
 import os
 from subprocess import PIPE, Popen
 
+from basic_modules.tool import Tool
+
 from utils import logger
 
 try:
@@ -38,9 +40,6 @@ except ImportError:
     from utils.dummy_pycompss import task # pylint: disable=ungrouped-imports
     from utils.dummy_pycompss import compss_wait_on # pylint: disable=ungrouped-imports
     #from utils.dummy_pycompss import constraint
-
-from basic_modules.tool import Tool
-
 
 # ------------------------------------------------------------------------------
 
@@ -60,8 +59,8 @@ class tbModelTool(Tool):
           gen_pos_begin=IN, gen_pos_end=IN, num_mod_comp=IN, num_mod_keep=IN,
           max_dist=IN, upper_bound=IN, lower_bound=IN, cutoff=IN, workdir=IN,
           model_dir=FILE_OUT)
-    # @constraint(ProcessorCoreCount=16)
-    def tb_model(self, optimize_only, hic_contacts_matrix_norm, resolution, gen_pos_chrom_name, gen_pos_begin,
+    def tb_model(self, optimize_only, hic_contacts_matrix_norm, resolution,
+                 gen_pos_chrom_name, gen_pos_begin,
                  gen_pos_end, num_mod_comp, num_mod_keep,
                  max_dist, upper_bound, lower_bound, cutoff, workdir, metadata,
                  ncpus=1):
@@ -88,14 +87,20 @@ class tbModelTool(Tool):
         num_mod_comp : int
             Number of models to keep.
         max_dist : str
-            Range of numbers for optimal maxdist parameter, i.e. 400:1000:100; or just a single number e.g. 800; or a list of numbers e.g. 400 600 800 1000.
+            Range of numbers for optimal maxdist parameter, i.e. 400:1000:100;
+            or just a single number e.g. 800; or a list of numbers e.g. 400 600 800 1000.
         upper_bound : int
-            Range of numbers for optimal upfreq parameter, i.e. 0:1.2:0.3; or just a single number e.g. 0.8; or a list of numbers e.g. 0.1 0.3 0.5 0.9.
+            Range of numbers for optimal upfreq parameter, i.e. 0:1.2:0.3;
+            or just a single number e.g. 0.8; or a list of numbers e.g. 0.1 0.3 0.5 0.9.
         lower_bound : int
-            Range of numbers for optimal low parameter, i.e. -1.2:0:0.3; or just a single number e.g. -0.8; or a list of numbers e.g. -0.1 -0.3 -0.5 -0.9.
+            Range of numbers for optimal low parameter, i.e. -1.2:0:0.3;
+            or just a single number e.g. -0.8; or a list of numbers e.g. -0.1 -0.3 -0.5 -0.9.
         cutoff : str
-            Range of numbers for optimal cutoff distance. Cutoff is computed based on the resolution. This cutoff distance is calculated taking as reference the diameter
-            of a modeled particle in the 3D model. i.e. 1.5:2.5:0.5; or just a single number e.g. 2; or a list of numbers e.g. 2 2.5.
+            Range of numbers for optimal cutoff distance.
+            Cutoff is computed based on the resolution.
+            This cutoff distance is calculated taking as reference the diameter
+            of a modeled particle in the 3D model. i.e. 1.5:2.5:0.5;
+            or just a single number e.g. 2; or a list of numbers e.g. 2 2.5.
         workdir : str
             Location of working directory
         ncpus : str
@@ -110,8 +115,9 @@ class tbModelTool(Tool):
 
         """
         #chr_hic_data = read_matrix(matrix_file, resolution=int(resolution))
-        
-        logger.info("TB MODELING: {0},{1},{2},{3},{4},{5},{6},{7},{8},{9},{10},{11}".format(hic_contacts_matrix_norm,
+
+        logger.info("TB MODELING: {0},{1},{2},{3},{4},{5},{6},{7},{8},{9},{10},{11}".format(
+            hic_contacts_matrix_norm,
             resolution, gen_pos_chrom_name, gen_pos_begin,
             gen_pos_end, num_mod_comp, num_mod_keep,
             max_dist, upper_bound, lower_bound, cutoff, workdir))
@@ -193,7 +199,7 @@ class tbModelTool(Tool):
             '--project', metadata["project"],
             '--fig_format', 'png'
             ]
-        if len(gen_pos_chrom_name) > 0:
+        if gen_pos_chrom_name:
             _cmd.append('--crm')
             _cmd.append(gen_pos_chrom_name)
         if gen_pos_begin and gen_pos_end:
@@ -205,14 +211,14 @@ class tbModelTool(Tool):
         _cmd.append(str(num_mod_comp))
         _cmd.append('--nkeep')
         _cmd.append(str(num_mod_keep))
-        
+
         if optimize_only:
             _cmd.append('--optimize')
         else:
             _cmd.append('--model')
             _cmd.append('--force')
             _cmd.append('--analyze')
-            
+
         output_metadata = {}
         logger.info(' '.join(_cmd))
         out, err = Popen(_cmd, stdout=PIPE, stderr=PIPE).communicate()
@@ -224,11 +230,11 @@ class tbModelTool(Tool):
 
         if not optimize_only:
             os.chdir(os.path.join(workdir, name,'06_model',output_folder))
-            for fl in glob.glob("*.json"):
-                output_files.append(fl)
+            for fl_file in glob.glob("*.json"):
+                output_files.append(fl_file)
                 break
-            for fl in glob.glob("*optimal_params*"):
-                os.unlink(fl)
+            for fl_file in glob.glob("*optimal_params*"):
+                os.unlink(fl_file)
 
         return (output_files, output_metadata)
 
@@ -257,14 +263,20 @@ class tbModelTool(Tool):
             num_mod_comp : int
                 Number of models to keep.
             max_dist : str
-                Range of numbers for optimal maxdist parameter, i.e. 400:1000:100; or just a single number e.g. 800; or a list of numbers e.g. 400 600 800 1000.
+                Range of numbers for optimal maxdist parameter, i.e. 400:1000:100;
+                or just a single number e.g. 800; or a list of numbers e.g. 400 600 800 1000.
             upper_bound : int
-                Range of numbers for optimal upfreq parameter, i.e. 0:1.2:0.3; or just a single number e.g. 0.8; or a list of numbers e.g. 0.1 0.3 0.5 0.9.
+                Range of numbers for optimal upfreq parameter, i.e. 0:1.2:0.3;
+                or just a single number e.g. 0.8; or a list of numbers e.g. 0.1 0.3 0.5 0.9.
             lower_bound : int
-                Range of numbers for optimal low parameter, i.e. -1.2:0:0.3; or just a single number e.g. -0.8; or a list of numbers e.g. -0.1 -0.3 -0.5 -0.9.
+                Range of numbers for optimal low parameter, i.e. -1.2:0:0.3;
+                or just a single number e.g. -0.8; or a list of numbers e.g. -0.1 -0.3 -0.5 -0.9.
             cutoff : str
-                Range of numbers for optimal cutoff distance. Cutoff is computed based on the resolution. This cutoff distance is calculated taking as reference the diameter
-                of a modeled particle in the 3D model. i.e. 1.5:2.5:0.5; or just a single number e.g. 2; or a list of numbers e.g. 2 2.5.
+                Range of numbers for optimal cutoff distance.
+                Cutoff is computed based on the resolution.
+                This cutoff distance is calculated taking as reference the diameter
+                of a modeled particle in the 3D model. i.e. 1.5:2.5:0.5;
+                or just a single number e.g. 2; or a list of numbers e.g. 2 2.5.
             workdir : str
                 Location of working directory
             ncpus : str
@@ -308,9 +320,10 @@ class tbModelTool(Tool):
 
         # input and output share most metadata
 
-        output_files, output_metadata = self.tb_model(optimize_only, hic_contacts_matrix_norm, resolution, gen_pos_chrom_name, gen_pos_begin,
-                                                      gen_pos_end, num_mod_comp, num_mod_keep,
-                                                      max_dist, upper_bound, lower_bound, cutoff, root_name,
-                                                      project_metadata, ncpus)
+        output_files, output_metadata = self.tb_model(optimize_only, hic_contacts_matrix_norm,
+                                resolution, gen_pos_chrom_name, gen_pos_begin,
+                                gen_pos_end, num_mod_comp, num_mod_keep,
+                                max_dist, upper_bound, lower_bound, cutoff, root_name,
+                                project_metadata, ncpus)
 
         return (output_files, output_metadata)

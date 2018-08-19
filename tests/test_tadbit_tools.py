@@ -18,6 +18,7 @@
 from __future__ import print_function
 
 from os import path, remove
+import gzip
 import pytest # pylint: disable=unused-import
 
 from basic_modules.metadata import Metadata
@@ -32,15 +33,20 @@ def test_tadbit_tools():
     """
     Test case to ensure that the tadbit tools code works.
     """
-    
+
     resource_path = path.join(path.dirname(__file__), "data/")
-    
+
     files = {
-        "parsing:refGenome": resource_path + 'tb.Human.GCA_000001405.22_gem.fasta',
-        "mapping:refGenome": resource_path + 'tb.Human.GCA_000001405.22_gem.fasta.gem',
+        "parsing:refGenome": resource_path + 'tb.Human.GCA_000001405.22.fasta',
+        "mapping:refGenome": resource_path + 'tb.Human.GCA_000001405.22.fasta.gem',
         "read1": resource_path + 'tb.Human.SRR1658573_1.fastq',
         "read2": resource_path + 'tb.Human.SRR1658573_2.fastq'
     }
+    assert path.isfile(files["parsing:refGenome"]), \
+        "Missing refGenome, please run test_gem_indexer first"
+    with gzip.open(files["mapping:refGenome"] + '.gz', 'rb') as fgz_in:
+        with open(files["mapping:refGenome"], 'wb') as f_out:
+            f_out.write(fgz_in.read())
     metadata_1 = {}
     metadata_1["read1"] = Metadata(
                     data_type = "hic_reads",
@@ -112,7 +118,7 @@ def test_tadbit_tools():
         remove(resource_path + "/data/paired_reads.bam.bai")
     if path.isfile(resource_path + "/data/map_parse_filter_stats.tar.gz"):
         remove(resource_path + "/data/map_parse_filter_stats.tar.gz")
-    
+
     tb_handle = tadbit_map_parse_filter(configuration=config)
     tb_1_files, tb_1_meta = tb_handle.run(files, metadata_1, [])
 
@@ -125,7 +131,7 @@ def test_tadbit_tools():
     files = {
         "bamin": tb_1_files["paired_reads"]
     }
-    
+
     metadata_2 = {}
     metadata_2["bamin"] = tb_1_meta["paired_reads"]
     config = {
@@ -140,17 +146,17 @@ def test_tadbit_tools():
             ]
     }
     tb_handle = tadbit_segment(configuration=config)
-    tb_2_files, tb_2_meta = tb_handle.run(files, metadata_2, [])
+    tb_2_files, _ = tb_handle.run(files, metadata_2, [])
 
     print(tb_2_files)
 
     for tb_file in tb_2_files:
         assert path.isfile(tb_2_files[tb_file]) is True
         assert path.getsize(tb_2_files[tb_file]) > 0
-    
+
     files = {
         "bamin": tb_1_files["paired_reads"],
-        "refGenomes_folder": resource_path + 'tb.Human.GCA_000001405.22_gem.fasta'
+        "refGenomes_folder": resource_path + 'tb.Human.GCA_000001405.22.fasta'
     }
     metadata_3 = {}
     metadata_3["bamin"] = tb_1_meta["paired_reads"]
@@ -165,18 +171,18 @@ def test_tadbit_tools():
     }
     tb_handle = tadbit_normalize(configuration=config)
     tb_3_files, tb_3_meta = tb_handle.run(files, metadata_3, [])
- 
+
     print(tb_3_files)
- 
+
     for tb_file in tb_3_files:
         assert path.isfile(tb_3_files[tb_file]) is True
         assert path.getsize(tb_3_files[tb_file]) > 0
-        
+
     files = {
         "bamin": tb_1_files["paired_reads"],
         "hic_biases": tb_3_files["hic_biases"]
     }
-    
+
     metadata_4 = {}
     metadata_4["bamin"] = tb_1_meta["paired_reads"]
     metadata_4["hic_biases"] = tb_3_meta["hic_biases"]
@@ -188,7 +194,7 @@ def test_tadbit_tools():
         "coord1": ""
     }
     tb_handle = tadbit_bin(configuration=config)
-    tb_4_files, tb_4_meta = tb_handle.run(files, metadata_4, [])
+    tb_4_files, _ = tb_handle.run(files, metadata_4, [])
 
     print(tb_4_files)
 

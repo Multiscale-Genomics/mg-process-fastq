@@ -168,3 +168,9 @@ IOError was depricated in favour of OSError when moving to py3, but to maintian 
 -----------------------------------------------
 
 Using the directory of the input file for building the location of the working directory with outside of a task is not a viable option as it can write data to the wrong directory. The execution path provided in the config.json arguments is the right place. This location is also the location for output files. This issue occurred as the FASTQ splitter was generating a tar file that the aligners were downloading to the wrong location. Even though this was tidied up this was still not the right place to put this file.
+
+
+2018-08-16 - Prevent further duplicate filtering by MACS2
+---------------------------------------------------------
+
+In the process_chipseq.py pipeline the duplicates have already been filtered by BioBamBam2 and samtools so there is no need for further filtering to be done by MACS2.

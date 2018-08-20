@@ -162,3 +162,9 @@ MACS2 is able to generate a plot of the results as well as a bedGraph. These hav
 ------------------------------------------
 
 IOError was depricated in favour of OSError when moving to py3, but to maintian backwards compatibility IOError also needs to be supported. There were places in the code where this was not true and other places that relied on just OSError. Instances of just IOError have been converted to testing for both IOError and OSError and visa versa.
+
+
+2018-08-16 - Prevent further duplicate filtering by MACS2
+---------------------------------------------------------
+
+In the process_chipseq.py pipeline the duplicates have already been filtered by BioBamBam2 and samtools so there is no need for further filtering to be done by MACS2.

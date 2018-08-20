@@ -37,15 +37,15 @@ from tool.common import format_utils
 from utils import logger
 from utils import remap
 
-from tool.tb_full_mapping import tbFullMappingTool
-from tool.tb_parse_mapping import tbParseMappingTool
-from tool.tb_filter import tbFilterTool
+from tool.tb_full_mapping import tbFullMappingTool # pylint: disable=ungrouped-imports
+from tool.tb_parse_mapping import tbParseMappingTool # pylint: disable=ungrouped-imports
+from tool.tb_filter import tbFilterTool # pylint: disable=ungrouped-imports
 
 if '/opt/COMPSs/Bindings/python' in sys.path:
     sys.path.pop(sys.path.index('/opt/COMPSs/Bindings/python'))
 
 # ------------------------------------------------------------------------------
-class tadbit_map_parse_filter(Workflow):
+class tadbit_map_parse_filter(Workflow): # pylint: disable=invalid-name,too-few-public-methods
     """
     Wrapper for the VRE form TADbit map, parse and filter.
     It combines different tools to map, merge and filter
@@ -53,7 +53,7 @@ class tadbit_map_parse_filter(Workflow):
     """
     configuration = {}
 
-    def __init__(self, configuration=None):
+    def __init__(self, configuration=None): # pylint: disable=too-many-branches
         """
         Initialise the tool with its configuration.
 
@@ -109,7 +109,7 @@ class tadbit_map_parse_filter(Workflow):
         if 'rest_enzyme' not in self.configuration:
             self.configuration["rest_enzyme"] = ''
 
-    def run(self, input_files, metadata, output_files):
+    def run(self, input_files, metadata, output_files): # pylint: disable=too-many-locals,too-many-statements
         """
         Parameters
         ----------

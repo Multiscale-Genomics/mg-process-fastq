@@ -28,9 +28,9 @@ from utils import logger
 try:
     if hasattr(sys, '_run_from_cmdl') is True:
         raise ImportError
-    from pycompss.api.parameter import FILE_IN, FILE_OUT, FILE_INOUT, IN
+    from pycompss.api.parameter import FILE_IN, FILE_OUT, IN
     from pycompss.api.task import task
-    from pycompss.api.api import compss_wait_on
+    # from pycompss.api.api import compss_wait_on
     # from pycompss.api.constraint import constraint
 except ImportError:
     logger.info("[Warning] Cannot import \"pycompss\" API packages.")
@@ -38,12 +38,12 @@ except ImportError:
 
     from utils.dummy_pycompss import FILE_IN, FILE_OUT, IN # pylint: disable=ungrouped-imports
     from utils.dummy_pycompss import task # pylint: disable=ungrouped-imports
-    from utils.dummy_pycompss import compss_wait_on # pylint: disable=ungrouped-imports
+    #from utils.dummy_pycompss import compss_wait_on # pylint: disable=ungrouped-imports
     #from utils.dummy_pycompss import constraint
 
 # ------------------------------------------------------------------------------
 
-class tbModelTool(Tool):
+class tbModelTool(Tool): # pylint: disable=invalid-name
     """
     Tool for normalizing an adjacency matrix
     """
@@ -59,7 +59,7 @@ class tbModelTool(Tool):
           gen_pos_begin=IN, gen_pos_end=IN, num_mod_comp=IN, num_mod_keep=IN,
           max_dist=IN, upper_bound=IN, lower_bound=IN, cutoff=IN, workdir=IN,
           model_dir=FILE_OUT)
-    def tb_model(self, optimize_only, hic_contacts_matrix_norm, resolution,
+    def tb_model(self, optimize_only, hic_contacts_matrix_norm, resolution, # pylint: disable=too-many-locals,too-many-statements,unused-argument,no-self-use,too-many-arguments
                  gen_pos_chrom_name, gen_pos_begin,
                  gen_pos_end, num_mod_comp, num_mod_keep,
                  max_dist, upper_bound, lower_bound, cutoff, workdir, metadata,
@@ -127,7 +127,7 @@ class tbModelTool(Tool):
             end = int(float(gen_pos_end) / int(resolution))
             if end - beg <= 2:
                 logger.fatal('"beg" and "end" parameter should be given in ' +
-                                'genomic coordinates, not bin')
+                             'genomic coordinates, not bin')
                 raise Exception('"beg" and "end" parameter should be given in ' +
                                 'genomic coordinates, not bin')
         except ValueError:
@@ -226,10 +226,10 @@ class tbModelTool(Tool):
         logger.info(err)
 
         output_folder = os.listdir(os.path.join(workdir, name, '06_model'))[0]
-        output_files = [os.path.join(workdir, name,'06_model',output_folder)]
+        output_files = [os.path.join(workdir, name, '06_model', output_folder)]
 
         if not optimize_only:
-            os.chdir(os.path.join(workdir, name,'06_model',output_folder))
+            os.chdir(os.path.join(workdir, name, '06_model', output_folder))
             for fl_file in glob.glob("*.json"):
                 output_files.append(fl_file)
                 break
@@ -238,7 +238,7 @@ class tbModelTool(Tool):
 
         return (output_files, output_metadata)
 
-    def run(self, input_files, output_files, metadata=None):
+    def run(self, input_files, output_files, metadata=None): # pylint: disable=too-many-locals
         """
         The main function for the normalization of the Hi-C matrix to a given resolution
 
@@ -321,9 +321,9 @@ class tbModelTool(Tool):
         # input and output share most metadata
 
         output_files, output_metadata = self.tb_model(optimize_only, hic_contacts_matrix_norm,
-                                resolution, gen_pos_chrom_name, gen_pos_begin,
-                                gen_pos_end, num_mod_comp, num_mod_keep,
-                                max_dist, upper_bound, lower_bound, cutoff, root_name,
-                                project_metadata, ncpus)
+                                                      resolution, gen_pos_chrom_name, gen_pos_begin,
+                                                      gen_pos_end, num_mod_comp, num_mod_keep,
+                                                      max_dist, upper_bound, lower_bound, cutoff,
+                                                      root_name, project_metadata, ncpus)
 
         return (output_files, output_metadata)

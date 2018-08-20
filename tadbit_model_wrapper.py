@@ -41,13 +41,13 @@ from tool.common import format_utils
 from utils import logger
 from utils import remap
 
-from tool.tb_model import tbModelTool
+from tool.tb_model import tbModelTool # pylint: disable=ungrouped-imports
 
 if '/opt/COMPSs/Bindings/python' in sys.path:
     sys.path.pop(sys.path.index('/opt/COMPSs/Bindings/python'))
 
 # ------------------------------------------------------------------------------
-class tadbit_model(Workflow):
+class tadbit_model(Workflow): # pylint: disable=invalid-name,too-few-public-methods
     """
     Wrapper for the VRE form TADbit model.
     It has two main sections:

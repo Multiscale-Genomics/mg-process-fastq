@@ -45,7 +45,7 @@ except ImportError:
 
 # ------------------------------------------------------------------------------
 
-class tbFullMappingTool(Tool):
+class tbFullMappingTool(Tool): # pylint: disable=invalid-name
     """
     Tool for mapping fastq paired end files to the GEM index files
     """
@@ -60,7 +60,7 @@ class tbFullMappingTool(Tool):
     @task(
         gem_file=FILE_IN, fastq_file=FILE_IN, windows=IN, window1=FILE_OUT,
         window2=FILE_OUT, window3=FILE_OUT, window4=FILE_OUT)
-    def tb_full_mapping_iter(
+    def tb_full_mapping_iter( # pylint: disable=too-many-locals,too-many-statements,unused-argument,no-self-use,too-many-arguments
             self, gem_file, fastq_file, windows,
             window1, window2, window3, window4, ncpus=1, workdir='/tmp/'):
         """
@@ -111,7 +111,7 @@ class tbFullMappingTool(Tool):
     @task(
         gem_file=FILE_IN, fastq_file=FILE_IN, enzyme_name=IN, windows=IN,
         full_file=FILE_OUT, frag_file=FILE_OUT)
-    def tb_full_mapping_frag(
+    def tb_full_mapping_frag( # pylint: disable=too-many-locals,too-many-statements,unused-argument,no-self-use,too-many-arguments
             self, gem_file, fastq_file, enzyme_name, windows,
             full_file, frag_file, ncpus=1, workdir='/tmp/'):
         """
@@ -180,7 +180,7 @@ class tbFullMappingTool(Tool):
 
         return True
 
-    def run(self, input_files, output_files, metadata=None):
+    def run(self, input_files, output_files, metadata=None): # pylint: disable=too-many-locals,too-many-branches,too-many-statements,no-self-use,unused-argument
         """
         The main function to map the FASTQ files to the GEM file over different
         window sizes ready for alignment
@@ -251,7 +251,7 @@ class tbFullMappingTool(Tool):
             orig_stdout = sys.stdout
             f_handler = open(log_path, "w")
             sys.stdout = f_handler
-            logger.info ('Hi-C QC plot')
+            logger.info('Hi-C QC plot')
             for renz in dangling_ends:
                 logger.info('  - Dangling-ends (sensu-stricto): ', dangling_ends[renz])
             for renz in ligated:

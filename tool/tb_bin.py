@@ -32,7 +32,7 @@ from utils import logger
 try:
     if hasattr(sys, '_run_from_cmdl') is True:
         raise ImportError
-    from pycompss.api.parameter import FILE_IN, FILE_OUT, FILE_INOUT, IN
+    from pycompss.api.parameter import FILE_IN, FILE_OUT, IN
     from pycompss.api.task import task
 except ImportError:
     logger.info("[Warning] Cannot import \"pycompss\" API packages.")
@@ -45,7 +45,7 @@ from basic_modules.tool import Tool
 
 # ------------------------------------------------------------------------------
 
-class tbBinTool(Tool):
+class tbBinTool(Tool):  # pylint: disable=invalid-name,too-few-public-methods
     """
     Tool for binning an adjacency matrix
     """
@@ -60,7 +60,7 @@ class tbBinTool(Tool):
     @task(bamin=FILE_IN, biases=FILE_IN, resolution=IN, coord1=IN, coord2=IN,
           norm=IN, workdir=IN, raw_matrix=FILE_OUT, raw_fig=FILE_OUT,
           nrm_matrix=FILE_OUT, nrm_fig=FILE_OUT, json_matrix=FILE_OUT)
-    def tb_bin(self, bamin, biases, resolution, coord1, coord2,
+    def tb_bin(self, bamin, biases, resolution, coord1, coord2, # pylint: disable=too-many-arguments,too-many-locals,too-many-statements,too-many-branches,no-self-use
                norm, workdir, ncpus="1", metadata=None):
         """
         Function to bin to a given resolution the Hi-C
@@ -226,7 +226,7 @@ class tbBinTool(Tool):
 
         return (output_files, output_metadata)
 
-    def run(self, input_files, output_files, metadata=None):
+    def run(self, input_files, output_files, metadata=None): # pylint: disable=too-many-locals
         """
         The main function to the predict TAD sites for a given resolution from
         the Hi-C matrix
@@ -305,7 +305,8 @@ class tbBinTool(Tool):
         project_metadata["assembly"] = metadata["assembly"]
 
         output_files, output_metadata = self.tb_bin(bamin, biases, resolution,
-                        coord1, coord2, norm, root_name, ncpus, project_metadata)
+                                                    coord1, coord2, norm, root_name,
+                                                    ncpus, project_metadata)
 
         return (output_files, output_metadata)
 

@@ -40,10 +40,10 @@ from tool.common import format_utils
 from utils import logger
 from utils import remap
 
-from tool.tb_segment import tbSegmentTool
+from tool.tb_segment import tbSegmentTool # pylint: disable=ungrouped-imports
 
 # ------------------------------------------------------------------------------
-class tadbit_segment(Workflow):
+class tadbit_segment(Workflow): # pylint: disable=invalid-name, too-few-public-methods
     """
     Wrapper for the VRE form TADbit segment.
     It detects TADs and compartments from a BAM file.

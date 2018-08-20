@@ -34,17 +34,18 @@ from string import ascii_letters as letters
 # Required for ReadTheDocs
 from functools import wraps # pylint: disable=unused-import
 
-from basic_modules.workflow import Workflow
-from basic_modules.metadata import Metadata
-from tool.common import CommandLineParser
-from tool.common import format_utils
 from utils import logger
 from utils import remap
+
+from basic_modules.workflow import Workflow
+from basic_modules.metadata import Metadata
+from tool.common import CommandLineParser # pylint: disable=ungrouped-imports
+from tool.common import format_utils # pylint: disable=ungrouped-imports
 
 from tool.tb_bin import tbBinTool
 
 # ------------------------------------------------------------------------------
-class tadbit_bin(Workflow):
+class tadbit_bin(Workflow): # pylint: disable=invalid-name,too-few-public-methods
     """
     Wrapper for the VRE form TADbit bin.
     It extracts a section of a matrix from a BAM file.

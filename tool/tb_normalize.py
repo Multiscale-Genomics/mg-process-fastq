@@ -29,9 +29,9 @@ from utils import logger
 try:
     if hasattr(sys, '_run_from_cmdl') is True:
         raise ImportError
-    from pycompss.api.parameter import FILE_IN, FILE_OUT, FILE_INOUT, IN
+    from pycompss.api.parameter import FILE_IN, FILE_OUT, IN
     from pycompss.api.task import task
-    from pycompss.api.api import compss_wait_on
+    #from pycompss.api.api import compss_wait_on
     # from pycompss.api.constraint import constraint
 except ImportError:
     logger.info("[Warning] Cannot import \"pycompss\" API packages.")
@@ -39,12 +39,12 @@ except ImportError:
 
     from utils.dummy_pycompss import FILE_IN, FILE_OUT, IN # pylint: disable=ungrouped-imports
     from utils.dummy_pycompss import task # pylint: disable=ungrouped-imports
-    from utils.dummy_pycompss import compss_wait_on # pylint: disable=ungrouped-imports
+    #from utils.dummy_pycompss import compss_wait_on # pylint: disable=ungrouped-imports
     #from utils.dummy_pycompss import constraint
 
 # ------------------------------------------------------------------------------
 
-class tbNormalizeTool(Tool):
+class tbNormalizeTool(Tool): # pylint: disable=invalid-name
     """
     Tool for normalizing an adjacency matrix
     """
@@ -59,7 +59,7 @@ class tbNormalizeTool(Tool):
     @task(bamin=FILE_IN, normalization=IN, resolution=IN, min_perc=IN,
           max_perc=IN, workdir=IN, biases=FILE_OUT, interactions_plot=FILE_OUT,
           filtered_bins_plot=FILE_OUT)
-    def tb_normalize(self, bamin, normalization, resolution, min_perc,
+    def tb_normalize(self, bamin, normalization, resolution, min_perc, # pylint: disable=too-many-locals,too-many-statements,unused-argument,no-self-use,too-many-arguments
                      max_perc, workdir, ncpus="1", min_count=None, fasta=None,
                      mappability=None, rest_enzyme=None):
         """
@@ -166,7 +166,7 @@ class tbNormalizeTool(Tool):
 
         return (output_files, output_metadata)
 
-    def run(self, input_files, output_files, metadata=None):
+    def run(self, input_files, output_files, metadata=None): # pylint: disable=too-many-locals
         """
         The main function for the normalization of the Hi-C matrix to a given resolution
 
@@ -250,8 +250,10 @@ class tbNormalizeTool(Tool):
         # input and output share most metadata
 
         output_files, output_metadata = self.tb_normalize(bamin, normalization,
-                            resolution, min_perc, max_perc, root_name, ncpus,
-                            min_count, fasta, mappability, rest_enzyme)
+                                                          resolution, min_perc,
+                                                          max_perc, root_name, ncpus,
+                                                          min_count, fasta, mappability,
+                                                          rest_enzyme)
 
         return (output_files, output_metadata)
 

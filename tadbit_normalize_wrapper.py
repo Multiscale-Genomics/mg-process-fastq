@@ -38,10 +38,10 @@ from tool.common import format_utils
 from utils import logger
 from utils import remap
 
-from tool.tb_normalize import tbNormalizeTool
+from tool.tb_normalize import tbNormalizeTool # pylint: disable=ungrouped-imports
 
 # ------------------------------------------------------------------------------
-class tadbit_normalize(Workflow):
+class tadbit_normalize(Workflow): # pylint: disable=invalid-name, too-few-public-methods
     """
     Wrapper for the VRE form TADbit normalize.
     It normalizes a BAM file at a given resolution.
@@ -62,7 +62,7 @@ class tadbit_normalize(Workflow):
         tool_extra_config = json.load(file(os.path.dirname(
             os.path.abspath(__file__))+'/tadbit_wrappers_config.json'))
         if os.path.isdir(format_utils.convert_from_unicode(
-            tool_extra_config["bin_path"])):
+                tool_extra_config["bin_path"])):
             os.environ["PATH"] += os.pathsep + format_utils.convert_from_unicode(
                 tool_extra_config["bin_path"])
 
@@ -120,7 +120,7 @@ class tadbit_normalize(Workflow):
         if self.configuration["normalization"] == 'oneD':
             if 'refGenomes_folder' in input_files and os.path.isfile(
                     format_utils.convert_from_unicode(
-                    input_files['refGenomes_folder'])+assembly+'/'+assembly+'.fa'):
+                        input_files['refGenomes_folder'])+assembly+'/'+assembly+'.fa'):
                 input_metadata["fasta"] = format_utils.convert_from_unicode(
                     input_files['refGenomes_folder'])+assembly+'/'+assembly+'.fa'
                 input_metadata["mappability"] = format_utils.convert_from_unicode(
@@ -133,7 +133,7 @@ class tadbit_normalize(Workflow):
                     or 'mappability' not in input_metadata:
                 logger.fatal('Error: missing parameters for oneD normalization.\
                     Please check that the BAM input file has been generated with the VRE tool.')
-                return
+                return {}, {}
 
         bamfile = AlignmentFile(bamin, 'rb')
         if len(bamfile.references) == 1:

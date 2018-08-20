@@ -44,7 +44,7 @@ except ImportError:
 
 # ------------------------------------------------------------------------------
 
-class tbFilterTool(Tool):
+class tbFilterTool(Tool): # pylint: disable=invalid-name
     """
     Tool for filtering out experimetnal artifacts from the aligned data
     """
@@ -62,7 +62,7 @@ class tbFilterTool(Tool):
         output_ed=FILE_OUT, output_or=FILE_OUT, output_rb=FILE_OUT,
         output_sc=FILE_OUT, output_tc=FILE_OUT, output_tl=FILE_OUT,
         output_ts=FILE_OUT, returns=int)
-    def tb_filter(
+    def tb_filter( # pylint: disable=too-many-arguments,too-many-locals,too-many-statements,too-many-branches,no-self-use
             self, reads, filter_reads_file, custom_filter, min_dist_to_re, min_fragment_size,
             max_fragment_size, conservative, output_de, output_d,
             output_e, output_ed, output_or, output_rb, output_sc, output_tc,
@@ -174,7 +174,7 @@ class tbFilterTool(Tool):
 
         return masked
 
-    def run(self, input_files, output_files, metadata=None):
+    def run(self, input_files, output_files, metadata=None): # pylint: disable=too-many-locals,too-many-statements,unused-argument
         """
         The main function to filter the reads to remove experimental artifacts
 
@@ -274,10 +274,10 @@ class tbFilterTool(Tool):
             max_mole = max_f # pseudo DEs
             min_dist = max_f + mad # random breaks
             logger.info('   Using the maximum continuous fragment size'
-                   '('+str(max_mole)+' bp) to check '
-                   'for pseudo-dangling ends')
+                        '('+str(max_mole)+' bp) to check '
+                        'for pseudo-dangling ends')
             logger.info('   Using maximum continuous fragment size plus the MAD '
-                   '('+str(min_dist)+' bp) to check for random breaks')
+                        '('+str(min_dist)+' bp) to check for random breaks')
 
             sys.stdout = orig_stdout
             f_handler.close()

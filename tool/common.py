@@ -147,16 +147,24 @@ class common(object):  # pylint: disable=too-few-public-methods, invalid-name
             process = subprocess.Popen(args)
             process.wait()
 
+
 class CommandLineParser(object):
     """Parses command line"""
+
     @staticmethod
     def valid_file(file_name):
+        """
+        Check that files exist
+        """
         if not os.path.exists(file_name):
             raise argparse.ArgumentTypeError("The file does not exist")
         return file_name
 
     @staticmethod
     def valid_integer_number(ivalue):
+        """
+        Check that values are a valid integer
+        """
         try:
             ivalue = int(ivalue)
         except:
@@ -165,10 +173,12 @@ class CommandLineParser(object):
             raise argparse.ArgumentTypeError("%s is an invalid value" % ivalue)
         return ivalue
 
+
 class format_utils(object):
     """
-    Useful functions to format strings 
+    Useful functions to format strings
     """
+
     @staticmethod
     def convert_from_unicode(data):
         """
@@ -186,6 +196,7 @@ class format_utils(object):
         if isinstance(data, collections.Iterable):
             return type(data)(map(format_utils.convert_from_unicode, data))
         return data
+
     @staticmethod
     def nice(reso):
         """

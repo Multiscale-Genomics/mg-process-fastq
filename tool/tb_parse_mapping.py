@@ -32,7 +32,7 @@ try:
         raise ImportError
     from pycompss.api.parameter import FILE_IN, FILE_OUT, IN
     from pycompss.api.task import task
-    #from pycompss.api.constraint import constraint
+    # from pycompss.api.constraint import constraint
     from pycompss.api.api import compss_wait_on
 except ImportError:
     logger.info("[Warning] Cannot import \"pycompss\" API packages.")
@@ -42,6 +42,7 @@ except ImportError:
     from utils.dummy_pycompss import task  # pylint: disable=ungrouped-imports
     # from utils.dummy_pycompss import constraint  # pylint: disable=ungrouped-imports
     from utils.dummy_pycompss import compss_wait_on  # pylint: disable=ungrouped-imports
+
 
 # ------------------------------------------------------------------------------
 
@@ -63,7 +64,7 @@ class tbParseMappingTool(Tool):
         window1_1=FILE_IN, window1_2=FILE_IN, window1_3=FILE_IN, window1_4=FILE_IN,
         window2_1=FILE_IN, window2_2=FILE_IN, window2_3=FILE_IN, window2_4=FILE_IN,
         reads=FILE_OUT)
-    def tb_parse_mapping_iter(
+    def tb_parse_mapping_iter(  # pylint: disable=no-self-use,too-many-arguments,too-many-locals
             self, genome_seq, enzyme_name,
             window1_1, window1_2, window1_3, window1_4,
             window2_1, window2_2, window2_3, window2_4,
@@ -146,10 +147,10 @@ class tbParseMappingTool(Tool):
         window1_full=FILE_IN, window1_frag=FILE_IN,
         window2_full=FILE_IN, window2_frag=FILE_IN,
         reads=FILE_OUT)
-    def tb_parse_mapping_frag(
+    def tb_parse_mapping_frag(  # pylint: disable=no-self-use,too-many-arguments,too-many-locals
             self, genome_seq, enzyme_name,
             window1_full, window1_frag, window2_full, window2_frag,
-            reads,ncpus=1):
+            reads, ncpus=1):
         """
         Function to map the aligned reads and return the matching pairs
 
@@ -185,10 +186,10 @@ class tbParseMappingTool(Tool):
         logger.info("TB WINDOWS - full 2 {0}".format(window2_full))
         logger.info("TB WINDOWS - frag 2 {0}".format(window2_frag))
 
-        #root_name = reads.split("/")
+        # root_name = reads.split("/")
 
-        #reads1 = "/".join(root_name) + '/reads_1.tsv'
-        #reads2 = "/".join(root_name) + '/reads_2.tsv'
+        # reads1 = "/".join(root_name) + '/reads_1.tsv'
+        # reads2 = "/".join(root_name) + '/reads_2.tsv'
         reads1 = reads + '_reads_1.tsv'
         reads2 = reads + '_reads_2.tsv'
         reads_both = reads + '_reads_both.tsv'
@@ -212,7 +213,7 @@ class tbParseMappingTool(Tool):
 
         return counts
 
-    def run(self, input_files, output_files, metadata=None):
+    def run(self, input_files, output_files, metadata=None):  # pylint: disable=too-many-locals
         """
         The main function to map the aligned reads and return the matching
         pairs. Parsing of the mappings can be either iterative of fragment
@@ -334,9 +335,10 @@ class tbParseMappingTool(Tool):
 
         reads = "/".join(root_name[0:-1]) + '/'
 
-        genome_seq = parse_fasta(genome_file, chr_filter=filter_chrom,
-                    chr_regexp="^(chr)?[A-Za-z]?[0-9]{0,3}[XVI]{0,3}(?:ito)?[A-Z-a-z]?$",
-                    save_cache=False, reload_cache=True)
+        genome_seq = parse_fasta(
+            genome_file, chr_filter=filter_chrom,
+            chr_regexp="^(chr)?[A-Za-z]?[0-9]{0,3}[XVI]{0,3}(?:ito)?[A-Z-a-z]?$",
+            save_cache=False, reload_cache=True)
 
         if not genome_seq:
             genome_seq = parse_fasta(genome_file, chr_filter=filter_chrom,
@@ -354,7 +356,7 @@ class tbParseMappingTool(Tool):
             chromosome_meta.append([k, len(genome_seq[k])])
         # input and output share most metadata
         output_metadata = {
-            'chromosomes' : chromosome_meta
+            'chromosomes': chromosome_meta
         }
 
         if mapping_list[0] == mapping_list[1]:
@@ -375,7 +377,7 @@ class tbParseMappingTool(Tool):
                     genome_seq, enzyme_name,
                     window1_1, window1_2, window1_3, window1_4,
                     window2_1, window2_2, window2_3, window2_4,
-                    read_iter,ncpus=(1 if 'ncpus' not in metadata else metadata['ncpus']))
+                    read_iter, ncpus=(1 if 'ncpus' not in metadata else metadata['ncpus']))
                 results = compss_wait_on(results)
                 if results == 0:
                     output_metadata = {
@@ -398,12 +400,12 @@ class tbParseMappingTool(Tool):
                     genome_seq, enzyme_name,
                     window1_full, window1_frag,
                     window2_full, window2_frag,
-                    read_frag,ncpus=(1 if 'ncpus' not in metadata else metadata['ncpus']))
+                    read_frag, ncpus=(1 if 'ncpus' not in metadata else metadata['ncpus']))
 
                 results = compss_wait_on(results)
                 if results == 0:
                     output_metadata = {
-                        'error' : 'No interactions found, \
+                        'error': 'No interactions found, \
                         please verify input data and chromosome filtering'
                     }
                     return ([], output_metadata)

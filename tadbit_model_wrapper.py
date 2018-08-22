@@ -31,23 +31,22 @@ import shutil
 from random import random
 from string import ascii_letters as letters
 
-# Required for ReadTheDocs
-from functools import wraps # pylint: disable=unused-import
-
 from basic_modules.workflow import Workflow
 from basic_modules.metadata import Metadata
-from tool.common import CommandLineParser
-from tool.common import format_utils
 from utils import logger
 from utils import remap
 
-from tool.tb_model import tbModelTool # pylint: disable=ungrouped-imports
+from tool.common import CommandLineParser
+from tool.common import format_utils
+from tool.tb_model import tbModelTool
 
 if '/opt/COMPSs/Bindings/python' in sys.path:
     sys.path.pop(sys.path.index('/opt/COMPSs/Bindings/python'))
 
+
 # ------------------------------------------------------------------------------
-class tadbit_model(Workflow): # pylint: disable=invalid-name,too-few-public-methods
+
+class tadbit_model(Workflow):  # pylint: disable=invalid-name,too-few-public-methods
     """
     Wrapper for the VRE form TADbit model.
     It has two main sections:

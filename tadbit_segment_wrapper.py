@@ -30,19 +30,18 @@ import tarfile
 from random import random
 from string import ascii_letters as letters
 
-# Required for ReadTheDocs
-from functools import wraps # pylint: disable=unused-import
-
 from basic_modules.workflow import Workflow
 from basic_modules.metadata import Metadata
-from tool.common import CommandLineParser
-from tool.common import format_utils
 from utils import logger
 from utils import remap
 
-from tool.tb_segment import tbSegmentTool # pylint: disable=ungrouped-imports
+from tool.common import CommandLineParser
+from tool.common import format_utils
+from tool.tb_segment import tbSegmentTool
+
 
 # ------------------------------------------------------------------------------
+
 class tadbit_segment(Workflow): # pylint: disable=invalid-name, too-few-public-methods
     """
     Wrapper for the VRE form TADbit segment.
@@ -154,12 +153,13 @@ class tadbit_segment(Workflow): # pylint: disable=invalid-name, too-few-public-m
             })
         # List of files to get saved
         logger.info("TADBIT RESULTS:" + m_results_files["tads_compartments"])
-        #clean_temps(os.path.dirname(ts_files[0]))
-        #clean_temps(os.path.join(self.configuration['workdir'],"06_segmentation"))
-        #cleaning
+        # clean_temps(os.path.dirname(ts_files[0]))
+        # clean_temps(os.path.join(self.configuration['workdir'],"06_segmentation"))
+        # cleaning
         clean_temps(self.configuration['workdir'])
 
         return m_results_files, m_results_meta
+
 
 # ------------------------------------------------------------------------------
 
@@ -176,7 +176,8 @@ def main(args):
 
     return result
 
-#===============================================================================
+
+# ------------------------------------------------------------------------------
 
 def clean_temps(working_path):
     """Cleans the workspace from temporal folder and scratch files"""
@@ -195,10 +196,11 @@ def clean_temps(working_path):
         pass
     logger.info('[CLEANING] Finished')
 
+
 # ------------------------------------------------------------------------------
 
 if __name__ == "__main__":
-    sys._run_from_cmdl = True # pylint: disable=protected-access
+    sys._run_from_cmdl = True  # pylint: disable=protected-access
 
     # Set up the command line parameters
     PARSER = argparse.ArgumentParser(description="TADbit map")
@@ -219,4 +221,3 @@ if __name__ == "__main__":
     IN_ARGS = PARSER.parse_args()
 
     RESULTS = main(IN_ARGS)
-    

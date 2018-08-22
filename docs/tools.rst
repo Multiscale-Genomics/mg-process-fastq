@@ -136,19 +136,19 @@ Tools for processing FastQ files
    --------------------
    .. autoclass:: tool.tb_filter.tbFilterTool
       :members:
-      
+
    Identify TADs and Compartments
    ------------------------------
    .. autoclass:: tool.tb_segment.tbSegmentTool
       :members:
-     
+
    Normalize paired end reads file
-   ------------------------------
+   -------------------------------
    .. autoclass:: tool.tb_normalize.tbNormalizeTool
       :members:
-   
-   Extract binned matrix from paired end reads file 
-   ------------------------------
+
+   Extract binned matrix from paired end reads file
+   ------------------------------------------------
    .. autoclass:: tool.tb_bin.tbBinTool
       :members:
 
@@ -161,8 +161,8 @@ Tools for processing FastQ files
    ------------------------
    .. autoclass:: tool.tb_generate_tads.tbGenerateTADsTool
       :members:
-      
+
    Generate 3D models from binned interaction matrix
-   ------------------------
+   -------------------------------------------------
    .. autoclass:: tool.tb_model.tbModelTool
       :members:

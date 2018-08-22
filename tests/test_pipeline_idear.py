@@ -73,6 +73,7 @@ def test_idear_pipeline():
         "idear_release_date": "2013",
         "idear_sample_param": "Nup98",
         "idear_background_param": "GFP",
+        "execution": resource_path
     }
 
     damidseq_handle = process_idear(config_param)

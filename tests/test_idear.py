@@ -16,11 +16,12 @@
 """
 
 import os.path
-import pytest # pylint: disable=unused-import
+import pytest  # pylint: disable=unused-import
 
 from basic_modules.metadata import Metadata
 
 from tool.idear import idearTool
+
 
 @pytest.mark.idamidseq
 def test_idear():
@@ -45,25 +46,26 @@ def test_idear():
     metadata = {
         "bsgenome": Metadata(
             "data_damid_seq", "bsgenome", [], None,
-            {'assembly' : 'test'}, 9606),
+            {'assembly': 'test'}, 9606),
         "bam_1": Metadata(
             "data_damid_seq", "bam", [], None,
-            {'assembly' : 'test'}, 9606),
+            {'assembly': 'test'}, 9606),
         "bam_2": Metadata(
             "data_damid_seq", "bam", [], None,
-            {'assembly' : 'test'}, 9606),
+            {'assembly': 'test'}, 9606),
         "bg_bam_1": Metadata(
             "data_damid_seq", "bam", [], None,
-            {'assembly' : 'test'}, 9606),
+            {'assembly': 'test'}, 9606),
         "bg_bam_2": Metadata(
             "data_damid_seq", "bam", [], None,
-            {'assembly' : 'test'}, 9606),
+            {'assembly': 'test'}, 9606),
     }
 
     config = {
         "idear_common_name": "Human",
         "idear_sample_param": "Nup98",
-        "idear_background_param": "GFP"
+        "idear_background_param": "GFP",
+        "execution": resource_path
     }
 
     idear_handle = idearTool(config)

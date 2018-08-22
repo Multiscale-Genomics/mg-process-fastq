@@ -18,9 +18,10 @@
 from __future__ import print_function
 
 import os.path
-import pytest # pylint: disable=unused-import
+import pytest  # pylint: disable=unused-import
 
 from tool.tb_bin import tbBinTool
+
 
 @pytest.mark.hic
 def test_tb_bin():
@@ -28,22 +29,21 @@ def test_tb_bin():
     Test case to bin a sample bam file
     """
     resource_path = os.path.join(os.path.dirname(__file__), "data/")
-    
+
     bamin = resource_path + "tb_paired_reads.bam"
     hic_biases = resource_path + "tb_biases_100kb.pickle"
-    
-    files = [bamin,hic_biases]
-        
+
+    files = [bamin, hic_biases]
+
     metadata = {
-        'resolution' : "100000",
-        'norm' : ['raw','norm'],
-        "species" : "Homo sapiens",
-        "assembly" : "Unknown",
-        'ncpus' : 4
+        'resolution': "100000",
+        'norm': ['raw', 'norm'],
+        "species": "Homo sapiens",
+        "assembly": "Unknown",
+        'ncpus': 4
     }
-    
+
     tb = tbBinTool()
     tb_files, tb_meta = tb.run(files, [], metadata)
 
     assert len(tb_files) == 5
-    

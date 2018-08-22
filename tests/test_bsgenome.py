@@ -55,6 +55,7 @@ def test_bsgenome():
         "idear_provider": "ENA",
         "idear_release_date": "2013",
         #"idear_circ_chrom": "",
+        "execution": resource_path
     }
 
     bsg_handle = bsgenomeTool(config)

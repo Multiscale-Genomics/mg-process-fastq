@@ -67,7 +67,7 @@ def test_mnaseseq_pipeline():
         'assembly': 'GRCh38'
     }
 
-    mnaseseq_handle = process_mnaseseq()
+    mnaseseq_handle = process_mnaseseq({"execution": resource_path})
     mnaseseq_files, mnaseseq_meta = mnaseseq_handle.run(files, metadata, [])
 
     print(mnaseseq_files, mnaseseq_meta)

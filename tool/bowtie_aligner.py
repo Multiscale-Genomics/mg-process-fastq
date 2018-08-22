@@ -408,7 +408,8 @@ class bowtie2AlignerTool(Tool):  # pylint: disable=invalid-name
         sources.append(input_files["loc"])
 
         logger.progress("FASTQ Splitter", task_id=tasks_done, total=task_count)
-        fastq_file_gz = str(fastq1 + ".tar.gz")
+        fastq_file_gz = os.path.join(
+            self.configuration["execution"], os.path.split(fastq1)[1] + ".tar.gz")
         if "fastq2" in input_files:
             fastq2 = input_files["fastq2"]
             sources.append(input_files["fastq2"])
@@ -444,8 +445,15 @@ class bowtie2AlignerTool(Tool):  # pylint: disable=invalid-name
             tar = tarfile.open(fastq_file_gz)
             tar.extractall(path=gz_data_path)
             tar.close()
-            os.remove(fastq_file_gz)
             compss_delete_file(fastq_file_gz)
+            try:
+                os.remove(fastq_file_gz)
+            except (OSError, IOError) as msg:
+                logger.warn(
+                    "Unable to remove file I/O error({0}): {1}".format(
+                        msg.errno, msg.strerror
+                    )
+                )
         except tarfile.TarError:
             logger.fatal("Split FASTQ files: Malformed tar file")
             return {}, {}
@@ -471,6 +479,8 @@ class bowtie2AlignerTool(Tool):  # pylint: disable=invalid-name
                 output_bam_file_tmp = tmp_fq1 + ".bam"
                 output_bam_list.append(output_bam_file_tmp)
 
+                logger.info("BOWTIE2 ALIGN (PAIRED) FILES:\n\t{}\n\t{}".format(tmp_fq1, tmp_fq2))
+
                 self.bowtie2_aligner_paired(
                     str(input_files["genome"]), tmp_fq1, tmp_fq2,
                     output_bam_file_tmp,
@@ -488,7 +498,7 @@ class bowtie2AlignerTool(Tool):  # pylint: disable=invalid-name
                 output_bam_file_tmp = tmp_fq + ".bam"
                 output_bam_list.append(output_bam_file_tmp)
 
-                logger.info("BOWTIE2 ALN FILES:" + tmp_fq)
+                logger.info("BOWTIE2 ALIGN (SINGLE) FILES:" + tmp_fq)
                 self.bowtie2_aligner_single(
                     str(input_files["genome"]), tmp_fq, output_bam_file_tmp,
                     index_files["1.bt2"],
@@ -513,11 +523,25 @@ class bowtie2AlignerTool(Tool):  # pylint: disable=invalid-name
             for fastq_file_pair in fastq_file_list:
                 tmp_fq = os.path.join(gz_data_path, "tmp", fastq_file_pair[0])
                 compss_delete_file(tmp_fq)
-                os.remove(tmp_fq)
+                try:
+                    os.remove(tmp_fq)
+                except (OSError, IOError) as msg:
+                    logger.warn(
+                        "Unable to remove file I/O error({0}): {1}".format(
+                            msg.errno, msg.strerror
+                        )
+                    )
                 if "fastq2" in input_files:
                     tmp_fq = os.path.join(gz_data_path, "tmp", fastq_file_pair[1])
                     compss_delete_file(tmp_fq)
-                    os.remove(tmp_fq)
+                    try:
+                        os.remove(tmp_fq)
+                    except (OSError, IOError) as msg:
+                        logger.warn(
+                            "Unable to remove file I/O error({0}): {1}".format(
+                                msg.errno, msg.strerror
+                            )
+                        )
 
         tasks_done += 1
         logger.progress("ALIGNER", task_id=tasks_done, total=task_count)

@@ -307,14 +307,14 @@ class alignerUtils(object):  # pylint: disable=invalid-name
             'bowtie2',
             '-p 4',
             '-x', genome_file,
+            '-S', reads_file_1 + '.sam',
             ' '.join(params),
         ] + reads)
 
         try:
-            with open(reads_file_1 + '.sam', "w") as f_out:
-                logger.info("BOWTIE2 COMMAND: " + cmd_aln)
-                process = subprocess.Popen(cmd_aln, shell=True, stdout=f_out)
-                process.wait()
+            logger.info("BOWTIE2 COMMAND: " + cmd_aln)
+            process = subprocess.Popen(cmd_aln, shell=True)
+            process.wait()
         except (OSError, IOError) as msg:
             logger.info("I/O error({0}): {1}\n{2}".format(
                 msg.errno, msg.strerror, cmd_aln))

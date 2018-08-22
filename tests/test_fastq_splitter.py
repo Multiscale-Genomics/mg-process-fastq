@@ -22,6 +22,7 @@ from basic_modules.metadata import Metadata
 
 from tool.fastq_splitter import fastq_splitter
 
+
 @pytest.mark.wgbs
 def test_paired_splitter():
     """
@@ -34,18 +35,18 @@ def test_paired_splitter():
     fqs_handle = fastq_splitter()
     results = fqs_handle.run(
         {
-            "fastq1" : fastq_1file,
-            "fastq2" : fastq_2file
+            "fastq1": fastq_1file,
+            "fastq2": fastq_2file
         },
         {
             "fastq1": Metadata(
                 "data_rnaseq", "fastq", [], None,
-                {'assembly' : 'test'}),
+                {'assembly': 'test'}),
             "fastq2": Metadata(
                 "data_rnaseq", "fastq", [], None,
-                {'assembly' : 'test'})
+                {'assembly': 'test'})
         },
-        {"output" : fastq_1file + ".tar.gz"}
+        {"output": fastq_1file + ".tar.gz"}
     )
 
     print("WGBS - PAIRED RESULTS:", results)

@@ -62,7 +62,7 @@ def test_trim_galore_pipeline():
         "fastq1_report": 'tests/data/bsSeeker.Mouse.SRR892982_1.trimmed.single.report.txt'
     }
 
-    tg_handle = process_trim_galore()
+    tg_handle = process_trim_galore({"execution": resource_path})
     tg_files, tg_meta = tg_handle.run(files, metadata, files_out)
 
     # Checks that the returned files matches the expected set of results
@@ -124,7 +124,7 @@ def test_trim_galore_pipeline_02():
         "fastq2_report": 'tests/data/bsSeeker.Mouse.SRR892982_2.trimmed.report.txt'
     }
 
-    tg_handle = process_trim_galore()
+    tg_handle = process_trim_galore({"execution": resource_path})
     tg_files, tg_meta = tg_handle.run(files, metadata, files_out)
 
     # Checks that the returned files matches the expected set of results

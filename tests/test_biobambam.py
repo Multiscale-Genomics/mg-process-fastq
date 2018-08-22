@@ -45,7 +45,7 @@ def test_biobambam_chipseq():
             {'assembly': 'test'}),
     }
 
-    bbb = biobambam_filter.biobambam()
+    bbb = biobambam_filter.biobambam({"execution": resource_path})
     bbb.run(input_files, metadata, output_files)
 
     assert os.path.isfile(resource_path + "macs2.Human.DRR000150.22_aln_filtered.bam") is True
@@ -82,7 +82,7 @@ def test_biobambam_idamidseq():
                 {'assembly': 'test'}),
         }
 
-        bbb = biobambam_filter.biobambam()
+        bbb = biobambam_filter.biobambam({"execution": resource_path})
         bbb.run(input_files, metadata, output_files)
 
         assert os.path.isfile(bam_file.replace(".bam", "_filtered.bam")) is True

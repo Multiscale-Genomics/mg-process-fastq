@@ -18,11 +18,12 @@
 from __future__ import print_function
 
 import os.path
-import pytest # pylint: disable=unused-import
+import pytest  # pylint: disable=unused-import
 
 from basic_modules.metadata import Metadata
 
 from tool.validate_fastqc import fastqcTool
+
 
 @pytest.mark.chipseq
 def test_fastqc_chipseq_0():
@@ -42,7 +43,7 @@ def test_fastqc_chipseq_0():
     metadata = {
         "fastq": Metadata(
             "data_rnaseq", "fastq", [], None,
-            {'assembly' : 'test'})
+            {'assembly': 'test'})
     }
 
     fastqc_handle = fastqcTool()
@@ -50,6 +51,7 @@ def test_fastqc_chipseq_0():
 
     assert os.path.isfile(output_files["report"]) is True
     assert os.path.getsize(output_files["report"]) > 0
+
 
 @pytest.mark.hic
 def test_fastqc_hic_0():
@@ -69,7 +71,7 @@ def test_fastqc_hic_0():
     metadata = {
         "fastq": Metadata(
             "data_rnaseq", "fastq", [], None,
-            {'assembly' : 'test'})
+            {'assembly': 'test'})
     }
 
     fastqc_handle = fastqcTool()
@@ -77,6 +79,7 @@ def test_fastqc_hic_0():
 
     assert os.path.isfile(output_files["report"]) is True
     assert os.path.getsize(output_files["report"]) > 0
+
 
 @pytest.mark.hic
 def test_fastqc_hic_1():
@@ -96,7 +99,7 @@ def test_fastqc_hic_1():
     metadata = {
         "fastq": Metadata(
             "data_rnaseq", "fastq", [], None,
-            {'assembly' : 'test'})
+            {'assembly': 'test'})
     }
 
     fastqc_handle = fastqcTool()
@@ -104,6 +107,7 @@ def test_fastqc_hic_1():
 
     assert os.path.isfile(output_files["report"]) is True
     assert os.path.getsize(output_files["report"]) > 0
+
 
 @pytest.mark.idamidseq
 def test_fastqc_idamseq_0():
@@ -123,7 +127,7 @@ def test_fastqc_idamseq_0():
     metadata = {
         "fastq": Metadata(
             "data_idamseq", "fastq", [], None,
-            {'assembly' : 'test'})
+            {'assembly': 'test'})
     }
 
     fastqc_handle = fastqcTool()
@@ -131,6 +135,7 @@ def test_fastqc_idamseq_0():
 
     assert os.path.isfile(output_files["report"]) is True
     assert os.path.getsize(output_files["report"]) > 0
+
 
 @pytest.mark.idamidseq
 def test_fastqc_idamseq_1():
@@ -150,7 +155,7 @@ def test_fastqc_idamseq_1():
     metadata = {
         "fastq": Metadata(
             "data_idamseq", "fastq", [], None,
-            {'assembly' : 'test'})
+            {'assembly': 'test'})
     }
 
     fastqc_handle = fastqcTool()
@@ -158,6 +163,7 @@ def test_fastqc_idamseq_1():
 
     assert os.path.isfile(output_files["report"]) is True
     assert os.path.getsize(output_files["report"]) > 0
+
 
 @pytest.mark.idamidseq
 def test_fastqc_idamseq_2():
@@ -177,7 +183,7 @@ def test_fastqc_idamseq_2():
     metadata = {
         "fastq": Metadata(
             "data_idamseq", "fastq", [], None,
-            {'assembly' : 'test'})
+            {'assembly': 'test'})
     }
 
     fastqc_handle = fastqcTool()
@@ -185,6 +191,7 @@ def test_fastqc_idamseq_2():
 
     assert os.path.isfile(output_files["report"]) is True
     assert os.path.getsize(output_files["report"]) > 0
+
 
 @pytest.mark.idamidseq
 def test_fastqc_idamseq_3():
@@ -204,7 +211,7 @@ def test_fastqc_idamseq_3():
     metadata = {
         "fastq": Metadata(
             "data_idamseq", "fastq", [], None,
-            {'assembly' : 'test'})
+            {'assembly': 'test'})
     }
 
     fastqc_handle = fastqcTool()
@@ -212,6 +219,7 @@ def test_fastqc_idamseq_3():
 
     assert os.path.isfile(output_files["report"]) is True
     assert os.path.getsize(output_files["report"]) > 0
+
 
 @pytest.mark.inps
 def test_fastqc_inps_0():
@@ -231,7 +239,7 @@ def test_fastqc_inps_0():
     metadata = {
         "fastq": Metadata(
             "data_rnaseq", "fastq", [], None,
-            {'assembly' : 'test'})
+            {'assembly': 'test'})
     }
 
     fastqc_handle = fastqcTool()
@@ -239,6 +247,7 @@ def test_fastqc_inps_0():
 
     assert os.path.isfile(output_files["report"]) is True
     assert os.path.getsize(output_files["report"]) > 0
+
 
 @pytest.mark.rnaseq
 def test_fastqc_rnaseq_0():
@@ -258,7 +267,7 @@ def test_fastqc_rnaseq_0():
     metadata = {
         "fastq": Metadata(
             "data_rnaseq", "fastq", [], None,
-            {'assembly' : 'test'})
+            {'assembly': 'test'})
     }
 
     fastqc_handle = fastqcTool()
@@ -266,6 +275,7 @@ def test_fastqc_rnaseq_0():
 
     assert os.path.isfile(output_files["report"]) is True
     assert os.path.getsize(output_files["report"]) > 0
+
 
 @pytest.mark.rnaseq
 def test_fastqc_rnaseq_1():
@@ -285,7 +295,7 @@ def test_fastqc_rnaseq_1():
     metadata = {
         "fastq": Metadata(
             "data_rnaseq", "fastq", [], None,
-            {'assembly' : 'test'})
+            {'assembly': 'test'})
     }
 
     fastqc_handle = fastqcTool()
@@ -293,6 +303,7 @@ def test_fastqc_rnaseq_1():
 
     assert os.path.isfile(output_files["report"]) is True
     assert os.path.getsize(output_files["report"]) > 0
+
 
 @pytest.mark.wgbs
 def test_fastqc_wgbs_0():
@@ -312,7 +323,7 @@ def test_fastqc_wgbs_0():
     metadata = {
         "fastq": Metadata(
             "data_rnaseq", "fastq", [], None,
-            {'assembly' : 'test'})
+            {'assembly': 'test'})
     }
 
     fastqc_handle = fastqcTool()
@@ -320,6 +331,7 @@ def test_fastqc_wgbs_0():
 
     assert os.path.isfile(output_files["report"]) is True
     assert os.path.getsize(output_files["report"]) > 0
+
 
 @pytest.mark.wgbs
 def test_fastqc_wgbs_1():
@@ -339,7 +351,7 @@ def test_fastqc_wgbs_1():
     metadata = {
         "fastq": Metadata(
             "data_rnaseq", "fastq", [], None,
-            {'assembly' : 'test'})
+            {'assembly': 'test'})
     }
 
     fastqc_handle = fastqcTool()

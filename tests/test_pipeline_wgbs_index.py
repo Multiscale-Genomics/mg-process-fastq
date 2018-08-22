@@ -57,7 +57,8 @@ def test_wgbs_pipeline_index():
         configuration={
             "bss_path": home + "/lib/BSseeker2",
             "aligner": "bowtie2",
-            "aligner_path": home + "/lib/bowtie2-2.3.4-linux-x86_64"
+            "aligner_path": home + "/lib/bowtie2-2.3.4-linux-x86_64",
+            "execution": resource_path
         }
     )
     rs_files, rs_meta = rs_handle.run(files, metadata, files_out)  # pylint: disable=unused-variable

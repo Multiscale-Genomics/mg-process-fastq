@@ -148,16 +148,22 @@ class macs2(Tool):  # pylint: disable=invalid-name
         if int(bam_utils_handle.bam_count_reads(bam_tmp_file, aligned=True)) > 0:
             try:
                 args = shlex.split(command_line)
-                process = subprocess.Popen(args)
-                process.wait()
+                process = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+                proc_out, proc_err = process.communicate()
             except (IOError, OSError) as msg:
                 logger.fatal("I/O error({0}): {1}\n{2}".format(
                     msg.errno, msg.strerror, command_line))
                 return False
 
             if process.returncode is not 0:
-                logger.fatal("MACS2 ERROR", process.returncode)
-                return False
+                logger.fatal("MACS2 ERROR: " + str(process.returncode))
+                logger.fatal(
+                    "MACS2 ERROR: BAM counts: " + str(
+                        bam_utils_handle.bam_count_reads(bam_tmp_file, aligned=True)
+                    )
+                )
+                logger.fatal("\n\nMACS2 ERROR - out:\n\t" + str(proc_out))
+                logger.fatal("\n\nMACS2 ERROR - err:\n\t" + str(proc_err))
 
             logger.info('Process Results 1:', process)
 

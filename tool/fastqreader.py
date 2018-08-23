@@ -171,7 +171,7 @@ class fastqreader(object):  # pylint: disable=too-many-instance-attributes,inval
         tag : str
             Tag to identify the output files (DEFAULT: '')
         """
-        if tag != '' and self.output_tag != tag:
+        if tag not in ('', self.output_tag):
             self.output_tag = tag
 
         fq1 = self.fastq1.split("/")
@@ -183,7 +183,7 @@ class fastqreader(object):  # pylint: disable=too-many-instance-attributes,inval
         if os.path.isdir("/".join(fq1[0:-1])) is False:
             try:
                 os.mkdir("/".join(fq1[0:-1]))
-            except OSError as oserror:
+            except (OSError, IOError) as oserror:
                 if oserror.errno != errno.EEXIST:
                     raise OSError
 

@@ -1,0 +1,28 @@
+[
+    {
+        "compressed": 0,
+        "_id": "59b7e020d9422a5969b65378",
+        "data_type": "hic_sequences",
+        "file_type": "bam",
+        "file_path": "/scratch/results/vre/yeast_paired_reads.bam",
+        "sources": null,
+        "taxon_id": "9606",
+        "meta_data": {
+            "visible": true,
+            "validated": 1,
+            "assembly": "R64-1-1",
+            "rest_enzyme":"HindIII"
+        }
+    },
+    {
+        "_id": "MuGUSER5a394e70646c9_5a609b0f317dd3.78427312_dummy",
+        "file_path": "/scratch/genomes/",
+        "meta_data": [],
+        "sources": [],
+        "taxon_id": 0,
+        "data_type": "configuration_file",
+        "file_type": "TXT",
+        "user_id": "public",
+        "type": "dir"
+    }
+]

@@ -1,0 +1,75 @@
+{
+   "input_files": [
+        {
+            "required": true,
+            "allow_multiple": false,
+            "name": "bamin",
+            "value": "59b7e020d9422a5969b65378"
+        }
+    ],
+    "arguments": [
+        {
+            "name": "execution",
+            "value": "mg_process_fastq/tests/data"
+        },
+        {
+            "name": "project",
+            "value": "/scratch/results/vre/"
+        },
+    	{
+            "name": "resolution",
+            "description": "Resolution of the normalization",
+            "help": "Resolution of the normalization.",
+            "type": "string",
+            "required": true,
+            "default": "100000",
+            "value" : "10000"
+        },
+        {
+            "name": "coord1",
+            "description": "Coordinate of the region to retrieve.",
+            "help": "Coordinate of the region to retrieve. By default all genome, arguments can be either one chromosome name, or the coordinate in the form: chr3:110000000-120000000",
+            "type": "string",
+            "required": false,
+            "value" : "",
+            "default": ""
+        }
+    ],
+    "output_files": [
+    	{
+            "name": "hic_contacts_matrix_raw",
+            "required": true,
+            "allow_multiple": false,
+            "file": {
+                "file_type": "TXT",
+                "data_type": "hic_contacts_matrix",
+                "compressed": "null",
+                "file_path": "hic_contacts_matrix.txt",
+                "meta_data": {
+                    "tool": "tadbit",
+                    "description": "HiC contact matrix raw",
+                    "visible": true
+                }
+            }
+        },
+        {
+            "name": "hic_contacts_matrix_norm",
+            "required": false,
+            "allow_multiple": false,
+            "file": {
+                "file_type": "TXT",
+                "data_type": "hic_contacts_matrix",
+                "compressed": "null",
+                "file_path": "hic_contacts_matrix_norm.txt",
+                "meta_data": {
+                    "tool": "tadbit",
+                    "description": "HiC contact matrix normalized",
+                    "visible": true
+                }
+            }
+        }
+    ],
+    "control_file": ".results.json"
+}
+
+

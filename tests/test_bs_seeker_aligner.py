@@ -22,6 +22,7 @@ from basic_modules.metadata import Metadata
 
 from tool import bs_seeker_aligner
 
+
 @pytest.mark.wgbs
 def test_bs_seeker_aligner():
     """
@@ -45,22 +46,23 @@ def test_bs_seeker_aligner():
     metadata = {
         "genome": Metadata(
             "Assembly", "fasta", input_files["genome"], None,
-            {'assembly' : 'test'}),
+            {'assembly': 'test'}),
         "index": Metadata(
             "index_bowtie", "index", input_files["genome"], None,
-            {'assembly' : 'test'}),
+            {'assembly': 'test'}),
         "fastq1": Metadata(
             "data_wgbs", "fastq", input_files["fastq1"], None,
-            {'assembly' : 'test'}),
+            {'assembly': 'test'}),
         "fastq2": Metadata(
             "data_wgbs", "fastq", input_files["fastq2"], None,
-            {'assembly' : 'test'})
+            {'assembly': 'test'})
     }
 
     config_param = {
-        "aligner" : "bowtie2",
-        "aligner_path" : home + "/lib/bowtie2-2.3.4-linux-x86_64",
-        "bss_path" : home + "/lib/BSseeker2"
+        "aligner": "bowtie2",
+        "aligner_path": home + "/lib/bowtie2-2.3.4-linux-x86_64",
+        "bss_path": home + "/lib/BSseeker2",
+        "execution": resource_path
     }
 
     bsa = bs_seeker_aligner.bssAlignerTool(config_param)

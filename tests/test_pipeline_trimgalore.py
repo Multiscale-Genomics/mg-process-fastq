@@ -62,12 +62,11 @@ def test_trim_galore_pipeline():
         "fastq1_report": 'tests/data/bsSeeker.Mouse.SRR892982_1.trimmed.single.report.txt'
     }
 
-    tg_handle = process_trim_galore()
+    tg_handle = process_trim_galore({"execution": resource_path})
     tg_files, tg_meta = tg_handle.run(files, metadata, files_out)
 
     # Checks that the returned files matches the expected set of results
-    assert len(tg_files) == 1
-    print (tg_meta)
+    assert len(tg_files) == 2
 
     # Add tests for all files created
     for f_out in tg_files:
@@ -76,6 +75,7 @@ def test_trim_galore_pipeline():
         assert f_out in tg_meta
         assert os.path.isfile(tg_files[f_out]) is True
         assert os.path.getsize(tg_files[f_out]) > 0
+        os.remove(tg_files[f_out])
 
 
 @pytest.mark.trimgalore
@@ -124,12 +124,11 @@ def test_trim_galore_pipeline_02():
         "fastq2_report": 'tests/data/bsSeeker.Mouse.SRR892982_2.trimmed.report.txt'
     }
 
-    tg_handle = process_trim_galore()
+    tg_handle = process_trim_galore({"execution": resource_path})
     tg_files, tg_meta = tg_handle.run(files, metadata, files_out)
 
     # Checks that the returned files matches the expected set of results
-    assert len(tg_files) == 2
-    print (tg_meta)
+    assert len(tg_files) == 4
 
     # Add tests for all files created
     for f_out in tg_files:
@@ -138,3 +137,4 @@ def test_trim_galore_pipeline_02():
         assert f_out in tg_meta
         assert os.path.isfile(tg_files[f_out]) is True
         assert os.path.getsize(tg_files[f_out]) > 0
+        os.remove(tg_files[f_out])

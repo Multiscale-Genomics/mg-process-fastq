@@ -44,7 +44,7 @@ def test_kallisto_indexer_00():
             {'assembly': 'test'}),
     }
 
-    ki_handle = kallistoIndexerTool()
+    ki_handle = kallistoIndexerTool({"execution": resource_path})
     ki_handle.run(input_files, metadata, output_files)
 
     print(__file__)

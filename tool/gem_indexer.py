@@ -17,6 +17,7 @@
 
 from __future__ import print_function
 
+import os.path
 import sys
 
 from utils import logger
@@ -80,20 +81,23 @@ class gemIndexerTool(Tool):  # pylint: disable=invalid-name
         idx_loc : str
             Location of the output index file
         """
+        index_dir = os.path.split(index_loc)
         try:
             au_handle = alignerUtils()
-            au_handle.gem_index_genome(genome_file)
+            au_handle.gem_index_genome(genome_file, os.path.join(index_dir[0], "tmp"))
         except (IOError, OSError) as msg:
             logger.fatal("I/O error({0}): {1}".format(
                 msg.errno, msg.strerror))
             return False
 
-        common.zip_file(genome_file + ".gem")
+        common.zip_file(os.path.join(index_dir[0], "tmp.gem"))
 
-        if genome_file + ".gem.gz" != index_loc:
-            with open(index_loc, "wb") as f_out:
-                with open(genome_file + ".gem.gz") as f_in:
-                    f_out.write(f_in.read())
+        # if genome_file + ".gem.gz" != index_loc:
+        with open(index_loc, "wb") as f_out:
+            with open(os.path.join(index_dir[0], "tmp.gem.gz"), "rb") as f_in:
+                f_out.write(f_in.read())
+
+        os.remove(os.path.join(index_dir[0], "tmp.gem.gz"))
 
         return True
 
@@ -119,7 +123,7 @@ class gemIndexerTool(Tool):  # pylint: disable=invalid-name
         # input and output share most metadata
         results = self.gem_indexer(
             input_files['genome'],
-            input_files['genome'] + ".gem.gz"
+            output_files['index']
         )
         results = compss_wait_on(results)
 

@@ -39,7 +39,7 @@ def test_tb_filter_frag_01():
         'mapping': ['frag', 'frag']
     }
 
-    tpm = tbFilterTool()
+    tpm = tbFilterTool({"execution": resource_path})
     tpm_files, tpm_meta = tpm.run([reads_tsv], [], metadata)  # pylint: disable=unused-variable
 
     reads_tsv = resource_path + metadata['expt_name'] + "_filtered_map.tsv"
@@ -85,7 +85,7 @@ def test_tb_filter_frag_02():
         'conservative_filtering': True
     }
 
-    tpm = tbFilterTool()
+    tpm = tbFilterTool({"execution": resource_path})
     tpm_files, tpm_meta = tpm.run([reads_tsv], [], metadata)  # pylint: disable=unused-variable
 
     reads_tsv = resource_path + metadata['expt_name'] + "_filtered_map.tsv"
@@ -130,7 +130,7 @@ def test_tb_filter_iter_01():
         'mapping': ['iter', 'iter']
     }
 
-    tpm = tbFilterTool()
+    tpm = tbFilterTool({"execution": resource_path})
     tpm_files, tpm_meta = tpm.run([reads_tsv], [], metadata)  # pylint: disable=unused-variable
 
     reads_tsv = resource_path + metadata['expt_name'] + "_filtered_map.tsv"
@@ -176,7 +176,7 @@ def test_tb_filter_iter_02():
         'conservative_filtering': True
     }
 
-    tpm = tbFilterTool()
+    tpm = tbFilterTool({"execution": resource_path})
     tpm_files, tpm_meta = tpm.run([reads_tsv], [], metadata)  # pylint: disable=unused-variable
 
     reads_tsv = resource_path + metadata['expt_name'] + "_filtered_map.tsv"

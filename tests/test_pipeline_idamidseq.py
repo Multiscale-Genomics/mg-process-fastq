@@ -91,6 +91,7 @@ def test_idamidseq_pipeline_00():
         "idear_release_date": "2013",
         "idear_sample_param": "Nup98",
         "idear_background_param": "GFP",
+        "execution": resource_path
     }
 
     files_out = {
@@ -226,5 +227,5 @@ def test_idamidseq_pipeline_01():
 
         try:
             os.remove(damidseq_files[f_out])
-        except OSError, ose:
+        except OSError as ose:
             print("Error: %s - %s." % (ose.filename, ose.strerror))

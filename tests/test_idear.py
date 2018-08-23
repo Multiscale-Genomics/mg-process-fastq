@@ -64,7 +64,8 @@ def test_idear():
     config = {
         "idear_common_name": "Human",
         "idear_sample_param": "Nup98",
-        "idear_background_param": "GFP"
+        "idear_background_param": "GFP",
+        "execution": resource_path
     }
 
     idear_handle = idearTool(config)

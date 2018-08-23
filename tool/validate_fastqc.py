@@ -85,7 +85,7 @@ class fastqcTool(Tool):  # pylint: disable=invalid-name
             args = shlex.split(command_line)
             process = subprocess.Popen(args)
             process.wait()
-        except (IOError, OSError) as error:
+        except (OSError, IOError) as error:
             logger.fatal("FastQC error: {0}".format(error))
             return False
 
@@ -97,7 +97,7 @@ class fastqcTool(Tool):  # pylint: disable=invalid-name
             with open(report_file, "wb") as f_out:
                 with open(fastq_file_tmp, "rb") as f_in:
                     f_out.write(f_in.read())
-        except IOError as error:
+        except (OSError, IOError) as error:
             logger.fatal("I/O error({0}): {1}".format(error.errno, error.strerror))
             return False
 

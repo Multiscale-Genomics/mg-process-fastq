@@ -244,6 +244,10 @@ class process_chipseq(Workflow):  # pylint: disable=invalid-name,too-few-public-
                 logger.fatal("Background BioBamBam filtering failed")
 
         # MACS2 to call peaks
+        # Duplicates have already been filtered so MACS2 does not need to due
+        # any further filtering
+        self.configuration["macs_keep-dup_param"] = "all"
+
         macs_caller = macs2(self.configuration)
         macs_inputs = {"bam": output_files_generated["filtered"]}
         macs_metadt = {"bam": output_metadata['filtered']}
@@ -294,6 +298,20 @@ class process_chipseq(Workflow):  # pylint: disable=invalid-name,too-few-public-
             tool_name = output_metadata['gapped_peak'].meta_data['tool']
             output_metadata['gapped_peak'].meta_data['tool_description'] = tool_name
             output_metadata['gapped_peak'].meta_data['tool'] = "process_chipseq"
+        if 'control_lambda' in m_results_meta:
+            output_files_generated['control_lambda'] = m_results_files['control_lambda']
+            output_metadata['control_lambda'] = m_results_meta['control_lambda']
+
+            tool_name = output_metadata['control_lambda'].meta_data['tool']
+            output_metadata['control_lambda'].meta_data['tool_description'] = tool_name
+            output_metadata['control_lambda'].meta_data['tool'] = "process_chipseq"
+        if 'treat_pileup' in m_results_meta:
+            output_files_generated['treat_pileup'] = m_results_files['treat_pileup']
+            output_metadata['treat_pileup'] = m_results_meta['treat_pileup']
+
+            tool_name = output_metadata['treat_pileup'].meta_data['tool']
+            output_metadata['treat_pileup'].meta_data['tool_description'] = tool_name
+            output_metadata['treat_pileup'].meta_data['tool'] = "process_chipseq"
 
         return output_files_generated, output_metadata
 

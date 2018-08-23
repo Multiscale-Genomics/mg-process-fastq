@@ -387,6 +387,8 @@ Install MACS2
 This should get installed as part of the installation in the mg-process-fastq
 package, if not then it will need to be installed separately.
 
+For Python 2.7:
+
 .. code-block:: none
    :linenos:
 
@@ -394,14 +396,26 @@ package, if not then it will need to be installed separately.
    pyenv activate mg-process-fastq
    pip install MACS2
 
-Whether this package is installed as part of the mg-process-fastq package or
-manually the following symlink should also be created if it is to be run within
-the COMPSs environment.
+   ln -s ${HOME}/.pyenv/versions/mg-process-fastq/bin/macs2 ${HOME}/bin/macs2
+
+For Python 3.6:
 
 .. code-block:: none
    :linenos:
 
-   ln -s ${HOME}/.pyenv/versions/mg-process-fastq/bin/macs2 ${HOME}/bin/macs2
+   cd ${HOME}/code
+   pyenv activate mg-process-fastq
+   git clone https://github.com/taoliu/MACS.git
+   cd MACS
+   git checkout MACS2p3
+
+   cython MACS2/*.pyx
+   cython MACS2/IO/*.pyx
+   python setup_w_cython.py install
+
+   pip install .
+   alias macs2="macs2p3"
+
 
 Install iDEAR
 ^^^^^^^^^^^^^
@@ -434,7 +448,7 @@ Install TADbit
    cd TADbit-master
 
    # If the pyenv env is not called mg-process-fastq then change this to match,
-   # the sme is true for teh version of python
+   # the same is true for the version of python
    python setup.py install --install-lib=${HOME}/.pyenv/versions/mg-process-fastq/lib/python2.7/site-packages/ --install-scripts=${HOME}/bin
 
 Install BSseeker
@@ -460,11 +474,11 @@ Trim Galore
 
    cd ${HOME}/lib
    pip install cutadapt
-   wget -O trim_galore.tar.gz https://github.com/FelixKrueger/TrimGalore/archive/0.4.3.tar.gz
+   wget -O trim_galore.tar.gz https://github.com/FelixKrueger/TrimGalore/archive/0.5.0.tar.gz
    tar -xzf trim_galore.tar.gz
 
    cd ${HOME}/bin
-   ln -s ${HOME}/lib/TrimGalore-0.4.3/trim_galore trim_galore
+   ln -s ${HOME}/lib/TrimGalore-0.5.0/trim_galore trim_galore
 
 Running on a COMPSs VM the symlink will need to be created in a system accessible area:
 

@@ -64,7 +64,7 @@ def test_genome_pipeline_00():
         "gem_index": resource_path + 'macs2.Human.GCA_000001405.22.fasta.gem.gz'
     }
 
-    genome_handle = process_genome()
+    genome_handle = process_genome({"execution": resource_path})
     genome_files, genome_meta = genome_handle.run(files, metadata, files_out)  # pylint: disable=unused-variable
 
     print(genome_files)
@@ -122,7 +122,7 @@ def test_genome_pipeline_01():
         except OSError as ose:
             print("Error: %s - %s." % (ose.filename, ose.strerror))
 
-    genome_handle = process_genome()
+    genome_handle = process_genome({"execution": resource_path})
     genome_files, genome_meta = genome_handle.run(files, metadata, files_out)  # pylint: disable=unused-variable
 
     print(genome_files)
@@ -136,5 +136,5 @@ def test_genome_pipeline_01():
 
         try:
             os.remove(genome_files[f_out])
-        except OSError, ose:
+        except OSError as ose:
             print("Error: %s - %s." % (ose.filename, ose.strerror))

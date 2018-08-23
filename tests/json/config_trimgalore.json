@@ -13,7 +13,11 @@
             "value": "59b7e020d9422a5969b65379"
         }
     ],
-    "arguments": [],
+    "arguments": [
+        {
+            "name": "execution",
+            "value": "mg_process_fastq/tests/data"
+        }],
     "output_files": [
         {
             "required": true,

@@ -99,8 +99,8 @@ if [ ! -d "bedtools2" ]; then
 fi
 
 cd ${HOME}/lib
-if [ ! -d "TrimGalore-0.4.3" ]; then
-    wget -O trim_galore.tar.gz https://github.com/FelixKrueger/TrimGalore/archive/0.4.3.tar.gz
+if [ ! -d "TrimGalore-0.5.0" ]; then
+    wget -O trim_galore.tar.gz https://github.com/FelixKrueger/TrimGalore/archive/0.5.0.tar.gz
     tar -xzf trim_galore.tar.gz
 fi
 

@@ -57,7 +57,7 @@ def test_rnaseq_pipeline():
         "kallisto_tar_file": 'tests/data/kallisto.tar.gz'
     }
 
-    rs_handle = process_rnaseq()
+    rs_handle = process_rnaseq({"execution": resource_path})
     rs_files, rs_meta = rs_handle.run(files, metadata, files_out)  # pylint: disable=unused-variable
 
     # Checks that the returned files matches the expected set of results

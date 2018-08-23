@@ -39,6 +39,8 @@ except ImportError:
 from basic_modules.tool import Tool
 from basic_modules.metadata import Metadata
 
+from tool.common import common
+
 # ------------------------------------------------------------------------------
 
 
@@ -234,17 +236,7 @@ class sleuthTool(Tool):  # pylint: disable=invalid-name
             tar.add(img, arcname="results")
         tar.close()
 
-        try:
-            command_line = 'pigz ' + image_tar.replace(".gz", "")
-            args = shlex.split(command_line)
-            process = subprocess.Popen(args)
-            process.wait()
-        except OSError:
-            logger.warn("OSERROR: pigz not installed, using gzip")
-            command_line = 'gzip ' + image_tar.replace(".gz", "")
-            args = shlex.split(command_line)
-            process = subprocess.Popen(args)
-            process.wait()
+        common.zip_file(image_tar.replace(".gz", ""), 2)
 
     def run(self, input_files, input_metadata, output_files):
         """

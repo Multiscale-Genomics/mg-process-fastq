@@ -28,12 +28,22 @@ Tools for processing FastQ files
    .. autoclass:: tool.validate_fastqc.fastqcTool
       :members:
 
+   TrimGalore
+   ----------
+   .. autoclass:: tool.trimgalore.trimgalore
+      :members:
+
    Indexers
    ========
 
    Bowtie 2
    --------
    .. autoclass:: tool.bowtie_indexer.bowtieIndexerTool
+      :members:
+
+   BSgenome Index
+   --------------
+   .. autoclass:: tool.forge_bsgenome.bsgenomeTool
       :members:
 
    BS-Seeker2 Indexer
@@ -60,11 +70,20 @@ Tools for processing FastQ files
    Aligners
    ========
 
-   BWA
-   ---
+   Bowtie2
+   -------
+   .. autoclass:: tool.bowtie_aligner.bowtie2AlignerTool
+      :members:
+
+   BWA - ALN
+   ---------
    .. autoclass:: tool.bwa_aligner.bwaAlignerTool
       :members:
 
+   BWA - MEM
+   ---------
+   .. autoclass:: tool.bwa_mem_aligner.bwaAlignerMEMTool
+      :members:
 
    BS-Seeker2 Aligner
    ------------------
@@ -85,6 +104,11 @@ Tools for processing FastQ files
    .. autoclass:: tool.bs_seeker_filter.filterReadsTool
       :members:
 
+   Trim Galore
+   -----------
+   .. autoclass:: tool.trimgalore.trimgalore
+      :members:
+
 
    Peak Calling
    ============
@@ -92,6 +116,11 @@ Tools for processing FastQ files
    BS-Seeker2 Methylation Caller
    -----------------------------
    .. autoclass:: tool.bs_seeker_methylation_caller.bssMethylationCallerTool
+      :members:
+
+   iDEAR
+   -----
+   .. autoclass:: tool.idear.idearTool
       :members:
 
    iNPS
@@ -141,7 +170,7 @@ Tools for processing FastQ files
    .. autoclass:: tool.tb_normalize.tbNormalizeTool
       :members:
 
-   Extract binned matrix from paired end reads file
+   Extract binned matrix from paired end reads file 
    ------------------------------------------------
    .. autoclass:: tool.tb_bin.tbBinTool
       :members:

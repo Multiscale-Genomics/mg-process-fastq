@@ -48,7 +48,7 @@ def test_bowtie_indexer_chipseq():
             {'assembly': 'test'}),
     }
 
-    bti = bowtie_indexer.bowtieIndexerTool()
+    bti = bowtie_indexer.bowtieIndexerTool({"execution": resource_path})
     bti.run(input_files, metadata, output_files)
 
     assert os.path.isfile(output_files["index"]) is True
@@ -79,7 +79,7 @@ def test_bowtie_indexer_mnaseseq():
             {'assembly': 'test'}),
     }
 
-    bti = bowtie_indexer.bowtieIndexerTool()
+    bti = bowtie_indexer.bowtieIndexerTool({"execution": resource_path})
     bti.run(input_files, metadata, output_files)
 
     assert os.path.isfile(output_files["index"]) is True
@@ -110,7 +110,7 @@ def test_bowtie_indexer_wgbs():
             {'assembly': 'test'}),
     }
 
-    bti = bowtie_indexer.bowtieIndexerTool()
+    bti = bowtie_indexer.bowtieIndexerTool({"execution": resource_path})
     bti.run(input_files, metadata, output_files)
 
     assert os.path.isfile(output_files["index"]) is True

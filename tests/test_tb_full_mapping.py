@@ -27,6 +27,7 @@ from tool.gem_indexer import gemIndexerTool
 from tool.tb_full_mapping import tbFullMappingTool
 
 
+
 def generate_gem():
     """
     Create the GEM file
@@ -58,7 +59,7 @@ def generate_gem():
 
     print(input_files, output_files)
 
-    gem_it = gemIndexerTool()
+    gem_it = gemIndexerTool({"execution": resource_path})
     gem_it.run(input_files, metadata, output_files)
 
 

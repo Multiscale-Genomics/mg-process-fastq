@@ -64,7 +64,7 @@ def test_bwa_aligner_chipseq_aln():
         )
     }
 
-    bwa_t = bwaAlignerTool()
+    bwa_t = bwaAlignerTool({"execution": resource_path})
     bwa_t.run(input_files, metadata, output_files)
 
     print(__file__)
@@ -109,7 +109,7 @@ def test_bwa_aligner_aln():
         )
     }
 
-    bwa_t = bwaAlignerTool()
+    bwa_t = bwaAlignerTool({"execution": resource_path})
     bwa_t.run(input_files, metadata, output_files)
 
     print(__file__)
@@ -170,7 +170,7 @@ def test_bwa_aligner_mem():
         )
     }
 
-    bwa_t = bwaAlignerMEMTool()
+    bwa_t = bwaAlignerMEMTool({"execution": resource_path})
     bwa_t.run(input_files, metadata, output_files)
 
     print(__file__)
@@ -259,7 +259,7 @@ def test_bwa_aligner_aln_paired():
         )
     }
 
-    bwa_t = bwaAlignerTool()
+    bwa_t = bwaAlignerTool({"execution": resource_path})
     bwa_t.run(input_files, metadata, output_files)
 
     assert os.path.isfile(resource_path + "bsSeeker.Mouse.SRR892982_1_aln.bam") is True
@@ -324,7 +324,7 @@ def test_bwa_aligner_mem_paired():
         )
     }
 
-    bwa_t = bwaAlignerMEMTool()
+    bwa_t = bwaAlignerMEMTool({"execution": resource_path})
     bwa_t.run(input_files, metadata, output_files)
 
     assert os.path.isfile(resource_path + "bsSeeker.Mouse.SRR892982_1_mem.bam") is True
@@ -400,7 +400,7 @@ def test_bwa_aligner_idamidseq():
             )
         }
 
-        bwa_t = bwaAlignerMEMTool()
+        bwa_t = bwaAlignerMEMTool({"execution": resource_path})
         bwa_t.run(input_files, metadata, output_files)
 
         assert os.path.isfile(fastq_file.replace(".fastq", ".bam")) is True
@@ -444,7 +444,7 @@ def test_bwa_aligner_mnaseseq():
         )
     }
 
-    bwa_t = bwaAlignerTool()
+    bwa_t = bwaAlignerTool({"execution": resource_path})
     bwa_t.run(input_files, metadata, output_files)
 
     assert os.path.isfile(resource_path + "inps.Mouse.DRR000386.bam") is True

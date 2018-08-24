@@ -38,14 +38,15 @@ except ImportError:
     logger.info("[Warning] Cannot import \"pycompss\" API packages.")
     logger.info("          Using mock decorators.")
 
-    from utils.dummy_pycompss import FILE_IN, FILE_OUT, IN # pylint: disable=ungrouped-imports
-    from utils.dummy_pycompss import task # pylint: disable=ungrouped-imports
+    from utils.dummy_pycompss import FILE_IN, FILE_OUT, IN  # pylint: disable=ungrouped-imports
+    from utils.dummy_pycompss import task  # pylint: disable=ungrouped-imports
     # from utils.dummy_pycompss import constraint # pylint: disable=ungrouped-imports
-    from utils.dummy_pycompss import compss_wait_on # pylint: disable=ungrouped-imports
+    from utils.dummy_pycompss import compss_wait_on  # pylint: disable=ungrouped-imports
+
 
 # ------------------------------------------------------------------------------
 
-class tbFullMappingTool(Tool): # pylint: disable=invalid-name
+class tbFullMappingTool(Tool):  # pylint: disable=invalid-name
     """
     Tool for mapping fastq paired end files to the GEM index files
     """
@@ -60,7 +61,7 @@ class tbFullMappingTool(Tool): # pylint: disable=invalid-name
     @task(
         gem_file=FILE_IN, fastq_file=FILE_IN, windows=IN, window1=FILE_OUT,
         window2=FILE_OUT, window3=FILE_OUT, window4=FILE_OUT)
-    def tb_full_mapping_iter( # pylint: disable=too-many-locals,too-many-statements,unused-argument,no-self-use,too-many-arguments
+    def tb_full_mapping_iter(  # pylint: disable=too-many-locals,too-many-statements,unused-argument,no-self-use,too-many-arguments
             self, gem_file, fastq_file, windows,
             window1, window2, window3, window4, ncpus=1, workdir='/tmp/'):
         """
@@ -111,7 +112,7 @@ class tbFullMappingTool(Tool): # pylint: disable=invalid-name
     @task(
         gem_file=FILE_IN, fastq_file=FILE_IN, enzyme_name=IN, windows=IN,
         full_file=FILE_OUT, frag_file=FILE_OUT)
-    def tb_full_mapping_frag( # pylint: disable=too-many-locals,too-many-statements,unused-argument,no-self-use,too-many-arguments
+    def tb_full_mapping_frag(  # pylint: disable=too-many-locals,too-many-statements,unused-argument,no-self-use,too-many-arguments
             self, gem_file, fastq_file, enzyme_name, windows,
             full_file, frag_file, ncpus=1, workdir='/tmp/'):
         """
@@ -139,8 +140,8 @@ class tbFullMappingTool(Tool): # pylint: disable=invalid-name
 
         """
         logger.info("tb_full_mapping_frag")
-        #od_loc = fastq_file.split("/")
-        #output_dir = "/".join(od_loc[0:-1])
+        # od_loc = fastq_file.split("/")
+        # output_dir = "/".join(od_loc[0:-1])
         output_dir = workdir
 
         logger.info("TB MAPPING - output_dir:", output_dir)
@@ -165,22 +166,22 @@ class tbFullMappingTool(Tool): # pylint: disable=invalid-name
         )
 
         with open(full_file, "wb") as f_out:
-            with open(fastq_file_tmp +dsrc+"_full_1-end.map", "rb") as f_in:
+            with open(fastq_file_tmp + dsrc + "_full_1-end.map", "rb") as f_in:
                 f_out.write(f_in.read())
 
-        if path.isfile(fastq_file_tmp +dsrc+"_full_1-end.map"):
-            unlink(fastq_file_tmp +dsrc+"_full_1-end.map")
+        if path.isfile(fastq_file_tmp + dsrc + "_full_1-end.map"):
+            unlink(fastq_file_tmp + dsrc + "_full_1-end.map")
 
         with open(frag_file, "wb") as f_out:
-            with open(fastq_file_tmp +dsrc+"_frag_1-end.map", "rb") as f_in:
+            with open(fastq_file_tmp + dsrc + "_frag_1-end.map", "rb") as f_in:
                 f_out.write(f_in.read())
 
-        if path.isfile(fastq_file_tmp +dsrc+"_frag_1-end.map"):
-            unlink(fastq_file_tmp +dsrc+"_frag_1-end.map")
+        if path.isfile(fastq_file_tmp + dsrc + "_frag_1-end.map"):
+            unlink(fastq_file_tmp + dsrc + "_frag_1-end.map")
 
         return True
 
-    def run(self, input_files, output_files, metadata=None): # pylint: disable=too-many-locals,too-many-branches,too-many-statements,no-self-use,unused-argument
+    def run(self, input_files, output_files, metadata=None):  # pylint: disable=too-many-locals,too-many-branches,too-many-statements,no-self-use,unused-argument
         """
         The main function to map the FASTQ files to the GEM file over different
         window sizes ready for alignment
@@ -235,7 +236,7 @@ class tbFullMappingTool(Tool): # pylint: disable=invalid-name
         file_name = (file_name.replace('.fq'+gzipped, '')).replace('.FQ'+gzipped, '')
         quality_plot_file = ''
         log_path = ''
-        #name = root_name[-1]
+        # name = root_name[-1]
 
         if 'quality_plot' in metadata:
             quality_plot_file = 'QC-plot_'+file_name + '.png'

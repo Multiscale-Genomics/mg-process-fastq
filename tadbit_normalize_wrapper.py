@@ -27,21 +27,22 @@ import multiprocessing
 import tarfile
 from random import random
 from string import ascii_letters as letters
-# Required for ReadTheDocs
-from functools import wraps # pylint: disable=unused-import
-from pysam import AlignmentFile
+
+from pysam import AlignmentFile  # pylint: disable=no-name-in-module
 
 from basic_modules.workflow import Workflow
 from basic_modules.metadata import Metadata
-from tool.common import CommandLineParser
-from tool.common import format_utils
 from utils import logger
 from utils import remap
 
-from tool.tb_normalize import tbNormalizeTool # pylint: disable=ungrouped-imports
+from tool.common import CommandLineParser
+from tool.common import format_utils
+from tool.tb_normalize import tbNormalizeTool
+
 
 # ------------------------------------------------------------------------------
-class tadbit_normalize(Workflow): # pylint: disable=invalid-name, too-few-public-methods
+
+class tadbit_normalize(Workflow):  # pylint: disable=invalid-name, too-few-public-methods
     """
     Wrapper for the VRE form TADbit normalize.
     It normalizes a BAM file at a given resolution.
@@ -187,11 +188,12 @@ class tadbit_normalize(Workflow): # pylint: disable=invalid-name, too-few-public
                 "visible": False
             })
 
-        #cleaning
+        # cleaning
         clean_temps(self.configuration['workdir']+"/04_normalization")
         clean_temps(self.configuration['workdir'])
 
         return m_results_files, m_results_meta
+
 
 # ------------------------------------------------------------------------------
 
@@ -208,6 +210,7 @@ def main(args):
 
     return result
 
+
 def clean_temps(working_path):
     """Cleans the workspace from temporal folder and scratch files"""
     for the_file in os.listdir(working_path):
@@ -223,6 +226,7 @@ def clean_temps(working_path):
     except OSError:
         pass
     logger.info('[CLEANING] Finished')
+
 
 # ------------------------------------------------------------------------------
 

@@ -25,29 +25,30 @@ from subprocess import PIPE
 from subprocess import Popen
 
 from basic_modules.tool import Tool
-from tool.common import format_utils
-
 from utils import logger
+
+from tool.common import format_utils
 
 try:
     if hasattr(sys, '_run_from_cmdl') is True:
         raise ImportError
     from pycompss.api.parameter import FILE_IN, FILE_OUT, IN
     from pycompss.api.task import task
-    #from pycompss.api.api import compss_wait_on
+    # from pycompss.api.api import compss_wait_on
     # from pycompss.api.constraint import constraint
 except ImportError:
     logger.info("[Warning] Cannot import \"pycompss\" API packages.")
     logger.info("          Using mock decorators.")
 
-    from utils.dummy_pycompss import FILE_IN, FILE_OUT, IN # pylint: disable=ungrouped-imports
-    from utils.dummy_pycompss import task # pylint: disable=ungrouped-imports
-    #from utils.dummy_pycompss import compss_wait_on # pylint: disable=ungrouped-imports
-    #from utils.dummy_pycompss import constraint # pylint: disable=ungrouped-imports
+    from utils.dummy_pycompss import FILE_IN, FILE_OUT, IN  # pylint: disable=ungrouped-imports
+    from utils.dummy_pycompss import task  # pylint: disable=ungrouped-imports
+    # from utils.dummy_pycompss import compss_wait_on # pylint: disable=ungrouped-imports
+    # from utils.dummy_pycompss import constraint # pylint: disable=ungrouped-imports
+
 
 # ------------------------------------------------------------------------------
 
-class tbSegmentTool(Tool): # pylint: disable=invalid-name
+class tbSegmentTool(Tool):  # pylint: disable=invalid-name
     """
     Tool for finding tads and compartments in an adjacency matrix
     """
@@ -61,8 +62,9 @@ class tbSegmentTool(Tool): # pylint: disable=invalid-name
 
     @task(bamin=FILE_IN, biases=FILE_IN, resolution=IN, workdir=IN,
           tad_dir=FILE_OUT, compartment_dir=FILE_OUT)
-    def tb_segment(self, bamin, biases, resolution, callers, chromosomes, # pylint: disable=too-many-locals,too-many-statements,unused-argument,no-self-use,too-many-arguments
-                   workdir, fasta=None, ncpus="1"):
+    def tb_segment(  # pylint: disable=too-many-locals,too-many-statements,unused-argument,no-self-use,too-many-arguments
+            self, bamin, biases, resolution, callers, chromosomes,
+            workdir, fasta=None, ncpus="1"):
         """
         Function to find tads and compartments in the Hi-C
         matrix
@@ -139,7 +141,7 @@ class tbSegmentTool(Tool): # pylint: disable=invalid-name
 
         return (output_files, output_metadata)
 
-    def run(self, input_files, output_files, metadata=None): # pylint: disable=too-many-locals
+    def run(self, input_files, output_files, metadata=None):  # pylint: disable=too-many-locals
         """
         The main function to the predict TAD sites and compartments for a given resolution from
         the Hi-C matrix
@@ -209,6 +211,7 @@ class tbSegmentTool(Tool): # pylint: disable=invalid-name
 
         return (output_files, output_metadata)
 
+
 def clean_headers(fpath):
     """
         Replaces spaces by underscores in the headers of tsv files
@@ -219,7 +222,7 @@ def clean_headers(fpath):
         tsv_file = open(fl_files)
         line = tsv_file.readline()
         line = line.replace(' ', '_')
-        dest_file = os.path.join(os.path.dirname(fl_files), 'vre_'+os.path.basename(fl_files))
+        dest_file = os.path.join(os.path.dirname(fl_files), 'vre_' + os.path.basename(fl_files))
         to_file = open(dest_file, mode="w")
         to_file.write(line)
         shutil.copyfileobj(tsv_file, to_file)

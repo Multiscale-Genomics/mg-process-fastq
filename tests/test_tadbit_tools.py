@@ -19,7 +19,7 @@ from __future__ import print_function
 
 from os import path, remove
 import gzip
-import pytest # pylint: disable=unused-import
+import pytest
 
 from basic_modules.metadata import Metadata
 from tadbit_map_parse_filter_wrapper import tadbit_map_parse_filter
@@ -27,9 +27,10 @@ from tadbit_normalize_wrapper import tadbit_normalize
 from tadbit_segment_wrapper import tadbit_segment
 from tadbit_bin_wrapper import tadbit_bin
 
+
 @pytest.mark.hic
 @pytest.mark.pipeline
-def test_tadbit_tools():
+def test_tadbit_tools():  # pylint: disable=too-many-locals,too-many-statements
     """
     Test case to ensure that the tadbit tools code works.
     """
@@ -49,48 +50,48 @@ def test_tadbit_tools():
             f_out.write(fgz_in.read())
     metadata_1 = {}
     metadata_1["read1"] = Metadata(
-                    data_type = "hic_reads",
-                    file_type = "fastq",
-                    file_path=files["read1"],
-                    sources=[""],
-                    meta_data={
-                        "visible": True,
-                        "assembly": "hg38"
-                    },
-                    taxon_id=9606)
+        data_type="hic_reads",
+        file_type="fastq",
+        file_path=files["read1"],
+        sources=[""],
+        meta_data={
+            "visible": True,
+            "assembly": "hg38"
+        },
+        taxon_id=9606)
 
     metadata_1["read2"] = Metadata(
-                    data_type = "hic_reads",
-                    file_type = "fastq",
-                    file_path=files["read1"],
-                    sources=[""],
-                    meta_data={
-                        "visible": True,
-                        "assembly": "hg38"
-                    },
-                    taxon_id=9606)
+        data_type="hic_reads",
+        file_type="fastq",
+        file_path=files["read1"],
+        sources=[""],
+        meta_data={
+            "visible": True,
+            "assembly": "hg38"
+        },
+        taxon_id=9606)
 
     metadata_1["parsing:refGenome"] = Metadata(
-                    data_type = "sequence_genomic",
-                    file_type = "fasta",
-                    file_path=files["parsing:refGenome"],
-                    sources=[""],
-                    meta_data={
-                        "visible": True,
-                        "assembly": "hg38"
-                    },
-                    taxon_id=9606)
+        data_type="sequence_genomic",
+        file_type="fasta",
+        file_path=files["parsing:refGenome"],
+        sources=[""],
+        meta_data={
+            "visible": True,
+            "assembly": "hg38"
+        },
+        taxon_id=9606)
 
     metadata_1["mapping:refGenome"] = Metadata(
-                    data_type = "sequence_mapping_index",
-                    file_type = "gem",
-                    file_path=files["mapping:refGenome"],
-                    sources=[""],
-                    meta_data={
-                        "visible": True,
-                        "assembly": "hg38"
-                    },
-                    taxon_id=9606)
+        data_type="sequence_mapping_index",
+        file_type="gem",
+        file_path=files["mapping:refGenome"],
+        sources=[""],
+        meta_data={
+            "visible": True,
+            "assembly": "hg38"
+        },
+        taxon_id=9606)
 
     config = {
         "project": resource_path,
@@ -99,13 +100,13 @@ def test_tadbit_tools():
         "mapping:rest_enzyme": "MboI",
         "mapping:iterative_mapping": False,
         "filtering:filters": [
-                "1",
-                "2",
-                "3",
-                "4",
-                "9",
-                "10"
-             ],
+            "1",
+            "2",
+            "3",
+            "4",
+            "9",
+            "10"
+        ],
         "chromosomes": "",
         "mapping:windows": "1:20 1:40",
         "filtering:min_dist_RE": "500",
@@ -141,9 +142,9 @@ def test_tadbit_tools():
         "resolution": "100000",
         "segmentation:chromosome_names": "",
         "segmentation:callers": [
-                "1",
-                "2"
-            ]
+            "1",
+            "2"
+        ]
     }
     tb_handle = tadbit_segment(configuration=config)
     tb_2_files, _ = tb_handle.run(files, metadata_2, [])

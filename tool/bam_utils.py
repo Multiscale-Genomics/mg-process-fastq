@@ -74,6 +74,30 @@ class bamUtils(object):  # pylint: disable=invalid-name
 
         return True
 
+   @staticmethod
+    def bam_to_bed(bam_file, bed_file):
+        """
+        Function for converting bam files to bed files
+        """
+        # Convert the new bam file into a bed file
+        cmd_bamtobed = ' '.join([
+            'bedtools bamtobed',
+            '-i', bam_file,
+            '>',bed_file
+        ])
+
+        try:
+            logger.info("CREATE BAMTOBED COMMAND: " + cmd_bamtobed)
+            process = subprocess.Popen(cmd_bamtobed, shell=True)
+            process.wait()
+        except (OSError, IOError) as msg:
+            logger.info("I/O error({0}): {1}\n{2}".format(
+                msg.errno, msg.strerror, cmd_sort))
+            return False
+
+        return True
+
+
     @staticmethod
     def bam_count_reads(bam_file, aligned=False):
         """

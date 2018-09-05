@@ -131,7 +131,7 @@ class macs2(Tool):  # pylint: disable=invalid-name
                 bed_tmp_file = bam_file.replace(".bam", "." + str(chromosome) + ".bed")
                 bam_utils_handle.bam_to_bed(bam_tmp_file, bed_tmp_file)
                 macs_params.append("--format BEDPE")
-            else: 
+            else:
                 macs_params.append("--format BAMPE")
 
         command_param = [
@@ -259,7 +259,8 @@ class macs2(Tool):  # pylint: disable=invalid-name
             name, bam_file, bai_file, macs_params,
             narrowpeak, summits_bed, broadpeak, gappedpeak,
             bdg_control_lambda=bdg_control_lambda, bdg_treat_pileup=bdg_treat_pileup,
-            chromosome=chromosome, bam_file_bgd=bam_file_bgd, bai_file_bgd=bai_file_bgd, bedpe=bedpe)
+            chromosome=chromosome, bam_file_bgd=bam_file_bgd,
+            bai_file_bgd=bai_file_bgd, bedpe=bedpe)
 
         return True
 

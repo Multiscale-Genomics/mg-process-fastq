@@ -259,7 +259,7 @@ class macs2(Tool):  # pylint: disable=invalid-name
             name, bam_file, bai_file, macs_params,
             narrowpeak, summits_bed, broadpeak, gappedpeak,
             bdg_control_lambda=bdg_control_lambda, bdg_treat_pileup=bdg_treat_pileup,
-            chromosome=chromosome, bam_file_bgd=bam_file_bgd, bai_file_bgd=bai_file_bgd, bedpe)
+            chromosome=chromosome, bam_file_bgd=bam_file_bgd, bai_file_bgd=bai_file_bgd, bedpe=bedpe)
 
         return True
 

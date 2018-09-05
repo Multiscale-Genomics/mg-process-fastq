@@ -86,19 +86,19 @@ def test_splitter_02():
     Function to test single splitter
     """
     resource_path = os.path.join(os.path.dirname(__file__), "data/")
-    fastq_1file = resource_path + "bsSeeker.Mouse.SRR892982_1.fastq"
+    fastq_file = resource_path + "bsSeeker.Mouse.SRR892982_1.fastq"
 
     fqs_handle = fastq_splitter()
     results = fqs_handle.run(
         {
-            "fastq1": fastq_1file
+            "fastq1": fastq_file,
         },
         {
             "fastq1": Metadata(
                 "data_rnaseq", "fastq", [], None,
                 {'assembly': 'test'})
         },
-        {"output": fastq_1file + ".tar.gz"}
+        {"output": fastq_file + ".tar.gz"}
     )
 
     print("WGBS - SINGLE RESULTS:", results)

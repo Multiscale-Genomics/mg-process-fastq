@@ -328,7 +328,7 @@ class macs2(Tool):  # pylint: disable=invalid-name
             name, bam_file, bai_file, macs_params,
             narrowpeak, summits_bed, broadpeak, gappedpeak,
             bdg_control_lambda=bdg_control_lambda, bdg_treat_pileup=bdg_treat_pileup,
-            chromosome=chromosome,  bedpe=bedpe)
+            chromosome=chromosome, bedpe=bedpe)
 
         return True
 
@@ -433,7 +433,7 @@ class macs2(Tool):  # pylint: disable=invalid-name
         chr_list = compss_wait_on(chr_list)
 
         logger.info("MACS2 COMMAND PARAMS: " + ", ".join(command_params))
-        
+
         bedpe_param = False
         if 'macs2_bedpe' in self.configuration:
             bedpe_param = True

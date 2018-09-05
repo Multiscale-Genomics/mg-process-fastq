@@ -83,7 +83,7 @@ class bamUtils(object):  # pylint: disable=invalid-name
         cmd_bamtobed = ' '.join([
             'bedtools bamtobed',
             '-i', bam_file,
-            '>',bed_file
+            '>', bed_file
         ])
 
         try:
@@ -92,7 +92,7 @@ class bamUtils(object):  # pylint: disable=invalid-name
             process.wait()
         except (OSError, IOError) as msg:
             logger.info("I/O error({0}): {1}\n{2}".format(
-                msg.errno, msg.strerror, cmd_sort))
+                msg.errno, msg.strerror, cmd_bamtobed))
             return False
 
         return True

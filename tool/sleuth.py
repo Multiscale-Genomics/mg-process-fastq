@@ -150,17 +150,20 @@ class sleuthTool(Tool):  # pylint: disable=invalid-name
             True if the task has completed successfully
         """
 
-        data_tmp_dir = kallisto_tar.split("/")
-        data_tmp_dir = "/".join(data_tmp_dir[:-1])
+        data_tmp_dir = os.path.split(kallisto_tar)
+        data_tmp_dir = data_tmp_dir[0]
 
         self.extract_kallisto_tar(data_tmp_dir, kallisto_tar)
-        self.write_config_file(data_tmp_dir + "/ht_config.txt", sleuth_config)
+        self.write_config_file(
+            os.path.join(data_tmp_dir, "ht_config.txt"),
+            sleuth_config
+        )
 
         rscript = os.path.join(os.path.dirname(__file__), "../scripts/sleuth.R")
 
         args = [
             'Rscript', rscript,
-            '--config', data_tmp_dir + "/ht_config.txt",
+            '--config', os.path.join(data_tmp_dir, "ht_config.txt"),
             '--data_dir', kallisto_tar.replace(".tar.gz", ""),
             '--save', save_file,
             '--deg', save_table,
@@ -233,7 +236,9 @@ class sleuthTool(Tool):  # pylint: disable=invalid-name
 
         tar = tarfile.open(image_tar.replace(".gz", ""), "w")
         for img in images_to_save:
-            tar.add(img, arcname="results")
+            img_name = os.path.split(img)
+            tar.add(img, arcname=img_name[1])
+            os.remove(img)
         tar.close()
 
         common.zip_file(image_tar.replace(".gz", ""), 2)

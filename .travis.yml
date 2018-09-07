@@ -212,7 +212,7 @@ before_script:
     # - if [[ "$TESTENV" == "code" ]]; then Rscript scripts/install_packages.R; fi
 
     - echo "R_LIB=${HOME}/R" > ${HOME}/.Renviron
-    - echo "options(repos = c(CRAN = 'http://mirrors.ebi.ac.uk/CRAN/'))" > ${HOME}/.Rprofile
+    - echo "options(repos = c(CRAN = 'https://www.stats.bris.ac.uk/R/'))" > ${HOME}/.Rprofile
     - echo ".libPaths('~/R')" >> ${HOME}/.Rprofile
     - echo 'message("Using library:", .libPaths()[1])' >> ${HOME}/.Rprofile
     - if [[ "$TESTENV" == "rcode" ]]; then Rscript scripts/install_sleuth.R; fi

@@ -145,7 +145,8 @@ class macs2(Tool):  # pylint: disable=invalid-name
         command_param.append('--outdir ' + output_dir)
         command_line = ' '.join(command_param)
 
-        if int(bam_utils_handle.bam_count_reads(bam_tmp_file, aligned=True)) > 0:
+        aligned_count = bam_utils_handle.bam_count_reads(bam_tmp_file, aligned=True)
+        if int(aligned_count) > 0:
             try:
                 args = shlex.split(command_line)
                 process = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)

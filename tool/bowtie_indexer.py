@@ -95,8 +95,6 @@ class bowtieIndexerTool(Tool):  # pylint: disable=invalid-name
             index_dir = index_loc.replace('.tar.gz', '')
             os.mkdir(index_dir)
 
-            idx_split = index_dir.split("/")
-
             shutil.move(bt2_1, index_dir)
             shutil.move(bt2_2, index_dir)
             shutil.move(bt2_3, index_dir)
@@ -104,10 +102,8 @@ class bowtieIndexerTool(Tool):  # pylint: disable=invalid-name
             shutil.move(bt2_rev1, index_dir)
             shutil.move(bt2_rev2, index_dir)
 
-            index_folder = idx_split[-1]
-
             tar = tarfile.open(idx_out_pregz, "w")
-            tar.add(index_dir, arcname=index_folder)
+            tar.add(index_dir, arcname=os.path.split(index_dir)[1])
             tar.close()
 
         except (OSError, IOError) as error:

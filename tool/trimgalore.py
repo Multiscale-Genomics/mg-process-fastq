@@ -139,23 +139,22 @@ class trimgalore(Tool):  # pylint: disable=invalid-name
         if fastq_trimmed[1][-3:] == ".gz":
             gzipped = True
 
-        tmp_dir = os.path.join(fastq_trimmed[0], 'tmp')
-
         if gzipped:
-            tg_tmp_out = os.path.join(tmp_dir, fastq_trimmed[1])
+            tg_tmp_out = os.path.join(fastq_trimmed[0], fastq_trimmed[1])
             tg_tmp_out = tg_tmp_out.replace(
                 "." + tail_substring + ".gz",
                 "_trimmed.fq.gz"
             )
         else:
-            tg_tmp_out = os.path.join(tmp_dir, fastq_trimmed[1])
+            tg_tmp_out = os.path.join(fastq_trimmed[0], fastq_trimmed[1])
             tg_tmp_out = tg_tmp_out.replace(
                 "." + tail_substring,
                 "_trimmed.fq"
             )
 
         try:
-            os.mkdir(tmp_dir)
+            logger.info("CREATE TMP FOLDER: " + fastq_trimmed[0])
+            os.mkdir(fastq_trimmed[0])
         except (OSError, IOError) as msg:
             logger.warn("I/O error({0}) - tmp folder already exists: {1}".format(
                 msg.errno, msg.strerror))
@@ -190,7 +189,7 @@ class trimgalore(Tool):  # pylint: disable=invalid-name
             with open(fastq_report, "wb") as f_out:
                 with open(
                     os.path.join(
-                        fastq_trimmed[0], "tmp", fastq_trimmed[1] + "_trimming_report.txt"
+                        fastq_trimmed[0], fastq_trimmed[1] + "_trimming_report.txt"
                     ), "rb"
                 ) as f_in:
                     f_out.write(f_in.read())
@@ -245,7 +244,10 @@ class trimgalore(Tool):  # pylint: disable=invalid-name
 
         # Output file name used by TrimGalore
         fastq1_trimmed = os.path.split(fastq1_file_in)
+        fastq1_trimmed = os.path.split(os.path.join(fastq1_trimmed[0], "tmp", fastq1_trimmed[1]))
+
         fastq2_trimmed = os.path.split(fastq2_file_in)
+        fastq2_trimmed = os.path.split(os.path.join(fastq2_trimmed[0], "tmp", fastq2_trimmed[1]))
 
         tail_substring = "fastq"
         if ".fq" in fastq1_trimmed[1]:
@@ -255,33 +257,31 @@ class trimgalore(Tool):  # pylint: disable=invalid-name
         if fastq1_trimmed[1][-3:] == ".gz":
             gzipped = True
 
-        tmp_dir = os.path.join(fastq1_trimmed[0], 'tmp')
-
         if gzipped:
-            tg_tmp_out_1 = os.path.join(fastq1_trimmed[0], 'tmp', fastq1_trimmed[1])
+            tg_tmp_out_1 = os.path.join(fastq1_trimmed[0], fastq1_trimmed[1])
             tg_tmp_out_1 = tg_tmp_out_1.replace(
                 "." + tail_substring + ".gz",
                 "_val_1.fq.gz"
             )
-            tg_tmp_out_2 = os.path.join(fastq2_trimmed[0], 'tmp', fastq2_trimmed[1])
+            tg_tmp_out_2 = os.path.join(fastq2_trimmed[0], fastq2_trimmed[1])
             tg_tmp_out_2 = tg_tmp_out_2.replace(
                 "." + tail_substring + ".gz",
                 "_val_2.fq.gz"
             )
         else:
-            tg_tmp_out_1 = os.path.join(fastq1_trimmed[0], 'tmp', fastq1_trimmed[1])
+            tg_tmp_out_1 = os.path.join(fastq1_trimmed[0], fastq1_trimmed[1])
             tg_tmp_out_1 = tg_tmp_out_1.replace(
                 "." + tail_substring,
-                "_trimmed.fq"
+                "_val.fq"
             )
-            tg_tmp_out_2 = os.path.join(fastq2_trimmed[0], 'tmp', fastq2_trimmed[1])
+            tg_tmp_out_2 = os.path.join(fastq2_trimmed[0], fastq2_trimmed[1])
             tg_tmp_out_2 = tg_tmp_out_2.replace(
                 "." + tail_substring,
-                "_trimmed.fq"
+                "_val.fq"
             )
 
         try:
-            os.mkdir(tmp_dir)
+            os.mkdir(fastq1_trimmed[0])
         except (OSError, IOError) as msg:
             logger.warn("I/O error({0}) - tmp folder already exists: {1}".format(
                 msg.errno, msg.strerror))
@@ -310,14 +310,14 @@ class trimgalore(Tool):  # pylint: disable=invalid-name
             with open(fastq1_report, "wb") as f_out:
                 with open(
                     os.path.join(
-                        fastq1_trimmed[0], "tmp", fastq1_trimmed[1] + "_trimming_report.txt"
+                        fastq1_trimmed[0], fastq1_trimmed[1] + "_trimming_report.txt"
                     ), "rb"
                 ) as f_in:
                     f_out.write(f_in.read())
             with open(fastq2_report, "wb") as f_out:
                 with open(
                     os.path.join(
-                        fastq2_trimmed[0], "tmp", fastq2_trimmed[1] + "_trimming_report.txt"
+                        fastq2_trimmed[0], fastq2_trimmed[1] + "_trimming_report.txt"
                     ), "rb"
                 ) as f_in:
                     f_out.write(f_in.read())

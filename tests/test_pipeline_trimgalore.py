@@ -139,3 +139,5 @@ def test_trim_galore_pipeline_02():
         assert os.path.isfile(tg_files[f_out]) is True
         assert os.path.getsize(tg_files[f_out]) > 0
         os.remove(tg_files[f_out])
+
+    shutil.rmtree('tests/data/tmp')

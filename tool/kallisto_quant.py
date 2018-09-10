@@ -99,7 +99,7 @@ class kallistoQuantificationTool(Tool):  # pylint: disable=invalid-name
 
         fq_stats = self.seq_read_stats(fastq_file_loc)
 
-        output_dir = fastq_file_loc.split('/')
+        output_dir = os.path.split(fastq_file_loc)
 
         std = fq_stats["std"]
         if std == 0.0:
@@ -109,7 +109,7 @@ class kallistoQuantificationTool(Tool):  # pylint: disable=invalid-name
         if bootstrap:
             command_line += "--bootstrap-samples=" + str(bootstrap) + " "
         command_line += "-t 4"
-        command_line += " -o " + "/".join(output_dir[0:-1]) + "/"
+        command_line += " -o " + output_dir[0] + "/"
         command_line += " --single -l " + str(fq_stats['mean']) + " "
         command_line += "-s " + str(std) + " " + fastq_file_loc
 
@@ -118,6 +118,20 @@ class kallistoQuantificationTool(Tool):  # pylint: disable=invalid-name
         args = shlex.split(command_line)
         process = subprocess.Popen(args)
         process.wait()
+
+        output_files = [
+            os.path.join(output_dir[0], "abundance.h5"),
+            os.path.join(output_dir[0], "abundance.tsv"),
+            os.path.join(output_dir[0], "run_info.json"),
+        ]
+
+        for i in output_files:
+            print(i)
+            if os.path.isfile(i) is True and os.path.getsize(i) > 0:
+                pass
+            else:
+                with open(i, "w") as f_out:
+                    f_out.write("")
 
         self.compress_results(
             kallisto_tar_file,
@@ -155,13 +169,13 @@ class kallistoQuantificationTool(Tool):  # pylint: disable=invalid-name
             Location of the wig file containing the levels of expression
         """
 
-        output_dir = fastq_file_loc_01.split('/')
+        output_dir = os.path.split(fastq_file_loc_01)
 
         command_line = 'kallisto quant -i ' + cdna_idx_file + ' '
         if bootstrap:
             command_line += "--bootstrap-samples=" + str(bootstrap) + " "
         command_line += "-t 4"
-        command_line += " -o " + "/".join(output_dir[0:-1]) + "/ "
+        command_line += '-o ' + output_dir[0] + "/ "
         command_line += fastq_file_loc_01 + ' ' + fastq_file_loc_02
 
         args = shlex.split(command_line)
@@ -170,13 +184,27 @@ class kallistoQuantificationTool(Tool):  # pylint: disable=invalid-name
 
         logger.info("OUTPUT DIR: " + '/'.join(output_dir[0:-1]))
 
+        output_files = [
+            os.path.join(output_dir[0], "abundance.h5"),
+            os.path.join(output_dir[0], "abundance.tsv"),
+            os.path.join(output_dir[0], "run_info.json"),
+        ]
+
+        for i in output_files:
+            print(i)
+            if os.path.isfile(i) is True and os.path.getsize(i) > 0:
+                pass
+            else:
+                with open(i, "w") as f_out:
+                    f_out.write("")
+
         self.compress_results(
             kallisto_tar_file,
             '/'.join(output_dir[0:-1]) + "/abundance.h5",
             '/'.join(output_dir[0:-1]) + "/abundance.tsv",
             '/'.join(output_dir[0:-1]) + "/run_info.json"
         )
-
+                    
         return True
 
     @staticmethod

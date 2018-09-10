@@ -18,6 +18,7 @@
 from __future__ import print_function
 
 import os.path
+import shutil
 import pytest
 
 from basic_modules.metadata import Metadata
@@ -48,7 +49,7 @@ def test_trim_galore_pipeline():
     resource_path = os.path.join(os.path.dirname(__file__), "data/")
 
     files = {
-        'fastq1': resource_path + 'bsSeeker.Mouse.SRR892982_1.fastq.gz'
+        'fastq1': os.path.join(resource_path, 'bsSeeker.Mouse.SRR892982_1.fastq.gz')
     }
 
     metadata = {
@@ -70,12 +71,13 @@ def test_trim_galore_pipeline():
 
     # Add tests for all files created
     for f_out in tg_files:
-        print("TRIM GALORE RESULTS FILE:", f_out)
         assert tg_files[f_out] == files_out[f_out]
         assert f_out in tg_meta
         assert os.path.isfile(tg_files[f_out]) is True
         assert os.path.getsize(tg_files[f_out]) > 0
         os.remove(tg_files[f_out])
+
+    shutil.rmtree('tests/data/tmp')
 
 
 @pytest.mark.trimgalore
@@ -103,8 +105,8 @@ def test_trim_galore_pipeline_02():
     resource_path = os.path.join(os.path.dirname(__file__), "data/")
 
     files = {
-        'fastq1': resource_path + 'bsSeeker.Mouse.SRR892982_1.fastq.gz',
-        'fastq2': resource_path + 'bsSeeker.Mouse.SRR892982_2.fastq.gz'
+        'fastq1': os.path.join(resource_path, 'bsSeeker.Mouse.SRR892982_1.fastq.gz'),
+        'fastq2': os.path.join(resource_path, 'bsSeeker.Mouse.SRR892982_2.fastq.gz')
     }
 
     metadata = {
@@ -124,7 +126,7 @@ def test_trim_galore_pipeline_02():
         "fastq2_report": 'tests/data/bsSeeker.Mouse.SRR892982_2.trimmed.report.txt'
     }
 
-    tg_handle = process_trim_galore({"execution": resource_path})
+    tg_handle = process_trim_galore({"tg_paired": True, "execution": resource_path})
     tg_files, tg_meta = tg_handle.run(files, metadata, files_out)
 
     # Checks that the returned files matches the expected set of results
@@ -132,9 +134,10 @@ def test_trim_galore_pipeline_02():
 
     # Add tests for all files created
     for f_out in tg_files:
-        print("TRIM GALORE RESULTS FILE:", f_out)
         assert tg_files[f_out] == files_out[f_out]
         assert f_out in tg_meta
         assert os.path.isfile(tg_files[f_out]) is True
         assert os.path.getsize(tg_files[f_out]) > 0
         os.remove(tg_files[f_out])
+
+    shutil.rmtree('tests/data/tmp')

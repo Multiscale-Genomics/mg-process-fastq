@@ -145,7 +145,8 @@ class macs2(Tool):  # pylint: disable=invalid-name
         command_param.append('--outdir ' + output_dir)
         command_line = ' '.join(command_param)
 
-        if int(bam_utils_handle.bam_count_reads(bam_tmp_file, aligned=True)) > 0:
+        aligned_count = bam_utils_handle.bam_count_reads(bam_tmp_file, aligned=True)
+        if int(aligned_count) > 0:
             try:
                 args = shlex.split(command_line)
                 process = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -174,7 +175,8 @@ class macs2(Tool):  # pylint: disable=invalid-name
         common_handle.to_output_file(output_tmp.format(name, 'peaks.broadPeak'), broadpeak)
         common_handle.to_output_file(output_tmp.format(name, 'peaks.gappedPeak'), gappedpeak)
         common_handle.to_output_file(output_tmp.format(name, 'summits.bed'), summits_bed)
-        common_handle.to_output_file(output_tmp.format(name, 'control_lambda.bdg'), bdg_control_lambda)
+        common_handle.to_output_file(
+            output_tmp.format(name, 'control_lambda.bdg'), bdg_control_lambda)
         common_handle.to_output_file(output_tmp.format(name, 'treat_pileup.bdg'), bdg_treat_pileup)
 
         return True
@@ -376,7 +378,7 @@ class macs2(Tool):  # pylint: disable=invalid-name
 
         return command_params
 
-    def run(self, input_files, input_metadata, output_files):  # pylint: disable=too-many-locals
+    def run(self, input_files, input_metadata, output_files):  # pylint: disable=too-many-locals,too-many-branches,too-many-statements
         """
         The main function to run MACS 2 for peak calling over a given BAM file
         and matching background BAM file.

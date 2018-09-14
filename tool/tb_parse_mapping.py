@@ -46,7 +46,7 @@ except ImportError:
 
 # ------------------------------------------------------------------------------
 
-class tbParseMappingTool(Tool):
+class tbParseMappingTool(Tool):  # pylint: disable=invalid-name
     """
     Tool for parsing the mapped reads and generating the list of paired ends
     that have a match at both ends.
@@ -213,7 +213,7 @@ class tbParseMappingTool(Tool):
 
         return counts
 
-    def run(self, input_files, output_files, metadata=None):  # pylint: disable=too-many-locals
+    def run(self, input_files, input_metadata, output_files):  # pylint: disable=too-many-locals
         """
         The main function to map the aligned reads and return the matching
         pairs. Parsing of the mappings can be either iterative of fragment
@@ -324,12 +324,12 @@ class tbParseMappingTool(Tool):
 
         genome_file = input_files[0]
 
-        enzyme_name = metadata['enzyme_name']
-        mapping_list = metadata['mapping']
-        expt_name = metadata['expt_name']
+        enzyme_name = input_metadata['enzyme_name']
+        mapping_list = input_metadata['mapping']
+        expt_name = input_metadata['expt_name']
         filter_chrom = None
-        if 'chromosomes' in metadata and metadata['chromosomes'] != '':
-            filter_chrom = metadata['chromosomes'].split(',')
+        if 'chromosomes' in input_metadata and input_metadata['chromosomes'] != '':
+            filter_chrom = input_metadata['chromosomes'].split(',')
 
         root_name = input_files[1].split("/")
 
@@ -377,7 +377,7 @@ class tbParseMappingTool(Tool):
                     genome_seq, enzyme_name,
                     window1_1, window1_2, window1_3, window1_4,
                     window2_1, window2_2, window2_3, window2_4,
-                    read_iter, ncpus=(1 if 'ncpus' not in metadata else metadata['ncpus']))
+                    read_iter, ncpus=(1 if 'ncpus' not in input_metadata else input_metadata['ncpus']))
                 results = compss_wait_on(results)
                 if results == 0:
                     output_metadata = {
@@ -400,7 +400,7 @@ class tbParseMappingTool(Tool):
                     genome_seq, enzyme_name,
                     window1_full, window1_frag,
                     window2_full, window2_frag,
-                    read_frag, ncpus=(1 if 'ncpus' not in metadata else metadata['ncpus']))
+                    read_frag, ncpus=(1 if 'ncpus' not in input_metadata else input_metadata['ncpus']))
 
                 results = compss_wait_on(results)
                 if results == 0:

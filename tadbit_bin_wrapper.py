@@ -135,7 +135,7 @@ class tadbit_bin(Workflow): # pylint: disable=invalid-name,too-few-public-method
             )
             input_metadata["species"] = dt_json['scientificName']
         tb_handle = tbBinTool()
-        tb_files, _ = tb_handle.run(in_files, [], input_metadata)
+        tb_files, _ = tb_handle.run(in_files, input_metadata, [])
 
         m_results_files["bin_stats"] = self.configuration['project']+"/bin_stats.tar.gz"
         m_results_files["hic_contacts_matrix_raw"] = self.configuration['project']+"/"+ \
@@ -274,4 +274,3 @@ if __name__ == "__main__":
     IN_ARGS = PARSER.parse_args()
 
     RESULTS = main(IN_ARGS)
-    

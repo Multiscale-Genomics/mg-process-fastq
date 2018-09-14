@@ -227,7 +227,7 @@ class tbBinTool(Tool):  # pylint: disable=invalid-name,too-few-public-methods
 
         return (output_files, output_metadata)
 
-    def run(self, input_files, output_files, metadata=None):  # pylint: disable=too-many-locals
+    def run(self, input_files, input_metadata, output_files):  # pylint: disable=too-many-locals
         """
         The main function to the predict TAD sites for a given resolution from
         the Hi-C matrix
@@ -239,7 +239,7 @@ class tbBinTool(Tool):  # pylint: disable=invalid-name,too-few-public-methods
                 Location of the tadbit bam paired reads
             biases : str
                 Location of the pickle hic biases
-        metadata : dict
+        input_metadata : dict
             resolution : int
                 Resolution of the Hi-C
             coord1 : str
@@ -281,29 +281,29 @@ class tbBinTool(Tool):  # pylint: disable=invalid-name,too-few-public-methods
         if len(input_files) > 1:
             biases = input_files[1]
         resolution = 100000
-        if 'resolution' in metadata:
-            resolution = int(metadata['resolution'])
+        if 'resolution' in input_metadata:
+            resolution = int(input_metadata['resolution'])
 
         coord1 = coord2 = norm = None
         ncpus = 1
-        if 'ncpus' in metadata:
-            ncpus = metadata['ncpus']
+        if 'ncpus' in input_metadata:
+            ncpus = input_metadata['ncpus']
 
-        if 'coord1' in metadata:
-            coord1 = metadata['coord1']
-        if 'coord2' in metadata:
-            coord2 = metadata['coord2']
-        if 'norm' in metadata:
-            norm = metadata['norm']
+        if 'coord1' in input_metadata:
+            coord1 = input_metadata['coord1']
+        if 'coord2' in input_metadata:
+            coord2 = input_metadata['coord2']
+        if 'norm' in input_metadata:
+            norm = input_metadata['norm']
 
         root_name = os.path.dirname(os.path.abspath(bamin))
-        if 'workdir' in metadata:
-            root_name = metadata['workdir']
+        if 'workdir' in input_metadata:
+            root_name = input_metadata['workdir']
 
         # input and output share most metadata
         project_metadata = {}
-        project_metadata["species"] = metadata["species"]
-        project_metadata["assembly"] = metadata["assembly"]
+        project_metadata["species"] = input_metadata["species"]
+        project_metadata["assembly"] = input_metadata["assembly"]
 
         output_files, output_metadata = self.tb_bin(bamin, biases, resolution,
                                                     coord1, coord2, norm, root_name,

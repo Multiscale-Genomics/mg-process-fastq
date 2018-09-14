@@ -166,7 +166,7 @@ class tbNormalizeTool(Tool): # pylint: disable=invalid-name
 
         return (output_files, output_metadata)
 
-    def run(self, input_files, output_files, metadata=None): # pylint: disable=too-many-locals
+    def run(self, input_files, input_metadata, output_files):  # pylint: disable=too-many-locals
         """
         The main function for the normalization of the Hi-C matrix to a given resolution
 
@@ -219,33 +219,33 @@ class tbNormalizeTool(Tool): # pylint: disable=invalid-name
             logger.info(err)
 
         resolution = '1000000'
-        if 'resolution' in metadata:
-            resolution = metadata['resolution']
+        if 'resolution' in input_metadata:
+            resolution = input_metadata['resolution']
 
         normalization = 'Vanilla'
-        if 'normalization' in metadata:
-            normalization = metadata['normalization']
+        if 'normalization' in input_metadata:
+            normalization = input_metadata['normalization']
 
         min_perc = max_perc = min_count = fasta = mappability = rest_enzyme = None
         ncpus = 1
-        if 'ncpus' in metadata:
-            ncpus = metadata['ncpus']
-        if 'min_perc' in metadata:
-            min_perc = metadata['min_perc']
-        if 'max_perc' in metadata:
-            max_perc = metadata['max_perc']
-        if 'min_count' in metadata:
-            min_count = metadata['min_count']
-        if 'fasta' in metadata:
-            fasta = metadata['fasta']
-        if 'mappability' in metadata:
-            mappability = metadata['mappability']
-        if 'rest_enzyme' in metadata:
-            rest_enzyme = metadata['rest_enzyme']
+        if 'ncpus' in input_metadata:
+            ncpus = input_metadata['ncpus']
+        if 'min_perc' in input_metadata:
+            min_perc = input_metadata['min_perc']
+        if 'max_perc' in input_metadata:
+            max_perc = input_metadata['max_perc']
+        if 'min_count' in input_metadata:
+            min_count = input_metadata['min_count']
+        if 'fasta' in input_metadata:
+            fasta = input_metadata['fasta']
+        if 'mappability' in input_metadata:
+            mappability = input_metadata['mappability']
+        if 'rest_enzyme' in input_metadata:
+            rest_enzyme = input_metadata['rest_enzyme']
 
         root_name = os.path.dirname(os.path.abspath(bamin))
-        if 'workdir' in metadata:
-            root_name = metadata['workdir']
+        if 'workdir' in input_metadata:
+            root_name = input_metadata['workdir']
 
         # input and output share most metadata
 

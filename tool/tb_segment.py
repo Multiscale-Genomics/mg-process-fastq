@@ -141,7 +141,7 @@ class tbSegmentTool(Tool):  # pylint: disable=invalid-name
 
         return (output_files, output_metadata)
 
-    def run(self, input_files, output_files, metadata=None):  # pylint: disable=too-many-locals
+    def run(self, input_files, input_metadata, output_files):   # pylint: disable=too-many-locals
         """
         The main function to the predict TAD sites and compartments for a given resolution from
         the Hi-C matrix
@@ -182,26 +182,26 @@ class tbSegmentTool(Tool):  # pylint: disable=invalid-name
             logger.info(err)
 
         resolution = '1000000'
-        if 'resolution' in metadata:
-            resolution = metadata['resolution']
+        if 'resolution' in input_metadata:
+            resolution = input_metadata['resolution']
 
         ncpus = 1
-        if 'ncpus' in metadata:
-            ncpus = metadata['ncpus']
+        if 'ncpus' in input_metadata:
+            ncpus = input_metadata['ncpus']
         biases = chromosomes = fasta = None
         if len(input_files) > 1:
             biases = input_files[1]
-        if "chromosomes" in metadata:
-            chromosomes = metadata['chromosomes']
-        if "fasta" in metadata:
-            fasta = metadata['fasta']
+        if "chromosomes" in input_metadata:
+            chromosomes = input_metadata['chromosomes']
+        if "fasta" in input_metadata:
+            fasta = input_metadata['fasta']
         callers = "1"
-        if "callers" in metadata:
-            callers = metadata['callers']
+        if "callers" in input_metadata:
+            callers = input_metadata['callers']
 
         root_name = os.path.dirname(os.path.abspath(bamin))
-        if 'workdir' in metadata:
-            root_name = metadata['workdir']
+        if 'workdir' in input_metadata:
+            root_name = input_metadata['workdir']
 
         # input and output share most metadata
 

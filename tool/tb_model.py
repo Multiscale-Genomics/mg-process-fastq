@@ -36,14 +36,15 @@ except ImportError:
     logger.info("[Warning] Cannot import \"pycompss\" API packages.")
     logger.info("          Using mock decorators.")
 
-    from utils.dummy_pycompss import FILE_IN, FILE_OUT, IN # pylint: disable=ungrouped-imports
-    from utils.dummy_pycompss import task # pylint: disable=ungrouped-imports
-    #from utils.dummy_pycompss import compss_wait_on # pylint: disable=ungrouped-imports
-    #from utils.dummy_pycompss import constraint
+    from utils.dummy_pycompss import FILE_IN, FILE_OUT, IN  # pylint: disable=ungrouped-imports
+    from utils.dummy_pycompss import task  # pylint: disable=ungrouped-imports
+    # from utils.dummy_pycompss import compss_wait_on  # pylint: disable=ungrouped-imports
+    # from utils.dummy_pycompss import constraint
 
 # ------------------------------------------------------------------------------
 
-class tbModelTool(Tool): # pylint: disable=invalid-name
+
+class tbModelTool(Tool):  # pylint: disable=invalid-name
     """
     Tool for normalizing an adjacency matrix
     """
@@ -59,7 +60,7 @@ class tbModelTool(Tool): # pylint: disable=invalid-name
           gen_pos_begin=IN, gen_pos_end=IN, num_mod_comp=IN, num_mod_keep=IN,
           max_dist=IN, upper_bound=IN, lower_bound=IN, cutoff=IN, workdir=IN,
           model_dir=FILE_OUT)
-    def tb_model(self, optimize_only, hic_contacts_matrix_norm, resolution, # pylint: disable=too-many-locals,too-many-statements,unused-argument,no-self-use,too-many-arguments
+    def tb_model(self, optimize_only, hic_contacts_matrix_norm, resolution,  # pylint: disable=too-many-locals,too-many-statements,unused-argument,no-self-use,too-many-arguments
                  gen_pos_chrom_name, gen_pos_begin,
                  gen_pos_end, num_mod_comp, num_mod_keep,
                  max_dist, upper_bound, lower_bound, cutoff, workdir, metadata,
@@ -114,7 +115,7 @@ class tbModelTool(Tool): # pylint: disable=invalid-name
             Location of the folder with the modeling files and stats
 
         """
-        #chr_hic_data = read_matrix(matrix_file, resolution=int(resolution))
+        # chr_hic_data = read_matrix(matrix_file, resolution=int(resolution))
 
         logger.info("TB MODELING: {0},{1},{2},{3},{4},{5},{6},{7},{8},{9},{10},{11}".format(
             hic_contacts_matrix_norm,
@@ -140,7 +141,7 @@ class tbModelTool(Tool): # pylint: disable=invalid-name
         if not os.path.exists(os.path.join(workdir, name)):
             os.makedirs(os.path.join(workdir, name))
 
-        #=======================================================================
+        # =======================================================================
         # _cmd = [
         #     'model_and_analyze.py',
         #     '--norm', hic_contacts_matrix_norm,
@@ -182,7 +183,7 @@ class tbModelTool(Tool): # pylint: disable=invalid-name
         #     _cmd.append(str(num_mod_keep))
         #     _cmd.append('--outdir')
         #     _cmd.append(workdir)
-        #=======================================================================
+        # =======================================================================
 
         _cmd = [
             'tadbit', 'model',
@@ -238,7 +239,7 @@ class tbModelTool(Tool): # pylint: disable=invalid-name
 
         return (output_files, output_metadata)
 
-    def run(self, input_files, output_files, metadata=None): # pylint: disable=too-many-locals
+    def run(self, input_files, input_metadata, output_files):  # pylint: disable=too-many-locals
         """
         The main function for the normalization of the Hi-C matrix to a given resolution
 
@@ -294,29 +295,29 @@ class tbModelTool(Tool): # pylint: disable=invalid-name
         hic_contacts_matrix_norm = input_files[0]
 
         ncpus = 1
-        if 'ncpus' in metadata:
-            ncpus = metadata['ncpus']
+        if 'ncpus' in input_metadata:
+            ncpus = input_metadata['ncpus']
 
-        optimize_only = metadata["optimize_only"]
-        gen_pos_chrom_name = metadata['gen_pos_chrom_name']
-        resolution = metadata['resolution']
-        gen_pos_begin = metadata['gen_pos_begin']
-        gen_pos_end = metadata['gen_pos_end']
-        num_mod_comp = metadata['num_mod_comp']
-        num_mod_keep = metadata['num_mod_keep']
-        max_dist = metadata['max_dist']
-        upper_bound = metadata['upper_bound']
-        lower_bound = metadata['lower_bound']
-        cutoff = metadata['cutoff']
+        optimize_only = input_metadata["optimize_only"]
+        gen_pos_chrom_name = input_metadata['gen_pos_chrom_name']
+        resolution = input_metadata['resolution']
+        gen_pos_begin = input_metadata['gen_pos_begin']
+        gen_pos_end = input_metadata['gen_pos_end']
+        num_mod_comp = input_metadata['num_mod_comp']
+        num_mod_keep = input_metadata['num_mod_keep']
+        max_dist = input_metadata['max_dist']
+        upper_bound = input_metadata['upper_bound']
+        lower_bound = input_metadata['lower_bound']
+        cutoff = input_metadata['cutoff']
 
         root_name = os.path.dirname(os.path.abspath(hic_contacts_matrix_norm))
-        if 'workdir' in metadata:
-            root_name = metadata['workdir']
+        if 'workdir' in input_metadata:
+            root_name = input_metadata['workdir']
 
         project_metadata = {}
-        project_metadata["species"] = metadata["species"]
-        project_metadata["assembly"] = metadata["assembly"]
-        project_metadata["project"] = os.path.basename(os.path.normpath(metadata["project"]))
+        project_metadata["species"] = input_metadata["species"]
+        project_metadata["assembly"] = input_metadata["assembly"]
+        project_metadata["project"] = os.path.basename(os.path.normpath(input_metadata["project"]))
 
         # input and output share most metadata
 

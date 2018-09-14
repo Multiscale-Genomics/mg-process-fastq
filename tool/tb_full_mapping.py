@@ -181,7 +181,7 @@ class tbFullMappingTool(Tool):  # pylint: disable=invalid-name
 
         return True
 
-    def run(self, input_files, output_files, metadata=None):  # pylint: disable=too-many-locals,too-many-branches,too-many-statements,no-self-use,unused-argument
+    def run(self, input_files, input_metadata, output_files):  # pylint: disable=too-many-locals,too-many-branches,too-many-statements,no-self-use,unused-argument
         """
         The main function to map the FASTQ files to the GEM file over different
         window sizes ready for alignment
@@ -211,20 +211,20 @@ class tbFullMappingTool(Tool):  # pylint: disable=invalid-name
 
         gem_file = input_files[0]
         fastq_file = input_files[1]
-        windows = metadata['windows']
+        windows = input_metadata['windows']
         if not windows:
             windows = None
-        if 'ncpus' not in metadata:
-            metadata['ncpus'] = 8
-        if 'iterative_mapping' in metadata:
-            if isinstance(metadata['iterative_mapping'], basestring):
-                frag_base = not metadata['iterative_mapping'].lower() in ("yes", "true", "t", "1")
+        if 'ncpus' not in input_metadata:
+            input_metadata['ncpus'] = 8
+        if 'iterative_mapping' in input_metadata:
+            if isinstance(input_metadata['iterative_mapping'], basestring):
+                frag_base = not input_metadata['iterative_mapping'].lower() in ("yes", "true", "t", "1")
             else:
-                frag_base = not metadata['iterative_mapping']
+                frag_base = not input_metadata['iterative_mapping']
         else:
             frag_base = (windows is None)
-        if 'workdir' in metadata:
-            root_path = metadata['workdir']
+        if 'workdir' in input_metadata:
+            root_path = input_metadata['workdir']
         else:
             root_path = path.dirname(path.abspath(fastq_file))
 
@@ -238,12 +238,12 @@ class tbFullMappingTool(Tool):  # pylint: disable=invalid-name
         log_path = ''
         # name = root_name[-1]
 
-        if 'quality_plot' in metadata:
+        if 'quality_plot' in input_metadata:
             quality_plot_file = 'QC-plot_'+file_name + '.png'
             log_path = root_path+'/'+'mapping_log_'+file_name + '.txt'
 
             dangling_ends, ligated = quality_plot(
-                fastq_file, r_enz=metadata['enzyme_name'],
+                fastq_file, r_enz=input_metadata['enzyme_name'],
                 nreads=100000, paired=False,
                 savefig=path.join(
                     root_path,
@@ -270,14 +270,14 @@ class tbFullMappingTool(Tool):  # pylint: disable=invalid-name
             frag_file = file_name + "_frag.map"
 
             results = self.tb_full_mapping_frag(
-                gem_file, fastq_file, metadata['enzyme_name'], None,
-                full_file, frag_file, ncpus=metadata['ncpus'], workdir=root_path
+                gem_file, fastq_file, input_metadata['enzyme_name'], None,
+                full_file, frag_file, ncpus=input_metadata['ncpus'], workdir=root_path
             )
             results = compss_wait_on(results)
 
             output_metadata['func'] = 'frag'
             return_files = [full_file, frag_file]
-            if 'quality_plot' in metadata:
+            if 'quality_plot' in input_metadata:
                 return_files += [log_path, root_path+'/'+quality_plot_file]
             return (return_files, output_metadata)
 
@@ -292,13 +292,13 @@ class tbFullMappingTool(Tool):  # pylint: disable=invalid-name
 
         results = self.tb_full_mapping_iter(
             gem_file, fastq_file, windows,
-            window1, window2, window3, window4, ncpus=metadata['ncpus'], workdir=root_path
+            window1, window2, window3, window4, ncpus=input_metadata['ncpus'], workdir=root_path
         )
         results = compss_wait_on(results)
 
         output_metadata['func'] = 'iter'
         return_files = [window1, window2, window3, window4]
-        if 'quality_plot' in metadata:
+        if 'quality_plot' in input_metadata:
             return_files += [log_path, root_path+'/'+quality_plot_file]
         return (return_files, output_metadata)
 

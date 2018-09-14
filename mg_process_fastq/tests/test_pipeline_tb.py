@@ -76,7 +76,7 @@ def test_tb_pipeline():
         'hdf5': True,
     }
 
-    hic_handle = process_hic()
+    hic_handle = process_hic({"execution": resource_path})
     hic_files, hic_meta = hic_handle.run(files, metadata, [])  # pylint: disable=unused-variable
 
     print(hic_files)

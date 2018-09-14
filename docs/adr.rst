@@ -146,12 +146,24 @@ The previous splitter would split the FASTQ files into separate changes, then cr
 There has also been some refactoring of the handling of the archiving and compression steps to reduce the duplication of code within the repository.
 
 
+2018-07-16 - Modified handling of file locations
+------------------------------------------------
+
+Updated the handling of file locations to use os.path.join and os.path.split to allow for compatibility between different operating systems for the pipelines and tools.
+
+
 2018-08-02 - Added in Paired End BAM file handling for MACS2
 ------------------------------------------------------------
 
 MACS2 is able to automatically handle the files that are handed to it except for paired-end BAM and BED files (BAMPE and BEDPE respectively). The MACS2 tool only accepts BAM files so a check was implemented to determine if the BAM file contained paired-end reads.
 
 There has also been a major rewrite of the MACS2 tool to remove code duplication.
+
+
+2018-07-16 - Modified handling of file locations
+------------------------------------------------
+
+Updated the handling of file locations to use os.path.join and os.path.split to allow for compatibility between different operating systems for the pipelines and tools.
 
 
 2018-08-07 - Storing tool parameters as part of the metadata
@@ -170,3 +182,23 @@ MACS2 is able to generate a plot of the results as well as a bedGraph. These hav
 ------------------------------------------
 
 IOError was depricated in favour of OSError when moving to py3, but to maintian backwards compatibility IOError also needs to be supported. There were places in the code where this was not true and other places that relied on just OSError. Instances of just IOError have been converted to testing for both IOError and OSError and visa versa.
+
+
+2018-08-15 - Use the config.json execution path
+-----------------------------------------------
+
+Using the directory of the input file for building the location of the working directory with outside of a task is not a viable option as it can write data to the wrong directory. The execution path provided in the config.json arguments is the right place. This location is also the location for output files. This issue occurred as the FASTQ splitter was generating a tar file that the aligners were downloading to the wrong location. Even though this was tidied up this was still not the right place to put this file.
+
+
+2018-08-16 - Prevent further duplicate filtering by MACS2
+---------------------------------------------------------
+
+In the process_chipseq.py pipeline the duplicates have already been filtered by BioBamBam2 and samtools so there is no need for further filtering to be done by MACS2.
+
+
+2018-09-04 - Adding functionality to bam_utils and macs2
+---------------------------------------------------------
+
+Macs2 was previously set to work with the BAMPE option for the -f/--format parameter. Additional functionality has been added to bam_utils and macs2 mode to incorporate the BEDPE option. This has been done for the Atac Seq pipeline to incorporate the processing of bed file rather than bam files if the user would need changes to the result files generated.
+
+

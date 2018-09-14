@@ -56,7 +56,7 @@ def test_gem_indexer():
 
     print(input_files, output_files)
 
-    gem_it = gemIndexerTool()
+    gem_it = gemIndexerTool({"execution": resource_path})
     gem_it.run(input_files, metadata, output_files)
 
     assert os.path.isfile(genome_gem_idx) is True

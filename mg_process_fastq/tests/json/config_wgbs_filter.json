@@ -14,6 +14,10 @@
     ],
     "arguments": [
         {
+            "name": "execution",
+            "value": "mg_process_fastq/tests/data"
+        },
+        {
             "name": "project",
             "value": "run001"
         },
@@ -65,7 +69,7 @@
                 "data_type": "data_wgbs",
                 "compressed": "null"
             }
-        }, 
+        },
         {
             "required": true,
             "allow_multiple": false,
@@ -81,7 +85,7 @@
                 "data_type": "data_wgbs",
                 "compressed": "null"
             }
-        } 
+        }
     ]
 }
 

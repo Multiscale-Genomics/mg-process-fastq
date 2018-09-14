@@ -57,7 +57,7 @@ def test_inps():
         )
     }
 
-    inps_obj = inps.inps()
+    inps_obj = inps.inps({"execution": resource_path})
     inps_files, inps_meta = inps_obj.run(  # pylint: disable=unused-variable
         input_files,
         metadata,

@@ -17,6 +17,7 @@
 
 from __future__ import print_function
 
+import os
 import shlex
 import subprocess
 import sys
@@ -106,9 +107,8 @@ class bssMethylationCallerTool(Tool):  # pylint: disable=invalid-name
         This is managed by pyCOMPS
         """
 
-        g_dir = genome_idx.split("/")
-        g_dir = "/".join(g_dir[:-1])
-        gi_dir = "/".join(g_dir[:-1])
+        g_dir = os.path.split(genome_idx)
+        gi_dir = g_dir[0]
 
         untar_idx = True
         if "no-untar" in self.configuration and self.configuration["no-untar"] is True:
@@ -118,15 +118,15 @@ class bssMethylationCallerTool(Tool):  # pylint: disable=invalid-name
             tar = tarfile.open(genome_idx)
             for member in tar.getmembers():
                 if member.isdir():
-                    gi_dir = g_dir + "/" + member.name
+                    gi_dir = os.path.join(g_dir[0], member.name)
                     break
-            logger.info("EXTRACTING " + genome_idx + " to " + g_dir)
+            logger.info("EXTRACTING " + genome_idx + " to " + g_dir[0])
             if untar_idx is True:
-                tar.extractall(path=g_dir)
+                tar.extractall(path=g_dir[0])
             tar.close()
         except (IOError, OSError) as msg:
             logger.fatal("I/O error({0}): {1}\n{2}".format(
-                msg.errno, msg.strerror, g_dir))
+                msg.errno, msg.strerror, g_dir[0]))
 
             return False
 

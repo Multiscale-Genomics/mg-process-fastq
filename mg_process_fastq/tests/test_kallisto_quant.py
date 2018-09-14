@@ -60,7 +60,7 @@ def test_kallisto_quant_paired():
             {'assembly': 'test'}),
     }
 
-    kqft = kallistoQuantificationTool()
+    kqft = kallistoQuantificationTool({"execution": resource_path})
     kqft.run(input_files, metadata, output_files)
 
     assert os.path.isfile(output_files["abundance_h5_file"]) is True
@@ -102,7 +102,7 @@ def test_kallisto_quant_single():
             {'assembly': 'test'}),
     }
 
-    kqft = kallistoQuantificationTool()
+    kqft = kallistoQuantificationTool({"execution": resource_path})
     kqft.run(input_files, metadata, output_files)
 
     assert os.path.isfile(output_files["abundance_h5_file"]) is True

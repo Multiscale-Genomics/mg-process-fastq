@@ -171,33 +171,33 @@ class fastqreader(object):  # pylint: disable=too-many-instance-attributes,inval
         tag : str
             Tag to identify the output files (DEFAULT: '')
         """
-        if tag != '' and self.output_tag != tag:
+        if tag not in ('', self.output_tag):
             self.output_tag = tag
 
-        fq1 = self.fastq1.split("/")
-        fq1_suffix = "." + fq1[-1].split(".")[-1]
+        fq1 = os.path.split(self.fastq1)
+        fq1_suffix = "." + fq1[1].split(".")[-1]
         new_suffix = "." + str(self.output_tag) + "_" + str(self.output_file_count) + fq1_suffix
-        fq1[-1] = re.sub(fq1_suffix + '$', new_suffix, fq1[-1])
-        fq1.insert(-1, "tmp")
+        fq1_tmp_file = re.sub(fq1_suffix + '$', new_suffix, fq1[1])
+        fq1 = os.path.split(os.path.join(fq1[0], "tmp", fq1_tmp_file))
 
-        if os.path.isdir("/".join(fq1[0:-1])) is False:
+        if os.path.isdir(fq1[0]) is False:
             try:
-                os.mkdir("/".join(fq1[0:-1]))
+                os.mkdir(fq1[0])
             except (OSError, IOError) as oserror:
                 if oserror.errno != errno.EEXIST:
                     raise OSError
 
-        self.f1_output_file = open("/".join(fq1), "w")
-        self.f1_output_file_loc = "/".join(fq1)
+        self.f1_output_file = open(os.path.join(fq1[0], fq1[1]), "w")
+        self.f1_output_file_loc = os.path.join(fq1[0], fq1[1])
 
         if self.paired is True:
-            fq2 = self.fastq2.split("/")
-            fq2_suffix = "." + fq2[-1].split(".")[-1]
+            fq2 = os.path.split(self.fastq2)
+            fq2_suffix = "." + fq2[1].split(".")[-1]
             new_suffix = "." + str(self.output_tag) + "_" + str(self.output_file_count) + fq2_suffix
-            fq2[-1] = re.sub(fq2_suffix + '$', new_suffix, fq2[-1])
-            fq2.insert(-1, "tmp")
-            self.f2_output_file = open("/".join(fq2), "w")
-            self.f2_output_file_loc = "/".join(fq2)
+            fq2_tmp_file = re.sub(fq2_suffix + '$', new_suffix, fq2[1])
+            fq2 = os.path.split(os.path.join(fq2[0], "tmp", fq2_tmp_file))
+            self.f2_output_file = open(os.path.join(fq2[0], fq2[1]), "w")
+            self.f2_output_file_loc = os.path.join(fq2[0], fq2[1])
 
     def writeOutput(self, read, side=1):  # pylint: disable=invalid-name
         """

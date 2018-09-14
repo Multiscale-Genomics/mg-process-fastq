@@ -80,7 +80,7 @@ def test_chipseq_pipeline_00():
         'gapped_peak': '/'.join(root_name) + '_filtered_peaks.gappedPeak'
     }
 
-    chipseq_handle = process_chipseq({"macs_nomodel_param": True})
+    chipseq_handle = process_chipseq({"macs_nomodel_param": True, "execution": resource_path})
     chipseq_files, chipseq_meta = chipseq_handle.run(files, metadata, files_out)  # pylint: disable=unused-variable
 
     print(chipseq_files)
@@ -154,7 +154,7 @@ def test_chipseq_pipeline_01():
         'gapped_peak': '/'.join(root_name) + '_filtered_peaks.gappedPeak'
     }
 
-    chipseq_handle = process_chipseq({"macs_nomodel_param": True})
+    chipseq_handle = process_chipseq({"macs_nomodel_param": True, "execution": resource_path})
     chipseq_files, chipseq_meta = chipseq_handle.run(files, metadata, files_out)  # pylint: disable=unused-variable
 
     print(chipseq_files)

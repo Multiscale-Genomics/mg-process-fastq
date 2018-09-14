@@ -131,8 +131,6 @@ class gemIndexerTool(Tool):  # pylint: disable=invalid-name
             logger.fatal("GEM Indexer: run failed")
             return {}, {}
 
-        output_files["index"] = input_files['genome'] + ".gem.gz"
-
         output_metadata = {
             "index": Metadata(
                 data_type="sequence_mapping_index_gem",

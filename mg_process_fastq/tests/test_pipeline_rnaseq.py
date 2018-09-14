@@ -76,7 +76,7 @@ def test_rnaseq_pipeline():
         "run_info_file": resource_path + 'kallisto.run_info.json'
     }
 
-    rs_handle = process_rnaseq()
+    rs_handle = process_rnaseq({"execution": resource_path})
     rs_files, rs_meta = rs_handle.run(files, metadata, files_out)  # pylint: disable=unused-variable
 
     # Checks that the returned files matches the expected set of results

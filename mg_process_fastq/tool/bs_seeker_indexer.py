@@ -17,6 +17,7 @@
 
 from __future__ import print_function
 
+import os
 import subprocess
 import sys
 import tarfile
@@ -100,14 +101,14 @@ class bssIndexerTool(Tool):  # pylint: disable=invalid-name
             Location of the output bam alignment file
         """
 
-        ff_split = fasta_file.split("/")
+        ff_split = os.path.split(fasta_file)
 
         command_line = (
-            "python " + bss_path + "/bs_seeker2-build.py " + ""
+            "python " + os.path.join(bss_path, "bs_seeker2-build.py") + ""
             " ".join(params) + ""
             " -f " + fasta_file + ""
             " --aligner " + aligner + " --path " + aligner_path + ""
-            " --db " + "/".join(ff_split[:-1])
+            " --db " + ff_split[0]
         ).format()
 
         try:
@@ -129,7 +130,7 @@ class bssIndexerTool(Tool):  # pylint: disable=invalid-name
             logger.info("BS - idx folder to add: " + fasta_file + "_" + aligner)
             logger.info("BS - idx folder arcname: " + ff_split[-1] + "_" + aligner)
             tar = tarfile.open(idx_out_pregz, "w")
-            tar.add(fasta_file + "_" + aligner, arcname=ff_split[-1] + "_" + aligner)
+            tar.add(fasta_file + "_" + aligner, arcname=ff_split[1] + "_" + aligner)
             tar.close()
         except (IOError, OSError) as msg:
             logger.fatal("TAR I/O error({0}): {1}".format(

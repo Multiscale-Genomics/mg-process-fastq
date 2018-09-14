@@ -107,7 +107,7 @@ def test_tb_generate_tads_iter_01():
 @pytest.mark.hic
 def test_tb_generate_tads_iter_02():
     """
-    Test case to ensure that the BWA indexer works.
+    Test case to ensure that the BWA indexer works.z
     """
     resource_path = os.path.join(os.path.dirname(__file__), "data/")
     reads_tsv = resource_path + "tb.Human.SRR1658573_iter_02_filtered_map.tsv"

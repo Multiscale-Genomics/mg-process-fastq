@@ -18,11 +18,12 @@
 from __future__ import print_function
 
 import os.path
-import pytest # pylint: disable=unused-import
+import pytest  # pylint: disable=unused-import
 
 from basic_modules.metadata import Metadata
 
 from mg_process_fastq.tool.bwa_indexer import bwaIndexerTool
+
 
 @pytest.mark.genome
 @pytest.mark.bwa
@@ -45,16 +46,17 @@ def test_bwa_indexer_bwa():
     metadata = {
         "genome": Metadata(
             "Assembly", "fasta", genome_fa, None,
-            {'assembly' : 'test'}),
+            {'assembly': 'test'}),
     }
 
     print(input_files, output_files)
 
-    bwa_it = bwaIndexerTool()
+    bwa_it = bwaIndexerTool({"execution": resource_path})
     bwa_it.run(input_files, metadata, output_files)
 
     assert os.path.isfile(resource_path + "bsSeeker.Mouse.GRCm38.fasta.bwa.tar.gz") is True
     assert os.path.getsize(resource_path + "bsSeeker.Mouse.GRCm38.fasta.bwa.tar.gz") > 0
+
 
 @pytest.mark.chipseq
 @pytest.mark.genome
@@ -77,16 +79,17 @@ def test_bwa_indexer_chipseq():
     metadata = {
         "genome": Metadata(
             "Assembly", "fasta", genome_fa, None,
-            {'assembly' : 'test'}),
+            {'assembly': 'test'}),
     }
 
     print(input_files, output_files)
 
-    bwa_it = bwaIndexerTool()
+    bwa_it = bwaIndexerTool({"execution": resource_path})
     bwa_it.run(input_files, metadata, output_files)
 
     assert os.path.isfile(resource_path + "macs2.Human.GCA_000001405.22.fasta.bwa.tar.gz") is True
     assert os.path.getsize(resource_path + "macs2.Human.GCA_000001405.22.fasta.bwa.tar.gz") > 0
+
 
 @pytest.mark.idamidseq
 @pytest.mark.genome
@@ -109,12 +112,12 @@ def test_bwa_indexer_idear():
     metadata = {
         "genome": Metadata(
             "Assembly", "fasta", genome_fa, None,
-            {'assembly' : 'test'}),
+            {'assembly': 'test'}),
     }
 
     print(input_files, output_files)
 
-    bwa_it = bwaIndexerTool()
+    bwa_it = bwaIndexerTool({"execution": resource_path})
     bwa_it.run(input_files, metadata, output_files)
 
     assert os.path.isfile(resource_path + "idear.Human.GCA_000001405.22.fasta.bwa.tar.gz") is True
@@ -142,12 +145,12 @@ def test_bwa_indexer_mnaseseq():
     metadata = {
         "genome": Metadata(
             "Assembly", "fasta", genome_fa, None,
-            {'assembly' : 'test'}),
+            {'assembly': 'test'}),
     }
 
     print(input_files, output_files)
 
-    bwa_it = bwaIndexerTool()
+    bwa_it = bwaIndexerTool({"execution": resource_path})
     bwa_it.run(input_files, metadata, output_files)
 
     assert os.path.isfile(resource_path + "inps.Mouse.GRCm38.fasta.bwa.tar.gz") is True

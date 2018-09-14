@@ -18,9 +18,10 @@
 from __future__ import print_function
 
 import os.path
-import pytest # pylint: disable=unused-import
+import pytest  # pylint: disable=unused-import
 
 from tool.tb_segment import tbSegmentTool
+
 
 @pytest.mark.hic
 def test_tb_segment():
@@ -28,24 +29,23 @@ def test_tb_segment():
     Test case to detect tads and compartments in a sample bam file
     """
     resource_path = os.path.join(os.path.dirname(__file__), "data/")
-    
+
     bamin = resource_path + "tb_paired_reads.bam"
     hic_biases = resource_path + "tb_biases_100kb.pickle"
-    
-    files = [bamin,hic_biases]
-        
+
+    files = [bamin, hic_biases]
+
     metadata = {
-        'resolution' : "100000",
-        'chromosome_names' : 'chr21',
-        "callers" : [
-                "1",
-                "2"
-            ],
-        'ncpus' : 4
+        'resolution': "100000",
+        'chromosome_names': 'chr21',
+        "callers": [
+            "1",
+            "2"
+        ],
+        'ncpus': 4
     }
-    
+
     ts = tbSegmentTool()
     ts_files, ts_meta = ts.run(files, [], metadata)
 
     assert len(ts_files) == 2
-    

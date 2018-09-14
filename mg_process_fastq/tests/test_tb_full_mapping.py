@@ -57,7 +57,7 @@ def generate_gem():
 
     print(input_files, output_files)
 
-    gem_it = gemIndexerTool()
+    gem_it = gemIndexerTool({"execution": resource_path})
     gem_it.run(input_files, metadata, output_files)
 
 
@@ -92,7 +92,6 @@ def test_tb_extract_fastq():
     assert os.path.getsize(fastq_file_2) > 0
 
 
-
 @pytest.mark.hic
 def test_tb_full_mapping_frag_01():
     """
@@ -110,9 +109,9 @@ def test_tb_full_mapping_frag_01():
     ]
 
     metadata = {
-        'assembly' : 'test',
-        'enzyme_name' : 'MboI',
-        'windows' : None
+        'assembly': 'test',
+        'enzyme_name': 'MboI',
+        'windows': None
     }
 
     gem_file = files[1]
@@ -129,6 +128,7 @@ def test_tb_full_mapping_frag_01():
     assert os.path.getsize(map_frag) > 0
     assert os.path.isfile(map_full) is True
     assert os.path.getsize(map_full) > 0
+
 
 @pytest.mark.hic
 def test_tb_full_mapping_frag_02():
@@ -147,9 +147,9 @@ def test_tb_full_mapping_frag_02():
     ]
 
     metadata = {
-        'assembly' : 'test',
-        'enzyme_name' : 'MboI',
-        'windows' : None
+        'assembly': 'test',
+        'enzyme_name': 'MboI',
+        'windows': None
     }
 
     gem_file = files[1]
@@ -166,6 +166,7 @@ def test_tb_full_mapping_frag_02():
     assert os.path.getsize(map_frag) > 0
     assert os.path.isfile(map_full) is True
     assert os.path.getsize(map_full) > 0
+
 
 @pytest.mark.hic
 def test_tb_full_mapping_iter_01():
@@ -184,9 +185,9 @@ def test_tb_full_mapping_iter_01():
     ]
 
     metadata = {
-        'assembly' : 'test',
-        # 'enzyme_name' : 'MboI',
-        'windows' : ((1, 25), (1, 50), (1, 75), (1, 100))
+        'assembly': 'test',
+        # 'enzyme_name': 'MboI',
+        'windows': ((1, 25), (1, 50), (1, 75), (1, 100))
     }
 
     gem_file = files[1]
@@ -210,6 +211,7 @@ def test_tb_full_mapping_iter_01():
     assert os.path.isfile(map100) is True
     assert os.path.getsize(map100) > 0
 
+
 @pytest.mark.hic
 def test_tb_full_mapping_iter_02():
     """
@@ -227,9 +229,9 @@ def test_tb_full_mapping_iter_02():
     ]
 
     metadata = {
-        'assembly' : 'test',
-        # 'enzyme_name' : 'MboI',
-        'windows' : ((1, 25), (1, 50), (1, 75), (1, 100))
+        'assembly': 'test',
+        # 'enzyme_name': 'MboI',
+        'windows': ((1, 25), (1, 50), (1, 75), (1, 100))
     }
 
     gem_file = files[1]

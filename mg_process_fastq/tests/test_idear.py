@@ -23,6 +23,7 @@ from basic_modules.metadata import Metadata
 from mg_process_fastq.tool.idear import idearTool
 
 
+
 @pytest.mark.idamidseq
 def test_idear():
     """
@@ -64,7 +65,8 @@ def test_idear():
     config = {
         "idear_common_name": "Human",
         "idear_sample_param": "Nup98",
-        "idear_background_param": "GFP"
+        "idear_background_param": "GFP",
+        "execution": resource_path
     }
 
     idear_handle = idearTool(config)

@@ -244,6 +244,10 @@ class process_chipseq(Workflow):  # pylint: disable=invalid-name,too-few-public-
                 logger.fatal("Background BioBamBam filtering failed")
 
         # MACS2 to call peaks
+        # Duplicates have already been filtered so MACS2 does not need to due
+        # any further filtering
+        self.configuration["macs_keep-dup_param"] = "all"
+
         macs_caller = macs2(self.configuration)
         macs_inputs = {"bam": output_files_generated["filtered"]}
         macs_metadt = {"bam": output_metadata['filtered']}

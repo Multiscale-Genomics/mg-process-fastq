@@ -68,7 +68,7 @@ class macs2(Tool):  # pylint: disable=invalid-name
             name, bam_file, bai_file, macs_params,
             narrowpeak, summits_bed, broadpeak, gappedpeak,
             bdg_control_lambda=None, bdg_treat_pileup=None, chromosome=None,
-            bam_file_bgd=None, bai_file_bgd=None):
+            bam_file_bgd=None, bai_file_bgd=None, bedpe=False):
         """
         Function to run MACS2 for peak calling on aligned sequence files and
         normalised against a provided background set of alignments.
@@ -127,7 +127,12 @@ class macs2(Tool):  # pylint: disable=invalid-name
 
         # Test to see if the bam file contains paired end reads
         if bam_utils_handle.bam_paired_reads(bam_file):
-            macs_params.append("--format BAMPE")
+            if bedpe:
+                bed_tmp_file = bam_file.replace(".bam", "." + str(chromosome) + ".bed")
+                bam_utils_handle.bam_to_bed(bam_tmp_file, bed_tmp_file)
+                macs_params.append("--format BEDPE")
+            else:
+                macs_params.append("--format BAMPE")
 
         command_param = [
             'macs2 callpeak',
@@ -145,19 +150,26 @@ class macs2(Tool):  # pylint: disable=invalid-name
         command_param.append('--outdir ' + output_dir)
         command_line = ' '.join(command_param)
 
-        if int(bam_utils_handle.bam_count_reads(bam_tmp_file, aligned=True)) > 0:
+        aligned_count = bam_utils_handle.bam_count_reads(bam_tmp_file, aligned=True)
+        if int(aligned_count) > 0:
             try:
                 args = shlex.split(command_line)
-                process = subprocess.Popen(args)
-                process.wait()
+                process = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+                proc_out, proc_err = process.communicate()
             except (IOError, OSError) as msg:
                 logger.fatal("I/O error({0}): {1}\n{2}".format(
                     msg.errno, msg.strerror, command_line))
                 return False
 
             if process.returncode is not 0:
-                logger.fatal("MACS2 ERROR", process.returncode)
-                return False
+                logger.fatal("MACS2 ERROR: " + str(process.returncode))
+                logger.fatal(
+                    "MACS2 ERROR: BAM counts: " + str(
+                        bam_utils_handle.bam_count_reads(bam_tmp_file, aligned=True)
+                    )
+                )
+                logger.fatal("\n\nMACS2 ERROR - out:\n\t" + str(proc_out))
+                logger.fatal("\n\nMACS2 ERROR - err:\n\t" + str(proc_err))
 
             logger.info('Process Results 1:', process)
 
@@ -168,7 +180,8 @@ class macs2(Tool):  # pylint: disable=invalid-name
         common_handle.to_output_file(output_tmp.format(name, 'peaks.broadPeak'), broadpeak)
         common_handle.to_output_file(output_tmp.format(name, 'peaks.gappedPeak'), gappedpeak)
         common_handle.to_output_file(output_tmp.format(name, 'summits.bed'), summits_bed)
-        common_handle.to_output_file(output_tmp.format(name, 'control_lambda.bdg'), bdg_control_lambda)
+        common_handle.to_output_file(
+            output_tmp.format(name, 'control_lambda.bdg'), bdg_control_lambda)
         common_handle.to_output_file(output_tmp.format(name, 'treat_pileup.bdg'), bdg_treat_pileup)
 
         return True
@@ -190,11 +203,12 @@ class macs2(Tool):  # pylint: disable=invalid-name
         bdg_control_lambda=FILE_OUT,
         bdg_treat_pileup=FILE_OUT,
         chromosome=IN,
+        bedpe=IN,
         isModifier=False)
     def macs2_peak_calling(  # pylint: disable=no-self-use,too-many-arguments
             self, name, bam_file, bai_file, bam_file_bgd, bai_file_bgd, macs_params,
             narrowpeak, summits_bed, broadpeak, gappedpeak,
-            bdg_control_lambda, bdg_treat_pileup, chromosome):  # pylint: disable=unused-argument
+            bdg_control_lambda, bdg_treat_pileup, chromosome, bedpe):  # pylint: disable=unused-argument
         """
         Function to run MACS2 for peak calling on aligned sequence files and
         normalised against a provided background set of alignments.
@@ -246,7 +260,8 @@ class macs2(Tool):  # pylint: disable=invalid-name
             name, bam_file, bai_file, macs_params,
             narrowpeak, summits_bed, broadpeak, gappedpeak,
             bdg_control_lambda=bdg_control_lambda, bdg_treat_pileup=bdg_treat_pileup,
-            chromosome=chromosome, bam_file_bgd=bam_file_bgd, bai_file_bgd=bai_file_bgd)
+            chromosome=chromosome, bam_file_bgd=bam_file_bgd,
+            bai_file_bgd=bai_file_bgd, bedpe=bedpe)
 
         return True
 
@@ -264,11 +279,12 @@ class macs2(Tool):  # pylint: disable=invalid-name
         bdg_control_lambda=FILE_OUT,
         bdg_treat_pileup=FILE_OUT,
         chromosome=IN,
+        bedpe=IN,
         isModifier=False)
     def macs2_peak_calling_nobgd(  # pylint: disable=too-many-arguments,no-self-use,too-many-branches
             self, name, bam_file, bai_file, macs_params,
             narrowpeak, summits_bed, broadpeak, gappedpeak,
-            bdg_control_lambda, bdg_treat_pileup, chromosome):  # pylint: disable=unused-argument
+            bdg_control_lambda, bdg_treat_pileup, chromosome, bedpe):  # pylint: disable=unused-argument
         """
         Function to run MACS2 for peak calling on aligned sequence files without
         a background dataset for normalisation.
@@ -314,7 +330,7 @@ class macs2(Tool):  # pylint: disable=invalid-name
             name, bam_file, bai_file, macs_params,
             narrowpeak, summits_bed, broadpeak, gappedpeak,
             bdg_control_lambda=bdg_control_lambda, bdg_treat_pileup=bdg_treat_pileup,
-            chromosome=chromosome)
+            chromosome=chromosome, bedpe=bedpe)
 
         return True
 
@@ -370,7 +386,7 @@ class macs2(Tool):  # pylint: disable=invalid-name
 
         return command_params
 
-    def run(self, input_files, input_metadata, output_files):  # pylint: disable=too-many-locals
+    def run(self, input_files, input_metadata, output_files):  # pylint: disable=too-many-locals,too-many-branches,too-many-statements
         """
         The main function to run MACS 2 for peak calling over a given BAM file
         and matching background BAM file.
@@ -420,6 +436,10 @@ class macs2(Tool):  # pylint: disable=invalid-name
 
         logger.info("MACS2 COMMAND PARAMS: " + ", ".join(command_params))
 
+        bedpe_param = False
+        if 'macs2_bedpe' in self.configuration:
+            bedpe_param = True
+
         for chromosome in chr_list:
             if 'bam_bg' in input_files:
                 result = self.macs2_peak_calling(
@@ -433,7 +453,8 @@ class macs2(Tool):  # pylint: disable=invalid-name
                     str(output_files['gapped_peak']) + "." + str(chromosome),
                     os.path.join(root_name[0], name + "_control_lambda.bdg"),
                     os.path.join(root_name[0], name + "_treat_pvalue.bdg"),
-                    chromosome)
+                    chromosome,
+                    bedpe_param)
             else:
                 result = self.macs2_peak_calling_nobgd(
                     name,
@@ -445,7 +466,8 @@ class macs2(Tool):  # pylint: disable=invalid-name
                     str(output_files['gapped_peak']) + "." + str(chromosome),
                     os.path.join(root_name[0], name + "_control_lambda.bdg"),
                     os.path.join(root_name[0], name + "_treat_pvalue.bdg"),
-                    chromosome)
+                    chromosome,
+                    bedpe_param)
 
             if result is False:
                 logger.fatal("MACS2: Something went wrong with the peak calling")

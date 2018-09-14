@@ -17,6 +17,7 @@
 
 from __future__ import print_function
 
+import os
 import shlex
 import subprocess
 import sys
@@ -89,7 +90,7 @@ class filterReadsTool(Tool):  # pylint: disable=invalid-name
             Location of the filtered FASTQ file
         """
         command_line = (
-            "python " + bss_path + "/FilterReads.py"
+            "python " + os.path.join(bss_path, "FilterReads.py") + ""
             " -i " + infile + ""
             " -o " + outfile + ".tmp"
         ).format()
@@ -143,11 +144,6 @@ class filterReadsTool(Tool):  # pylint: disable=invalid-name
             output_files["fastq_filtered"],
             self.configuration["bss_path"]
         )
-        # results = compss_wait_on(results)
-
-        # if results is False:
-        #     logger.fatal("BS SEEKER2 Filter: run failed")
-        #     return {}, {}
 
         output_metadata = {
             "fastq_filtered": Metadata(

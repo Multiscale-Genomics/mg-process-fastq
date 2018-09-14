@@ -33,11 +33,11 @@ def test_fastqc_chipseq_0():
     resource_path = os.path.join(os.path.dirname(__file__), "data/")
 
     input_files = {
-        "fastq": resource_path + "macs2.Human.DRR000150.22.fastq"
+        "fastq": os.path.join(resource_path, "macs2.Human.DRR000150.22.fastq")
     }
 
     output_files = {
-        "report": resource_path + "macs2.Human.DRR000150.22.report",
+        "report": os.path.join(resource_path, "macs2.Human.DRR000150.22.report"),
     }
 
     metadata = {
@@ -61,11 +61,11 @@ def test_fastqc_hic_0():
     resource_path = os.path.join(os.path.dirname(__file__), "data/")
 
     input_files = {
-        "fastq": resource_path + "tb.Human.SRR1658573_1.fastq.gz"
+        "fastq": os.path.join(resource_path, "tb.Human.SRR1658573_1.fastq.gz")
     }
 
     output_files = {
-        "report": resource_path + "tb.Human.SRR1658573_1.report",
+        "report": os.path.join(resource_path, "tb.Human.SRR1658573_1.report"),
     }
 
     metadata = {
@@ -89,11 +89,11 @@ def test_fastqc_hic_1():
     resource_path = os.path.join(os.path.dirname(__file__), "data/")
 
     input_files = {
-        "fastq": resource_path + "tb.Human.SRR1658573_2.fastq.gz"
+        "fastq": os.path.join(resource_path, "tb.Human.SRR1658573_2.fastq.gz")
     }
 
     output_files = {
-        "report": resource_path + "tb.Human.SRR1658573_2.report",
+        "report": os.path.join(resource_path, "tb.Human.SRR1658573_2.report"),
     }
 
     metadata = {
@@ -117,11 +117,11 @@ def test_fastqc_idamseq_0():
     resource_path = os.path.join(os.path.dirname(__file__), "data/")
 
     input_files = {
-        "fastq": resource_path + "idear.Human.SRR3714775.fastq.gz"
+        "fastq": os.path.join(resource_path, "idear.Human.SRR3714775.fastq.gz")
     }
 
     output_files = {
-        "report": resource_path + "idear.Human.SRR3714775.report",
+        "report": os.path.join(resource_path, "idear.Human.SRR3714775.report"),
     }
 
     metadata = {
@@ -145,11 +145,11 @@ def test_fastqc_idamseq_1():
     resource_path = os.path.join(os.path.dirname(__file__), "data/")
 
     input_files = {
-        "fastq": resource_path + "idear.Human.SRR3714776.fastq.gz"
+        "fastq": os.path.join(resource_path, "idear.Human.SRR3714776.fastq.gz")
     }
 
     output_files = {
-        "report": resource_path + "idear.Human.SRR3714776.report",
+        "report": os.path.join(resource_path, "idear.Human.SRR3714776.report"),
     }
 
     metadata = {
@@ -173,11 +173,11 @@ def test_fastqc_idamseq_2():
     resource_path = os.path.join(os.path.dirname(__file__), "data/")
 
     input_files = {
-        "fastq": resource_path + "idear.Human.SRR3714777.fastq.gz"
+        "fastq": os.path.join(resource_path, "idear.Human.SRR3714777.fastq.gz")
     }
 
     output_files = {
-        "report": resource_path + "idear.Human.SRR3714777.report",
+        "report": os.path.join(resource_path, "idear.Human.SRR3714777.report"),
     }
 
     metadata = {
@@ -201,11 +201,11 @@ def test_fastqc_idamseq_3():
     resource_path = os.path.join(os.path.dirname(__file__), "data/")
 
     input_files = {
-        "fastq": resource_path + "idear.Human.SRR3714778.fastq.gz"
+        "fastq": os.path.join(resource_path, "idear.Human.SRR3714778.fastq.gz")
     }
 
     output_files = {
-        "report": resource_path + "idear.Human.SRR3714778.report",
+        "report": os.path.join(resource_path, "idear.Human.SRR3714778.report"),
     }
 
     metadata = {
@@ -229,11 +229,11 @@ def test_fastqc_inps_0():
     resource_path = os.path.join(os.path.dirname(__file__), "data/")
 
     input_files = {
-        "fastq": resource_path + "inps.Mouse.DRR000386.fastq"
+        "fastq": os.path.join(resource_path, "inps.Mouse.DRR000386.fastq")
     }
 
     output_files = {
-        "report": resource_path + "inps.Mouse.DRR000386.report",
+        "report": os.path.join(resource_path, "inps.Mouse.DRR000386.report"),
     }
 
     metadata = {
@@ -257,11 +257,11 @@ def test_fastqc_rnaseq_0():
     resource_path = os.path.join(os.path.dirname(__file__), "data/")
 
     input_files = {
-        "fastq": resource_path + "kallisto.Human.ERR030872_1.fastq"
+        "fastq": os.path.join(resource_path, "kallisto.Human.ERR030872_1.fastq")
     }
 
     output_files = {
-        "report": resource_path + "kallisto.Human.ERR030872_1.report",
+        "report": os.path.join(resource_path, "kallisto.Human.ERR030872_1.report"),
     }
 
     metadata = {
@@ -285,11 +285,11 @@ def test_fastqc_rnaseq_1():
     resource_path = os.path.join(os.path.dirname(__file__), "data/")
 
     input_files = {
-        "fastq": resource_path + "kallisto.Human.ERR030872_2.fastq"
+        "fastq": os.path.join(resource_path, "kallisto.Human.ERR030872_2.fastq")
     }
 
     output_files = {
-        "report": resource_path + "kallisto.Human.ERR030872_2.report",
+        "report": os.path.join(resource_path, "kallisto.Human.ERR030872_2.report"),
     }
 
     metadata = {
@@ -313,11 +313,11 @@ def test_fastqc_wgbs_0():
     resource_path = os.path.join(os.path.dirname(__file__), "data/")
 
     input_files = {
-        "fastq": resource_path + "bsSeeker.Mouse.SRR892982_1.fastq.gz"
+        "fastq": os.path.join(resource_path, "bsSeeker.Mouse.SRR892982_1.fastq.gz")
     }
 
     output_files = {
-        "report": resource_path + "bsSeeker.Mouse.SRR892982_1.fastq.report",
+        "report": os.path.join(resource_path, "bsSeeker.Mouse.SRR892982_1.fastq.report"),
     }
 
     metadata = {
@@ -341,11 +341,11 @@ def test_fastqc_wgbs_1():
     resource_path = os.path.join(os.path.dirname(__file__), "data/")
 
     input_files = {
-        "fastq": resource_path + "bsSeeker.Mouse.SRR892982_2.fastq.gz"
+        "fastq": os.path.join(resource_path, "bsSeeker.Mouse.SRR892982_2.fastq.gz")
     }
 
     output_files = {
-        "report": resource_path + "bsSeeker.Mouse.SRR892982_2.fastq.report",
+        "report": os.path.join(resource_path, "bsSeeker.Mouse.SRR892982_2.fastq.report"),
     }
 
     metadata = {

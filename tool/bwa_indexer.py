@@ -72,7 +72,7 @@ class bwaIndexerTool(Tool):
         self.configuration.update(configuration)
 
     @task(file_loc=FILE_IN, idx_out=FILE_OUT)
-    def bwa_indexer(self, file_loc, idx_out):  # pylint disable=no-self-use
+    def bwa_indexer(self, file_loc, idx_out):  # pylint: disable=no-self-use
         """
         BWA Indexer
 
@@ -98,18 +98,14 @@ class bwaIndexerTool(Tool):
             index_dir = idx_out.replace('.tar.gz', '')
             os.mkdir(index_dir)
 
-            idx_split = index_dir.split("/")
-
             shutil.move(amb_loc, index_dir)
             shutil.move(ann_loc, index_dir)
             shutil.move(bwt_loc, index_dir)
             shutil.move(pac_loc, index_dir)
             shutil.move(sa_loc, index_dir)
 
-            index_folder = idx_split[-1]
-
             tar = tarfile.open(idx_out_pregz, "w")
-            tar.add(index_dir, arcname=index_folder)
+            tar.add(index_dir, arcname=os.path.split(index_dir)[1])
             tar.close()
 
         except (IOError, OSError) as msg:
@@ -149,11 +145,6 @@ class bwaIndexerTool(Tool):
             input_files["genome"],
             output_files["index"]
         )
-        # results = compss_wait_on(results)
-
-        # if results is False:
-        #     logger.fatal("BWA Indexer: run failed")
-        #     return {}, {}
 
         output_metadata = {
             "index": Metadata(

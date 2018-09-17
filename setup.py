@@ -49,7 +49,7 @@ setup(
     packages=find_packages(),
     include_package_data=True,
     install_requires=[
-        'numpy', 'h5py', 'pytest', 'scipy', 'matplotlib', 'pysam', 'mock',
+        'numpy', 'h5py', 'pytest', 'scipy', 'matplotlib==2.2.3', 'pysam', 'mock',
         'bz2file', 'ConfigParser'
     ],
     setup_requires=[

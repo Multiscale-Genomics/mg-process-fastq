@@ -138,12 +138,24 @@ The previous splitter would split the FASTQ files into separate changes, then cr
 There has also been some refactoring of the handling of the archiving and compression steps to reduce the duplication of code within the repository.
 
 
+2018-07-16 - Modified handling of file locations
+------------------------------------------------
+
+Updated the handling of file locations to use os.path.join and os.path.split to allow for compatibility between different operating systems for the pipelines and tools.
+
+
 2018-08-02 - Added in Paired End BAM file handling for MACS2
 ------------------------------------------------------------
 
 MACS2 is able to automatically handle the files that are handed to it except for paired-end BAM and BED files (BAMPE and BEDPE respectively). The MACS2 tool only accepts BAM files so a check was implemented to determine if the BAM file contained paired-end reads.
 
 There has also been a major rewrite of the MACS2 tool to remove code duplication.
+
+
+2018-07-16 - Modified handling of file locations
+------------------------------------------------
+
+Updated the handling of file locations to use os.path.join and os.path.split to allow for compatibility between different operating systems for the pipelines and tools.
 
 
 2018-08-07 - Storing tool parameters as part of the metadata
@@ -185,3 +197,10 @@ Code update to use last features of the development branch of tadbit tools api
 The wrapper of tadbit model was rebuilt to allow the modelling of full genomes, mainly for yeast
 General reshape of all the code according to pylint
 Inclusion of tests for the wrappers and tools of the tadbit pipelines
+
+
+2018-09-04 - Adding functionality to bam_utils and macs2
+---------------------------------------------------------
+
+Macs2 was previously set to work with the BAMPE option for the -f/--format parameter. Additional functionality has been added to bam_utils and macs2 mode to incorporate the BEDPE option. This has been done for the Atac Seq pipeline to incorporate the processing of bed file rather than bam files if the user would need changes to the result files generated.
+

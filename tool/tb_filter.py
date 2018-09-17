@@ -49,12 +49,17 @@ class tbFilterTool(Tool):  # pylint: disable=invalid-name
     Tool for filtering out experimetnal artifacts from the aligned data
     """
 
-    def __init__(self):
+    def __init__(self, configuration):
         """
         Init function
         """
         logger.info("TADbit filter aligned reads")
         Tool.__init__(self)
+
+        if configuration is None:
+            configuration = {}
+
+        self.configuration.update(configuration)
 
     @task(
         reads=FILE_IN, filter_reads_file=FILE_OUT, custom_filter=IN, conservative=IN,

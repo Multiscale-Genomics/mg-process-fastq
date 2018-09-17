@@ -218,7 +218,7 @@ class tbFullMappingTool(Tool):  # pylint: disable=invalid-name
             input_metadata['ncpus'] = 8
         if 'iterative_mapping' in input_metadata:
             if isinstance(input_metadata['iterative_mapping'], basestring):
-                frag_base = not input_metadata['iterative_mapping'].lower() in ("yes", "true", "t", "1")
+                frag_base = not input_metadata['iterative_mapping'].lower() in ("yes", "true", "t", "1")  # pylint: disable=line-too-long
             else:
                 frag_base = not input_metadata['iterative_mapping']
         else:

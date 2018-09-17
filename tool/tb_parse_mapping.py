@@ -377,11 +377,11 @@ class tbParseMappingTool(Tool):  # pylint: disable=invalid-name
                     genome_seq, enzyme_name,
                     window1_1, window1_2, window1_3, window1_4,
                     window2_1, window2_2, window2_3, window2_4,
-                    read_iter, ncpus=(1 if 'ncpus' not in input_metadata else input_metadata['ncpus']))
+                    read_iter, ncpus=(1 if 'ncpus' not in input_metadata else input_metadata['ncpus']))  # pylint: disable=line-too-long
                 results = compss_wait_on(results)
                 if results == 0:
                     output_metadata = {
-                        'error' : 'No interactions found, \
+                        'error': 'No interactions found, \
                         please verify input data and chromosome filtering'
                     }
                     return ([], output_metadata)
@@ -400,7 +400,7 @@ class tbParseMappingTool(Tool):  # pylint: disable=invalid-name
                     genome_seq, enzyme_name,
                     window1_full, window1_frag,
                     window2_full, window2_frag,
-                    read_frag, ncpus=(1 if 'ncpus' not in input_metadata else input_metadata['ncpus']))
+                    read_frag, ncpus=(1 if 'ncpus' not in input_metadata else input_metadata['ncpus']))  # pylint: disable=line-too-long
 
                 results = compss_wait_on(results)
                 if results == 0:

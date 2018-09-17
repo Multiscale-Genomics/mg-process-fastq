@@ -75,6 +75,30 @@ class bamUtils(object):  # pylint: disable=invalid-name
         return True
 
     @staticmethod
+    def bam_to_bed(bam_file, bed_file):
+        """
+        Function for converting bam files to bed files
+        """
+        # Convert the new bam file into a bed file
+        cmd_bamtobed = ' '.join([
+            'bedtools bamtobed',
+            '-i', bam_file,
+            '>', bed_file
+        ])
+
+        try:
+            logger.info("CREATE BAMTOBED COMMAND: " + cmd_bamtobed)
+            process = subprocess.Popen(cmd_bamtobed, shell=True)
+            process.wait()
+        except (OSError, IOError) as msg:
+            logger.info("I/O error({0}): {1}\n{2}".format(
+                msg.errno, msg.strerror, cmd_bamtobed))
+            return False
+
+        return True
+
+
+    @staticmethod
     def bam_count_reads(bam_file, aligned=False):
         """
         Wrapper to count the number of (aligned) reads in a bam file
@@ -426,7 +450,7 @@ class bamUtilsTask(object):  # pylint: disable=invalid-name
         bam_handle = bamUtils()
         return bam_handle.bam_sort(bam_file)
 
-    @task(bam_file=FILE_IN, bam_file_out=FILE_IN, filter_name=IN)
+    @task(returns=bool, bam_file=FILE_IN, bam_file_out=FILE_IN, filter_name=IN)
     def bam_filter(self, bam_file, bam_file_out, filter_name):  # pylint: disable=no-self-use
         """
         Wrapper for filtering out reads from a bam file
@@ -531,7 +555,9 @@ class bamUtilsTask(object):  # pylint: disable=invalid-name
 
         return return_value
 
-    @task(bam_file_1=FILE_IN, bam_file_2=FILE_IN, bam_file_out=FILE_OUT)
+    @task(
+        returns=bool,
+        bam_file_1=FILE_IN, bam_file_2=FILE_IN, bam_file_out=FILE_OUT)
     def bam_merge_2(self, bam_file_1, bam_file_2, bam_file_out):  # pylint: disable=no-self-use
         """
         Wrapper for the pysam SAMtools merge function
@@ -545,9 +571,10 @@ class bamUtilsTask(object):  # pylint: disable=invalid-name
         """
         bam_handle = bamUtils()
         bam_handle.bam_merge(bam_file_1, bam_file_2)
-        bam_handle.bam_copy(bam_file_1, bam_file_out)
+        return bam_handle.bam_copy(bam_file_1, bam_file_out)
 
     @task(
+        returns=bool,
         bam_file_1=FILE_IN, bam_file_2=FILE_IN, bam_file_3=FILE_IN,
         bam_file_out=FILE_OUT)
     def bam_merge_3(self, bam_file_1, bam_file_2, bam_file_3, bam_file_out):  # pylint: disable=no-self-use
@@ -570,9 +597,10 @@ class bamUtilsTask(object):  # pylint: disable=invalid-name
         return bam_handle.bam_copy(bam_file_1, bam_file_out)
 
     @task(
+        returns=bool,
         bam_file_1=FILE_IN, bam_file_2=FILE_IN, bam_file_3=FILE_IN,
-        bam_file_4=FILE_IN, bam_file_out=FILE_OUT)
-    def bam_merge_4(self, bam_file_1, bam_file_2, bam_file_3, bam_file_4, bam_file_out):  # pylint: disable=no-self-use
+        bam_file_4=FILE_IN, bam_file_out=FILE_OUT)  # pylint: disable=no-self-use,too-many-arguments
+    def bam_merge_4(self, bam_file_1, bam_file_2, bam_file_3, bam_file_4, bam_file_out):
         """
         Wrapper for the pysam SAMtools merge function
 
@@ -594,6 +622,7 @@ class bamUtilsTask(object):  # pylint: disable=invalid-name
         return bam_handle.bam_copy(bam_file_1, bam_file_out)
 
     @task(
+        returns=bool,
         bam_file_1=FILE_IN, bam_file_2=FILE_IN, bam_file_3=FILE_IN,
         bam_file_4=FILE_IN, bam_file_5=FILE_IN, bam_file_out=FILE_OUT
     )  # pylint: disable=no-self-use,too-many-arguments
@@ -621,6 +650,7 @@ class bamUtilsTask(object):  # pylint: disable=invalid-name
         return bam_handle.bam_copy(bam_file_1, bam_file_out)
 
     @task(
+        returns=bool,
         bam_file_1=FILE_IN, bam_file_2=FILE_IN, bam_file_3=FILE_IN,
         bam_file_4=FILE_IN, bam_file_5=FILE_IN, bam_file_6=FILE_IN,
         bam_file_7=FILE_IN, bam_file_8=FILE_IN, bam_file_9=FILE_IN,
@@ -663,7 +693,7 @@ class bamUtilsTask(object):  # pylint: disable=invalid-name
         ])
         return bam_handle.bam_copy(bam_file_1, bam_file_out)
 
-    @task(bam_in=FILE_IN, bam_out=FILE_OUT)
+    @task(returns=bool, bam_in=FILE_IN, bam_out=FILE_OUT)
     def bam_copy(self, bam_in, bam_out):  # pylint: disable=no-self-use
         """
         Wrapper function to copy from one bam file to another
@@ -678,7 +708,7 @@ class bamUtilsTask(object):  # pylint: disable=invalid-name
         bam_handle = bamUtils()
         return bam_handle.bam_copy(bam_in, bam_out)
 
-    @task(bam_file=FILE_IN, bam_idx_file=FILE_OUT)
+    @task(returns=bool, bam_file=FILE_IN, bam_idx_file=FILE_OUT)
     def bam_index(self, bam_file, bam_idx_file):  # pylint: disable=no-self-use
         """
         Wrapper for the pysam SAMtools merge function
@@ -693,7 +723,7 @@ class bamUtilsTask(object):  # pylint: disable=invalid-name
         bam_handle = bamUtils()
         return bam_handle.bam_index(bam_file, bam_idx_file)
 
-    @task(bam_file=FILE_IN)
+    @task(returns=list, bam_file=FILE_IN)
     def bam_stats(self, bam_file):  # pylint: disable=no-self-use
         """
         Wrapper for the pysam SAMtools flagstat function
@@ -727,7 +757,7 @@ class bamUtilsTask(object):  # pylint: disable=invalid-name
         bam_handle = bamUtils()
         return bam_handle.bam_stats(bam_file)
 
-    @task(bam_file=FILE_IN)
+    @task(returns=bool, bam_file=FILE_IN)
     def check_header(self, bam_file):  # pylint: disable=no-self-use
         """
         Wrapper for the pysam SAMtools merge function

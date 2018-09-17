@@ -185,3 +185,9 @@ Code update to use last features of the development branch of tadbit tools api
 The wrapper of tadbit model was rebuilt to allow the modelling of full genomes, mainly for yeast
 General reshape of all the code according to pylint
 Inclusion of tests for the wrappers and tools of the tadbit pipelines
+
+
+2018-09-17 - Updates to tool and pipline run()
+----------------------------------------------
+
+Changes to the pipelines so that the run() function matches the definitions within the Tool API.

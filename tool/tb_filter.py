@@ -49,7 +49,7 @@ class tbFilterTool(Tool):  # pylint: disable=invalid-name
     Tool for filtering out experimetnal artifacts from the aligned data
     """
 
-    def __init__(self, configuration):
+    def __init__(self, configuration=None):
         """
         Init function
         """

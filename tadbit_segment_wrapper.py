@@ -42,7 +42,7 @@ from tool.tb_segment import tbSegmentTool
 
 # ------------------------------------------------------------------------------
 
-class tadbit_segment(Workflow): # pylint: disable=invalid-name, too-few-public-methods
+class tadbit_segment(Workflow):  # pylint: disable=invalid-name, too-few-public-methods
     """
     Wrapper for the VRE form TADbit segment.
     It detects TADs and compartments from a BAM file.
@@ -126,9 +126,9 @@ class tadbit_segment(Workflow): # pylint: disable=invalid-name, too-few-public-m
             in_files.append(format_utils.convert_from_unicode(input_files['biases']))
 
         ts_handler = tbSegmentTool()
-        ts_files, _ = ts_handler.run(in_files, [], input_metadata)
+        ts_files, _ = ts_handler.run(in_files, input_metadata, [])
 
-        m_results_files["tads_compartments"] = self.configuration['project']+ \
+        m_results_files["tads_compartments"] = self.configuration['project'] + \
             "/tads_compartments.tar.gz"
 
         tar = tarfile.open(m_results_files["tads_compartments"], "w:gz")

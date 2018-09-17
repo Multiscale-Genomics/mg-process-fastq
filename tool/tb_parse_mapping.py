@@ -414,4 +414,6 @@ class tbParseMappingTool(Tool):  # pylint: disable=invalid-name
             reads = None
             return ([reads], output_metadata)
 
+        return ([], [])
+
 # ------------------------------------------------------------------------------

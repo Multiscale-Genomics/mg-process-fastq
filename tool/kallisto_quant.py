@@ -95,14 +95,14 @@ class kallistoQuantificationTool(Tool):  # pylint: disable=invalid-name
 
         fq_stats = self.seq_read_stats(fastq_file_loc)
 
-        output_dir = fastq_file_loc.split('/')
+        output_dir = os.path.split(fastq_file_loc)
 
         std = fq_stats["std"]
         if std == 0.0:
             std = 1/fq_stats['mean']
 
         command_line = "kallisto quant -i " + cdna_idx_file + " "
-        command_line += " -o " + "/".join(output_dir[0:-1]) + "/"
+        command_line += " -o " + output_dir[0] + "/"
         command_line += " --single -l " + str(fq_stats['mean']) + " "
         command_line += "-s " + str(std) + " " + fastq_file_loc
 
@@ -114,15 +114,15 @@ class kallistoQuantificationTool(Tool):  # pylint: disable=invalid-name
 
         output_files = [
             {
-                "in": '/'.join(output_dir[0:-1]) + "/abundance.h5",
+                "in": os.path.join(output_dir[0], "abundance.h5"),
                 "out": abundance_h5_file
             },
             {
-                "in": '/'.join(output_dir[0:-1]) + "/abundance.tsv",
+                "in": os.path.join(output_dir[0], "abundance.tsv"),
                 "out": abundance_tsv_file
             },
             {
-                "in": '/'.join(output_dir[0:-1]) + "/run_info.json",
+                "in": os.path.join(output_dir[0], "run_info.json"),
                 "out": run_info_file
             }
         ]
@@ -167,10 +167,10 @@ class kallistoQuantificationTool(Tool):  # pylint: disable=invalid-name
             Location of the wig file containing the levels of expression
         """
 
-        output_dir = fastq_file_loc_01.split('/')
+        output_dir = os.path.split(fastq_file_loc_01)
 
         command_line = 'kallisto quant -i ' + cdna_idx_file + ' '
-        command_line += '-o ' + '/'.join(output_dir[0:-1]) + "/ "
+        command_line += '-o ' + output_dir[0] + "/ "
         command_line += fastq_file_loc_01 + ' ' + fastq_file_loc_02
 
         args = shlex.split(command_line)
@@ -179,20 +179,21 @@ class kallistoQuantificationTool(Tool):  # pylint: disable=invalid-name
 
         output_files = [
             {
-                "in": '/'.join(output_dir[0:-1]) + "/abundance.h5",
+                "in": os.path.join(output_dir[0], "abundance.h5"),
                 "out": abundance_h5_file
             },
             {
-                "in": '/'.join(output_dir[0:-1]) + "/abundance.tsv",
+                "in": os.path.join(output_dir[0], "abundance.tsv"),
                 "out": abundance_tsv_file
             },
             {
-                "in": '/'.join(output_dir[0:-1]) + "/run_info.json",
+                "in": os.path.join(output_dir[0], "run_info.json"),
                 "out": run_info_file
             }
         ]
 
         for i in output_files:
+            print(i)
             if os.path.isfile(i["in"]) is True and os.path.getsize(i["in"]) > 0:
                 with open(i["out"], "wb") as f_out:
                     with open(i["in"], "rb") as f_in:

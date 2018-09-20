@@ -39,12 +39,13 @@ except ImportError:
 
     from utils.dummy_pycompss import FILE_IN, FILE_OUT, IN  # pylint: disable=ungrouped-imports
     from utils.dummy_pycompss import task  # pylint: disable=ungrouped-imports
-    # from utils.dummy_pycompss import compss_wait_on # pylint: disable=ungrouped-imports
+    # from utils.dummy_pycompss import compss_wait_on  # pylint: disable=ungrouped-imports
     # from utils.dummy_pycompss import constraint
+
 
 # ------------------------------------------------------------------------------
 
-class tbNormalizeTool(Tool): # pylint: disable=invalid-name
+class tbNormalizeTool(Tool):  # pylint: disable=invalid-name
     """
     Tool for normalizing an adjacency matrix
     """
@@ -103,7 +104,7 @@ class tbNormalizeTool(Tool): # pylint: disable=invalid-name
             Location of filtered_bins png
 
         """
-        #chr_hic_data = read_matrix(matrix_file, resolution=int(resolution))
+        # chr_hic_data = read_matrix(matrix_file, resolution=int(resolution))
 
         logger.info("TB NORMALIZATION: {0} {1} {2} {3} {4} {5}".format(
             bamin, normalization, resolution, min_perc, max_perc, workdir))

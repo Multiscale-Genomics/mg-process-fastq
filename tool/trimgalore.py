@@ -187,17 +187,15 @@ class trimgalore(Tool):  # pylint: disable=invalid-name
 
         try:
             trimmed_report = os.path.join(
-                fastq_trimmed[0], "tmp", fastq_trimmed[1] + "_trimming_report.txt"
+                fastq_trimmed[0], fastq_trimmed[1] + "_trimming_report.txt"
             )
             with open(fastq_report, "wb") as f_out:
                 with open(trimmed_report, "rb") as f_in:
                     f_out.write(f_in.read())
         except (OSError, IOError) as error:
-            logger.fatal("I/O error({0}) - TRIMMING REPORT FASTQ 1: {1}\n{2}\n{3}".format(
+            logger.fatal("I/O error({0}) - TRIMMING REPORT FASTQ 1: {1}\nWRITE: {2}\nREAD: {3}".format(
                 error.errno, error.strerror, fastq_report,
-                os.path.join(
-                    fastq_trimmed[0], fastq_trimmed[1] + "_trimming_report.txt"
-                )
+                trimmed_report
             ))
             return False
 
@@ -308,10 +306,10 @@ class trimgalore(Tool):  # pylint: disable=invalid-name
                     f_out.write(f_in.read())
 
             trimmed_report_1 = os.path.join(
-                fastq1_trimmed[0], "tmp", fastq1_trimmed[1] + "_trimming_report.txt"
+                fastq1_trimmed[0], fastq1_trimmed[1] + "_trimming_report.txt"
             )
             trimmed_report_2 = os.path.join(
-                fastq2_trimmed[0], "tmp", fastq2_trimmed[1] + "_trimming_report.txt"
+                fastq2_trimmed[0], fastq2_trimmed[1] + "_trimming_report.txt"
             )
             with open(fastq1_report, "wb") as f_out:
                 with open(trimmed_report_1, "rb") as f_in:

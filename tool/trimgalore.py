@@ -193,10 +193,11 @@ class trimgalore(Tool):  # pylint: disable=invalid-name
                 with open(trimmed_report, "rb") as f_in:
                     f_out.write(f_in.read())
         except (OSError, IOError) as error:
-            logger.fatal("I/O error({0}) - TRIMMING REPORT FASTQ 1: {1}\nWRITE: {2}\nREAD: {3}".format(
-                error.errno, error.strerror, fastq_report,
-                trimmed_report
-            ))
+            logger.fatal(
+                "I/O error({0}) - TRIMMING REPORT FASTQ 1: {1}\nWRITE: {2}\nREAD: {3}".format(
+                    error.errno, error.strerror, fastq_report,
+                    trimmed_report
+                ))
             return False
 
         return True

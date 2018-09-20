@@ -20,9 +20,6 @@ import sys
 
 from os import path, unlink
 
-from pytadbit.mapping.mapper import full_mapping
-from pytadbit.utils.fastq_utils import quality_plot
-
 from basic_modules.tool import Tool
 
 from utils import logger
@@ -42,6 +39,9 @@ except ImportError:
     from utils.dummy_pycompss import task  # pylint: disable=ungrouped-imports
     # from utils.dummy_pycompss import constraint # pylint: disable=ungrouped-imports
     from utils.dummy_pycompss import compss_wait_on  # pylint: disable=ungrouped-imports
+
+from pytadbit.mapping.mapper import full_mapping  # pylint: disable=import-error
+from pytadbit.utils.fastq_utils import quality_plot  # pylint: disable=import-error
 
 
 # ------------------------------------------------------------------------------

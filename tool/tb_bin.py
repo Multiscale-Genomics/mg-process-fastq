@@ -20,14 +20,14 @@ import sys
 from sys import stdout
 from subprocess import PIPE, Popen
 import os
-from cPickle import load
-
-from pytadbit.parsers.hic_bam_parser import write_matrix
-from pytadbit import Chromosome
-from pytadbit.parsers.hic_parser import load_hic_data_from_bam
-from pytadbit.mapping.analyze import hic_map
 
 from utils import logger
+
+try:
+    from cPickle import load
+except ImportError:
+    logger.info("Using pickle instead of cPickle")
+    from pickle import load
 
 try:
     if hasattr(sys, '_run_from_cmdl') is True:
@@ -42,6 +42,11 @@ except ImportError:
     from utils.dummy_pycompss import task  # pylint: disable=ungrouped-imports
 
 from basic_modules.tool import Tool
+
+from pytadbit.parsers.hic_bam_parser import write_matrix  # pylint: disable=import-error
+from pytadbit import Chromosome  # pylint: disable=import-error
+from pytadbit.parsers.hic_parser import load_hic_data_from_bam  # pylint: disable=import-error
+from pytadbit.mapping.analyze import hic_map  # pylint: disable=import-error
 
 
 # ------------------------------------------------------------------------------

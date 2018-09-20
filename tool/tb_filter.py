@@ -19,10 +19,6 @@ from __future__ import print_function
 import sys
 import os.path
 
-from pytadbit.parsers.hic_bam_parser import bed2D_to_BAMhic
-from pytadbit.mapping.filter import apply_filter, filter_reads
-from pytadbit.mapping.analyze import insert_sizes
-
 from basic_modules.tool import Tool
 
 from utils import logger
@@ -40,6 +36,10 @@ except ImportError:
     from utils.dummy_pycompss import FILE_IN, FILE_OUT, IN  # pylint: disable=ungrouped-imports
     from utils.dummy_pycompss import task  # pylint: disable=ungrouped-imports
     from utils.dummy_pycompss import compss_wait_on  # pylint: disable=ungrouped-imports
+
+from pytadbit.parsers.hic_bam_parser import bed2D_to_BAMhic  # pylint: disable=import-error
+from pytadbit.mapping.filter import apply_filter, filter_reads  # pylint: disable=import-error
+from pytadbit.mapping.analyze import insert_sizes  # pylint: disable=import-error
 
 
 # ------------------------------------------------------------------------------

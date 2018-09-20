@@ -19,10 +19,6 @@ from __future__ import print_function
 
 import sys
 
-from pytadbit.parsers.genome_parser import parse_fasta  # pylint: disable=import-error
-from pytadbit.parsers.map_parser import parse_map  # pylint: disable=import-error
-from pytadbit.mapping import get_intersection  # pylint: disable=import-error
-
 from basic_modules.tool import Tool
 
 from utils import logger
@@ -42,6 +38,10 @@ except ImportError:
     from utils.dummy_pycompss import task  # pylint: disable=ungrouped-imports
     # from utils.dummy_pycompss import constraint  # pylint: disable=ungrouped-imports
     from utils.dummy_pycompss import compss_wait_on  # pylint: disable=ungrouped-imports
+
+from pytadbit.parsers.genome_parser import parse_fasta  # pylint: disable=import-error
+from pytadbit.parsers.map_parser import parse_map  # pylint: disable=import-error
+from pytadbit.mapping import get_intersection  # pylint: disable=import-error
 
 
 # ------------------------------------------------------------------------------

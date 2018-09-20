@@ -31,16 +31,16 @@ try:
         raise ImportError
     from pycompss.api.parameter import FILE_IN, FILE_OUT, IN
     from pycompss.api.task import task
-    #from pycompss.api.api import compss_wait_on
+    # from pycompss.api.api import compss_wait_on
     # from pycompss.api.constraint import constraint
 except ImportError:
     logger.info("[Warning] Cannot import \"pycompss\" API packages.")
     logger.info("          Using mock decorators.")
 
-    from utils.dummy_pycompss import FILE_IN, FILE_OUT, IN # pylint: disable=ungrouped-imports
-    from utils.dummy_pycompss import task # pylint: disable=ungrouped-imports
-    #from utils.dummy_pycompss import compss_wait_on # pylint: disable=ungrouped-imports
-    #from utils.dummy_pycompss import constraint
+    from utils.dummy_pycompss import FILE_IN, FILE_OUT, IN  # pylint: disable=ungrouped-imports
+    from utils.dummy_pycompss import task  # pylint: disable=ungrouped-imports
+    # from utils.dummy_pycompss import compss_wait_on # pylint: disable=ungrouped-imports
+    # from utils.dummy_pycompss import constraint
 
 # ------------------------------------------------------------------------------
 

@@ -25,8 +25,12 @@ import sys
 import tarfile
 import multiprocessing
 import json
-import urllib2
 import shutil
+
+try:
+    from urllib2 import urlopen
+except ImportError:
+    from urllib.request import urlopen
 
 from random import random
 from string import ascii_letters as letters
@@ -82,7 +86,7 @@ class tadbit_model(Workflow):  # pylint: disable=invalid-name,too-few-public-met
         num_cores = multiprocessing.cpu_count()
         self.configuration["ncpus"] = num_cores
 
-        tmp_name = ''.join([letters[int(random()*52)]for _ in xrange(5)])
+        tmp_name = ''.join([letters[int(random()*52)]for _ in range(5)])
         if 'execution' in self.configuration:
             self.configuration['project'] = self.configuration['execution']
         self.configuration['workdir'] = self.configuration['project']+'/_tmp_tadbit_'+tmp_name
@@ -149,7 +153,7 @@ class tadbit_model(Workflow):  # pylint: disable=invalid-name,too-few-public-met
         if "assembly" in metadata['hic_contacts_matrix_norm'].meta_data:
             input_metadata["assembly"] = metadata['hic_contacts_matrix_norm'].meta_data["assembly"]
         if metadata['hic_contacts_matrix_norm'].taxon_id:
-            dt_json = json.load(urllib2.urlopen(
+            dt_json = json.load(urlopen(
                 "http://www.ebi.ac.uk/ena/data/taxonomy/v1/taxon/tax-id/" +
                 str(metadata['hic_contacts_matrix_norm'].taxon_id)))
             input_metadata["species"] = dt_json['scientificName']

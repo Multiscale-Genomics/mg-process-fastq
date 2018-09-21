@@ -79,7 +79,7 @@ class tadbit_normalize(Workflow):  # pylint: disable=invalid-name, too-few-publi
         if "normalization" not in self.configuration:
             self.configuration["normalization"] = "Vanilla"
 
-        tmp_name = ''.join([letters[int(random()*52)]for _ in xrange(5)])
+        tmp_name = ''.join([letters[int(random()*52)]for _ in range(5)])
         if 'execution' in self.configuration:
             self.configuration['project'] = self.configuration['execution']
         self.configuration['workdir'] = self.configuration['project']+'/_tmp_tadbit_'+tmp_name

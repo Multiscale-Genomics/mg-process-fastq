@@ -189,6 +189,8 @@ class format_utils(object):
         data : str or collection
             Input object in unicode
         """
+        from past.builtins import basestring  # pylint: disable=redefined-builtin
+
         if isinstance(data, basestring):
             return str(data)
         if isinstance(data, collections.Mapping):

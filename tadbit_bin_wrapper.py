@@ -25,8 +25,12 @@ import argparse
 import sys
 import json
 import multiprocessing
-import urllib2
 import tarfile
+
+try:
+    from urllib2 import urlopen
+except ImportError:
+    from urllib.request import urlopen
 
 from random import random
 from string import ascii_letters as letters
@@ -127,7 +131,7 @@ class tadbit_bin(Workflow):  # pylint: disable=invalid-name,too-few-public-metho
             input_metadata["assembly"] = metadata['bamin'].meta_data["assembly"]
         if metadata['bamin'].taxon_id:
             dt_json = json.load(
-                urllib2.urlopen(
+                urlopen(
                     "http://www.ebi.ac.uk/ena/data/taxonomy/v1/taxon/tax-id/"+
                     str(metadata['bamin'].taxon_id)
                 )

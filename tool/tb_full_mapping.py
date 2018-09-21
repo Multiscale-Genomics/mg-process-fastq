@@ -18,7 +18,10 @@
 from __future__ import print_function
 import sys
 
-from os import path, unlink
+from os import path
+from os import unlink
+
+from past.builtins import basestring  # pylint: disable=redefined-builtin
 
 from basic_modules.tool import Tool
 

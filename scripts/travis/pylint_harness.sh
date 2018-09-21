@@ -18,7 +18,7 @@
 disabled="--disable=similarities,invalid-name,too-many-statements,too-many-arguments,too-many-locals,too-few-public-methods,relative-import,no-self-use,,useless-object-inheritance"
 
 pylint ${disabled} --rcfile pylintrc process*.py > output.err
-pylint ${disabled} --rcfile pylintrc *wrapper*.py > output.err
+pylint ${disabled} --rcfile pylintrc *wrapper*.py >> output.err
 pylint ${disabled} --rcfile pylintrc tool >> output.err
 pylint ${disabled} --rcfile pylintrc tests >> output.err
 

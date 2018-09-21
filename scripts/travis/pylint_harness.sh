@@ -27,7 +27,8 @@ grep -v "\-\-\-\-\-\-\-\-\-" output.err | grep -v "Your code has been rated" | g
 
 if [ -s pylint.err ]
 then
-    cat pylint.err
+    # cat pylint.err
+    cat output.err
     rm pylint.err
     exit 1
 fi

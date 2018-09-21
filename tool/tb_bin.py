@@ -43,9 +43,9 @@ except ImportError:
 
 from basic_modules.tool import Tool
 
-from pytadbit.parsers.hic_bam_parser import write_matrix  # pylint: disable=import-error
+from pytadbit.parsers.hic_bam_parser import write_matrix  # pylint: disable=import-error,no-name-in-module
 from pytadbit import Chromosome  # pylint: disable=import-error
-from pytadbit.parsers.hic_parser import load_hic_data_from_bam  # pylint: disable=import-error
+from pytadbit.parsers.hic_parser import load_hic_data_from_bam  # pylint: disable=import-error,no-name-in-module
 from pytadbit.mapping.analyze import hic_map  # pylint: disable=import-error
 
 

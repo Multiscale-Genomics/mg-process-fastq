@@ -37,7 +37,7 @@ except ImportError:
     from utils.dummy_pycompss import task  # pylint: disable=ungrouped-imports
     from utils.dummy_pycompss import compss_wait_on  # pylint: disable=ungrouped-imports
 
-from pytadbit.parsers.hic_bam_parser import bed2D_to_BAMhic  # pylint: disable=import-error
+from pytadbit.parsers.hic_bam_parser import bed2D_to_BAMhic  # pylint: disable=import-error,no-name-in-module
 from pytadbit.mapping.filter import apply_filter, filter_reads  # pylint: disable=import-error
 from pytadbit.mapping.analyze import insert_sizes  # pylint: disable=import-error
 

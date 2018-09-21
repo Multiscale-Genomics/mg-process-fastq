@@ -94,7 +94,8 @@ class fastqreader(object):  # pylint: disable=too-many-instance-attributes,inval
         """
         if side == 1:
             return self.f1_eof
-        elif side == 2:
+
+        if side == 2:
             return self.f2_eof
 
         logger.error("side has value {}. Permitted values are 1 or 2".format(side))

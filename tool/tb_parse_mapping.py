@@ -388,7 +388,8 @@ class tbParseMappingTool(Tool):  # pylint: disable=invalid-name
                     }
                     return ([], output_metadata)
                 return ([read_iter], output_metadata)
-            elif mapping_list[0] == 'frag':
+
+            if mapping_list[0] == 'frag':
                 window1_full = input_files[1]
                 window1_frag = input_files[2]
 
@@ -415,7 +416,7 @@ class tbParseMappingTool(Tool):  # pylint: disable=invalid-name
 
             reads = None
             return ([reads], output_metadata)
-        else:
-            return ([], [])
+
+        return ([], [])
 
 # ------------------------------------------------------------------------------

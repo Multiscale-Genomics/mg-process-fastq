@@ -378,7 +378,8 @@ class tbParseMappingTool(Tool):  # pylint: disable=invalid-name
                     genome_seq, enzyme_name,
                     window1_1, window1_2, window1_3, window1_4,
                     window2_1, window2_2, window2_3, window2_4,
-                    read_iter, ncpus=(1 if 'ncpus' not in input_metadata else input_metadata['ncpus']))  # pylint: disable=line-too-long
+                    read_iter, ncpus=(
+                        1 if 'ncpus' not in input_metadata else input_metadata['ncpus']))
                 results = compss_wait_on(results)
                 if results == 0:
                     output_metadata = {
@@ -387,7 +388,6 @@ class tbParseMappingTool(Tool):  # pylint: disable=invalid-name
                     }
                     return ([], output_metadata)
                 return ([read_iter], output_metadata)
-
             elif mapping_list[0] == 'frag':
                 window1_full = input_files[1]
                 window1_frag = input_files[2]
@@ -401,7 +401,8 @@ class tbParseMappingTool(Tool):  # pylint: disable=invalid-name
                     genome_seq, enzyme_name,
                     window1_full, window1_frag,
                     window2_full, window2_frag,
-                    read_frag, ncpus=(1 if 'ncpus' not in input_metadata else input_metadata['ncpus']))  # pylint: disable=line-too-long
+                    read_frag, ncpus=(
+                        1 if 'ncpus' not in input_metadata else input_metadata['ncpus']))
 
                 results = compss_wait_on(results)
                 if results == 0:
@@ -414,7 +415,7 @@ class tbParseMappingTool(Tool):  # pylint: disable=invalid-name
 
             reads = None
             return ([reads], output_metadata)
-
-        return ([], [])
+        else:
+            return ([], [])
 
 # ------------------------------------------------------------------------------

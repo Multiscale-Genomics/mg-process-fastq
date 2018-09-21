@@ -21,6 +21,8 @@ import os
 import errno
 import re
 
+from utils import logger
+
 
 class fastqreader(object):  # pylint: disable=too-many-instance-attributes,invalid-name
     """
@@ -95,6 +97,7 @@ class fastqreader(object):  # pylint: disable=too-many-instance-attributes,inval
         elif side == 2:
             return self.f2_eof
 
+        logger.error("side has value {}. Permitted values are 1 or 2".format(side))
         return "ERROR"
 
     def next(self, side=1):

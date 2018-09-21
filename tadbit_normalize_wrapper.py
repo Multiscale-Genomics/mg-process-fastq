@@ -60,7 +60,7 @@ class tadbit_normalize(Workflow):  # pylint: disable=invalid-name, too-few-publi
             a dictionary containing parameters that define how the operation
             should be carried out, which are specific to each Tool.
         """
-        tool_extra_config = json.load(file(os.path.dirname(
+        tool_extra_config = json.load(open(os.path.dirname(
             os.path.abspath(__file__))+'/tadbit_wrappers_config.json'))
         if os.path.isdir(format_utils.convert_from_unicode(
                 tool_extra_config["bin_path"])):

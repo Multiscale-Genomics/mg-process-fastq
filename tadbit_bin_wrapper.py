@@ -67,7 +67,7 @@ class tadbit_bin(Workflow):  # pylint: disable=invalid-name,too-few-public-metho
             should be carried out, which are specific to each Tool.
         """
         tool_extra_config = json.load(
-            file(os.path.dirname(os.path.abspath(__file__))+'/tadbit_wrappers_config.json')
+            open(os.path.dirname(os.path.abspath(__file__))+'/tadbit_wrappers_config.json')
         )
         os.environ["PATH"] += os.pathsep + format_utils.convert_from_unicode(
             tool_extra_config["bin_path"])

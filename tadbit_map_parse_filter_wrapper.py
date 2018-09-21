@@ -64,7 +64,7 @@ class tadbit_map_parse_filter(Workflow):  # pylint: disable=invalid-name,too-few
             a dictionary containing parameters that define how the operation
             should be carried out, which are specific to each Tool.
         """
-        tool_extra_config = json.load(file(os.path.dirname(os.path.abspath(__file__))
+        tool_extra_config = json.load(open(os.path.dirname(os.path.abspath(__file__))
                                            + '/tadbit_wrappers_config.json'))
         if os.path.isdir(format_utils.convert_from_unicode(tool_extra_config["bin_path"])):
             os.environ["PATH"] += os.pathsep + format_utils.convert_from_unicode(

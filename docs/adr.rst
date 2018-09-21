@@ -208,5 +208,5 @@ Macs2 was previously set to work with the BAMPE option for the -f/--format param
 2018-09-17 - Updates to tool and pipline run()
 ----------------------------------------------
 
-Changes to the pipelines so that the run() function matches the definitions within the Tool API.
+Changes to the pipelines so that the run() function matches the definitions within the Tool API. There have also been a number of changes so that the pipeline and tool code is python 3 compatible
 

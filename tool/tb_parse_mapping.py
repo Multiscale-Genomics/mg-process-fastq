@@ -335,14 +335,15 @@ class tbParseMappingTool(Tool):  # pylint: disable=invalid-name
 
         reads = "/".join(root_name[0:-1]) + '/'
 
-        genome_seq = parse_fasta(
+        genome_seq = parse_fasta(  # pylint: disable=unexpected-keyword-arg
             genome_file, chr_filter=filter_chrom,
             chr_regexp="^(chr)?[A-Za-z]?[0-9]{0,3}[XVI]{0,3}(?:ito)?[A-Z-a-z]?$",
             save_cache=False, reload_cache=True)
 
         if not genome_seq:
-            genome_seq = parse_fasta(genome_file, chr_filter=filter_chrom,
-                                     save_cache=False, reload_cache=True)
+            genome_seq = parse_fasta(  # pylint: disable=unexpected-keyword-arg
+                genome_file, chr_filter=filter_chrom,
+                save_cache=False, reload_cache=True)
             if not genome_seq:
                 logger.fatal("Reference genome FASTA file does not contain any valid chromosome")
                 raise ValueError('No valid chromosomes in FASTA.')

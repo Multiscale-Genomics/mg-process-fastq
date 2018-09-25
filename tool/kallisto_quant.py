@@ -22,7 +22,6 @@ import subprocess
 import itertools
 import sys
 import os
-import re
 
 from utils import logger
 

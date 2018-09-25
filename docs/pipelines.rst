@@ -1012,7 +1012,7 @@ RNA-Seq Analysis
 
    Example
    -------
-   When running the pipeline on a local machinewithout COMPSs:
+   When running the pipeline on a local machine without COMPSs:
 
    .. code-block:: none
       :linenos:
@@ -1045,11 +1045,68 @@ RNA-Seq Analysis
       :members:
 
 
+.. automodule:: process_sleuth
+
+   This pipeline can process multiple outputs from the process_rnaseq Kallisto
+   pipeline to identify genes that are differentially expressed between datasets.
+
+   Running from the command line
+   =============================
+
+   Parameters
+   ----------
+   config : str
+      Configuration JSON file
+   in_metadata : str
+      Location of input JSON metadata for files
+   out_metadata : str
+      Location of output JSON metadata for files
+
+   Returns
+   -------
+   R data object : file
+      Sleuth R object
+
+   Example
+   -------
+   When running the pipeline on a local machine without COMPSs:
+
+   .. code-block:: none
+      :linenos:
+
+      python process_sleuth.py                                       \
+         --config tests/json/config_sleuth.json \
+         --in_metadata tests/json/input_sleuth.json \
+         --out_metadata tests/json/output_sleuth.json \
+         --local
+
+   When using a local version of the [COMPS virtual machine](https://www.bsc.es/research-and-development/software-and-apps/software-list/comp-superscalar/):
+
+   .. code-block:: none
+      :linenos:
+
+      runcompss                                        \
+         --lang=python                                 \
+         --library_path=${HOME}/bin                    \
+         --pythonpath=/<pyenv_virtenv_dir>/lib/python2.7/site-packages/ \
+         --log_level=debug                             \
+         process_sleuth.py                             \
+            --config tests/json/config_sleuth.json \
+            --in_metadata tests/json/input_sleuth.json \
+            --out_metadata tests/json/output_sleuth.json
+
+   Methods
+   =======
+   .. autoclass:: process_sleuth.process_sleuth
+      :members:
+
+
 TrimGalore
 ----------
 .. automodule:: process_trim_galore
 
    This pipeline can process FASTQ to trim poor base quality or adapter contamination.
+
 
    Running from the command line
    =============================

@@ -40,9 +40,7 @@ def test_kallisto_quant_paired():
     }
 
     output_files = {
-        "abundance_h5_file": resource_path + "kallisto.Human.ERR030872.paired.abundance.h5",
-        "abundance_tsv_file": resource_path + "kallisto.Human.ERR030872.paired.abundance.tsv",
-        "run_info_file": resource_path + "kallisto.Human.ERR030872.paired.run_info.json"
+        "kallisto_tar_file": resource_path + "kallisto.Human.ERR030872.paired.tar.gz"
     }
 
     metadata = {
@@ -63,12 +61,8 @@ def test_kallisto_quant_paired():
     kqft = kallistoQuantificationTool({"execution": resource_path})
     kqft.run(input_files, metadata, output_files)
 
-    assert os.path.isfile(output_files["abundance_h5_file"]) is True
-    assert os.path.getsize(output_files["abundance_h5_file"]) > 0
-    assert os.path.isfile(output_files["abundance_tsv_file"]) is True
-    assert os.path.getsize(output_files["abundance_tsv_file"]) > 0
-    assert os.path.isfile(output_files["run_info_file"]) is True
-    assert os.path.getsize(output_files["run_info_file"]) > 0
+    assert os.path.isfile(output_files["kallisto_tar_file"]) is True
+    assert os.path.getsize(output_files["kallisto_tar_file"]) > 0
 
 
 @pytest.mark.rnaseq
@@ -85,9 +79,7 @@ def test_kallisto_quant_single():
     }
 
     output_files = {
-        "abundance_h5_file": resource_path + "kallisto.Human.ERR030872.single.abundance.h5",
-        "abundance_tsv_file": resource_path + "kallisto.Human.ERR030872.single.abundance.tsv",
-        "run_info_file": resource_path + "kallisto.Human.ERR030872.single.run_info.json"
+        "kallisto_tar_file": resource_path + "kallisto.Human.ERR030872.single.tar.gz"
     }
 
     metadata = {
@@ -105,9 +97,189 @@ def test_kallisto_quant_single():
     kqft = kallistoQuantificationTool({"execution": resource_path})
     kqft.run(input_files, metadata, output_files)
 
-    assert os.path.isfile(output_files["abundance_h5_file"]) is True
-    assert os.path.getsize(output_files["abundance_h5_file"]) > 0
-    assert os.path.isfile(output_files["abundance_tsv_file"]) is True
-    assert os.path.getsize(output_files["abundance_tsv_file"]) > 0
-    assert os.path.isfile(output_files["run_info_file"]) is True
-    assert os.path.getsize(output_files["run_info_file"]) > 0
+    assert os.path.isfile(output_files["kallisto_tar_file"]) is True
+    assert os.path.getsize(output_files["kallisto_tar_file"]) > 0
+
+
+@pytest.mark.sleuth
+def test_kallisto_sleuth_paired_00():
+    """
+    Function to test Kallisto quantifier
+    """
+    resource_path = os.path.join(os.path.dirname(__file__), "data/sleuth/")
+
+    input_files = {
+        "cdna": resource_path + "sleuth.Human.GRCh38.cdna.fasta",
+        "index": resource_path + "sleuth.Human.GRCh38.cdna.idx",
+        "fastq1": resource_path + "sleuth.Human.ERR030872_1.fastq.gz",
+        "fastq2": resource_path + "sleuth.Human.ERR030872_2.fastq.gz"
+    }
+
+    output_files = {
+        "kallisto_tar_file": resource_path + "sleuth.Human.ERR030872.tar.gz"
+    }
+
+    metadata = {
+        "cdna": Metadata(
+            "data_cdna", "fasta", [], None,
+            {'assembly': 'test'}),
+        "index": Metadata(
+            "data_cdna", "fasta", [], None,
+            {'assembly': 'test'}),
+        "fastq1": Metadata(
+            "data_rnaseq", "fastq", [], None,
+            {'assembly': 'test'}),
+        "fastq2": Metadata(
+            "data_rnaseq", "fastq", [], None,
+            {'assembly': 'test'}),
+    }
+
+    kqft = kallistoQuantificationTool({"kallisto_bootstrap_param": 10})
+    kqft.run(input_files, metadata, output_files)
+
+    assert os.path.isfile(output_files["kallisto_tar_file"]) is True
+    assert os.path.getsize(output_files["kallisto_tar_file"]) > 0
+
+
+@pytest.mark.sleuth
+def test_kallisto_sleuth_single_01():
+    """
+    Function to test Kallisto quantifier
+    """
+    resource_path = os.path.join(os.path.dirname(__file__), "data/sleuth/")
+
+    input_files = {
+        "cdna": resource_path + "sleuth.Human.GRCh38.cdna.fasta",
+        "index": resource_path + "sleuth.Human.GRCh38.cdna.idx",
+        "fastq1": resource_path + "sleuth.Human.ERR030856.fastq.gz"
+    }
+
+    output_files = {
+        "kallisto_tar_file": resource_path + "sleuth.Human.ERR030856.tar.gz"
+    }
+
+    metadata = {
+        "cdna": Metadata(
+            "data_cdna", "fasta", [], None,
+            {'assembly': 'test'}),
+        "index": Metadata(
+            "data_cdna", "fasta", [], None,
+            {'assembly': 'test'}),
+        "fastq1": Metadata(
+            "data_rnaseq", "fastq", [], None,
+            {'assembly': 'test'}),
+    }
+
+    kqft = kallistoQuantificationTool({"kallisto_bootstrap_param": 10})
+    kqft.run(input_files, metadata, output_files)
+
+    assert os.path.isfile(output_files["kallisto_tar_file"]) is True
+    assert os.path.getsize(output_files["kallisto_tar_file"]) > 0
+
+
+@pytest.mark.sleuth
+def test_kallisto_sleuth_single_02():
+    """
+    Function to test Kallisto quantifier
+    """
+    resource_path = os.path.join(os.path.dirname(__file__), "data/sleuth/")
+
+    input_files = {
+        "cdna": resource_path + "sleuth.Human.GRCh38.cdna.fasta",
+        "index": resource_path + "sleuth.Human.GRCh38.cdna.idx",
+        "fastq1": resource_path + "sleuth.Human.ERR030857.fastq.gz"
+    }
+
+    output_files = {
+        "kallisto_tar_file": resource_path + "sleuth.Human.ERR030857.tar.gz"
+    }
+
+    metadata = {
+        "cdna": Metadata(
+            "data_cdna", "fasta", [], None,
+            {'assembly': 'test'}),
+        "index": Metadata(
+            "data_cdna", "fasta", [], None,
+            {'assembly': 'test'}),
+        "fastq1": Metadata(
+            "data_rnaseq", "fastq", [], None,
+            {'assembly': 'test'}),
+    }
+
+    kqft = kallistoQuantificationTool({"kallisto_bootstrap_param": 10})
+    kqft.run(input_files, metadata, output_files)
+
+    assert os.path.isfile(output_files["kallisto_tar_file"]) is True
+    assert os.path.getsize(output_files["kallisto_tar_file"]) > 0
+
+
+@pytest.mark.sleuth
+def test_kallisto_sleuth_single_03():
+    """
+    Function to test Kallisto quantifier
+    """
+    resource_path = os.path.join(os.path.dirname(__file__), "data/sleuth/")
+
+    input_files = {
+        "cdna": resource_path + "sleuth.Human.GRCh38.cdna.fasta",
+        "index": resource_path + "sleuth.Human.GRCh38.cdna.idx",
+        "fastq1": resource_path + "sleuth.Human.ERR030858.fastq.gz"
+    }
+
+    output_files = {
+        "kallisto_tar_file": resource_path + "sleuth.Human.ERR030858.tar.gz"
+    }
+
+    metadata = {
+        "cdna": Metadata(
+            "data_cdna", "fasta", [], None,
+            {'assembly': 'test'}),
+        "index": Metadata(
+            "data_cdna", "fasta", [], None,
+            {'assembly': 'test'}),
+        "fastq1": Metadata(
+            "data_rnaseq", "fastq", [], None,
+            {'assembly': 'test'}),
+    }
+
+    kqft = kallistoQuantificationTool({"kallisto_bootstrap_param": 10})
+    kqft.run(input_files, metadata, output_files)
+
+    assert os.path.isfile(output_files["kallisto_tar_file"]) is True
+    assert os.path.getsize(output_files["kallisto_tar_file"]) > 0
+
+
+@pytest.mark.sleuth
+def test_kallisto_sleuth_single_04():
+    """
+    Function to test Kallisto quantifier
+    """
+    resource_path = os.path.join(os.path.dirname(__file__), "data/sleuth/")
+
+    input_files = {
+        "cdna": resource_path + "sleuth.Human.GRCh38.cdna.fasta",
+        "index": resource_path + "sleuth.Human.GRCh38.cdna.idx",
+        "fastq1": resource_path + "sleuth.Human.ERR030903.fastq.gz"
+    }
+
+    output_files = {
+        "kallisto_tar_file": resource_path + "sleuth.Human.ERR030903.tar.gz"
+    }
+
+    metadata = {
+        "cdna": Metadata(
+            "data_cdna", "fasta", [], None,
+            {'assembly': 'test'}),
+        "index": Metadata(
+            "data_cdna", "fasta", [], None,
+            {'assembly': 'test'}),
+        "fastq1": Metadata(
+            "data_rnaseq", "fastq", [], None,
+            {'assembly': 'test'}),
+    }
+
+    kqft = kallistoQuantificationTool({"kallisto_bootstrap_param": 10})
+    kqft.run(input_files, metadata, output_files)
+
+    assert os.path.isfile(output_files["kallisto_tar_file"]) is True
+    assert os.path.getsize(output_files["kallisto_tar_file"]) > 0

@@ -58,6 +58,14 @@ Added compression of the split FASTQ files to reduce the amount of space require
 The code has been modified so that there is a single decompression of the BWA and Bowtie2 common indexes. The index files are then explicitly handed to the alignment task rather than handing over the compressed index. The decompression is performed as a @task so that the index files are already in the COMPSs system. This means that handing the index files to the alignment tasks creates a single symlink in the sandbox temporary file directory rather than duplicating the whole of the index structure for each job.
 
 
+2018-05-11 - Sleuth gene differential analysis pipeline
+-------------------------------------------------------
+
+This allows for the comparison of multiple RNA-seq experiments to determine if there are any genes that are differentially expressed. This has required changes to the output of the kallisto_quant tool so that it generates only a single tar file containing the abundance and run_info files. There is also the introduction of the bootstrap-sample parameter as part of the quantification to determine the accuracy of the counts.
+
+The first tool uses Sleuth to generate an R object of all the processed tracks. Separate tools are written for each visualisation to allow for a certain amount of parallelisation with the results being saved to an archive file.
+
+
 2018-05-22 - GEM Naming
 -----------------------
 

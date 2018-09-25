@@ -61,16 +61,6 @@ if [[ $pv == "2.7.12" ]]; then
     bash tidy_data.sh
 fi
 
-python tests/test_toolchains.py --pipeline rnaseq
-tc=$?
-rc=$(($rc + $tc))
-bash tidy_data.sh
-
-python tests/test_pipelines.py --pipeline rnaseq
-tc=$?
-rc=$(($rc + $tc))
-bash tidy_data.sh
-
 # if [[ $python_version == *"3."* ]]; then
 #     python tests/test_toolchains.py --pipeline mnaseseq
 #     tc=$?

@@ -29,23 +29,6 @@ from process_rnaseq import process_rnaseq
 def test_rnaseq_pipeline():
     """
     Test case to ensure that the RNA-seq pipeline code works.
-
-    Running the pipeline with the test data from the command line:
-
-    .. code-block:: none
-
-       runcompss                                                         \\
-          --lang=python                                                  \\
-          --library_path=${HOME}/bin                                     \\
-          --pythonpath=/<pyenv_virtenv_dir>/lib/python2.7/site-packages/ \\
-          --log_level=debug                                              \\
-          process_rnaseq.py                                              \\
-             --taxon_id 9606                                             \\
-             --genome /<dataset_dir>/Human.GRCh38.fasta                  \\
-             --assembly GRCh38                                           \\
-             --file /<dataset_dir>/ERR030872_1.fastq                     \\
-             --file2 /<dataset_dir>/ERR030872_2.fastq
-
     """
     resource_path = os.path.join(os.path.dirname(__file__), "data/")
 
@@ -71,16 +54,229 @@ def test_rnaseq_pipeline():
 
     files_out = {
         "index": 'tests/data/kallisto.idx',
-        "abundance_h5_file": 'tests/data/kallisto.abundance.h5',
-        "abundance_tsv_file": 'tests/data/kallisto.abundance.tsv',
-        "run_info_file": 'tests/data/kallisto.run_info.json'
+        "kallisto_tar_file": 'tests/data/kallisto.tar.gz'
     }
 
     rs_handle = process_rnaseq({"execution": resource_path})
     rs_files, rs_meta = rs_handle.run(files, metadata, files_out)  # pylint: disable=unused-variable
 
     # Checks that the returned files matches the expected set of results
-    assert len(rs_files) == 4
+    assert len(rs_files) == 2
+
+    # Add tests for all files created
+    for f_out in rs_files:
+        print("RNA SEQ RESULTS FILE:", f_out)
+        assert rs_files[f_out] == files_out[f_out]
+        assert os.path.isfile(rs_files[f_out]) is True
+        assert os.path.getsize(rs_files[f_out]) > 0
+
+
+@pytest.mark.sleuth
+@pytest.mark.pipeline
+def test_rnaseq_pipeline_sleuth_00():
+    """
+    Test case to ensure that the Sleuth pipeline code works.
+    """
+    resource_path = os.path.join(os.path.dirname(__file__), "data/sleuth/")
+
+    files = {
+        'cdna': resource_path + 'sleuth.Human.GRCh38.cdna.fasta',
+        'fastq1': resource_path + 'sleuth.Human.ERR030872_1.fastq.gz',
+        'fastq2': resource_path + 'sleuth.Human.ERR030872_2.fastq.gz'
+    }
+
+    metadata = {
+        "cdna": Metadata(
+            "Assembly", "fasta", files['cdna'], None,
+            {'assembly': 'GRCh38'}),
+        "fastq1": Metadata(
+            "data_rna_seq", "fastq", files['fastq1'], None,
+            {'assembly': 'GRCh38'}
+        ),
+        "fastq2": Metadata(
+            "data_rna_seq", "fastq", files['fastq2'], None,
+            {'assembly': 'GRCh38'}
+        ),
+    }
+
+    files_out = {
+        "index": resource_path + 'kallisto.idx',
+        "kallisto_tar_file": resource_path + 'sleuth.Human.ERR030872.tar.gz'
+    }
+
+    rs_handle = process_rnaseq({"kallisto_bootstrap_param": 10})
+    rs_files, rs_meta = rs_handle.run(files, metadata, files_out)  # pylint: disable=unused-variable
+
+    # Checks that the returned files matches the expected set of results
+    assert len(rs_files) == 2
+
+    # Add tests for all files created
+    for f_out in rs_files:
+        print("RNA SEQ RESULTS FILE:", f_out)
+        assert rs_files[f_out] == files_out[f_out]
+        assert os.path.isfile(rs_files[f_out]) is True
+        assert os.path.getsize(rs_files[f_out]) > 0
+
+
+@pytest.mark.sleuth
+@pytest.mark.pipeline
+def test_rnaseq_pipeline_sleuth_01():
+    """
+    Test case to ensure that the Sleuth pipeline code works.
+    """
+    resource_path = os.path.join(os.path.dirname(__file__), "data/sleuth/")
+
+    files = {
+        'cdna': resource_path + 'sleuth.Human.GRCh38.cdna.fasta',
+        'fastq1': resource_path + 'sleuth.Human.ERR030856.fastq.gz',
+    }
+
+    metadata = {
+        "cdna": Metadata(
+            "Assembly", "fasta", files['cdna'], None,
+            {'assembly': 'GRCh38'}),
+        "fastq1": Metadata(
+            "data_rna_seq", "fastq", files['fastq1'], None,
+            {'assembly': 'GRCh38'}
+        ),
+    }
+
+    files_out = {
+        "index": resource_path + 'kallisto.idx',
+        "kallisto_tar_file": resource_path + 'sleuth.Human.ERR030856.tar.gz'
+    }
+
+    rs_handle = process_rnaseq({"kallisto_bootstrap_param": 10})
+    rs_files, rs_meta = rs_handle.run(files, metadata, files_out)  # pylint: disable=unused-variable
+
+    # Checks that the returned files matches the expected set of results
+    assert len(rs_files) == 2
+
+    # Add tests for all files created
+    for f_out in rs_files:
+        print("RNA SEQ RESULTS FILE:", f_out)
+        assert rs_files[f_out] == files_out[f_out]
+        assert os.path.isfile(rs_files[f_out]) is True
+        assert os.path.getsize(rs_files[f_out]) > 0
+
+
+@pytest.mark.sleuth
+@pytest.mark.pipeline
+def test_rnaseq_pipeline_sleuth_02():
+    """
+    Test case to ensure that the Sleuth pipeline code works.
+    """
+    resource_path = os.path.join(os.path.dirname(__file__), "data/sleuth/")
+
+    files = {
+        'cdna': resource_path + 'sleuth.Human.GRCh38.cdna.fasta',
+        'fastq1': resource_path + 'sleuth.Human.ERR030857.fastq.gz',
+    }
+
+    metadata = {
+        "cdna": Metadata(
+            "Assembly", "fasta", files['cdna'], None,
+            {'assembly': 'GRCh38'}),
+        "fastq1": Metadata(
+            "data_rna_seq", "fastq", files['fastq1'], None,
+            {'assembly': 'GRCh38'}
+        ),
+    }
+
+    files_out = {
+        "index": resource_path + 'kallisto.idx',
+        "kallisto_tar_file": resource_path + 'sleuth.Human.ERR030857.tar.gz'
+    }
+
+    rs_handle = process_rnaseq({"kallisto_bootstrap_param": 10})
+    rs_files, rs_meta = rs_handle.run(files, metadata, files_out)  # pylint: disable=unused-variable
+
+    # Checks that the returned files matches the expected set of results
+    assert len(rs_files) == 2
+
+    # Add tests for all files created
+    for f_out in rs_files:
+        print("RNA SEQ RESULTS FILE:", f_out)
+        assert rs_files[f_out] == files_out[f_out]
+        assert os.path.isfile(rs_files[f_out]) is True
+        assert os.path.getsize(rs_files[f_out]) > 0
+
+
+@pytest.mark.sleuth
+@pytest.mark.pipeline
+def test_rnaseq_pipeline_sleuth_03():
+    """
+    Test case to ensure that the Sleuth pipeline code works.
+    """
+    resource_path = os.path.join(os.path.dirname(__file__), "data/sleuth/")
+
+    files = {
+        'cdna': resource_path + 'sleuth.Human.GRCh38.cdna.fasta',
+        'fastq1': resource_path + 'sleuth.Human.ERR030858.fastq.gz',
+    }
+
+    metadata = {
+        "cdna": Metadata(
+            "Assembly", "fasta", files['cdna'], None,
+            {'assembly': 'GRCh38'}),
+        "fastq1": Metadata(
+            "data_rna_seq", "fastq", files['fastq1'], None,
+            {'assembly': 'GRCh38'}
+        ),
+    }
+
+    files_out = {
+        "index": resource_path + 'kallisto.idx',
+        "kallisto_tar_file": resource_path + 'sleuth.Human.ERR030858.tar.gz'
+    }
+
+    rs_handle = process_rnaseq({"kallisto_bootstrap_param": 10})
+    rs_files, rs_meta = rs_handle.run(files, metadata, files_out)  # pylint: disable=unused-variable
+
+    # Checks that the returned files matches the expected set of results
+    assert len(rs_files) == 2
+
+    # Add tests for all files created
+    for f_out in rs_files:
+        print("RNA SEQ RESULTS FILE:", f_out)
+        assert rs_files[f_out] == files_out[f_out]
+        assert os.path.isfile(rs_files[f_out]) is True
+        assert os.path.getsize(rs_files[f_out]) > 0
+
+
+@pytest.mark.sleuth
+@pytest.mark.pipeline
+def test_rnaseq_pipeline_sleuth_04():
+    """
+    Test case to ensure that the Sleuth pipeline code works.
+    """
+    resource_path = os.path.join(os.path.dirname(__file__), "data/sleuth/")
+
+    files = {
+        'cdna': resource_path + 'sleuth.Human.GRCh38.cdna.fasta',
+        'fastq1': resource_path + 'sleuth.Human.ERR030903.fastq.gz',
+    }
+
+    metadata = {
+        "cdna": Metadata(
+            "Assembly", "fasta", files['cdna'], None,
+            {'assembly': 'GRCh38'}),
+        "fastq1": Metadata(
+            "data_rna_seq", "fastq", files['fastq1'], None,
+            {'assembly': 'GRCh38'}
+        ),
+    }
+
+    files_out = {
+        "index": resource_path + 'kallisto.idx',
+        "kallisto_tar_file": resource_path + 'sleuth.Human.ERR030903.tar.gz'
+    }
+
+    rs_handle = process_rnaseq({"kallisto_bootstrap_param": 10})
+    rs_files, rs_meta = rs_handle.run(files, metadata, files_out)  # pylint: disable=unused-variable
+
+    # Checks that the returned files matches the expected set of results
+    assert len(rs_files) == 2
 
     # Add tests for all files created
     for f_out in rs_files:

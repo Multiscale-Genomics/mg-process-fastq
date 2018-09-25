@@ -89,17 +89,11 @@ if [ ! -d "iNPS" ]; then
     unzip iNPS_V1.2.2.zip
 fi
 
-# Kallisto
-cd ${HOME}/lib
-if [ ! -d "kallisto_linux-v0.43.1" ]; then
-    wget https://github.com/pachterlab/kallisto/releases/download/v0.43.1/kallisto_linux-v0.43.1.tar.gz
-    tar -xzf kallisto_linux-v0.43.1.tar.gz
-fi
-
 # bedTools
+cd ${HOME}/lib
 if [ ! -d "bedtools2" ]; then
-    wget https://github.com/arq5x/bedtools2/releases/download/v2.26.0/bedtools-2.26.0.tar.gz
-    tar -zxvf bedtools-2.26.0.tar.gz
+    wget https://github.com/arq5x/bedtools2/releases/download/v2.27.1/bedtools-2.27.1.tar.gz
+    tar -zxvf bedtools-2.27.1.tar.gz
     cd bedtools2
     make
 fi
@@ -110,20 +104,10 @@ if [ ! -d "TrimGalore-0.5.0" ]; then
     tar -xzf trim_galore.tar.gz
 fi
 
-# Install MACS2
-# cd ${HOME}/build/Multiscale-Genomics/mg-process-fastq
-# chmod +x scripts/travis/includeMAC2.sh
-# ./scripts/travis/includeMAC2.sh
-
 # Install R packages required by iDEAR
 # cd ${HOME}/build/Multiscale-Genomics/mg-process-fastq
 # chmod +x scripts/travis/install_packages.R
 # sudo Rscript scripts/install_packages.R
-
-# Install TADbit (only on Python 2.7)
-# cd ${HOME}/build/Multiscale-Genomics/mg-process-fastq
-# chmod +x scripts/travis/includeTADbit.sh
-# ./scripts/travis/includeTADbit.sh
 
 # Post Installation Tidyup
 cd ${HOME}/lib

@@ -19,16 +19,16 @@
     ],
     "arguments": [
         {
-            "name": "execution",
-            "value": "mg_process_fastq/tests/data"
-        },
-        {
             "name": "project",
             "value": "run001"
         },
         {
             "name": "description",
             "value": null
+        },
+        {
+            "name": "kallisto_bootstrap_param",
+            "value": 10
         }
     ],
     "output_files": [
@@ -58,13 +58,10 @@
                     "tool": "process_rnaseq",
                     "description": "Output"
                 },
-                "file_path": "tests/data/kallisto.Human.ERR030872.tar.gz",
+                "file_path": "tests/data/sleuth/sleuth.Human.ERR030872.tar.gz",
                 "data_type": "data_rna_seq",
                 "compressed": "null"
             }
         }
     ]
 }
-
-
-

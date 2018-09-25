@@ -62,7 +62,16 @@
             "fastq2"
         ]
     ],
-    "arguments": [],
+    "arguments": [
+        {
+            "name": "kallisto_bootstrap_param",
+            "description": "Bootstramp Sampling Size",
+            "help": "Number of bootstrap rounds should be performed to identify the significance of the gene expression level calling. This is required to be greater than 1 for differential analysis with Sleuth.",
+            "type": "string",
+            "required": false,
+            "default": "0"
+        }
+    ],
     "output_files": [
         {
             "required": true,

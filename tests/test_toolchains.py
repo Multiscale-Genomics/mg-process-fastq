@@ -310,6 +310,33 @@ def rnaseq_toolchain(verbose=False):
     return pytest.main(params)
 
 
+def sleuth_toolchain(verbose=False):
+    """
+    Runs the tests for all of the tools from the RNA-seq pipeline
+
+    Runs the following tests:
+
+    .. code-block:: none
+
+       pytest -m sleuth tests/test_fastqc_validation.py
+       pytest -m sleuth tests/test_kallisto_indexer.py
+       pytest -m sleuth tests/test_kallisto_quant.py
+       pytest -m sleuth tests/test_sleuth.py
+    """
+
+    params = ['-m sleuth']
+
+    if verbose is True:
+        params.append('-s')
+
+    params.append('tests/test_fastqc_validation.py')
+    params.append('tests/test_kallisto_indexer.py')
+    params.append('tests/test_kallisto_quant.py')
+    params.append('tests/test_sleuth.py')
+
+    return pytest.main(params)
+
+
 def wgbs_toolchain(verbose=0):
     """
     Runs the tests for all of the tools from the WGBS pipeline
@@ -364,7 +391,7 @@ if __name__ == '__main__':
         type=str,
         choices=[
             'genome', 'biobambam', 'bowtie2', 'bwa', 'chipseq', 'hic', 'idamidseq', 'mnaseseq',
-            'rnaseq', 'wgbs', 'all'
+            'rnaseq', 'sleuth', 'wgbs', 'all'
         ],
         help=""
     )
@@ -466,6 +493,14 @@ if __name__ == '__main__':
     if 'rnaseq' in PIPELINES:
         print('RNASEQ')
         if rnaseq_toolchain(VERBOSE) > 0:
+            sys.exit(1)
+
+        if TIDY:
+            tidy_data()
+
+    if 'sleuth' in PIPELINES:
+        print('SLEUTH')
+        if sleuth_toolchain(VERBOSE) > 0:
             sys.exit(1)
 
         if TIDY:

@@ -25,6 +25,7 @@ cache:
     directories:
         - $HOME/.cache/pip
         - ${HOME}/lib
+        - ${HOME}/R
 
 before_cache:
     - rm -f $HOME/.cache/pip/log/debug.log
@@ -33,6 +34,7 @@ env:
     matrix:
         - TESTENV=docs
         - TESTENV=code
+        - TESTENV=rcode
         - TESTENV=wgbs_code_1
         - TESTENV=wgbs_code_2
         - TESTENV=pylint
@@ -93,10 +95,12 @@ before_install:
     - cd ${HOME}/build/Multiscale-Genomics/mg-process-fastq
     - sudo chmod +x scripts/travis/includeMAC2.sh
     - sudo chmod +x scripts/travis/includeTADbit.sh
+    - sudo chmod +x scripts/travis/install_r_code.sh
     - sudo chmod +x scripts/travis/install_wgbs_code.sh
 
-    - if [[ "$TESTENV" == "code" ]]; then sudo apt-get install r-base-core; fi
-    - if [[ "$TESTENV" == "code" ]]; then sudo apt-get install python-rpy2; fi
+    - if [[ "$TESTENV" == "rcode" ]]; then sudo apt-get install r-base-core; fi
+    - if [[ "$TESTENV" == "rcode" ]]; then sudo apt-get install python-rpy2; fi
+    - if [[ "$TESTENV" == "rcode" ]]; then sudo ./scripts/travis/install_r_code.sh; fi
     - if [[ "$TESTENV" == "code" ]]; then sudo ./scripts/travis/install_code_test_dependencies.sh; fi
     - if [[ "$TESTENV" == "code" ]]; then pip install Cython; fi
     - if [[ "$TESTENV" == "code" ]]; then ./scripts/travis/includeMAC2.sh; fi
@@ -205,7 +209,13 @@ before_script:
     # - echo "options(repos = c(CRAN = 'http://mirrors.ebi.ac.uk/CRAN/'))" > ${HOME}/.Rprofile
     # - echo ".libPaths('~/R')" >> ${HOME}/.Rprofile
     # - echo 'message("Using library:", .libPaths()[1])' >> ${HOME}/.Rprofile
-    # - Rscript scripts/install_packages.R
+    # - if [[ "$TESTENV" == "code" ]]; then Rscript scripts/install_packages.R; fi
+
+    - echo "R_LIB=${HOME}/R" > ${HOME}/.Renviron
+    - echo "options(repos = c(CRAN = 'https://www.stats.bris.ac.uk/R/'))" > ${HOME}/.Rprofile
+    - echo ".libPaths('~/R')" >> ${HOME}/.Rprofile
+    - echo 'message("Using library:", .libPaths()[1])' >> ${HOME}/.Rprofile
+    - if [[ "$TESTENV" == "rcode" ]]; then Rscript scripts/install_sleuth.R; fi
 
 
     - cd ${HOME}/build/Multiscale-Genomics/mg-process-fastq
@@ -219,6 +229,7 @@ before_script:
 
     - cd ${HOME}/build/Multiscale-Genomics/mg-process-fastq
     - chmod +x scripts/travis/harness.sh
+    - chmod +x scripts/travis/r_harness.sh
     - chmod +x scripts/travis/wgbs_harness.sh
     - chmod +x scripts/travis/docs_harness.sh
     - chmod +x scripts/travis/pylint_harness.sh
@@ -228,6 +239,7 @@ before_script:
     - export PATH="${HOME}/bin:$PATH"
 
 script:
+    - if [[ "$TESTENV" == "rcode" ]]; then ./scripts/travis/r_harness.sh; fi
     - if [[ "$TESTENV" == "code" ]]; then ./scripts/travis/harness.sh; fi
     - if [[ "$TESTENV" == "wgbs_code_1" ]]; then ./scripts/travis/wgbs_harness.sh; fi
     - if [[ "$TESTENV" == "wgbs_code_2" ]]; then ./scripts/travis/wgbs_harness.sh; fi

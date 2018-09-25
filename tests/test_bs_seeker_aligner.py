@@ -16,7 +16,7 @@
 """
 
 import os
-import pytest  # pylint: disable=unused-import
+import pytest
 
 from basic_modules.metadata import Metadata
 

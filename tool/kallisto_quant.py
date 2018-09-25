@@ -22,19 +22,20 @@ import subprocess
 import itertools
 import sys
 import os
+import tarfile
 
 from utils import logger
 
 try:
     if hasattr(sys, '_run_from_cmdl') is True:
         raise ImportError
-    from pycompss.api.parameter import FILE_IN, FILE_OUT
+    from pycompss.api.parameter import FILE_IN, FILE_OUT, IN
     from pycompss.api.task import task
 except ImportError:
     logger.warn("[Warning] Cannot import \"pycompss\" API packages.")
     logger.warn("          Using mock decorators.")
 
-    from utils.dummy_pycompss import FILE_IN, FILE_OUT  # pylint: disable=ungrouped-imports
+    from utils.dummy_pycompss import FILE_IN, FILE_OUT, IN  # pylint: disable=ungrouped-imports
     from utils.dummy_pycompss import task  # pylint: disable=ungrouped-imports
 
 from basic_modules.tool import Tool
@@ -64,19 +65,22 @@ class kallistoQuantificationTool(Tool):  # pylint: disable=invalid-name
         Tool.__init__(self)
 
         if configuration is None:
-            configuration = {}
+            configuration = {
+                "kallisto_bootstrap_param": 0
+            }
+
+        if "kallisto_bootstrap_param" not in configuration:
+            configuration["kallisto_bootstrap_param"] = 0
 
         self.configuration.update(configuration)
 
     @task(
         cdna_idx_file=FILE_IN,
         fastq_file_loc=FILE_IN,
-        abundance_h5_file=FILE_OUT,
-        abundance_tsv_file=FILE_OUT,
-        run_info_file=FILE_OUT)
-    def kallisto_quant_single(  # pylint: disable=too-many-arguments, too-many-locals
-            self, cdna_idx_file, fastq_file_loc,
-            abundance_h5_file, abundance_tsv_file, run_info_file):
+        kallisto_tar_file=FILE_OUT,
+        bootstrap=IN)
+    def kallisto_quant_single(
+            self, cdna_idx_file, fastq_file_loc, kallisto_tar_file, bootstrap=0):
         """
         Kallisto quantifier for single end RNA-seq data
 
@@ -102,6 +106,9 @@ class kallistoQuantificationTool(Tool):  # pylint: disable=invalid-name
             std = 1/fq_stats['mean']
 
         command_line = "kallisto quant -i " + cdna_idx_file + " "
+        if bootstrap:
+            command_line += "--bootstrap-samples=" + str(bootstrap) + " "
+        command_line += "-t 4"
         command_line += " -o " + output_dir[0] + "/"
         command_line += " --single -l " + str(fq_stats['mean']) + " "
         command_line += "-s " + str(std) + " " + fastq_file_loc
@@ -113,29 +120,25 @@ class kallistoQuantificationTool(Tool):  # pylint: disable=invalid-name
         process.wait()
 
         output_files = [
-            {
-                "in": os.path.join(output_dir[0], "abundance.h5"),
-                "out": abundance_h5_file
-            },
-            {
-                "in": os.path.join(output_dir[0], "abundance.tsv"),
-                "out": abundance_tsv_file
-            },
-            {
-                "in": os.path.join(output_dir[0], "run_info.json"),
-                "out": run_info_file
-            }
+            os.path.join(output_dir[0], "abundance.h5"),
+            os.path.join(output_dir[0], "abundance.tsv"),
+            os.path.join(output_dir[0], "run_info.json"),
         ]
 
         for i in output_files:
-            if i["in"] != i["out"]:
-                if os.path.isfile(i["in"]) is True and os.path.getsize(i["in"]) > 0:
-                    with open(i["out"], "wb") as f_out:
-                        with open(i["in"], "rb") as f_in:
-                            f_out.write(f_in.read())
-                else:
-                    with open(i["out"], "w") as f_out:
-                        f_out.write("")
+            print(i)
+            if os.path.isfile(i) is True and os.path.getsize(i) > 0:
+                pass
+            else:
+                with open(i, "w") as f_out:
+                    f_out.write("")
+
+        self.compress_results(
+            kallisto_tar_file,
+            '/'.join(output_dir[0:-1]) + "/abundance.h5",
+            '/'.join(output_dir[0:-1]) + "/abundance.tsv",
+            '/'.join(output_dir[0:-1]) + "/run_info.json"
+        )
 
         return True
 
@@ -143,12 +146,11 @@ class kallistoQuantificationTool(Tool):  # pylint: disable=invalid-name
         fastq_file_loc_01=FILE_IN,
         fastq_file_loc_02=FILE_IN,
         cdna_idx_file=FILE_IN,
-        abundance_h5_file=FILE_OUT,
-        abundance_tsv_file=FILE_OUT,
-        run_info_file=FILE_OUT)
-    def kallisto_quant_paired(  # pylint: disable=no-self-use,too-many-arguments
+        kallisto_tar_file=FILE_OUT,
+        bootstrap=IN)
+    def kallisto_quant_paired(
             self, cdna_idx_file, fastq_file_loc_01, fastq_file_loc_02,
-            abundance_h5_file, abundance_tsv_file, run_info_file):
+            kallisto_tar_file, bootstrap=0):
         """
         Kallisto quantifier for paired end RNA-seq data
 
@@ -170,6 +172,9 @@ class kallistoQuantificationTool(Tool):  # pylint: disable=invalid-name
         output_dir = os.path.split(fastq_file_loc_01)
 
         command_line = 'kallisto quant -i ' + cdna_idx_file + ' '
+        if bootstrap:
+            command_line += "--bootstrap-samples=" + str(bootstrap) + " "
+        command_line += "-t 4"
         command_line += '-o ' + output_dir[0] + "/ "
         command_line += fastq_file_loc_01 + ' ' + fastq_file_loc_02
 
@@ -177,31 +182,29 @@ class kallistoQuantificationTool(Tool):  # pylint: disable=invalid-name
         process = subprocess.Popen(args)
         process.wait()
 
+        logger.info("OUTPUT DIR: " + '/'.join(output_dir[0:-1]))
+
         output_files = [
-            {
-                "in": os.path.join(output_dir[0], "abundance.h5"),
-                "out": abundance_h5_file
-            },
-            {
-                "in": os.path.join(output_dir[0], "abundance.tsv"),
-                "out": abundance_tsv_file
-            },
-            {
-                "in": os.path.join(output_dir[0], "run_info.json"),
-                "out": run_info_file
-            }
+            os.path.join(output_dir[0], "abundance.h5"),
+            os.path.join(output_dir[0], "abundance.tsv"),
+            os.path.join(output_dir[0], "run_info.json"),
         ]
 
         for i in output_files:
             print(i)
-            if os.path.isfile(i["in"]) is True and os.path.getsize(i["in"]) > 0:
-                with open(i["out"], "wb") as f_out:
-                    with open(i["in"], "rb") as f_in:
-                        f_out.write(f_in.read())
+            if os.path.isfile(i) is True and os.path.getsize(i) > 0:
+                pass
             else:
-                with open(i["out"], "w") as f_out:
+                with open(i, "w") as f_out:
                     f_out.write("")
 
+        self.compress_results(
+            kallisto_tar_file,
+            '/'.join(output_dir[0:-1]) + "/abundance.h5",
+            '/'.join(output_dir[0:-1]) + "/abundance.tsv",
+            '/'.join(output_dir[0:-1]) + "/run_info.json"
+        )
+                    
         return True
 
     @staticmethod
@@ -237,6 +240,35 @@ class kallistoQuantificationTool(Tool):  # pylint: disable=invalid-name
 
         return {'mean': length_mean, 'std': length_sd}
 
+    @staticmethod
+    def compress_results(kallisto_tar_file, abundance_h5_file, abundance_tsv_file, run_info_file):
+        """
+        Function to compress the Kallisto results into a tar file containing a
+        single directory with the outputs from kallisto quant
+        """
+        output_file_pregz = kallisto_tar_file.replace('.tar.gz', '.tar')
+
+        if os.path.isfile(kallisto_tar_file):
+            os.remove(kallisto_tar_file)
+
+        tar = tarfile.open(output_file_pregz, "w")
+        tar.add(abundance_h5_file, arcname='kallisto/abundance.h5')
+        tar.add(abundance_tsv_file, arcname='kallisto/abundance.tsv')
+        tar.add(run_info_file, arcname='kallisto/run_info.json')
+        tar.close()
+
+        try:
+            command_line = 'pigz ' + output_file_pregz
+            args = shlex.split(command_line)
+            process = subprocess.Popen(args)
+            process.wait()
+        except OSError:
+            logger.warn("OSERROR: pigz not installed, using gzip")
+            command_line = 'gzip ' + output_file_pregz
+            args = shlex.split(command_line)
+            process = subprocess.Popen(args)
+            process.wait()
+
     def run(self, input_files, input_metadata, output_files):
         """
         Tool for calculating the level of expression
@@ -258,57 +290,49 @@ class kallistoQuantificationTool(Tool):  # pylint: disable=invalid-name
         # input and output share most metadata
         output_metadata = {}
 
+        # file_loc = input_files[1].split("/")
+        # output_dir = "/".join(file_loc[0:-1])
+
+        # abundance_h5_file = output_dir + "/abundance.h5"
+        # abundance_tsv_file = output_dir + "/abundance.tsv"
+        # run_info_file = output_dir + "/run_info.json"
+
+        sources = [input_metadata["cdna"].file_path]
+
         if "fastq2" not in input_files:
             self.kallisto_quant_single(
-                input_files["index"], input_files["fastq1"],
-                output_files["abundance_h5_file"], output_files["abundance_tsv_file"],
-                output_files["run_info_file"]
+                input_files["index"],
+                input_files["fastq1"],
+                output_files["kallisto_tar_file"],
+                self.configuration["kallisto_bootstrap_param"]
             )
+            sources.append(input_metadata["fastq1"].file_path)
             # results = compss_wait_on(results)
         elif "fastq2" in input_files:
             # handle error
             self.kallisto_quant_paired(
-                input_files["index"], input_files["fastq1"], input_files["fastq2"],
-                output_files["abundance_h5_file"], output_files["abundance_tsv_file"],
-                output_files["run_info_file"]
+                input_files["index"],
+                input_files["fastq1"],
+                input_files["fastq2"],
+                output_files["kallisto_tar_file"],
+                self.configuration["kallisto_bootstrap_param"]
             )
+            sources.append(input_metadata["fastq1"].file_path)
+            sources.append(input_metadata["fastq2"].file_path)
             # results = compss_wait_on(results)
         else:
             return ({}, {})
 
+        meta_data = input_metadata["cdna"].meta_data
+        meta_data["tool"] = "kallisto_quant"
         output_metadata = {
-            "abundance_h5_file": Metadata(
-                data_type="data_rna_seq",
-                file_type="HDF5",
-                file_path=output_files["abundance_h5_file"],
-                sources=[input_metadata["cdna"].file_path, input_metadata["fastq1"].file_path],
+            "kallisto_tar_file": Metadata(
+                data_type="data_rnaseq",
+                file_type="TAR",
+                file_path=output_files["kallisto_tar_file"],
+                sources=sources,
                 taxon_id=input_metadata["cdna"].taxon_id,
-                meta_data={
-                    "assembly": input_metadata["cdna"].meta_data["assembly"],
-                    "tool": "kallisto_quant"
-                }
-            ),
-            "abundance_tsv_file": Metadata(
-                data_type="data_rna_seq",
-                file_type="TSV",
-                file_path=output_files["abundance_tsv_file"],
-                sources=[input_metadata["cdna"].file_path, input_metadata["fastq1"].file_path],
-                taxon_id=input_metadata["cdna"].taxon_id,
-                meta_data={
-                    "assembly": input_metadata["cdna"].meta_data["assembly"],
-                    "tool": "kallisto_quant"
-                }
-            ),
-            "run_info_file": Metadata(
-                data_type="data_rna_seq",
-                file_type="JSON",
-                file_path=output_files["run_info_file"],
-                sources=[input_metadata["cdna"].file_path, input_metadata["fastq1"].file_path],
-                taxon_id=input_metadata["cdna"].taxon_id,
-                meta_data={
-                    "assembly": input_metadata["cdna"].meta_data["assembly"],
-                    "tool": "kallisto_quant"
-                }
+                meta_data=meta_data
             )
         }
 

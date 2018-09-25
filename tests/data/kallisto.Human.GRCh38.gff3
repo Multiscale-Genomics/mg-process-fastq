@@ -1,0 +1,55 @@
+##gff-version 3
+##sequence-region   13 1 114364328
+#!genome-build Ensembl GRCh38.p12
+#!genome-version GRCh38
+#!genome-date 2013-12
+#!genome-build-accession NCBI:GCA_000001405.27
+#!genebuild-last-updated 2018-01
+13	havana	pseudogenic_transcript	32384660	32386108	.	+	.	ID=transcript:ENST00000400497;Parent=gene:ENSG00000215515;Name=IFIT1P1-201;biotype=processed_pseudogene;tag=basic;transcript_id=ENST00000400497;transcript_support_level=NA;version=2
+13	ensembl	mRNA	32400724	32428178	.	-	.	ID=transcript:ENST00000380130;Parent=gene:ENSG00000139597;Name=N4BP2L1-202;biotype=protein_coding;ccdsid=CCDS9345.2;tag=basic;transcript_id=ENST00000380130;transcript_support_level=1;version=6
+13	havana	mRNA	32402480	32428130	.	-	.	ID=transcript:ENST00000343281;Parent=gene:ENSG00000139597;Name=N4BP2L1-201;biotype=nonsense_mediated_decay;transcript_id=ENST00000343281;transcript_support_level=5;version=9
+13	ensembl	snoRNA	32420390	32420516	.	-	.	ID=transcript:ENST00000390991;Parent=gene:ENSG00000212293;Name=RF00190.2-201;biotype=snoRNA;tag=basic;transcript_id=ENST00000390991;transcript_support_level=NA;version=1
+13	havana	mRNA	32400723	32428133	.	-	.	ID=transcript:ENST00000380139;Parent=gene:ENSG00000139597;Name=N4BP2L1-204;biotype=protein_coding;ccdsid=CCDS41877.1;tag=basic;transcript_id=ENST00000380139;transcript_support_level=1;version=8
+13	havana	mRNA	32060864	32117470	.	+	.	ID=transcript:ENST00000436046;Parent=gene:ENSG00000073910;Name=FRY-205;biotype=protein_coding;transcript_id=ENST00000436046;transcript_support_level=5;version=1
+13	havana	mRNA	32379840	32398272	.	+	.	ID=transcript:ENST00000470094;Parent=gene:ENSG00000139618;Name=BRCA2-202;biotype=nonsense_mediated_decay;transcript_id=ENST00000470094;transcript_support_level=5;version=1
+13	havana	mRNA	32510292	32538782	.	-	.	ID=transcript:ENST00000267068;Parent=gene:ENSG00000244754;Name=N4BP2L2-201;biotype=protein_coding;ccdsid=CCDS9346.1;tag=basic;transcript_id=ENST00000267068;transcript_support_level=1;version=5
+13	havana	mRNA	32424922	32428014	.	-	.	ID=transcript:ENST00000464470;Parent=gene:ENSG00000139597;Name=N4BP2L1-206;biotype=protein_coding;transcript_id=ENST00000464470;transcript_support_level=2;version=1
+13	havana	mRNA	32432891	32537027	.	-	.	ID=transcript:ENST00000446957;Parent=gene:ENSG00000244754;Name=N4BP2L2-205;biotype=protein_coding;tag=basic;transcript_id=ENST00000446957;transcript_support_level=5;version=6
+13	ensembl	mRNA	32031300	32296613	.	+	.	ID=transcript:ENST00000380250;Parent=gene:ENSG00000073910;Name=FRY-202;biotype=protein_coding;tag=basic;transcript_id=ENST00000380250;transcript_support_level=5;version=7
+13	havana	mRNA	32401673	32428311	.	-	.	ID=transcript:ENST00000459716;Parent=gene:ENSG00000139597;Name=N4BP2L1-205;biotype=nonsense_mediated_decay;transcript_id=ENST00000459716;transcript_support_level=5;version=6
+13	havana	pseudogenic_transcript	32477274	32478841	.	+	.	ID=transcript:ENST00000437678;Parent=gene:ENSG00000229800;Name=ATP8A2P2-201;biotype=processed_pseudogene;tag=basic;transcript_id=ENST00000437678;transcript_support_level=NA;version=1
+13	havana	lnc_RNA	32031555	32038620	.	+	.	ID=transcript:ENST00000463566;Parent=gene:ENSG00000073910;Name=FRY-207;biotype=processed_transcript;transcript_id=ENST00000463566;transcript_support_level=3;version=1
+13	havana	lnc_RNA	32425358	32432954	.	-	.	ID=transcript:ENST00000461502;Parent=gene:ENSG00000270008;Name=AL137247.1-201;biotype=processed_transcript;tag=basic;transcript_id=ENST00000461502;transcript_support_level=3;version=1
+13	ensembl_havana	lnc_RNA	32432417	32480638	.	-	.	ID=transcript:ENST00000380121;Parent=gene:ENSG00000244754;Name=N4BP2L2-203;biotype=processed_transcript;transcript_id=ENST00000380121;transcript_support_level=1;version=7
+13	havana	lnc_RNA	32287851	32295503	.	+	.	ID=transcript:ENST00000380217;Parent=gene:ENSG00000073910;Name=FRY-201;biotype=processed_transcript;transcript_id=ENST00000380217;transcript_support_level=3;version=1
+13	ensembl	mRNA	32303771	32311954	.	-	.	ID=transcript:ENST00000345108;Parent=gene:ENSG00000189167;Name=ZAR1L-201;biotype=protein_coding;ccdsid=CCDS45023.1;tag=basic;transcript_id=ENST00000345108;transcript_support_level=1;version=6
+13	ensembl_havana	mRNA	32401816	32428133	.	-	.	ID=transcript:ENST00000380133;Parent=gene:ENSG00000139597;Name=N4BP2L1-203;biotype=protein_coding;ccdsid=CCDS9345.2;tag=basic;transcript_id=ENST00000380133;transcript_support_level=1;version=6
+13	ensembl	mRNA	32432489	32538885	.	-	.	ID=transcript:ENST00000357505;Parent=gene:ENSG00000244754;Name=N4BP2L2-202;biotype=protein_coding;ccdsid=CCDS61307.1;tag=basic;transcript_id=ENST00000357505;transcript_support_level=2;version=10
+13	ensembl_havana	mRNA	32315474	32400266	.	+	.	ID=transcript:ENST00000380152;Parent=gene:ENSG00000139618;Name=BRCA2-201;biotype=protein_coding;ccdsid=CCDS9344.1;tag=basic;transcript_id=ENST00000380152;transcript_support_level=5;version=7
+13	havana	lnc_RNA	32298154	32298712	.	+	.	ID=transcript:ENST00000418076;Parent=gene:ENSG00000073910;Name=FRY-203;biotype=processed_transcript;transcript_id=ENST00000418076;transcript_support_level=3;version=1
+13	havana	lnc_RNA	32025314	32031639	.	-	.	ID=transcript:ENST00000428419;Parent=gene:ENSG00000237637;Name=FRY-AS1-201;biotype=antisense;tag=basic;transcript_id=ENST00000428419;transcript_support_level=1;version=1
+13	ensembl	mRNA	32432489	32538885	.	-	.	ID=transcript:ENST00000399396;Parent=gene:ENSG00000244754;Name=N4BP2L2-204;biotype=protein_coding;ccdsid=CCDS45024.1;tag=basic;transcript_id=ENST00000399396;transcript_support_level=5;version=7
+13	havana	lnc_RNA	32315505	32333291	.	+	.	ID=transcript:ENST00000530893;Parent=gene:ENSG00000139618;Name=BRCA2-204;biotype=processed_transcript;transcript_id=ENST00000530893;transcript_support_level=1;version=6
+13	havana	lnc_RNA	32536427	32538825	.	-	.	ID=transcript:ENST00000483088;Parent=gene:ENSG00000244754;Name=N4BP2L2-208;biotype=processed_transcript;transcript_id=ENST00000483088;transcript_support_level=2;version=1
+13	havana	lnc_RNA	32396809	32398448	.	+	.	ID=transcript:ENST00000533776;Parent=gene:ENSG00000139618;Name=BRCA2-205;biotype=retained_intron;transcript_id=ENST00000533776;transcript_support_level=3;version=1
+13	havana	mRNA	32443697	32538833	.	-	.	ID=transcript:ENST00000505213;Parent=gene:ENSG00000244754;Name=N4BP2L2-212;biotype=protein_coding;transcript_id=ENST00000505213;transcript_support_level=5;version=5
+13	havana	lnc_RNA	32526875	32536383	.	-	.	ID=transcript:ENST00000512755;Parent=gene:ENSG00000244754;Name=N4BP2L2-215;biotype=processed_transcript;transcript_id=ENST00000512755;transcript_support_level=2;version=1
+13	havana	mRNA	32401817	32428014	.	-	.	ID=transcript:ENST00000495479;Parent=gene:ENSG00000139597;Name=N4BP2L1-208;biotype=protein_coding;transcript_id=ENST00000495479;transcript_support_level=2;version=5
+13	ensembl_havana	mRNA	32031300	32299122	.	+	.	ID=transcript:ENST00000542859;Parent=gene:ENSG00000073910;Name=FRY-210;biotype=protein_coding;ccdsid=CCDS41875.1;tag=basic;transcript_id=ENST00000542859;transcript_support_level=5;version=5
+13	havana	lnc_RNA	32517875	32535869	.	-	.	ID=transcript:ENST00000475731;Parent=gene:ENSG00000244754;Name=N4BP2L2-207;biotype=processed_transcript;transcript_id=ENST00000475731;transcript_support_level=5;version=1
+13	havana	mRNA	32370971	32379495	.	+	.	ID=transcript:ENST00000528762;Parent=gene:ENSG00000139618;Name=BRCA2-203;biotype=nonsense_mediated_decay;transcript_id=ENST00000528762;transcript_support_level=4;version=1
+13	havana	mRNA	32262389	32289639	.	+	.	ID=transcript:ENST00000477712;Parent=gene:ENSG00000073910;Name=FRY-208;biotype=nonsense_mediated_decay;transcript_id=ENST00000477712;transcript_support_level=5;version=2
+13	havana	lnc_RNA	32432831	32522275	.	-	.	ID=transcript:ENST00000509076;Parent=gene:ENSG00000244754;Name=N4BP2L2-213;biotype=retained_intron;transcript_id=ENST00000509076;transcript_support_level=5;version=1
+13	ensembl	mRNA	32315480	32399668	.	+	.	ID=transcript:ENST00000544455;Parent=gene:ENSG00000139618;Name=BRCA2-206;biotype=protein_coding;ccdsid=CCDS9344.1;tag=basic;transcript_id=ENST00000544455;transcript_support_level=1;version=5
+13	havana	lnc_RNA	32516894	32525579	.	-	.	ID=transcript:ENST00000503814;Parent=gene:ENSG00000244754;Name=N4BP2L2-210;biotype=retained_intron;transcript_id=ENST00000503814;transcript_support_level=1;version=1
+13	havana	lnc_RNA	32443966	32517920	.	-	.	ID=transcript:ENST00000473025;Parent=gene:ENSG00000244754;Name=N4BP2L2-206;biotype=processed_transcript;transcript_id=ENST00000473025;transcript_support_level=4;version=1
+13	havana	lnc_RNA	32432787	32490140	.	-	.	ID=transcript:ENST00000503296;Parent=gene:ENSG00000244754;Name=N4BP2L2-209;biotype=processed_transcript;transcript_id=ENST00000503296;transcript_support_level=2;version=6
+13	havana	mRNA	32432787	32538686	.	-	.	ID=transcript:ENST00000504114;Parent=gene:ENSG00000244754;Name=N4BP2L2-211;biotype=protein_coding;ccdsid=CCDS61307.1;tag=basic;transcript_id=ENST00000504114;transcript_support_level=5;version=5
+13	havana	lnc_RNA	32406453	32428006	.	-	.	ID=transcript:ENST00000472298;Parent=gene:ENSG00000139597;Name=N4BP2L1-207;biotype=retained_intron;transcript_id=ENST00000472298;transcript_support_level=2;version=1
+13	ensembl	mRNA	32400724	32428178	.	-	.	ID=transcript:ENST00000613078;Parent=gene:ENSG00000139597;Name=N4BP2L1-210;biotype=protein_coding;ccdsid=CCDS41877.1;tag=basic;transcript_id=ENST00000613078;transcript_support_level=5;version=4
+13	havana	lnc_RNA	32517488	32538792	.	-	.	ID=transcript:ENST00000511143;Parent=gene:ENSG00000244754;Name=N4BP2L2-214;biotype=processed_transcript;transcript_id=ENST00000511143;transcript_support_level=3;version=5
+13	ensembl	mRNA	32401677	32411606	.	-	.	ID=transcript:ENST00000530622;Parent=gene:ENSG00000139597;Name=N4BP2L1-209;biotype=protein_coding;tag=basic;transcript_id=ENST00000530622;transcript_support_level=5;version=6
+13	havana	mRNA	32303700	32315344	.	-	.	ID=transcript:ENST00000533490;Parent=gene:ENSG00000189167;Name=ZAR1L-202;biotype=protein_coding;ccdsid=CCDS45023.1;tag=basic;transcript_id=ENST00000533490;transcript_support_level=5;version=6
+13	havana	lnc_RNA	32316461	32362659	.	+	.	ID=transcript:ENST00000614259;Parent=gene:ENSG00000139618;Name=BRCA2-207;biotype=processed_transcript;transcript_id=ENST00000614259;transcript_support_level=2;version=1
+13	havana	mRNA	32401784	32428130	.	-	.	ID=transcript:ENST00000635178;Parent=gene:ENSG00000139597;Name=N4BP2L1-211;biotype=nonsense_mediated_decay;transcript_id=ENST00000635178;transcript_support_level=5;version=1
+13	havana	mRNA	32400753	32428014	.	-	.	ID=transcript:ENST00000635608;Parent=gene:ENSG00000139597;Name=N4BP2L1-212;biotype=protein_coding;transcript_id=ENST00000635608;transcript_support_level=5;version=1

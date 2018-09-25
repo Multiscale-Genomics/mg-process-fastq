@@ -36,12 +36,14 @@ def test_kallisto_quant_paired():
         "cdna": resource_path + "kallisto.Human.GRCh38.fasta",
         "index": resource_path + "kallisto.Human.GRCh38.idx",
         "fastq1": resource_path + "kallisto.Human.ERR030872_1.fastq",
-        "fastq2": resource_path + "kallisto.Human.ERR030872_2.fastq"
+        "fastq2": resource_path + "kallisto.Human.ERR030872_2.fastq",
+        "gff": resource_path + "Homo_sapiens.GRCh38.93.gff3"
     }
 
     output_files = {
         "abundance_h5_file": resource_path + "kallisto.Human.ERR030872.paired.abundance.h5",
         "abundance_tsv_file": resource_path + "kallisto.Human.ERR030872.paired.abundance.tsv",
+        "abundance_bed_file": resource_path + "kallisto.Human.ERR030872.paired.abundance.bed",
         "run_info_file": resource_path + "kallisto.Human.ERR030872.paired.run_info.json"
     }
 
@@ -58,6 +60,9 @@ def test_kallisto_quant_paired():
         "fastq2": Metadata(
             "data_rnaseq", "fastq", [], None,
             {'assembly': 'test'}),
+        "gff": Metadata(
+            "data_seq", "gff", [], None,
+            {'assembly': 'test'}),
     }
 
     kqft = kallistoQuantificationTool({"execution": resource_path})
@@ -67,6 +72,8 @@ def test_kallisto_quant_paired():
     assert os.path.getsize(output_files["abundance_h5_file"]) > 0
     assert os.path.isfile(output_files["abundance_tsv_file"]) is True
     assert os.path.getsize(output_files["abundance_tsv_file"]) > 0
+    assert os.path.isfile(output_files["abundance_bed_file"]) is True
+    assert os.path.getsize(output_files["abundance_bed_file"]) > 0
     assert os.path.isfile(output_files["run_info_file"]) is True
     assert os.path.getsize(output_files["run_info_file"]) > 0
 
@@ -81,12 +88,14 @@ def test_kallisto_quant_single():
     input_files = {
         "cdna": resource_path + "kallisto.Human.GRCh38.fasta",
         "index": resource_path + "kallisto.Human.GRCh38.idx",
-        "fastq1": resource_path + "kallisto.Human.ERR030872_1.fastq"
+        "fastq1": resource_path + "kallisto.Human.ERR030872_1.fastq",
+        "gff": resource_path + "kallisto.Human.GRCh38.gff3"
     }
 
     output_files = {
         "abundance_h5_file": resource_path + "kallisto.Human.ERR030872.single.abundance.h5",
         "abundance_tsv_file": resource_path + "kallisto.Human.ERR030872.single.abundance.tsv",
+        "abundance_bed_file": resource_path + "kallisto.Human.ERR030872.single.abundance.bed",
         "run_info_file": resource_path + "kallisto.Human.ERR030872.single.run_info.json"
     }
 
@@ -100,6 +109,9 @@ def test_kallisto_quant_single():
         "fastq1": Metadata(
             "data_rnaseq", "fastq", [], None,
             {'assembly': 'test'}),
+        "gff": Metadata(
+            "data_seq", "gff", [], None,
+            {'assembly': 'test'}),
     }
 
     kqft = kallistoQuantificationTool({"execution": resource_path})
@@ -109,5 +121,7 @@ def test_kallisto_quant_single():
     assert os.path.getsize(output_files["abundance_h5_file"]) > 0
     assert os.path.isfile(output_files["abundance_tsv_file"]) is True
     assert os.path.getsize(output_files["abundance_tsv_file"]) > 0
+    assert os.path.isfile(output_files["abundance_bed_file"]) is True
+    assert os.path.getsize(output_files["abundance_bed_file"]) > 0
     assert os.path.isfile(output_files["run_info_file"]) is True
     assert os.path.getsize(output_files["run_info_file"]) > 0

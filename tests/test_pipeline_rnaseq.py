@@ -50,9 +50,10 @@ def test_rnaseq_pipeline():
     resource_path = os.path.join(os.path.dirname(__file__), "data/")
 
     files = {
-        'cdna': resource_path + 'kallisto.Human.GRCh38.fasta',
-        'fastq1': resource_path + 'kallisto.Human.ERR030872_1.fastq',
-        'fastq2': resource_path + 'kallisto.Human.ERR030872_2.fastq'
+        "cdna": resource_path + "kallisto.Human.GRCh38.fasta",
+        "fastq1": resource_path + "kallisto.Human.ERR030872_1.fastq",
+        "fastq2": resource_path + "kallisto.Human.ERR030872_2.fastq",
+        "gff": resource_path + "Homo_sapiens.GRCh38.93.gff3"
     }
 
     metadata = {
@@ -67,20 +68,24 @@ def test_rnaseq_pipeline():
             "data_rna_seq", "fastq", files['fastq2'], None,
             {'assembly': 'GCA_000001405.22'}
         ),
+        "gff": Metadata(
+            "data_cdna", "gff", [], None,
+            {'assembly': 'test'}),
     }
 
     files_out = {
         "index": 'tests/data/kallisto.idx',
-        "abundance_h5_file": 'tests/data/kallisto.abundance.h5',
-        "abundance_tsv_file": 'tests/data/kallisto.abundance.tsv',
-        "run_info_file": 'tests/data/kallisto.run_info.json'
+        "abundance_h5_file": resource_path + "kallisto.abundance.h5",
+        "abundance_tsv_file": resource_path + "kallisto.abundance.tsv",
+        "abundance_bed_file": resource_path + "kallisto.abundance.bed",
+        "run_info_file": resource_path + "kallisto.run_info.json"
     }
 
     rs_handle = process_rnaseq({"execution": resource_path})
     rs_files, rs_meta = rs_handle.run(files, metadata, files_out)  # pylint: disable=unused-variable
 
     # Checks that the returned files matches the expected set of results
-    assert len(rs_files) == 4
+    assert len(rs_files) == 5
 
     # Add tests for all files created
     for f_out in rs_files:

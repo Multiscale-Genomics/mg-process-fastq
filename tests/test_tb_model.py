@@ -18,7 +18,7 @@
 from __future__ import print_function
 
 import os.path
-import pytest  # pylint: disable=unused-import
+import pytest
 
 from tool.tb_model import tbModelTool
 
@@ -35,6 +35,7 @@ def test_tb_model():
     files = [hic_contacts_matrix_norm]
 
     metadata = {
+        'project': "tests/test_model",
         'resolution': "100000",
         'optimize_only': False,
         'gen_pos_chrom_name': "chr21",
@@ -51,7 +52,8 @@ def test_tb_model():
         'ncpus': 4
     }
 
-    tm = tbModelTool()
-    tm_files, tm_meta = tm.run(files, [], metadata)
+    tm_handle = tbModelTool()
+    tm_files, tm_meta = tm_handle.run(files, [], metadata)
 
     assert len(tm_files) == 2
+    assert len(tm_meta) == 2

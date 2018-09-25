@@ -18,7 +18,7 @@
 from __future__ import print_function
 
 import os.path
-import pytest  # pylint: disable=unused-import
+import pytest
 
 from tool.tb_segment import tbSegmentTool
 
@@ -45,7 +45,8 @@ def test_tb_segment():
         'ncpus': 4
     }
 
-    ts = tbSegmentTool()
-    ts_files, ts_meta = ts.run(files, [], metadata)
+    ts_handle = tbSegmentTool()
+    ts_files, ts_meta = ts_handle.run(files, [], metadata)
 
     assert len(ts_files) == 2
+    assert len(ts_meta) == 2

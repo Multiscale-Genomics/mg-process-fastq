@@ -1,5 +1,21 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+"""
+.. See the NOTICE file distributed with this work for additional information
+   regarding copyright ownership.
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+"""
 
 from __future__ import print_function
 
@@ -9,41 +25,30 @@ import argparse
 import sys
 import json
 import multiprocessing
-import urllib2
-import collections
 import tarfile
+
+try:
+    from urllib2 import urlopen
+except ImportError:
+    from urllib.request import urlopen
 
 from random import random
 from string import ascii_letters as letters
 
-# Required for ReadTheDocs
-from functools import wraps # pylint: disable=unused-import
+from utils import logger
+from utils import remap
 
 from basic_modules.workflow import Workflow
 from basic_modules.metadata import Metadata
-from utils import logger
 
+from tool.common import CommandLineParser
+from tool.common import format_utils
 from tool.tb_bin import tbBinTool
 
-class CommandLineParser(object):
-    """Parses command line"""
-    @staticmethod
-    def valid_file(file_name):
-        if not os.path.exists(file_name):
-            raise argparse.ArgumentTypeError("The file does not exist")
-        return file_name
 
-    @staticmethod
-    def valid_integer_number(ivalue):
-        try:
-            ivalue = int(ivalue)
-        except:
-            raise argparse.ArgumentTypeError("%s is an invalid value" % ivalue)
-        if ivalue <= 0:
-            raise argparse.ArgumentTypeError("%s is an invalid value" % ivalue)
-        return ivalue
 # ------------------------------------------------------------------------------
-class tadbit_bin(Workflow):
+
+class tadbit_bin(Workflow):  # pylint: disable=invalid-name,too-few-public-methods
     """
     Wrapper for the VRE form TADbit bin.
     It extracts a section of a matrix from a BAM file.
@@ -61,19 +66,22 @@ class tadbit_bin(Workflow):
             a dictionary containing parameters that define how the operation
             should be carried out, which are specific to each Tool.
         """
-        tool_extra_config = json.load(file(os.path.dirname(os.path.abspath(__file__))+'/tadbit_wrappers_config.json'))
-        os.environ["PATH"] += os.pathsep + convert_from_unicode(tool_extra_config["bin_path"])
+        tool_extra_config = json.load(
+            open(os.path.dirname(os.path.abspath(__file__))+'/tadbit_wrappers_config.json')
+        )
+        os.environ["PATH"] += os.pathsep + format_utils.convert_from_unicode(
+            tool_extra_config["bin_path"])
 
         if configuration is None:
             configuration = {}
 
-        self.configuration.update(convert_from_unicode(configuration))
+        self.configuration.update(format_utils.convert_from_unicode(configuration))
 
         # Number of cores available
         num_cores = multiprocessing.cpu_count()
         self.configuration["ncpus"] = num_cores
 
-        tmp_name = ''.join([letters[int(random()*52)]for _ in xrange(5)])
+        tmp_name = ''.join([letters[int(random()*52)]for _ in range(5)])
         if 'execution' in self.configuration:
             self.configuration['project'] = self.configuration['execution']
         self.configuration['workdir'] = self.configuration['project']+'/_tmp_tadbit_'+tmp_name
@@ -101,12 +109,11 @@ class tadbit_bin(Workflow):
             List of locations for the output files
         """
         logger.info(
-            "PROCESS BIN - FILES PASSED TO TOOLS: " + ','.join([str(input_files[k]) for k in input_files])
+            "PROCESS BIN - FILES PASSED TO TOOLS: " + ','.join(
+                [str(input_files[k]) for k in input_files])
         )
         m_results_files = {}
         m_results_meta = {}
-        #hic_data = load_hic_data_from_reads('/home/dcastillo/workspace/vre/mg-process-fastq-tadbit/tests/data/raw_None:0-13381_10kb.abc', resolution=10000)
-        #exp = Experiment("vre", resolution=10000, hic_data=hic_data)
 
         input_metadata = remap(self.configuration, "resolution", "workdir", "ncpus")
         if "coord1" in self.configuration:
@@ -114,26 +121,32 @@ class tadbit_bin(Workflow):
         if "coord2" in self.configuration:
             input_metadata["coord2"] = self.configuration["coord2"]
         input_metadata["norm"] = ['raw']
-        in_files = [convert_from_unicode(input_files['bamin'])]
+        in_files = [format_utils.convert_from_unicode(input_files['bamin'])]
         if 'hic_biases' in input_files:
-            in_files.append(convert_from_unicode(input_files['hic_biases']))
+            in_files.append(format_utils.convert_from_unicode(input_files['hic_biases']))
             input_metadata["norm"] = ['raw', 'norm']
         input_metadata["species"] = "Unknown"
         input_metadata["assembly"] = "Unknown"
         if "assembly" in metadata['bamin'].meta_data:
             input_metadata["assembly"] = metadata['bamin'].meta_data["assembly"]
         if metadata['bamin'].taxon_id:
-            dt = json.load(urllib2.urlopen("http://www.ebi.ac.uk/ena/data/taxonomy/v1/taxon/tax-id/"+str(metadata['bamin'].taxon_id)))
-            input_metadata["species"] = dt['scientificName']
-        #hic_data = HiC_data((), len(bins_dict), sections, bins_dict, resolution=int(input_metadata['resolution']))
-        tb = tbBinTool()
-        tb_files, tb_meta = tb.run(in_files, [], input_metadata)
+            dt_json = json.load(
+                urlopen(
+                    "http://www.ebi.ac.uk/ena/data/taxonomy/v1/taxon/tax-id/"+
+                    str(metadata['bamin'].taxon_id)
+                )
+            )
+            input_metadata["species"] = dt_json['scientificName']
+        tb_handle = tbBinTool()
+        tb_files, _ = tb_handle.run(in_files, input_metadata, [])
 
         m_results_files["bin_stats"] = self.configuration['project']+"/bin_stats.tar.gz"
-        m_results_files["hic_contacts_matrix_raw"] = self.configuration['project']+"/"+os.path.basename(tb_files[0])
+        m_results_files["hic_contacts_matrix_raw"] = self.configuration['project']+"/"+ \
+            os.path.basename(tb_files[0])
         os.rename(tb_files[0], m_results_files["hic_contacts_matrix_raw"])
         if len(input_metadata["norm"]) > 1:
-            m_results_files["hic_contacts_matrix_norm"] = self.configuration['project']+"/"+os.path.basename(tb_files[2])
+            m_results_files["hic_contacts_matrix_norm"] = self.configuration['project']+"/"+ \
+                os.path.basename(tb_files[2])
             os.rename(tb_files[2], m_results_files["hic_contacts_matrix_norm"])
 
         with tarfile.open(m_results_files["bin_stats"], "w:gz") as tar:
@@ -148,7 +161,8 @@ class tadbit_bin(Workflow):
                 clean_temps(tb_files[3])
 
         # List of files to get saved
-        logger.info("TADBIT RESULTS: " + ','.join([str(m_results_files[k]) for k in m_results_files]))
+        logger.info("TADBIT RESULTS: " + ','.join(
+            [str(m_results_files[k]) for k in m_results_files]))
 
         m_results_meta["hic_contacts_matrix_raw"] = Metadata(
             data_type="hic_contacts_matrix",
@@ -158,8 +172,9 @@ class tadbit_bin(Workflow):
             meta_data={
                 "description": "HiC contact matrix raw",
                 "visible": True,
-                "assembly": convert_from_unicode(metadata['bamin'].meta_data['assembly']),
-                "norm" : 'raw'
+                "assembly": format_utils.convert_from_unicode(
+                    metadata['bamin'].meta_data['assembly']),
+                "norm": 'raw'
             },
             taxon_id=metadata['bamin'].taxon_id)
         m_results_meta["bin_stats"] = Metadata(
@@ -180,12 +195,14 @@ class tadbit_bin(Workflow):
                 meta_data={
                     "description": "HiC contact matrix normalized",
                     "visible": True,
-                    "assembly": convert_from_unicode(metadata['bamin'].meta_data['assembly']),
-                    "norm" : 'norm'
+                    "assembly": format_utils.convert_from_unicode(
+                        metadata['bamin'].meta_data['assembly']),
+                    "norm": 'norm'
                 },
                 taxon_id=metadata['bamin'].taxon_id)
-        
-        m_results_files["tadkit_matrix"] = self.configuration['project']+"/"+os.path.basename(tb_files[-1])
+
+        m_results_files["tadkit_matrix"] = self.configuration['project']+"/"+ \
+            os.path.basename(tb_files[-1])
         os.rename(tb_files[-1], m_results_files["tadkit_matrix"])
         m_results_meta["tadkit_matrix"] = Metadata(
             data_type="chromatin_3dmodel_ensemble",
@@ -198,40 +215,18 @@ class tadbit_bin(Workflow):
                 "assembly": input_metadata["assembly"]
             },
             taxon_id=metadata['bamin'].taxon_id)
-        #cleaning
+        # cleaning
         clean_temps(self.configuration['workdir'])
 
         return m_results_files, m_results_meta
 
-# ------------------------------------------------------------------------------
 
-def remap(indict, *args, **kwargs):
-    """
-    Re-map keys of indict using information from arguments.
-    Non-keyword arguments are keys of input dictionary that are passed
-    unchanged to the output. Keyword arguments must be in the form
-    old="new"
-    and act as a translation table for new key names.
-    """
-    outdict = {role: indict[role] for role in args}
-    outdict.update(
-        {new: indict[old] for old, new in kwargs.items()}
-    )
-    return outdict
-
-# ------------------------------------------------------------------------------
-
-def convert_from_unicode(data):
-    if isinstance(data, basestring):
-        return str(data)
-    if isinstance(data, collections.Mapping):
-        return dict(map(convert_from_unicode, data.iteritems()))
-    if isinstance(data, collections.Iterable):
-        return type(data)(map(convert_from_unicode, data))
-    return data
 # ------------------------------------------------------------------------------
 
 def main(args):
+    """
+    Main function
+    """
 
     from apps.jsonapp import JSONApp
     app = JSONApp()
@@ -241,6 +236,7 @@ def main(args):
                         args.out_metadata)
 
     return result
+
 
 def clean_temps(working_path):
     """Cleans the workspace from temporal folder and scratch files"""
@@ -259,27 +255,28 @@ def clean_temps(working_path):
         pass
     logger.info('[CLEANING] Finished')
 
+
 # ------------------------------------------------------------------------------
 
 if __name__ == "__main__":
-    sys._run_from_cmdl = True # pylint: disable=protected-access
+    sys._run_from_cmdl = True  # pylint: disable=protected-access
 
     # Set up the command line parameters
-    parser = argparse.ArgumentParser(description="TADbit map")
+    PARSER = argparse.ArgumentParser(description="TADbit map")
     # Config file
-    parser.add_argument("--config", help="Configuration JSON file",
+    PARSER.add_argument("--config", help="Configuration JSON file",
                         type=CommandLineParser.valid_file, metavar="config", required=True)
 
     # Metadata
-    parser.add_argument("--in_metadata", help="Project metadata", metavar="in_metadata", required=True)
+    PARSER.add_argument("--in_metadata", help="Project metadata",
+                        metavar="in_metadata", required=True)
     # Output metadata
-    parser.add_argument("--out_metadata", help="Output metadata", metavar="output_metadata", required=True)
+    PARSER.add_argument("--out_metadata", help="Output metadata",
+                        metavar="output_metadata", required=True)
     # Log file
-    parser.add_argument("--log_file", help="Log file", metavar="log_file", required=True)
+    PARSER.add_argument("--log_file", help="Log file",
+                        metavar="log_file", required=True)
 
-    in_args = parser.parse_args()
+    IN_ARGS = PARSER.parse_args()
 
-    RESULTS = main(in_args)
-
-    # print(RESULTS)
-    
+    RESULTS = main(IN_ARGS)

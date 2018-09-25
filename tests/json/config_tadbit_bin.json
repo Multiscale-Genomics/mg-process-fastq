@@ -5,6 +5,12 @@
             "allow_multiple": false,
             "name": "bamin",
             "value": "59b7e020d9422a5969b65378"
+        },
+        {
+            "required": false,
+            "allow_multiple": false,
+            "name": "hic_biases",
+            "value": "59b7e020d9422a5969b65372"
         }
     ],
     "arguments": [
@@ -23,7 +29,7 @@
             "type": "string",
             "required": true,
             "default": "100000",
-            "value" : "10000"
+            "value" : "100000"
         },
         {
             "name": "coord1",
@@ -31,7 +37,7 @@
             "help": "Coordinate of the region to retrieve. By default all genome, arguments can be either one chromosome name, or the coordinate in the form: chr3:110000000-120000000",
             "type": "string",
             "required": false,
-            "value" : "",
+            "value" : "chr21:15000000-19900000",
             "default": ""
         }
     ],

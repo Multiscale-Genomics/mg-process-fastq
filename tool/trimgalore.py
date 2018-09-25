@@ -186,20 +186,18 @@ class trimgalore(Tool):  # pylint: disable=invalid-name
             return False
 
         try:
+            trimmed_report = os.path.join(
+                fastq_trimmed[0], fastq_trimmed[1] + "_trimming_report.txt"
+            )
             with open(fastq_report, "wb") as f_out:
-                with open(
-                    os.path.join(
-                        fastq_trimmed[0], fastq_trimmed[1] + "_trimming_report.txt"
-                    ), "rb"
-                ) as f_in:
+                with open(trimmed_report, "rb") as f_in:
                     f_out.write(f_in.read())
         except (OSError, IOError) as error:
-            logger.fatal("I/O error({0}) - TRIMMING REPORT FASTQ 1: {1}\n{2}\n{3}".format(
-                error.errno, error.strerror, fastq_report,
-                os.path.join(
-                    fastq_trimmed[0], fastq_trimmed[1] + "_trimming_report.txt"
-                )
-            ))
+            logger.fatal(
+                "I/O error({0}) - TRIMMING REPORT FASTQ 1: {1}\nWRITE: {2}\nREAD: {3}".format(
+                    error.errno, error.strerror, fastq_report,
+                    trimmed_report
+                ))
             return False
 
         return True
@@ -307,19 +305,18 @@ class trimgalore(Tool):  # pylint: disable=invalid-name
             with open(fastq2_file_out, "wb") as f_out:
                 with open(tg_tmp_out_2, "rb") as f_in:
                     f_out.write(f_in.read())
+
+            trimmed_report_1 = os.path.join(
+                fastq1_trimmed[0], fastq1_trimmed[1] + "_trimming_report.txt"
+            )
+            trimmed_report_2 = os.path.join(
+                fastq2_trimmed[0], fastq2_trimmed[1] + "_trimming_report.txt"
+            )
             with open(fastq1_report, "wb") as f_out:
-                with open(
-                    os.path.join(
-                        fastq1_trimmed[0], fastq1_trimmed[1] + "_trimming_report.txt"
-                    ), "rb"
-                ) as f_in:
+                with open(trimmed_report_1, "rb") as f_in:
                     f_out.write(f_in.read())
             with open(fastq2_report, "wb") as f_out:
-                with open(
-                    os.path.join(
-                        fastq2_trimmed[0], fastq2_trimmed[1] + "_trimming_report.txt"
-                    ), "rb"
-                ) as f_in:
+                with open(trimmed_report_2, "rb") as f_in:
                     f_out.write(f_in.read())
         except (OSError, IOError) as error:
             logger.fatal("I/O error({0}) - Missing output file: {1}".format(

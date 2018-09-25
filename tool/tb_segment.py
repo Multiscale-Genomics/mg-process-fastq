@@ -18,15 +18,21 @@ from __future__ import print_function
 
 import sys
 import os
+import glob
+import shutil
 # from subprocess import CalledProcessError
 from subprocess import PIPE
 from subprocess import Popen
+
+from basic_modules.tool import Tool
 from utils import logger
+
+from tool.common import format_utils
 
 try:
     if hasattr(sys, '_run_from_cmdl') is True:
         raise ImportError
-    from pycompss.api.parameter import FILE_IN, FILE_OUT, FILE_INOUT, IN
+    from pycompss.api.parameter import FILE_IN, FILE_OUT, IN
     from pycompss.api.task import task
     # from pycompss.api.api import compss_wait_on
     # from pycompss.api.constraint import constraint
@@ -34,17 +40,15 @@ except ImportError:
     logger.info("[Warning] Cannot import \"pycompss\" API packages.")
     logger.info("          Using mock decorators.")
 
-    from dummy_pycompss import FILE_IN, FILE_OUT, FILE_INOUT, IN  # pylint: disable=ungrouped-imports
-    from dummy_pycompss import task  # pylint: disable=ungrouped-imports
-    # from dummy_pycompss import compss_wait_on  # pylint: disable=ungrouped-imports
-    # from dummy_pycompss import constraint  # pylint: disable=ungrouped-imports
+    from utils.dummy_pycompss import FILE_IN, FILE_OUT, IN  # pylint: disable=ungrouped-imports
+    from utils.dummy_pycompss import task  # pylint: disable=ungrouped-imports
+    # from utils.dummy_pycompss import compss_wait_on # pylint: disable=ungrouped-imports
+    # from utils.dummy_pycompss import constraint # pylint: disable=ungrouped-imports
 
-from basic_modules.tool import Tool
 
 # ------------------------------------------------------------------------------
 
-
-class tbSegmentTool(Tool):
+class tbSegmentTool(Tool):  # pylint: disable=invalid-name
     """
     Tool for finding tads and compartments in an adjacency matrix
     """
@@ -56,9 +60,11 @@ class tbSegmentTool(Tool):
         logger.info("TADbit - Normalize")
         Tool.__init__(self)
 
-    @task(bamin=FILE_IN, biases=FILE_IN, resolution=IN, workdir=IN)
-    # @constraint(ProcessorCoreCount=16)
-    def tb_segment(self, bamin, biases, resolution, callers, chromosomes, workdir, fasta=None, ncpus="1"):
+    @task(bamin=FILE_IN, biases=FILE_IN, resolution=IN, workdir=IN,
+          tad_dir=FILE_OUT, compartment_dir=FILE_OUT)
+    def tb_segment(  # pylint: disable=too-many-locals,too-many-statements,unused-argument,no-self-use,too-many-arguments
+            self, bamin, biases, resolution, callers, chromosomes,
+            workdir, fasta=None, ncpus="1"):
         """
         Function to find tads and compartments in the Hi-C
         matrix
@@ -124,16 +130,18 @@ class tbSegmentTool(Tool):
 
         if '1' in callers:
             tad_dir = os.path.join(workdir, '06_segmentation',
-                                   'tads_%s' % (nice(int(resolution))))
+                                   'tads_%s' % (format_utils.nice(int(resolution))))
+            clean_headers(tad_dir)
             output_files.append(tad_dir)
         if '2' in callers:
             cmprt_dir = os.path.join(workdir, '06_segmentation',
-                                     'compartments_%s' % (nice(int(resolution))))
+                                     'compartments_%s' % (format_utils.nice(int(resolution))))
+            clean_headers(cmprt_dir)
             output_files.append(cmprt_dir)
 
         return (output_files, output_metadata)
 
-    def run(self, input_files, output_files, metadata=None):
+    def run(self, input_files, input_metadata, output_files):   # pylint: disable=too-many-locals
         """
         The main function to the predict TAD sites and compartments for a given resolution from
         the Hi-C matrix
@@ -174,36 +182,48 @@ class tbSegmentTool(Tool):
             logger.info(err)
 
         resolution = '1000000'
-        if 'resolution' in metadata:
-            resolution = metadata['resolution']
+        if 'resolution' in input_metadata:
+            resolution = input_metadata['resolution']
 
         ncpus = 1
-        if 'ncpus' in metadata:
-            ncpus = metadata['ncpus']
+        if 'ncpus' in input_metadata:
+            ncpus = input_metadata['ncpus']
         biases = chromosomes = fasta = None
         if len(input_files) > 1:
             biases = input_files[1]
-        if "chromosomes" in metadata:
-            chromosomes = metadata['chromosomes']
-        if "fasta" in metadata:
-            fasta = metadata['fasta']
+        if "chromosomes" in input_metadata:
+            chromosomes = input_metadata['chromosomes']
+        if "fasta" in input_metadata:
+            fasta = input_metadata['fasta']
         callers = "1"
-        if "callers" in metadata:
-            callers = metadata['callers']
+        if "callers" in input_metadata:
+            callers = input_metadata['callers']
 
         root_name = os.path.dirname(os.path.abspath(bamin))
-        if 'workdir' in metadata:
-            root_name = metadata['workdir']
+        if 'workdir' in input_metadata:
+            root_name = input_metadata['workdir']
 
         # input and output share most metadata
 
-        output_files, output_metadata = self.tb_segment(bamin, biases, resolution, callers, chromosomes, root_name, fasta, ncpus)
+        output_files, output_metadata = self.tb_segment(bamin, biases, resolution,
+                                                        callers, chromosomes, root_name,
+                                                        fasta, ncpus)
 
         return (output_files, output_metadata)
 
-# ------------------------------------------------------------------------------
 
-def nice(reso):
-    if reso >= 1000000:
-        return '%dMb' % (reso / 1000000)
-    return '%dkb' % (reso / 1000)
+def clean_headers(fpath):
+    """
+        Replaces spaces by underscores in the headers of tsv files
+    """
+    os.chdir(fpath)
+
+    for fl_files in glob.glob("*.tsv"):
+        tsv_file = open(fl_files)
+        line = tsv_file.readline()
+        line = line.replace(' ', '_')
+        dest_file = os.path.join(os.path.dirname(fl_files), 'vre_' + os.path.basename(fl_files))
+        to_file = open(dest_file, mode="w")
+        to_file.write(line)
+        shutil.copyfileobj(tsv_file, to_file)
+        os.unlink(fl_files)

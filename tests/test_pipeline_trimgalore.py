@@ -59,8 +59,12 @@ def test_trim_galore_pipeline():
     }
 
     files_out = {
-        "fastq1_trimmed": 'tests/data/bsSeeker.Mouse.SRR892982_1_trimmed.single.fastq.gz',
-        "fastq1_report": 'tests/data/bsSeeker.Mouse.SRR892982_1.trimmed.single.report.txt'
+        "fastq1_trimmed": os.path.join(
+            resource_path,
+            "bsSeeker.Mouse.SRR892982_1_trimmed.single.fastq.gz"),
+        "fastq1_report": os.path.join(
+            resource_path,
+            "bsSeeker.Mouse.SRR892982_1.trimmed.single.report.txt")
     }
 
     tg_handle = process_trim_galore({"execution": resource_path})

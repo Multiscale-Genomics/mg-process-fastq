@@ -21,30 +21,30 @@ import glob
 import os
 from subprocess import PIPE, Popen
 
+from basic_modules.tool import Tool
+
 from utils import logger
 
 try:
     if hasattr(sys, '_run_from_cmdl') is True:
         raise ImportError
-    from pycompss.api.parameter import FILE_IN, FILE_OUT, FILE_INOUT, IN
+    from pycompss.api.parameter import FILE_IN, FILE_OUT, IN
     from pycompss.api.task import task
-    from pycompss.api.api import compss_wait_on
+    # from pycompss.api.api import compss_wait_on
     # from pycompss.api.constraint import constraint
 except ImportError:
     logger.info("[Warning] Cannot import \"pycompss\" API packages.")
     logger.info("          Using mock decorators.")
 
-    from dummy_pycompss import FILE_IN, FILE_OUT, FILE_INOUT, IN  # pylint: disable=ungrouped-imports
-    from dummy_pycompss import task  # pylint: disable=ungrouped-imports
-    from dummy_pycompss import compss_wait_on  # pylint: disable=ungrouped-imports
-    #from dummy_pycompss import constraint
-
-from basic_modules.tool import Tool
-
+    from utils.dummy_pycompss import FILE_IN, FILE_OUT, IN  # pylint: disable=ungrouped-imports
+    from utils.dummy_pycompss import task  # pylint: disable=ungrouped-imports
+    # from utils.dummy_pycompss import compss_wait_on  # pylint: disable=ungrouped-imports
+    # from utils.dummy_pycompss import constraint
 
 # ------------------------------------------------------------------------------
 
-class tbModelTool(Tool):
+
+class tbModelTool(Tool):  # pylint: disable=invalid-name
     """
     Tool for normalizing an adjacency matrix
     """
@@ -56,11 +56,12 @@ class tbModelTool(Tool):
         logger.info("TADbit - Modeling")
         Tool.__init__(self)
 
-    @task(hic_contacts_matrix_norm=FILE_IN, resolution=IN, gen_pos_chrom_name=IN, gen_pos_begin=IN,
-          gen_pos_end=IN, num_mod_comp=IN, num_mod_keep=IN,
-          max_dist=IN, upper_bound=IN, lower_bound=IN, cutoff=IN, workdir=IN)
-    # @constraint(ProcessorCoreCount=16)
-    def tb_model(self, optimize_only, hic_contacts_matrix_norm, resolution, gen_pos_chrom_name, gen_pos_begin,
+    @task(optimize_only=IN, hic_contacts_matrix_norm=FILE_IN, resolution=IN, gen_pos_chrom_name=IN,
+          gen_pos_begin=IN, gen_pos_end=IN, num_mod_comp=IN, num_mod_keep=IN,
+          max_dist=IN, upper_bound=IN, lower_bound=IN, cutoff=IN, workdir=IN,
+          model_dir=FILE_OUT)
+    def tb_model(self, optimize_only, hic_contacts_matrix_norm, resolution,  # pylint: disable=too-many-locals,too-many-statements,unused-argument,no-self-use,too-many-arguments
+                 gen_pos_chrom_name, gen_pos_begin,
                  gen_pos_end, num_mod_comp, num_mod_keep,
                  max_dist, upper_bound, lower_bound, cutoff, workdir, metadata,
                  ncpus=1):
@@ -87,14 +88,20 @@ class tbModelTool(Tool):
         num_mod_comp : int
             Number of models to keep.
         max_dist : str
-            Range of numbers for optimal maxdist parameter, i.e. 400:1000:100; or just a single number e.g. 800; or a list of numbers e.g. 400 600 800 1000.
+            Range of numbers for optimal maxdist parameter, i.e. 400:1000:100;
+            or just a single number e.g. 800; or a list of numbers e.g. 400 600 800 1000.
         upper_bound : int
-            Range of numbers for optimal upfreq parameter, i.e. 0:1.2:0.3; or just a single number e.g. 0.8; or a list of numbers e.g. 0.1 0.3 0.5 0.9.
+            Range of numbers for optimal upfreq parameter, i.e. 0:1.2:0.3;
+            or just a single number e.g. 0.8; or a list of numbers e.g. 0.1 0.3 0.5 0.9.
         lower_bound : int
-            Range of numbers for optimal low parameter, i.e. -1.2:0:0.3; or just a single number e.g. -0.8; or a list of numbers e.g. -0.1 -0.3 -0.5 -0.9.
+            Range of numbers for optimal low parameter, i.e. -1.2:0:0.3;
+            or just a single number e.g. -0.8; or a list of numbers e.g. -0.1 -0.3 -0.5 -0.9.
         cutoff : str
-            Range of numbers for optimal cutoff distance. Cutoff is computed based on the resolution. This cutoff distance is calculated taking as reference the diameter
-            of a modeled particle in the 3D model. i.e. 1.5:2.5:0.5; or just a single number e.g. 2; or a list of numbers e.g. 2 2.5.
+            Range of numbers for optimal cutoff distance.
+            Cutoff is computed based on the resolution.
+            This cutoff distance is calculated taking as reference the diameter
+            of a modeled particle in the 3D model. i.e. 1.5:2.5:0.5;
+            or just a single number e.g. 2; or a list of numbers e.g. 2 2.5.
         workdir : str
             Location of working directory
         ncpus : str
@@ -108,9 +115,10 @@ class tbModelTool(Tool):
             Location of the folder with the modeling files and stats
 
         """
-        #chr_hic_data = read_matrix(matrix_file, resolution=int(resolution))
+        # chr_hic_data = read_matrix(matrix_file, resolution=int(resolution))
 
-        logger.info("TB MODELING: {0},{1},{2},{3},{4},{5},{6},{7},{8},{9},{10},{11}".format(hic_contacts_matrix_norm,
+        logger.info("TB MODELING: {0},{1},{2},{3},{4},{5},{6},{7},{8},{9},{10},{11}".format(
+            hic_contacts_matrix_norm,
             resolution, gen_pos_chrom_name, gen_pos_begin,
             gen_pos_end, num_mod_comp, num_mod_keep,
             max_dist, upper_bound, lower_bound, cutoff, workdir))
@@ -120,7 +128,7 @@ class tbModelTool(Tool):
             end = int(float(gen_pos_end) / int(resolution))
             if end - beg <= 2:
                 logger.fatal('"beg" and "end" parameter should be given in ' +
-                                'genomic coordinates, not bin')
+                             'genomic coordinates, not bin')
                 raise Exception('"beg" and "end" parameter should be given in ' +
                                 'genomic coordinates, not bin')
         except ValueError:
@@ -133,7 +141,7 @@ class tbModelTool(Tool):
         if not os.path.exists(os.path.join(workdir, name)):
             os.makedirs(os.path.join(workdir, name))
 
-        #=======================================================================
+        # =======================================================================
         # _cmd = [
         #     'model_and_analyze.py',
         #     '--norm', hic_contacts_matrix_norm,
@@ -175,7 +183,7 @@ class tbModelTool(Tool):
         #     _cmd.append(str(num_mod_keep))
         #     _cmd.append('--outdir')
         #     _cmd.append(workdir)
-        #=======================================================================
+        # =======================================================================
 
         _cmd = [
             'tadbit', 'model',
@@ -192,7 +200,7 @@ class tbModelTool(Tool):
             '--project', metadata["project"],
             '--fig_format', 'png'
             ]
-        if len(gen_pos_chrom_name) > 0:
+        if gen_pos_chrom_name:
             _cmd.append('--crm')
             _cmd.append(gen_pos_chrom_name)
         if gen_pos_begin and gen_pos_end:
@@ -219,19 +227,19 @@ class tbModelTool(Tool):
         logger.info(err)
 
         output_folder = os.listdir(os.path.join(workdir, name, '06_model'))[0]
-        output_files = [os.path.join(workdir, name,'06_model',output_folder)]
+        output_files = [os.path.join(workdir, name, '06_model', output_folder)]
 
         if not optimize_only:
-            os.chdir(os.path.join(workdir, name,'06_model',output_folder))
-            for fl in glob.glob("*.json"):
-                output_files.append(fl)
+            os.chdir(os.path.join(workdir, name, '06_model', output_folder))
+            for fl_file in glob.glob("*.json"):
+                output_files.append(fl_file)
                 break
-            for fl in glob.glob("*optimal_params*"):
-                os.unlink(fl)
+            for fl_file in glob.glob("*optimal_params*"):
+                os.unlink(fl_file)
 
         return (output_files, output_metadata)
 
-    def run(self, input_files, output_files, metadata=None):
+    def run(self, input_files, input_metadata, output_files):  # pylint: disable=too-many-locals
         """
         The main function for the normalization of the Hi-C matrix to a given resolution
 
@@ -256,14 +264,20 @@ class tbModelTool(Tool):
             num_mod_comp : int
                 Number of models to keep.
             max_dist : str
-                Range of numbers for optimal maxdist parameter, i.e. 400:1000:100; or just a single number e.g. 800; or a list of numbers e.g. 400 600 800 1000.
+                Range of numbers for optimal maxdist parameter, i.e. 400:1000:100;
+                or just a single number e.g. 800; or a list of numbers e.g. 400 600 800 1000.
             upper_bound : int
-                Range of numbers for optimal upfreq parameter, i.e. 0:1.2:0.3; or just a single number e.g. 0.8; or a list of numbers e.g. 0.1 0.3 0.5 0.9.
+                Range of numbers for optimal upfreq parameter, i.e. 0:1.2:0.3;
+                or just a single number e.g. 0.8; or a list of numbers e.g. 0.1 0.3 0.5 0.9.
             lower_bound : int
-                Range of numbers for optimal low parameter, i.e. -1.2:0:0.3; or just a single number e.g. -0.8; or a list of numbers e.g. -0.1 -0.3 -0.5 -0.9.
+                Range of numbers for optimal low parameter, i.e. -1.2:0:0.3;
+                or just a single number e.g. -0.8; or a list of numbers e.g. -0.1 -0.3 -0.5 -0.9.
             cutoff : str
-                Range of numbers for optimal cutoff distance. Cutoff is computed based on the resolution. This cutoff distance is calculated taking as reference the diameter
-                of a modeled particle in the 3D model. i.e. 1.5:2.5:0.5; or just a single number e.g. 2; or a list of numbers e.g. 2 2.5.
+                Range of numbers for optimal cutoff distance.
+                Cutoff is computed based on the resolution.
+                This cutoff distance is calculated taking as reference the diameter
+                of a modeled particle in the 3D model. i.e. 1.5:2.5:0.5;
+                or just a single number e.g. 2; or a list of numbers e.g. 2 2.5.
             workdir : str
                 Location of working directory
             ncpus : str
@@ -281,35 +295,36 @@ class tbModelTool(Tool):
         hic_contacts_matrix_norm = input_files[0]
 
         ncpus = 1
-        if 'ncpus' in metadata:
-            ncpus = metadata['ncpus']
+        if 'ncpus' in input_metadata:
+            ncpus = input_metadata['ncpus']
 
-        optimize_only = metadata["optimize_only"]
-        gen_pos_chrom_name = metadata['gen_pos_chrom_name']
-        resolution = metadata['resolution']
-        gen_pos_begin = metadata['gen_pos_begin']
-        gen_pos_end = metadata['gen_pos_end']
-        num_mod_comp = metadata['num_mod_comp']
-        num_mod_keep = metadata['num_mod_keep']
-        max_dist = metadata['max_dist']
-        upper_bound = metadata['upper_bound']
-        lower_bound = metadata['lower_bound']
-        cutoff = metadata['cutoff']
+        optimize_only = input_metadata["optimize_only"]
+        gen_pos_chrom_name = input_metadata['gen_pos_chrom_name']
+        resolution = input_metadata['resolution']
+        gen_pos_begin = input_metadata['gen_pos_begin']
+        gen_pos_end = input_metadata['gen_pos_end']
+        num_mod_comp = input_metadata['num_mod_comp']
+        num_mod_keep = input_metadata['num_mod_keep']
+        max_dist = input_metadata['max_dist']
+        upper_bound = input_metadata['upper_bound']
+        lower_bound = input_metadata['lower_bound']
+        cutoff = input_metadata['cutoff']
 
         root_name = os.path.dirname(os.path.abspath(hic_contacts_matrix_norm))
-        if 'workdir' in metadata:
-            root_name = metadata['workdir']
+        if 'workdir' in input_metadata:
+            root_name = input_metadata['workdir']
 
         project_metadata = {}
-        project_metadata["species"] = metadata["species"]
-        project_metadata["assembly"] = metadata["assembly"]
-        project_metadata["project"] = os.path.basename(os.path.normpath(metadata["project"]))
+        project_metadata["species"] = input_metadata["species"]
+        project_metadata["assembly"] = input_metadata["assembly"]
+        project_metadata["project"] = os.path.basename(os.path.normpath(input_metadata["project"]))
 
         # input and output share most metadata
 
-        output_files, output_metadata = self.tb_model(optimize_only, hic_contacts_matrix_norm, resolution, gen_pos_chrom_name, gen_pos_begin,
+        output_files, output_metadata = self.tb_model(optimize_only, hic_contacts_matrix_norm,
+                                                      resolution, gen_pos_chrom_name, gen_pos_begin,
                                                       gen_pos_end, num_mod_comp, num_mod_keep,
-                                                      max_dist, upper_bound, lower_bound, cutoff, root_name,
-                                                      project_metadata, ncpus)
+                                                      max_dist, upper_bound, lower_bound, cutoff,
+                                                      root_name, project_metadata, ncpus)
 
         return (output_files, output_metadata)

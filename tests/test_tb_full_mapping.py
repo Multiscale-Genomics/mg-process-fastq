@@ -19,15 +19,19 @@ from __future__ import print_function
 
 import os.path
 import gzip
-import pytest  # pylint: disable=unused-import
+import pytest
+
+from basic_modules.metadata import Metadata
 
 from tool.gem_indexer import gemIndexerTool
 from tool.tb_full_mapping import tbFullMappingTool
-from basic_modules.metadata import Metadata
+
 
 
 def generate_gem():
-
+    """
+    Create the GEM file
+    """
     resource_path = os.path.join(os.path.dirname(__file__), "data/")
     genome_fa = resource_path + "tb.Human.GCA_000001405.22.fasta"
     genome_gem_fa = resource_path + "tb.Human.GCA_000001405.22_gem.fasta"
@@ -50,7 +54,7 @@ def generate_gem():
     metadata = {
         "genome": Metadata(
             "Assembly", "fasta", genome_fa, None,
-            {'assembly' : 'test'}),
+            {'assembly': 'test'}),
     }
 
     print(input_files, output_files)
@@ -117,7 +121,7 @@ def test_tb_full_mapping_frag_01():
     print(gem_file)
 
     tfm1 = tbFullMappingTool()
-    tfm1_files, tfm1_meta = tfm1.run(files, [], metadata)
+    tfm1_files, tfm1_meta = tfm1.run(files, [], metadata)  # pylint: disable=unused-variable
 
     map_frag = resource_path + "tb.Human.SRR1658573_1_frag.map"
     map_full = resource_path + "tb.Human.SRR1658573_1_full.map"
@@ -155,7 +159,7 @@ def test_tb_full_mapping_frag_02():
     print(gem_file)
 
     tfm2 = tbFullMappingTool()
-    tfm2_files, tfm2_meta = tfm2.run(files, [], metadata)
+    tfm2_files, tfm2_meta = tfm2.run(files, [], metadata)  # pylint: disable=unused-variable
 
     map_frag = resource_path + "tb.Human.SRR1658573_2_frag.map"
     map_full = resource_path + "tb.Human.SRR1658573_2_full.map"
@@ -193,7 +197,7 @@ def test_tb_full_mapping_iter_01():
     print(gem_file)
 
     tfm1 = tbFullMappingTool()
-    tfm1_files, tfm1_meta = tfm1.run(files, [], metadata)
+    tfm1_files, tfm1_meta = tfm1.run(files, [], metadata)  # pylint: disable=unused-variable
 
     map25 = resource_path + "tb.Human.SRR1658573_1_full_1-25.map"
     map50 = resource_path + "tb.Human.SRR1658573_1_full_1-50.map"
@@ -237,7 +241,7 @@ def test_tb_full_mapping_iter_02():
     print(gem_file)
 
     tfm2 = tbFullMappingTool()
-    tfm2_files, tfm2_meta = tfm2.run(files, [], metadata)
+    tfm2_files, tfm2_meta = tfm2.run(files, [], metadata)  # pylint: disable=unused-variable
 
     map25 = resource_path + "tb.Human.SRR1658573_2_full_1-25.map"
     map50 = resource_path + "tb.Human.SRR1658573_2_full_1-50.map"

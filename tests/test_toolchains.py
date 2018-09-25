@@ -238,7 +238,10 @@ def hic_toolchain(verbose=False):
        pytest -m hic tests/test_tb_full_mapping.py
        pytest -m hic tests/test_tb_parse_mapping.py
        pytest -m hic tests/test_tb_filter.py
+       pytest -m hic tests/test_tb_normalize.py
+       pytest -m hic tests/test_tb_segment.py
        pytest -m hic tests/test_tb_generate_tads.py
+       pytest -m hic tests/test_tb_bin.py
        pytest -m hic tests/test_tb_save_hdf5_matrix.py
     """
 
@@ -252,7 +255,11 @@ def hic_toolchain(verbose=False):
     params.append('tests/test_tb_full_mapping.py')
     params.append('tests/test_tb_parse_mapping.py')
     params.append('tests/test_tb_filter.py')
+    params.append('tests/test_tb_normalize.py')
+    params.append('tests/test_tb_segment.py')
     params.append('tests/test_tb_generate_tads.py')
+    params.append('tests/test_tb_bin.py')
+    params.append('tests/test_tb_model.py')
     params.append('tests/test_tb_save_hdf5_matrix.py')
 
     return pytest.main(params)

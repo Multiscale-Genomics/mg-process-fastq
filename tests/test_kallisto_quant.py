@@ -37,7 +37,7 @@ def test_kallisto_quant_paired():
         "index": resource_path + "kallisto.Human.GRCh38.idx",
         "fastq1": resource_path + "kallisto.Human.ERR030872_1.fastq",
         "fastq2": resource_path + "kallisto.Human.ERR030872_2.fastq",
-        "gff": resource_path + "Homo_sapiens.GRCh38.93.gff3"
+        "gff": resource_path + "kallisto.Human.GRCh38.gff3"
     }
 
     output_files = {

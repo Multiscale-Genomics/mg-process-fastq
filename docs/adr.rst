@@ -188,9 +188,13 @@ Using the directory of the input file for building the location of the working d
 In the process_chipseq.py pipeline the duplicates have already been filtered by BioBamBam2 and samtools so there is no need for further filtering to be done by MACS2.
 
 
-2018-09-04 - Adding functionality to bam_utils and macs2
----------------------------------------------------------
+2018-09-04 - Adding functionality to bam_utils and MACS2
+--------------------------------------------------------
 
-Macs2 was previously set to work with the BAMPE option for the -f/--format parameter. Additional functionality has been added to bam_utils and macs2 mode to incorporate the BEDPE option. This has been done for the Atac Seq pipeline to incorporate the processing of bed file rather than bam files if the user would need changes to the result files generated.
+MACS2 was previously set to work with the BAMPE option for the -f/--format parameter. Additional functionality has been added to bam_utils and macs2 mode to incorporate the BEDPE option. This has been done for the Atac Seq pipeline to incorporate the processing of bed file rather than bam files if the user would need changes to the result files generated.
 
 
+2018-09-25 - Converting the Kallisto TSV file to BED
+----------------------------------------------------
+
+To display the scores on the genome browser the abundance tsv is used to generate a bed file where the score matches the transcripts per million column from the abundance.tsv output from Kallisto. This module requires the presence of the ensembl gff3 file for the matching assembly. This should be passed by the VRE when passing the FASTA file for the transcripts.

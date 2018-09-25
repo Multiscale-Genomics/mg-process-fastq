@@ -264,7 +264,7 @@ class kallistoQuantificationTool(Tool):  # pylint: disable=invalid-name
                                 gene_entry["start"],
                                 gene_entry["end"],
                                 tsv_entry[0],
-                                tsv_entry[2],
+                                tsv_entry[4],
                                 gene_entry["strand"],
                             )
                         )

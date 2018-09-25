@@ -1,13 +1,13 @@
 {
     "_id": "process_biobambam",
-    "name": "BioBamBam Filtering",
-    "title": "BioBamBam Filtering",
-    "short_description": "Filtering aligned reads with BioBamBam",
+    "name": "BioBamBam2 Filtering",
+    "title": "BioBamBam2 Filtering",
+    "short_description": "Filtering aligned reads with BioBamBam2",
+    "long_description": "Mark technical duplicates using BioBamBam2 and then remove them with samtools",
     "owner": {
         "institution": "EMBL-EBI",
         "author": "Mark McDowall",
         "contact": "mcdowall@ebi.ac.uk",
-        "user": "",
         "url": "https://github.com/Multiscale-Genomics/mg-process-fastq"
     },
     "status": 0,
@@ -33,7 +33,7 @@
         {
             "name": "bam",
             "description": "Sequence read file",
-            "help": "path to a BAm alignment file",
+            "help": "path to a BAM alignment file",
             "file_type": ["BAM"],
             "data_type": [
                 "data_chip_seq", "data_idamid_seq", "data_mnase_seq", "data_rna_seq",
@@ -44,9 +44,12 @@
         }
     ],
     "input_files_combinations": [
-        [
-            "bam"
-        ]
+        {
+            "description": "Filter reads using BioBamBam2",
+            "input_files": [
+                "bam"
+            ]
+        }
     ],
     "arguments": [],
     "output_files": [
@@ -55,14 +58,17 @@
             "allow_multiple": false,
             "name": "filtered",
             "file": {
-                "file_type": "bam",
+                "file_type": "BAM",
                 "meta_data": {
                     "visible": true,
                     "tool": "process_biobambam",
                     "description": "Filtered aligned sequences"
                 },
                 "file_path": "filtered.bam",
-                "data_type": "data_seq",
+                "data_type": [
+                    "data_chip_seq", "data_idamid_seq", "data_mnase_seq", "data_rna_seq",
+                    "data_wgbs", "data_hic"
+                ],
                 "compressed": "null"
             }
         }

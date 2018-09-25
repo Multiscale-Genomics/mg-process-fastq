@@ -7,7 +7,6 @@
         "institution": "EMBL-EBI",
         "author": "Mark McDowall",
         "contact": "mcdowall@ebi.ac.uk",
-        "user": "",
         "url": "https://github.com/Multiscale-Genomics/mg-process-fastq"
     },
     "status": 0,
@@ -74,17 +73,23 @@
         }
     ],
     "input_files_combinations": [
-        [
-            "loc",
-            "genome",
-            "index"
-        ],
-        [
-            "loc",
-            "fastq2",
-            "genome",
-            "index"
-        ]
+        {
+            "description": "Align single end reads",
+            "input_files": [
+                "loc",
+                "genome",
+                "index"
+            ]
+        },
+        {
+            "description": "Align paired end reads",
+            "input_files": [
+                "loc",
+                "fastq2",
+                "genome",
+                "index"
+            ]
+        }
     ],
     "arguments": [
         {
@@ -126,7 +131,7 @@
             "name": "bwa_mem_paried_rescue_mode_param",
             "description": "In the paired-end mode, perform SW to rescue missing hits only but do not try to find hits that fit a proper pair",
             "help": "In the paired-end mode, perform SW to rescue missing hits only but do not try to find hits that fit a proper pair",
-            "type": "bool",
+            "type": "boolean",
             "required": false,
             "default": false
         }, {
@@ -175,7 +180,7 @@
             "name": "bwa_mem_reads_interleaved_param",
             "description": "Assume the first input query file is interleaved paired-end FASTA/Q",
             "help": "Assume the first input query file is interleaved paired-end FASTA/Q",
-            "type": "bool",
+            "type": "boolean",
             "required": false,
             "default": false
         }, {
@@ -196,14 +201,14 @@
             "name": "bwa_mem_hard_clipping_param",
             "description": "Use hard clipping ’H’ in the SAM output",
             "help": "Use hard clipping ’H’ in the SAM output",
-            "type": "bool",
+            "type": "boolean",
             "required": false,
             "default": false
         }, {
             "name": "bwa_mem_short_split_secondary_param",
             "description": "Mark shorter split hits as secondary (for Picard compatibility)",
             "help": "Mark shorter split hits as secondary (for Picard compatibility)",
-            "type": "bool",
+            "type": "boolean",
             "required": false,
             "default": false
         }
@@ -214,14 +219,17 @@
             "allow_multiple": false,
             "name": "bam",
             "file": {
-                "file_type": "bam",
+                "file_type": "BAM",
                 "meta_data": {
                     "visible": true,
                     "tool": "process_bwa_mem",
                     "description": "Aligned sequences"
                 },
                 "file_path": "bwa_mem.bam",
-                "data_type": "data_seq",
+                "data_type": [
+                    "data_chip_seq", "data_idamid_seq", "data_mnase_seq", "data_rna_seq",
+                    "data_wgbs", "data_hic"
+                ],
                 "compressed": "null"
             }
         }

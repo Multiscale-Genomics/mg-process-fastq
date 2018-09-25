@@ -7,7 +7,6 @@
         "institution": "EMBL-EBI",
         "author": "Reham Fatima",
         "contact": "reham@ebi.ac.uk",
-        "user": "",
         "url": "https://github.com/Multiscale-Genomics/mg-process-fastq"
     },
     "status": 0,
@@ -49,10 +48,19 @@
         }
     ],
     "input_files_combinations": [
-        [
-            "fastq1",
-            "fastq2"
-        ]
+        {
+            "description": "Filtering of single end FASTQ files",
+            "input_files": [
+                "fastq1"
+            ]
+        },
+        {
+            "description": "Filtering of paired end FASTQ files",
+            "input_files": [
+                "fastq1",
+                "fastq2"
+            ]
+        }
     ],
     "arguments": [
         {
@@ -99,7 +107,7 @@
             "allow_multiple": false,
             "name": "fastq1_filtered",
             "file": {
-                "file_type": "fastq",
+                "file_type": "FASTQ",
                 "meta_data": {
                     "visible": true,
                     "tool": "process_bs_seeker_filter",
@@ -110,11 +118,11 @@
                 "compressed": "null"
             }
         }, {
-            "required": true,
+            "required": false,
             "allow_multiple": false,
             "name": "fastq2_filtered",
             "file": {
-                "file_type": "fastq",
+                "file_type": "FASTQ",
                 "meta_data": {
                     "visible": true,
                     "tool": "process_bs_seeker_filter",

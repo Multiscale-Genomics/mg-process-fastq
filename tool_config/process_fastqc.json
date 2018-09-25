@@ -1,13 +1,12 @@
 {
     "_id": "process_fastqc",
-    "name": "Process RNA-seq",
-    "title": "RNA-seq Analysis",
-    "short_description": "Align RNA-seq data, gene expression calling with Kallisto",
+    "name": "Analyse FASTQ Files",
+    "title": "Analyse Read Quality",
+    "short_description": "Analyse the quality of reads within a fastq file and provide relevant statistics",
     "owner": {
         "institution": "EMBL-EBI",
         "author": "Mark McDowall",
         "contact": "mcdowall@ebi.ac.uk",
-        "user": "",
         "url": "https://github.com/Multiscale-Genomics/mg-process-fastq"
     },
     "status": 0,
@@ -43,9 +42,12 @@
         }
     ],
     "input_files_combinations": [
-        [
-            "fastq"
-        ]
+        {
+            "description": "FASTQ file",
+            "input_files": [
+                "fastq"
+            ]
+        }
     ],
     "arguments": [],
     "output_files": [
@@ -61,7 +63,7 @@
                     "description": "FastQ validation using FastQC"
                 },
                 "file_path": "report.html",
-                "data_type": "HTML",
+                "data_type": "tool_statistics",
                 "compressed": "null"
             }
         }

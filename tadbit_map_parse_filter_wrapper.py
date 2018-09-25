@@ -45,7 +45,7 @@ if '/opt/COMPSs/Bindings/python' in sys.path:
 
 # ------------------------------------------------------------------------------
 
-class tadbit_map_parse_filter(Workflow): # pylint: disable=invalid-name,too-few-public-methods
+class tadbit_map_parse_filter(Workflow):  # pylint: disable=invalid-name,too-few-public-methods
     """
     Wrapper for the VRE form TADbit map, parse and filter.
     It combines different tools to map, merge and filter
@@ -53,7 +53,7 @@ class tadbit_map_parse_filter(Workflow): # pylint: disable=invalid-name,too-few-
     """
     configuration = {}
 
-    def __init__(self, configuration=None): # pylint: disable=too-many-branches
+    def __init__(self, configuration=None):  # pylint: disable=too-many-branches
         """
         Initialise the tool with its configuration.
 
@@ -64,8 +64,8 @@ class tadbit_map_parse_filter(Workflow): # pylint: disable=invalid-name,too-few-
             a dictionary containing parameters that define how the operation
             should be carried out, which are specific to each Tool.
         """
-        tool_extra_config = json.load(file(os.path.dirname(os.path.abspath(__file__))
-                                           +'/tadbit_wrappers_config.json'))
+        tool_extra_config = json.load(open(os.path.dirname(os.path.abspath(__file__))
+                                           + '/tadbit_wrappers_config.json'))
         if os.path.isdir(format_utils.convert_from_unicode(tool_extra_config["bin_path"])):
             os.environ["PATH"] += os.pathsep + format_utils.convert_from_unicode(
                 tool_extra_config["bin_path"])
@@ -80,7 +80,7 @@ class tadbit_map_parse_filter(Workflow): # pylint: disable=invalid-name,too-few-
 
         self.configuration["ncpus"] = num_cores
 
-        tmp_name = ''.join([letters[int(random()*52)]for _ in xrange(5)])
+        tmp_name = ''.join([letters[int(random()*52)]for _ in range(5)])
         if 'execution' in self.configuration:
             self.configuration['project'] = self.configuration['execution']
         self.configuration['workdir'] = self.configuration['project']+'/_tmp_tadbit_'+tmp_name
@@ -109,7 +109,7 @@ class tadbit_map_parse_filter(Workflow): # pylint: disable=invalid-name,too-few-
         if 'rest_enzyme' not in self.configuration:
             self.configuration["rest_enzyme"] = ''
 
-    def run(self, input_files, metadata, output_files): # pylint: disable=too-many-locals,too-many-statements
+    def run(self, input_files, metadata, output_files):  # pylint: disable=too-many-locals,too-many-statements
         """
         Parameters
         ----------
@@ -137,7 +137,7 @@ class tadbit_map_parse_filter(Workflow): # pylint: disable=invalid-name,too-few-
         if 'parsing:refGenome' in input_files:
             genome_fa = format_utils.convert_from_unicode(input_files['parsing:refGenome'])
         elif 'parsing_refGenome' in self.configuration:
-            genome_fa = self.configuration['public_dir']+ \
+            genome_fa = self.configuration['public_dir'] + \
                 format_utils.convert_from_unicode(self.configuration['parsing_refGenome'])
 
         if 'mapping:refGenome' in input_files:
@@ -145,13 +145,13 @@ class tadbit_map_parse_filter(Workflow): # pylint: disable=invalid-name,too-few-
             assembly = format_utils.convert_from_unicode(
                 metadata['mapping:refGenome'].meta_data['assembly'])
         elif 'mapping_refGenome' in self.configuration:
-            genome_gem = self.configuration['public_dir']+ \
+            genome_gem = self.configuration['public_dir'] + \
                 format_utils.convert_from_unicode(self.configuration['mapping_refGenome'])
             assembly = os.path.basename(genome_gem).split('.')[0]
 
         fastq_file_1 = format_utils.convert_from_unicode(input_files['read1'])
         fastq_file_2 = format_utils.convert_from_unicode(input_files['read2'])
-        input_metadata = remap(self.configuration, "ncpus", "iterative_mapping", \
+        input_metadata = remap(self.configuration, "ncpus", "iterative_mapping",
                                "workdir", "windows", enzyme_name="rest_enzyme")
         input_metadata['quality_plot'] = True
         summary_file = input_metadata["workdir"]+'/'+'summary.txt'
@@ -159,7 +159,7 @@ class tadbit_map_parse_filter(Workflow): # pylint: disable=invalid-name,too-few-
         logger.info("MAPPING")
         logger.info("Read 1 of 2")
         tfm1 = tbFullMappingTool()
-        tfm1_files, tfm1_meta = tfm1.run([genome_gem, fastq_file_1], [], input_metadata)
+        tfm1_files, tfm1_meta = tfm1.run([genome_gem, fastq_file_1], input_metadata, [])
         with open(summary_file, 'w') as outfile:
             outfile.write("Mapping read 1\n--------------\n")
             with open(tfm1_files[-2]) as infile:
@@ -167,7 +167,7 @@ class tadbit_map_parse_filter(Workflow): # pylint: disable=invalid-name,too-few-
 
         logger.info("Read 2 of 2")
         tfm2 = tbFullMappingTool()
-        tfm2_files, tfm2_meta = tfm2.run([genome_gem, fastq_file_2], [], input_metadata)
+        tfm2_files, tfm2_meta = tfm2.run([genome_gem, fastq_file_2], input_metadata, [])
         with open(summary_file, 'a') as outfile:
             outfile.write("\n\nMapping read 2\n--------------\n")
             with open(tfm2_files[-2]) as infile:
@@ -177,14 +177,14 @@ class tadbit_map_parse_filter(Workflow): # pylint: disable=invalid-name,too-few-
         tpm = tbParseMappingTool()
         files = [genome_fa] + tfm1_files[:-2] + tfm2_files[:-2]
 
-        input_metadata = remap(self.configuration, "ncpus", "chromosomes", \
+        input_metadata = remap(self.configuration, "ncpus", "chromosomes",
                                "workdir", enzyme_name="rest_enzyme")
         input_metadata['mapping'] = [tfm1_meta['func'], tfm2_meta['func']]
         input_metadata['expt_name'] = 'vre'
 
         logger.info("TB MAPPED FILES:", files)
         logger.info("TB PARSE METADATA:", input_metadata)
-        tpm_files, tpm_meta = tpm.run(files, [], input_metadata)
+        tpm_files, tpm_meta = tpm.run(files, input_metadata, [])
 
         if 'error' in tpm_meta:
             m_results_meta["paired_reads"] = Metadata(
@@ -225,7 +225,7 @@ class tadbit_map_parse_filter(Workflow): # pylint: disable=invalid-name,too-few-
 
         logger.info("FILTERING")
         tbf = tbFilterTool()
-        tf_files, _ = tbf.run(tpm_files, [], input_metadata)
+        tf_files, _ = tbf.run(tpm_files, input_metadata, [])
         with open(summary_file, 'a') as outfile:
             outfile.write("\n\nFiltering\n--------------\n")
             with open(tf_files[-2]) as infile:
@@ -233,10 +233,9 @@ class tadbit_map_parse_filter(Workflow): # pylint: disable=invalid-name,too-few-
 
         logger.info("TB FILTER FILES:", tf_files[0])
 
-
         m_results_files["paired_reads"] = tf_files[0]+'.bam'
         m_results_files["paired_reads_bai"] = m_results_files["paired_reads"]+'.bai'
-        m_results_files["map_parse_filter_stats"] = self.configuration['project']+ \
+        m_results_files["map_parse_filter_stats"] = self.configuration['project'] + \
             "/map_parse_filter_stats.tar.gz"
 
         with tarfile.open(m_results_files["map_parse_filter_stats"], "w:gz") as tar:
@@ -257,7 +256,7 @@ class tadbit_map_parse_filter(Workflow): # pylint: disable=invalid-name,too-few-
                 "description": "Paired end reads",
                 "visible": True,
                 "assembly": assembly,
-                "paired" : "paired",
+                "paired": "paired",
                 "sorted": "sorted",
                 "associated_files": [
                     m_results_files["paired_reads"]+'.bai'
@@ -290,10 +289,10 @@ class tadbit_map_parse_filter(Workflow): # pylint: disable=invalid-name,too-few-
                 "visible": False
             })
 
-
         clean_temps(self.configuration['workdir'])
 
         return m_results_files, m_results_meta
+
 
 # ------------------------------------------------------------------------------
 
@@ -308,7 +307,6 @@ def main(args):
                         args.in_metadata,
                         args.out_metadata)
 
-
     return result
 
 
@@ -319,7 +317,7 @@ def clean_temps(working_path):
         try:
             if os.path.isfile(file_path):
                 os.unlink(file_path)
-            #elif os.path.isdir(file_path): shutil.rmtree(file_path)
+            # elif os.path.isdir(file_path): shutil.rmtree(file_path)
         except OSError:
             pass
     try:
@@ -328,11 +326,12 @@ def clean_temps(working_path):
         pass
     logger.info('[CLEANING] Finished')
 
+
 # ------------------------------------------------------------------------------
 
 if __name__ == "__main__":
 
-    sys._run_from_cmdl = True # pylint: disable=protected-access
+    sys._run_from_cmdl = True  # pylint: disable=protected-access
 
     # Set up the command line parameters
     PARSER = argparse.ArgumentParser(description="TADbit map")
@@ -341,10 +340,10 @@ if __name__ == "__main__":
                         type=CommandLineParser.valid_file, metavar="config", required=True)
 
     # Metadata
-    PARSER.add_argument("--in_metadata", help="Project metadata", \
+    PARSER.add_argument("--in_metadata", help="Project metadata",
                         metavar="in_metadata", required=True)
     # Output metadata
-    PARSER.add_argument("--out_metadata", help="Output metadata", \
+    PARSER.add_argument("--out_metadata", help="Output metadata",
                         metavar="output_metadata", required=True)
     # Log file
     PARSER.add_argument("--log_file", help="Log file", metavar="log_file", required=True)

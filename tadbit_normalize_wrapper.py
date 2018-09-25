@@ -60,7 +60,7 @@ class tadbit_normalize(Workflow):  # pylint: disable=invalid-name, too-few-publi
             a dictionary containing parameters that define how the operation
             should be carried out, which are specific to each Tool.
         """
-        tool_extra_config = json.load(file(os.path.dirname(
+        tool_extra_config = json.load(open(os.path.dirname(
             os.path.abspath(__file__))+'/tadbit_wrappers_config.json'))
         if os.path.isdir(format_utils.convert_from_unicode(
                 tool_extra_config["bin_path"])):
@@ -79,7 +79,7 @@ class tadbit_normalize(Workflow):  # pylint: disable=invalid-name, too-few-publi
         if "normalization" not in self.configuration:
             self.configuration["normalization"] = "Vanilla"
 
-        tmp_name = ''.join([letters[int(random()*52)]for _ in xrange(5)])
+        tmp_name = ''.join([letters[int(random()*52)]for _ in range(5)])
         if 'execution' in self.configuration:
             self.configuration['project'] = self.configuration['execution']
         self.configuration['workdir'] = self.configuration['project']+'/_tmp_tadbit_'+tmp_name
@@ -144,17 +144,17 @@ class tadbit_normalize(Workflow):  # pylint: disable=invalid-name, too-few-publi
         m_results_meta = {}
 
         tn_handler = tbNormalizeTool()
-        tn_files, _ = tn_handler.run([bamin], [], input_metadata)
+        tn_files, _ = tn_handler.run([bamin], input_metadata, [])
 
         m_results_files = {}
         try:
-            m_results_files["hic_biases"] = self.configuration['project']+"/"+\
+            m_results_files["hic_biases"] = self.configuration['project'] + "/" + \
                 os.path.basename(tn_files[0])
             os.rename(tn_files[0], m_results_files["hic_biases"])
         except OSError:
             pass
 
-        m_results_files["normalize_stats"] = self.configuration['project']+"/normalize_stats.tar.gz"
+        m_results_files["normalize_stats"] = self.configuration['project'] + "/normalize_stats.tar.gz"  # pylint: disable=line-too-long
 
         with tarfile.open(m_results_files["normalize_stats"], "w:gz") as tar:
             if len(tn_files) > 1:
@@ -218,7 +218,7 @@ def clean_temps(working_path):
         try:
             if os.path.isfile(file_path):
                 os.unlink(file_path)
-            #elif os.path.isdir(file_path): shutil.rmtree(file_path)
+            # elif os.path.isdir(file_path): shutil.rmtree(file_path)
         except OSError:
             pass
     try:
@@ -231,7 +231,7 @@ def clean_temps(working_path):
 # ------------------------------------------------------------------------------
 
 if __name__ == "__main__":
-    sys._run_from_cmdl = True # pylint: disable=protected-access
+    sys._run_from_cmdl = True  # pylint: disable=protected-access
 
     # Set up the command line parameters
     PARSER = argparse.ArgumentParser(description="TADbit map")

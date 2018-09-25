@@ -25,27 +25,30 @@ import argparse
 import sys
 import json
 import multiprocessing
-import urllib2
 import tarfile
+
+try:
+    from urllib2 import urlopen
+except ImportError:
+    from urllib.request import urlopen
 
 from random import random
 from string import ascii_letters as letters
-
-# Required for ReadTheDocs
-from functools import wraps # pylint: disable=unused-import
 
 from utils import logger
 from utils import remap
 
 from basic_modules.workflow import Workflow
 from basic_modules.metadata import Metadata
-from tool.common import CommandLineParser # pylint: disable=ungrouped-imports
-from tool.common import format_utils # pylint: disable=ungrouped-imports
 
+from tool.common import CommandLineParser
+from tool.common import format_utils
 from tool.tb_bin import tbBinTool
 
+
 # ------------------------------------------------------------------------------
-class tadbit_bin(Workflow): # pylint: disable=invalid-name,too-few-public-methods
+
+class tadbit_bin(Workflow):  # pylint: disable=invalid-name,too-few-public-methods
     """
     Wrapper for the VRE form TADbit bin.
     It extracts a section of a matrix from a BAM file.
@@ -64,7 +67,7 @@ class tadbit_bin(Workflow): # pylint: disable=invalid-name,too-few-public-method
             should be carried out, which are specific to each Tool.
         """
         tool_extra_config = json.load(
-            file(os.path.dirname(os.path.abspath(__file__))+'/tadbit_wrappers_config.json')
+            open(os.path.dirname(os.path.abspath(__file__))+'/tadbit_wrappers_config.json')
         )
         os.environ["PATH"] += os.pathsep + format_utils.convert_from_unicode(
             tool_extra_config["bin_path"])
@@ -78,7 +81,7 @@ class tadbit_bin(Workflow): # pylint: disable=invalid-name,too-few-public-method
         num_cores = multiprocessing.cpu_count()
         self.configuration["ncpus"] = num_cores
 
-        tmp_name = ''.join([letters[int(random()*52)]for _ in xrange(5)])
+        tmp_name = ''.join([letters[int(random()*52)]for _ in range(5)])
         if 'execution' in self.configuration:
             self.configuration['project'] = self.configuration['execution']
         self.configuration['workdir'] = self.configuration['project']+'/_tmp_tadbit_'+tmp_name
@@ -128,14 +131,14 @@ class tadbit_bin(Workflow): # pylint: disable=invalid-name,too-few-public-method
             input_metadata["assembly"] = metadata['bamin'].meta_data["assembly"]
         if metadata['bamin'].taxon_id:
             dt_json = json.load(
-                urllib2.urlopen(
+                urlopen(
                     "http://www.ebi.ac.uk/ena/data/taxonomy/v1/taxon/tax-id/"+
                     str(metadata['bamin'].taxon_id)
                 )
             )
             input_metadata["species"] = dt_json['scientificName']
         tb_handle = tbBinTool()
-        tb_files, _ = tb_handle.run(in_files, [], input_metadata)
+        tb_files, _ = tb_handle.run(in_files, input_metadata, [])
 
         m_results_files["bin_stats"] = self.configuration['project']+"/bin_stats.tar.gz"
         m_results_files["hic_contacts_matrix_raw"] = self.configuration['project']+"/"+ \
@@ -171,7 +174,7 @@ class tadbit_bin(Workflow): # pylint: disable=invalid-name,too-few-public-method
                 "visible": True,
                 "assembly": format_utils.convert_from_unicode(
                     metadata['bamin'].meta_data['assembly']),
-                "norm" : 'raw'
+                "norm": 'raw'
             },
             taxon_id=metadata['bamin'].taxon_id)
         m_results_meta["bin_stats"] = Metadata(
@@ -194,7 +197,7 @@ class tadbit_bin(Workflow): # pylint: disable=invalid-name,too-few-public-method
                     "visible": True,
                     "assembly": format_utils.convert_from_unicode(
                         metadata['bamin'].meta_data['assembly']),
-                    "norm" : 'norm'
+                    "norm": 'norm'
                 },
                 taxon_id=metadata['bamin'].taxon_id)
 
@@ -212,10 +215,11 @@ class tadbit_bin(Workflow): # pylint: disable=invalid-name,too-few-public-method
                 "assembly": input_metadata["assembly"]
             },
             taxon_id=metadata['bamin'].taxon_id)
-        #cleaning
+        # cleaning
         clean_temps(self.configuration['workdir'])
 
         return m_results_files, m_results_meta
+
 
 # ------------------------------------------------------------------------------
 
@@ -232,6 +236,7 @@ def main(args):
                         args.out_metadata)
 
     return result
+
 
 def clean_temps(working_path):
     """Cleans the workspace from temporal folder and scratch files"""
@@ -250,10 +255,11 @@ def clean_temps(working_path):
         pass
     logger.info('[CLEANING] Finished')
 
+
 # ------------------------------------------------------------------------------
 
 if __name__ == "__main__":
-    sys._run_from_cmdl = True # pylint: disable=protected-access
+    sys._run_from_cmdl = True  # pylint: disable=protected-access
 
     # Set up the command line parameters
     PARSER = argparse.ArgumentParser(description="TADbit map")
@@ -274,4 +280,3 @@ if __name__ == "__main__":
     IN_ARGS = PARSER.parse_args()
 
     RESULTS = main(IN_ARGS)
-    

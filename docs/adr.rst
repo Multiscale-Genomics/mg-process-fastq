@@ -204,3 +204,9 @@ Inclusion of tests for the wrappers and tools of the tadbit pipelines
 
 Macs2 was previously set to work with the BAMPE option for the -f/--format parameter. Additional functionality has been added to bam_utils and macs2 mode to incorporate the BEDPE option. This has been done for the Atac Seq pipeline to incorporate the processing of bed file rather than bam files if the user would need changes to the result files generated.
 
+
+2018-09-17 - Updates to tool and pipline run()
+----------------------------------------------
+
+Changes to the pipelines so that the run() function matches the definitions within the Tool API. There have also been a number of changes so that the pipeline and tool code is python 3 compatible
+

@@ -42,7 +42,7 @@ from tool.tb_segment import tbSegmentTool
 
 # ------------------------------------------------------------------------------
 
-class tadbit_segment(Workflow): # pylint: disable=invalid-name, too-few-public-methods
+class tadbit_segment(Workflow):  # pylint: disable=invalid-name, too-few-public-methods
     """
     Wrapper for the VRE form TADbit segment.
     It detects TADs and compartments from a BAM file.
@@ -61,7 +61,7 @@ class tadbit_segment(Workflow): # pylint: disable=invalid-name, too-few-public-m
             should be carried out, which are specific to each Tool.
         """
 
-        tool_extra_config = json.load(file(os.path.dirname(
+        tool_extra_config = json.load(open(os.path.dirname(
             os.path.abspath(__file__))+'/tadbit_wrappers_config.json'))
         os.environ["PATH"] += os.pathsep + format_utils.convert_from_unicode(
             tool_extra_config["bin_path"])
@@ -75,7 +75,7 @@ class tadbit_segment(Workflow): # pylint: disable=invalid-name, too-few-public-m
         num_cores = multiprocessing.cpu_count()
         self.configuration["ncpus"] = num_cores
 
-        tmp_name = ''.join([letters[int(random()*52)]for _ in xrange(5)])
+        tmp_name = ''.join([letters[int(random()*52)]for _ in range(5)])
         if 'execution' in self.configuration:
             self.configuration['project'] = self.configuration['execution']
         self.configuration['workdir'] = self.configuration['project']+'/_tmp_tadbit_'+tmp_name
@@ -126,9 +126,9 @@ class tadbit_segment(Workflow): # pylint: disable=invalid-name, too-few-public-m
             in_files.append(format_utils.convert_from_unicode(input_files['biases']))
 
         ts_handler = tbSegmentTool()
-        ts_files, _ = ts_handler.run(in_files, [], input_metadata)
+        ts_files, _ = ts_handler.run(in_files, input_metadata, [])
 
-        m_results_files["tads_compartments"] = self.configuration['project']+ \
+        m_results_files["tads_compartments"] = self.configuration['project'] + \
             "/tads_compartments.tar.gz"
 
         tar = tarfile.open(m_results_files["tads_compartments"], "w:gz")

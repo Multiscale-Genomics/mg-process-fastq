@@ -25,8 +25,12 @@ import sys
 import tarfile
 import multiprocessing
 import json
-import urllib2
 import shutil
+
+try:
+    from urllib2 import urlopen
+except ImportError:
+    from urllib.request import urlopen
 
 from random import random
 from string import ascii_letters as letters
@@ -68,7 +72,7 @@ class tadbit_model(Workflow):  # pylint: disable=invalid-name,too-few-public-met
             should be carried out, which are specific to each Tool.
         """
 
-        tool_extra_config = json.load(file(os.path.dirname(
+        tool_extra_config = json.load(open(os.path.dirname(
             os.path.abspath(__file__))+'/tadbit_wrappers_config.json'))
         os.environ["PATH"] += os.pathsep + format_utils.convert_from_unicode(
             tool_extra_config["bin_path"])
@@ -82,14 +86,14 @@ class tadbit_model(Workflow):  # pylint: disable=invalid-name,too-few-public-met
         num_cores = multiprocessing.cpu_count()
         self.configuration["ncpus"] = num_cores
 
-        tmp_name = ''.join([letters[int(random()*52)]for _ in xrange(5)])
+        tmp_name = ''.join([letters[int(random()*52)]for _ in range(5)])
         if 'execution' in self.configuration:
             self.configuration['project'] = self.configuration['execution']
         self.configuration['workdir'] = self.configuration['project']+'/_tmp_tadbit_'+tmp_name
         if not os.path.exists(self.configuration['workdir']):
             os.makedirs(self.configuration['workdir'])
 
-        self.configuration["optimize_only"] = not "generation:num_mod_comp" in self.configuration
+        self.configuration["optimize_only"] = "generation:num_mod_comp" not in self.configuration
         if "optimization:max_dist" in self.configuration and \
                 not self.configuration["optimize_only"]:
             del self.configuration["optimization:max_dist"]
@@ -149,8 +153,8 @@ class tadbit_model(Workflow):  # pylint: disable=invalid-name,too-few-public-met
         if "assembly" in metadata['hic_contacts_matrix_norm'].meta_data:
             input_metadata["assembly"] = metadata['hic_contacts_matrix_norm'].meta_data["assembly"]
         if metadata['hic_contacts_matrix_norm'].taxon_id:
-            dt_json = json.load(urllib2.urlopen(
-                "http://www.ebi.ac.uk/ena/data/taxonomy/v1/taxon/tax-id/"+ \
+            dt_json = json.load(urlopen(
+                "http://www.ebi.ac.uk/ena/data/taxonomy/v1/taxon/tax-id/" +
                 str(metadata['hic_contacts_matrix_norm'].taxon_id)))
             input_metadata["species"] = dt_json['scientificName']
 
@@ -158,7 +162,7 @@ class tadbit_model(Workflow):  # pylint: disable=invalid-name,too-few-public-met
         input_metadata["num_mod_keep"] = self.configuration["num_mod_keep"]
 
         tm_handler = tbModelTool()
-        tm_files, _ = tm_handler.run(in_files, [], input_metadata)
+        tm_files, _ = tm_handler.run(in_files, input_metadata, [])
 
         m_results_files["modeling_stats"] = self.configuration['project']+"/model_stats.tar.gz"
 
@@ -167,7 +171,7 @@ class tadbit_model(Workflow):  # pylint: disable=invalid-name,too-few-public-met
         tar.close()
 
         if not self.configuration["optimize_only"]:
-            m_results_files["tadkit_models"] = self.configuration['project']+"/"+ \
+            m_results_files["tadkit_models"] = self.configuration['project'] + "/" + \
                 os.path.basename(tm_files[1])
             os.rename(tm_files[1], m_results_files["tadkit_models"])
             m_results_meta["tadkit_models"] = Metadata(
@@ -200,6 +204,7 @@ class tadbit_model(Workflow):  # pylint: disable=invalid-name,too-few-public-met
 
         return m_results_files, m_results_meta
 
+
 # ------------------------------------------------------------------------------
 
 def main(args):
@@ -214,6 +219,7 @@ def main(args):
                         args.out_metadata)
 
     return result
+
 
 def clean_temps(working_path):
     """Cleans the workspace from temporal folder and scratch files"""
@@ -232,16 +238,18 @@ def clean_temps(working_path):
         pass
     logger.info('[CLEANING] Finished')
 
+
 def make_absolute_path(files, root):
     """Make paths absolute."""
     for role, path in files.items():
         files[role] = os.path.join(root, path)
     return files
 
+
 # ------------------------------------------------------------------------------
 
 if __name__ == "__main__":
-    sys._run_from_cmdl = True # pylint: disable=protected-access
+    sys._run_from_cmdl = True  # pylint: disable=protected-access
 
     # Set up the command line parameters
     PARSER = argparse.ArgumentParser(description="TADbit map")

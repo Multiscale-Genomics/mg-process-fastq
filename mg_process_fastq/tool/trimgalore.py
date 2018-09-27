@@ -437,6 +437,10 @@ class trimgalore(Tool):  # pylint: disable=invalid-name
             version = compss_wait_on(version)
             logger.info("TRIM GALORE VERSION: " + version)
 
+        if "fastq2" in input_files:
+            if "tg_paired" not in self.configuration:
+                self.configuration["tg_paired"] = True
+
         command_params = self.get_trimgalore_params(self.configuration)
 
         if "fastq2" in input_files:

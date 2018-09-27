@@ -16,8 +16,8 @@
 """
 
 import os.path
-import pytest
 import gzip
+import pytest
 
 from basic_modules.metadata import Metadata
 

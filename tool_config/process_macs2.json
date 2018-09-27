@@ -7,7 +7,6 @@
         "institution": "EMBL-EBI",
         "author": "Mark McDowall",
         "contact": "mcdowall@ebi.ac.uk",
-        "user": "",
         "url": "https://github.com/Multiscale-Genomics/mg-process-fastq"
     },
     "status": 0,
@@ -50,13 +49,19 @@
         }
     ],
     "input_files_combinations": [
-        [
-            "bam"
-        ],
-        [
-            "bam",
-            "bam_bg"
-        ]
+        {
+            "description": "Compare with 'my Tool' 2 BAMs",
+            "input_files": [
+                "bam"
+            ]
+        },
+        {
+            "description": "Compare with 'my Tool' 2 BAMs",
+            "input_files": [
+                "bam",
+                "bam_bg"
+            ]
+        }
     ],
     "arguments": [
         {
@@ -207,7 +212,7 @@
             "allow_multiple": false,
             "name": "narrow_peak",
             "file": {
-                "file_type": "bed",
+                "file_type": "BED",
                 "meta_data": {
                     "visible": true,
                     "tool": "process_chipseq",
@@ -222,7 +227,7 @@
             "allow_multiple": false,
             "name": "summits",
             "file": {
-                "file_type": "bed",
+                "file_type": "BED",
                 "meta_data": {
                     "visible": true,
                     "tool": "process_chipseq",
@@ -237,7 +242,7 @@
             "allow_multiple": false,
             "name": "broad_peak",
             "file": {
-                "file_type": "bed",
+                "file_type": "BED",
                 "meta_data": {
                     "visible": true,
                     "tool": "process_chipseq",
@@ -252,7 +257,7 @@
             "allow_multiple": false,
             "name": "gapped_peak",
             "file": {
-                "file_type": "bed",
+                "file_type": "BED",
                 "meta_data": {
                     "visible": true,
                     "tool": "process_chipseq",
@@ -267,7 +272,7 @@
             "allow_multiple": false,
             "name": "control_lambda",
             "file": {
-                "file_type": "bigwig",
+                "file_type": "BW",
                 "meta_data": {
                     "visible": true,
                     "tool": "process_chipseq",
@@ -282,7 +287,7 @@
             "allow_multiple": false,
             "name": "treat_pileup",
             "file": {
-                "file_type": "bigwig",
+                "file_type": "BW",
                 "meta_data": {
                     "visible": true,
                     "tool": "process_chipseq",

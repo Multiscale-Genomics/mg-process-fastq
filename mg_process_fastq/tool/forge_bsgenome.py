@@ -291,9 +291,8 @@ class bsgenomeTool(Tool):  # pylint: disable=invalid-name
                 return False
 
             try:
-                with open(
-                    package_build + "_" + seed_file_param["Version"] + ".tar.gz", "rb"
-                ) as f_in:
+                package_file_name = package_build + "_" + seed_file_param["Version"] + ".tar.gz"
+                with open(package_file_name, "rb") as f_in:
                     with open(bsgenome, "wb") as f_out:
                         f_out.write(f_in.read())
             except (IOError, OSError) as msg:

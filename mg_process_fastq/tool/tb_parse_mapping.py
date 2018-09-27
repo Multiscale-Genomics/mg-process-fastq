@@ -19,6 +19,8 @@ from __future__ import print_function
 
 import sys
 
+from basic_modules.tool import Tool
+
 from utils import logger
 
 try:
@@ -37,16 +39,14 @@ except ImportError:
     # from utils.dummy_pycompss import constraint  # pylint: disable=ungrouped-imports
     from utils.dummy_pycompss import compss_wait_on  # pylint: disable=ungrouped-imports
 
-from basic_modules.tool import Tool
-
 from pytadbit.parsers.genome_parser import parse_fasta  # pylint: disable=import-error
 from pytadbit.parsers.map_parser import parse_map  # pylint: disable=import-error
 from pytadbit.mapping import get_intersection  # pylint: disable=import-error
 
+
 # ------------------------------------------------------------------------------
 
-
-class tbParseMappingTool(Tool):
+class tbParseMappingTool(Tool):  # pylint: disable=invalid-name
     """
     Tool for parsing the mapped reads and generating the list of paired ends
     that have a match at both ends.
@@ -64,8 +64,7 @@ class tbParseMappingTool(Tool):
         window1_1=FILE_IN, window1_2=FILE_IN, window1_3=FILE_IN, window1_4=FILE_IN,
         window2_1=FILE_IN, window2_2=FILE_IN, window2_3=FILE_IN, window2_4=FILE_IN,
         reads=FILE_OUT)
-    # @constraint(ProcessorCoreCount=32)
-    def tb_parse_mapping_iter(
+    def tb_parse_mapping_iter(  # pylint: disable=no-self-use,too-many-arguments,too-many-locals
             self, genome_seq, enzyme_name,
             window1_1, window1_2, window1_3, window1_4,
             window2_1, window2_2, window2_3, window2_4,
@@ -135,7 +134,7 @@ class tbParseMappingTool(Tool):
             ncpus=ncpus
         )
 
-        counts, multiples = get_intersection(reads1, reads2, reads_both, verbose=True)
+        counts, _ = get_intersection(reads1, reads2, reads_both, verbose=True)
 
         with open(reads, "wb") as f_out:
             with open(reads_both, "rb") as f_in:
@@ -148,8 +147,7 @@ class tbParseMappingTool(Tool):
         window1_full=FILE_IN, window1_frag=FILE_IN,
         window2_full=FILE_IN, window2_frag=FILE_IN,
         reads=FILE_OUT)
-    # @constraint(ProcessorCoreCount=32)
-    def tb_parse_mapping_frag(
+    def tb_parse_mapping_frag(  # pylint: disable=no-self-use,too-many-arguments,too-many-locals
             self, genome_seq, enzyme_name,
             window1_full, window1_frag, window2_full, window2_frag,
             reads, ncpus=1):
@@ -207,7 +205,7 @@ class tbParseMappingTool(Tool):
             ncpus=ncpus
         )
 
-        counts, multiples = get_intersection(reads1, reads2, reads_both, verbose=True)
+        counts, _ = get_intersection(reads1, reads2, reads_both, verbose=True)
 
         with open(reads, "wb") as f_out:
             with open(reads_both, "rb") as f_in:
@@ -215,7 +213,7 @@ class tbParseMappingTool(Tool):
 
         return counts
 
-    def run(self, input_files, output_files, metadata=None):
+    def run(self, input_files, input_metadata, output_files):  # pylint: disable=too-many-locals
         """
         The main function to map the aligned reads and return the matching
         pairs. Parsing of the mappings can be either iterative of fragment
@@ -326,25 +324,40 @@ class tbParseMappingTool(Tool):
 
         genome_file = input_files[0]
 
-        enzyme_name = metadata['enzyme_name']
-        mapping_list = metadata['mapping']
-        expt_name = metadata['expt_name']
+        enzyme_name = input_metadata['enzyme_name']
+        mapping_list = input_metadata['mapping']
+        expt_name = input_metadata['expt_name']
         filter_chrom = None
-        if 'chromosomes' in metadata and metadata['chromosomes'] != '':
-            filter_chrom = metadata['chromosomes'].split(',')
+        if 'chromosomes' in input_metadata and input_metadata['chromosomes'] != '':
+            filter_chrom = input_metadata['chromosomes'].split(',')
 
         root_name = input_files[1].split("/")
 
         reads = "/".join(root_name[0:-1]) + '/'
 
-        genome_seq = parse_fasta(genome_file, chr_filter=filter_chrom, chr_regexp="^(chr)?[A-Za-z]?[0-9]{0,3}[XVI]{0,3}(?:ito)?[A-Z-a-z]?$", save_cache=False, reload_cache=True)
+        genome_seq = parse_fasta(  # pylint: disable=unexpected-keyword-arg
+            genome_file, chr_filter=filter_chrom,
+            chr_regexp="^(chr)?[A-Za-z]?[0-9]{0,3}[XVI]{0,3}(?:ito)?[A-Z-a-z]?$",
+            save_cache=False, reload_cache=True)
+
+        if not genome_seq:
+            genome_seq = parse_fasta(  # pylint: disable=unexpected-keyword-arg
+                genome_file, chr_filter=filter_chrom,
+                save_cache=False, reload_cache=True)
+            if not genome_seq:
+                logger.fatal("Reference genome FASTA file does not contain any valid chromosome")
+                raise ValueError('No valid chromosomes in FASTA.')
+            else:
+                logger.warn("No chromosomes headers found in fasta, found {0}.".format(
+                    [k for k in genome_seq]))
+                logger.warn("Using them instead")
 
         chromosome_meta = []
         for k in genome_seq:
             chromosome_meta.append([k, len(genome_seq[k])])
         # input and output share most metadata
         output_metadata = {
-            'chromosomes' : chromosome_meta
+            'chromosomes': chromosome_meta
         }
 
         if mapping_list[0] == mapping_list[1]:
@@ -365,16 +378,18 @@ class tbParseMappingTool(Tool):
                     genome_seq, enzyme_name,
                     window1_1, window1_2, window1_3, window1_4,
                     window2_1, window2_2, window2_3, window2_4,
-                    read_iter, ncpus=metadata['ncpus'])
+                    read_iter, ncpus=(
+                        1 if 'ncpus' not in input_metadata else input_metadata['ncpus']))
                 results = compss_wait_on(results)
                 if results == 0:
                     output_metadata = {
-                        'error': 'No interactions found, please verify input data and chromosome filtering'
+                        'error': 'No interactions found, \
+                        please verify input data and chromosome filtering'
                     }
                     return ([], output_metadata)
                 return ([read_iter], output_metadata)
 
-            elif mapping_list[0] == 'frag':
+            if mapping_list[0] == 'frag':
                 window1_full = input_files[1]
                 window1_frag = input_files[2]
 
@@ -387,17 +402,21 @@ class tbParseMappingTool(Tool):
                     genome_seq, enzyme_name,
                     window1_full, window1_frag,
                     window2_full, window2_frag,
-                    read_frag, ncpus=metadata['ncpus'])
+                    read_frag, ncpus=(
+                        1 if 'ncpus' not in input_metadata else input_metadata['ncpus']))
 
                 results = compss_wait_on(results)
                 if results == 0:
                     output_metadata = {
-                        'error': 'No interactions found, please verify input data and chromosome filtering'
+                        'error': 'No interactions found, \
+                        please verify input data and chromosome filtering'
                     }
                     return ([], output_metadata)
                 return ([read_frag], output_metadata)
 
             reads = None
             return ([reads], output_metadata)
+
+        return ([], [])
 
 # ------------------------------------------------------------------------------

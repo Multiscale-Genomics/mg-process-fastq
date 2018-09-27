@@ -15,17 +15,18 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-disabled="--disable=similarities,invalid-name,too-many-statements,too-many-arguments,too-many-locals,too-few-public-methods,relative-import,no-self-use"
+disabled="--disable=similarities,invalid-name,too-many-statements,too-many-arguments,too-many-locals,too-few-public-methods,relative-import,no-self-use,,useless-object-inheritance"
 
 pylint ${disabled} --rcfile pylintrc process*.py > output.err
+pylint ${disabled} --rcfile pylintrc *wrapper*.py >> output.err
 pylint ${disabled} --rcfile pylintrc mg_process_fastq >> output.err
 
 grep -v "\-\-\-\-\-\-\-\-\-" output.err | grep -v "Your code has been rated" | grep -v "\n\n" | sed '/^$/d' > pylint.err
 
-
 if [ -s pylint.err ]
 then
-    cat pylint.err
+    # cat pylint.err
+    cat output.err
     rm pylint.err
     exit 1
 fi

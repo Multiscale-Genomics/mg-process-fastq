@@ -84,6 +84,26 @@ def hic_pipeline(verbose=False):
 
     return pytest.main(params)
 
+def tadbit_tools(verbose=False):
+    """
+    Runs the tests for tadbit tools
+
+    Runs the following tests:
+
+    .. code-block:: none
+
+       pytest -m tadbit tests/test_tadbit_tools.py
+    """
+
+    params = ['-m tadbit']
+
+    if verbose is True:
+        params.append('-s')
+
+    params.append('tests/test_tadbit_tools.py')
+
+    return pytest.main(params)
+
 
 def idamidseq_pipeline(verbose=False):
     """
@@ -226,7 +246,7 @@ if __name__ == '__main__':
         required=True,
         type=str,
         choices=[
-            'genome', 'chipseq', 'hic', 'idamidseq', 'idear', 'trimgalore', 'mnaseseq',
+            'genome', 'chipseq', 'hic', 'tadbit', 'idamidseq', 'idear', 'trimgalore', 'mnaseseq',
             'rnaseq', 'wgbs', 'all'
         ],
         help=""
@@ -260,6 +280,11 @@ if __name__ == '__main__':
     if 'hic' in PIPELINES or 'all' in PIPELINES:
         print('HIC')
         if hic_pipeline(VERBOSE) > 0:
+            sys.exit(1)
+
+    if 'tadbit' in PIPELINES or 'all' in PIPELINES:
+        print('TADbit')
+        if tadbit_tools(VERBOSE) > 0:
             sys.exit(1)
 
     if 'idamidseq' in PIPELINES or 'all' in PIPELINES:

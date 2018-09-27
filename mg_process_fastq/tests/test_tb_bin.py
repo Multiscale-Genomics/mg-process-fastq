@@ -18,7 +18,7 @@
 from __future__ import print_function
 
 import os.path
-import pytest  # pylint: disable=unused-import
+import pytest
 
 from tool.tb_bin import tbBinTool
 
@@ -43,7 +43,8 @@ def test_tb_bin():
         'ncpus': 4
     }
 
-    tb = tbBinTool()
-    tb_files, tb_meta = tb.run(files, [], metadata)
+    tb_handle = tbBinTool()
+    tb_files, tb_meta = tb_handle.run(files, [], metadata)
 
     assert len(tb_files) == 5
+    assert len(tb_meta) == 5

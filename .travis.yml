@@ -32,10 +32,10 @@ before_cache:
 env:
     matrix:
         - TESTENV=docs
+        - TESTENV=pylint
         - TESTENV=code
         - TESTENV=wgbs_code_1
         - TESTENV=wgbs_code_2
-        - TESTENV=pylint
 
 addons:
     apt:

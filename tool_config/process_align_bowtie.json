@@ -74,38 +74,44 @@
         }
     ],
     "input_files_combinations": [
-        [
-            "loc",
-            "genome",
-            "index"
-        ],
-        [
-            "loc",
-            "fastq2",
-            "genome",
-            "index"
-        ]
+        {
+            "description": "Align single end reads",
+            "input_files": [
+                "loc",
+                "genome",
+                "index"
+            ]
+        },
+        {
+            "description": "Align paired end reads",
+            "input_files": [
+                "loc",
+                "fastq2",
+                "genome",
+                "index"
+            ]
+        }
     ],
     "arguments": [
         {
             "name": "bowtie2_interleaved_param",
             "description": "Interleaved reads, where the first 2 reads represent a paired end",
             "help": "Interleaved reads, where the first 2 reads represent a paired end",
-            "type": "bool",
+            "type": "boolean",
             "required": false,
             "default": false
         }, {
             "name": "bowtie2_tab5_param",
             "description": "All reads, or pairs of reads, are a single line",
             "help": "",
-            "type": "bool",
+            "type": "boolean",
             "required": false,
             "default": false
         }, {
             "name": "bowtie2_tab6_param",
             "description": "Same as tab5 except the the second paired-end read can have a different name",
             "help": "",
-            "type": "bool",
+            "type": "boolean",
             "required": false,
             "default": false
         }, {
@@ -140,14 +146,14 @@
             "name": "bowtie2_phred33_param",
             "description": "Input score are equivalent to Phred+33",
             "help": "Input score are equivalent to Phred+33",
-            "type": "bool",
+            "type": "boolean",
             "required": false,
             "default": false
         }, {
             "name": "bowtie2_phre64_param",
             "description": "Input score are equivalent to Phred+64",
             "help": "Input score are equivalent to Phred+64",
-            "type": "bool",
+            "type": "boolean",
             "required": false,
             "default": false
         }, {
@@ -182,42 +188,42 @@
             "name": "bowtie2_ignore_quals_param",
             "description": "Use a high read quality in cases of gaps instead of the quality score",
             "help": "Use a high read quality in cases of gaps instead of the quality score",
-            "type": "bool",
+            "type": "boolean",
             "required": false,
             "default": false
         }, {
             "name": "bowtie2_nofw_param",
             "description": "Do not align unpaired reads to the forward strand",
             "help": "Do not align unpaired reads to the forward strand",
-            "type": "bool",
+            "type": "boolean",
             "required": false,
             "default": false
         }, {
             "name": "bowtie2_norc_param",
             "description": "Do not align unpaired reads to the reverse strand",
             "help": "Do not align unpaired reads to the reverse strand",
-            "type": "bool",
+            "type": "boolean",
             "required": false,
             "default": false
         }, {
             "name": "bowtie2_no_1mm_upfront_param",
             "description": "Prevent Bowtie2 searching for alignments with 1 mismatch before using a multiseed approach to alignment",
             "help": "Prevent Bowtie2 searching for alignments with 1 mismatch before using a multiseed approach to alignment",
-            "type": "bool",
+            "type": "boolean",
             "required": false,
             "default": false
         }, {
             "name": "bowtie2_end_to_end_param",
             "description": "The read should completely align to the reference genome",
             "help": "The read should completely align to the reference genome",
-            "type": "bool",
+            "type": "boolean",
             "required": false,
             "default": false
         }, {
             "name": "bowtie2_local_param",
             "description": "Allow soft-clipping to get an alignment",
             "help": "Allow soft-clipping to get an alignment",
-            "type": "bool",
+            "type": "boolean",
             "required": false,
             "default": false
         }, {
@@ -227,7 +233,7 @@
             "type": "string",
             "required": false,
             "default": "15"
-        }, , {
+        }, {
             "name": "bowtie2_reseed_param",
             "description": "Max number of re-seeds if a read has repetitive seeds",
             "help": "Max number of re-seeds if a read has repetitive seeds",
@@ -262,56 +268,56 @@
             "name": "bowtie2_no_mixed_param",
             "description": "Find only concordant/discordant alignments for pairs",
             "help": "Find only concordant/discordant alignments for pairs",
-            "type": "bool",
+            "type": "boolean",
             "required": false,
             "default": false
         }, {
             "name": "bowtie2_no_discordant_param",
             "description": "If there are no concordant pair alignments, do not search for discordant pairs",
             "help": "If there are no concordant pair alignments, do not search for discordant pairs",
-            "type": "bool",
+            "type": "boolean",
             "required": false,
             "default": false
         }, {
             "name": "bowtie2_dovetail_param",
             "description": "Allow mates to dovetail each other. For further details see http://bowtie-bio.sourceforge.net/bowtie2/manual.shtml#mates-can-overlap-contain-or-dovetail-each-other",
             "help": "Allow mates to dovetail each other. For further details see http://bowtie-bio.sourceforge.net/bowtie2/manual.shtml#mates-can-overlap-contain-or-dovetail-each-other",
-            "type": "bool",
+            "type": "boolean",
             "required": false,
             "default": false
         }, {
             "name": "bowtie2_no_contain_param",
             "description": "Don't allow mates to contain its paired mate. For further details see http://bowtie-bio.sourceforge.net/bowtie2/manual.shtml#mates-can-overlap-contain-or-dovetail-each-other",
             "help": "Don't allow mates to contain its paired mate. For further details see http://bowtie-bio.sourceforge.net/bowtie2/manual.shtml#mates-can-overlap-contain-or-dovetail-each-other",
-            "type": "bool",
+            "type": "boolean",
             "required": false,
             "default": false
         }, {
             "name": "bowtie2_no_overlap_param",
             "description": "Don't allow mates to overlap each other. For further details see http://bowtie-bio.sourceforge.net/bowtie2/manual.shtml#mates-can-overlap-contain-or-dovetail-each-other",
             "help": "Don't allow mates to overlap each other. For further details see http://bowtie-bio.sourceforge.net/bowtie2/manual.shtml#mates-can-overlap-contain-or-dovetail-each-other",
-            "type": "bool",
+            "type": "boolean",
             "required": false,
             "default": false
         }, {
             "name": "bowtie2_no_unal_param",
             "description": "No SAM records for unaligned reads",
             "help": "No SAM records for unaligned reads",
-            "type": "bool",
+            "type": "boolean",
             "required": false,
             "default": false
         }, {
             "name": "bowtie2_no_hd_param",
             "description": "No SAM header lines",
             "help": "No SAM header lines",
-            "type": "bool",
+            "type": "boolean",
             "required": false,
             "default": false
         }, {
             "name": "bowtie2_no_sq_param",
             "description": "No @SQ SAM header lines",
             "help": "No @SQ SAM header lines",
-            "type": "bool",
+            "type": "boolean",
             "required": false,
             "default": false
         }, {
@@ -332,28 +338,28 @@
             "name": "bowtie2_omit_sec_seq_param",
             "description": "Do not include sequence and quality lines when printing secondary alignments",
             "help": "Do not include sequence and quality lines when printing secondary alignments",
-            "type": "bool",
+            "type": "boolean",
             "required": false,
             "default": false
         }, {
             "name": "bowtie2_soft_clipped_unmapped_tlen_param",
             "description": "Soft-clipped bases are assigned as unmapped when calculating TLEN",
             "help": "Soft-clipped bases are assigned as unmapped when calculating TLEN",
-            "type": "bool",
+            "type": "boolean",
             "required": false,
             "default": false
         }, {
             "name": "bowtie2_sam_no_qname_trunc_param",
             "description": "Use full read name (including whitespace). This will generate non-standard format SAM files",
             "help": "Use full read name (including whitespace). This will generate non-standard format SAM files",
-            "type": "bool",
+            "type": "boolean",
             "required": false,
             "default": false
         }, {
             "name": "bowtie2_xeq_param",
             "description": "To indicate matches/mis-matches use '='/'X' instead of 'M'",
             "help": "To indicate matches/mis-matches use '='/'X' instead of 'M'",
-            "type": "bool",
+            "type": "boolean",
             "required": false,
             "default": false
         }, {
@@ -420,14 +426,17 @@
             "allow_multiple": false,
             "name": "bam",
             "file": {
-                "file_type": "bam",
+                "file_type": "BAM",
                 "meta_data": {
                     "visible": true,
                     "tool": "process_bowtie",
                     "description": "Aligned sequences"
                 },
                 "file_path": "bt2.bam",
-                "data_type": "data_seq",
+                "data_type": [
+                    "data_chip_seq", "data_idamid_seq", "data_mnase_seq", "data_rna_seq",
+                    "data_wgbs", "data_hic"
+                ],
                 "compressed": "null"
             }
         }

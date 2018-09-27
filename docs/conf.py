@@ -50,7 +50,7 @@ class Mock(MagicMock):
 
 MOCK_MODULES = [
     'rpy2', 'pyBigWig', 'pycompss', 'pysam',
-    'bs_index', 'bs_index.wg_build', 'FilterReads'
+    'bs_index', 'bs_index.wg_build', 'FilterReads', 'cPickle'
 ]
 sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
 

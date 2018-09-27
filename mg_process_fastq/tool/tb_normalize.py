@@ -22,29 +22,30 @@ import os
 from subprocess import PIPE, Popen
 import subprocess
 
+from basic_modules.tool import Tool
+
 from utils import logger
 
 try:
     if hasattr(sys, '_run_from_cmdl') is True:
         raise ImportError
-    from pycompss.api.parameter import FILE_IN, FILE_OUT, FILE_INOUT, IN
+    from pycompss.api.parameter import FILE_IN, FILE_OUT, IN
     from pycompss.api.task import task
-    from pycompss.api.api import compss_wait_on
+    # from pycompss.api.api import compss_wait_on
     # from pycompss.api.constraint import constraint
 except ImportError:
     logger.info("[Warning] Cannot import \"pycompss\" API packages.")
     logger.info("          Using mock decorators.")
 
-    from dummy_pycompss import FILE_IN, FILE_OUT, FILE_INOUT, IN  # pylint: disable=ungrouped-imports
-    from dummy_pycompss import task  # pylint: disable=ungrouped-imports
-    from dummy_pycompss import compss_wait_on  # pylint: disable=ungrouped-imports
-    #from dummy_pycompss import constraint
+    from utils.dummy_pycompss import FILE_IN, FILE_OUT, IN  # pylint: disable=ungrouped-imports
+    from utils.dummy_pycompss import task  # pylint: disable=ungrouped-imports
+    # from utils.dummy_pycompss import compss_wait_on  # pylint: disable=ungrouped-imports
+    # from utils.dummy_pycompss import constraint
 
-from basic_modules.tool import Tool
 
 # ------------------------------------------------------------------------------
 
-class tbNormalizeTool(Tool):
+class tbNormalizeTool(Tool):  # pylint: disable=invalid-name
     """
     Tool for normalizing an adjacency matrix
     """
@@ -56,9 +57,12 @@ class tbNormalizeTool(Tool):
         logger.info("TADbit - Normalize")
         Tool.__init__(self)
 
-    @task(bamin=FILE_IN, resolution=IN, min_perc=IN, max_perc=IN, workdir=IN)
-    # @constraint(ProcessorCoreCount=16)
-    def tb_normalize(self, bamin, normalization, resolution, min_perc, max_perc, workdir, ncpus="1", min_count=None, fasta=None, mappability=None, rest_enzyme=None):
+    @task(bamin=FILE_IN, normalization=IN, resolution=IN, min_perc=IN,
+          max_perc=IN, workdir=IN, biases=FILE_OUT, interactions_plot=FILE_OUT,
+          filtered_bins_plot=FILE_OUT)
+    def tb_normalize(self, bamin, normalization, resolution, min_perc, # pylint: disable=too-many-locals,too-many-statements,unused-argument,no-self-use,too-many-arguments
+                     max_perc, workdir, ncpus="1", min_count=None, fasta=None,
+                     mappability=None, rest_enzyme=None):
         """
         Function to normalize to a given resolution the Hi-C
         matrix
@@ -100,9 +104,10 @@ class tbNormalizeTool(Tool):
             Location of filtered_bins png
 
         """
-        #chr_hic_data = read_matrix(matrix_file, resolution=int(resolution))
+        # chr_hic_data = read_matrix(matrix_file, resolution=int(resolution))
 
-        logger.info("TB NORMALIZATION: {0} {1} {2} {3} {4} {5}".format(bamin, normalization, resolution, min_perc, max_perc, workdir))
+        logger.info("TB NORMALIZATION: {0} {1} {2} {3} {4} {5}".format(
+            bamin, normalization, resolution, min_perc, max_perc, workdir))
 
         _cmd = [
             'tadbit', 'normalize',
@@ -135,33 +140,34 @@ class tbNormalizeTool(Tool):
         output_files = []
 
         try:
-            proc = subprocess.check_output(_cmd, stderr=subprocess.STDOUT)
-        except subprocess.CalledProcessError as e:
-            logger.info(e.output)
+            _ = subprocess.check_output(_cmd, stderr=subprocess.STDOUT,
+                                        cwd=workdir)
+        except subprocess.CalledProcessError as subp_err:
+            logger.info(subp_err.output)
             if not min_count:
                 logger.info("cis/trans ratio failed, trying with min_count. Disabling plot.")
                 _cmd.append('--min_count')
                 _cmd.append('10')
                 _cmd.append('--normalize_only')
                 try:
-                    proc = subprocess.check_output(_cmd, stderr=subprocess.STDOUT)
-                except subprocess.CalledProcessError as e:
-                    logger.fatal(e.output)
+                    _ = subprocess.check_output(_cmd, stderr=subprocess.STDOUT)
+                except subprocess.CalledProcessError as subp_err:
+                    logger.fatal(subp_err.output)
 
         os.chdir(workdir+"/04_normalization")
-        for fl in glob.glob("biases_*.pickle"):
-            output_files.append(os.path.abspath(fl))
+        for fl_file in glob.glob("biases_*.pickle"):
+            output_files.append(os.path.abspath(fl_file))
             break
-        for fl in glob.glob("interactions*.png"):
-            output_files.append(os.path.abspath(fl))
+        for fl_file in glob.glob("interactions*.png"):
+            output_files.append(os.path.abspath(fl_file))
             break
-        for fl in glob.glob("filtered_bins_*.png"):
-            output_files.append(os.path.abspath(fl))
+        for fl_file in glob.glob("filtered_bins_*.png"):
+            output_files.append(os.path.abspath(fl_file))
             break
 
         return (output_files, output_metadata)
 
-    def run(self, input_files, output_files, metadata=None):
+    def run(self, input_files, input_metadata, output_files):  # pylint: disable=too-many-locals
         """
         The main function for the normalization of the Hi-C matrix to a given resolution
 
@@ -192,9 +198,8 @@ class tbNormalizeTool(Tool):
             mappability: str
                 Location of the file with mappability, required for oneD normalization
             rest_enzyme: str
-                For oneD normalization. Name of the restriction enzyme used to do the Hi-C experiment
-
-
+                For oneD normalization.
+                Name of the restriction enzyme used to do the Hi-C experiment
 
         Returns
         -------
@@ -215,37 +220,41 @@ class tbNormalizeTool(Tool):
             logger.info(err)
 
         resolution = '1000000'
-        if 'resolution' in metadata:
-            resolution = metadata['resolution']
+        if 'resolution' in input_metadata:
+            resolution = input_metadata['resolution']
 
         normalization = 'Vanilla'
-        if 'normalization' in metadata:
-            normalization = metadata['normalization']
+        if 'normalization' in input_metadata:
+            normalization = input_metadata['normalization']
 
         min_perc = max_perc = min_count = fasta = mappability = rest_enzyme = None
         ncpus = 1
-        if 'ncpus' in metadata:
-            ncpus = metadata['ncpus']
-        if 'min_perc' in metadata:
-            min_perc = metadata['min_perc']
-        if 'max_perc' in metadata:
-            max_perc = metadata['max_perc']
-        if 'min_count' in metadata:
-            min_count = metadata['min_count']
-        if 'fasta' in metadata:
-            fasta = metadata['fasta']
-        if 'mappability' in metadata:
-            mappability = metadata['mappability']
-        if 'rest_enzyme' in metadata:
-            rest_enzyme = metadata['rest_enzyme']
+        if 'ncpus' in input_metadata:
+            ncpus = input_metadata['ncpus']
+        if 'min_perc' in input_metadata:
+            min_perc = input_metadata['min_perc']
+        if 'max_perc' in input_metadata:
+            max_perc = input_metadata['max_perc']
+        if 'min_count' in input_metadata:
+            min_count = input_metadata['min_count']
+        if 'fasta' in input_metadata:
+            fasta = input_metadata['fasta']
+        if 'mappability' in input_metadata:
+            mappability = input_metadata['mappability']
+        if 'rest_enzyme' in input_metadata:
+            rest_enzyme = input_metadata['rest_enzyme']
 
         root_name = os.path.dirname(os.path.abspath(bamin))
-        if 'workdir' in metadata:
-            root_name = metadata['workdir']
+        if 'workdir' in input_metadata:
+            root_name = input_metadata['workdir']
 
         # input and output share most metadata
 
-        output_files, output_metadata = self.tb_normalize(bamin, normalization, resolution, min_perc, max_perc, root_name, ncpus, min_count, fasta, mappability, rest_enzyme)
+        output_files, output_metadata = self.tb_normalize(bamin, normalization,
+                                                          resolution, min_perc,
+                                                          max_perc, root_name, ncpus,
+                                                          min_count, fasta, mappability,
+                                                          rest_enzyme)
 
         return (output_files, output_metadata)
 

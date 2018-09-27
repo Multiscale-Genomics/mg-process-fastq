@@ -233,6 +233,7 @@ def hic_toolchain(verbose=False):
 
     .. code-block:: none
 
+<<<<<<< HEAD:mg_process_fastq/tests/test_toolchains.py
        pytest -m hic mg_process_fastq/tests/test_fastqc_validation.py
        pytest -m hic mg_process_fastq/tests/test_gem_indexer.py
        pytest -m hic mg_process_fastq/tests/test_tb_full_mapping.py
@@ -240,6 +241,18 @@ def hic_toolchain(verbose=False):
        pytest -m hic mg_process_fastq/tests/test_tb_filter.py
        pytest -m hic mg_process_fastq/tests/test_tb_generate_tads.py
        pytest -m hic mg_process_fastq/tests/test_tb_save_hdf5_matrix.py
+=======
+       pytest -m hic tests/test_fastqc_validation.py
+       pytest -m hic tests/test_gem_indexer.py
+       pytest -m hic tests/test_tb_full_mapping.py
+       pytest -m hic tests/test_tb_parse_mapping.py
+       pytest -m hic tests/test_tb_filter.py
+       pytest -m hic tests/test_tb_normalize.py
+       pytest -m hic tests/test_tb_segment.py
+       pytest -m hic tests/test_tb_generate_tads.py
+       pytest -m hic tests/test_tb_bin.py
+       pytest -m hic tests/test_tb_save_hdf5_matrix.py
+>>>>>>> master:tests/test_toolchains.py
     """
 
     params = ['-m hic']
@@ -247,13 +260,17 @@ def hic_toolchain(verbose=False):
     if verbose is True:
         params.append('-s')
 
-    params.append('mg_process_fastq/tests/test_fastqc_validation.py')
-    params.append('mg_process_fastq/tests/test_gem_indexer.py')
-    params.append('mg_process_fastq/tests/test_tb_full_mapping.py')
-    params.append('mg_process_fastq/tests/test_tb_parse_mapping.py')
-    params.append('mg_process_fastq/tests/test_tb_filter.py')
-    params.append('mg_process_fastq/tests/test_tb_generate_tads.py')
-    params.append('mg_process_fastq/tests/test_tb_save_hdf5_matrix.py')
+    params.append('tests/test_fastqc_validation.py')
+    params.append('tests/test_gem_indexer.py')
+    params.append('tests/test_tb_full_mapping.py')
+    params.append('tests/test_tb_parse_mapping.py')
+    params.append('tests/test_tb_filter.py')
+    params.append('tests/test_tb_normalize.py')
+    params.append('tests/test_tb_segment.py')
+    params.append('tests/test_tb_generate_tads.py')
+    params.append('tests/test_tb_bin.py')
+    params.append('tests/test_tb_model.py')
+    params.append('tests/test_tb_save_hdf5_matrix.py')
 
     return pytest.main(params)
 

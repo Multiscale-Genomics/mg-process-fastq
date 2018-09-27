@@ -7,7 +7,6 @@
         "institution": "EMBL-EBI",
         "author": "Reham Fatima",
         "contact": "reham@ebi.ac.uk",
-        "user": "",
         "url": "https://github.com/Multiscale-Genomics/mg-process-fastq"
     },
     "status": 0,
@@ -54,23 +53,32 @@
         }
     ],
     "input_files_combinations": [
-        [
-            "fastq1"
-        ],
-        [
-            "fastq1",
-            "fastq2"
-        ]
+        {
+            "description": "Trim single end reads",
+            "input_files": [
+                "fastq1",
+                "genome",
+                "index"
+            ]
+        },
+        {
+            "description": "Trim paired end reads",
+            "input_files": [
+                "fastq1",
+                "fastq2",
+                "genome",
+                "index"
+            ]
+        }
     ],
     "arguments": [
         {
             "name": "tg_quality",
             "description": "Trim low quality reads in addition to adpater removal",
             "help": "Trim low quality reads in addition to adpater removal",
-            "type": "int",
+            "type": "integer",
             "required": false,
-            "default": "50",
-            "value": "50"
+            "default": 50
         },
         {
             "name": "tg_phred33",
@@ -78,8 +86,7 @@
             "help": "Instructs Cutadapt to use ASCII+33 quality scores as Phred scores",
             "type": "boolean",
             "required": false,
-            "default": "true",
-            "value": "true"
+            "default": true
         },
         {
             "name": "tg_phred64",
@@ -122,8 +129,7 @@
             "help": "Adapter sequence to be trimmed is the first 13bp of the Illumina universal adapter",
             "type": "string",
             "required": false,
-            "default" : "AGATCGGAAGAGC",
-            "value" : "AGATCGGAAGAGC"
+            "default" : "AGATCGGAAGAGC"
         },
         {
             "name": "tg_nextera",
@@ -131,8 +137,7 @@
             "help": "Adapter sequence to be trimmed is the first 12bp of the Nextera adapter",
             "type": "string",
             "required": false,
-            "default" : "CTGTCTCTTATA",
-            "value" : "CTGTCTCTTATA"
+            "default" : "CTGTCTCTTATA"
         },
         {
             "name": "tg_small_rna",
@@ -140,33 +145,30 @@
             "help": "Adapter sequence to be trimmed is the first 12bp of the Illumina Small RNA 3' Adapter",
             "type": "string",
             "required": false,
-            "default" : "TGGAATTCTCGG",
-            "value" : "TGGAATTCTCGG"
+            "default" : "TGGAATTCTCGG"
         },
         {
             "name": "tg_max_length",
             "description": "Discard reads that are longer than bp after trimming",
             "help": "Discard reads that are longer than bp after trimming",
-            "type": "int",
+            "type": "integer",
             "required": false
         },
         {
             "name": "tg_stringency",
             "description": "Overlap with adapter sequence required to trim a sequence",
             "help": "Overlap with adapter sequence required to trim a sequence",
-            "type": "int",
+            "type": "integer",
             "required": false,
-            "default": "1",
-            "value": "1"
+            "default": 1
         },
         {
             "name": "tg_length",
             "description": "Discard reads that became shorter than length INT because of either quality or adapter trimming",
             "help": "Discard reads that became shorter than length INT because of either quality or adapter trimming",
-            "type": "int",
+            "type": "integer",
             "required": false,
-            "default": "20",
-            "value": "20"
+            "default": 20
         }
 
     ],
@@ -176,14 +178,17 @@
             "allow_multiple": false,
             "name": "fastq1_trimmed",
             "file": {
-                "file_type": "fastq",
+                "file_type": "FASTQ",
                 "meta_data": {
                     "visible": true,
                     "tool": "process_trim_galore",
                     "description": "Trimmed reads"
                 },
                 "file_path": "fastq1_trimmed.fastq",
-                "data_type": "null",
+                "data_type": [
+                    "data_chip_seq", "data_idamid_seq", "data_mnase_seq", "data_rna_seq",
+                    "data_wgbs", "data_hic"
+                ],
                 "compressed": "null"
             }
         }, {
@@ -191,14 +196,17 @@
             "allow_multiple": false,
             "name": "fastq2_trimmed",
             "file": {
-                "file_type": "fastq",
+                "file_type": "FASTQ",
                 "meta_data": {
                     "visible": true,
                     "tool": "process_trim_galore",
                     "description": "Trimmed reads"
                 },
                 "file_path": "fastq2_trimmed.fastq",
-                "data_type": "null",
+                "data_type": [
+                    "data_chip_seq", "data_idamid_seq", "data_mnase_seq", "data_rna_seq",
+                    "data_wgbs", "data_hic"
+                ],
                 "compressed": "null"
             }
 
@@ -207,14 +215,17 @@
             "allow_multiple": false,
             "name": "fastq1_report",
             "file": {
-                "file_type": "txt",
+                "file_type": "TXT",
                 "meta_data": {
                     "visible": true,
                     "tool": "process_trim_galore",
                     "description": "FASTQ 1 trimming report"
                 },
                 "file_path": "fastq1_trimmed.report.txt",
-                "data_type": "null",
+                "data_type": [
+                    "data_chip_seq", "data_idamid_seq", "data_mnase_seq", "data_rna_seq",
+                    "data_wgbs", "data_hic"
+                ],
                 "compressed": "null"
             }
         }, {
@@ -222,14 +233,17 @@
             "allow_multiple": false,
             "name": "fastq2_report",
             "file": {
-                "file_type": "txt",
+                "file_type": "TXT",
                 "meta_data": {
                     "visible": true,
                     "tool": "process_trim_galore",
                     "description": "FASTQ 2 trimming report"
                 },
                 "file_path": "fastq2_trimmed.report.txt",
-                "data_type": "null",
+                "data_type": [
+                    "data_chip_seq", "data_idamid_seq", "data_mnase_seq", "data_rna_seq",
+                    "data_wgbs", "data_hic"
+                ],
                 "compressed": "null"
             }
 

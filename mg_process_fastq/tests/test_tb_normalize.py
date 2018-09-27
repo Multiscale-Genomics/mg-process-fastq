@@ -19,7 +19,7 @@ from __future__ import print_function
 
 import os.path
 from pysam import AlignmentFile  # pylint: disable=no-name-in-module
-import pytest  # pylint: disable=unused-import
+import pytest
 
 from tool.tb_normalize import tbNormalizeTool
 
@@ -45,7 +45,8 @@ def test_tb_normalize():
         metadata["min_count"] = "10"
     bamfile.close()
 
-    tn = tbNormalizeTool()
-    tn_files, tn_meta = tn.run([bamin], [], metadata)
+    tn_handle = tbNormalizeTool()
+    tn_files, tn_meta = tn_handle.run([bamin], [], metadata)
 
     assert len(tn_files) > 1
+    assert len(tn_meta) > 1

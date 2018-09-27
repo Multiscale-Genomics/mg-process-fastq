@@ -304,26 +304,42 @@ class trimgalore(Tool):  # pylint: disable=invalid-name
             with open(fastq1_file_out, "wb") as f_out:
                 with open(tg_tmp_out_1, "rb") as f_in:
                     f_out.write(f_in.read())
+        except (OSError, IOError) as error:
+            logger.fatal("I/O error({0}) - Missing output file: {1}\n\tFile: {2}".format(
+                error.errno, error.strerror, tg_tmp_out_1))
+            return False
+
+        try:
             with open(fastq2_file_out, "wb") as f_out:
                 with open(tg_tmp_out_2, "rb") as f_in:
                     f_out.write(f_in.read())
+        except (OSError, IOError) as error:
+            logger.fatal("I/O error({0}) - Missing output file: {1}\n\tFile: {2}".format(
+                error.errno, error.strerror, tg_tmp_out_2))
+            return False
+
+        try:
+            tg_tmp_out_rpt_1 = os.path.join(
+                fastq1_trimmed[0], fastq1_trimmed[1] + "_trimming_report.txt"
+            )
             with open(fastq1_report, "wb") as f_out:
-                with open(
-                    os.path.join(
-                        fastq1_trimmed[0], fastq1_trimmed[1] + "_trimming_report.txt"
-                    ), "rb"
-                ) as f_in:
-                    f_out.write(f_in.read())
-            with open(fastq2_report, "wb") as f_out:
-                with open(
-                    os.path.join(
-                        fastq2_trimmed[0], fastq2_trimmed[1] + "_trimming_report.txt"
-                    ), "rb"
-                ) as f_in:
+                with open(tg_tmp_out_rpt_1, "rb") as f_in:
                     f_out.write(f_in.read())
         except (OSError, IOError) as error:
-            logger.fatal("I/O error({0}) - Missing output file: {1}".format(
-                error.errno, error.strerror))
+            logger.fatal("I/O error({0}) - Missing output file: {1}\n\tFile in: {2}".format(
+                error.errno, error.strerror, tg_tmp_out_rpt_1))
+            return False
+
+        try:
+            tg_tmp_out_rpt_2 = os.path.join(
+                fastq2_trimmed[0], fastq2_trimmed[1] + "_trimming_report.txt"
+            )
+            with open(fastq2_report, "wb") as f_out:
+                with open(tg_tmp_out_rpt_2, "rb") as f_in:
+                    f_out.write(f_in.read())
+        except (OSError, IOError) as error:
+            logger.fatal("I/O error({0}) - Missing output file: {1}\n\tFile: {2}".format(
+                error.errno, error.strerror, tg_tmp_out_rpt_2))
             return False
 
         return True

@@ -206,7 +206,7 @@ class trimgalore(Tool):  # pylint: disable=invalid-name
           fastq1_file_in=FILE_IN, fastq1_file_out=FILE_OUT, fastq1_report=FILE_OUT,
           fastq2_file_in=FILE_IN, fastq2_file_out=FILE_OUT, fastq2_report=FILE_OUT,
           params=IN, isModifier=False)
-    def trimgalore_paired(  # pylint: disable=no-self-use,too-many-arguments,too-many-locals,too-many-statements
+    def trimgalore_paired(  # pylint: disable=no-self-use,too-many-arguments,too-many-locals,too-many-statements,too-many-branches
             self,
             fastq1_file_in, fastq1_file_out, fastq1_report,
             fastq2_file_in, fastq2_file_out, fastq2_report, params):  # pylint: disable=no-self-use
@@ -289,6 +289,8 @@ class trimgalore(Tool):  # pylint: disable=invalid-name
         command_line += fastq1_file_in + " " + fastq2_file_in
         logger.info("TRIM GALORE: command_line: " + command_line)
 
+        saving_error = False
+
         try:
             args = shlex.split(command_line)
             process = subprocess.Popen(args)
@@ -296,31 +298,60 @@ class trimgalore(Tool):  # pylint: disable=invalid-name
         except (OSError, IOError) as msg:
             logger.fatal("I/O error({0}) - trim_galore: {1}\n{2}".format(
                 msg.errno, msg.strerror, command_line))
-            return False
+            saving_error = True
+
+        try:
+            args = shlex.split(command_line)
+            process = subprocess.Popen(args)
+            process.wait()
+        except (OSError, IOError) as msg:
+            logger.fatal("I/O error({0}) - trim_galore: {1}\n{2}".format(
+                msg.errno, msg.strerror, command_line))
+            saving_error = True
 
         try:
             with open(fastq1_file_out, "wb") as f_out:
                 with open(tg_tmp_out_1, "rb") as f_in:
                     f_out.write(f_in.read())
+        except (OSError, IOError) as error:
+            logger.fatal("I/O error({0}) - Missing output file: {1}\n\tFile: {2}".format(
+                error.errno, error.strerror, tg_tmp_out_1))
+            saving_error = True
+
+        try:
             with open(fastq2_file_out, "wb") as f_out:
                 with open(tg_tmp_out_2, "rb") as f_in:
                     f_out.write(f_in.read())
+        except (OSError, IOError) as error:
+            logger.fatal("I/O error({0}) - Missing output file: {1}\n\tFile: {2}".format(
+                error.errno, error.strerror, tg_tmp_out_2))
+            saving_error = True
 
-            trimmed_report_1 = os.path.join(
+        try:
+            tg_tmp_out_rpt_1 = os.path.join(
                 fastq1_trimmed[0], fastq1_trimmed[1] + "_trimming_report.txt"
             )
-            trimmed_report_2 = os.path.join(
-                fastq2_trimmed[0], fastq2_trimmed[1] + "_trimming_report.txt"
-            )
             with open(fastq1_report, "wb") as f_out:
-                with open(trimmed_report_1, "rb") as f_in:
-                    f_out.write(f_in.read())
-            with open(fastq2_report, "wb") as f_out:
-                with open(trimmed_report_2, "rb") as f_in:
+                with open(tg_tmp_out_rpt_1, "rb") as f_in:
                     f_out.write(f_in.read())
         except (OSError, IOError) as error:
-            logger.fatal("I/O error({0}) - Missing output file: {1}".format(
-                error.errno, error.strerror))
+            logger.fatal("I/O error({0}) - Missing output file: {1}\n\tFile in: {2}".format(
+                error.errno, error.strerror, tg_tmp_out_rpt_1))
+            saving_error = True
+
+        try:
+            tg_tmp_out_rpt_2 = os.path.join(
+                fastq2_trimmed[0], fastq2_trimmed[1] + "_trimming_report.txt"
+            )
+            with open(fastq2_report, "wb") as f_out:
+                with open(tg_tmp_out_rpt_2, "rb") as f_in:
+                    f_out.write(f_in.read())
+        except (OSError, IOError) as error:
+            logger.fatal("I/O error({0}) - Missing output file: {1}\n\tFile: {2}".format(
+                error.errno, error.strerror, tg_tmp_out_rpt_2))
+            saving_error = True
+
+        if saving_error:
             return False
 
         return True

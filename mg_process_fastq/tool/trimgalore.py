@@ -270,12 +270,12 @@ class trimgalore(Tool):  # pylint: disable=invalid-name
             tg_tmp_out_1 = os.path.join(fastq1_trimmed[0], fastq1_trimmed[1])
             tg_tmp_out_1 = tg_tmp_out_1.replace(
                 "." + tail_substring,
-                "_val.fq"
+                "_val_1.fq"
             )
             tg_tmp_out_2 = os.path.join(fastq2_trimmed[0], fastq2_trimmed[1])
             tg_tmp_out_2 = tg_tmp_out_2.replace(
                 "." + tail_substring,
-                "_val.fq"
+                "_val_2.fq"
             )
 
         try:

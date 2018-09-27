@@ -81,7 +81,7 @@ def test_trim_galore_pipeline():
         assert os.path.getsize(tg_files[f_out]) > 0
         os.remove(tg_files[f_out])
 
-    shutil.rmtree('tests/data/tmp')
+    shutil.rmtree('mg_process_fastq/tests/data/tmp')
 
 
 @pytest.mark.trimgalore
@@ -144,4 +144,4 @@ def test_trim_galore_pipeline_02():
         assert os.path.getsize(tg_files[f_out]) > 0
         os.remove(tg_files[f_out])
 
-    shutil.rmtree('tests/data/tmp')
+    shutil.rmtree('mg_process_fastq/tests/data/tmp')

@@ -50,19 +50,19 @@ def test_kallisto_quant_paired():
     metadata = {
         "cdna": Metadata(
             "data_cdna", "fasta", [], None,
-            {'assembly': 'test'}),
+            {"assembly": "GCA_000001405.22", "ensembl": True}),
         "index": Metadata(
             "data_cdna", "fasta", [], None,
-            {'assembly': 'test'}),
+            {"assembly": "GCA_000001405.22", "ensembl": True}),
         "fastq1": Metadata(
             "data_rnaseq", "fastq", [], None,
-            {'assembly': 'test'}),
+            {"assembly": "GCA_000001405.22", "ensembl": True}),
         "fastq2": Metadata(
             "data_rnaseq", "fastq", [], None,
-            {'assembly': 'test'}),
+            {"assembly": "GCA_000001405.22", "ensembl": True}),
         "gff": Metadata(
             "data_seq", "gff", [], None,
-            {'assembly': 'test'}),
+            {"assembly": "GCA_000001405.22", "ensembl": True}),
     }
 
     kqft = kallistoQuantificationTool({"execution": resource_path})
@@ -102,16 +102,16 @@ def test_kallisto_quant_single():
     metadata = {
         "cdna": Metadata(
             "data_cdna", "fasta", [], None,
-            {'assembly': 'test'}),
+            {"assembly": "GCA_000001405.22", "ensembl": True}),
         "index": Metadata(
             "data_cdna", "fasta", [], None,
-            {'assembly': 'test'}),
+            {"assembly": "GCA_000001405.22", "ensembl": True}),
         "fastq1": Metadata(
             "data_rnaseq", "fastq", [], None,
-            {'assembly': 'test'}),
+            {"assembly": "GCA_000001405.22", "ensembl": True}),
         "gff": Metadata(
             "data_seq", "gff", [], None,
-            {'assembly': 'test'}),
+            {"assembly": "GCA_000001405.22", "ensembl": True}),
     }
 
     kqft = kallistoQuantificationTool({"execution": resource_path})

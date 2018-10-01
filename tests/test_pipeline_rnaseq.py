@@ -59,18 +59,18 @@ def test_rnaseq_pipeline():
     metadata = {
         "cdna": Metadata(
             "Assembly", "fasta", files['cdna'], None,
-            {'assembly': 'GCA_000001405.22'}),
+            {"assembly": "GCA_000001405.22"}),
         "fastq1": Metadata(
             "data_rna_seq", "fastq", files['fastq1'], None,
-            {'assembly': 'GCA_000001405.22'}
+            {"assembly": "GCA_000001405.22"}
         ),
         "fastq2": Metadata(
             "data_rna_seq", "fastq", files['fastq2'], None,
-            {'assembly': 'GCA_000001405.22'}
+            {"assembly": "GCA_000001405.22"}
         ),
         "gff": Metadata(
             "data_cdna", "gff", [], None,
-            {'assembly': 'test'}),
+            {"assembly": "GCA_000001405.22", "ensembl": True}),
     }
 
     files_out = {

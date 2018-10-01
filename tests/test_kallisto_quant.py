@@ -44,6 +44,7 @@ def test_kallisto_quant_paired():
         "abundance_h5_file": resource_path + "kallisto.Human.ERR030872.paired.abundance.h5",
         "abundance_tsv_file": resource_path + "kallisto.Human.ERR030872.paired.abundance.tsv",
         "abundance_bed_file": resource_path + "kallisto.Human.ERR030872.paired.abundance.bed",
+        "abundance_gff_file": resource_path + "kallisto.Human.ERR030872.paired.abundance.gff",
         "run_info_file": resource_path + "kallisto.Human.ERR030872.paired.run_info.json"
     }
 
@@ -66,16 +67,18 @@ def test_kallisto_quant_paired():
     }
 
     kqft = kallistoQuantificationTool({"execution": resource_path})
-    kqft.run(input_files, metadata, output_files)
+    rs_files, rs_meta = kqft.run(input_files, metadata, output_files)
 
-    assert os.path.isfile(output_files["abundance_h5_file"]) is True
-    assert os.path.getsize(output_files["abundance_h5_file"]) > 0
-    assert os.path.isfile(output_files["abundance_tsv_file"]) is True
-    assert os.path.getsize(output_files["abundance_tsv_file"]) > 0
-    assert os.path.isfile(output_files["abundance_bed_file"]) is True
-    assert os.path.getsize(output_files["abundance_bed_file"]) > 0
-    assert os.path.isfile(output_files["run_info_file"]) is True
-    assert os.path.getsize(output_files["run_info_file"]) > 0
+    # Checks that the returned files matches the expected set of results
+    assert len(rs_meta) == 5
+
+    # Add tests for all files created
+    for f_out in rs_files:
+        print("RNA SEQ RESULTS FILE:", f_out)
+        assert rs_files[f_out] == output_files[f_out]
+        assert os.path.isfile(rs_files[f_out]) is True
+        assert os.path.getsize(rs_files[f_out]) > 0
+        os.remove(rs_files[f_out])
 
 
 @pytest.mark.rnaseq
@@ -96,6 +99,7 @@ def test_kallisto_quant_single():
         "abundance_h5_file": resource_path + "kallisto.Human.ERR030872.single.abundance.h5",
         "abundance_tsv_file": resource_path + "kallisto.Human.ERR030872.single.abundance.tsv",
         "abundance_bed_file": resource_path + "kallisto.Human.ERR030872.single.abundance.bed",
+        "abundance_gff_file": resource_path + "kallisto.Human.ERR030872.single.abundance.gff",
         "run_info_file": resource_path + "kallisto.Human.ERR030872.single.run_info.json"
     }
 
@@ -115,13 +119,15 @@ def test_kallisto_quant_single():
     }
 
     kqft = kallistoQuantificationTool({"execution": resource_path})
-    kqft.run(input_files, metadata, output_files)
+    rs_files, rs_meta = kqft.run(input_files, metadata, output_files)
 
-    assert os.path.isfile(output_files["abundance_h5_file"]) is True
-    assert os.path.getsize(output_files["abundance_h5_file"]) > 0
-    assert os.path.isfile(output_files["abundance_tsv_file"]) is True
-    assert os.path.getsize(output_files["abundance_tsv_file"]) > 0
-    assert os.path.isfile(output_files["abundance_bed_file"]) is True
-    assert os.path.getsize(output_files["abundance_bed_file"]) > 0
-    assert os.path.isfile(output_files["run_info_file"]) is True
-    assert os.path.getsize(output_files["run_info_file"]) > 0
+    # Checks that the returned files matches the expected set of results
+    assert len(rs_meta) == 5
+
+    # Add tests for all files created
+    for f_out in rs_files:
+        print("RNA SEQ RESULTS FILE:", f_out)
+        assert rs_files[f_out] == output_files[f_out]
+        assert os.path.isfile(rs_files[f_out]) is True
+        assert os.path.getsize(rs_files[f_out]) > 0
+        os.remove(rs_files[f_out])

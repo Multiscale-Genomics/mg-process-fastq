@@ -78,14 +78,15 @@ def test_rnaseq_pipeline():
         "abundance_h5_file": resource_path + "kallisto.abundance.h5",
         "abundance_tsv_file": resource_path + "kallisto.abundance.tsv",
         "abundance_bed_file": resource_path + "kallisto.abundance.bed",
+        "abundance_gff_file": resource_path + "kallisto.abundance.gff",
         "run_info_file": resource_path + "kallisto.run_info.json"
     }
 
     rs_handle = process_rnaseq({"execution": resource_path})
-    rs_files, rs_meta = rs_handle.run(files, metadata, files_out)  # pylint: disable=unused-variable
+    rs_files, rs_meta = rs_handle.run(files, metadata, files_out)
 
     # Checks that the returned files matches the expected set of results
-    assert len(rs_files) == 5
+    assert len(rs_meta) == 6
 
     # Add tests for all files created
     for f_out in rs_files:
@@ -93,3 +94,4 @@ def test_rnaseq_pipeline():
         assert rs_files[f_out] == files_out[f_out]
         assert os.path.isfile(rs_files[f_out]) is True
         assert os.path.getsize(rs_files[f_out]) > 0
+        os.remove(rs_files[f_out])

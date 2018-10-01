@@ -245,7 +245,7 @@ class kallistoQuantificationTool(Tool):  # pylint: disable=invalid-name
                 if gff_line[0] == "#":
                     continue
 
-                gff_entry = gff_line.split("\t")
+                gff_entry = gff_line.strip().split("\t")
 
                 gff_meta = [i.split("=") for i in gff_entry[8].split(";")]
                 gff_meta_dict = {i[0]: i[1] for i in gff_meta}
@@ -278,7 +278,7 @@ class kallistoQuantificationTool(Tool):  # pylint: disable=invalid-name
             with open(abundance_bed_file, "w") as bed_handle:
                 bed_handle.write("track name=kallisto_quant\n")
                 for tsv_line in tsv_handle:
-                    tsv_entry = tsv_line.split("\t")
+                    tsv_entry = tsv_line.strip().split("\t")
 
                     if tsv_entry[0] == "target_id":
                         continue
@@ -293,6 +293,45 @@ class kallistoQuantificationTool(Tool):  # pylint: disable=invalid-name
                                 tsv_entry[0],
                                 tsv_entry[4],
                                 gene_entry["strand"],
+                            )
+                        )
+                    else:
+                        logger.warn("{} is not a valid transcript ID".format(tsv_entry[0]))
+
+        return True
+
+    @task(
+        returns=bool,
+        gff_data=IN,
+        abundance_tsv_file=FILE_IN,
+        abundance_gff_file=FILE_OUT)
+    def kallisto_tsv2gff(  # pylint: disable=no-self-use
+            self, gff_data, abundance_tsv_file, abundance_gff_file):
+        """
+        So that the TSV file can be viewed within the genome browser it is handy
+        to convert the file to a BigBed file
+        """
+        with open(abundance_tsv_file, "r") as tsv_handle:
+            with open(abundance_gff_file, "w") as gff_handle:
+                gff_handle.write("##gff-version 3\n")
+                gff_handle.write("track name=kallisto_quant\n")
+                for tsv_line in tsv_handle:
+                    tsv_entry = tsv_line.strip().split("\t")
+
+                    if tsv_entry[0] == "target_id":
+                        continue
+
+                    if tsv_entry[0] in gff_data:
+                        gene_entry = gff_data[tsv_entry[0]]
+                        gff_handle.write(
+                            "{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\n".format(
+                                gene_entry["chromosome"],
+                                "Kallisto", "expression",
+                                gene_entry["start"],
+                                gene_entry["end"],
+                                tsv_entry[4],
+                                gene_entry["strand"],
+                                ".",
                             )
                         )
                     else:
@@ -382,15 +421,25 @@ class kallistoQuantificationTool(Tool):  # pylint: disable=invalid-name
             output_files["abundance_tsv_file"],
             output_files["abundance_bed_file"]
         )
+        self.kallisto_tsv2gff(
+            gff_data,
+            output_files["abundance_tsv_file"],
+            output_files["abundance_gff_file"]
+        )
 
         generic_meta = input_metadata["cdna"].meta_data
         generic_meta["tool"] = "kallisto_quant"
+
+        sources = [input_metadata["cdna"].file_path, input_metadata["fastq1"].file_path]
+        if "fastq2" in input_files:
+            sources.append(input_metadata["fastq1"].file_path)
+
         output_metadata = {
             "abundance_h5_file": Metadata(
                 data_type="data_rna_seq",
                 file_type="HDF5",
                 file_path=output_files["abundance_h5_file"],
-                sources=[input_metadata["cdna"].file_path, input_metadata["fastq1"].file_path],
+                sources=sources,
                 taxon_id=input_metadata["cdna"].taxon_id,
                 meta_data=generic_meta
             ),
@@ -398,7 +447,7 @@ class kallistoQuantificationTool(Tool):  # pylint: disable=invalid-name
                 data_type="data_rna_seq",
                 file_type="TSV",
                 file_path=output_files["abundance_tsv_file"],
-                sources=[input_metadata["cdna"].file_path, input_metadata["fastq1"].file_path],
+                sources=sources,
                 taxon_id=input_metadata["cdna"].taxon_id,
                 meta_data=generic_meta
             ),
@@ -406,7 +455,15 @@ class kallistoQuantificationTool(Tool):  # pylint: disable=invalid-name
                 data_type="data_rna_seq",
                 file_type="BED",
                 file_path=output_files["abundance_bed_file"],
-                sources=[input_metadata["cdna"].file_path, input_metadata["fastq1"].file_path],
+                sources=sources,
+                taxon_id=input_metadata["cdna"].taxon_id,
+                meta_data=generic_meta
+            ),
+            "abundance_gff_file": Metadata(
+                data_type="data_rna_seq",
+                file_type="GFF3",
+                file_path=output_files["abundance_gff_file"],
+                sources=sources,
                 taxon_id=input_metadata["cdna"].taxon_id,
                 meta_data=generic_meta
             ),
@@ -414,7 +471,7 @@ class kallistoQuantificationTool(Tool):  # pylint: disable=invalid-name
                 data_type="data_rna_seq",
                 file_type="JSON",
                 file_path=output_files["run_info_file"],
-                sources=[input_metadata["cdna"].file_path, input_metadata["fastq1"].file_path],
+                sources=sources,
                 taxon_id=input_metadata["cdna"].taxon_id,
                 meta_data=generic_meta
             )

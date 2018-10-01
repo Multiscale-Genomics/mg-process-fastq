@@ -132,7 +132,7 @@ class process_rnaseq(Workflow):
                 remap(
                     output_files,
                     "abundance_h5_file", "abundance_tsv_file",
-                    "abundance_bed_file", "run_info_file"
+                    "abundance_bed_file", "abundance_gff_file", "run_info_file"
                 )
             )
         elif "fastq2" in input_files:
@@ -157,7 +157,7 @@ class process_rnaseq(Workflow):
                 remap(
                     output_files,
                     "abundance_h5_file", "abundance_tsv_file",
-                    "abundance_bed_file", "run_info_file")
+                    "abundance_bed_file", "abundance_gff_file", "run_info_file")
             )
         logger.progress("Kallisto Quant", status="DONE")
 

@@ -324,7 +324,7 @@ class kallistoQuantificationTool(Tool):  # pylint: disable=invalid-name
                     if tsv_entry[0] in gff_data:
                         gene_entry = gff_data[tsv_entry[0]]
                         gff_handle.write(
-                            "{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\n".format(
+                            "{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\tID={}\n".format(
                                 gene_entry["chromosome"],
                                 "Kallisto", "expression",
                                 gene_entry["start"],
@@ -332,6 +332,7 @@ class kallistoQuantificationTool(Tool):  # pylint: disable=invalid-name
                                 tsv_entry[4],
                                 gene_entry["strand"],
                                 ".",
+                                tsv_entry[0]
                             )
                         )
                     else:

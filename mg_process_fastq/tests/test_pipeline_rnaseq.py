@@ -50,37 +50,43 @@ def test_rnaseq_pipeline():
     resource_path = os.path.join(os.path.dirname(__file__), "data/")
 
     files = {
-        'cdna': resource_path + 'kallisto.Human.GRCh38.fasta',
-        'fastq1': resource_path + 'kallisto.Human.ERR030872_1.fastq',
-        'fastq2': resource_path + 'kallisto.Human.ERR030872_2.fastq'
+        "cdna": resource_path + "kallisto.Human.GRCh38.fasta",
+        "fastq1": resource_path + "kallisto.Human.ERR030872_1.fastq",
+        "fastq2": resource_path + "kallisto.Human.ERR030872_2.fastq",
+        "gff": resource_path + "kallisto.Human.GRCh38.gff3"
     }
 
     metadata = {
         "cdna": Metadata(
             "Assembly", "fasta", files['cdna'], None,
-            {'assembly': 'GCA_000001405.22'}),
+            {"assembly": "GCA_000001405.22"}),
         "fastq1": Metadata(
             "data_rna_seq", "fastq", files['fastq1'], None,
-            {'assembly': 'GCA_000001405.22'}
+            {"assembly": "GCA_000001405.22"}
         ),
         "fastq2": Metadata(
             "data_rna_seq", "fastq", files['fastq2'], None,
-            {'assembly': 'GCA_000001405.22'}
+            {"assembly": "GCA_000001405.22"}
         ),
+        "gff": Metadata(
+            "data_cdna", "gff", [], None,
+            {"assembly": "GCA_000001405.22", "ensembl": True}),
     }
 
     files_out = {
-        "index": resource_path + 'kallisto.idx',
-        "abundance_h5_file": resource_path + 'kallisto.abundance.h5',
-        "abundance_tsv_file": resource_path + 'kallisto.abundance.tsv',
-        "run_info_file": resource_path + 'kallisto.run_info.json'
+        "index": 'tests/data/kallisto.idx',
+        "abundance_h5_file": resource_path + "kallisto.abundance.h5",
+        "abundance_tsv_file": resource_path + "kallisto.abundance.tsv",
+        "abundance_bed_file": resource_path + "kallisto.abundance.bed",
+        "abundance_gff_file": resource_path + "kallisto.abundance.gff",
+        "run_info_file": resource_path + "kallisto.run_info.json"
     }
 
     rs_handle = process_rnaseq({"execution": resource_path})
-    rs_files, rs_meta = rs_handle.run(files, metadata, files_out)  # pylint: disable=unused-variable
+    rs_files, rs_meta = rs_handle.run(files, metadata, files_out)
 
     # Checks that the returned files matches the expected set of results
-    assert len(rs_files) == 4
+    assert len(rs_meta) == 6
 
     # Add tests for all files created
     for f_out in rs_files:
@@ -88,3 +94,4 @@ def test_rnaseq_pipeline():
         assert rs_files[f_out] == files_out[f_out]
         assert os.path.isfile(rs_files[f_out]) is True
         assert os.path.getsize(rs_files[f_out]) > 0
+        os.remove(rs_files[f_out])

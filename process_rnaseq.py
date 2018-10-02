@@ -116,11 +116,13 @@ class process_rnaseq(Workflow):
             kq_input_files = {
                 "cdna": input_files["cdna"],
                 "fastq1": input_files["fastq1"],
-                "index": k_out["index"]
+                "index": k_out["index"],
+                "gff": input_files["gff"],
             }
             kq_input_meta = {
                 "cdna": metadata["cdna"],
                 "fastq1": metadata["fastq1"],
+                "gff": metadata["gff"],
                 "index": k_meta["index"]
             }
 
@@ -129,7 +131,8 @@ class process_rnaseq(Workflow):
                 kq_input_meta,
                 remap(
                     output_files,
-                    "abundance_h5_file", "abundance_tsv_file", "run_info_file"
+                    "abundance_h5_file", "abundance_tsv_file",
+                    "abundance_bed_file", "abundance_gff_file", "run_info_file"
                 )
             )
         elif "fastq2" in input_files:
@@ -137,19 +140,24 @@ class process_rnaseq(Workflow):
                 "cdna": input_files["cdna"],
                 "fastq1": input_files["fastq1"],
                 "fastq2": input_files["fastq2"],
-                "index": k_out["index"]
+                "index": k_out["index"],
+                "gff": input_files["gff"],
             }
             kq_input_meta = {
                 "cdna": metadata["cdna"],
                 "fastq1": metadata["fastq1"],
                 "fastq2": metadata["fastq2"],
-                "index": k_meta["index"]
+                "index": k_meta["index"],
+                "gff": metadata["gff"],
             }
 
             kq_files, kq_meta = k_quant.run(
                 kq_input_files,
                 kq_input_meta,
-                remap(output_files, "abundance_h5_file", "abundance_tsv_file", "run_info_file")
+                remap(
+                    output_files,
+                    "abundance_h5_file", "abundance_tsv_file",
+                    "abundance_bed_file", "abundance_gff_file", "run_info_file")
             )
         logger.progress("Kallisto Quant", status="DONE")
 
@@ -168,6 +176,10 @@ class process_rnaseq(Workflow):
             tool_name = kq_meta['abundance_tsv_file'].meta_data['tool']
             kq_meta['abundance_tsv_file'].meta_data['tool_description'] = tool_name
             kq_meta['abundance_tsv_file'].meta_data['tool'] = "process_rnaseq"
+
+            tool_name = kq_meta['abundance_bed_file'].meta_data['tool']
+            kq_meta['abundance_bed_file'].meta_data['tool_description'] = tool_name
+            kq_meta['abundance_bed_file'].meta_data['tool'] = "process_rnaseq"
 
             tool_name = kq_meta['run_info_file'].meta_data['tool']
             kq_meta['run_info_file'].meta_data['tool_description'] = tool_name

@@ -20,7 +20,7 @@ from __future__ import print_function
 import os.path
 import pytest
 
-from tool.tb_segment import tbSegmentTool
+from mg_process_fastq.tool.tb_segment import tbSegmentTool
 
 
 @pytest.mark.hic

@@ -20,7 +20,7 @@ from __future__ import print_function
 import os.path
 import pytest
 
-from tool.tb_model import tbModelTool
+from mg_process_fastq.tool.tb_model import tbModelTool
 
 
 @pytest.mark.hic

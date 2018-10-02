@@ -40,9 +40,9 @@ from basic_modules.metadata import Metadata
 from utils import logger
 from utils import remap
 
-from tool.common import CommandLineParser
-from tool.common import format_utils
-from tool.tb_model import tbModelTool
+from mg_process_fastq.tool.common import CommandLineParser
+from mg_process_fastq.tool.common import format_utils
+from mg_process_fastq.tool.tb_model import tbModelTool
 
 if '/opt/COMPSs/Bindings/python' in sys.path:
     sys.path.pop(sys.path.index('/opt/COMPSs/Bindings/python'))

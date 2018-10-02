@@ -33,11 +33,11 @@ from basic_modules.metadata import Metadata
 from utils import logger
 from utils import remap
 
-from tool.common import CommandLineParser
-from tool.common import format_utils
-from tool.tb_full_mapping import tbFullMappingTool
-from tool.tb_parse_mapping import tbParseMappingTool
-from tool.tb_filter import tbFilterTool
+from mg_process_fastq.tool.common import CommandLineParser
+from mg_process_fastq.tool.common import format_utils
+from mg_process_fastq.tool.tb_full_mapping import tbFullMappingTool
+from mg_process_fastq.tool.tb_parse_mapping import tbParseMappingTool
+from mg_process_fastq.tool.tb_filter import tbFilterTool
 
 if '/opt/COMPSs/Bindings/python' in sys.path:
     sys.path.pop(sys.path.index('/opt/COMPSs/Bindings/python'))

@@ -23,8 +23,8 @@ import pytest
 
 from basic_modules.metadata import Metadata
 
-from tool.gem_indexer import gemIndexerTool
-from tool.tb_full_mapping import tbFullMappingTool
+from mg_process_fastq.tool.gem_indexer import gemIndexerTool
+from mg_process_fastq.tool.tb_full_mapping import tbFullMappingTool
 
 
 

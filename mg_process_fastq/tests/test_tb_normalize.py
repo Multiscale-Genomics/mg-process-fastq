@@ -21,7 +21,7 @@ import os.path
 from pysam import AlignmentFile  # pylint: disable=no-name-in-module
 import pytest
 
-from tool.tb_normalize import tbNormalizeTool
+from mg_process_fastq.tool.tb_normalize import tbNormalizeTool
 
 
 @pytest.mark.hic

@@ -162,17 +162,17 @@ Tools for processing FastQ files
 
    Identify TADs and Compartments
    ------------------------------
-   .. autoclass:: tool.tb_segment.tbSegmentTool
+   .. autoclass:: mg_process_fastq.tool.tb_segment.tbSegmentTool
       :members:
 
    Normalize paired end reads file
    -------------------------------
-   .. autoclass:: tool.tb_normalize.tbNormalizeTool
+   .. autoclass:: mg_process_fastq.tool.tb_normalize.tbNormalizeTool
       :members:
 
    Extract binned matrix from paired end reads file
    ------------------------------------------------
-   .. autoclass:: tool.tb_bin.tbBinTool
+   .. autoclass:: mg_process_fastq.tool.tb_bin.tbBinTool
       :members:
 
    Save Matrix to HDF5 File

@@ -27,7 +27,7 @@ from subprocess import Popen
 from basic_modules.tool import Tool
 from utils import logger
 
-from tool.common import format_utils
+from mg_process_fastq.tool.common import format_utils
 
 try:
     if hasattr(sys, '_run_from_cmdl') is True:

@@ -84,7 +84,7 @@
             "allow_multiple": false,
             "name": "abundance_h5_file",
             "file": {
-                "file_type": "hdf5",
+                "file_type": "HDF5",
                 "meta_data": {
                     "visible": true,
                     "tool": "process_rnaseq",
@@ -99,7 +99,7 @@
             "allow_multiple": false,
             "name": "abundance_tsv_file",
             "file": {
-                "file_type": "tsv",
+                "file_type": "TSV",
                 "meta_data": {
                     "visible": true,
                     "tool": "process_rnaseq",
@@ -112,9 +112,24 @@
         }, {
             "required": false,
             "allow_multiple": false,
+            "name": "abundance_bed_file",
+            "file": {
+                "file_type": "BED",
+                "meta_data": {
+                    "visible": true,
+                    "tool": "process_rnaseq",
+                    "description": "Background aligned sequences"
+                },
+                "file_path": "kallisto.abundance.bed",
+                "data_type": "data_rna_seq",
+                "compressed": "null"
+            }
+        }, {
+            "required": false,
+            "allow_multiple": false,
             "name": "run_info_file",
             "file": {
-                "file_type": "json",
+                "file_type": "JSON",
                 "meta_data": {
                     "visible": true,
                     "tool": "process_rnaseq",

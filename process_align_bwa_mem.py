@@ -106,6 +106,10 @@ class process_bwa_mem(Workflow):
             input_files["genome"] = input_files.pop("genome_public")
             metadata["genome"] = metadata.pop("genome_public")
 
+        if "index_public" in input_files:
+            input_files["index"] = input_files.pop("index_public")
+            metadata["index"] = metadata.pop("index_public")
+
         bwa = bwaAlignerMEMTool(self.configuration)
 
         logger.progress("BWA MEM Aligner", status="RUNNING")

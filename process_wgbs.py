@@ -125,13 +125,22 @@ class process_wgbs(Workflow):
         output_results_files = {}
         output_metadata = {}
 
+        genome_file = None
+        genome_meta = None
+        if "genome_public" in input_files:
+            genome_file = input_files["genome_public"]
+            genome_meta = metadata["genome_public"]
+        else:
+            genome_file = input_files["genome"]
+            genome_meta = metadata["genome"]
+
         logger.info("WGBS - BS-Seeker2 Index")
         # Build the matching WGBS genome index
         builder = bssIndexerTool(self.configuration)
         logger.progress("BSseeker2 Indexer", status="RUNNING")
         genome_idx, gidx_meta = builder.run(
-            remap(input_files, "genome"),
-            remap(metadata, "genome"),
+            {"genome": genome_file},
+            {"genome": genome_meta},
             remap(output_files, "index")
         )
         logger.progress("BSseeker2 Indexer", status="DONE")
@@ -186,13 +195,13 @@ class process_wgbs(Workflow):
         # back together.
         bss_aligner = bssAlignerTool(self.configuration)
         aligner_input_files = {
-            "genome": input_files["genome"],
+            "genome": genome_file,
             "fastq1": fastq1f["fastq_filtered"]
         }
         aligner_input_files["index"] = genome_idx["index"]
 
         aligner_meta = {
-            "genome": metadata["genome"],
+            "genome": genome_meta,
             "fastq1": filter1_meta["fastq_filtered"],
             "index": output_metadata["index"]
         }
@@ -228,7 +237,7 @@ class process_wgbs(Workflow):
         # Methylation peak caller
         peak_caller_handle = bssMethylationCallerTool(self.configuration)
         mct_input_files = {
-            "genome": input_files["genome"],
+            "genome": genome_file,
             "index": genome_idx["index"],
             "fastq1": fastq1f["fastq_filtered"],
             "bam": bam["bam"],
@@ -236,7 +245,7 @@ class process_wgbs(Workflow):
         }
 
         mct_meta = {
-            "genome": metadata["genome"],
+            "genome": genome_meta,
             "index": gidx_meta["index"],
             "fastq1": filter1_meta["fastq_filtered"],
             "bam": output_metadata["bam"],

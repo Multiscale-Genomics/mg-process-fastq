@@ -174,7 +174,7 @@ class CommandLineParser(object):
         return ivalue
 
 
-class format_utils(object):
+class format_utils(object):  # pylint: disable=invalid-name
     """
     Useful functions to format strings
     """

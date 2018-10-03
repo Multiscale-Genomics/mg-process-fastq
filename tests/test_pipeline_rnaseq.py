@@ -85,7 +85,7 @@ def test_rnaseq_pipeline():
     rs_files, rs_meta = rs_handle.run(files, metadata, files_out)
 
     # Checks that the returned files matches the expected set of results
-    assert len(rs_meta) == 6
+    assert len(rs_meta) == 5
 
     # Add tests for all files created
     for f_out in rs_files:

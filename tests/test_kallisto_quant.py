@@ -69,7 +69,7 @@ def test_kallisto_quant_paired():
     rs_files, rs_meta = kqft.run(input_files, metadata, output_files)
 
     # Checks that the returned files matches the expected set of results
-    assert len(rs_meta) == 5
+    assert len(rs_meta) == 4
 
     # Add tests for all files created
     for f_out in rs_files:
@@ -120,7 +120,7 @@ def test_kallisto_quant_single():
     rs_files, rs_meta = kqft.run(input_files, metadata, output_files)
 
     # Checks that the returned files matches the expected set of results
-    assert len(rs_meta) == 5
+    assert len(rs_meta) == 4
 
     # Add tests for all files created
     for f_out in rs_files:

@@ -92,31 +92,21 @@ class process_rnaseq(Workflow):
         output_metadata : dict
             Metadata about each of the files
         """
-        cdna_file = None
-        cdna_meta = None
         if "cdna_public" in input_files:
-            cdna_file = input_files["cdna_public"]
-            cdna_meta = metadata["cdna_public"]
-        else:
-            cdna_file = input_files["cdna"]
-            cdna_meta = metadata["cdna"]
+            input_files["cdna"] = input_files.pop("cdna_public")
+            metadata["cdna"] = metadata.pop("cdna_public")
 
-        gff_file = None
-        gff_meta = None
         if "gff_public" in input_files:
-            gff_file = input_files["gff_public"]
-            gff_meta = metadata["gff_public"]
-        else:
-            gff_file = input_files["gff"]
-            gff_meta = metadata["gff"]
+            input_files["gff"] = input_files.pop("gff_public")
+            metadata["gff"] = metadata.pop("gff_public")
 
         # Index the cDNA
         # This could get moved to the general tools section
         k_index = kallistoIndexerTool(self.configuration)
         logger.progress("Kallisto Indexer", status="RUNNING")
         k_out, k_meta = k_index.run(
-            {"cdna": cdna_file},
-            {"cdna": cdna_meta},
+            {"cdna": input_files["cdna"]},
+            {"cdna": metadata["cdna"]},
             {"index": output_files["index"]}
         )
         logger.progress("Kallisto Indexer", status="DONE")
@@ -131,15 +121,15 @@ class process_rnaseq(Workflow):
         logger.progress("Kallisto Quant", status="RUNNING")
         if "fastq2" not in input_files:
             kq_input_files = {
-                "cdna": cdna_file,
+                "cdna": input_files["cdna"],
                 "fastq1": input_files["fastq1"],
                 "index": k_out["index"],
-                "gff": gff_file,
+                "gff": input_files["gff"],
             }
             kq_input_meta = {
-                "cdna": cdna_meta,
+                "cdna": metadata["cdna"],
                 "fastq1": metadata["fastq1"],
-                "gff": gff_meta,
+                "gff": metadata["gff"],
                 "index": k_meta["index"]
             }
 
@@ -154,18 +144,18 @@ class process_rnaseq(Workflow):
             )
         elif "fastq2" in input_files:
             kq_input_files = {
-                "cdna": cdna_file,
+                "cdna": input_files["cdna"],
                 "fastq1": input_files["fastq1"],
                 "fastq2": input_files["fastq2"],
                 "index": k_out["index"],
-                "gff": gff_file,
+                "gff": input_files["gff"],
             }
             kq_input_meta = {
-                "cdna": cdna_meta,
+                "cdna": metadata["cdna"],
                 "fastq1": metadata["fastq1"],
                 "fastq2": metadata["fastq2"],
                 "index": k_meta["index"],
-                "gff": gff_meta,
+                "gff": metadata["gff"],
             }
 
             kq_files, kq_meta = k_quant.run(

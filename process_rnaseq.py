@@ -115,7 +115,9 @@ class process_rnaseq(Workflow):
         k_index = kallistoIndexerTool(self.configuration)
         logger.progress("Kallisto Indexer", status="RUNNING")
         k_out, k_meta = k_index.run(
-            cdna_file, cdna_meta, output_files["index"]
+            {"cdna": cdna_file},
+            {"cdna": cdna_meta},
+            {"index": output_files["index"]}
         )
         logger.progress("Kallisto Indexer", status="DONE")
 
@@ -147,7 +149,7 @@ class process_rnaseq(Workflow):
                 remap(
                     output_files,
                     "abundance_h5_file", "abundance_tsv_file",
-                    "abundance_bed_file", "abundance_gff_file", "run_info_file"
+                    "abundance_gff_file", "run_info_file"
                 )
             )
         elif "fastq2" in input_files:

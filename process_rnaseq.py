@@ -92,15 +92,30 @@ class process_rnaseq(Workflow):
         output_metadata : dict
             Metadata about each of the files
         """
+        cdna_file = None
+        cdna_meta = None
+        if "cdna_public" in input_files:
+            cdna_file = input_files["cdna_public"]
+            cdna_meta = metadata["cdna_public"]
+        else:
+            cdna_file = input_files["cdna"]
+            cdna_meta = metadata["cdna"]
+
+        gff_file = None
+        gff_meta = None
+        if "gff_public" in input_files:
+            gff_file = input_files["gff_public"]
+            gff_meta = metadata["gff_public"]
+        else:
+            gff_file = input_files["gff"]
+            gff_meta = metadata["gff"]
 
         # Index the cDNA
         # This could get moved to the general tools section
         k_index = kallistoIndexerTool(self.configuration)
         logger.progress("Kallisto Indexer", status="RUNNING")
         k_out, k_meta = k_index.run(
-            remap(input_files, "cdna"),
-            remap(metadata, "cdna"),
-            remap(output_files, "index"),
+            cdna_file, cdna_meta, output_files["index"]
         )
         logger.progress("Kallisto Indexer", status="DONE")
 
@@ -114,15 +129,15 @@ class process_rnaseq(Workflow):
         logger.progress("Kallisto Quant", status="RUNNING")
         if "fastq2" not in input_files:
             kq_input_files = {
-                "cdna": input_files["cdna"],
+                "cdna": cdna_file,
                 "fastq1": input_files["fastq1"],
                 "index": k_out["index"],
-                "gff": input_files["gff"],
+                "gff": gff_file,
             }
             kq_input_meta = {
-                "cdna": metadata["cdna"],
+                "cdna": cdna_meta,
                 "fastq1": metadata["fastq1"],
-                "gff": metadata["gff"],
+                "gff": gff_meta,
                 "index": k_meta["index"]
             }
 
@@ -137,18 +152,18 @@ class process_rnaseq(Workflow):
             )
         elif "fastq2" in input_files:
             kq_input_files = {
-                "cdna": input_files["cdna"],
+                "cdna": cdna_file,
                 "fastq1": input_files["fastq1"],
                 "fastq2": input_files["fastq2"],
                 "index": k_out["index"],
-                "gff": input_files["gff"],
+                "gff": gff_file,
             }
             kq_input_meta = {
-                "cdna": metadata["cdna"],
+                "cdna": cdna_meta,
                 "fastq1": metadata["fastq1"],
                 "fastq2": metadata["fastq2"],
                 "index": k_meta["index"],
-                "gff": metadata["gff"],
+                "gff": gff_meta,
             }
 
             kq_files, kq_meta = k_quant.run(
@@ -157,7 +172,7 @@ class process_rnaseq(Workflow):
                 remap(
                     output_files,
                     "abundance_h5_file", "abundance_tsv_file",
-                    "abundance_bed_file", "abundance_gff_file", "run_info_file")
+                    "abundance_gff_file", "run_info_file")
             )
         logger.progress("Kallisto Quant", status="DONE")
 
@@ -176,10 +191,6 @@ class process_rnaseq(Workflow):
             tool_name = kq_meta['abundance_tsv_file'].meta_data['tool']
             kq_meta['abundance_tsv_file'].meta_data['tool_description'] = tool_name
             kq_meta['abundance_tsv_file'].meta_data['tool'] = "process_rnaseq"
-
-            tool_name = kq_meta['abundance_bed_file'].meta_data['tool']
-            kq_meta['abundance_bed_file'].meta_data['tool_description'] = tool_name
-            kq_meta['abundance_bed_file'].meta_data['tool'] = "process_rnaseq"
 
             tool_name = kq_meta['run_info_file'].meta_data['tool']
             kq_meta['run_info_file'].meta_data['tool_description'] = tool_name

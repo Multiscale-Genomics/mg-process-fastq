@@ -43,7 +43,6 @@ def test_kallisto_quant_paired():
     output_files = {
         "abundance_h5_file": resource_path + "kallisto.Human.ERR030872.paired.abundance.h5",
         "abundance_tsv_file": resource_path + "kallisto.Human.ERR030872.paired.abundance.tsv",
-        "abundance_bed_file": resource_path + "kallisto.Human.ERR030872.paired.abundance.bed",
         "abundance_gff_file": resource_path + "kallisto.Human.ERR030872.paired.abundance.gff",
         "run_info_file": resource_path + "kallisto.Human.ERR030872.paired.run_info.json"
     }
@@ -98,7 +97,6 @@ def test_kallisto_quant_single():
     output_files = {
         "abundance_h5_file": resource_path + "kallisto.Human.ERR030872.single.abundance.h5",
         "abundance_tsv_file": resource_path + "kallisto.Human.ERR030872.single.abundance.tsv",
-        "abundance_bed_file": resource_path + "kallisto.Human.ERR030872.single.abundance.bed",
         "abundance_gff_file": resource_path + "kallisto.Human.ERR030872.single.abundance.gff",
         "run_info_file": resource_path + "kallisto.Human.ERR030872.single.run_info.json"
     }

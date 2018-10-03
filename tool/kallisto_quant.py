@@ -288,8 +288,8 @@ class kallistoQuantificationTool(Tool):  # pylint: disable=invalid-name
                         bed_handle.write(
                             "{}\t{}\t{}\t{}\t{}\t{}\n".format(
                                 gene_entry["chromosome"],
-                                gene_entry["start"],
-                                gene_entry["end"],
+                                gene_entry["start"]-1,
+                                gene_entry["end"]-1,
                                 tsv_entry[0],
                                 tsv_entry[4],
                                 gene_entry["strand"],

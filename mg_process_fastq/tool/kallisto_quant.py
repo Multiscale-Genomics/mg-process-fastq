@@ -288,8 +288,8 @@ class kallistoQuantificationTool(Tool):  # pylint: disable=invalid-name
                         bed_handle.write(
                             "{}\t{}\t{}\t{}\t{}\t{}\n".format(
                                 gene_entry["chromosome"],
-                                gene_entry["start"],
-                                gene_entry["end"],
+                                gene_entry["start"]-1,
+                                gene_entry["end"]-1,
                                 tsv_entry[0],
                                 tsv_entry[4],
                                 gene_entry["strand"],
@@ -417,11 +417,11 @@ class kallistoQuantificationTool(Tool):  # pylint: disable=invalid-name
         else:
             return ({}, {})
 
-        self.kallisto_tsv2bed(
-            gff_data,
-            output_files["abundance_tsv_file"],
-            output_files["abundance_bed_file"]
-        )
+        # self.kallisto_tsv2bed(
+        #     gff_data,
+        #     output_files["abundance_tsv_file"],
+        #     output_files["abundance_bed_file"]
+        # )
         self.kallisto_tsv2gff(
             gff_data,
             output_files["abundance_tsv_file"],
@@ -452,14 +452,14 @@ class kallistoQuantificationTool(Tool):  # pylint: disable=invalid-name
                 taxon_id=input_metadata["cdna"].taxon_id,
                 meta_data=generic_meta
             ),
-            "abundance_bed_file": Metadata(
-                data_type="data_rna_seq",
-                file_type="BED",
-                file_path=output_files["abundance_bed_file"],
-                sources=sources,
-                taxon_id=input_metadata["cdna"].taxon_id,
-                meta_data=generic_meta
-            ),
+            # "abundance_bed_file": Metadata(
+            #     data_type="data_rna_seq",
+            #     file_type="BED",
+            #     file_path=output_files["abundance_bed_file"],
+            #     sources=sources,
+            #     taxon_id=input_metadata["cdna"].taxon_id,
+            #     meta_data=generic_meta
+            # ),
             "abundance_gff_file": Metadata(
                 data_type="data_rna_seq",
                 file_type="GFF3",

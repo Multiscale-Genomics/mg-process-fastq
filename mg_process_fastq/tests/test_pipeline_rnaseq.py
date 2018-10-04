@@ -77,7 +77,6 @@ def test_rnaseq_pipeline():
         "index": 'tests/data/kallisto.idx',
         "abundance_h5_file": resource_path + "kallisto.abundance.h5",
         "abundance_tsv_file": resource_path + "kallisto.abundance.tsv",
-        "abundance_bed_file": resource_path + "kallisto.abundance.bed",
         "abundance_gff_file": resource_path + "kallisto.abundance.gff",
         "run_info_file": resource_path + "kallisto.run_info.json"
     }
@@ -86,7 +85,7 @@ def test_rnaseq_pipeline():
     rs_files, rs_meta = rs_handle.run(files, metadata, files_out)
 
     # Checks that the returned files matches the expected set of results
-    assert len(rs_meta) == 6
+    assert len(rs_meta) == 5
 
     # Add tests for all files created
     for f_out in rs_files:

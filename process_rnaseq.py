@@ -92,15 +92,22 @@ class process_rnaseq(Workflow):
         output_metadata : dict
             Metadata about each of the files
         """
+        if "cdna_public" in input_files:
+            input_files["cdna"] = input_files.pop("cdna_public")
+            metadata["cdna"] = metadata.pop("cdna_public")
+
+        if "gff_public" in input_files:
+            input_files["gff"] = input_files.pop("gff_public")
+            metadata["gff"] = metadata.pop("gff_public")
 
         # Index the cDNA
         # This could get moved to the general tools section
         k_index = kallistoIndexerTool(self.configuration)
         logger.progress("Kallisto Indexer", status="RUNNING")
         k_out, k_meta = k_index.run(
-            remap(input_files, "cdna"),
-            remap(metadata, "cdna"),
-            remap(output_files, "index"),
+            {"cdna": input_files["cdna"]},
+            {"cdna": metadata["cdna"]},
+            {"index": output_files["index"]}
         )
         logger.progress("Kallisto Indexer", status="DONE")
 
@@ -132,7 +139,7 @@ class process_rnaseq(Workflow):
                 remap(
                     output_files,
                     "abundance_h5_file", "abundance_tsv_file",
-                    "abundance_bed_file", "abundance_gff_file", "run_info_file"
+                    "abundance_gff_file", "run_info_file"
                 )
             )
         elif "fastq2" in input_files:
@@ -157,7 +164,7 @@ class process_rnaseq(Workflow):
                 remap(
                     output_files,
                     "abundance_h5_file", "abundance_tsv_file",
-                    "abundance_bed_file", "abundance_gff_file", "run_info_file")
+                    "abundance_gff_file", "run_info_file")
             )
         logger.progress("Kallisto Quant", status="DONE")
 
@@ -176,10 +183,6 @@ class process_rnaseq(Workflow):
             tool_name = kq_meta['abundance_tsv_file'].meta_data['tool']
             kq_meta['abundance_tsv_file'].meta_data['tool_description'] = tool_name
             kq_meta['abundance_tsv_file'].meta_data['tool'] = "process_rnaseq"
-
-            tool_name = kq_meta['abundance_bed_file'].meta_data['tool']
-            kq_meta['abundance_bed_file'].meta_data['tool_description'] = tool_name
-            kq_meta['abundance_bed_file'].meta_data['tool'] = "process_rnaseq"
 
             tool_name = kq_meta['run_info_file'].meta_data['tool']
             kq_meta['run_info_file'].meta_data['tool_description'] = tool_name

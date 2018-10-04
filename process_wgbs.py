@@ -125,6 +125,14 @@ class process_wgbs(Workflow):
         output_results_files = {}
         output_metadata = {}
 
+        if "genome_public" in input_files:
+            input_files["genome"] = input_files.pop("genome_public")
+            metadata["genome"] = metadata.pop("genome_public")
+
+        if "index_public" in input_files:
+            input_files["index"] = input_files.pop("index_public")
+            metadata["index"] = metadata.pop("index_public")
+
         logger.info("WGBS - BS-Seeker2 Index")
         # Build the matching WGBS genome index
         builder = bssIndexerTool(self.configuration)

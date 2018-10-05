@@ -295,21 +295,24 @@ class bssAlignerTool(Tool):  # pylint: disable=invalid-name
                         command_params.append(bowtie2_command_parameters[param][0])
 
         # Scoring Options - 8
-        if "bowtie2_ma_param" in params:
+        if "bowtie2_ma_param" in params and params["bowtie2_ma_param"] != "":
             command_params = command_params + [
-                "--ma_", str(params["bowtie2_ma_param"])]
-        if "bowtie2_mp_mx_param" in params and "bowtie2_mp_mn_param" in params:
+                "--ma", str(params["bowtie2_ma_param"])]
+        if ("bowtie2_mp_mx_param" in params and "bowtie2_mp_mn_param" in params and
+                params["bowtie2_mp_mx_param"] != "" and params["bowtie2_mp_mn_param"] != ""):
             command_params = command_params + [
                 "--mp",
                 str(params["bowtie2_mp_mx_param"]) + "," + str(params["bowtie2_mp_mn_param"])]
-        if "bowtie2_np_param" in params:
+        if "bowtie2_np_param" in params and params["bowtie2_np_param"] != "":
             command_params = command_params + [
                 "--np", str(params["bowtie2_np_param"])]
-        if "bowtie2_rdg_o_param" in params and "bowtie2_rdg_e_param" in params:
+        if ("bowtie2_rdg_o_param" in params and "bowtie2_rdg_e_param" in params and
+                params["bowtie2_rdg_o_param"] != "" and params["bowtie2_rdg_e_param"] != ""):
             command_params = command_params + [
                 "--rdg",
                 str(params["bowtie2_rdg_o_param"]) + "," + str(params["bowtie2_rdg_e_param"])]
-        if "bowtie2_rfg_o_param" in params and "bowtie2_rfg_e_param" in params:
+        if ("bowtie2_rfg_o_param" in params and "bowtie2_rfg_e_param" in params and
+                params["bowtie2_rfg_o_param"] != "" and params["bowtie2_rfg_e_param"] != ""):
             command_params = command_params + [
                 "--rfg",
                 str(params["bowtie2_rfg_o_param"]) + "," + str(params["bowtie2_rfg_e_param"])]

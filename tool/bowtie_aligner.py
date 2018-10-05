@@ -311,10 +311,10 @@ class bowtie2AlignerTool(Tool):  # pylint: disable=invalid-name
 
         for param in params:
             if param in command_parameters:
-                if command_parameters[param][1]:
+                if command_parameters[param][1] and params[param] != "":
                     command_params = command_params + [command_parameters[param][0], params[param]]
                 else:
-                    if command_parameters[param][0]:
+                    if command_parameters[param][0] and params[param] is not False:
                         command_params.append(command_parameters[param][0])
 
         # Scoring Options - 8

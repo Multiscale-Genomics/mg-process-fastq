@@ -33,10 +33,14 @@ def test_idear():
 
     input_files = {
         "bsgenome": resource_path + "idear.Human.GCA_000001405.22.22.bsgenome.tar.gz",
-        "bam_1": resource_path + "idear.Human.SRR3714775.bam",
-        "bam_2": resource_path + "idear.Human.SRR3714776.bam",
-        "bg_bam_1": resource_path + "idear.Human.SRR3714777.bam",
-        "bg_bam_2": resource_path + "idear.Human.SRR3714778.bam",
+        "bam": [
+            resource_path + "idear.Human.SRR3714775.bam",
+            resource_path + "idear.Human.SRR3714776.bam",
+        ],
+        "bg_bam": [
+            resource_path + "idear.Human.SRR3714777.bam",
+            resource_path + "idear.Human.SRR3714778.bam",
+        ]
     }
 
     output_files = {
@@ -47,18 +51,22 @@ def test_idear():
         "bsgenome": Metadata(
             "data_damid_seq", "bsgenome", [], None,
             {'assembly': 'test'}, 9606),
-        "bam_1": Metadata(
-            "data_damid_seq", "bam", [], None,
-            {'assembly': 'test'}, 9606),
-        "bam_2": Metadata(
-            "data_damid_seq", "bam", [], None,
-            {'assembly': 'test'}, 9606),
-        "bg_bam_1": Metadata(
-            "data_damid_seq", "bam", [], None,
-            {'assembly': 'test'}, 9606),
-        "bg_bam_2": Metadata(
-            "data_damid_seq", "bam", [], None,
-            {'assembly': 'test'}, 9606),
+        "bam": [
+            Metadata(
+                "data_damid_seq", "bam", [], None,
+                {'assembly': 'test'}, 9606),
+            Metadata(
+                "data_damid_seq", "bam", [], None,
+                {'assembly': 'test'}, 9606),
+        ],
+        "bg_bam": [
+            Metadata(
+                "data_damid_seq", "bam", [], None,
+                {'assembly': 'test'}, 9606),
+            Metadata(
+                "data_damid_seq", "bam", [], None,
+                {'assembly': 'test'}, 9606),
+        ],
     }
 
     config = {

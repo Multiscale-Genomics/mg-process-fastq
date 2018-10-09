@@ -24,14 +24,10 @@ option_list = list(
                 help="Sample Name", metavar="character"),
     make_option(c("-bn", "--background_name"), type="character", default=NULL,
                 help="Background Sample Name", metavar="character"),
-    make_option(c("-f1", "--file1"), type="character", default=NULL,
-                help="Sample 1", metavar="character"),
-    make_option(c("-f2", "--file2"), type="character", default=NULL,
-                help="Sample 2", metavar="character"),
-    make_option(c("-f3", "--file3"), type="character", default=NULL,
-                help="Background Sample 1", metavar="character"),
-    make_option(c("-f4", "--file4"), type="character", default=NULL,
-                help="Background Sample 2", metavar="character"),
+    make_option(c("-f", "--files"), type="character", default=NULL,
+                help="Comma separated sample files", metavar="character"),
+    make_option(c("-bg", "--bg_files"), type="character", default=NULL,
+                help="Comma separated background files", metavar="character"),
     make_option(c("-s", "--species"), type="character", default=NULL,
                 help="Species", metavar="character"),
     make_option(c("-a", "--assembly"), type="character", default=NULL,
@@ -46,17 +42,21 @@ opt_parser = OptionParser(option_list=option_list);
 opt = parse_args(opt_parser);
 
 library(
-    paste('BSgenome.', opt$species, '.', opt$a, sep=""),
+    paste('BSgenome.', opt$species, '.', opt$assembly, sep=""),
     lib.loc=opt$local_lib,
     character.only=TRUE)
-genome <- get(paste('BSgenome.', opt$species, '.', opt$a, sep=""))
+genome <- get(paste('BSgenome.', opt$species, '.', opt$assembly, sep=""))
 
 fragments <- getDpnIFragments(genome)
 
-samples <- data.frame(name = factor(c(opt$sample_name, opt$sample_name, opt$background_name, opt$background_name),
+sample_files = unlist(strsplit(opt$files, ","))
+bg_files = unlist(strsplit(opt$bg_files, ","))
+
+samples <- data.frame(name = factor(c(rep(opt$sample_name, length(sample_files)),
+                                      rep(opt$background_name, length(bg_files))),
                                     levels = c(opt$sample_name, opt$background_name)),
-                      replicate = c(1,2,1,2),
-                      paths = c(opt$file1, opt$file2, opt$file3, opt$file4))
+                      replicate = c(seq(1,length(sample_files)), seq(1,length(bg_files))),
+                      paths = c(sample_files, bg_files))
 
 results <- getEnrichedDamRegions(samples,fragments)
 

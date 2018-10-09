@@ -256,8 +256,7 @@ class alignerUtils(object):  # pylint: disable=invalid-name
             Dictionary object of the suffix and final index file location
         """
         try:
-            g_dir = tar_file.split("/")
-            g_dir = "/".join(g_dir[:-1])
+            g_dir = os.path.split(tar_file)[0]
 
             tar = tarfile.open(tar_file)
             tar.extractall(path=g_dir)

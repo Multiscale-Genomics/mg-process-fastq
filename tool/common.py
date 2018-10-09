@@ -110,7 +110,11 @@ class common(object):  # pylint: disable=too-few-public-methods, invalid-name
             By default (False) the files and folder are deleted once they are added to
             the archive.
         """
-        onlyfiles = [f for f in os.listdir(folder) if os.path.isfile(os.path.join(folder, f))]
+        if isinstance(folder, list):
+            onlyfiles = folder
+            keep_folder = True
+        else:
+            onlyfiles = [f for f in os.listdir(folder) if os.path.isfile(os.path.join(folder, f))]
 
         tar = tarfile.open(tar_file, "w")
         for tmp_file in onlyfiles:

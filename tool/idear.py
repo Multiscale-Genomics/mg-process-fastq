@@ -214,12 +214,14 @@ class idearTool(Tool):  # pylint: disable=invalid-name
                 "tmp_sample_bam_files.tar"
             )
             common.tar_folder(input_files["bam"], tmp_sample_tar_file, "tmp_sample")
+            input_datatype = input_metadata['bam'][0].data_type
         else:
             tmp_sample_tar_file = os.path.join(
                 os.path.split(input_files["bam"])[0],
                 "tmp_sample_bam_files.tar"
             )
             common.tar_folder([input_files["bam"]], tmp_sample_tar_file, "tmp_sample")
+            input_datatype = input_metadata['bam'].data_type
 
         if isinstance(input_files["bg_bam"], list):
             tmp_background_tar_file = os.path.join(
@@ -257,7 +259,7 @@ class idearTool(Tool):  # pylint: disable=invalid-name
 
         output_metadata = {
             "bigwig": Metadata(
-                data_type=input_metadata['bam_1'].data_type,
+                data_type=input_datatype,
                 file_type="BIGWIG",
                 file_path=output_files["bigwig"],
                 sources=[
@@ -265,9 +267,9 @@ class idearTool(Tool):  # pylint: disable=invalid-name
                     input_files["bg_bam"],
                     input_metadata["bsgenome"].file_path
                 ],
-                taxon_id=input_metadata["bam_1"].taxon_id,
+                taxon_id=input_metadata["bsgenome"].taxon_id,
                 meta_data={
-                    "assembly": input_metadata["bam_1"].meta_data["assembly"],
+                    "assembly": input_metadata["bsgenome"].meta_data["assembly"],
                     "tool": "idear"
                 }
             )

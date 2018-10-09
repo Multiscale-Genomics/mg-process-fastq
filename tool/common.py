@@ -99,8 +99,11 @@ class common(object):  # pylint: disable=too-few-public-methods, invalid-name
 
         Parameters
         ----------
-        folder : str
-            Location of the folder that is to be archived.
+        folder : str,list
+            If the value is a string it should be the location of the folder that
+            is to be archived.
+            If the value is a list it should be a list of locations of files that
+            are to be archived.
         tar_file : str
             Location of the archive tar file
         archive_name : str
@@ -114,16 +117,20 @@ class common(object):  # pylint: disable=too-few-public-methods, invalid-name
             onlyfiles = folder
             keep_folder = True
         else:
-            onlyfiles = [f for f in os.listdir(folder) if os.path.isfile(os.path.join(folder, f))]
+            onlyfiles = []
+            for file_name in os.listdir(folder):
+                tmp_file = os.path.join(folder, file_name)
+                if os.path.isfile(tmp_file):
+                    onlyfiles.append(tmp_file)
 
         tar = tarfile.open(tar_file, "w")
         for tmp_file in onlyfiles:
             tar.add(
-                os.path.join(folder, tmp_file),
-                arcname=os.path.join(archive_name, tmp_file)
+                tmp_file,
+                arcname=os.path.join(archive_name, os.path.split(tmp_file)[1])
             )
             if keep_folder is False:
-                os.remove(os.path.join(folder, tmp_file))
+                os.remove(tmp_file)
         tar.close()
 
         if keep_folder is False:

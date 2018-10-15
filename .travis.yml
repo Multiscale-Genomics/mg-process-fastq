@@ -72,6 +72,8 @@ addons:
             - libtool
             - pigz
             - tree
+            - libblas-dev
+            - liblapack-dev
 
 # env:
 #   - COVERALLS=false

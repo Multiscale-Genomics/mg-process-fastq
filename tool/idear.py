@@ -175,6 +175,11 @@ class idearTool(Tool):  # pylint: disable=invalid-name
             '--assembly', assembly,
             '--output', peak_bw + '.tmp',
             '--local_lib', rlib]
+
+        if "idear_significance" in self.configuration:
+            args.append("--significance")
+            args.append(self.configuration["idear_significance"])
+
         logger.info("iDEAR CMD: " + ' '.join(args))
 
         process = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)

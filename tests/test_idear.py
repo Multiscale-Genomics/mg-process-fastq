@@ -73,6 +73,7 @@ def test_idear():
         "idear_common_name": "Human",
         "idear_sample_param": "Nup98",
         "idear_background_param": "GFP",
+        "idear_significance": "0.05",
         "execution": resource_path
     }
 

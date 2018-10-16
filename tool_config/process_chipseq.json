@@ -68,8 +68,8 @@
         },
         {
             "name": "genome",
-            "description": "Genome sequence file",
-            "help": "path to a assembly sequence file",
+            "description": "Reference sequence of a custom genome assembly",
+            "help": "FASTA file  of the custom genome assembly mapping the given Chip-seq reads. Only required if reads do not belong to any of the reference genomes offered within the platform",
             "file_type": ["FASTA"],
             "data_type": ["sequence_genomic", "sequence_dna"],
             "required": true,
@@ -77,8 +77,8 @@
         },
         {
             "name": "index",
-            "description": "BWA index for matching species",
-            "help": "path to matching BWA index file",
+            "description": "BWA indexes of a custom genome assembly",
+            "help": "TAR containing BWA index files of the custom genome assembly. It can be uploaded or generated using the 'Proces Genome'  tool.",
             "file_type": ["TAR"],
             "data_type": ["sequence_mapping_index_bwa"],
             "required": true,

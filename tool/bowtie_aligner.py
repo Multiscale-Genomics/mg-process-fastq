@@ -379,13 +379,17 @@ class bowtie2AlignerTool(Tool):  # pylint: disable=invalid-name
             untar_idx = False
             task_count = 5
 
+        index_file_root = os.path.join(
+            input_files["index"].replace(".tar.gz", "/"),
+            os.path.split(input_files["genome"])[1]
+        )
         index_files = {
-            "1.bt2": input_files["genome"] + ".1.bt2",
-            "2.bt2": input_files["genome"] + ".2.bt2",
-            "3.bt2": input_files["genome"] + ".3.bt2",
-            "4.bt2": input_files["genome"] + ".4.bt2",
-            "rev.1.bt2": input_files["genome"] + ".rev.1.bt2",
-            "rev.2.bt2": input_files["genome"] + ".rev.2.bt2"
+            "1.bt2": index_file_root + ".1.bt2",
+            "2.bt2": index_file_root + ".2.bt2",
+            "3.bt2": index_file_root + ".3.bt2",
+            "4.bt2": index_file_root + ".4.bt2",
+            "rev.1.bt2": index_file_root + ".rev.1.bt2",
+            "rev.2.bt2": index_file_root + ".rev.2.bt2"
         }
 
         if untar_idx:

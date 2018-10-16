@@ -139,8 +139,14 @@ class idearTool(Tool):  # pylint: disable=invalid-name
             Location of the collated bed file
         """
 
+        logger.info("TAR SAMPLE FILE: " + sample_bam_tar_file)
+        logger.info("TAR BACKGROUND FILE: " + bg_bam_tar_file)
+
         sample_files = self._untar_files(sample_bam_tar_file)
         bg_files = self._untar_files(bg_bam_tar_file)
+
+        logger.info("SAMPLE FILES: " + ", ".join(sample_files))
+        logger.info("BACKGROUND FILES: " + ", ".join(bg_files))
 
         if not sample_files or not bg_files:
             logger.fatal("iDEAR requires sample and background bam files")
@@ -228,7 +234,7 @@ class idearTool(Tool):  # pylint: disable=invalid-name
                 os.path.split(input_files["bg_bam"][0])[0],
                 "tmp_background_bam_files.tar"
             )
-            common.tar_folder(input_files["bam"], tmp_background_tar_file, "tmp_background")
+            common.tar_folder(input_files["bg_bam"], tmp_background_tar_file, "tmp_background")
         else:
             tmp_background_tar_file = os.path.join(
                 os.path.split(input_files["bg_bam"])[0],

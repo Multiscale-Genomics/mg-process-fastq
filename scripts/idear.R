@@ -58,7 +58,9 @@ samples <- data.frame(name = factor(c(rep(opt$sample_name, length(sample_files))
                       replicate = c(seq(1,length(sample_files)), seq(1,length(bg_files))),
                       paths = c(sample_files, bg_files))
 
-results <- getEnrichedDamRegions(samples,fragments)
+samples
+
+results <- getEnrichedDamRegions(samples,fragments,correlation.plot=FALSE)
 
 poi.positive <- results[mcols(results)$log2FoldChange > 0, ]
 poi.negative <- results[mcols(results)$log2FoldChange < 0, ]

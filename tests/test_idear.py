@@ -34,12 +34,12 @@ def test_idear():
     input_files = {
         "bsgenome": resource_path + "idear.Human.GCA_000001405.22.22.bsgenome.tar.gz",
         "bam": [
-            resource_path + "idear.Human.SRR3714775.bam",
-            resource_path + "idear.Human.SRR3714776.bam",
+            resource_path + "idear.Human.SRR3714775_filtered.bam",
+            resource_path + "idear.Human.SRR3714776_filtered.bam",
         ],
         "bg_bam": [
-            resource_path + "idear.Human.SRR3714777.bam",
-            resource_path + "idear.Human.SRR3714778.bam",
+            resource_path + "idear.Human.SRR3714777_filtered.bam",
+            resource_path + "idear.Human.SRR3714778_filtered.bam",
         ]
     }
 

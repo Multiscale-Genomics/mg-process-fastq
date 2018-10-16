@@ -305,16 +305,12 @@ class bwaAlignerTool(Tool):  # pylint: disable=invalid-name
             untar_idx = False
             task_count = 5
 
-        index_file_root = os.path.join(
-            input_files["index"].replace(".tar.gz", "/"),
-            os.path.split(input_files["genome"])[1]
-        )
         index_files = {
-            "amb": index_file_root + ".amb",
-            "ann": index_file_root + ".ann",
-            "bwt": index_file_root + ".bwt",
-            "pac": index_file_root + ".pac",
-            "sa": index_file_root + ".sa"
+            "amb": input_files["genome"] + ".amb",
+            "ann": input_files["genome"] + ".ann",
+            "bwt": input_files["genome"] + ".bwt",
+            "pac": input_files["genome"] + ".pac",
+            "sa": input_files["genome"] + ".sa"
         }
 
         if untar_idx:

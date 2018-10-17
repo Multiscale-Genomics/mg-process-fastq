@@ -112,15 +112,15 @@
         }, {
             "required": false,
             "allow_multiple": false,
-            "name": "abundance_bed_file",
+            "name": "abundance_gff_file",
             "file": {
-                "file_type": "BED",
+                "file_type": "GFF",
                 "meta_data": {
                     "visible": true,
                     "tool": "process_rnaseq",
                     "description": "Background aligned sequences"
                 },
-                "file_path": "kallisto.abundance.bed",
+                "file_path": "kallisto.abundance.gff",
                 "data_type": "data_rna_seq",
                 "compressed": "null"
             }

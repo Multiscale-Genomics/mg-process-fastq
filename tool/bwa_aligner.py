@@ -181,7 +181,7 @@ class bwaAlignerTool(Tool):  # pylint: disable=invalid-name
           read_file_loc2=FILE_IN, bam_loc=FILE_OUT,
           amb_file=FILE_IN, ann_file=FILE_IN, bwt_file=FILE_IN,
           pac_file=FILE_IN, sa_file=FILE_IN, aln_params=IN, isModifier=False)
-    def bwa_aligner_paired(  # pylint: disable=too-many-arguments, no-self-use
+    def bwa_aligner_paired(  # pylint: disable=too-many-arguments, no-self-use, too-many-locals
             self, genome_file_loc, read_file_loc1, read_file_loc2, bam_loc,
             amb_file, ann_file, bwt_file, pac_file, sa_file, aln_params):  # pylint: disable=unused-argument
         """
@@ -376,6 +376,14 @@ class bwaAlignerTool(Tool):  # pylint: disable=invalid-name
             tar.close()
             os.remove(fastq_file_gz)
             compss_delete_file(fastq_file_gz)
+            # try:
+            #     os.remove(fastq_file_gz)
+            # except (OSError, IOError) as msg:
+            #     logger.warn(
+            #         "Unable to remove file I/O error({0}): {1}".format(
+            #             msg.errno, msg.strerror
+            #         )
+            #     )
         except tarfile.TarError:
             logger.fatal("Split FASTQ files: Malformed tar file")
             return {}, {}
@@ -390,11 +398,10 @@ class bwaAlignerTool(Tool):  # pylint: disable=invalid-name
         # output_bai_file = output_files["bai"]
 
         logger.info("BWA ALIGNER: Aligning sequence reads to the genome")
-
-        output_bam_list = []
         logger.progress("ALIGNER - jobs = " + str(len(fastq_file_list)),
                         task_id=tasks_done, total=task_count)
 
+        output_bam_list = []
         for fastq_file_pair in fastq_file_list:
             if "fastq2" in input_files:
                 tmp_fq1 = os.path.join(gz_data_path, "tmp", fastq_file_pair[0])

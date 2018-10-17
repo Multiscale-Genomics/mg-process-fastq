@@ -31,7 +31,7 @@ from tool.bwa_aligner import bwaAlignerTool
 
 class process_bwa(Workflow):
     """
-    Functions for aligning FastQ files with BWA
+    Functions for aligning FastQ files with BWA ALN
     """
 
     def __init__(self, configuration=None):
@@ -52,10 +52,7 @@ class process_bwa(Workflow):
 
     def run(self, input_files, metadata, output_files):
         """
-        Main run function for aligning FastQ reads with BWA.
-
-        Currently this can only handle a single data file and a single
-        background file.
+        Main run function for aligning FastQ reads with BWA ALN.
 
         Parameters
         ----------

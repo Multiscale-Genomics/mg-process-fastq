@@ -58,6 +58,7 @@ if [ ! -f "bedToBigBed" ]; then
     wget http://hgdownload.cse.ucsc.edu/admin/exe/linux.x86_64/wigToBigWig
     wget http://hgdownload.soe.ucsc.edu/admin/exe/linux.x86_64/faToTwoBit
     wget http://hgdownload.soe.ucsc.edu/admin/exe/linux.x86_64/twoBitInfo
+    chmod +x bedToBigBed wigToBigWig faToTwoBit twoBitInfo
 fi
 
 # Bowtie2 Aligner

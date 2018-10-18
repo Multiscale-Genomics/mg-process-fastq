@@ -143,7 +143,7 @@ class bwaAlignerMEMTool(Tool):  # pylint: disable=invalid-name
             Location of the pac index file
         sa_file : str
             Location of the sa index file
-        mam_params : dict
+        mem_params : dict
             Alignment parameters
 
         Returns
@@ -255,7 +255,7 @@ class bwaAlignerMEMTool(Tool):  # pylint: disable=invalid-name
             "bwa_mem_zdropoff_param": ["-d", True],
             "bwa_mem_reseeding_param": ["-r", True],
             "bwa_mem_insensitive_param": ["-c", True],
-            "bwa_mem_paried_rescue_mode_param": ["-P"],
+            "bwa_mem_paried_rescue_mode_param": ["-P", False],
             "bwa_mem_matching_score_param": ["-A", True],
             "bwa_mem_mismatch_penalty_param": ["-B", True],
             "bwa_mem_gap_open_penalty_param": ["-O", True],
@@ -378,14 +378,6 @@ class bwaAlignerMEMTool(Tool):  # pylint: disable=invalid-name
             tar.close()
             os.remove(fastq_file_gz)
             compss_delete_file(fastq_file_gz)
-            # try:
-            #     os.remove(fastq_file_gz)
-            # except (OSError, IOError) as msg:
-            #     logger.warn(
-            #         "Unable to remove file I/O error({0}): {1}".format(
-            #             msg.errno, msg.strerror
-            #         )
-            #     )
         except tarfile.TarError:
             logger.fatal("Split FASTQ files: Malformed tar file")
             return {}, {}

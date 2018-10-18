@@ -18,58 +18,58 @@
 rc=0
 pv=$(python -c 'import platform; print(platform.python_version())')
 
-# python tests/test_toolchains.py --pipeline genome
-# tc=$?
-# rc=$(($rc + $tc))
-# bash tidy_data.sh
-
-# python tests/test_pipelines.py --pipeline genome
-# tc=$?
-# rc=$(($rc + $tc))
-# bash tidy_data.sh
-
-# python tests/test_pipelines.py --pipeline trimgalore
-# tc=$?
-# rc=$(($rc + $tc))
-# bash tidy_data.sh
-
-# Not included for the moment due to installation issues with versions of R and python
-python tests/test_toolchains.py --pipeline idamidseq
+python tests/test_toolchains.py --pipeline genome
 tc=$?
 rc=$(($rc + $tc))
-sh tidy_data.sh
+bash tidy_data.sh
 
-# python tests/test_toolchains.py --pipeline bowtie2
+python tests/test_pipelines.py --pipeline genome
+tc=$?
+rc=$(($rc + $tc))
+bash tidy_data.sh
+
+python tests/test_pipelines.py --pipeline trimgalore
+tc=$?
+rc=$(($rc + $tc))
+bash tidy_data.sh
+
+# # Not included for the moment due to issues with the library building in Travis
+# python tests/test_toolchains.py --pipeline idamidseq
 # tc=$?
 # rc=$(($rc + $tc))
-# bash tidy_data.sh
+# sh tidy_data.sh
 
-# python tests/test_toolchains.py --pipeline bwa
-# tc=$?
-# rc=$(($rc + $tc))
-# bash tidy_data.sh
+python tests/test_toolchains.py --pipeline bowtie2
+tc=$?
+rc=$(($rc + $tc))
+bash tidy_data.sh
 
-# if [[ $pv == "2.7.12" ]]; then
-#     python tests/test_toolchains.py --pipeline chipseq
-#     tc=$?
-#     rc=$(($rc + $tc))
-#     bash tidy_data.sh
+python tests/test_toolchains.py --pipeline bwa
+tc=$?
+rc=$(($rc + $tc))
+bash tidy_data.sh
 
-#     python tests/test_pipelines.py --pipeline chipseq
-#     tc=$?
-#     rc=$(($rc + $tc))
-#     bash tidy_data.sh
-# fi
+if [[ $pv == "2.7.12" ]]; then
+    python tests/test_toolchains.py --pipeline chipseq
+    tc=$?
+    rc=$(($rc + $tc))
+    bash tidy_data.sh
 
-# python tests/test_toolchains.py --pipeline rnaseq
-# tc=$?
-# rc=$(($rc + $tc))
-# bash tidy_data.sh
+    python tests/test_pipelines.py --pipeline chipseq
+    tc=$?
+    rc=$(($rc + $tc))
+    bash tidy_data.sh
+fi
 
-# python tests/test_pipelines.py --pipeline rnaseq
-# tc=$?
-# rc=$(($rc + $tc))
-# bash tidy_data.sh
+python tests/test_toolchains.py --pipeline rnaseq
+tc=$?
+rc=$(($rc + $tc))
+bash tidy_data.sh
+
+python tests/test_pipelines.py --pipeline rnaseq
+tc=$?
+rc=$(($rc + $tc))
+bash tidy_data.sh
 
 # Not included in teh testing at the moment for speed reasons
 # if [[ $python_version == *"3."* ]]; then

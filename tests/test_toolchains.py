@@ -211,14 +211,14 @@ def idamidseq_toolchain(verbose=False):
 
     params = ['-m idamidseq']
 
-    # if verbose is True:
-    params.append('-s')
+    if verbose is True:
+        params.append('-s')
 
-    # params.append('tests/test_bwa_indexer.py')
-    # params.append('tests/test_bwa_aligner.py')
-    # params.append('tests/test_biobambam.py')
+    params.append('tests/test_bwa_indexer.py')
+    params.append('tests/test_bwa_aligner.py')
+    params.append('tests/test_biobambam.py')
     params.append('tests/test_bsgenome.py')
-    # params.append('tests/test_idear.py')
+    params.append('tests/test_idear.py')
 
     return pytest.main(params)
 

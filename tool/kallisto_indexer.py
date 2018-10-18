@@ -65,7 +65,7 @@ class kallistoIndexerTool(Tool):  # pylint: disable=invalid-name
 
         self.configuration.update(configuration)
 
-    @task(cdna_file_loc=FILE_IN, cdna_idx_file=FILE_OUT)
+    @task(returns=bool, cdna_file_loc=FILE_IN, cdna_idx_file=FILE_OUT)
     def kallisto_indexer(self, cdna_file_loc, cdna_idx_file):  # pylint: disable=no-self-use
         """
         Kallisto Indexer

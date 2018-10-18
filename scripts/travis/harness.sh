@@ -71,7 +71,7 @@ tc=$?
 rc=$(($rc + $tc))
 bash tidy_data.sh
 
-# Not included in teh testing at the moment for speed reasons
+# Not included in the testing at the moment for speed reasons
 # if [[ $python_version == *"3."* ]]; then
 #     python tests/test_toolchains.py --pipeline mnaseseq
 #     tc=$?

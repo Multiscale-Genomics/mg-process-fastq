@@ -35,7 +35,7 @@ option_list = list(
     make_option(c("-o", "--output"), type="character", default=NULL,
                 help="BigWig file", metavar="character"),
     make_option(c("-l", "--local_lib"), type="character", default=NULL,
-                help="Local R library", metavar="character")
+                help="Local R library", metavar="character"),
     make_option(c("-sf", "--significance"), type="character", default=0.01,
                 help="Significance of read", metavar="character")
 );
@@ -62,7 +62,7 @@ samples <- data.frame(name = factor(c(rep(opt$sample_name, length(sample_files))
 
 samples
 
-results <- getEnrichedDamRegions(samples,fragments,significance=significance,correlation.plot=FALSE)
+results <- getEnrichedDamRegions(samples,fragments,correlation.plot=FALSE,significance=as.double(opt$significance))
 
 poi.positive <- results[mcols(results)$log2FoldChange > 0, ]
 poi.negative <- results[mcols(results)$log2FoldChange < 0, ]

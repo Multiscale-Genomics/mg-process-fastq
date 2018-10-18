@@ -31,13 +31,13 @@
     },
     "input_files": [
         {
-            "name": "bam_1",
+            "name": "bam",
             "description": "Sequence read file",
             "help": "path to a bam sequence read file",
             "file_type": ["bam"],
             "data_type": ["data_idamid_seq"],
             "required": true,
-            "allow_multiple": false
+            "allow_multiple": true
         },
         {
             "name": "bg_bam_1",
@@ -45,26 +45,8 @@
             "help": "path to a bam sequence read file",
             "file_type": ["bam"],
             "data_type": ["data_idamid_seq"],
-            "required": false,
-            "allow_multiple": false
-        },
-        {
-            "name": "bam_2",
-            "description": "Sequence read file",
-            "help": "path to a bam sequence read file",
-            "file_type": ["bam"],
-            "data_type": ["data_idamid_seq"],
             "required": true,
-            "allow_multiple": false
-        },
-        {
-            "name": "bg_bam_2",
-            "description": "Sequence read file",
-            "help": "path to a bam sequence read file",
-            "file_type": ["bam"],
-            "data_type": ["data_idamid_seq"],
-            "required": false,
-            "allow_multiple": false
+            "allow_multiple": true
         },
         {
             "name": "bsgenome",

@@ -2,7 +2,7 @@
     "_id": "process_idamidseq",
     "name": "Process iDamID-seq",
     "title": "iDamID-seq Analysis",
-    "short_description": "Align iDamID-seq data, filtering with BioBamBam and Peak Calling using iDEAR.",
+    "short_description": "Align DamID-seq data, filtering with BioBamBam and Peak Calling using iDEAR.",
     "owner": {
         "institution": "EMBL-EBI",
         "author": "Mark McDowall",
@@ -86,12 +86,24 @@
         }
     ],
     "input_files_combinations": [
-        [
-            "fastq_1", "fastq_2",
-            "bg_fastq_1", "bg_fastq_2",
-            "genome",
-            "index"
-        ]
+        {
+            "description": "Compare 2 variables (Paired End)",
+            "input_files": [
+                "fastq_1", "fastq_2",
+                "bg_fastq_1", "bg_fastq_2",
+                "genome",
+                "index"
+            ]
+        },
+        {
+            "description": "Compare 2 variables (Single End)",
+            "input_files": [
+                "fastq_1",
+                "bg_fastq_1",
+                "genome",
+                "index"
+            ]
+        }
     ],
     "arguments": [
         {
@@ -155,8 +167,8 @@
     "output_files": [
         {
             "required": true,
-            "allow_multiple": false,
-            "name": "bam_1",
+            "allow_multiple": true,
+            "name": "bam",
             "file": {
                 "file_type": "bam",
                 "meta_data": {
@@ -164,14 +176,13 @@
                     "tool": "process_idamidseq",
                     "description": "Aligned sequences"
                 },
-                "file_path": "fastq_1.bam",
                 "data_type": "data_idamid_seq",
                 "compressed": "null"
             }
         }, {
             "required": true,
-            "allow_multiple": false,
-            "name": "bam_1_filtered",
+            "allow_multiple": true,
+            "name": "bam_filtered",
             "file": {
                 "file_type": "bam",
                 "meta_data": {
@@ -179,44 +190,13 @@
                     "tool": "process_idamidseq",
                     "description": "Filtered aligned sequences"
                 },
-                "file_path": "fastq_1.filtered.bam",
                 "data_type": "data_idamid_seq",
                 "compressed": "null"
             }
         }, {
             "required": true,
-            "allow_multiple": false,
-            "name": "bam_2",
-            "file": {
-                "file_type": "bam",
-                "meta_data": {
-                    "visible": true,
-                    "tool": "process_idamidseq",
-                    "description": "Aligned sequences"
-                },
-                "file_path": "fastq_2.bam",
-                "data_type": "data_idamid_seq",
-                "compressed": "null"
-            }
-        }, {
-            "required": true,
-            "allow_multiple": false,
-            "name": "bam_2_filtered",
-            "file": {
-                "file_type": "bam",
-                "meta_data": {
-                    "visible": true,
-                    "tool": "process_idamidseq",
-                    "description": "Filtered aligned sequences"
-                },
-                "file_path": "fastq_2.filtered.bam",
-                "data_type": "data_idamid_seq",
-                "compressed": "null"
-            }
-        }, {
-            "required": false,
-            "allow_multiple": false,
-            "name": "bg_bam_1",
+            "allow_multiple": true,
+            "name": "bg_bam",
             "file": {
                 "file_type": "bam",
                 "meta_data": {
@@ -224,14 +204,13 @@
                     "tool": "process_idamidseq",
                     "description": "Background aligned sequences"
                 },
-                "file_path": "bg_fastq_1.bam",
                 "data_type": "data_idamid_seq",
                 "compressed": "null"
             }
         }, {
-            "required": false,
-            "allow_multiple": false,
-            "name": "bg_bam_1_filtered",
+            "required": true,
+            "allow_multiple": true,
+            "name": "bg_bam_filtered",
             "file": {
                 "file_type": "bam",
                 "meta_data": {
@@ -239,37 +218,6 @@
                     "tool": "process_idamidseq",
                     "description": "Filtered background aligned sequences"
                 },
-                "file_path": "bg_fastq_1.filtered.bam",
-                "data_type": "data_idamid_seq",
-                "compressed": "null"
-            }
-        }, {
-            "required": false,
-            "allow_multiple": false,
-            "name": "bg_bam_2",
-            "file": {
-                "file_type": "bam",
-                "meta_data": {
-                    "visible": true,
-                    "tool": "process_idamidseq",
-                    "description": "Background aligned sequences"
-                },
-                "file_path": "bg_fastq_2.bam",
-                "data_type": "data_idamid_seq",
-                "compressed": "null"
-            }
-        }, {
-            "required": false,
-            "allow_multiple": false,
-            "name": "bg_bam_2_filtered",
-            "file": {
-                "file_type": "bam",
-                "meta_data": {
-                    "visible": true,
-                    "tool": "process_idamidseq",
-                    "description": "Filtered background aligned sequences"
-                },
-                "file_path": "bg_fastq_2.filtered.bam",
                 "data_type": "data_idamid_seq",
                 "compressed": "null"
             }

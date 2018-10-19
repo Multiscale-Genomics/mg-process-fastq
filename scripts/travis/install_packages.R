@@ -16,7 +16,7 @@
 # limitations under the License.
 
 if(!require("optparse")) install.packages("optparse", lib="../tmp_R_lib", repos="http://cloud.r-project.org/")
-source("http://bioconductor.org/biocLite.R")
+source("https://bioconductor.org/biocLite.R")
 biocLite("BSgenome")
 biocLite("DESeq2")
 if(!require("devtools")) install.packages("devtools", lib="../tmp_R_lib", repos="http://cloud.r-project.org/")

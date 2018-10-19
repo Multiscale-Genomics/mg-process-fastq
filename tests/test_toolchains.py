@@ -196,13 +196,12 @@ def chipseq_toolchain(verbose=False):
 
 def idamidseq_toolchain(verbose=False):
     """
-    Runs the tests for all of the tools from the ChIP-seq pipeline
+    Runs the tests for all of the tools from the iDamID-seq pipeline
 
     Runs the following tests:
 
     .. code-block:: none
 
-       pytest -m idamidseq tests/test_fastqc_validation.py
        pytest -m idamidseq tests/test_bwa_indexer.py
        pytest -m idamidseq tests/test_bwa_aligner.py
        pytest -m idamidseq tests/test_biobambam.py
@@ -215,7 +214,6 @@ def idamidseq_toolchain(verbose=False):
     if verbose is True:
         params.append('-s')
 
-    params.append('tests/test_fastqc_validation.py')
     params.append('tests/test_bwa_indexer.py')
     params.append('tests/test_bwa_aligner.py')
     params.append('tests/test_biobambam.py')

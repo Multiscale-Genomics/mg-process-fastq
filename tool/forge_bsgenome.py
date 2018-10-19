@@ -273,10 +273,10 @@ class bsgenomeTool(Tool):  # pylint: disable=invalid-name
                 out, err = process.communicate()
                 logger.info(out)
 
-                with open(package_build + ".Rcheck/00install.out", "r") as f_in:
-                    logger.warn(f_in.read())
-                with open(package_build + ".Rcheck/00check.log", "r") as f_in:
-                    logger.warn(f_in.read())
+                # with open(package_build + ".Rcheck/00install.out", "r") as f_in:
+                #     logger.warn(f_in.read())
+                # with open(package_build + ".Rcheck/00check.log", "r") as f_in:
+                #     logger.warn(f_in.read())
             except (IOError, OSError) as msg:
                 logger.fatal("I/O error({0} - CHECK): {1}\n{2}".format(
                     msg.errno, msg.strerror, command_line_check))
@@ -284,8 +284,8 @@ class bsgenomeTool(Tool):  # pylint: disable=invalid-name
                 logger.info(out)
                 logger.warn(err)
 
-                with open(package_build + ".Rcheck/00install.out", "r") as f_in:
-                    logger.warn(f_in.read())
+                # with open(package_build + ".Rcheck/00install.out", "r") as f_in:
+                #     logger.warn(f_in.read())
                 with open(package_build + ".Rcheck/00check.log", "r") as f_in:
                     logger.warn(f_in.read())
                 return False

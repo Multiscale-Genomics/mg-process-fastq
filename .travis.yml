@@ -209,7 +209,7 @@ before_script:
     - echo "options(repos = c(CRAN = 'http://mirrors.ebi.ac.uk/CRAN/'))" > ${HOME}/.Rprofile
     - echo ".libPaths('~/R')" >> ${HOME}/.Rprofile
     - echo 'message("Using library:", .libPaths()[1])' >> ${HOME}/.Rprofile
-    - Rscript scripts/travis/install_packages.R
+    - if [[ "$TESTENV" == "code" ]]; then Rscript scripts/travis/install_packages.R; fi
 
 
     - cd ${HOME}/build/Multiscale-Genomics/mg-process-fastq

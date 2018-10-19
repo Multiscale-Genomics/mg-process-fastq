@@ -33,7 +33,7 @@ tc=$?
 rc=$(($rc + $tc))
 bash tidy_data.sh
 
-# # Not included for the moment due to installation issues with versions or R and python
+# # Not included for the moment due to issues with the library building in Travis
 # python tests/test_toolchains.py --pipeline idamidseq
 # tc=$?
 # rc=$(($rc + $tc))
@@ -71,6 +71,7 @@ tc=$?
 rc=$(($rc + $tc))
 bash tidy_data.sh
 
+# Not included in the testing at the moment for speed reasons
 # if [[ $python_version == *"3."* ]]; then
 #     python tests/test_toolchains.py --pipeline mnaseseq
 #     tc=$?

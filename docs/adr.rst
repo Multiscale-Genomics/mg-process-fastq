@@ -135,6 +135,8 @@ Also performed some tidying of the code to annotate issues that had been highlig
 
 The original repo had the tools and tests in a directory that was in the root of the repo. This is problematic when there is sharing of the code as there are collisions in the name space. This has meant that all of the code needs to be moved into a new subdirectory (mg_process_fastq).
 
+There is also the movement of the workflow classes out of the pipeline scripts and into their own module in mg_process_fastq. This means that tworkflows that have been written by others can be more easily imported.
+
 This change will probably necessitate incrementing the major release number to 1.0.0 as this is not a backwards compatible change and will require changes in other repos that rely on mg-process-fastq. As a result this will need to be part of a planned release with other developers.
 
 

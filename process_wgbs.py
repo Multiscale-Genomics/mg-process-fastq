@@ -264,11 +264,6 @@ class process_wgbs(Workflow):
         )
         logger.progress("BSseeker2 Peak Caller", status="DONE")
 
-        wigIndexerTool.wig2bigwig(
-            output_files["wig_file"].replace("bw", "wig"),
-
-        )
-
         try:
             output_results_files["wig_file"] = peak_files["wig_file"]
             output_results_files["cgmap_file"] = peak_files["cgmap_file"]

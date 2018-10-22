@@ -335,7 +335,7 @@ def wgbs_toolchain(verbose=0):
     if verbose is True:
         params.append('-s')
 
-    params.append('tests/test_fastqc_validation.py')
+    # params.append('tests/test_fastqc_validation.py')
     params.append('tests/test_bs_seeker_filter.py')
     params.append('tests/test_bs_seeker_indexer.py')
     params.append('tests/test_bs_seeker_aligner.py')

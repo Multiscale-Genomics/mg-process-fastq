@@ -20,6 +20,7 @@
 from __future__ import print_function
 
 import argparse
+import os
 
 from basic_modules.workflow import Workflow
 from utils import logger
@@ -255,9 +256,18 @@ class process_wgbs(Workflow):
         peak_files, peak_meta = peak_caller_handle.run(
             mct_input_files,
             mct_meta,
-            remap(output_files, "wig_file", "cgmap_file", "atcgmap_file")
+            {
+                "wig_file": output_files["wig_file"].replace("bw", "wig"),
+                "atcgmap_file": output_files["atcgmap_file"],
+                "cgmap_file": output_files["cgmap_file"]
+            }
         )
         logger.progress("BSseeker2 Peak Caller", status="DONE")
+
+        wigIndexerTool.wig2bigwig(
+            output_files["wig_file"].replace("bw", "wig"),
+
+        )
 
         try:
             output_results_files["wig_file"] = peak_files["wig_file"]

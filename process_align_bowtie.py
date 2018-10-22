@@ -21,116 +21,9 @@ from __future__ import print_function
 
 import argparse
 
-from basic_modules.workflow import Workflow
 from utils import logger
 
-from mg_process_fastq.tool.bowtie_aligner import bowtie2AlignerTool
-
-
-# ------------------------------------------------------------------------------
-
-class process_bowtie(Workflow):
-    """
-    Functions for aligning FastQ files with Bowtie2
-    """
-
-    def __init__(self, configuration=None):
-        """
-        Initialise the class
-
-        Parameters
-        ----------
-        configuration : dict
-            a dictionary containing parameters that define how the operation
-            should be carried out, which are specific to each Tool.
-        """
-        logger.info("Processing Bowtie2 Aligner")
-        if configuration is None:
-            configuration = {}
-
-        self.configuration.update(configuration)
-
-    def run(self, input_files, metadata, output_files):
-        """
-        Main run function for aligning FastQ reads with Bowtie2.
-
-        Currently this can only handle a single data file and a single
-        background file.
-
-        Parameters
-        ----------
-        input_files : dict
-            Location of the initial input files required by the workflow
-
-            genome : str
-                Genome FASTA file
-
-            index : str
-                Location of the BWA archived index files
-
-            loc : str
-                Location of the FASTQ reads files
-
-            fastq2 : str
-                [OPTIONAL] Location of the FASTQ reads file for paired end data
-
-        metadata : dict
-            Input file meta data associated with their roles
-
-            genome : str
-            index : str
-            loc : str
-            fastq2 : str
-        output_files : dict
-            Output file locations
-
-            bam : str
-                Output bam file location
-
-        Returns
-        -------
-        output_files : dict
-            Output file locations associated with their roles, for the output
-
-            bam : str
-                Aligned FASTQ short read file locations
-        output_metadata : dict
-            Output metadata for the associated files in output_files
-
-            bam : Metadata
-        """
-        output_files_generated = {}
-        output_metadata = {}
-
-        logger.info("PROCESS ALIGNMENT - DEFINED OUTPUT:", output_files["bam"])
-
-        if "genome_public" in input_files:
-            input_files["genome"] = input_files.pop("genome_public")
-            metadata["genome"] = metadata.pop("genome_public")
-
-        if "index_public" in input_files:
-            input_files["index"] = input_files.pop("index_public")
-            metadata["index"] = metadata.pop("index_public")
-
-        bowtie2_handle = bowtie2AlignerTool(self.configuration)
-
-        logger.progress("Bowtie2 Aligner", status="RUNNING")
-        bowtie2_files, bowtie2_meta = bowtie2_handle.run(
-            input_files, metadata, {"output": output_files["bam"]}
-        )
-        logger.progress("Bowtie2 Aligner", status="DONE")
-
-        try:
-            output_files_generated["bam"] = bowtie2_files["bam"]
-            output_metadata["bam"] = bowtie2_meta["bam"]
-
-            tool_name = output_metadata['bam'].meta_data['tool']
-            output_metadata['bam'].meta_data['tool_description'] = tool_name
-            output_metadata['bam'].meta_data['tool'] = "process_bwa"
-        except KeyError:
-            logger.fatal("BWA aligner failed")
-
-        return output_files_generated, output_metadata
+from mg_process_fastq.workflow.bowtie2 import process_bowtie
 
 
 # ------------------------------------------------------------------------------
@@ -144,7 +37,7 @@ def main_json(config, in_metadata, out_metadata):
     two json files: config.json and input_metadata.json.
     """
     # 1. Instantiate and launch the App
-    print("1. Instantiate and launch the App")
+    logger.info("1. Instantiate and launch the App")
     from apps.jsonapp import JSONApp
     app = JSONApp()
     result = app.launch(process_bowtie,
@@ -153,7 +46,7 @@ def main_json(config, in_metadata, out_metadata):
                         out_metadata)
 
     # 2. The App has finished
-    print("2. Execution finished; see " + out_metadata)
+    logger.info("2. Execution finished; see " + out_metadata)
 
     return result
 
@@ -187,4 +80,4 @@ if __name__ == "__main__":
 
     RESULTS = main_json(CONFIG, IN_METADATA, OUT_METADATA)
 
-    print(RESULTS)
+    logger.info(RESULTS)

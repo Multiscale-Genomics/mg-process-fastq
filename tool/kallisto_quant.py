@@ -314,7 +314,6 @@ class kallistoQuantificationTool(Tool):  # pylint: disable=invalid-name
         with open(abundance_tsv_file, "r") as tsv_handle:
             with open(abundance_gff_file, "w") as gff_handle:
                 gff_handle.write("##gff-version 3\n")
-                gff_handle.write("track name=kallisto_quant\n")
                 for tsv_line in tsv_handle:
                     tsv_entry = tsv_line.strip().split("\t")
 

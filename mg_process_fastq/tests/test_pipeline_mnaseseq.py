@@ -20,8 +20,8 @@ from __future__ import print_function
 import os.path
 import pytest
 
-from process_genome import process_genome
-from process_mnaseseq import process_mnaseseq
+from mg_process_fastq.workflow.genome_indexer import process_genome
+from mg_process_fastq.workflow.mnaseseq import process_mnaseseq
 
 
 @pytest.mark.mnaseseq

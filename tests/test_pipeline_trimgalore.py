@@ -124,10 +124,14 @@ def test_trim_galore_pipeline_02():
     }
 
     files_out = {
-        "fastq1_trimmed": 'tests/data/bsSeeker.Mouse.SRR892982_1.trimmed.fastq.gz',
-        "fastq2_trimmed": 'tests/data/bsSeeker.Mouse.SRR892982_2.trimmed.fastq.gz',
-        "fastq1_report": 'tests/data/bsSeeker.Mouse.SRR892982_1.trimmed.report.txt',
-        "fastq2_report": 'tests/data/bsSeeker.Mouse.SRR892982_2.trimmed.report.txt'
+        "fastq1_trimmed": os.path.join(
+            resource_path, 'bsSeeker.Mouse.SRR892982_1.trimmed.fastq.gz'),
+        "fastq2_trimmed": os.path.join(
+            resource_path, 'bsSeeker.Mouse.SRR892982_2.trimmed.fastq.gz'),
+        "fastq1_report": os.path.join(
+            resource_path, 'bsSeeker.Mouse.SRR892982_1.trimmed.report.txt'),
+        "fastq2_report": os.path.join(
+            resource_path, 'bsSeeker.Mouse.SRR892982_2.trimmed.report.txt')
     }
 
     tg_handle = process_trim_galore({"tg_paired": True, "execution": resource_path})

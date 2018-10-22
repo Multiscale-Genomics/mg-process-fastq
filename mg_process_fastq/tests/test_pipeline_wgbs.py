@@ -22,7 +22,7 @@ import gzip
 import pytest  # pylint: disable=unused-import
 
 from basic_modules.metadata import Metadata
-from process_wgbs import process_wgbs
+from mg_process_fastq.workflow.wgbs import process_wgbs
 
 
 @pytest.mark.wgbs

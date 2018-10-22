@@ -21,7 +21,7 @@ import os.path
 import pytest
 
 from basic_modules.metadata import Metadata
-from process_rnaseq import process_rnaseq
+from mg_process_fastq.workflow.rnaseq import process_rnaseq
 
 
 @pytest.mark.rnaseq

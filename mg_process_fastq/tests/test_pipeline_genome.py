@@ -21,7 +21,7 @@ import os.path
 import pytest
 
 from basic_modules.metadata import Metadata
-from process_genome import process_genome
+from mg_process_fastq.workflow.genome_indexer import process_genome
 
 
 @pytest.mark.genome

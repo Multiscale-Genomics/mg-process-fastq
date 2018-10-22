@@ -21,7 +21,7 @@ import os.path
 import pytest
 
 from basic_modules.metadata import Metadata
-from process_chipseq import process_chipseq
+from mg_process_fastq.workflow.chipseq import process_chipseq
 
 
 @pytest.mark.chipseq

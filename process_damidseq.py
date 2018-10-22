@@ -20,13 +20,14 @@
 from __future__ import print_function
 
 import argparse
+import os.path
 
 from basic_modules.workflow import Workflow
 from utils import logger
 from utils import remap
 
 from mg_process_fastq.tool.forge_bsgenome import bsgenomeTool
-from mg_process_fastq.tool.bwa_aligner import bwaAlignerTool
+from mg_process_fastq.tool.bwa_mem_aligner import bwaAlignerMEMTool
 from mg_process_fastq.tool.biobambam_filter import biobambam
 from mg_process_fastq.tool.idear import idearTool
 
@@ -54,6 +55,62 @@ class process_damidseq(Workflow):
             configuration = {}
 
         self.configuration.update(configuration)
+
+    def _align_filter(self, align_input_files, align_input_file_meta, output_files):
+        """
+        Function for performing the alignment and filtering of fastq files.
+        """
+
+        output_files_generated = {}
+        output_metadata_generated = {}
+
+        bwa = bwaAlignerMEMTool(self.configuration)
+        logger.progress("BWA MEM Aligner - " + align_input_files["loc"], status="RUNNING")
+        bwa_files, bwa_meta = bwa.run(
+            align_input_files, align_input_file_meta, {"output": output_files["bam"]}
+        )
+        logger.progress("BWA MEM Aligner - " + align_input_files["loc"], status="DONE")
+
+        try:
+            output_files_generated["bam"] = bwa_files["bam"]
+            output_metadata_generated["bam"] = bwa_meta["bam"]
+
+            tool_name = output_metadata_generated["bam"].meta_data["tool"]
+            output_metadata_generated["bam"].meta_data["tool_description"] = tool_name
+            output_metadata_generated["bam"].meta_data["tool"] = "process_damidseq"
+        except KeyError as msg:
+            logger.fatal(
+                "KeyError error - BWA aligner failed: {0}\n{1}\n{2}\n{3}".format(
+                    msg, output_files_generated["bam"],
+                    "Available file keys: " + ", ".join(bwa_files.keys()),
+                    "Available mets keys: " + ", ".join(bwa_meta.keys())
+                )
+            )
+            return {}, {}
+
+        # Filter the bams
+        b3f = biobambam(self.configuration)
+        logger.progress("BioBamBam Filtering - " + align_input_files["loc"], status="RUNNING")
+        b3f_files, b3f_meta = b3f.run(
+            {"input": bwa_files["bam"]},
+            {"input": bwa_meta["bam"]},
+            {"output": output_files["bam_filtered"]}
+        )
+        logger.progress("BioBamBam Filtering - " + align_input_files["loc"], status="DONE")
+
+        try:
+            output_files_generated["bam_filtered"] = b3f_files["output"]
+            output_metadata_generated["bam_filtered"] = b3f_meta["output"]
+
+            tool_name = output_metadata_generated["bam_filtered"].meta_data["tool"]
+            output_metadata_generated["bam_filtered"].meta_data["tool_description"] = tool_name
+            output_metadata_generated["bam_filtered"].meta_data["tool"] = "process_damidseq"
+        except KeyError as msg:
+            logger.fatal("KeyError error - BioBamBam filtering failed: {0}\n{1}".format(
+                msg, output_files_generated["bam_filtered"]))
+            return {}, {}
+
+        return (output_files_generated, output_metadata_generated)
 
     def run(self, input_files, metadata, output_files):
         """
@@ -126,19 +183,14 @@ class process_damidseq(Workflow):
             bigwig : Metadata
 
         """
-        output_files_generated = {}
-        output_metadata = {}
-
-        # Add in BSgenome section
-
-        logger.info("PROCESS DAMIDSEQ - DEFINED OUTPUT:", output_files)
-
-        alignment_set = [
-            ["fastq_1", "bam_1", "bam_1_filtered"],
-            ["fastq_2", "bam_2", "bam_2_filtered"],
-            ["bg_fastq_1", "bg_bam_1", "bg_bam_1_filtered"],
-            ["bg_fastq_2", "bg_bam_2", "bg_bam_2_filtered"],
-        ]
+        output_files_generated = {
+            "bam": [],
+            "bam_filtered": []
+        }
+        output_metadata = {
+            "bam": [],
+            "bam_filtered": []
+        }
 
         # BSgenome
         logger.info("Generating BSgenome")
@@ -175,79 +227,69 @@ class process_damidseq(Workflow):
                 output_metadata[file_key].meta_data['tool'] = "process_damidseq"
         except KeyError:
             logger.fatal("BSgenome indexer failed")
+            return {}, {}
 
         # Align and filter reads
-        for aln in alignment_set:
-            if "genome_public" in input_files:
-                align_input_files = remap(
-                    input_files, genome="genome_public", loc="loc", index="index_public")
-                align_input_file_meta = remap(
-                    metadata, genome="genome_public", loc="loc", index="index_public")
-            else:
-                align_input_files = remap(input_files, "genome", "index", loc=aln[0])
-                align_input_file_meta = remap(metadata, "genome", "index", loc=aln[0])
+        for prefix in ["", "bg_"]:
+            for i, aln in enumerate(input_files[prefix + "fastq_1"]):
+                logger.info("BWA MEM Aligning and filtering of " + aln)
+                if "genome_public" in input_files:
+                    align_input_files = remap(
+                        input_files, genome="genome_public", index="index_public",
+                        loc=input_files[prefix + "fastq_1"][i])
+                    align_input_file_meta = remap(
+                        metadata, genome="genome_public", index="index_public",
+                        loc=input_files[prefix + "fastq_1"][i])
+                else:
+                    align_input_files = remap(
+                        input_files, genome="genome", index="index",
+                        loc=input_files[prefix + "fastq_1"][i])
+                    align_input_file_meta = remap(
+                        metadata, genome="genome", index="index",
+                        loc=input_files[prefix + "fastq_1"][i])
 
-            bwa = bwaAlignerTool(self.configuration)
-            logger.progress("BWA ALN Aligner - " + aln[0], status="RUNNING")
-            bwa_files, bwa_meta = bwa.run(
-                align_input_files, align_input_file_meta, {"output": output_files[aln[1]]}
-            )
-            logger.progress("BWA ALN Aligner - " + aln[0], status="DONE")
+                if prefix + "fastq_2" in input_files:
+                    align_input_files["fastq_2"] = input_files[prefix + "fastq_2"][i]
+                    align_input_file_meta["fastq_2"] = metadata[prefix + "fastq_2"][i]
 
-            try:
-                output_files_generated[aln[1]] = bwa_files["bam"]
-                output_metadata[aln[1]] = bwa_meta["bam"]
+                fastq_in = os.path.split(input_files[prefix + "fastq_1"][i])
+                fastq_suffix = fastq_in[1].split(".")[-1]
+                align_output_files = {
+                    prefix + "bam": os.path.join(
+                        self.configuration["execution"],
+                        fastq_in[1].replace(fastq_suffix, "bam")
+                    ),
+                    prefix + "bam_filtered": os.path.join(
+                        self.configuration["execution"],
+                        fastq_in[1].replace(fastq_suffix, "filtered.bam")
+                    ),
+                }
 
-                tool_name = output_metadata[aln[1]].meta_data["tool"]
-                output_metadata[aln[1]].meta_data["tool_description"] = tool_name
-                output_metadata[aln[1]].meta_data["tool"] = "process_damidseq"
-            except KeyError as msg:
-                logger.fatal(
-                    "KeyError error - BWA aligner failed: {0}\n{1}\n{2}\n{3}".format(
-                        msg, aln[1],
-                        "Available file keys: " + ", ".join(bwa_files.keys()),
-                        "Available mets keys: " + ", ".join(bwa_meta.keys())
-                    )
-                )
+                bwa_files, bwa_meta = self._align_filter(
+                    align_input_files, align_input_file_meta, align_output_files)
 
-            # Filter the bams
-            b3f = biobambam(self.configuration)
-            logger.progress("BioBamBam Filtering - " + aln[0], status="RUNNING")
-            b3f_files, b3f_meta = b3f.run(
-                {"input": bwa_files["bam"]},
-                {"input": bwa_meta["bam"]},
-                {"output": output_files[aln[2]]}
-            )
-            logger.progress("BioBamBam Filtering - " + aln[0], status="DONE")
+                try:
+                    output_files_generated[prefix + "bam"].append(bwa_files["bam"])
+                    output_metadata[prefix + "bam"].append(bwa_meta["bam"])
 
-            try:
-                output_files_generated[aln[2]] = b3f_files["bam"]
-                output_metadata[aln[2]] = b3f_meta["bam"]
-
-                tool_name = output_metadata[aln[2]].meta_data["tool"]
-                output_metadata[aln[2]].meta_data["tool_description"] = tool_name
-                output_metadata[aln[2]].meta_data["tool"] = "process_damidseq"
-            except KeyError as msg:
-                logger.fatal("KeyError error - BioBamBam filtering failed: {0}\n{1}".format(
-                    msg, aln[2]))
-
-                return {}, {}
+                    output_files_generated[prefix + "bam_filtered"].append(
+                        bwa_files["bam_filtered"])
+                    output_metadata[prefix + "bam_filtered"].append(bwa_meta["bam"])
+                except KeyError as msg:
+                    logger.fatal("Error aligning and filtering input FASTQ files")
+                    return {}, {}
 
         # iDEAR to call peaks
         idear_caller = idearTool(self.configuration)
         logger.progress("iDEAR Peak Caller", status="RUNNING")
         idear_files, idear_meta = idear_caller.run(
             {
-                "bam_1": output_files_generated["bam_1_filtered"],
-                "bam_2": output_files_generated["bam_2_filtered"],
-                "bg_bam_1": output_files_generated["bg_bam_1_filtered"],
-                "bg_bam_2": output_files_generated["bg_bam_2_filtered"],
+                "bam": output_files_generated["bam_filtered"],
+                "bg_bam": output_files_generated["bg_bam_filtered"],
                 "bsgenome": input_files["bsgenome"]
             }, {
-                "bam_1": output_metadata["bam_1_filtered"],
-                "bam_2": output_metadata["bam_2_filtered"],
-                "bg_bam_1": output_metadata["bg_bam_1_filtered"],
-                "bg_bam_2": output_metadata["bg_bam_2_filtered"],
+                "bam": output_metadata["bam_filtered"],
+                "bg_bam": output_metadata["bg_bam_filtered"],
                 "bsgenome": metadata["bsgenome"]
             }, {
                 "bigwig": output_files["bigwig"],
@@ -268,7 +310,6 @@ class process_damidseq(Workflow):
 
             return {}, {}
 
-        print("DAMID-SEQ RESULTS:", output_metadata)
         return output_files_generated, output_metadata
 
 

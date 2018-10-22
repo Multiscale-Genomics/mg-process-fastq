@@ -123,16 +123,12 @@ class process_idear(Workflow):
         logger.progress("iDEAR Peak Caller", status="RUNNING")
         idear_caller.run(
             {
-                "bam_1": input_files["bam_1"],
-                "bam_2": input_files["bam_2"],
-                "bg_bam_1": input_files["bg_bam_1"],
-                "bg_bam_2": input_files["bg_bam_2"],
+                "bam": input_files["bam"],
+                "bg_bam": input_files["bg_bam"],
                 "bsgenome": input_files["bsgenome"]
             }, {
-                "bam_1": metadata["bam_1"],
-                "bam_2": metadata["bam_2"],
-                "bg_bam_1": metadata["bg_bam_1"],
-                "bg_bam_2": metadata["bg_bam_2"],
+                "bam": metadata["bam"],
+                "bg_bam": metadata["bg_bam"],
                 "bsgenome": metadata["bsgenome"]
             }, {
                 "bigwig": output_files["bigwig"],

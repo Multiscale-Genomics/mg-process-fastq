@@ -16,11 +16,12 @@
 """
 
 import os.path
-import pytest # pylint: disable=unused-import
+import pytest
 
 from basic_modules.metadata import Metadata
 
 from mg_process_fastq.tool.forge_bsgenome import bsgenomeTool
+
 
 @pytest.mark.idamidseq
 def test_bsgenome():

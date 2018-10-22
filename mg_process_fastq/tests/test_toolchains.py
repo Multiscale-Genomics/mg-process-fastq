@@ -196,18 +196,18 @@ def chipseq_toolchain(verbose=False):
 
 def idamidseq_toolchain(verbose=False):
     """
-    Runs the tests for all of the tools from the ChIP-seq pipeline
+    Runs the tests for all of the tools from the iDamID-seq pipeline
 
     Runs the following tests:
 
     .. code-block:: none
 
-       pytest -m idamidseq mg_process_fastq/tests/test_fastqc_validation.py
        pytest -m idamidseq mg_process_fastq/tests/test_bwa_indexer.py
        pytest -m idamidseq mg_process_fastq/tests/test_bwa_aligner.py
        pytest -m idamidseq mg_process_fastq/tests/test_biobambam.py
        pytest -m idamidseq mg_process_fastq/tests/test_bsgenome.py
        pytest -m idamidseq mg_process_fastq/tests/test_idear.py
+
     """
 
     params = ['-m idamidseq']
@@ -215,7 +215,6 @@ def idamidseq_toolchain(verbose=False):
     if verbose is True:
         params.append('-s')
 
-    params.append('mg_process_fastq/tests/test_fastqc_validation.py')
     params.append('mg_process_fastq/tests/test_bwa_indexer.py')
     params.append('mg_process_fastq/tests/test_bwa_aligner.py')
     params.append('mg_process_fastq/tests/test_biobambam.py')
@@ -233,17 +232,16 @@ def hic_toolchain(verbose=False):
 
     .. code-block:: none
 
-       pytest -m hic tests/test_fastqc_validation.py
-       pytest -m hic tests/test_gem_indexer.py
-       pytest -m hic tests/test_tb_full_mapping.py
-       pytest -m hic tests/test_tb_parse_mapping.py
-       pytest -m hic tests/test_tb_filter.py
-       pytest -m hic tests/test_tb_normalize.py
-       pytest -m hic tests/test_tb_segment.py
-       pytest -m hic tests/test_tb_generate_tads.py
-       pytest -m hic tests/test_tb_bin.py
-       pytest -m hic tests/test_tb_save_hdf5_matrix.py
->>>>>>> master:tests/test_toolchains.py
+       pytest -m hic mg_process_fastq/tests/test_fastqc_validation.py
+       pytest -m hic mg_process_fastq/tests/test_gem_indexer.py
+       pytest -m hic mg_process_fastq/tests/test_tb_full_mapping.py
+       pytest -m hic mg_process_fastq/tests/test_tb_parse_mapping.py
+       pytest -m hic mg_process_fastq/tests/test_tb_filter.py
+       pytest -m hic mg_process_fastq/tests/test_tb_normalize.py
+       pytest -m hic mg_process_fastq/tests/test_tb_segment.py
+       pytest -m hic mg_process_fastq/tests/test_tb_generate_tads.py
+       pytest -m hic mg_process_fastq/tests/test_tb_bin.py
+       pytest -m hic mg_process_fastq/tests/test_tb_save_hdf5_matrix.py
     """
 
     params = ['-m hic']
@@ -338,7 +336,6 @@ def wgbs_toolchain(verbose=0):
     if verbose is True:
         params.append('-s')
 
-    params.append('mg_process_fastq/tests/test_fastqc_validation.py')
     params.append('mg_process_fastq/tests/test_bs_seeker_filter.py')
     params.append('mg_process_fastq/tests/test_bs_seeker_indexer.py')
     params.append('mg_process_fastq/tests/test_bs_seeker_aligner.py')

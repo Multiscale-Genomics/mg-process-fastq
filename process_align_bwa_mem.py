@@ -31,8 +31,7 @@ from mg_process_fastq.tool.bwa_mem_aligner import bwaAlignerMEMTool
 
 class process_bwa_mem(Workflow):
     """
-    Functions for processing Chip-Seq FastQ files. Files are the aligned,
-    filtered and analysed for peak calling
+    Functions for aligning FastQ files with BWA MEM
     """
 
     def __init__(self, configuration=None):

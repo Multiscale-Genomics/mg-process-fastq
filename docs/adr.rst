@@ -223,3 +223,15 @@ Inclusion of tests for the wrappers and tools of the tadbit pipelines
 ----------------------------------------------------
 
 To display the scores on the genome browser the abundance tsv is used to generate a bed file where the score matches the transcripts per million column from the abundance.tsv output from Kallisto. This module requires the presence of the ensembl gff3 file for the matching assembly. This should be passed by the VRE when passing the FASTA file for the transcripts.
+
+
+2018-10-18 - Multi File handling for the DamID-seq Pipeline
+-----------------------------------------------------------
+
+Ability to handle multiple input single/paired end data and background data files and process them in an orderly fashion. Ability to handle the resultant multiples of generated bam files in the idear tool and its matching individual pipeline.
+
+
+2018-10-25 - WGBS Pipeline Create BigWig files as standard
+----------------------------------------------------------
+
+The output wig files from BS Seeker2 are now converted to BigWig files by default rather than returning wig files. This is so that they are easier to visualise on the JBrowse interface.

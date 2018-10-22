@@ -92,7 +92,7 @@ class alignerUtils(object):  # pylint: disable=invalid-name
         genome_file : str
             Location of the assembly file in the file system
         """
-        file_name = genome_file.split("/")
+        file_name = os.path.split(genome_file)
 
         bt2_1_name = genome_file + ".1.bt2"
         bt2_2_name = genome_file + ".2.bt2"
@@ -101,7 +101,7 @@ class alignerUtils(object):  # pylint: disable=invalid-name
         rev1_bt2_name = genome_file + ".rev.1.bt2"
         rev2_bt2_name = genome_file + ".rev.2.bt2"
 
-        with cd("/".join(file_name[0:-1])):
+        with cd(file_name[0]):
             command_line = 'bowtie2-build ' + genome_file + ' ' + genome_file
             args = shlex.split(command_line)
             process = subprocess.Popen(args)
@@ -256,8 +256,7 @@ class alignerUtils(object):  # pylint: disable=invalid-name
             Dictionary object of the suffix and final index file location
         """
         try:
-            g_dir = tar_file.split("/")
-            g_dir = "/".join(g_dir[:-1])
+            g_dir = os.path.split(tar_file)[0]
 
             tar = tarfile.open(tar_file)
             tar.extractall(path=g_dir)

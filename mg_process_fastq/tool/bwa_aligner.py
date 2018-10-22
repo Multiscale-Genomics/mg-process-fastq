@@ -181,7 +181,7 @@ class bwaAlignerTool(Tool):  # pylint: disable=invalid-name
           read_file_loc2=FILE_IN, bam_loc=FILE_OUT,
           amb_file=FILE_IN, ann_file=FILE_IN, bwt_file=FILE_IN,
           pac_file=FILE_IN, sa_file=FILE_IN, aln_params=IN, isModifier=False)
-    def bwa_aligner_paired(  # pylint: disable=too-many-arguments, no-self-use
+    def bwa_aligner_paired(  # pylint: disable=too-many-arguments, no-self-use, too-many-locals
             self, genome_file_loc, read_file_loc1, read_file_loc2, bam_loc,
             amb_file, ann_file, bwt_file, pac_file, sa_file, aln_params):  # pylint: disable=unused-argument
         """
@@ -270,10 +270,10 @@ class bwaAlignerTool(Tool):  # pylint: disable=invalid-name
         command_params = []
         for param in params:
             if param in command_parameters:
-                if command_parameters[param][1]:
+                if command_parameters[param][1] and params[param] != "":
                     command_params = command_params + [command_parameters[param][0], params[param]]
                 else:
-                    if command_parameters[param][0]:
+                    if command_parameters[param][0] and params[param] is not False:
                         command_params.append(command_parameters[param][0])
 
         return command_params
@@ -390,11 +390,10 @@ class bwaAlignerTool(Tool):  # pylint: disable=invalid-name
         # output_bai_file = output_files["bai"]
 
         logger.info("BWA ALIGNER: Aligning sequence reads to the genome")
-
-        output_bam_list = []
         logger.progress("ALIGNER - jobs = " + str(len(fastq_file_list)),
                         task_id=tasks_done, total=task_count)
 
+        output_bam_list = []
         for fastq_file_pair in fastq_file_list:
             if "fastq2" in input_files:
                 tmp_fq1 = os.path.join(gz_data_path, "tmp", fastq_file_pair[0])

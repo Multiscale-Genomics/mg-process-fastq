@@ -257,7 +257,7 @@ class process_wgbs(Workflow):
             mct_input_files,
             mct_meta,
             {
-                "wig_file": output_files["wig_file"].replace("bw", "wig"),
+                "wig_file": output_files["wig_file"],
                 "atcgmap_file": output_files["atcgmap_file"],
                 "cgmap_file": output_files["cgmap_file"]
             }

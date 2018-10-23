@@ -114,7 +114,7 @@ class process_bwa(Workflow):
         logger.progress("BWA ALN Aligner", status="RUNNING")
         bwa_files, bwa_meta = bwa.run(
             input_files, metadata,
-            {"output": output_files["bam"], "bai": output_files["bam"]}
+            {"output": output_files["bam"], "bai": output_files["bai"]}
         )
         logger.progress("BWA ALN Aligner", status="DONE")
 

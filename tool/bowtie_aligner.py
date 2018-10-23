@@ -572,13 +572,13 @@ class bowtie2AlignerTool(Tool):  # pylint: disable=invalid-name
         logger.progress("Copying bam file into the output file",
                         task_id=tasks_done, total=task_count)
         bam_handle.bam_copy(output_bam_list[0], output_bam_file)
+        bam_handle.bam_index(output_bam_file, output_files["bai"])
+
         tasks_done += 1
         logger.progress("Copying bam file into the output file",
                         task_id=tasks_done, total=task_count)
 
         compss_delete_file(output_bam_list[0])
-
-        bam_handle.bam_index(output_bam_file, output_files["bai"])
 
         logger.info("BOWTIE2 ALIGNER: Alignments complete")
 

@@ -300,7 +300,7 @@ class bwaAlignerMEMTool(Tool):  # pylint: disable=invalid-name
         """
 
         tasks_done = 0
-        task_count = 6
+        task_count = 7
 
         untar_idx = True
         if "no-untar" in self.configuration and self.configuration["no-untar"] is True:
@@ -495,9 +495,14 @@ class bwaAlignerMEMTool(Tool):  # pylint: disable=invalid-name
         logger.progress("Copying bam file into the output file",
                         task_id=tasks_done, total=task_count)
 
-        compss_delete_file(output_bam_list[0])
-
+        logger.progress("Indexing output bam file",
+                        task_id=tasks_done, total=task_count)
         bam_handle.bam_index(output_bam_file, output_files["bai"])
+        tasks_done += 1
+        logger.progress("Indexing output bam file",
+                        task_id=tasks_done, total=task_count)
+
+        compss_delete_file(output_bam_list[0])
 
         logger.info("BWA ALIGNER: Alignments complete")
 
@@ -510,7 +515,6 @@ class bwaAlignerMEMTool(Tool):  # pylint: disable=invalid-name
                     msg.errno, msg.strerror
                 )
             )
-
 
         output_metadata = {
             "bam": Metadata(

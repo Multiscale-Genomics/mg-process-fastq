@@ -20,7 +20,6 @@
 from __future__ import print_function
 
 import argparse
-import os
 
 from basic_modules.workflow import Workflow
 from utils import logger

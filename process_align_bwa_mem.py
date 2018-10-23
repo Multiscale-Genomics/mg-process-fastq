@@ -113,7 +113,8 @@ class process_bwa_mem(Workflow):
 
         logger.progress("BWA MEM Aligner", status="RUNNING")
         bwa_files, bwa_meta = bwa.run(
-            input_files, metadata, {"output": output_files["bam"]}
+            input_files, metadata,
+            {"output": output_files["bam"], "bai": output_files["bam"]}
         )
         logger.progress("BWA MEM Aligner", status="DONE")
 
@@ -123,7 +124,14 @@ class process_bwa_mem(Workflow):
 
             tool_name = output_metadata['bam'].meta_data['tool']
             output_metadata['bam'].meta_data['tool_description'] = tool_name
-            output_metadata['bam'].meta_data['tool'] = "process_bwa"
+            output_metadata['bam'].meta_data['tool'] = "process_bwa_mem"
+
+            output_files_generated["bai"] = bwa_files["bai"]
+            output_metadata["bai"] = bwa_meta["bai"]
+
+            tool_name = output_metadata['bai'].meta_data['tool']
+            output_metadata['bai'].meta_data['tool_description'] = tool_name
+            output_metadata['bai'].meta_data['tool'] = "process_bwa_mem"
         except KeyError:
             logger.fatal("BWA aligner failed")
 

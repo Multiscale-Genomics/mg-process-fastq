@@ -67,7 +67,8 @@ class process_damidseq(Workflow):
         bwa = bwaAlignerMEMTool(self.configuration)
         logger.progress("BWA MEM Aligner - " + align_input_files["loc"], status="RUNNING")
         bwa_files, bwa_meta = bwa.run(
-            align_input_files, align_input_file_meta, {"output": output_files["bam"]}
+            align_input_files, align_input_file_meta,
+            {"output": output_files["bam"], "bai": output_files["bai"]}
         )
         logger.progress("BWA MEM Aligner - " + align_input_files["loc"], status="DONE")
 
@@ -78,6 +79,13 @@ class process_damidseq(Workflow):
             tool_name = output_metadata_generated["bam"].meta_data["tool"]
             output_metadata_generated["bam"].meta_data["tool_description"] = tool_name
             output_metadata_generated["bam"].meta_data["tool"] = "process_damidseq"
+
+            output_files_generated["bai"] = bwa_files["bai"]
+            output_metadata_generated["bai"] = bwa_meta["bai"]
+
+            tool_name = output_metadata_generated["bai"].meta_data["tool"]
+            output_metadata_generated["bai"].meta_data["tool_description"] = tool_name
+            output_metadata_generated["bai"].meta_data["tool"] = "process_damidseq"
         except KeyError as msg:
             logger.fatal(
                 "KeyError error - BWA aligner failed: {0}\n{1}\n{2}\n{3}".format(
@@ -94,17 +102,24 @@ class process_damidseq(Workflow):
         b3f_files, b3f_meta = b3f.run(
             {"input": bwa_files["bam"]},
             {"input": bwa_meta["bam"]},
-            {"output": output_files["bam_filtered"]}
+            {"output": output_files["bam_filtered"], "bai": output_files["bai_filtered"]}
         )
         logger.progress("BioBamBam Filtering - " + align_input_files["loc"], status="DONE")
 
         try:
-            output_files_generated["bam_filtered"] = b3f_files["output"]
-            output_metadata_generated["bam_filtered"] = b3f_meta["output"]
+            output_files_generated["bam_filtered"] = b3f_files["bam"]
+            output_metadata_generated["bam_filtered"] = b3f_meta["bam"]
 
             tool_name = output_metadata_generated["bam_filtered"].meta_data["tool"]
             output_metadata_generated["bam_filtered"].meta_data["tool_description"] = tool_name
             output_metadata_generated["bam_filtered"].meta_data["tool"] = "process_damidseq"
+
+            output_files_generated["bai_filtered"] = b3f_files["bai"]
+            output_metadata_generated["bai_filtered"] = b3f_meta["bai"]
+
+            tool_name = output_metadata_generated["bai_filtered"].meta_data["tool"]
+            output_metadata_generated["bai_filtered"].meta_data["tool_description"] = tool_name
+            output_metadata_generated["bai_filtered"].meta_data["tool"] = "process_damidseq"
         except KeyError as msg:
             logger.fatal("KeyError error - BioBamBam filtering failed: {0}\n{1}".format(
                 msg, output_files_generated["bam_filtered"]))
@@ -255,14 +270,22 @@ class process_damidseq(Workflow):
                 fastq_in = os.path.split(input_files[prefix + "fastq_1"][i])
                 fastq_suffix = fastq_in[1].split(".")[-1]
                 align_output_files = {
-                    prefix + "bam": os.path.join(
+                    "bam": os.path.join(
                         self.configuration["execution"],
                         fastq_in[1].replace(fastq_suffix, "bam")
                     ),
-                    prefix + "bam_filtered": os.path.join(
+                    "bam_filtered": os.path.join(
                         self.configuration["execution"],
                         fastq_in[1].replace(fastq_suffix, "filtered.bam")
                     ),
+                    "bai": os.path.join(
+                        self.configuration["execution"],
+                        fastq_in[1].replace(fastq_suffix, "bai")
+                    ),
+                    "bai_filtered": os.path.join(
+                        self.configuration["execution"],
+                        fastq_in[1].replace(fastq_suffix, "filtered.bai")
+                    )
                 }
 
                 bwa_files, bwa_meta = self._align_filter(
@@ -275,6 +298,13 @@ class process_damidseq(Workflow):
                     output_files_generated[prefix + "bam_filtered"].append(
                         bwa_files["bam_filtered"])
                     output_metadata[prefix + "bam_filtered"].append(bwa_meta["bam"])
+
+                    output_files_generated[prefix + "bai"].append(bwa_files["bai"])
+                    output_metadata[prefix + "bai"].append(bwa_meta["bai"])
+
+                    output_files_generated[prefix + "bai_filtered"].append(
+                        bwa_files["bai_filtered"])
+                    output_metadata[prefix + "bai_filtered"].append(bwa_meta["bai"])
                 except KeyError as msg:
                     logger.fatal("Error aligning and filtering input FASTQ files")
                     return {}, {}

@@ -578,6 +578,8 @@ class bowtie2AlignerTool(Tool):  # pylint: disable=invalid-name
 
         compss_delete_file(output_bam_list[0])
 
+        bam_handle.bam_index(output_bam_file, output_files["bai"])
+
         logger.info("BOWTIE2 ALIGNER: Alignments complete")
 
         barrier()
@@ -595,16 +597,32 @@ class bowtie2AlignerTool(Tool):  # pylint: disable=invalid-name
                 data_type=input_metadata['loc'].data_type,
                 file_type="BAM",
                 file_path=output_files["output"],
-                sources=[input_metadata["genome"].file_path, input_metadata['loc'].file_path],
+                sources=sources,
                 taxon_id=input_metadata["genome"].taxon_id,
                 meta_data={
                     "assembly": input_metadata["genome"].meta_data["assembly"],
                     "tool": "bowtie_aligner",
-                    "parameters": command_params
+                    "parameters": command_params,
+                    "associated_files": [output_files["bai"]]
+                }
+            ),
+            "bai": Metadata(
+                data_type=input_metadata['loc'].data_type,
+                file_type="BAI",
+                file_path=output_files["bai"],
+                sources=sources,
+                taxon_id=input_metadata["genome"].taxon_id,
+                meta_data={
+                    "assembly": input_metadata["genome"].meta_data["assembly"],
+                    "tool": "bs_seeker_aligner",
+                    "associated_master": output_bam_file
                 }
             )
         }
 
-        return ({"bam": output_files["output"]}, output_metadata)
+        return (
+            {"bam": output_files["output"], "bai": output_files["bai"]},
+            output_metadata
+        )
 
 # ------------------------------------------------------------------------------

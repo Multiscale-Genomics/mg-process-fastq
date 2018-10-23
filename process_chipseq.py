@@ -157,7 +157,7 @@ class process_chipseq(Workflow):  # pylint: disable=invalid-name,too-few-public-
         bwa_files, bwa_meta = bwa.run(
             align_input_files,
             align_input_file_meta,
-            {"output": output_files["bam"]}
+            {"output": output_files["bam"], "bai": output_files["bai"]}
         )
         logger.progress("BWA Aligner", status="DONE")
         try:
@@ -167,6 +167,13 @@ class process_chipseq(Workflow):  # pylint: disable=invalid-name,too-few-public-
             tool_name = output_metadata['bam'].meta_data['tool']
             output_metadata['bam'].meta_data['tool_description'] = tool_name
             output_metadata['bam'].meta_data['tool'] = "process_chipseq"
+
+            output_files_generated["bai"] = bwa_files["bai"]
+            output_metadata["bai"] = bwa_meta["bai"]
+
+            tool_name = output_metadata['bai'].meta_data['tool']
+            output_metadata['bai'].meta_data['tool_description'] = tool_name
+            output_metadata['bai'].meta_data['tool'] = "process_chipseq"
         except KeyError:
             logger.fatal("BWA aligner failed")
 
@@ -189,7 +196,7 @@ class process_chipseq(Workflow):  # pylint: disable=invalid-name,too-few-public-
             bwa_bg_files, bwa_bg_meta = bwa.run(
                 align_input_files_bg,
                 align_input_file_meta_bg,
-                {"output": output_files["bam_bg"]}
+                {"output": output_files["bam_bg"], "bai": output_files["bai_bg"]}
             )
             logger.progress("BWA Aligner - Background", status="DONE")
 
@@ -200,6 +207,13 @@ class process_chipseq(Workflow):  # pylint: disable=invalid-name,too-few-public-
                 tool_name = output_metadata['bam_bg'].meta_data['tool']
                 output_metadata['bam_bg'].meta_data['tool_description'] = tool_name
                 output_metadata['bam_bg'].meta_data['tool'] = "process_chipseq"
+
+                output_files_generated["bai_bg"] = bwa_bg_files["bai_bg"]
+                output_metadata["bai_bg"] = bwa_bg_meta["bai_bg"]
+
+                tool_name = output_metadata['bai_bg'].meta_data['tool']
+                output_metadata['bai_bg'].meta_data['tool_description'] = tool_name
+                output_metadata['bai_bg'].meta_data['tool'] = "process_chipseq"
             except KeyError:
                 logger.fatal("Background BWA aligner failed")
 
@@ -209,7 +223,7 @@ class process_chipseq(Workflow):  # pylint: disable=invalid-name,too-few-public-
         b3f_files, b3f_meta = b3f.run(
             {"input": bwa_files['bam']},
             {"input": bwa_meta['bam']},
-            {"output": output_files["filtered"]}
+            {"output": output_files["filtered"], "bai": output_files["filtered_bai"]}
         )
         logger.progress("BioBamBam", status="DONE")
 
@@ -220,6 +234,13 @@ class process_chipseq(Workflow):  # pylint: disable=invalid-name,too-few-public-
             tool_name = output_metadata['filtered'].meta_data['tool']
             output_metadata['filtered'].meta_data['tool_description'] = tool_name
             output_metadata['filtered'].meta_data['tool'] = "process_chipseq"
+
+            output_files_generated["filtered_bai"] = b3f_files["bai"]
+            output_metadata["filtered_bai"] = b3f_meta["bai"]
+
+            tool_name = output_metadata['filtered_bai'].meta_data['tool']
+            output_metadata['filtered_bai'].meta_data['tool_description'] = tool_name
+            output_metadata['filtered_bai'].meta_data['tool'] = "process_chipseq"
         except KeyError:
             logger.fatal("BioBamBam filtering failed")
 
@@ -229,7 +250,7 @@ class process_chipseq(Workflow):  # pylint: disable=invalid-name,too-few-public-
             b3f_bg_files, b3f_bg_meta = b3f.run(
                 {"input": bwa_bg_files['bam']},
                 {"input": bwa_bg_meta['bam']},
-                {"output": output_files["filtered_bg"]}
+                {"output": output_files["filtered_bg"], "bai": output_files["filtered_bai_bg"]}
             )
             logger.progress("BioBamBam Background", status="DONE")
 
@@ -240,6 +261,13 @@ class process_chipseq(Workflow):  # pylint: disable=invalid-name,too-few-public-
                 tool_name = output_metadata['filtered_bg'].meta_data['tool']
                 output_metadata['filtered_bg'].meta_data['tool_description'] = tool_name
                 output_metadata['filtered_bg'].meta_data['tool'] = "process_chipseq"
+
+                output_files_generated["filtered_bai_bg"] = b3f_bg_files["bai"]
+                output_metadata["filtered_bai_bg"] = b3f_bg_meta["bai"]
+
+                tool_name = output_metadata['filtered_bai_bg'].meta_data['tool']
+                output_metadata['filtered_bai_bg'].meta_data['tool_description'] = tool_name
+                output_metadata['filtered_bai_bg'].meta_data['tool'] = "process_chipseq"
             except KeyError:
                 logger.fatal("Background BioBamBam filtering failed")
 

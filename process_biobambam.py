@@ -106,6 +106,13 @@ class process_biobambam(Workflow):  # pylint disable=too-few-public-methods, inv
             tool_name = output_metadata['filtered'].meta_data['tool']
             output_metadata['filtered'].meta_data['tool_description'] = tool_name
             output_metadata['filtered'].meta_data['tool'] = "process_biobambam"
+
+            output_files_generated["filtered_bai"] = b3f_files["bai"]
+            output_metadata["filtered_bai"] = b3f_meta["bai"]
+
+            tool_name = output_metadata['filtered_bai'].meta_data['tool']
+            output_metadata['filtered_bai'].meta_data['tool_description'] = tool_name
+            output_metadata['filtered_bai'].meta_data['tool'] = "process_biobambam"
         except KeyError:
             logger.fatal("BioBamBam filtering failed")
 

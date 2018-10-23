@@ -95,14 +95,22 @@ def test_idamidseq_pipeline_00():
     }
 
     files_out = {
-        "bam_1": files['fastq_1'].replace(".fastq", ".bam"),
-        "bam_2": files['fastq_2'].replace(".fastq", ".bam"),
-        "bg_bam_1": files['bg_fastq_1'].replace(".fastq", ".bam"),
-        "bg_bam_2": files['bg_fastq_2'].replace(".fastq", ".bam"),
-        "bam_1_filtered": files['fastq_1'].replace(".fastq", ".filtered.bam"),
-        "bam_2_filtered": files['fastq_2'].replace(".fastq", ".filtered.bam"),
-        "bg_bam_1_filtered": files['bg_fastq_1'].replace(".fastq", ".filtered.bam"),
-        "bg_bam_2_filtered": files['bg_fastq_2'].replace(".fastq", ".filtered.bam"),
+        "bam": [
+            files['fastq_1'].replace(".fastq", ".bam"),
+            files['fastq_2'].replace(".fastq", ".bam")
+        ],
+        "bg_bam": [
+            files['bg_fastq_1'].replace(".fastq", ".bam"),
+            files['bg_fastq_2'].replace(".fastq", ".bam")
+        ],
+        "bam_filtered": [
+            files['fastq_1'].replace(".fastq", ".filtered.bam"),
+            files['fastq_2'].replace(".fastq", ".filtered.bam")
+        ],
+        "bg_bam_filtered": [
+            files['bg_fastq_1'].replace(".fastq", ".filtered.bam"),
+            files['bg_fastq_2'].replace(".fastq", ".filtered.bam")
+        ],
         "bsgenome": resource_path + "idear.Human.GCA_000001405.22.22.bsgenome.tar.gz",
         "chrom_size": resource_path + "chrom.size",
         "genome_2bit": resource_path + "idear.Human.GCA_000001405.22.2bit",
@@ -119,13 +127,23 @@ def test_idamidseq_pipeline_00():
     for f_out in damidseq_files:
         print("iDamID-SEQ RESULTS FILE:", f_out)
         # assert damidseq_files[f_out] == files_out[f_out]
-        assert os.path.isfile(damidseq_files[f_out]) is True
-        assert os.path.getsize(damidseq_files[f_out]) > 0
+        if isinstance(damidseq_files[f_out], list):
+            for sub_file_out in damidseq_files[f_out]:
+                assert os.path.isfile(sub_file_out) is True
+                assert os.path.getsize(sub_file_out) > 0
 
-        try:
-            os.remove(damidseq_files[f_out])
-        except OSError as ose:
-            print("Error: %s - %s." % (ose.filename, ose.strerror))
+                try:
+                    os.remove(sub_file_out)
+                except OSError as ose:
+                    print("Error: %s - %s." % (ose.filename, ose.strerror))
+        else:
+            assert os.path.isfile(damidseq_files[f_out]) is True
+            assert os.path.getsize(damidseq_files[f_out]) > 0
+
+            try:
+                os.remove(damidseq_files[f_out])
+            except OSError as ose:
+                print("Error: %s - %s." % (ose.filename, ose.strerror))
 
 
 @pytest.mark.idamidseq
@@ -198,14 +216,22 @@ def test_idamidseq_pipeline_01():
     }
 
     files_out = {
-        "bam_1": files['fastq_1'].replace(".fastq", ".bam"),
-        "bam_2": files['fastq_2'].replace(".fastq", ".bam"),
-        "bg_bam_1": files['bg_fastq_1'].replace(".fastq", ".bam"),
-        "bg_bam_2": files['bg_fastq_2'].replace(".fastq", ".bam"),
-        "bam_1_filtered": files['fastq_1'].replace(".fastq", ".filtered.bam"),
-        "bam_2_filtered": files['fastq_2'].replace(".fastq", ".filtered.bam"),
-        "bg_bam_1_filtered": files['bg_fastq_1'].replace(".fastq", ".filtered.bam"),
-        "bg_bam_2_filtered": files['bg_fastq_2'].replace(".fastq", ".filtered.bam"),
+        "bam": [
+            files['fastq_1'].replace(".fastq", ".bam"),
+            files['fastq_2'].replace(".fastq", ".bam")
+        ],
+        "bg_bam": [
+            files['bg_fastq_1'].replace(".fastq", ".bam"),
+            files['bg_fastq_2'].replace(".fastq", ".bam")
+        ],
+        "bam_filtered": [
+            files['fastq_1'].replace(".fastq", ".filtered.bam"),
+            files['fastq_2'].replace(".fastq", ".filtered.bam")
+        ],
+        "bg_bam_filtered": [
+            files['bg_fastq_1'].replace(".fastq", ".filtered.bam"),
+            files['bg_fastq_2'].replace(".fastq", ".filtered.bam")
+        ],
         "bsgenome": resource_path + "idear.Human.GCA_000001405.22.22.bsgenome.tar.gz",
         "chrom_size": resource_path + "chrom.size",
         "genome_2bit": resource_path + "idear.Human.GCA_000001405.22.2bit",
@@ -222,10 +248,20 @@ def test_idamidseq_pipeline_01():
     for f_out in damidseq_files:
         print("iDamID-SEQ RESULTS FILE:", f_out)
         # assert damidseq_files[f_out] == files_out[f_out]
-        assert os.path.isfile(damidseq_files[f_out]) is True
-        assert os.path.getsize(damidseq_files[f_out]) > 0
+        if isinstance(damidseq_files[f_out], list):
+            for sub_file_out in damidseq_files[f_out]:
+                assert os.path.isfile(sub_file_out) is True
+                assert os.path.getsize(sub_file_out) > 0
 
-        try:
-            os.remove(damidseq_files[f_out])
-        except OSError as ose:
-            print("Error: %s - %s." % (ose.filename, ose.strerror))
+                try:
+                    os.remove(sub_file_out)
+                except OSError as ose:
+                    print("Error: %s - %s." % (ose.filename, ose.strerror))
+        else:
+            assert os.path.isfile(damidseq_files[f_out]) is True
+            assert os.path.getsize(damidseq_files[f_out]) > 0
+
+            try:
+                os.remove(damidseq_files[f_out])
+            except OSError as ose:
+                print("Error: %s - %s." % (ose.filename, ose.strerror))

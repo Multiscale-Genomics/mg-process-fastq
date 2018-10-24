@@ -19,7 +19,7 @@ from basic_modules.workflow import Workflow
 from utils import logger
 from utils import remap
 
-from mg_process_fastq.tool.bwa_aligner import bwaAlignerTool
+from mg_process_fastq.tool.bwa_mem_aligner import bwaAlignerMEMTool
 from mg_process_fastq.tool.biobambam_filter import biobambam
 from mg_process_fastq.tool.macs2 import macs2
 
@@ -147,7 +147,7 @@ class process_chipseq(Workflow):  # pylint: disable=invalid-name,too-few-public-
             align_input_file_meta["fastq2"] = metadata["fastq2"]
 
         logger.progress("BWA Aligner", status="RUNNING")
-        bwa = bwaAlignerTool(self.configuration)
+        bwa = bwaAlignerMEMTool(self.configuration)
         bwa_files, bwa_meta = bwa.run(
             align_input_files,
             align_input_file_meta,

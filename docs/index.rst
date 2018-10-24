@@ -29,6 +29,7 @@ MuG - FASTQ Pipelines's documentation!
    full_installation
    pipelines
    tools
+   workflow
    common
    settingUpTravis
    docker

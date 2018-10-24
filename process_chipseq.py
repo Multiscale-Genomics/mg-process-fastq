@@ -223,7 +223,7 @@ class process_chipseq(Workflow):  # pylint: disable=invalid-name,too-few-public-
         b3f_files, b3f_meta = b3f.run(
             {"input": bwa_files['bam']},
             {"input": bwa_meta['bam']},
-            {"output": output_files["filtered"], "bai": output_files["filtered_bai"]}
+            {"bam": output_files["filtered"], "bai": output_files["filtered_bai"]}
         )
         logger.progress("BioBamBam", status="DONE")
 

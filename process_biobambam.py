@@ -95,7 +95,7 @@ class process_biobambam(Workflow):  # pylint disable=too-few-public-methods, inv
         b3f_files, b3f_meta = b3f.run(
             {"input": input_files['bam']},
             {"input": metadata['bam']},
-            {"output": output_files["filtered"]}
+            {"bam": output_files["filtered"]}
         )
         logger.progress("BioBamBam Filter", status="DONE")
 

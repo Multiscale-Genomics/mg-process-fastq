@@ -25,7 +25,7 @@ from mg_process_fastq.tool.bwa_aligner import bwaAlignerTool
 
 # ------------------------------------------------------------------------------
 
-class process_bwa(Workflow):
+class process_bwa_aln(Workflow):
     """
     Functions for aligning FastQ files with BWA ALN
     """

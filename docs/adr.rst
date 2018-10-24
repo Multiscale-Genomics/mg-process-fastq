@@ -237,3 +237,9 @@ Ability to handle multiple input single/paired end data and background data file
 ----------------------------------------------------------
 
 The output wig files from BS Seeker2 are now converted to BigWig files by default rather than returning wig files. This is so that they are easier to visualise on the JBrowse interface.
+
+
+2018-10-24 - ChIP-seq Pipeline to use BWA MEM
+---------------------------------------------
+
+Changed the default aligner for the ChIP-seq pipeline from BWA ALN to BWA MEM for speed improvements and better handling of short read data.

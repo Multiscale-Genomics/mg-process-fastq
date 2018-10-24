@@ -157,7 +157,7 @@ class biobambam(Tool):  # pylint: disable=invalid-name
         self.biobambam_filter_alignments(input_files['input'], output_files['output'])
 
         bam_handle = bamUtilsTask()
-        bam_handle.bam_index(output_files["bam"], output_files["bai"])
+        bam_handle.bam_index(output_files["output"], output_files["bai"])
 
         logger.info("BIOBAMBAM FILTER: completed")
 

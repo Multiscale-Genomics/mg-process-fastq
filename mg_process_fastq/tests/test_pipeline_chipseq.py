@@ -72,6 +72,7 @@ def test_chipseq_pipeline_00():
 
     files_out = {
         "bam": files['loc'].replace(".fastq", ".bam"),
+        "bai": files['loc'].replace(".fastq", ".bai"),
         "filtered": files['loc'].replace(".fastq", "_filtered.bam"),
         "output": files['loc'].replace(".fastq", ".tsv"),
         'narrow_peak': '/'.join(root_name) + '_filtered_peaks.narrowPeak',
@@ -146,6 +147,7 @@ def test_chipseq_pipeline_01():
 
     files_out = {
         "bam": files['loc'].replace(".fastq", ".bam"),
+        "bai": files['loc'].replace(".fastq", ".bai"),
         "filtered": files['loc'].replace(".fastq", "_filtered.bam"),
         "output": files['loc'].replace(".fastq", ".tsv"),
         'narrow_peak': '/'.join(root_name) + '_filtered_peaks.narrowPeak',

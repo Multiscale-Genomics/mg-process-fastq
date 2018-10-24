@@ -18,6 +18,16 @@
 # libtbb-dev did not seem to be installing correctly without using sudo
 sudo apt-get install libtbb-dev
 
+# UCSC Tools
+cd ${HOME}/lib
+if [ ! -f "bedToBigBed" ]; then
+    wget http://hgdownload.cse.ucsc.edu/admin/exe/linux.x86_64/bedToBigBed
+    wget http://hgdownload.cse.ucsc.edu/admin/exe/linux.x86_64/wigToBigWig
+    wget http://hgdownload.soe.ucsc.edu/admin/exe/linux.x86_64/faToTwoBit
+    wget http://hgdownload.soe.ucsc.edu/admin/exe/linux.x86_64/twoBitInfo
+    chmod +x bedToBigBed wigToBigWig faToTwoBit twoBitInfo
+fi
+
 # FastQC
 cd ${HOME}/lib
 if [ ! -d "FastQC" ]; then

@@ -20,6 +20,7 @@
 from __future__ import print_function
 
 import argparse
+
 from utils import logger
 from mg_process_fastq.workflow.wgbs import process_wgbs
 

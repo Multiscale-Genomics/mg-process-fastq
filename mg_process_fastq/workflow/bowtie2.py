@@ -112,7 +112,8 @@ class process_bowtie(Workflow):
 
         logger.progress("Bowtie2 Aligner", status="RUNNING")
         bowtie2_files, bowtie2_meta = bowtie2_handle.run(
-            input_files, metadata, {"output": output_files["bam"]}
+            input_files, metadata,
+            {"output": output_files["bam"], "bai": output_files["bai"]}
         )
         logger.progress("Bowtie2 Aligner", status="DONE")
 
@@ -122,7 +123,14 @@ class process_bowtie(Workflow):
 
             tool_name = output_metadata['bam'].meta_data['tool']
             output_metadata['bam'].meta_data['tool_description'] = tool_name
-            output_metadata['bam'].meta_data['tool'] = "process_bwa"
+            output_metadata['bam'].meta_data['tool'] = "process_bowtie"
+
+            output_files_generated["bai"] = bowtie2_files["bai"]
+            output_metadata["bai"] = bowtie2_meta["bai"]
+
+            tool_name = output_metadata['bai'].meta_data['tool']
+            output_metadata['bai'].meta_data['tool_description'] = tool_name
+            output_metadata['bai'].meta_data['tool'] = "process_bowtie"
         except KeyError:
             logger.fatal("BWA aligner failed")
 

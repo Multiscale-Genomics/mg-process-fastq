@@ -65,7 +65,8 @@ def test_bowtie2_aligner_single():
     }
 
     output_files = {
-        "output": fastq_file.replace(".fastq", "_bt2.bam")
+        "output": fastq_file.replace(".fastq", "_bt2.bam"),
+        "bai": fastq_file.replace(".fastq", "_bt2.bai")
     }
 
     metadata = {
@@ -90,6 +91,8 @@ def test_bowtie2_aligner_single():
 
     assert os.path.isfile(resource_path + "macs2.Human.DRR000150.22_bt2.bam") is True
     assert os.path.getsize(resource_path + "macs2.Human.DRR000150.22_bt2.bam") > 0
+    assert os.path.isfile(resource_path + "macs2.Human.DRR000150.22_bt2.bai") is True
+    assert os.path.getsize(resource_path + "macs2.Human.DRR000150.22_bt2.bai") > 0
 
     cmdl = "samtools view -c -f 0 {}macs2.Human.DRR000150.22_bt2.bam".format(resource_path)
     process = subprocess.Popen(cmdl, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -99,6 +102,7 @@ def test_bowtie2_aligner_single():
 
     try:
         os.remove(resource_path + "macs2.Human.DRR000150.22_bt2.bam")
+        os.remove(resource_path + "macs2.Human.DRR000150.22_bt2.bai")
     except OSError as ose:
         print("Error: %s - %s." % (ose.filename, ose.strerror))
 
@@ -121,7 +125,8 @@ def test_bowtie2_aligner_paired():
     }
 
     output_files = {
-        "output": fastq_file_1.replace(".fastq", "_bt2.bam")
+        "output": fastq_file_1.replace(".fastq", "_bt2.bam"),
+        "bai": fastq_file_1.replace(".fastq", "_bt2.bai")
     }
 
     metadata = {
@@ -150,6 +155,8 @@ def test_bowtie2_aligner_paired():
 
     assert os.path.isfile(resource_path + "bsSeeker.Mouse.SRR892982_1_bt2.bam") is True
     assert os.path.getsize(resource_path + "bsSeeker.Mouse.SRR892982_1_bt2.bam") > 0
+    assert os.path.isfile(resource_path + "bsSeeker.Mouse.SRR892982_1_bt2.bai") is True
+    assert os.path.getsize(resource_path + "bsSeeker.Mouse.SRR892982_1_bt2.bai") > 0
 
     cmdl = "samtools view -c -f 0 {}bsSeeker.Mouse.SRR892982_1_bt2.bam".format(resource_path)
     process = subprocess.Popen(cmdl, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -159,6 +166,7 @@ def test_bowtie2_aligner_paired():
 
     try:
         os.remove(resource_path + "bsSeeker.Mouse.SRR892982_1_bt2.bam")
+        os.remove(resource_path + "bsSeeker.Mouse.SRR892982_1_bt2.bai")
     except OSError as ose:
         print("Error: %s - %s." % (ose.filename, ose.strerror))
 

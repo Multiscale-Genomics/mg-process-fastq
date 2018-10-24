@@ -44,7 +44,8 @@ def test_bwa_aligner_chipseq_aln():
     }
 
     output_files = {
-        "output": fastq_file.replace(".fastq", "_aln.bam")
+        "output": fastq_file.replace(".fastq", "_aln.bam"),
+        "bai": fastq_file.replace(".fastq", "_aln.bai")
     }
 
     metadata = {
@@ -71,6 +72,8 @@ def test_bwa_aligner_chipseq_aln():
 
     assert os.path.isfile(resource_path + "macs2.Human.DRR000150.22_aln.bam") is True
     assert os.path.getsize(resource_path + "macs2.Human.DRR000150.22_aln.bam") > 0
+    assert os.path.isfile(resource_path + "macs2.Human.DRR000150.22_aln.bai") is True
+    assert os.path.getsize(resource_path + "macs2.Human.DRR000150.22_aln.bai") > 0
 
 
 @pytest.mark.bwa
@@ -89,7 +92,8 @@ def test_bwa_aligner_aln():
     }
 
     output_files = {
-        "output": fastq_file.replace(".fastq", "_aln.bam")
+        "output": fastq_file.replace(".fastq", "_aln.bam"),
+        "bai": fastq_file.replace(".fastq", "_aln.bai")
     }
 
     metadata = {
@@ -116,6 +120,8 @@ def test_bwa_aligner_aln():
 
     assert os.path.isfile(resource_path + "macs2.Human.DRR000150.22_aln.bam") is True
     assert os.path.getsize(resource_path + "macs2.Human.DRR000150.22_aln.bam") > 0
+    assert os.path.isfile(resource_path + "macs2.Human.DRR000150.22_aln.bai") is True
+    assert os.path.getsize(resource_path + "macs2.Human.DRR000150.22_aln.bai") > 0
 
     cmdl = "samtools view -c -f 0 {}macs2.Human.DRR000150.22_aln.bam".format(resource_path)
     process = subprocess.Popen(cmdl, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -125,6 +131,7 @@ def test_bwa_aligner_aln():
 
     try:
         os.remove(resource_path + "macs2.Human.DRR000150.22_aln.bam")
+        os.remove(resource_path + "macs2.Human.DRR000150.22_aln.bai")
     except OSError as ose:
         print("Error: %s - %s." % (ose.filename, ose.strerror))
 
@@ -150,7 +157,8 @@ def test_bwa_aligner_mem():
     }
 
     output_files = {
-        "output": fastq_file.replace(".fastq", "_mem.bam")
+        "output": fastq_file.replace(".fastq", "_mem.bam"),
+        "bai": fastq_file.replace(".fastq", "_mem.bai")
     }
 
     metadata = {
@@ -177,6 +185,8 @@ def test_bwa_aligner_mem():
 
     assert os.path.isfile(resource_path + "macs2.Human.DRR000150.22_mem.bam") is True
     assert os.path.getsize(resource_path + "macs2.Human.DRR000150.22_mem.bam") > 0
+    assert os.path.isfile(resource_path + "macs2.Human.DRR000150.22_mem.bai") is True
+    assert os.path.getsize(resource_path + "macs2.Human.DRR000150.22_mem.bai") > 0
 
     cmdl = "samtools view -c -f 0 {}macs2.Human.DRR000150.22_mem.bam".format(resource_path)
     process = subprocess.Popen(cmdl, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -186,6 +196,7 @@ def test_bwa_aligner_mem():
 
     try:
         os.remove(resource_path + "macs2.Human.DRR000150.22_mem.bam")
+        os.remove(resource_path + "macs2.Human.DRR000150.22_mem.bai")
     except OSError as ose:
         print("Error: %s - %s." % (ose.filename, ose.strerror))
 
@@ -235,7 +246,8 @@ def test_bwa_aligner_aln_paired():
     }
 
     output_files = {
-        "output": fastq_file_1.replace(".fastq", "_aln.bam")
+        "output": fastq_file_1.replace(".fastq", "_aln.bam"),
+        "bai": fastq_file_1.replace(".fastq", "_aln.bai")
     }
 
     metadata = {
@@ -264,6 +276,8 @@ def test_bwa_aligner_aln_paired():
 
     assert os.path.isfile(resource_path + "bsSeeker.Mouse.SRR892982_1_aln.bam") is True
     assert os.path.getsize(resource_path + "bsSeeker.Mouse.SRR892982_1_aln.bam") > 0
+    assert os.path.isfile(resource_path + "bsSeeker.Mouse.SRR892982_1_aln.bai") is True
+    assert os.path.getsize(resource_path + "bsSeeker.Mouse.SRR892982_1_aln.bai") > 0
 
     cmdl = "samtools view -c -f 1 {}bsSeeker.Mouse.SRR892982_1_aln.bam".format(resource_path)
     process = subprocess.Popen(cmdl, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -273,6 +287,7 @@ def test_bwa_aligner_aln_paired():
 
     try:
         os.remove(resource_path + "bsSeeker.Mouse.SRR892982_1_aln.bam")
+        os.remove(resource_path + "bsSeeker.Mouse.SRR892982_1_aln.bai")
     except OSError as ose:
         print("Error: %s - %s." % (ose.filename, ose.strerror))
 
@@ -300,7 +315,8 @@ def test_bwa_aligner_mem_paired():
     }
 
     output_files = {
-        "output": fastq_file_1.replace(".fastq", "_mem.bam")
+        "output": fastq_file_1.replace(".fastq", "_mem.bam"),
+        "bai": fastq_file_1.replace(".fastq", "_mem.bai")
     }
 
     metadata = {
@@ -329,6 +345,8 @@ def test_bwa_aligner_mem_paired():
 
     assert os.path.isfile(resource_path + "bsSeeker.Mouse.SRR892982_1_mem.bam") is True
     assert os.path.getsize(resource_path + "bsSeeker.Mouse.SRR892982_1_mem.bam") > 0
+    assert os.path.isfile(resource_path + "bsSeeker.Mouse.SRR892982_1_mem.bai") is True
+    assert os.path.getsize(resource_path + "bsSeeker.Mouse.SRR892982_1_mem.bai") > 0
 
     cmdl = "samtools view -c -f 1 {}bsSeeker.Mouse.SRR892982_1_mem.bam".format(resource_path)
     process = subprocess.Popen(cmdl, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -338,6 +356,7 @@ def test_bwa_aligner_mem_paired():
 
     try:
         os.remove(resource_path + "bsSeeker.Mouse.SRR892982_1_mem.bam")
+        os.remove(resource_path + "bsSeeker.Mouse.SRR892982_1_mem.bai")
     except OSError as ose:
         print("Error: %s - %s." % (ose.filename, ose.strerror))
 
@@ -380,7 +399,8 @@ def test_bwa_aligner_idamidseq():
         }
 
         output_files = {
-            "output": fastq_file.replace(".fastq", ".bam")
+            "output": fastq_file.replace(".fastq", ".bam"),
+            "bai": fastq_file.replace(".fastq", ".bai")
         }
 
         metadata = {
@@ -405,6 +425,8 @@ def test_bwa_aligner_idamidseq():
 
         assert os.path.isfile(fastq_file.replace(".fastq", ".bam")) is True
         assert os.path.getsize(fastq_file.replace(".fastq", ".bam")) > 0
+        assert os.path.isfile(fastq_file.replace(".fastq", ".bai")) is True
+        assert os.path.getsize(fastq_file.replace(".fastq", ".bai")) > 0
 
 
 @pytest.mark.mnaseseq
@@ -424,7 +446,8 @@ def test_bwa_aligner_mnaseseq():
     }
 
     output_files = {
-        "output": fastq_file.replace(".fastq", ".bam")
+        "output": fastq_file.replace(".fastq", ".bam"),
+        "bai": fastq_file.replace(".fastq", ".bai")
     }
 
     metadata = {
@@ -449,3 +472,5 @@ def test_bwa_aligner_mnaseseq():
 
     assert os.path.isfile(resource_path + "inps.Mouse.DRR000386.bam") is True
     assert os.path.getsize(resource_path + "inps.Mouse.DRR000386.bam") > 0
+    assert os.path.isfile(resource_path + "inps.Mouse.DRR000386.bai") is True
+    assert os.path.getsize(resource_path + "inps.Mouse.DRR000386.bai") > 0

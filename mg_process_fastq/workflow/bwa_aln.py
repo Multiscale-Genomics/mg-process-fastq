@@ -25,7 +25,7 @@ from mg_process_fastq.tool.bwa_aligner import bwaAlignerTool
 
 # ------------------------------------------------------------------------------
 
-class process_bwa_aln(Workflow):
+class process_bwa(Workflow):
     """
     Functions for aligning FastQ files with BWA ALN
     """
@@ -109,7 +109,8 @@ class process_bwa_aln(Workflow):
 
         logger.progress("BWA ALN Aligner", status="RUNNING")
         bwa_files, bwa_meta = bwa.run(
-            input_files, metadata, {"output": output_files["bam"]}
+            input_files, metadata,
+            {"output": output_files["bam"], "bai": output_files["bai"]}
         )
         logger.progress("BWA ALN Aligner", status="DONE")
 
@@ -119,7 +120,14 @@ class process_bwa_aln(Workflow):
 
             tool_name = output_metadata['bam'].meta_data['tool']
             output_metadata['bam'].meta_data['tool_description'] = tool_name
-            output_metadata['bam'].meta_data['tool'] = "process_bwa"
+            output_metadata['bam'].meta_data['tool'] = "process_bwa_aln"
+
+            output_files_generated["bai"] = bwa_files["bai"]
+            output_metadata["bai"] = bwa_meta["bai"]
+
+            tool_name = output_metadata['bai'].meta_data['tool']
+            output_metadata['bai'].meta_data['tool_description'] = tool_name
+            output_metadata['bai'].meta_data['tool'] = "process_bwa_aln"
         except KeyError:
             logger.fatal("BWA aligner failed")
 

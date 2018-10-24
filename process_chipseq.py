@@ -20,6 +20,7 @@ from __future__ import print_function
 
 import argparse
 
+from utils import logger
 from mg_process_fastq.workflow.chipseq import process_chipseq
 
 
@@ -34,7 +35,7 @@ def main_json(config, in_metadata, out_metadata):
     two json files: config.json and input_metadata.json.
     """
     # 1. Instantiate and launch the App
-    print("1. Instantiate and launch the App")
+    logger.info("1. Instantiate and launch the App")
     from apps.jsonapp import JSONApp
     app = JSONApp()
     result = app.launch(process_chipseq,
@@ -43,8 +44,8 @@ def main_json(config, in_metadata, out_metadata):
                         out_metadata)
 
     # 2. The App has finished
-    print("2. Execution finished; see " + out_metadata)
-    print(result)
+    logger.info("2. Execution finished; see " + out_metadata)
+    logger.info(result)
 
     return result
 
@@ -78,4 +79,4 @@ if __name__ == "__main__":
 
     RESULTS = main_json(CONFIG, IN_METADATA, OUT_METADATA)
 
-    print(RESULTS)
+    logger.info(RESULTS)

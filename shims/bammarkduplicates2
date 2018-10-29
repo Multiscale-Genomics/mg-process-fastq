@@ -1,3 +1,0 @@
-#!/bin/bash
-
-docker run -i --rm --name 'biobambam' multiscalegenomics/mgprocessfastq:biobambamimage /Mug/lib/biobambam2/bin/bammarkduplicates2 $@ 

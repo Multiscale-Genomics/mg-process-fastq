@@ -145,7 +145,7 @@ class chromSizeTool(Tool):  # pylint: disable=invalid-name
                 msg.errno, msg.strerror, command_line_chrom_size))
             out, err = sub_proc_1.communicate()
             logger.info(out)
-            logger.warn(err)
+            logger.warn("twoBitInfo: " + err)
             return False
 
         return True

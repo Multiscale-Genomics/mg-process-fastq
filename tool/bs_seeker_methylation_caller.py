@@ -245,7 +245,6 @@ class bssMethylationCallerTool(Tool):  # pylint: disable=invalid-name
 
         wig2bw_handle = wigIndexerTool()
 
-        print(output_files["wig_file"] + "_tmp.wig")
         wig2bw_handle.wig2bigwig(
             output_files["wig_file"] + "_tmp.wig",
             chrom_size_files["chrom_size"],

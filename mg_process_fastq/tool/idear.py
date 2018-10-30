@@ -41,7 +41,7 @@ except ImportError:
 from basic_modules.tool import Tool
 from basic_modules.metadata import Metadata
 
-from tool.common import common
+from mg_process_fastq.tool.common import common
 
 # ------------------------------------------------------------------------------
 

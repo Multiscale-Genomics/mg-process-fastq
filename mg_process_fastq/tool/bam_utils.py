@@ -486,7 +486,10 @@ class bamUtilsTask(object):  # pylint: disable=invalid-name
 
         cleanup_files = []
 
-        while True:
+        # The extra block required is for testing once the merge step for batches
+        # of 10 has completed, for the generation of the new name and therefore
+        # submitting the batches that there are actually more jobs to submit.
+        while True:  # pylint: disable=too-many-nested-blocks
             merge_round += 1
             if len(bam_job_files) > 1:
                 tmp_alignments = []

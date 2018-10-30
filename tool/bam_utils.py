@@ -97,7 +97,6 @@ class bamUtils(object):  # pylint: disable=invalid-name
 
         return True
 
-
     @staticmethod
     def bam_count_reads(bam_file, aligned=False):
         """

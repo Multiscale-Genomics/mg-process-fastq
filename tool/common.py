@@ -178,7 +178,8 @@ class CommandLineParser(object):
         """
         try:
             ivalue = int(ivalue)
-        except:
+        except TypeError:
+            logger.fatal("TypeError: {} is not a valid integer".format(ivalue))
             raise argparse.ArgumentTypeError("%s is an invalid value" % ivalue)
         if ivalue <= 0:
             raise argparse.ArgumentTypeError("%s is an invalid value" % ivalue)

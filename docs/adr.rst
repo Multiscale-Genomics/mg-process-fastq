@@ -215,3 +215,9 @@ Inclusion of tests for the wrappers and tools of the tadbit pipelines
 ----------------------------------------------------
 
 To display the scores on the genome browser the abundance tsv is used to generate a bed file where the score matches the transcripts per million column from the abundance.tsv output from Kallisto. This module requires the presence of the ensembl gff3 file for the matching assembly. This should be passed by the VRE when passing the FASTA file for the transcripts.
+
+
+2018-10-31 - Modify the file names for docker script
+----------------------------------------------------
+
+There were inconsistencies in the names, these have been updated to be more consistent with the consortium naming instead.

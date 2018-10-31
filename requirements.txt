@@ -1,2 +1,3 @@
 git+https://github.com/Multiscale-Genomics/mg-tool-api.git
 git+https://github.com/Multiscale-Genomics/mg-dm-api.git
+git+https://github.com/Multiscale-Genomics/mg-process-files.git

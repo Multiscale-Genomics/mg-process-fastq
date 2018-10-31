@@ -39,7 +39,7 @@ def test_bs_seeker_methylation_caller():
     }
 
     output_files = {
-        "wig_file": resource_path + "bsSeeker.Mouse.SRR892982_1.wig",
+        "wig_file": resource_path + "bsSeeker.Mouse.SRR892982_1.bw",
         "cgmap_file": resource_path + "bsSeeker.Mouse.SRR892982_1.cgmap",
         "atcgmap_file": resource_path + "bsSeeker.Mouse.SRR892982_1.atcgmap"
     }

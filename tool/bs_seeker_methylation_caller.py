@@ -24,26 +24,28 @@ import sys
 import tarfile
 
 from utils import logger
+from utils import remap
 
 try:
     if hasattr(sys, '_run_from_cmdl') is True:
         raise ImportError
     from pycompss.api.parameter import FILE_IN, FILE_OUT, IN
     from pycompss.api.task import task
-    # from pycompss.api.api import compss_wait_on
+    from pycompss.api.api import compss_wait_on, compss_delete_file
 except ImportError:
     logger.warn("[Warning] Cannot import \"pycompss\" API packages.")
     logger.warn("          Using mock decorators.")
 
     from utils.dummy_pycompss import FILE_IN, FILE_OUT, IN  # pylint: disable=ungrouped-imports
     from utils.dummy_pycompss import task  # pylint: disable=ungrouped-imports
-    # from utils.dummy_pycompss import compss_wait_on  # pylint: disable=ungrouped-imports
+    from utils.dummy_pycompss import compss_wait_on, compss_delete_file  # pylint: disable=ungrouped-imports
 
 from basic_modules.tool import Tool
 from basic_modules.metadata import Metadata
 
+from mg_process_files.tool.wig_indexer import wigIndexerTool
 from tool.bam_utils import bamUtilsTask
-
+from tool.create_chrom_size import chromSizeTool
 
 # ------------------------------------------------------------------------------
 
@@ -75,7 +77,7 @@ class bssMethylationCallerTool(Tool):  # pylint: disable=invalid-name
     @task(
         returns=bool, bss_path=IN, bam_file=FILE_IN, genome_idx=FILE_IN, params=IN,
         wig_file=FILE_OUT, cgmap_file=FILE_OUT, atcgmap_file=FILE_OUT)
-    def bss_methylation_caller(  # pylint disable=no-self-use
+    def bss_methylation_caller(  # pylint: disable=no-self-use, too-many-locals, too-many-arguments
             self, bss_path, bam_file, genome_idx, params, wig_file, cgmap_file, atcgmap_file):
         """
         Takes the merged and sorted bam file and calls the methylation sites.
@@ -224,15 +226,40 @@ class bssMethylationCallerTool(Tool):  # pylint: disable=invalid-name
             input_files["bam"],
             input_files["index"],
             command_params,
-            output_files["wig_file"],
+            output_files["wig_file"] + "_tmp.wig",
             output_files["cgmap_file"],
             output_files["atcgmap_file"]
         )
 
+        chrom_size_handle = chromSizeTool(self.configuration)
+        chrom_size_files, chrom_size_meta = chrom_size_handle.run(  # pylint: disable=unused-variable
+            remap(input_files, "genome"),
+            remap(input_metadata, "genome"),
+            {
+                "genome_2bit": os.path.join(
+                    self.configuration["execution"], "genome.2bit"),
+                "chrom_size": os.path.join(
+                    self.configuration["execution"], "chrom.size")
+            }
+        )
+
+        wig2bw_handle = wigIndexerTool()
+
+        wig2bw_handle.wig2bigwig(
+            output_files["wig_file"] + "_tmp.wig",
+            chrom_size_files["chrom_size"],
+            output_files["wig_file"]
+        )
+        wig2bw_handle = compss_wait_on(wig2bw_handle)
+
+        compss_delete_file(output_files["wig_file"] + "_tmp.wig")
+        compss_delete_file(chrom_size_files["chrom_size"])
+        compss_delete_file(chrom_size_files["genome_2bit"])
+
         output_metadata = {
             "wig_file": Metadata(
                 data_type="data_wgbs",
-                file_type="wig",
+                file_type="bw",
                 file_path=output_files["wig_file"],
                 sources=input_metadata["bam"].sources,
                 taxon_id=input_metadata["bam"].taxon_id,

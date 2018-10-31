@@ -87,7 +87,8 @@ class process_mnaseseq(Workflow):
         bwa = bwaAlignerTool()
         logger.progress("BWA ALN Aligner", status="RUNNING")
         bwa_files, bwa_meta = bwa.run(
-            align_input_files, align_input_file_meta, {"output": output_files["bam"]}
+            align_input_files, align_input_file_meta,
+            {"output": output_files["bam"], "bai": output_files["bai"]}
         )
         logger.progress("BWA ALN Aligner", status="DONE")
 
@@ -100,6 +101,13 @@ class process_mnaseseq(Workflow):
             tool_name = output_metadata['bam'].meta_data['tool']
             output_metadata['bam'].meta_data['tool_description'] = tool_name
             output_metadata['bam'].meta_data['tool'] = "process_mnaseseq"
+
+            output_files_generated["bai"] = bwa_files["bai"]
+            output_metadata["bai"] = bwa_meta["bai"]
+
+            tool_name = output_metadata['bai'].meta_data['tool']
+            output_metadata['bai'].meta_data['tool_description'] = tool_name
+            output_metadata['bai'].meta_data['tool'] = "process_mnaseseq"
         except KeyError:
             logger.fatal("BWA Alignment failed")
 

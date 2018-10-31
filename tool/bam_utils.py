@@ -97,7 +97,6 @@ class bamUtils(object):  # pylint: disable=invalid-name
 
         return True
 
-
     @staticmethod
     def bam_count_reads(bam_file, aligned=False):
         """
@@ -487,7 +486,10 @@ class bamUtilsTask(object):  # pylint: disable=invalid-name
 
         cleanup_files = []
 
-        while True:
+        # The extra block required is for testing once the merge step for batches
+        # of 10 has completed, for the generation of the new name and therefore
+        # submitting the batches that there are actually more jobs to submit.
+        while True:  # pylint: disable=too-many-nested-blocks
             merge_round += 1
             if len(bam_job_files) > 1:
                 tmp_alignments = []
@@ -507,39 +509,40 @@ class bamUtilsTask(object):  # pylint: disable=invalid-name
                                 bam_job_files.pop(0), bam_out
                             )
 
-                    bam_out = bam_job_files[0] + "_merge_" + str(merge_round) + ".bam"
-                    if len(bam_job_files) >= 5:
-                        tmp_alignments.append(bam_out)
-                        cleanup_files.append(bam_out)
-                        self.bam_merge_5(
-                            bam_job_files.pop(0), bam_job_files.pop(0), bam_job_files.pop(0),
-                            bam_job_files.pop(0), bam_job_files.pop(0), bam_out
-                        )
-                        if bam_job_files:
-                            bam_out = bam_job_files[0] + "_merge_" + str(merge_round) + ".bam"
+                    if bam_job_files:
+                        bam_out = bam_job_files[0] + "_merge_" + str(merge_round) + ".bam"
+                        if len(bam_job_files) >= 5:
+                            tmp_alignments.append(bam_out)
+                            cleanup_files.append(bam_out)
+                            self.bam_merge_5(
+                                bam_job_files.pop(0), bam_job_files.pop(0), bam_job_files.pop(0),
+                                bam_job_files.pop(0), bam_job_files.pop(0), bam_out
+                            )
+                            if bam_job_files:
+                                bam_out = bam_job_files[0] + "_merge_" + str(merge_round) + ".bam"
 
-                    if len(bam_job_files) == 4:
-                        tmp_alignments.append(bam_out)
-                        cleanup_files.append(bam_out)
-                        self.bam_merge_4(
-                            bam_job_files.pop(0), bam_job_files.pop(0), bam_job_files.pop(0),
-                            bam_job_files.pop(0), bam_out
-                        )
-                    elif len(bam_job_files) == 3:
-                        tmp_alignments.append(bam_out)
-                        cleanup_files.append(bam_out)
-                        self.bam_merge_3(
-                            bam_job_files.pop(0), bam_job_files.pop(0), bam_job_files.pop(0),
-                            bam_out
-                        )
-                    elif len(bam_job_files) == 2:
-                        tmp_alignments.append(bam_out)
-                        cleanup_files.append(bam_out)
-                        self.bam_merge_2(
-                            bam_job_files.pop(0), bam_job_files.pop(0), bam_out
-                        )
-                    elif len(bam_job_files) == 1:
-                        tmp_alignments.append(bam_job_files[0])
+                        if len(bam_job_files) == 4:
+                            tmp_alignments.append(bam_out)
+                            cleanup_files.append(bam_out)
+                            self.bam_merge_4(
+                                bam_job_files.pop(0), bam_job_files.pop(0), bam_job_files.pop(0),
+                                bam_job_files.pop(0), bam_out
+                            )
+                        elif len(bam_job_files) == 3:
+                            tmp_alignments.append(bam_out)
+                            cleanup_files.append(bam_out)
+                            self.bam_merge_3(
+                                bam_job_files.pop(0), bam_job_files.pop(0), bam_job_files.pop(0),
+                                bam_out
+                            )
+                        elif len(bam_job_files) == 2:
+                            tmp_alignments.append(bam_out)
+                            cleanup_files.append(bam_out)
+                            self.bam_merge_2(
+                                bam_job_files.pop(0), bam_job_files.pop(0), bam_out
+                            )
+                        elif len(bam_job_files) == 1:
+                            tmp_alignments.append(bam_job_files[0])
 
                 barrier()
 

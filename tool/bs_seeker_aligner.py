@@ -582,7 +582,8 @@ class bssAlignerTool(Tool):  # pylint: disable=invalid-name
                 meta_data={
                     "assembly": input_metadata["genome"].meta_data["assembly"],
                     "tool": "bs_seeker_aligner",
-                    "parameters": aln_params
+                    "parameters": aln_params,
+                    "associated_files": [output_bai_file]
                 }
             ),
             "bai": Metadata(
@@ -593,7 +594,8 @@ class bssAlignerTool(Tool):  # pylint: disable=invalid-name
                 taxon_id=input_metadata["genome"].taxon_id,
                 meta_data={
                     "assembly": input_metadata["genome"].meta_data["assembly"],
-                    "tool": "bs_seeker_aligner"
+                    "tool": "bs_seeker_aligner",
+                    "associated_master": output_bam_file
                 }
             )
         }

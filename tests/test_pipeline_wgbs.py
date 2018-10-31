@@ -91,25 +91,25 @@ def test_wgbs_pipeline_01():
     metadata = {
         "genome": Metadata(
             "Assembly", "fasta", files['genome'], None,
-            {'assembly' : 'GRCm38'}
+            {'assembly': 'GRCm38'}
         ),
         "fastq1": Metadata(
             "data_wgbs_seq", "fastq", files['fastq1'], None,
-            {"assembly" : "GRCm38"}
+            {"assembly": "GRCm38"}
         ),
         "fastq2": Metadata(
             "data_wgbs_seq", "fastq", files['fastq2'], None,
-            {"assembly" : "GRCm38"}
+            {"assembly": "GRCm38"}
         ),
     }
 
     files_out = {
         "index": resource_path + "bsSeeker.Mouse.GRCm38.fasta.bt2.tar.gz",
-        "fastq1_filtered": resource_path + 'bsSeeker.Mouse.SRR892982_1_filtered.fastq',
-        "fastq2_filtered": resource_path + 'bsSeeker.Mouse.SRR892982_2_filtered.fastq',
-        "bam": resource_path + "bsSeeker.Mouse.SRR892982_1_filtered.bam",
-        "bai": resource_path + "bsSeeker.Mouse.SRR892982_1_filtered.bai",
-        "wig_file": resource_path + "bsSeeker.Mouse.SRR892982_1.wig",
+        "fastq1_filtered": resource_path + 'bsSeeker.Mouse.SRR892982_1.filtered.fastq',
+        "fastq2_filtered": resource_path + 'bsSeeker.Mouse.SRR892982_2.filtered.fastq',
+        "bam": resource_path + "bsSeeker.Mouse.SRR892982_1.filtered.bam",
+        "bai": resource_path + "bsSeeker.Mouse.SRR892982_1.filtered.bai",
+        "wig_file": resource_path + "bsSeeker.Mouse.SRR892982_1.bw",
         "cgmap_file": resource_path + "bsSeeker.Mouse.SRR892982_1.cgmap",
         "atcgmap_file": resource_path + "bsSeeker.Mouse.SRR892982_1.atcgmap"
     }

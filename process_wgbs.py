@@ -129,10 +129,6 @@ class process_wgbs(Workflow):
             input_files["genome"] = input_files.pop("genome_public")
             metadata["genome"] = metadata.pop("genome_public")
 
-        if "index_public" in input_files:
-            input_files["index"] = input_files.pop("index_public")
-            metadata["index"] = metadata.pop("index_public")
-
         logger.info("WGBS - BS-Seeker2 Index")
         # Build the matching WGBS genome index
         builder = bssIndexerTool(self.configuration)
@@ -259,7 +255,11 @@ class process_wgbs(Workflow):
         peak_files, peak_meta = peak_caller_handle.run(
             mct_input_files,
             mct_meta,
-            remap(output_files, "wig_file", "cgmap_file", "atcgmap_file")
+            {
+                "wig_file": output_files["wig_file"],
+                "atcgmap_file": output_files["atcgmap_file"],
+                "cgmap_file": output_files["cgmap_file"]
+            }
         )
         logger.progress("BSseeker2 Peak Caller", status="DONE")
 

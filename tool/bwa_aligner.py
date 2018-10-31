@@ -376,14 +376,6 @@ class bwaAlignerTool(Tool):  # pylint: disable=invalid-name
             tar.close()
             os.remove(fastq_file_gz)
             compss_delete_file(fastq_file_gz)
-            # try:
-            #     os.remove(fastq_file_gz)
-            # except (OSError, IOError) as msg:
-            #     logger.warn(
-            #         "Unable to remove file I/O error({0}): {1}".format(
-            #             msg.errno, msg.strerror
-            #         )
-            #     )
         except tarfile.TarError:
             logger.fatal("Split FASTQ files: Malformed tar file")
             return {}, {}
@@ -503,6 +495,8 @@ class bwaAlignerTool(Tool):  # pylint: disable=invalid-name
 
         compss_delete_file(output_bam_list[0])
 
+        bam_handle.bam_index(output_bam_file, output_files["bai"])
+
         logger.info("BWA ALIGNER: Alignments complete")
 
         barrier()
@@ -520,16 +514,32 @@ class bwaAlignerTool(Tool):  # pylint: disable=invalid-name
                 data_type=input_metadata['loc'].data_type,
                 file_type="BAM",
                 file_path=output_files["output"],
-                sources=[input_metadata["genome"].file_path, input_metadata['loc'].file_path],
+                sources=sources,
                 taxon_id=input_metadata["genome"].taxon_id,
                 meta_data={
                     "assembly": input_metadata["genome"].meta_data["assembly"],
                     "tool": "bwa_aligner",
-                    "parameters": self.get_aln_params(self.configuration)
+                    "parameters": self.get_aln_params(self.configuration),
+                    "associated_files": [output_files["bai"]]
+                }
+            ),
+            "bai": Metadata(
+                data_type=input_metadata['loc'].data_type,
+                file_type="BAI",
+                file_path=output_files["bai"],
+                sources=sources,
+                taxon_id=input_metadata["genome"].taxon_id,
+                meta_data={
+                    "assembly": input_metadata["genome"].meta_data["assembly"],
+                    "tool": "bs_seeker_aligner",
+                    "associated_master": output_bam_file
                 }
             )
         }
 
-        return ({"bam": output_files["output"]}, output_metadata)
+        return (
+            {"bam": output_files["output"], "bai": output_files["bai"]},
+            output_metadata
+        )
 
 # ------------------------------------------------------------------------------

@@ -41,6 +41,7 @@ except ImportError:
 from basic_modules.metadata import Metadata
 from basic_modules.tool import Tool
 from tool.bam_utils import bamUtils
+from tool.bam_utils import bamUtilsTask
 from tool.common import common
 
 # ------------------------------------------------------------------------------
@@ -155,6 +156,9 @@ class biobambam(Tool):  # pylint: disable=invalid-name
 
         self.biobambam_filter_alignments(input_files['input'], output_files['output'])
 
+        bam_handle = bamUtilsTask()
+        bam_handle.bam_index(output_files["output"], output_files["bai"])
+
         logger.info("BIOBAMBAM FILTER: completed")
 
         output_metadata = {
@@ -166,13 +170,26 @@ class biobambam(Tool):  # pylint: disable=invalid-name
                 taxon_id=input_metadata["input"].taxon_id,
                 meta_data={
                     "assembly": input_metadata["input"].meta_data["assembly"],
-                    "tool": "biobambam_filter"
+                    "tool": "biobambam_filter",
+                    "associated_files": [output_files["bai"]]
+                }
+            ),
+            "bai": Metadata(
+                data_type=input_metadata['input'].data_type,
+                file_type="BAI",
+                file_path=output_files["bai"],
+                sources=[input_metadata["input"].file_path],
+                taxon_id=input_metadata["input"].taxon_id,
+                meta_data={
+                    "assembly": input_metadata["input"].meta_data["assembly"],
+                    "tool": "bs_seeker_aligner",
+                    "associated_master": output_files["output"]
                 }
             )
         }
 
         return (
-            {"bam": output_files['output']},
+            {"bam": output_files['output'], "bai": output_files["bai"]},
             output_metadata
         )
 

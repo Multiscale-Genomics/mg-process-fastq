@@ -41,9 +41,9 @@ from utils import remap
 from basic_modules.workflow import Workflow
 from basic_modules.metadata import Metadata
 
-from tool.common import CommandLineParser
-from tool.common import format_utils
-from tool.tb_bin import tbBinTool
+from mg_process_fastq.tool.common import CommandLineParser
+from mg_process_fastq.tool.common import format_utils
+from mg_process_fastq.tool.tb_bin import tbBinTool
 
 
 # ------------------------------------------------------------------------------

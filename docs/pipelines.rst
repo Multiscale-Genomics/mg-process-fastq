@@ -72,13 +72,6 @@ Download and index genome files
             --out_metadata tests/json/output_genome_indexer.json
 
 
-   Methods
-   =======
-
-   .. autoclass:: process_genome.process_genome
-      :members:
-
-
 BioBamBam Alignment Filtering
 -----------------------------
 .. automodule:: process_biobambam
@@ -131,12 +124,6 @@ BioBamBam Alignment Filtering
             --config tests/json/config_biobambam.json \
             --in_metadata tests/json/input_biobambam.json \
             --out_metadata tests/json/output_biobambam.json
-
-
-   Methods
-   =======
-   .. autoclass:: process_biobambam.process_biobambam
-      :members:
 
 
 Bowtie2 Alignment
@@ -207,12 +194,6 @@ Bowtie2 Alignment
             --out_metadata tests/json/output_bowtie2_paired.json
 
 
-   Methods
-   =======
-   .. autoclass:: process_align_bowtie.process_bowtie
-      :members:
-
-
 BSgenome Builder
 ----------------
 .. automodule:: process_bsgenome
@@ -272,12 +253,6 @@ BSgenome Builder
             --out_metadata tests/json/output_bsgenome.json
 
 
-   Methods
-   =======
-   .. autoclass:: process_bsgenome.process_bsgenome
-      :members:
-
-
 BS Seeker2 Indexer
 ------------------
 .. automodule:: process_bs_seeker_index
@@ -329,12 +304,6 @@ BS Seeker2 Indexer
             --config tests/json/config_wgbs_index.json \
             --in_metadata tests/json/input_wgbs_index_metadata.json \
             --out_metadata tests/json/output_wgbs_index.json
-
-
-   Methods
-   =======
-   .. autoclass:: process_bs_seeker_index.process_bs_seeker_index
-      :members:
 
 
 BS Seeker2 Aligner
@@ -393,12 +362,6 @@ BS Seeker2 Aligner
             --out_metadata tests/json/output_wgbs_align.json
 
 
-   Methods
-   =======
-   .. autoclass:: process_bs_seeker_aligner.process_bs_seeker_aligner
-      :members:
-
-
 BiSulphate Sequencing Filter
 ----------------------------
 .. automodule:: process_bs_seeker_filter
@@ -453,12 +416,6 @@ BiSulphate Sequencing Filter
             --config tests/json/config_wgbs_filter.json \
             --in_metadata tests/json/input_wgbs_filter_metadata.json \
             --out_metadata tests/json/output_metadata.json
-
-
-   Methods
-   =======
-   .. autoclass:: process_bs_seeker_filter.process_bsFilter
-      :members:
 
 
 BS Seeker2 Methylation Peak Caller
@@ -518,12 +475,6 @@ BS Seeker2 Methylation Peak Caller
             --config tests/json/config_wgbs_peak_caller.json \
             --in_metadata tests/json/input_wgbs_peak_caller_metadata.json \
             --out_metadata tests/json/output_wgbs_peak_caller.json
-
-
-   Methods
-   =======
-   .. autoclass:: process_bs_seeker_peak_caller.process_bs_seeker_peak_caller
-      :members:
 
 
 BWA Alignment - bwa aln
@@ -594,12 +545,6 @@ BWA Alignment - bwa aln
             --out_metadata tests/json/output_bwa_aln_paired.json
 
 
-   Methods
-   =======
-   .. autoclass:: process_align_bwa.process_bwa
-      :members:
-
-
 BWA Alignment - bwa mem
 -----------------------
 .. automodule:: process_align_bwa_mem
@@ -668,12 +613,6 @@ BWA Alignment - bwa mem
             --out_metadata tests/json/output_bwa_mem_paired.json
 
 
-   Methods
-   =======
-   .. autoclass:: process_align_bwa_mem.process_bwa_mem
-      :members:
-
-
 ChIP-Seq Analysis
 -----------------
 .. automodule:: process_chipseq
@@ -729,12 +668,6 @@ ChIP-Seq Analysis
             --out_metadata tests/json/output_chipseq.json
 
 
-   Methods
-   =======
-   .. autoclass:: process_chipseq.process_chipseq
-      :members:
-
-
 iDamID-Seq Analysis
 -------------------
 .. automodule:: process_damidseq
@@ -788,12 +721,6 @@ iDamID-Seq Analysis
             --in_metadata tests/json/input_idamidseq.json \
             --out_metadata tests/json/output_idamidseq.json
 
-
-   Methods
-   =======
-   .. autoclass:: process_damidseq.process_damidseq
-      :members:
-
 iNPS
 ----
 .. automodule:: process_iNPS
@@ -846,12 +773,6 @@ iNPS
              --config tests/json/config_inps.json \
              --in_metadata tests/json/input_iNPS_metadata.json \
              --out_metadata tests/json/output_iNPS.json
-
-
-   Methods
-   =======
-   .. autoclass:: process_iNPS.process_iNPS
-      :members:
 
 
 MACS2 Analysis
@@ -921,12 +842,6 @@ MACS2 Analysis
             --out_metadata tests/json/output_macs2_bgd.json
 
 
-   Methods
-   =======
-   .. autoclass:: process_macs2.process_macs2
-      :members:
-
-
 Mnase-Seq Analysis
 ------------------
 .. automodule:: process_mnaseseq
@@ -981,12 +896,6 @@ Mnase-Seq Analysis
             --out_metadata tests/json/output_mnaseseq.json
 
 
-   Methods
-   =======
-   .. autoclass:: process_mnaseseq.process_mnaseseq
-      :members:
-
-
 RNA-Seq Analysis
 ----------------
 .. automodule:: process_rnaseq
@@ -1038,11 +947,6 @@ RNA-Seq Analysis
             --config tests/json/config_rnaseq.json \
             --in_metadata tests/json/input_rnaseq.json \
             --out_metadata tests/json/output_rnaseq.json
-
-   Methods
-   =======
-   .. autoclass:: process_rnaseq.process_rnaseq
-      :members:
 
 
 TrimGalore
@@ -1099,12 +1003,6 @@ TrimGalore
             --config tests/json/config_trimgalore.json \
             --in_metadata tests/json/input_trimgalore_metadata.json \
             --out_metadata tests/json/output_trimgalore.json
-
-
-   Methods
-   =======
-   .. autoclass:: process_trim_galore.process_trim_galore
-      :members:
 
 
 Whole Genome BiSulphate Sequencing Analysis
@@ -1164,12 +1062,6 @@ Whole Genome BiSulphate Sequencing Analysis
             --config tests/json/config_wgbs.json \
             --in_metadata tests/json/input_wgbs.json \
             --out_metadata tests/json/output_wgbs.json
-
-
-   Methods
-   =======
-   .. autoclass:: process_wgbs.process_wgbs
-      :members:
 
 Hi-C Analysis
 -------------
@@ -1271,8 +1163,3 @@ Hi-C Analysis
             --normalized 1             \
             --tag Human.SRR1658573     \
             --window_type frag
-
-   Methods
-   =======
-   .. autoclass:: process_hic.process_hic
-      :members:

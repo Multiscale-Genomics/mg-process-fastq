@@ -18,17 +18,17 @@
 rc=0
 pv=$(python -c 'import platform; print(platform.python_version())')
 
-python tests/test_toolchains.py --pipeline genome
+python mg_process_fastq/tests/test_toolchains.py --pipeline genome
 tc=$?
 rc=$(($rc + $tc))
 bash tidy_data.sh
 
-python tests/test_pipelines.py --pipeline genome
+python mg_process_fastq/tests/test_pipelines.py --pipeline genome
 tc=$?
 rc=$(($rc + $tc))
 bash tidy_data.sh
 
-python tests/test_pipelines.py --pipeline trimgalore
+python mg_process_fastq/tests/test_pipelines.py --pipeline trimgalore
 tc=$?
 rc=$(($rc + $tc))
 bash tidy_data.sh
@@ -39,34 +39,34 @@ bash tidy_data.sh
 # rc=$(($rc + $tc))
 # sh tidy_data.sh
 
-python tests/test_toolchains.py --pipeline bowtie2
+python mg_process_fastq/tests/test_toolchains.py --pipeline bowtie2
 tc=$?
 rc=$(($rc + $tc))
 bash tidy_data.sh
 
-python tests/test_toolchains.py --pipeline bwa
+python mg_process_fastq/tests/test_toolchains.py --pipeline bwa
 tc=$?
 rc=$(($rc + $tc))
 bash tidy_data.sh
 
 if [[ $pv == "2.7.12" ]]; then
-    python tests/test_toolchains.py --pipeline chipseq
+    python mg_process_fastq/tests/test_toolchains.py --pipeline chipseq
     tc=$?
     rc=$(($rc + $tc))
     bash tidy_data.sh
 
-    python tests/test_pipelines.py --pipeline chipseq
+    python mg_process_fastq/tests/test_pipelines.py --pipeline chipseq
     tc=$?
     rc=$(($rc + $tc))
     bash tidy_data.sh
 fi
 
-python tests/test_toolchains.py --pipeline rnaseq
+python mg_process_fastq/tests/test_toolchains.py --pipeline rnaseq
 tc=$?
 rc=$(($rc + $tc))
 bash tidy_data.sh
 
-python tests/test_pipelines.py --pipeline rnaseq
+python mg_process_fastq/tests/test_pipelines.py --pipeline rnaseq
 tc=$?
 rc=$(($rc + $tc))
 bash tidy_data.sh

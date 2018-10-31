@@ -42,7 +42,7 @@ Pipelines
 ---------
 There is a test for each of the tools. This uses the "process" scripts to run each of the tools. This is to ensure that the pipeline scripts are able to call out to each of the tools and the correct parameters are handed to each one.
 
-.. automodule:: tests
+.. automodule:: mg_process_fastq.tests
 
    ChIP-Seq
    ========
@@ -55,7 +55,7 @@ There is a test for each of the tools. This uses the "process" scripts to run ea
 
    Methods
    -------
-   .. automodule:: tests.test_pipeline_chipseq
+   .. automodule:: mg_process_fastq.tests.test_pipeline_chipseq
       :members:
 
    Sample Data
@@ -74,7 +74,7 @@ There is a test for each of the tools. This uses the "process" scripts to run ea
 
    Methods
    -------
-   .. automodule:: tests.test_pipeline_idamidseq
+   .. automodule:: mg_process_fastq.tests.test_pipeline_idamidseq
       :members:
 
    Sample Data
@@ -93,7 +93,7 @@ There is a test for each of the tools. This uses the "process" scripts to run ea
 
    Methods
    -------
-   .. automodule:: tests.test_pipeline_genome
+   .. automodule:: mg_process_fastq.tests.test_pipeline_genome
       :members:
 
    Sample Data
@@ -111,7 +111,7 @@ There is a test for each of the tools. This uses the "process" scripts to run ea
 
    Methods
    -------
-   .. automodule:: tests.test_pipeline_tb
+   .. automodule:: mg_process_fastq.tests.test_pipeline_tb
       :members:
 
    Sample Data
@@ -130,7 +130,7 @@ There is a test for each of the tools. This uses the "process" scripts to run ea
 
    Methods
    -------
-   .. automodule:: tests.test_pipeline_mnaseseq
+   .. automodule:: mg_process_fastq.tests.test_pipeline_mnaseseq
       :members:
 
    Sample Data
@@ -148,7 +148,7 @@ There is a test for each of the tools. This uses the "process" scripts to run ea
 
    Methods
    -------
-   .. automodule:: tests.test_pipeline_rnaseq
+   .. automodule:: mg_process_fastq.tests.test_pipeline_rnaseq
       :members:
 
    Sample Data
@@ -166,7 +166,7 @@ There is a test for each of the tools. This uses the "process" scripts to run ea
 
    Methods
    -------
-   .. automodule:: tests.test_pipeline_wgbs
+   .. automodule:: mg_process_fastq.tests.test_pipeline_wgbs
       :members:
 
    Sample Data
@@ -188,5 +188,5 @@ This script automates the running of each of the tools that are required for a g
 Methods
 ^^^^^^^
 
-   .. automodule:: tests.test_toolchains
+   .. automodule:: mg_process_fastq.tests.test_toolchains
       :members:

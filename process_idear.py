@@ -24,7 +24,7 @@ import argparse
 from basic_modules.workflow import Workflow
 from utils import logger
 
-from tool.idear import idearTool
+from mg_process_fastq.tool.idear import idearTool
 
 
 # ------------------------------------------------------------------------------

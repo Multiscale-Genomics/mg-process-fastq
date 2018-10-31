@@ -125,9 +125,19 @@ Other changes include:
 2018-06-27 - Remove reads marked as duplicate by BioBamBam
 ----------------------------------------------------------
 
-BioBamBam only marks reads as duplicate, but does not remove the after. The Tool has been updated to remove the flagged duplicates using samtools with the parameter `-F 1024`. This matches the pipeline used within the `Blueprints project <http://dcc.blueprint-epigenome.eu/#/md/chip_seq_grch37>`_.
+BioBamBam only marks reads as duplicate, but does not remove them after. The Tool has been updated to remove the flagged duplicates using samtools with the parameter `-F 1024`. This matches the pipeline used within the `Blueprints project <http://dcc.blueprint-epigenome.eu/#/md/chip_seq_grch37>`_.
 
 Also performed some tidying of the code to annotate issues that had been highlighted by pylint.
+
+
+2018-07-05 - Refactoring of repo to avoid naming collisions
+-----------------------------------------------------------
+
+The original repo had the tools and tests in a directory that was in the root of the repo. This is problematic when there is sharing of the code as there are collisions in the name space. This has meant that all of the code needs to be moved into a new subdirectory (mg_process_fastq).
+
+There is also the movement of the workflow classes out of the pipeline scripts and into their own module in mg_process_fastq. This means that tworkflows that have been written by others can be more easily imported.
+
+This change will probably necessitate incrementing the major release number to 1.0.0 as this is not a backwards compatible change and will require changes in other repos that rely on mg-process-fastq. As a result this will need to be part of a planned release with other developers.
 
 
 2018-07-11 - Changes FASTQ splitter file management
@@ -227,3 +237,9 @@ Ability to handle multiple input single/paired end data and background data file
 ----------------------------------------------------------
 
 The output wig files from BS Seeker2 are now converted to BigWig files by default rather than returning wig files. This is so that they are easier to visualise on the JBrowse interface.
+
+
+2018-10-24 - ChIP-seq Pipeline to use BWA MEM
+---------------------------------------------
+
+Changed the default aligner for the ChIP-seq pipeline from BWA ALN to BWA MEM for speed improvements and better handling of short read data.

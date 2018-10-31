@@ -26,10 +26,10 @@ from basic_modules.workflow import Workflow
 from utils import logger
 from utils import remap
 
-from tool.forge_bsgenome import bsgenomeTool
-from tool.bwa_mem_aligner import bwaAlignerMEMTool
-from tool.biobambam_filter import biobambam
-from tool.idear import idearTool
+from mg_process_fastq.tool.forge_bsgenome import bsgenomeTool
+from mg_process_fastq.tool.bwa_mem_aligner import bwaAlignerMEMTool
+from mg_process_fastq.tool.biobambam_filter import biobambam
+from mg_process_fastq.tool.idear import idearTool
 
 
 # ------------------------------------------------------------------------------

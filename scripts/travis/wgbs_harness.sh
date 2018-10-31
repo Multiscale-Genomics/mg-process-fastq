@@ -20,12 +20,12 @@ pv=$(python -c 'import platform; v=platform.python_version_tuple(); print("{}.{}
 
 if [[ $pv == "2.7" ]]; then
     if [[ $TESTENV == "wgbs_code_1" ]]; then
-        python tests/test_toolchains.py --pipeline wgbs
+        python mg_process_fastq/tests/test_toolchains.py --pipeline wgbs
         tc=$?
         rc=$(($rc + $tc))
         bash tidy_data.sh
     else
-        python tests/test_pipelines.py --pipeline wgbs
+        python mg_process_fastq/tests/test_pipelines.py --pipeline wgbs
         tc=$?
         rc=$(($rc + $tc))
         bash tidy_data.sh

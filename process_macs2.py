@@ -25,7 +25,7 @@ from basic_modules.workflow import Workflow
 from utils import logger
 from utils import remap
 
-from tool.macs2 import macs2
+from mg_process_fastq.tool.macs2 import macs2
 
 
 # ------------------------------------------------------------------------------

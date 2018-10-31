@@ -213,7 +213,7 @@ before_script:
 
 
     - cd ${HOME}/build/Multiscale-Genomics/mg-process-fastq
-    - docker run -p 80:80 --name biobambamcontainer multiscalegenomics/mgprocessfastq:biobambamimage
+    - docker run -p 80:80 --name biobambamcontainer multiscalegenomics/mgprocessfastqbbb:latest
     - pwd
 
     - cd ${HOME}/build/Multiscale-Genomics/mg-process-fastq

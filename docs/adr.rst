@@ -227,3 +227,9 @@ Ability to handle multiple input single/paired end data and background data file
 ----------------------------------------------------------
 
 The output wig files from BS Seeker2 are now converted to BigWig files by default rather than returning wig files. This is so that they are easier to visualise on the JBrowse interface.
+
+
+2018-10-31 - Modify the file names for docker script
+----------------------------------------------------
+
+There were inconsistencies in the names, these have been updated to be more consistent with the consortium naming instead.

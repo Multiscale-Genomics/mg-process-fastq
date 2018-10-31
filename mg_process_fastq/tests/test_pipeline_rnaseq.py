@@ -74,7 +74,7 @@ def test_rnaseq_pipeline():
     }
 
     files_out = {
-        "index": 'tests/data/kallisto.idx',
+        "index": resource_path + "kallisto.idx",
         "abundance_h5_file": resource_path + "kallisto.abundance.h5",
         "abundance_tsv_file": resource_path + "kallisto.abundance.tsv",
         "abundance_gff_file": resource_path + "kallisto.abundance.gff",

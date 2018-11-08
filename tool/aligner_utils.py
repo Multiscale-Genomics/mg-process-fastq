@@ -272,9 +272,10 @@ class alignerUtils(object):  # pylint: disable=invalid-name
                         while True:
                             piece = f_in.read(piece_size)
 
-                            if piece == "":
+                            if not piece:
                                 break  # end of file
 
+                            print("PIECE:", piece[0:5])
                             f_out.write(piece)
 
             shutil.rmtree(tar_file.replace('.tar.gz', ''))

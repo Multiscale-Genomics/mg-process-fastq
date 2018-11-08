@@ -39,7 +39,7 @@ bash tidy_data.sh
 # rc=$(($rc + $tc))
 # sh tidy_data.sh
 
-python tests/test_toolchains.py --pipeline bowtie2
+python tests/test_toolchains.py --pipeline bowtie2 --verbose
 tc=$?
 rc=$(($rc + $tc))
 bash tidy_data.sh

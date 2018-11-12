@@ -201,15 +201,15 @@ class process_chipseq(Workflow):  # pylint: disable=invalid-name,too-few-public-
             logger.progress("BWA Aligner - Background", status="DONE")
 
             try:
-                output_files_generated["bam_bg"] = bwa_bg_files["bam_bg"]
-                output_metadata["bam_bg"] = bwa_bg_meta["bam_bg"]
+                output_files_generated["bam_bg"] = bwa_bg_files["bam"]
+                output_metadata["bam_bg"] = bwa_bg_meta["bam"]
 
                 tool_name = output_metadata['bam_bg'].meta_data['tool']
                 output_metadata['bam_bg'].meta_data['tool_description'] = tool_name
                 output_metadata['bam_bg'].meta_data['tool'] = "process_chipseq"
 
-                output_files_generated["bai_bg"] = bwa_bg_files["bai_bg"]
-                output_metadata["bai_bg"] = bwa_bg_meta["bai_bg"]
+                output_files_generated["bai_bg"] = bwa_bg_files["bai"]
+                output_metadata["bai_bg"] = bwa_bg_meta["bai"]
 
                 tool_name = output_metadata['bai_bg'].meta_data['tool']
                 output_metadata['bai_bg'].meta_data['tool_description'] = tool_name

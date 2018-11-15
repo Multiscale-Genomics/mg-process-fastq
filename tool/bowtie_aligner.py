@@ -286,6 +286,7 @@ class bowtie2AlignerTool(Tool):  # pylint: disable=invalid-name
             # Effort Options - 2
             "bowtie2_seed_extension_attempts_param": ["-D", True],
             "bowtie2_reseed_param": ["-R", True],
+            "bowtie2_fasta_input" : ["-f", False],
             # SAM Options - 9
             "bowtie2_no_unal_param": ["--no-unal", False],
             "bowtie2_no_hd_param": ["--no-hd", False],

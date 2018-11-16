@@ -264,10 +264,19 @@ class alignerUtils(object):  # pylint: disable=invalid-name
 
             gidx_folder = tar_file.replace('.tar.gz', '/') + genome_name
 
+            piece_size = 5120000  # 500MB
+
             for suffix in list(index_files.keys()):
                 with open(index_files[suffix], "wb") as f_out:
                     with open(gidx_folder + "." + suffix, "rb") as f_in:
-                        f_out.write(f_in.read())
+                        while True:
+                            piece = f_in.read(piece_size)
+
+                            if not piece:
+                                break  # end of file
+
+                            print("PIECE:", piece[0:5])
+                            f_out.write(piece)
 
             shutil.rmtree(tar_file.replace('.tar.gz', ''))
         except (OSError, IOError) as error:

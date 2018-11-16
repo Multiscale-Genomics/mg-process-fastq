@@ -235,6 +235,12 @@ The output wig files from BS Seeker2 are now converted to BigWig files by defaul
 There were inconsistencies in the names, these have been updated to be more consistent with the consortium naming instead.
 
 
+2018-11-08 - Modifications for the movement of files
+----------------------------------------------------
+
+To keep the memory usage low the files are now moved in N byte chunks rather than as a whole file.
+
+
 2018-11-16 - Reading of Gzipped FASTQ files
 -------------------------------------------
 

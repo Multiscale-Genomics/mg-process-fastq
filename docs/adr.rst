@@ -233,3 +233,9 @@ The output wig files from BS Seeker2 are now converted to BigWig files by defaul
 ----------------------------------------------------
 
 There were inconsistencies in the names, these have been updated to be more consistent with the consortium naming instead.
+
+
+2018-11-16 - Reading of Gzipped FASTQ files
+-------------------------------------------
+
+Due to the limitations of space it is necessary for the users to be able to load only the gzipped versions of the FASTQ files. Added the ability to  read the gzipped FASTQ files to the FASTQ reader. This is behind the aligners and the splitting procedure so has a wide ranging benefit for pipelines.

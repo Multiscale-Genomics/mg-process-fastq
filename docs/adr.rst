@@ -239,3 +239,9 @@ There were inconsistencies in the names, these have been updated to be more cons
 ----------------------------------------------------
 
 To keep the memory usage low the files are now moved in N byte chunks rather than as a whole file.
+
+
+2018-11-16 - Reading of Gzipped FASTQ files
+-------------------------------------------
+
+Due to the limitations of space it is necessary for the users to be able to load only the gzipped versions of the FASTQ files. Added the ability to  read the gzipped FASTQ files to the FASTQ reader. This is behind the aligners and the splitting procedure so has a wide ranging benefit for pipelines.

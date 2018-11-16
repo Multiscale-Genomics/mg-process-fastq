@@ -20,6 +20,7 @@
 import os
 import errno
 import re
+import gzip
 
 from utils import logger
 
@@ -38,6 +39,9 @@ class fastqreader(object):  # pylint: disable=too-many-instance-attributes,inval
 
         self.f1_file = None
         self.f2_file = None
+
+        self.f1_gz = False
+        self.f2_gz = False
 
         self.f1_eof = False
         self.f2_eof = False
@@ -65,12 +69,29 @@ class fastqreader(object):  # pylint: disable=too-many-instance-attributes,inval
             Location of a paired end FASTQ file.
         """
         self.fastq1 = file1
+
+        f1_name = os.path.split(self.fastq1)[1]
+        if f1_name.split(".")[-1] == "gz":
+            self.f1_gz = True
+
+        if self.f1_gz:
+            self.f1_file = gzip.open(self.fastq1, "rt")
+        else:
+            self.f1_file = open(self.fastq1, "r")
+
         self.f1_file = open(self.fastq1, "r")
         self.f1_eof = False
 
         if file2 is not None:
             self.fastq2 = file2
-            self.f2_file = open(self.fastq2, "r")
+            f2_name = os.path.split(self.fastq2)[1]
+            if f2_name.split(".")[-1] == "gz":
+                self.f2_gz = True
+
+            if self.f2_gz:
+                self.f2_file = gzip.open(self.fastq2, "rt")
+            else:
+                self.f2_file = open(self.fastq2, "r")
             self.f2_eof = False
             self.paired = True
 

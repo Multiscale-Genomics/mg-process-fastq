@@ -19,7 +19,6 @@ from __future__ import print_function
 
 import os
 import sys
-import re
 
 from utils import logger
 
@@ -123,7 +122,7 @@ class fastq_splitter(Tool):  # pylint: disable=invalid-name
 
             if count_r3 % fastq_chunk_size == 0:
                 file_loc_1_new = fqr.incrementOutputFiles()
-                files_out.append([file_loc_1_new])
+                files_out.append([os.path.split(file_loc_1_new)[1]])
 
         fqr.closeFastQ()
         fqr.closeOutputFiles()
@@ -219,7 +218,10 @@ class fastq_splitter(Tool):  # pylint: disable=invalid-name
 
             if count_r3 % fastq_chunk_size == 0:
                 file_loc_1_new, file_loc_2_new = fqr.incrementOutputFiles()
-                files_out.append([file_loc_1_new, file_loc_2_new])
+                files_out.append([
+                    os.path.split(file_loc_1_new)[1],
+                    os.path.split(file_loc_2_new)[1]
+                ])
 
         fqr.closeFastQ()
         fqr.closeOutputFiles()

@@ -240,6 +240,10 @@ class fastqreader(object):  # pylint: disable=too-many-instance-attributes,inval
             self.f2_output_file = open(os.path.join(fq2[0], fq2[1]), "w")
             self.f2_output_file_loc = os.path.join(fq2[0], fq2[1])
 
+            return (self.f1_output_file_loc, self.f2_output_file_loc)
+
+        return self.f1_output_file_loc
+
     def writeOutput(self, read, side=1):  # pylint: disable=invalid-name
         """
         Writer to print the extracted lines
@@ -284,3 +288,8 @@ class fastqreader(object):  # pylint: disable=too-many-instance-attributes,inval
         self.output_file_count += 1
 
         self.createOutputFiles(self.output_tag)
+
+        if self.paired is True:
+            return (self.f1_output_file_loc, self.f2_output_file_loc)
+
+        return self.f1_output_file_loc

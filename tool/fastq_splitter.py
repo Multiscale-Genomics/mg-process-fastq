@@ -114,7 +114,7 @@ class fastq_splitter(Tool):  # pylint: disable=invalid-name
 
         tmp_dir = os.path.split(file_loc_1_tmp)[0]
 
-        files_out = [[file_loc_1_tmp]]
+        files_out = [[os.path.split(file_loc_1_tmp)[1]]]
 
         while fqr.eof(1) is False:
             fqr.writeOutput(record1, 1)
@@ -191,7 +191,10 @@ class fastq_splitter(Tool):  # pylint: disable=invalid-name
 
         tmp_dir = os.path.split(file_loc_1_tmp)[0]
 
-        files_out = [[file_loc_1_tmp, file_loc_2_tmp]]
+        files_out = [[
+            os.path.split(file_loc_1_tmp)[1],
+            os.path.split(file_loc_2_tmp)[1]
+        ]]
 
         while fqr.eof(1) is False and fqr.eof(2) is False:
             r1_id = record1["id"].split(" ")

@@ -112,15 +112,7 @@ class fastq_splitter(Tool):  # pylint: disable=invalid-name
 
         count_r3 = 0
 
-        file_loc_1 = os.path.split(fqr.fastq1)
-        # file_loc_1_suffix = "." + file_loc_1[1].split(".")[-1]
-        # file_loc_1_tmp = file_loc_1[1].replace(
-        #     file_loc_1_suffix,
-        #     "." + str(fqr.output_tag) + "_" + str(fqr.output_file_count) + file_loc_1_suffix)
-
-        file_loc_1 = os.path.split(os.path.join(file_loc_1[0], tag, file_loc_1_tmp))
-
-        tmp_dir = file_loc_1[0]
+        tmp_dir = os.path.split(file_loc_1_tmp)[0]
 
         files_out = [[file_loc_1_tmp]]
 
@@ -131,14 +123,6 @@ class fastq_splitter(Tool):  # pylint: disable=invalid-name
 
             if count_r3 % fastq_chunk_size == 0:
                 file_loc_1_new = fqr.incrementOutputFiles()
-                # file_loc_1 = os.path.split(fqr.fastq1)
-                # new_suffix = ".{}_{}{}".format(
-                #     str(fqr.output_tag), str(fqr.output_file_count), file_loc_1_suffix)
-
-                # file_loc_1_new = re.sub(file_loc_1_suffix + '$', new_suffix, file_loc_1[1])
-
-                # file_loc_1 = os.path.split(os.path.join(file_loc_1[0], tag, file_loc_1_new))
-
                 files_out.append([file_loc_1_new])
 
         fqr.closeFastQ()
@@ -205,23 +189,7 @@ class fastq_splitter(Tool):  # pylint: disable=invalid-name
         count_r2 = 0
         count_r3 = 0
 
-        file_loc_1 = os.path.split(fqr.fastq1)
-        # file_loc_1_suffix = "." + file_loc_1[1].split(".")[-1]
-        # file_loc_1_tmp = file_loc_1[1].replace(
-        #     file_loc_1_suffix,
-        #     "." + str(fqr.output_tag) + "_" + str(fqr.output_file_count) + file_loc_1_suffix)
-
-        file_loc_1 = os.path.split(os.path.join(file_loc_1[0], tag, file_loc_1_tmp))
-
-        tmp_dir = file_loc_1[0]
-
-        file_loc_2 = os.path.split(fqr.fastq2)
-        # file_loc_2_suffix = "." + file_loc_2[1].split(".")[-1]
-        # file_loc_2_tmp = file_loc_2[1].replace(
-        #     file_loc_2_suffix,
-        #     "." + str(fqr.output_tag) + "_" + str(fqr.output_file_count) + file_loc_2_suffix)
-
-        file_loc_2 = os.path.split(os.path.join(file_loc_2[0], tag, file_loc_2_tmp))
+        tmp_dir = os.path.split(file_loc_1_tmp)[0]
 
         files_out = [[file_loc_1_tmp, file_loc_2_tmp]]
 
@@ -248,18 +216,6 @@ class fastq_splitter(Tool):  # pylint: disable=invalid-name
 
             if count_r3 % fastq_chunk_size == 0:
                 file_loc_1_new, file_loc_2_new = fqr.incrementOutputFiles()
-                # file_loc_1 = os.path.split(fqr.fastq1)
-                # new_suffix = ".{}_{}{}".format(
-                #     str(fqr.output_tag), str(fqr.output_file_count), file_loc_1_suffix)
-                # file_loc_1_new = re.sub('.fastq$', new_suffix, file_loc_1[1])
-                # file_loc_1 = os.path.split(os.path.join(file_loc_1[0], tag, file_loc_1_new))
-
-                # file_loc_2 = os.path.split(fqr.fastq2)
-                # new_suffix = ".{}_{}{}".format(
-                #     str(fqr.output_tag), str(fqr.output_file_count), file_loc_2_suffix)
-                # file_loc_2_new = re.sub('.fastq$', new_suffix, file_loc_2[1])
-                # file_loc_2 = os.path.split(os.path.join(file_loc_2[0], tag, file_loc_2_new))
-
                 files_out.append([file_loc_1_new, file_loc_2_new])
 
         fqr.closeFastQ()

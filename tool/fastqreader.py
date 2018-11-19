@@ -75,11 +75,10 @@ class fastqreader(object):  # pylint: disable=too-many-instance-attributes,inval
             self.f1_gz = True
 
         if self.f1_gz:
-            self.f1_file = gzip.open(self.fastq1, "rt")
+            self.f1_file = gzip.open(self.fastq1, "rb")
         else:
             self.f1_file = open(self.fastq1, "r")
 
-        self.f1_file = open(self.fastq1, "r")
         self.f1_eof = False
 
         if file2 is not None:
@@ -89,7 +88,7 @@ class fastqreader(object):  # pylint: disable=too-many-instance-attributes,inval
                 self.f2_gz = True
 
             if self.f2_gz:
-                self.f2_file = gzip.open(self.fastq2, "rt")
+                self.f2_file = gzip.open(self.fastq2, "rb")
             else:
                 self.f2_file = open(self.fastq2, "r")
             self.f2_eof = False
@@ -203,11 +202,11 @@ class fastqreader(object):  # pylint: disable=too-many-instance-attributes,inval
 
         if self.f1_gz:
             fq1_suffix = "." + fq1[1].split(".")[-2] + ".gz"
-            new_suffix = ".{}_{}{}".format(
+            new_suffix = ".{}_{}.{}".format(
                 str(self.output_tag), str(self.output_file_count), fq1[1].split(".")[-2])
         else:
             fq1_suffix = "." + fq1[1].split(".")[-1]
-            new_suffix = ".{}_{}{}".format(
+            new_suffix = ".{}_{}.{}".format(
                 str(self.output_tag), str(self.output_file_count), fq1[1].split(".")[-1])
 
         fq1_tmp_file = re.sub(fq1_suffix + '$', new_suffix, fq1[1])

@@ -202,11 +202,14 @@ class fastqreader(object):  # pylint: disable=too-many-instance-attributes,inval
         fq1 = os.path.split(self.fastq1)
 
         if self.f1_gz:
-            fq1_suffix = "." + fq1[1].split(".")[-2]
+            fq1_suffix = "." + fq1[1].split(".")[-2] + ".gz"
+            new_suffix = ".{}_{}{}".format(
+                str(self.output_tag), str(self.output_file_count), fq1[1].split(".")[-2])
         else:
             fq1_suffix = "." + fq1[1].split(".")[-1]
+            new_suffix = ".{}_{}{}".format(
+                str(self.output_tag), str(self.output_file_count), fq1[1].split(".")[-1])
 
-        new_suffix = "." + str(self.output_tag) + "_" + str(self.output_file_count) + fq1_suffix
         fq1_tmp_file = re.sub(fq1_suffix + '$', new_suffix, fq1[1])
         fq1 = os.path.split(os.path.join(fq1[0], "tmp", fq1_tmp_file))
 
@@ -225,10 +228,13 @@ class fastqreader(object):  # pylint: disable=too-many-instance-attributes,inval
 
             if self.f1_gz:
                 fq2_suffix = "." + fq2[1].split(".")[-2]
+                new_suffix = ".{}_{}{}".format(
+                    str(self.output_tag), str(self.output_file_count), fq2[1].split(".")[-2])
             else:
                 fq2_suffix = "." + fq2[1].split(".")[-1]
+                new_suffix = ".{}_{}{}".format(
+                    str(self.output_tag), str(self.output_file_count), fq2[1].split(".")[-1])
 
-            new_suffix = "." + str(self.output_tag) + "_" + str(self.output_file_count) + fq2_suffix
             fq2_tmp_file = re.sub(fq2_suffix + '$', new_suffix, fq2[1])
             fq2 = os.path.split(os.path.join(fq2[0], "tmp", fq2_tmp_file))
             self.f2_output_file = open(os.path.join(fq2[0], fq2[1]), "w")
